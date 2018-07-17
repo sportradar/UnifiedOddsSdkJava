@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+  -->
+
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="replay_set_content" type="replay_set_content"/>
+<xs:complexType name="replay_event">
+  <xs:simpleContent>
+    <xs:extension base="xs:string">
+      <xs:attribute type="xs:string" name="id" use="optional"/>
+      <xs:attribute type="xs:string" name="position" use="optional"/>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+<xs:complexType name="replay_set_content">
+  <xs:sequence>
+    <xs:element type="replay_event" name="event" maxOccurs="unbounded" minOccurs="0"/>
+  </xs:sequence>
+</xs:complexType>
+</xs:schema>

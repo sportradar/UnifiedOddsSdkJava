@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+  -->
+
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- the folder in which the SDK logs will be stored -->
+    <property name="UF_SDK_LOG_FOLDER" value="uf-sdk-logs" />
+    <!-- TRACE, DEBUG, INFO, WARN, ERROR, ALL or OFF -->
+    <property name="UF_SDK_LOG_LEVEL" value="debug" />
+
+    <!-- the execution log file appender configuration -->
+    <appender name="SdkExecutionLogFileAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- the main/current execution log file -->
+        <file>${UF_SDK_LOG_FOLDER}/uf-sdk.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover
+            Once any of the below condition met, it will change the file name as below and compressed it. -->
+            <fileNamePattern>${UF_SDK_LOG_FOLDER}/uf-sdk-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!-- or whenever the file size reaches 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] [%logger{32}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- the traffic log file appender configuration -->
+    <appender name="SdkTrafficLogFileAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- the main/current execution log file -->
+        <file>${UF_SDK_LOG_FOLDER}/traffic/uf-sdk-traffic.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover
+            Once any of the below condition met, it will change the file name as below and compressed it. -->
+            <fileNamePattern>${UF_SDK_LOG_FOLDER}/traffic/uf-sdk-traffic-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!-- or whenever the file size reaches 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SdkTrafficFailureLogFileAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- the main/current execution log file -->
+        <file>${UF_SDK_LOG_FOLDER}/uf-sdk-traffic-failure.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover
+            Once any of the below condition met, it will change the file name as below and compressed it. -->
+            <fileNamePattern>${UF_SDK_LOG_FOLDER}/traffic/uf-sdk-traffic-failure-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!-- or whenever the file size reaches 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- the rest traffic log file appender configuration -->
+    <appender name="SdkRestTrafficLogFileAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- the main/current execution log file -->
+        <file>${UF_SDK_LOG_FOLDER}/restTraffic/uf-sdk-rest-traffic.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover
+            Once any of the below condition met, it will change the file name as below and compressed it. -->
+            <fileNamePattern>${UF_SDK_LOG_FOLDER}/restTraffic/uf-sdk-rest-traffic-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!-- or whenever the file size reaches 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- the client interaction log file appender configuration -->
+    <appender name="SdkClientInteractionLogFileAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- the main/current execution log file -->
+        <file>${UF_SDK_LOG_FOLDER}/clientInteraction/uf-sdk-client-interaction.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover
+            Once any of the below condition met, it will change the file name as below and compressed it. -->
+            <fileNamePattern>${UF_SDK_LOG_FOLDER}/clientInteraction/uf-sdk-client-interaction-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!-- or whenever the file size reaches 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- the console log appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] [%logger{32}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- execution log -->
+    <logger name="com.sportradar.unifiedodds" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+        <appender-ref ref="SdkExecutionLogFileAppender" />
+    </logger>
+
+    <!-- traffic log config assigned to the traffic logger -->
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+        <appender-ref ref="SdkTrafficLogFileAppender" />
+    </logger>
+
+    <!-- traffic failure log config assigned to the traffic failure logger -->
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkTrafficFailureLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+        <appender-ref ref="SdkTrafficFailureLogFileAppender" />
+    </logger>
+
+    <!-- rest traffic log config assigned to the rest traffic logger -->
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkRestTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+        <appender-ref ref="SdkRestTrafficLogFileAppender" />
+    </logger>
+
+    <!-- client interaction log config assigned to the client interaction logger -->
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkClientInteractionLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+        <appender-ref ref="SdkClientInteractionLogFileAppender" />
+    </logger>
+
+    <!-- all the debug logs will be printed in the console -->
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

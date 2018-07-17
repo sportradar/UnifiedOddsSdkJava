@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.sportradar.unifiedodds.sdk.oddsentities.Message</OriginalElement>
+  <nodes>
+    <node x="1446.25" y="268.0">com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange</node>
+    <node x="346.0" y="423.0">com.sportradar.unifiedodds.sdk.oddsentities.OddsChange</node>
+    <node x="449.50000000000006" y="156.0">com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusChange</node>
+    <node x="256.25" y="290.0">com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown</node>
+    <node x="762.375" y="0.0">com.sportradar.unifiedodds.sdk.oddsentities.Message</node>
+    <node x="1494.0" y="445.0">com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetCancel</node>
+    <node x="559.25" y="290.0">com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp</node>
+    <node x="685.0" y="434.0">com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities</node>
+    <node x="1040.0" y="467.0">com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement</node>
+    <node x="1246.0" y="434.0">com.sportradar.unifiedodds.sdk.oddsentities.BetCancel</node>
+    <node x="1160.25" y="279.0">com.sportradar.unifiedodds.sdk.oddsentities.BetStop</node>
+    <node x="845.25" y="290.0">com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage</node>
+    <node x="1184.25" y="123.0">com.sportradar.unifiedodds.sdk.oddsentities.EventMessage</node>
+    <node x="0.0" y="445.0">com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.EventMessage" target="com.sportradar.unifiedodds.sdk.oddsentities.Message">
+      <point x="0.0" y="-47.5" />
+      <point x="1293.25" y="98.0" />
+      <point x="922.875" y="98.0" />
+      <point x="53.5" y="36.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.BetStop" target="com.sportradar.unifiedodds.sdk.oddsentities.EventMessage">
+      <point x="0.0" y="-36.5" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities" target="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage">
+      <point x="0.0" y="-47.5" />
+      <point x="852.5" y="403.0" />
+      <point x="968.1666666666667" y="403.0" />
+      <point x="-24.58333333333337" y="25.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.BetCancel" target="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage">
+      <point x="0.0" y="-47.5" />
+      <point x="1360.0" y="393.0" />
+      <point x="1066.5" y="393.0" />
+      <point x="73.75" y="25.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp" target="com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusChange">
+      <point x="0.0" y="-25.5" />
+      <point x="692.25" y="243.0" />
+      <point x="592.75" y="243.0" />
+      <point x="47.75" y="14.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange" target="com.sportradar.unifiedodds.sdk.oddsentities.EventMessage">
+      <point x="0.0" y="-47.5" />
+      <point x="1595.25" y="243.0" />
+      <point x="1365.9166666666667" y="243.0" />
+      <point x="72.66666666666674" y="47.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage" target="com.sportradar.unifiedodds.sdk.oddsentities.EventMessage">
+      <point x="0.0" y="-25.5" />
+      <point x="992.75" y="243.0" />
+      <point x="1220.5833333333333" y="243.0" />
+      <point x="-72.66666666666674" y="47.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusChange" target="com.sportradar.unifiedodds.sdk.oddsentities.Message">
+      <point x="0.0" y="-14.5" />
+      <point x="545.0" y="98.0" />
+      <point x="815.875" y="98.0" />
+      <point x="-53.5" y="36.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetCancel" target="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage">
+      <point x="0.0" y="-36.5" />
+      <point x="1588.5" y="383.0" />
+      <point x="1115.6666666666665" y="383.0" />
+      <point x="122.91666666666652" y="25.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement" target="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage">
+      <point x="0.0" y="-36.5" />
+      <point x="163.0" y="383.0" />
+      <point x="869.8333333333335" y="383.0" />
+      <point x="-122.91666666666663" y="25.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown" target="com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusChange">
+      <point x="0.0" y="-25.5" />
+      <point x="397.75" y="243.0" />
+      <point x="497.25000000000006" y="243.0" />
+      <point x="-47.75" y="14.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.OddsChange" target="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage">
+      <point x="0.0" y="-58.5" />
+      <point x="505.5" y="393.0" />
+      <point x="919.0" y="393.0" />
+      <point x="-73.75" y="25.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement" target="com.sportradar.unifiedodds.sdk.oddsentities.MarketMessage">
+      <point x="0.0" y="-14.5" />
+      <point x="1133.0" y="403.0" />
+      <point x="1017.3333333333333" y="403.0" />
+      <point x="24.583333333333258" y="25.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="872.5" y="270.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

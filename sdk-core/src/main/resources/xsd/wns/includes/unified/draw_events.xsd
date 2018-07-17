@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.sportradar.com/sportsapi/v1/unified" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:include schemaLocation="draw_event.xsd"/>
+    <xs:complexType name="draw_events">
+        <xs:sequence>
+            <xs:element type="draw_event" name="draw_event"  maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

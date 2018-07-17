@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.sportradar.unifiedodds.sdk.entities.SportEvent</OriginalElement>
+  <nodes>
+    <node x="0.0" y="422.0">com.sportradar.unifiedodds.sdk.entities.Stage</node>
+    <node x="333.4999999999999" y="633.0">com.sportradar.unifiedodds.sdk.entities.SoccerEvent</node>
+    <node x="290.99999999999994" y="400.0">com.sportradar.unifiedodds.sdk.entities.Match</node>
+    <node x="620.0" y="455.0">com.sportradar.unifiedodds.sdk.entities.Tournament</node>
+    <node x="950.0" y="400.0">com.sportradar.unifiedodds.sdk.entities.Season</node>
+    <node x="832.0" y="-6.0">com.sportradar.unifiedodds.sdk.entities.TournamentInfo</node>
+    <node x="920.0" y="233.0">com.sportradar.unifiedodds.sdk.entities.LongTermEvent</node>
+    <node x="127.92592592592587" y="189.0">com.sportradar.unifiedodds.sdk.entities.Competition</node>
+    <node x="1215.0" y="-60.0">com.sportradar.unifiedodds.sdk.entities.CurrentSeasonInfo</node>
+    <node x="1278.0" y="455.0">com.sportradar.unifiedodds.sdk.entities.BasicTournament</node>
+    <node x="545.8379629629629" y="0.0">com.sportradar.unifiedodds.sdk.entities.SportEvent</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.Stage" target="com.sportradar.unifiedodds.sdk.entities.Competition">
+      <point x="0.0" y="-69.5" />
+      <point x="135.5" y="375.0" />
+      <point x="204.17592592592587" y="375.0" />
+      <point x="-76.25" y="80.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.Season" target="com.sportradar.unifiedodds.sdk.entities.LongTermEvent">
+      <point x="0.0" y="-91.5" />
+      <point x="0.0" y="36.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.Tournament" target="com.sportradar.unifiedodds.sdk.entities.LongTermEvent">
+      <point x="0.0" y="-36.5" />
+      <point x="775.0" y="375.0" />
+      <point x="981.3333333333333" y="375.0" />
+      <point x="-122.66666666666663" y="36.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.LongTermEvent" target="com.sportradar.unifiedodds.sdk.entities.SportEvent">
+      <point x="0.0" y="-36.5" />
+      <point x="1104.0" y="164.0" />
+      <point x="731.0879629629629" y="164.0" />
+      <point x="61.75" y="69.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.SoccerEvent" target="com.sportradar.unifiedodds.sdk.entities.Match">
+      <point x="5.6843418860808015E-14" y="-25.5" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.Match" target="com.sportradar.unifiedodds.sdk.entities.Competition">
+      <point x="5.6843418860808015E-14" y="-91.5" />
+      <point x="445.5" y="375.0" />
+      <point x="356.67592592592587" y="375.0" />
+      <point x="76.25" y="80.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.BasicTournament" target="com.sportradar.unifiedodds.sdk.entities.LongTermEvent">
+      <point x="0.0" y="-36.5" />
+      <point x="1420.5" y="375.0" />
+      <point x="1226.6666666666667" y="375.0" />
+      <point x="122.66666666666674" y="36.5" />
+    </edge>
+    <edge source="com.sportradar.unifiedodds.sdk.entities.Competition" target="com.sportradar.unifiedodds.sdk.entities.SportEvent">
+      <point x="0.0" y="-80.5" />
+      <point x="280.42592592592587" y="164.0" />
+      <point x="607.5879629629629" y="164.0" />
+      <point x="-61.75" y="69.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="781.5" y="342.0" />
+  <SelectedNodes>
+    <node>com.sportradar.unifiedodds.sdk.entities.CurrentSeasonInfo</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

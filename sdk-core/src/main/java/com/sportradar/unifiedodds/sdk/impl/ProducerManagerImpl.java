@@ -1,0 +1,207 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
+
+package com.sportradar.unifiedodds.sdk.impl;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
+import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+/**
+ * Created on 03/07/2017.
+ * // TODO @eti: Javadoc
+ */
+public class ProducerManagerImpl implements SDKProducerManager {
+    private static final Logger logger = LoggerFactory.getLogger(ProducerManagerImpl.class);
+    private final SDKInternalConfiguration configuration;
+    private final ProducerDataProvider producerDataProvider;
+    private final Map<Integer, ProducerData> producers;
+    private Set<Integer> unknownProducersWarning = new HashSet<>();
+    private boolean feedOpened;
+
+    @Inject
+    public ProducerManagerImpl(SDKInternalConfiguration configuration, ProducerDataProvider producerDataProvider) {
+        Preconditions.checkNotNull(configuration);
+        Preconditions.checkNotNull(producerDataProvider);
+
+        this.configuration = configuration;
+        this.producerDataProvider = producerDataProvider;
+
+        logger.info("Fetching producer list");
+        List<ProducerData> availableProducers = producerDataProvider.getAvailableProducers();
+        availableProducers.forEach(pd ->
+                logger.info("Producers -> id: '{}', name: '{}', description: '{}', STATUS: [{}]",
+                        pd.getId(), pd.getName(), pd.getDescription(), pd.isActive() ? "ACTIVE" : "INACTIVE"));
+
+        this.producers = availableProducers.stream()
+                .collect(
+                        Collectors.toConcurrentMap(
+                                ProducerData::getId,
+                                v -> v
+                        )
+                );
+
+        logger.info("Automatically disabling producers: {}", configuration.getDisabledProducers());
+        configuration.getDisabledProducers().forEach(this::disableProducer);
+    }
+
+    @Override
+    public Map<Integer, Producer> getAvailableProducers() {
+        return ImmutableMap.copyOf(producers.entrySet().stream()
+                .collect(
+                        Collectors.toMap(
+                                Map.Entry::getKey,
+                                v -> new ProducerImpl(v.getValue())
+                        )
+                ));
+    }
+
+    @Override
+    public Map<Integer, Producer> getActiveProducers() {
+        return ImmutableMap.copyOf(producers.entrySet().stream()
+                .filter(p -> p.getValue().isActive())
+                .collect(
+                        Collectors.toMap(
+                                Map.Entry::getKey,
+                                v -> new ProducerImpl(v.getValue())
+                        )
+                ));
+    }
+
+    @Override
+    public Producer getProducer(int id) {
+        if (producers.containsKey(id)) {
+            return new ProducerImpl(producers.get(id));
+        } else {
+            return generateUnknownProducer(id);
+        }
+    }
+
+    private Producer generateUnknownProducer(int id) {
+        if (!unknownProducersWarning.contains(id)) {
+            logger.warn("Generating Unknown producer: " + id);
+            unknownProducersWarning.add(id);
+        }
+
+        return ProducerImpl.buildUnknownProducer(id, configuration);
+    }
+
+    @Override
+    public void enableProducer(int producerId) {
+        if (feedOpened) {
+            throw new UnsupportedOperationException("Can not enable producers once the feed instance is opened");
+        }
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setEnabled(true);
+        }
+    }
+
+    @Override
+    public void disableProducer(int producerId) {
+        if (feedOpened) {
+            throw new UnsupportedOperationException("Can not disable producers once the feed instance is opened");
+        }
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setProducerRecoveryFromTimestamp(int producerId, long lastMessageTimestamp) {
+        Preconditions.checkArgument(lastMessageTimestamp >= 0);
+
+        if (feedOpened) {
+            throw new IllegalStateException("Can not update last message timestamps for producers once the feed instance is opened");
+        }
+
+        if (lastMessageTimestamp != 0) {
+            long maxRecoveryInterval = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
+            long requestedRecoveryInterval = System.currentTimeMillis() - lastMessageTimestamp;
+            if (requestedRecoveryInterval > maxRecoveryInterval) {
+                throw new IllegalArgumentException(String.format("Last received message timestamp can not be more than 3 days, producerId:%s timestamp:%s (max recovery = 3 days ago)", producerId, lastMessageTimestamp));
+            }
+        }
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setRecoveryFromTimestamp(lastMessageTimestamp);
+        }
+    }
+
+    @Override
+    public boolean isProducerEnabled(int producerId) {
+        return producers.values().stream()
+                .filter(p -> p.getId() == producerId)
+                .findFirst()
+                .map(ProducerData::isEnabled)
+                .orElse(false);
+    }
+
+    @Override
+    public boolean isProducerDown(int producerId) {
+        return producers.values().stream()
+                .filter(p -> p.getId() == producerId)
+                .findFirst()
+                .map(ProducerData::isFlaggedDown)
+                .orElse(false);
+    }
+
+    @Override
+    public void open() {
+        this.feedOpened = true;
+    }
+
+    @Override
+    public void setProducerDown(int producerId, boolean flaggedDown) {
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setFlaggedDown(flaggedDown);
+        }
+    }
+
+    @Override
+    public void internalSetProducerLastMessageTimestamp(int producerId, long lastMessageTimestamp) {
+        Preconditions.checkArgument(lastMessageTimestamp > 0);
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setLastMessageTimestamp(lastMessageTimestamp);
+        }
+    }
+
+    @Override
+    public void setLastProcessedMessageGenTimestamp(int producerId, long lastProcessedMessageGenTimestamp) {
+        Preconditions.checkArgument(lastProcessedMessageGenTimestamp > 0);
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setLastProcessedMessageGenTimestamp(lastProcessedMessageGenTimestamp);
+        }
+    }
+
+    @Override
+    public void setLastAliveReceivedGenTimestamp(int producerId, long aliveReceivedGenTimestamp) {
+        Preconditions.checkArgument(aliveReceivedGenTimestamp > 0);
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setLastAliveReceivedGenTimestamp(aliveReceivedGenTimestamp);
+        }
+    }
+}

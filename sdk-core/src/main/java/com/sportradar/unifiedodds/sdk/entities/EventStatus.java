@@ -1,0 +1,128 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
+
+package com.sportradar.unifiedodds.sdk.entities;
+
+import com.sportradar.uf.datamodel.UFEventStatusStatus;
+
+/**
+ * Possible competition statuses. This is a fixed set of states that are the same for any sport
+ * Sportradar covers
+ */
+public enum EventStatus {
+    /**
+     * NotStarted - the match as far as we know has not yet started
+     */
+    NotStarted("not_started", 0),
+    /**
+     * Live - the match as far as we know is live could be over-time, extended time or between
+     * periods too
+     */
+    Live("live", 1),
+
+    /**
+     * Suspended - the match will continue but is temporarily suspended
+     */
+    Suspended("suspended", 2),
+
+    /**
+     * Ended - the match has ended according to our own data, the final results may not be ready yet
+     */
+    Ended("ended", 3),
+
+    /**
+     * Finished - the final results have been published and confirmed (often happens much later than
+     * Ended)
+     */
+    Finished("closed", 4),
+
+    /**
+     * Cancelled - the sport event has been cancelled, the event will not take place, there will be
+     * no results
+     */
+    Cancelled("cancelled", 5),
+
+    /**
+     * Abandoned - when Sportradar aborts scouting the match - this means there will be no live
+     * reporting the match will likely take place anyhow, and after the match has been played
+     * Sportradar will likely enter the results and the match will be moved to closed/finished
+     */
+    Abandoned("abandoned", 6),
+
+    /**
+     * Delayed - if a match has passed its scheduled start time but is delayed, unknown when it will
+     * start this is something that often happens in Tennis
+     */
+    Delayed("delayed", 7),
+
+    /**
+     * Unknown - if a hitherto unsupported sport-event-status is received
+     */
+    Unknown("unknown", 8),
+
+    /**
+     * Postponed
+     */
+    Postponed("postponed", 9);
+
+    private String apiName;
+    private int apiId;
+
+    EventStatus(String apiName, int apiId) {
+        this.apiName = apiName;
+        this.apiId = apiId;
+    }
+
+    public static EventStatus valueOfApiStatusName(String status) {
+        for (EventStatus ses : EventStatus.values()) {
+            if (ses.apiName.equals(status))
+                return ses;
+        }
+        return Unknown;
+    }
+
+    public static EventStatus valueOfApiStatusId(int status) {
+        for (EventStatus ses : EventStatus.values()) {
+            if (ses.apiId == status)
+                return ses;
+        }
+        return Unknown;
+    }
+
+    public static EventStatus valueOfMessageStatus(UFEventStatusStatus status) {
+        switch (status) {
+            case NOT_STARTED:
+                return NotStarted;
+            case LIVE:
+                return Live;
+            case SUSPENDED:
+                return Suspended;
+            case ENDED:
+                return Ended;
+            case FINALIZED:
+                return Finished;
+            default:
+                return Unknown;
+        }
+    }
+
+    /**
+     * Returns the API {@link String} value
+     *
+     * @return the API {@link String} value
+     */
+    public String getApiName() {
+        return apiName;
+    }
+
+    /**
+     * @deprecated in favour of {@link #getApiName()}
+     *
+     * @return the (not more valid) API id
+     */
+    @Deprecated
+    public int getApiId() {
+        return apiId;
+    }
+}

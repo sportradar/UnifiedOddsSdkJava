@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="response">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="action" type="xs:string"/>
+        <xs:element name="message" type="xs:string"/>
+      </xs:all>
+      <xs:attribute name="response_code" type="response_code"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="bookmaker_details">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="message" type="xs:string"/>
+      </xs:all>
+      <xs:attribute name="response_code" type="response_code"/>
+      <xs:attribute name="expire_at" type="xs:dateTime"/>
+      <xs:attribute name="bookmaker_id" type="xs:int"/>
+      <xs:attribute name="virtual_host" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="response_code">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OK"/>
+      <xs:enumeration value="CREATED"/>
+      <xs:enumeration value="ACCEPTED"/>
+      <xs:enumeration value="FORBIDDEN"/>
+      <xs:enumeration value="NOT_FOUND"/>
+      <xs:enumeration value="CONFLICT"/>
+      <xs:enumeration value="SERVICE_UNAVAILABLE"/>
+      <xs:enumeration value="NOT_IMPLEMENTED"/>
+      <xs:enumeration value="MOVED_PERMANENTLY"/>
+      <xs:enumeration value="BAD_REQUEST"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

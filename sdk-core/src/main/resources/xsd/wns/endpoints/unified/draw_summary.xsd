@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.sportradar.com/sportsapi/v1/unified" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:include schemaLocation="../../includes/unified/draw_fixture.xsd"/>
+    <xs:include schemaLocation="../../includes/unified/draw_result.xsd"/>
+    <xs:element name="draw_summary">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element type="draw_fixture" name="draw_fixture" />
+                <xs:element type="draw_result" name="draw_result" />
+            </xs:sequence>
+            <xs:attribute type="xs:dateTime" name="generated_at"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

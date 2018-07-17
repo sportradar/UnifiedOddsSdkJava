@@ -1,0 +1,66 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
+
+package com.sportradar.unifiedodds.sdk.entities;
+
+import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
+
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Defines methods implemented by classes representing sport events regardless to which sport they belong
+ */
+public interface Competition extends SportEvent {
+    /**
+     * Returns the competition name
+     * The name of {@link Stage} objects is the "name" attribute from the fixture endpoint.
+     * The name of {@link Match} objects is composed from the home and away competitor(eg. Home vs Away)
+     *
+     * @param locale the {@link Locale} in which the name should be provided
+     * @return the competition name if available; otherwise null
+     */
+    String getName(Locale locale);
+
+    /**
+     * Returns a {@link CompetitionStatus} containing information about the progress of the sport event
+     * associated with the current instance
+     *
+     * @return - a {@link CompetitionStatus} containing information about the progress of the sport event
+     * associated with the current instance
+     */
+    CompetitionStatus getStatus();
+
+    /**
+     * Returns a {@link BookingStatus} enum member providing booking status of the current instance
+     *
+     * @return - a {@link BookingStatus} enum member providing booking status of the current instance
+     */
+    BookingStatus getBookingStatus();
+
+    /**
+     * Returns the venue where the sport event associated with the current instance will take place
+     *
+     * @return - the {@link Venue} where the sport event associated with the current instance will take place
+     */
+    Venue getVenue();
+
+    /**
+     * Returns a {@link SportEventConditions} representing live conditions of the sport event associated
+     * with the current instance
+     *
+     * @return - the {@link SportEventConditions} representing live conditions of the sport event associated
+     * with the current instance
+     */
+    SportEventConditions getConditions();
+
+    /**
+     * Returns a {@link List} of competitors that participate in the sport event
+     * associated with the current instance
+     *
+     * @return - a {@link List} of competitors that participate in the sport event
+     * associated with the current instance
+     */
+    List<Competitor> getCompetitors();
+}

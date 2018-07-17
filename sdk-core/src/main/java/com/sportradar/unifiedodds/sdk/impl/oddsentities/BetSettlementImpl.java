@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
+
+package com.sportradar.unifiedodds.sdk.impl.oddsentities;
+
+import com.google.common.base.Preconditions;
+import com.sportradar.uf.datamodel.UFBetSettlement;
+import com.sportradar.unifiedodds.sdk.entities.SportEvent;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
+import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement;
+import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlementCertainty;
+import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithSettlement;
+import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * Created on 23/06/2017.
+ * // TODO @eti: Javadoc
+ */
+class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implements BetSettlement<T> {
+    private final static Logger logger = LoggerFactory.getLogger(BetSettlementImpl.class);
+    private final BetSettlementCertainty certainty;
+    private final List<MarketWithSettlement> affectedMarkets;
+
+    BetSettlementImpl(T sportEvent, UFBetSettlement message, Producer producer, byte[] rawMessage, MarketFactory marketFactory) {
+        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+        Preconditions.checkNotNull(marketFactory);
+
+        if (message.getCertainty() == 1) {
+            certainty = BetSettlementCertainty.LiveScouted;
+        } else if (message.getCertainty() == 2) {
+            certainty = BetSettlementCertainty.Confirmed;
+        } else {
+            certainty = BetSettlementCertainty.Unknown;
+        }
+
+        if (message.getOutcomes().getMarket() != null) {
+            affectedMarkets = message.getOutcomes().getMarket().stream()
+                    .map(m -> marketFactory.buildMarketWithSettlement(sportEvent, m, message.getProduct()))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+        } else {
+            logger.warn("Processing BetSettlement with empty market list");
+            affectedMarkets = Collections.emptyList();
+        }
+    }
+
+    /**
+     * @return the certainty of the settlement
+     */
+    @Override
+    public BetSettlementCertainty getCertainty() {
+        return certainty;
+    }
+
+    @Override
+    public List<MarketWithSettlement> getMarkets() {
+        return affectedMarkets;
+    }
+}

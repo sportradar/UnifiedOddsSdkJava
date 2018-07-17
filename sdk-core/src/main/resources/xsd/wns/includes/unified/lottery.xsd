@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+    <xs:include schemaLocation="../../../v1/includes/unified/sport.xsd"/>
+    <xs:include schemaLocation="../../../v1/includes/unified/category.xsd"/>
+    <xs:complexType name="lottery">
+        <xs:sequence>
+            <xs:element type="sport" name="sport"/>
+            <xs:element type="category" name="category" minOccurs="0"/>
+            <xs:element name="draw_info">
+                <xs:complexType>
+                    <xs:attribute name="draw_type" type="drawType"/>
+                    <xs:attribute name="time_type" type="timeType"/>
+                    <xs:attribute name="game_type" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="bonus_info">
+                <xs:complexType>
+                    <xs:attribute name="bonus_balls" type="xs:int"/>
+                    <xs:attribute name="bonus_drum" type="bonusDrumType"/>
+                    <xs:attribute name="bonus_range" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:simpleType name="drawType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="drum">
+                <xs:annotation>
+                    <xs:documentation>DRUM</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="rng">
+                <xs:annotation>
+                    <xs:documentation>RNG</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="timeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="interval">
+                <xs:annotation>
+                    <xs:documentation>INTERVAL</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="fixed">
+                <xs:annotation>
+                    <xs:documentation>FIXED</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="bonusDrumType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="same">
+                <xs:annotation>
+                    <xs:documentation>SAME</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="additional">
+                <xs:annotation>
+                    <xs:documentation>ADDITIONAL</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

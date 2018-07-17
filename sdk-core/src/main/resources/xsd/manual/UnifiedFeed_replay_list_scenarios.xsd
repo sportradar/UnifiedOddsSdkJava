@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+  -->
+
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="replay_scenarios" type="replay_scenariosType"/>
+  <xs:complexType name="replay_scenarioType">
+    <xs:sequence>
+      <xs:element type="eventType" name="event" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:int" name="id" use="optional"/>
+    <xs:attribute type="xs:string" name="description" use="optional"/>
+    <xs:attribute type="xs:string" name="run_parallel" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="replay_scenariosType">
+    <xs:sequence>
+      <xs:element type="replay_scenarioType" name="replay_scenario" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="eventType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

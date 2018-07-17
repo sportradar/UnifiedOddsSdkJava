@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+  -->
+
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" jaxb:extensionBindingPrefixes="xjc" version="2.1">
+  <jaxb:bindings schemaLocation="../../../target/schemas/v1/endpoints/unified/competitor_profile.xsd"> 
+    <jaxb:schemaBindings>
+		<jaxb:nameXmlTransform>
+			<jaxb:typeName prefix="SAPI"/>
+			<jaxb:anonymousTypeName prefix="SAPI"/>
+			<jaxb:elementName prefix="SAPI"/>
+		</jaxb:nameXmlTransform>
+	</jaxb:schemaBindings>   
+  </jaxb:bindings>
+</jaxb:bindings>
