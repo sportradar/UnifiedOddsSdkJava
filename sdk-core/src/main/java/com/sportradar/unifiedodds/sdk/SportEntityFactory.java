@@ -4,14 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import com.sportradar.unifiedodds.sdk.entities.CategorySummary;
-import com.sportradar.unifiedodds.sdk.entities.Competition;
-import com.sportradar.unifiedodds.sdk.entities.Competitor;
-import com.sportradar.unifiedodds.sdk.entities.PlayerProfile;
-import com.sportradar.unifiedodds.sdk.entities.Sport;
-import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.entities.SportSummary;
-import com.sportradar.unifiedodds.sdk.entities.Tournament;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.utils.URN;
 

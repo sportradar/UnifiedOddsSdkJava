@@ -4,30 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.uf.datamodel.UFBetCancel;
-import com.sportradar.uf.datamodel.UFBetSettlement;
-import com.sportradar.uf.datamodel.UFBetStop;
-import com.sportradar.uf.datamodel.UFCashout;
-import com.sportradar.uf.datamodel.UFFixtureChange;
-import com.sportradar.uf.datamodel.UFOddsChange;
-import com.sportradar.uf.datamodel.UFRollbackBetCancel;
-import com.sportradar.uf.datamodel.UFRollbackBetSettlement;
+import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetCancel;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
-import com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities;
-import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange;
-import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUpReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetCancel;
-import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement;
-import com.sportradar.unifiedodds.sdk.oddsentities.UnparsableMessage;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 
 /**
  * Created on 22/06/2017.

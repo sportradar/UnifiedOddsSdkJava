@@ -60,7 +60,8 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
                 p.getDescription(),
                 p.isActive(),
                 p.getApiUrl(),
-                p.getScope()
+                p.getScope(),
+                p.getStatefulRecoveryWindowInMinutes()
         )).collect(Collectors.toList());
     }
 }

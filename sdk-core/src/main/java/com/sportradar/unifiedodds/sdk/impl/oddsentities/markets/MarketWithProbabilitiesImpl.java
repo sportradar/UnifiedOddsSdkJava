@@ -6,11 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.sportradar.uf.datamodel.UFMarketStatus;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
-import com.sportradar.unifiedodds.sdk.oddsentities.CashOutStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithProbabilities;
-import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeProbabilities;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

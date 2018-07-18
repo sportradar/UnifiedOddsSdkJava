@@ -8,11 +8,7 @@ import com.sportradar.uf.datamodel.UFBetSettlementMarket;
 import com.sportradar.uf.datamodel.UFMarket;
 import com.sportradar.uf.datamodel.UFOddsChangeMarket;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.oddsentities.Market;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketCancel;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithProbabilities;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithSettlement;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 
 import java.util.Optional;
 

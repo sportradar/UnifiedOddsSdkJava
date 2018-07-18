@@ -8,22 +8,11 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
-import com.sportradar.unifiedodds.sdk.EventRecoveryRequestIssuer;
-import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.RecoveryManager;
-import com.sportradar.unifiedodds.sdk.SDKEventRecoveryStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.SDKProducerStatusListener;
+import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
-import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUpReason;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -470,7 +459,8 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         }
 
         if (recoveryFrom != 0) {
-            long maxRecoveryFrom = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS); // 3 days
+            int producerStatefulRecoveryLimitMin = pi.getStatefulRecoveryWindowInMinutes();
+            long maxRecoveryFrom = TimeUnit.MILLISECONDS.convert(producerStatefulRecoveryLimitMin, TimeUnit.MINUTES);
             long recoveryLength = timeUtils.now() - recoveryFrom;
 
             // if the requested initial recovery was close to the maximum recovery request, we could make a bad recovery request,
@@ -479,7 +469,10 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 Instant start = timeUtils.nowInstant();
                 Instant end = Instant.ofEpochMilli(recoveryFrom);
                 Duration recoveryInterval = Duration.between(start, end);
-                logger.warn("Received recovery request for more than 3 days, resetting value to max allowed time, pId: {} requested recovery interval:{}", pi.getProducerId(), recoveryInterval);
+                logger.warn("Received recovery request for more than {} minutes, resetting value to max allowed time, pId: {} requested recovery interval: {}",
+                        producerStatefulRecoveryLimitMin,
+                        pi.getProducerId(),
+                        recoveryInterval);
                 recoveryFrom = timeUtils.now() - (maxRecoveryFrom - TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES));
             }
         }

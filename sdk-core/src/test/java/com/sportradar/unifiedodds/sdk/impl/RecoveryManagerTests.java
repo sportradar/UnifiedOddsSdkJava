@@ -12,13 +12,7 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
-import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUpReason;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -688,24 +680,24 @@ public class RecoveryManagerTests {
                         "LiveOdds description",
                         true,
                         "lo-api-url",
-                        "live"
-                ),
+                        "live",
+                        4320),
                 new ProducerData(
                         3,
                         "Ctrl",
                         "Ctrl description",
                         true,
                         "ctrl-api-url",
-                        "prematch"
-                ),
+                        "prematch",
+                        4320),
                new ProducerData(
                        5,
                        "PremiumCricket",
                        "PremiumCricket description",
                        true,
                        "pc-api-url",
-                       "prematch|live"
-               )
+                       "prematch|live",
+                       4320)
         );
     }
 

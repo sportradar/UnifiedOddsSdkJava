@@ -115,7 +115,7 @@ public enum MessageInterest {
      * @return the routing key(s) for the current {@link MessageInterest} instance or a null reference
      *         if routing key is not static
      */
-    public List<String> getRoutingKey() {
+    public List<String> getRoutingKeys() {
         return routingKeys;
     }
 

@@ -9,12 +9,7 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIManager;
 import com.sportradar.utils.URN;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A cache representation of a competitor manager

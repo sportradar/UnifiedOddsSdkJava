@@ -5,14 +5,7 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetCancel;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
-import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange;
-import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
-import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetCancel;
-import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement;
-import com.sportradar.unifiedodds.sdk.oddsentities.UnparsableMessage;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 
 /**
  * Internally used generic interface used as a base for interfaces exposed to the SDK user

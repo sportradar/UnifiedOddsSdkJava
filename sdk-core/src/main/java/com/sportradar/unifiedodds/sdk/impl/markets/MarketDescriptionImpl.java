@@ -10,17 +10,9 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
-import com.sportradar.unifiedodds.sdk.entities.markets.MarketAttribute;
-import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
-import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
-import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
+import com.sportradar.unifiedodds.sdk.entities.markets.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

@@ -23,6 +23,8 @@ import java.util.stream.Stream;
  * // TODO @eti: Javadoc
  */
 public class ProducerData {
+    final static int DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES = 4320;
+
     private final static Logger logger = LoggerFactory.getLogger(ProducerData.class);
     private final static Map<String, ProducerScope> scopeMappings =
             ImmutableMap.<String, ProducerScope>builder()
@@ -37,6 +39,7 @@ public class ProducerData {
     private final boolean active;
     private final String apiUrl;
     private final Set<ProducerScope> producerScopes;
+    private final int statefulRecoveryWindowInMinutes;
     private long lastMessageTimestamp = 0;
     private boolean enabled;
     private boolean flaggedDown = true;
@@ -44,7 +47,7 @@ public class ProducerData {
     private long lastAliveReceivedGenTimestamp = 0;
     private long recoveryFromTimestamp;
 
-    ProducerData(int id, String name, String description, boolean active, String apiUrl, String producerScopes) {
+    ProducerData(int id, String name, String description, boolean active, String apiUrl, String producerScopes, Integer statefulRecoveryWindowInMinutes) {
         Preconditions.checkArgument(id > 0);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name));
         Preconditions.checkArgument(!Strings.isNullOrEmpty(description));
@@ -75,6 +78,9 @@ public class ProducerData {
             builder.addAll(Arrays.stream(ProducerScope.values()).collect(Collectors.toList()));
         }
         this.producerScopes = builder.build();
+        this.statefulRecoveryWindowInMinutes = statefulRecoveryWindowInMinutes == null ?
+                DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES :
+                statefulRecoveryWindowInMinutes;
     }
 
     public int getId() {
@@ -119,6 +125,10 @@ public class ProducerData {
         }
 
         return lastAliveReceivedGenTimestamp;
+    }
+
+    public int getStatefulRecoveryWindowInMinutes() {
+        return statefulRecoveryWindowInMinutes;
     }
 
     public void setLastMessageTimestamp(long lastMessageTimestamp) {

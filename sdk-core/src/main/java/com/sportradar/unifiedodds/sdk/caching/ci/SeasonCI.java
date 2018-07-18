@@ -8,12 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISeasonExtended;
 import com.sportradar.utils.URN;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * A season representation used by caching components

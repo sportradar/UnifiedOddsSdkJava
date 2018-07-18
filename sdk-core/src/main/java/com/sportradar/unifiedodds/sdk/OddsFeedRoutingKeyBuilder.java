@@ -7,13 +7,7 @@ package com.sportradar.unifiedodds.sdk;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,10 +46,10 @@ class OddsFeedRoutingKeyBuilder {
         sessionsData.forEach((k, v) -> {
             List<String> sessionRoutingKeys = new ArrayList<>();
 
-            List<String> basicRoutingKeys = v.getRoutingKey();
-            for (String basicRoutingKey:basicRoutingKeys) {
+            List<String> basicRoutingKeys = v.getRoutingKeys();
+            for (String basicRoutingKey: basicRoutingKeys) {
                 if (oddsFeedConfiguration.getSdkNodeId() != null) {
-                    sessionRoutingKeys.add(v.getRoutingKey() + "." + oddsFeedConfiguration.getSdkNodeId() + ".#");
+                    sessionRoutingKeys.add(basicRoutingKey + "." + oddsFeedConfiguration.getSdkNodeId() + ".#");
                     basicRoutingKey = basicRoutingKey + ".-.#";
                 } else {
                     basicRoutingKey = basicRoutingKey + ".#";
@@ -69,7 +63,7 @@ class OddsFeedRoutingKeyBuilder {
                 }
             }
             if (v != MessageInterest.SystemAliveMessages) {
-                sessionRoutingKeys.add(MessageInterest.SystemAliveMessages.getRoutingKey().get(0));
+                sessionRoutingKeys.add(MessageInterest.SystemAliveMessages.getRoutingKeys().get(0));
             }
             result.put(k, sessionRoutingKeys.stream().distinct().collect(Collectors.toList()));
         });
@@ -95,7 +89,7 @@ class OddsFeedRoutingKeyBuilder {
         }
 
         if (allUserValues.stream().anyMatch(v -> v == MessageInterest.AllMessages)) {
-            throw new UnsupportedOperationException("The AllMessages message interest can only be used in a single session setup. " + allUserValues);
+            throw new UnsupportedMessageInterestCombination("The AllMessages message interest can only be used in a single session setup. " + allUserValues);
         }
 
         if (sessionsData.size() > 1 && (containsLowOrHigh(sessionsData) && containsMessageTypeInterest(sessionsData))) {

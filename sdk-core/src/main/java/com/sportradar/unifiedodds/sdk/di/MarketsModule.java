@@ -6,12 +6,7 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
-import com.sportradar.unifiedodds.sdk.impl.markets.NameExpressionFactory;
-import com.sportradar.unifiedodds.sdk.impl.markets.NameExpressionFactoryImpl;
-import com.sportradar.unifiedodds.sdk.impl.markets.NameProviderFactory;
-import com.sportradar.unifiedodds.sdk.impl.markets.NameProviderFactoryImpl;
-import com.sportradar.unifiedodds.sdk.impl.markets.OperandFactory;
-import com.sportradar.unifiedodds.sdk.impl.markets.OperandFactoryImpl;
+import com.sportradar.unifiedodds.sdk.impl.markets.*;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImpl;
 

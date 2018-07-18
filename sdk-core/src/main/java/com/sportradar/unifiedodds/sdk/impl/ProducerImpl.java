@@ -26,6 +26,7 @@ public class ProducerImpl implements Producer {
     private final boolean enabled;
     private final String apiUrl;
     private final Set<ProducerScope> producerScopes;
+    private final int statefulRecoveryWindowInMinutes;
 
     ProducerImpl(ProducerData pData) {
         Preconditions.checkNotNull(pData);
@@ -38,6 +39,7 @@ public class ProducerImpl implements Producer {
         enabled = producerData.isEnabled();
         apiUrl = producerData.getApiUrl();
         producerScopes = producerData.getProducerScopes();
+        statefulRecoveryWindowInMinutes = producerData.getStatefulRecoveryWindowInMinutes();
     }
 
     private ProducerImpl(int unknownProducerId, SDKInternalConfiguration configuration) {
@@ -54,6 +56,7 @@ public class ProducerImpl implements Producer {
                 .addAll(Arrays.asList(ProducerScope.values()))
                 .build();
         producerData = null;
+        statefulRecoveryWindowInMinutes = ProducerData.DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES;
     }
 
     static Producer buildUnknownProducer(int unknownProducerId, SDKInternalConfiguration configuration) {
@@ -119,6 +122,11 @@ public class ProducerImpl implements Producer {
     @Override
     public long getTimestampForRecovery() {
         return producerData == null ? 0 : producerData.getTimestampForRecovery();
+    }
+
+    @Override
+    public int getStatefulRecoveryWindowInMinutes() {
+        return statefulRecoveryWindowInMinutes;
     }
 
     @Override

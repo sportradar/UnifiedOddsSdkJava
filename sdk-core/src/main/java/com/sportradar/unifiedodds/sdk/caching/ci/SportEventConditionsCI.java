@@ -6,7 +6,10 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISportEventConditions;
+import com.sportradar.unifiedodds.sdk.entities.Pitcher;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -32,6 +35,11 @@ public class SportEventConditionsCI {
      * The {@link WeatherInfoCI} instance representing the expected weather on the associated sport event
      */
     private WeatherInfoCI weatherInfo;
+
+    /**
+     * The list of associated {@link Pitcher}
+     */
+    private List<PitcherCI> pitchers;
 
     /**
      * Initializes a new instance of the {@link SportEventConditionsCI} class
@@ -70,6 +78,12 @@ public class SportEventConditionsCI {
         if (seConditions.getWeatherInfo() != null) {
             weatherInfo = new WeatherInfoCI(seConditions.getWeatherInfo());
         }
+
+        if(seConditions.getPitchers() != null && !seConditions.getPitchers().getPitcher().isEmpty())
+        {
+            pitchers = new ArrayList<>();
+            seConditions.getPitchers().getPitcher().forEach(pitcher -> pitchers.add(new PitcherCI(pitcher, locale)));
+        }
     }
 
     /**
@@ -107,4 +121,10 @@ public class SportEventConditionsCI {
     public WeatherInfoCI getWeatherInfo() {
         return weatherInfo;
     }
+
+    /**
+     * Returns the list of associated {@link Pitcher}
+     * @return the list of assocaited {@link Pitcher}
+     */
+    public List<PitcherCI> getPitchers() { return pitchers; }
 }

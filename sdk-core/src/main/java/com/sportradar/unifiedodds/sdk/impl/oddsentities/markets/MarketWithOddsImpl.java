@@ -8,11 +8,7 @@ import com.sportradar.uf.datamodel.UFFavourite;
 import com.sportradar.uf.datamodel.UFMarketMetadata;
 import com.sportradar.uf.datamodel.UFMarketStatus;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketMetadata;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
-import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeOdds;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

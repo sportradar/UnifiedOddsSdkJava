@@ -357,11 +357,13 @@ public class SportEntityWriter {
             } else {
                 description = sportEntityWriter.writeBaseEventData(sportEvent);
             }
+            sportEntityWriter.writeMessage(description);
         }
+
         return description;
     }
 
-    private void writeMessage(String message)
+    public void writeMessage(String message)
     {
         if (writeLog) {
             logger.info(message);

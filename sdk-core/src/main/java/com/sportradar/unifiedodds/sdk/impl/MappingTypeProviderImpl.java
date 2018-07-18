@@ -6,13 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.sportradar.unifiedodds.sdk.entities.BasicTournament;
-import com.sportradar.unifiedodds.sdk.entities.Draw;
-import com.sportradar.unifiedodds.sdk.entities.Lottery;
-import com.sportradar.unifiedodds.sdk.entities.Match;
-import com.sportradar.unifiedodds.sdk.entities.Season;
-import com.sportradar.unifiedodds.sdk.entities.Stage;
-import com.sportradar.unifiedodds.sdk.entities.Tournament;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

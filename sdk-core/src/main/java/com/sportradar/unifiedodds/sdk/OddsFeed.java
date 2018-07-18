@@ -10,17 +10,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.DataRouter;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
+import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
@@ -307,7 +299,7 @@ public class OddsFeed {
                                 .orElseThrow(() -> new IllegalStateException("Feed created without sessions?"));
 
                         systemMessagesSession.open(
-                                Lists.newArrayList(MessageInterest.SystemAliveMessages.getRoutingKey()),
+                                Lists.newArrayList(MessageInterest.SystemAliveMessages.getRoutingKeys()),
                                 MessageInterest.SystemAliveMessages,
                                 firstCreatedSession.listener
                         );
@@ -341,6 +333,10 @@ public class OddsFeed {
      * @throws IOException if the AMQP connection closure fails
      */
     public void close() throws IOException {
+        if (!this.feedOpened) {
+            throw new IllegalStateException("Can't close an already closed OddsFeed instance");
+        }
+
         logger.warn("OddsFeed.close invoked - closing the feed instance");
         AMQPConnectionFactory amqpConnectionFactory = injector.getInstance(AMQPConnectionFactory.class);
 

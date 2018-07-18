@@ -12,21 +12,13 @@ import com.sportradar.uf.datamodel.UFSportEventStatus;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchStatistics;
 import com.sportradar.uf.sportsapi.datamodel.SAPISportEventStatus;
 import com.sportradar.uf.sportsapi.datamodel.SAPIStageSportEventStatus;
-import com.sportradar.unifiedodds.sdk.entities.EventClock;
-import com.sportradar.unifiedodds.sdk.entities.EventResult;
-import com.sportradar.unifiedodds.sdk.entities.EventStatus;
-import com.sportradar.unifiedodds.sdk.entities.HomeAway;
-import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventClockImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventResultImpl;
 import com.sportradar.utils.URN;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

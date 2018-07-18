@@ -7,11 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawEvent;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawFixture;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawResult;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawStatus;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawSummary;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.DrawCI;
@@ -25,12 +21,7 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 

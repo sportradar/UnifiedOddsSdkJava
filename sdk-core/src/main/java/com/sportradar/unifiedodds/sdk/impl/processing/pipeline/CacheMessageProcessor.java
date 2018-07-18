@@ -146,6 +146,10 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         URN relatedEventId = URN.parse(message.getEventId());
 
         sportEventStatusCache.purgeSportEventStatus(relatedEventId);
+
+        if (isDrawEvent(relatedEventId)) {
+            sportEventCache.purgeCacheItem(relatedEventId);
+        }
     }
 
     /**
@@ -159,5 +163,16 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         URN relatedEventId = URN.parse(message.getEventId());
 
         sportEventStatusCache.purgeSportEventStatus(relatedEventId);
+
+        if (isDrawEvent(relatedEventId)) {
+            sportEventCache.purgeCacheItem(relatedEventId);
+        }
+    }
+
+    private static boolean isDrawEvent(URN eventId) {
+        Preconditions.checkNotNull(eventId);
+
+        return eventId.getType() != null &&
+                eventId.getType().equals("draw");
     }
 }

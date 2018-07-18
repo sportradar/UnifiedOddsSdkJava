@@ -6,12 +6,15 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
+import com.sportradar.unifiedodds.sdk.entities.Pitcher;
 import com.sportradar.unifiedodds.sdk.entities.Referee;
 import com.sportradar.unifiedodds.sdk.entities.SportEventConditions;
 import com.sportradar.unifiedodds.sdk.entities.WeatherInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Provides information about sport event conditions
@@ -37,6 +40,10 @@ public class SportEventConditionsImpl implements SportEventConditions {
      */
     private final WeatherInfo weatherInfo;
 
+    /**
+     * The list of associated {@link Pitcher}
+     */
+    private final List<Pitcher> pitchers;
 
     /**
      * Initializes a new instance of {@link SportEventConditionsImpl}
@@ -55,8 +62,16 @@ public class SportEventConditionsImpl implements SportEventConditions {
                 new RefereeImpl(sportEventConditionsCI.getReferee(), locales);
         this.weatherInfo = sportEventConditionsCI.getWeatherInfo() == null ? null :
                 new WeatherInfoImpl(sportEventConditionsCI.getWeatherInfo());
+        if(sportEventConditionsCI.getPitchers() != null && !sportEventConditionsCI.getPitchers().isEmpty())
+        {
+            this.pitchers = new ArrayList<>();
+            sportEventConditionsCI.getPitchers().forEach(pitcherCI -> this.pitchers.add(new PitcherImpl(pitcherCI)));
+        }
+        else
+        {
+            this.pitchers = null;
+        }
     }
-
 
     /**
      * Returns a {@link String} specifying the attendance of the associated sport event
@@ -101,17 +116,34 @@ public class SportEventConditionsImpl implements SportEventConditions {
     }
 
     /**
+     * Returns the list of {@link Pitcher}
+     *
+     * @return the list of {@link Pitcher}
+     */
+    @Override
+    public List<Pitcher> getPitchers() {
+        return pitchers;
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link SportEventConditions} instance
      *
      * @return - a {@link String} describing the current {@link SportEventConditions} instance
      */
     @Override
     public String toString() {
+        String pitcherStr = null;
+        if(pitchers != null)
+        {
+            pitcherStr = pitchers.stream().map(pitcher -> pitcher.getId().toString()).collect(Collectors.joining(","));
+        }
+
         return "SportEventConditionsImpl{" +
                 "attendance='" + attendance + '\'' +
                 ", eventMode='" + eventMode + '\'' +
                 ", referee=" + referee +
                 ", weatherInfo=" + weatherInfo +
+                ", pitchers=" + pitcherStr +
                 '}';
     }
 }

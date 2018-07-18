@@ -9,12 +9,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.entities.Competitor;
-import com.sportradar.unifiedodds.sdk.entities.Jersey;
-import com.sportradar.unifiedodds.sdk.entities.Manager;
-import com.sportradar.unifiedodds.sdk.entities.PlayerProfile;
-import com.sportradar.unifiedodds.sdk.entities.Reference;
-import com.sportradar.unifiedodds.sdk.entities.Venue;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
@@ -24,11 +19,7 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

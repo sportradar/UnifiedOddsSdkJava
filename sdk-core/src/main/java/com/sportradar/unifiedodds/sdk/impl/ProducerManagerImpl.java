@@ -130,18 +130,22 @@ public class ProducerManagerImpl implements SDKProducerManager {
             throw new IllegalStateException("Can not update last message timestamps for producers once the feed instance is opened");
         }
 
+        if (!producers.containsKey(producerId)) {
+            logger.warn("Received request to set a recovery timestamp for an unknown producer, id: {} - ignoring request", producerId);
+            return;
+        }
+
         if (lastMessageTimestamp != 0) {
-            long maxRecoveryInterval = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
+            int maxRequestMinutes = producers.get(producerId).getStatefulRecoveryWindowInMinutes();
+            long maxRecoveryInterval = TimeUnit.MILLISECONDS.convert(maxRequestMinutes, TimeUnit.MINUTES);
             long requestedRecoveryInterval = System.currentTimeMillis() - lastMessageTimestamp;
             if (requestedRecoveryInterval > maxRecoveryInterval) {
-                throw new IllegalArgumentException(String.format("Last received message timestamp can not be more than 3 days, producerId:%s timestamp:%s (max recovery = 3 days ago)", producerId, lastMessageTimestamp));
+                throw new IllegalArgumentException(String.format("Last received message timestamp can not be more than '%s' minutes ago, producerId:%s timestamp:%s (max recovery = '%s' minutes ago)", maxRequestMinutes, producerId, lastMessageTimestamp, maxRequestMinutes));
             }
         }
 
-        if (producers.containsKey(producerId)) {
-            ProducerData producerData = producers.get(producerId);
-            producerData.setRecoveryFromTimestamp(lastMessageTimestamp);
-        }
+        ProducerData producerData = producers.get(producerId);
+        producerData.setRecoveryFromTimestamp(lastMessageTimestamp);
     }
 
     @Override

@@ -13,11 +13,7 @@ import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
 import com.sportradar.unifiedodds.sdk.caching.CategoryCI;
 import com.sportradar.utils.URN;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

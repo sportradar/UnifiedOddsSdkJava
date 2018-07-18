@@ -6,20 +6,12 @@ package com.sportradar.unifiedodds.sdk.caching.ci.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
-import com.sportradar.uf.sportsapi.datamodel.DescVariant;
-import com.sportradar.uf.sportsapi.datamodel.DescVariantOutcomes;
-import com.sportradar.uf.sportsapi.datamodel.Mappings;
-import com.sportradar.uf.sportsapi.datamodel.VariantMappings;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

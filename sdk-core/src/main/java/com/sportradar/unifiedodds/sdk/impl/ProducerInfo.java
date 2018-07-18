@@ -182,6 +182,10 @@ class ProducerInfo {
         return lastUserSessionAliveReceivedTimestamp;
     }
 
+    int getStatefulRecoveryWindowInMinutes() {
+        return producerManager.getProducer(producerId).getStatefulRecoveryWindowInMinutes();
+    }
+
     void setProducerRecoveryState(int recoveryId, long recoveryStartedAt, RecoveryState recoveryState) {
         this.recoveryState = recoveryState;
 

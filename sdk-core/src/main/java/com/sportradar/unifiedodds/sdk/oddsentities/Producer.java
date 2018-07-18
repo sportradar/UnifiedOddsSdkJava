@@ -105,4 +105,11 @@ public interface Producer {
      * @return the last timestamp in which the SDK was in sync with the feed
      */
     long getTimestampForRecovery();
+
+    /**
+     * Returns the max allowed stateful recovery window in minutes
+     *
+     * @return the max allowed stateful recovery window in minutes
+     */
+    int getStatefulRecoveryWindowInMinutes();
 }

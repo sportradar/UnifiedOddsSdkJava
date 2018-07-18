@@ -4,11 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
-import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.utils.URN;
 
 import java.util.List;

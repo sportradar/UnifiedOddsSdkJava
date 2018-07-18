@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
@@ -15,7 +16,6 @@ import com.sportradar.unifiedodds.sdk.entities.CurrentSeasonInfo;
 import com.sportradar.unifiedodds.sdk.entities.TournamentInfo;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
-import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

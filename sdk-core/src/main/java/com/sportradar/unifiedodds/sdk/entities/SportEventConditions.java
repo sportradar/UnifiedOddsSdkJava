@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
+import java.util.List;
+
 /**
  * Defines methods implemented by classes representing sport event conditions
  */
@@ -37,4 +39,10 @@ public interface SportEventConditions {
      *           otherwise null
      */
     WeatherInfo getWeatherInfo();
+
+    /**
+     * Returns the list of {@link Pitcher}
+     * @return the list of {@link Pitcher}
+     */
+    List<Pitcher> getPitchers();
 }

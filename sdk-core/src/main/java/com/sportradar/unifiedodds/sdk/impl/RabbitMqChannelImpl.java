@@ -6,11 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.Recoverable;
+import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

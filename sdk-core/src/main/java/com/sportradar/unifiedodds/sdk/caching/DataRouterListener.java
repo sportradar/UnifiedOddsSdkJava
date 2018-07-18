@@ -4,23 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPICompetitorProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawEvent;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawFixture;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawSummary;
-import com.sportradar.uf.sportsapi.datamodel.SAPIFixture;
-import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchSummaryEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerExtended;
-import com.sportradar.uf.sportsapi.datamodel.SAPISport;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportEvent;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportEventChildren;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStageSummaryEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentExtended;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentInfoEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.utils.URN;
 
 import java.util.Locale;
