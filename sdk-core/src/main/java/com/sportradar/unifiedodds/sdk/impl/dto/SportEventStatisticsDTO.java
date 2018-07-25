@@ -23,7 +23,6 @@ public class SportEventStatisticsDTO {
     private final List<TeamStatisticsDTO> totalStatisticsDTOs;
     private final List<PeriodStatisticsDTO> periodStatisticDTOs;
 
-
     /**
      * Constructs a new statistics instance from the data obtained from the API
      *

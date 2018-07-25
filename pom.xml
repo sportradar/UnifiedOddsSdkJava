@@ -21,7 +21,6 @@
         <module>sdk-log-replay</module>
     </modules>
 
-
     <scm>
         <developerConnection>scm:git:git@gitlab.sportradar.ag:OddsFeedSDK/JavaSdk.git</developerConnection>
       <tag>unified-feed-sdk-parent-2.0.4</tag>

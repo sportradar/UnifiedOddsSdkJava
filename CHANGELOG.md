@@ -1,5 +1,12 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.12 (2018-07-25)
+* added check for feed opened before closing its components
+* added purging of Draw event data on BetStop and BetSettlement
+* added support for 2 routing keys for VirtualSports message interest
+* added support for new producer field (stateful_recovery_window_in_minutes)
+* added Pitcher info on SportEventConditions
+
 **2.0.11 (2018-06-26)**
 * introduced a new "UnparsableMessage" callback
 * increased max concurrent HTTP requests to 15(from 2)
