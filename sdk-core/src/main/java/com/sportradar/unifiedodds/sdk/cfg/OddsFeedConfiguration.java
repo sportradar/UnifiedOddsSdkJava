@@ -210,8 +210,11 @@ public class OddsFeedConfiguration {
 
     @Override
     public String toString() {
+
+        String obfuscatedToken = String.format("%s***%s", accessToken.substring(0, 3), accessToken.substring(accessToken.length()-3));
+
         return "OddsFeedConfiguration{" +
-                "\n\taccessToken='" + accessToken + '\'' +
+                "\n\taccessToken='" + obfuscatedToken + '\'' +
                 ",\n\tdefaultLocale=" + defaultLocale +
                 ",\n\tdesiredLocales=" + desiredLocales +
                 ",\n\thost='" + host + '\'' +
