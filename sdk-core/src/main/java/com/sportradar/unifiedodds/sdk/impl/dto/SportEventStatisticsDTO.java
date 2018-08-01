@@ -73,7 +73,6 @@ public class SportEventStatisticsDTO {
         periodStatisticDTOs = null;
     }
 
-
     public List<TeamStatisticsDTO> getTotalStatisticsDTOs() {
         return totalStatisticsDTOs == null ? null : ImmutableList.copyOf(totalStatisticsDTOs);
     }

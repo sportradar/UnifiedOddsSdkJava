@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -192,7 +193,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return competitors.stream()
                     .map(c -> {
                         try {
-                            return sportEntityFactory.buildCompetitor(c, provideCompetitorQualifier(cacheItem, c), locales);
+                            return sportEntityFactory.buildCompetitor(c, provideCompetitorQualifier(cacheItem, c), cacheItem.getCompetitorsReferences(), locales);
                         } catch (ObjectNotFoundException e) {
                             throw new StreamWrapperException(e.getMessage(), e);
                         }

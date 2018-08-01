@@ -12,13 +12,11 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.MatchCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-import com.sportradar.unifiedodds.sdk.entities.EventStatus;
-import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.unifiedodds.sdk.entities.HomeAway;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -32,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+
+import static com.google.common.collect.ImmutableMap.copyOf;
 
 /**
  * Created on 19/10/2017.
@@ -82,6 +82,12 @@ class MatchCIImpl implements MatchCI {
      * A map of available competitor qualifiers
      */
     private Map<URN, String> competitorQualifiers;
+
+    /**
+     * A {@link Map} of competitors id and their references that participate in the sport event
+     * associated with the current instance
+     */
+    private Map<URN, ReferenceIdCI> competitorsReferences;
 
     /**
      * The {@link URN} specifying the id of the tournament to which the sport event belongs to
@@ -165,7 +171,6 @@ class MatchCIImpl implements MatchCI {
      * The {@link DataRouterManager} which is used to trigger data fetches
      */
     private final DataRouterManager dataRouterManager;
-
 
     MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(id);
@@ -261,16 +266,16 @@ class MatchCIImpl implements MatchCI {
     @Override
     public Map<Locale, String> getNames(List<Locale> locales) {
         if (sportEventNames.keySet().containsAll(locales)) {
-            return ImmutableMap.copyOf(sportEventNames);
+            return copyOf(sportEventNames);
         }
 
         if (loadedSummaryLocales.containsAll(locales)) {
-            return ImmutableMap.copyOf(sportEventNames);
+            return copyOf(sportEventNames);
         }
 
         requestMissingSummaryData(locales, false);
 
-        return ImmutableMap.copyOf(sportEventNames);
+        return copyOf(sportEventNames);
     }
 
     /**
@@ -399,12 +404,12 @@ class MatchCIImpl implements MatchCI {
     @Override
     public Map<URN, String> getCompetitorQualifiers() {
         if (!loadedSummaryLocales.isEmpty()) {
-            return competitorQualifiers == null ? null : ImmutableMap.copyOf(competitorQualifiers);
+            return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
-        return competitorQualifiers == null ? null : ImmutableMap.copyOf(competitorQualifiers);
+        return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
     }
 
     /**
@@ -551,6 +556,22 @@ class MatchCIImpl implements MatchCI {
         }
 
         return eventTimelines.get(locale);
+    }
+
+    /**
+     * Returns list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
+     *
+     * @return list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
+     */
+    @Override
+    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+        if (!loadedSummaryLocales.isEmpty()) {
+            return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+
+        return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
     }
 
     @Override
@@ -867,7 +888,35 @@ class MatchCIImpl implements MatchCI {
             if (inputC.getQualifier() != null) {
                 competitorQualifiers.put(parsedId, inputC.getQualifier());
             }
+
+            AddOrUpdateReferenceId(parsedId, inputC.getReferenceIds());
         });
+    }
+
+    /**
+     * Add or update existing competitor reference
+     * @param competitorId competitor id with which is associated reference
+     * @param reference associated reference
+     * @apiNote reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
+     */
+    private void AddOrUpdateReferenceId(URN competitorId, SAPICompetitorReferenceIds reference)
+    {
+        ReferenceIdCI referenceId = reference.getReferenceId() == null ? null :
+                new ReferenceIdCI(reference.getReferenceId().stream()
+                        .filter(r -> r.getName() != null && r.getValue() != null)
+                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+        if(competitorsReferences == null)
+        {
+            competitorsReferences = new HashMap<>();
+            competitorsReferences.put(competitorId, referenceId);
+            return;
+        }
+        if(referenceId == null && !competitorsReferences.containsKey(competitorId))
+        {
+            competitorsReferences.put(competitorId, referenceId);
+            return;
+        }
+        competitorsReferences.put(competitorId, referenceId);
     }
 
     /**

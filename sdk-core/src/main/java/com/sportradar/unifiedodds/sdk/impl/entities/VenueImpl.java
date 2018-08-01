@@ -197,7 +197,7 @@ public class VenueImpl implements Venue {
      */
     @Override
     public String toString() {
-        return "VenueImpl{" +
+        return "Venue{" +
                 "id=" + id +
                 ", names=" + names +
                 ", cities=" + cities +

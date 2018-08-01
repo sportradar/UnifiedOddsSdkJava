@@ -23,9 +23,8 @@
 
     <scm>
         <developerConnection>scm:git:git@gitlab.sportradar.ag:OddsFeedSDK/JavaSdk.git</developerConnection>
-      <tag>unified-feed-sdk-parent-2.0.4</tag>
-  </scm>
-    
+        <tag>unified-feed-sdk-parent-2.0.4</tag>
+    </scm>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -46,7 +45,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

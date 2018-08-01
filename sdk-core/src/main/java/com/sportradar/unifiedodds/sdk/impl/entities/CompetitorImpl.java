@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
@@ -32,18 +33,19 @@ public class CompetitorImpl implements Competitor {
     private final List<Locale> locales;
     private final SportEntityFactory sportEntityFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
-
+    private final Map<URN, ReferenceIdCI> eventCompetitorsReferences;
 
     /**
      * Initializes a new instance of the {@link CompetitorImpl} class
      *
      * @param competitorId the associated competitor id
      * @param profileCache the cache instance used to retrieve the cached data
+     * @param eventCompetitorsReferences the list of competitors and associated references
      * @param locales a {@link List} in which is provided the {@link CompetitorCI}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public CompetitorImpl(URN competitorId, ProfileCache profileCache, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public CompetitorImpl(URN competitorId, ProfileCache profileCache, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
@@ -52,6 +54,7 @@ public class CompetitorImpl implements Competitor {
 
         this.competitorId = competitorId;
         this.profileCache = profileCache;
+        this.eventCompetitorsReferences = eventCompetitorsReferences;
         this.locales = locales;
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
@@ -133,6 +136,12 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Reference getReferences() {
+
+        if(eventCompetitorsReferences != null && eventCompetitorsReferences.containsKey(competitorId))
+        {
+            return new ReferenceImpl(eventCompetitorsReferences.get(competitorId));
+        }
+
         return loadCacheItem().map(CompetitorCI::getReferenceId).map(ReferenceImpl::new)
                 .orElse(null);
     }

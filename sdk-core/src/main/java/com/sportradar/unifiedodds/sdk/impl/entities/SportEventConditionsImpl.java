@@ -138,7 +138,7 @@ public class SportEventConditionsImpl implements SportEventConditions {
             pitcherStr = pitchers.stream().map(pitcher -> pitcher.getId().toString()).collect(Collectors.joining(","));
         }
 
-        return "SportEventConditionsImpl{" +
+        return "SportEventConditions{" +
                 "attendance='" + attendance + '\'' +
                 ", eventMode='" + eventMode + '\'' +
                 ", referee=" + referee +

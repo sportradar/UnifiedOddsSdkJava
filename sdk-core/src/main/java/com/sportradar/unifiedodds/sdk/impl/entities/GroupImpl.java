@@ -94,7 +94,7 @@ public class GroupImpl implements Group {
                     ImmutableList.copyOf(competitorIds.stream()
                             .map(c -> {
                                 try {
-                                    return sportEntityFactory.buildCompetitor(c, null, locales);
+                                    return sportEntityFactory.buildCompetitor(c, null, null, locales);
                                 } catch (ObjectNotFoundException e) {
                                     throw new StreamWrapperException(e.getMessage(), e);
                                 }

@@ -4,11 +4,10 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.DelayedInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.*;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.URN;
 
 import java.util.List;
@@ -85,4 +84,10 @@ public interface MatchCI extends CompetitionCI {
      * @return the associated event timeline
      */
     EventTimelineCI getEventTimeline(Locale locale);
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     */
+    Map<URN, ReferenceIdCI> getCompetitorsReferences();
 }

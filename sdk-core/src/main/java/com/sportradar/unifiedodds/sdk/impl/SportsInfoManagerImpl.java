@@ -606,7 +606,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
 
     private Competitor internalGetCompetitor(URN id, List<Locale> locales) {
         try {
-            return sportEntityFactory.buildCompetitor(id, null, locales);
+            return sportEntityFactory.buildCompetitor(id, null, null, locales);
         } catch (ObjectNotFoundException e) {
             return handleException("getCompetitor", e);
         }

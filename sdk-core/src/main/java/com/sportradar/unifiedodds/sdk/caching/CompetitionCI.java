@@ -7,11 +7,14 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Defines methods used to access competition type data

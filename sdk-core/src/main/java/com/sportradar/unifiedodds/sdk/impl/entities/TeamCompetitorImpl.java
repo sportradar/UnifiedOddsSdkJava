@@ -8,11 +8,13 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
 import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Represents a competing team
@@ -23,23 +25,22 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
      */
     private final String qualifier;
 
-
     /**
      * Initializes a new instance of the {@link TeamCompetitorImpl} class
      *
      * @param competitorId the associated competitor id
      * @param profileCache the cache instance used to retrieve the cached data
      * @param qualifier the associated team qualifier
+     * @param eventCompetitorsReferences the list of competitors and associated references
      * @param locales a {@link List} in which is provided the {@link CompetitorCI}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public TeamCompetitorImpl(URN competitorId, ProfileCache profileCache, String qualifier, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
-        super(competitorId, profileCache, locales, sportEntityFactory, exceptionHandlingStrategy);
+    public TeamCompetitorImpl(URN competitorId, ProfileCache profileCache, String qualifier, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        super(competitorId, profileCache, eventCompetitorsReferences, locales, sportEntityFactory, exceptionHandlingStrategy);
 
         this.qualifier = qualifier;
     }
-
 
     /**
      * Returns the qualifier additionally describing the competitor (e.g. home, away, ...)

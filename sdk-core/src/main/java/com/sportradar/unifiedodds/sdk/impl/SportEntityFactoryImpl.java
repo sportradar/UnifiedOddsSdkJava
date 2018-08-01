@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.impl.SportData;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
@@ -21,10 +22,7 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +65,6 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      */
     private final MappingTypeProvider mappingTypeProvider;
 
-
     /**
      * Initializes a new instance of the {@link SportEntityFactoryImpl}
      *
@@ -100,7 +97,6 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         this.exceptionHandlingStrategy = oddsFeedConfiguration.getExceptionHandlingStrategy();
         this.defaultLocale = oddsFeedConfiguration.getDefaultLocale();
     }
-
 
     /**
      * Builds a {@link List} of available {@link Sport} instances
@@ -269,21 +265,22 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * Builds a {@link Competitor} instance associated with the provided {@link URN}
      *
      * @param id the competitor identifier
-     * @param qualifier the competitor qualifier(if available)
+     * @param qualifier the competitor qualifier (if available)
+     * @param eventCompetitorsReferences the list of competitors and associated references
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
     @Override
-    public Competitor buildCompetitor(URN id, String qualifier, List<Locale> locales) throws ObjectNotFoundException {
+    public Competitor buildCompetitor(URN id, String qualifier, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales) throws ObjectNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
 
         if(qualifier != null) {
-            return new TeamCompetitorImpl(id, profileCache, qualifier, locales, this, exceptionHandlingStrategy);
+            return new TeamCompetitorImpl(id, profileCache, qualifier, eventCompetitorsReferences, locales, this, exceptionHandlingStrategy);
         }
 
-        return new CompetitorImpl(id, profileCache, locales, this, exceptionHandlingStrategy);
+        return new CompetitorImpl(id, profileCache, eventCompetitorsReferences, locales, this, exceptionHandlingStrategy);
     }
 
     /**
@@ -302,7 +299,7 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         return competitorIds.stream()
                 .map(c -> {
                     try {
-                        return this.buildCompetitor(c, null, locales);
+                        return this.buildCompetitor(c, null, null, locales);
                     } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
                         throw new StreamWrapperException(e.getMessage(), e);
                     }
