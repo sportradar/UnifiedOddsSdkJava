@@ -901,20 +901,19 @@ class MatchCIImpl implements MatchCI {
      */
     private void AddOrUpdateReferenceId(URN competitorId, SAPICompetitorReferenceIds reference)
     {
-        ReferenceIdCI referenceId = reference.getReferenceId() == null ? null :
-                new ReferenceIdCI(reference.getReferenceId().stream()
+        ReferenceIdCI referenceId = reference == null
+                ? null
+                : new ReferenceIdCI(reference.getReferenceId().stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+
+        if(referenceId==null)
+        {
+            return;
+        }
         if(competitorsReferences == null)
         {
             competitorsReferences = new HashMap<>();
-            competitorsReferences.put(competitorId, referenceId);
-            return;
-        }
-        if(referenceId == null && !competitorsReferences.containsKey(competitorId))
-        {
-            competitorsReferences.put(competitorId, referenceId);
-            return;
         }
         competitorsReferences.put(competitorId, referenceId);
     }
