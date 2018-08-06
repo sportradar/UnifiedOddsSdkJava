@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
+
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
