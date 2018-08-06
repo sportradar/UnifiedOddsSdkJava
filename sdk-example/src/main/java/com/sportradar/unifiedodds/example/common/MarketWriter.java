@@ -17,7 +17,7 @@ public class MarketWriter {
     private final Logger logger;
 
     public MarketWriter(Locale locale, boolean includeMappings, boolean writeLog){
-        logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+        logger = LoggerFactory.getLogger(this.getClass().getName());
         this.locale = locale;
         this.includeMappings = includeMappings;
         this.writeLog = writeLog;

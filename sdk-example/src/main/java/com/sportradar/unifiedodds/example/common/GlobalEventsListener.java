@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GlobalEventsListener implements SDKGlobalEventsListener {
-    private Logger logger = LoggerFactory.getLogger("GlobalEventsListener-basic_example");
+    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /**
      * Invoked when a producer serving messages via the feed is down

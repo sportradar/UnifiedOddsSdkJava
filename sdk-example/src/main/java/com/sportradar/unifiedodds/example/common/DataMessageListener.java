@@ -17,7 +17,7 @@ public class DataMessageListener implements OddsFeedListener {
     private final boolean writeMarketData;
 
     public DataMessageListener(String listener_version, boolean writeEventData, boolean writeMarketData) {
-        this.logger = LoggerFactory.getLogger("CustomMessageListener-" + listener_version);
+        this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
         sportEntityWriter = new SportEntityWriter(Locale.ENGLISH, true, false);
         marketWriter = new MarketWriter(Locale.ENGLISH, true, false);
         this.writeEventData = writeEventData;

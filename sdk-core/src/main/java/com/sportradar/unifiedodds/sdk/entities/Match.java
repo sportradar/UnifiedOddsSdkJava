@@ -5,10 +5,8 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
-import com.sportradar.utils.URN;
 
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Defines methods implemented by classes representing sport events of match type

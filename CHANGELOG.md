@@ -1,5 +1,8 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.13 (2018-08-02)
+* Fix: competitor references are saved per sport event
+
 **2.0.12 (2018-07-25)
 * added check for feed opened before closing its components
 * added purging of Draw event data on BetStop and BetSettlement

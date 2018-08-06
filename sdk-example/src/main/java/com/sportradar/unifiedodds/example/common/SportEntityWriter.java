@@ -26,7 +26,7 @@ public class SportEntityWriter {
     private final Logger logger;
 
     public SportEntityWriter(Locale locale, boolean writeNonCacheableData, boolean writeLog){
-        logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+        logger = LoggerFactory.getLogger(this.getClass().getName());
         this.locale = locale;
         this.writeNonCacheableData = writeNonCacheableData;
         this.writeLog = writeLog;

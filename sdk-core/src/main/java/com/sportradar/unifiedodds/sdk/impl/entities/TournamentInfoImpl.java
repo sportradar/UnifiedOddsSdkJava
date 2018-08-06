@@ -49,7 +49,6 @@ class TournamentInfoImpl implements TournamentInfo {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-
     /**
      * Returns the {@link URN} uniquely identifying the current season
      *

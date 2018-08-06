@@ -36,7 +36,7 @@ public class PitcherCI extends SportEntityCI {
      * Initializes a new instance of the {@link PitcherCI} class
      *
      * @param pitcher - {@link SAPIPitcher} containing information about the pitcher
-     * @param locale - {@link Locale} specifying the language of the <i>pitcher</i>
+     * @param locale  - {@link Locale} specifying the language of the <i>pitcher</i>
      */
     public PitcherCI(SAPIPitcher pitcher, Locale locale) {
         super(URN.parse(pitcher.getId()));
@@ -51,7 +51,7 @@ public class PitcherCI extends SportEntityCI {
      * Merges the information from the provided {@link SAPIPitcher} into the current instance
      *
      * @param pitcher - {@link SAPIPitcher} containing information about the pitcher
-     * @param locale - {@link Locale} specifying the language of the <i>pitcher</i>
+     * @param locale  - {@link Locale} specifying the language of the <i>pitcher</i>
      */
     public void merge(SAPIPitcher pitcher, Locale locale) {
         Preconditions.checkNotNull(pitcher);

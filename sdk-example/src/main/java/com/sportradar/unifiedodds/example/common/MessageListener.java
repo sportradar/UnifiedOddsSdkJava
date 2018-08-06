@@ -18,7 +18,7 @@ public class MessageListener implements OddsFeedListener {
     private final Logger logger;
 
     public MessageListener(String listener_version) {
-        this.logger = LoggerFactory.getLogger("MessageListener-basic_example-" + listener_version);
+        this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
     }
 
     /**

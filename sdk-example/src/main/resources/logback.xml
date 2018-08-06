@@ -11,6 +11,27 @@
     <property name="UF_SDK_LOG_LEVEL" value="debug" />
 
     <!-- the execution log file appender configuration -->
+    <appender name="SdkExampleLogFileAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- the main/current execution log file -->
+        <file>${UF_SDK_LOG_FOLDER}/uf-sdk-example.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover
+            Once any of the below condition met, it will change the file name as below and compressed it. -->
+            <fileNamePattern>${UF_SDK_LOG_FOLDER}/uf-sdk-example-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!-- or whenever the file size reaches 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%-5level] [%mdc{uf-sdk-tag}] [%thread] [%logger{32}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- the execution log file appender configuration -->
     <appender name="SdkExecutionLogFileAppender"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- the main/current execution log file -->
@@ -121,6 +142,11 @@
         </encoder>
     </appender>
 
+    <!-- all the debug logs will be printed in the console -->
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+    </root>
+
     <!-- execution log -->
     <logger name="com.sportradar.unifiedodds" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkExecutionLogFileAppender" />
@@ -146,8 +172,9 @@
         <appender-ref ref="SdkClientInteractionLogFileAppender" />
     </logger>
 
-    <!-- all the debug logs will be printed in the console -->
-    <root level="debug">
+    <!-- sdk example log config assigned to the example logger -->
+    <logger name="com.sportradar.unifiedodds.example" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+        <appender-ref ref="SdkExampleLogFileAppender" />
         <appender-ref ref="STDOUT" />
-    </root>
+    </logger>
 </configuration>
