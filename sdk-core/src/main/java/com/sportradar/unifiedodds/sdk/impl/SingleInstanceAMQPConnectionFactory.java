@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -171,6 +172,10 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         rabbitConnectionFactory.setPassword(messagingPassword);
 
         rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
+
+        rabbitConnectionFactory.setThreadFactory(
+                new ThreadFactoryBuilder().setNameFormat(whoAmIReader.getSdkContextDescription() + "-amqp-t-%d").build()
+        );
 
         Connection con = rabbitConnectionFactory.newConnection();
         logger.info("Connection created successfully");
