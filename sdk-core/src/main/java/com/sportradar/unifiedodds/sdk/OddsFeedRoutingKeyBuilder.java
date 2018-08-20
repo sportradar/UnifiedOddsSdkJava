@@ -17,7 +17,7 @@ class OddsFeedRoutingKeyBuilder {
     /**
      * The routing key pattern used to receive snapshot complete messages
      */
-    private static final String SNAPSHOT_COMPLETE_ROUTING_KEY = "-.-.-.snapshot_complete.#";
+    private static final String SNAPSHOT_COMPLETE_ROUTING_KEY_TEMPLATE = "-.-.-.snapshot_complete.-.-.-.%s";
 
     /**
      * Private constructor, since this is a static utility class
@@ -42,6 +42,9 @@ class OddsFeedRoutingKeyBuilder {
 
         boolean bothLowAndHigh = haveBothLowAndHigh(sessionsData);
 
+        String snapshotRoutingKey = String.format(SNAPSHOT_COMPLETE_ROUTING_KEY_TEMPLATE,
+                oddsFeedConfiguration.getSdkNodeId() == null ? "-" : oddsFeedConfiguration.getSdkNodeId());
+
         Map<Integer, List<String>> result = new HashMap<>(sessionsData.size());
         sessionsData.forEach((k, v) -> {
             List<String> sessionRoutingKeys = new ArrayList<>();
@@ -58,7 +61,7 @@ class OddsFeedRoutingKeyBuilder {
                 if (bothLowAndHigh && v == MessageInterest.LoPrioMessagesOnly) {
                     sessionRoutingKeys.add(basicRoutingKey);
                 } else {
-                    sessionRoutingKeys.add(SNAPSHOT_COMPLETE_ROUTING_KEY);
+                    sessionRoutingKeys.add(snapshotRoutingKey);
                     sessionRoutingKeys.add(basicRoutingKey);
                 }
             }
@@ -109,7 +112,7 @@ class OddsFeedRoutingKeyBuilder {
 
         return sessionsData.containsValue(MessageInterest.PrematchMessagesOnly) ||
                 sessionsData.containsValue(MessageInterest.LiveMessagesOnly) ||
-                 sessionsData.containsValue(MessageInterest.VirtualSports);
+                sessionsData.containsValue(MessageInterest.VirtualSports);
     }
 
     private static boolean haveBothLowAndHigh(Map<Integer, MessageInterest> sessionsData) {

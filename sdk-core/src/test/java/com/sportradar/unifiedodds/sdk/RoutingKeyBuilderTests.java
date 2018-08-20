@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
- */
-
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
@@ -10,14 +6,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created on 03/07/2018.
  * // TODO @eti: Javadoc
  */
 public class RoutingKeyBuilderTests {
-    private static final String SNAPSHOT_COMPLETE_ROUTING_KEY = "-.-.-.snapshot_complete.#";
+    private static final int SDK_NODE_ID = 46;
+    private static final String SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID = "-.-.-.snapshot_complete.-.-.-.-";
+    private static final String SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID = "-.-.-.snapshot_complete.-.-.-." + SDK_NODE_ID;
 
     private Map<Integer, MessageInterest> createdSessions = new HashMap<>();
     private Map<Integer, List<String>> validationMap = new HashMap<>();
@@ -34,7 +36,7 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -50,7 +52,7 @@ public class RoutingKeyBuilderTests {
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".46.#",
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".-.#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfgWithNodeId());
@@ -65,7 +67,7 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -81,12 +83,12 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LiveMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -102,13 +104,13 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.VirtualSports.getRoutingKeys().get(0) + ".#",
                 MessageInterest.VirtualSports.getRoutingKeys().get(1) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -125,18 +127,18 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LiveMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.VirtualSports.getRoutingKeys().get(0) + ".#",
                 MessageInterest.VirtualSports.getRoutingKeys().get(1) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -154,13 +156,13 @@ public class RoutingKeyBuilderTests {
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".46.#",
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".-.#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID
         ));
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LiveMessagesOnly.getRoutingKeys().get(0) + ".46.#",
                 MessageInterest.LiveMessagesOnly.getRoutingKeys().get(0) + ".-.#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.VirtualSports.getRoutingKeys().get(0) + ".46.#",
@@ -168,7 +170,7 @@ public class RoutingKeyBuilderTests {
                 MessageInterest.VirtualSports.getRoutingKeys().get(1) + ".46.#",
                 MessageInterest.VirtualSports.getRoutingKeys().get(1) + ".-.#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfgWithNodeId());
@@ -183,7 +185,7 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -198,7 +200,7 @@ public class RoutingKeyBuilderTests {
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LoPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -214,7 +216,7 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LoPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -235,7 +237,7 @@ public class RoutingKeyBuilderTests {
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".46.#",
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".-.#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID
         ));
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LoPrioMessagesOnly.getRoutingKeys().get(0) + ".46.#",
@@ -256,12 +258,12 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -277,12 +279,12 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -298,12 +300,12 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.VirtualSports.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -319,12 +321,12 @@ public class RoutingKeyBuilderTests {
         validationMap.put(1, Arrays.asList(
                 MessageInterest.LoPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
         validationMap.put(3, Arrays.asList(
                 MessageInterest.VirtualSports.getRoutingKeys().get(0) + ".#",
                 MessageInterest.SystemAliveMessages.getRoutingKeys().get(0),
-                SNAPSHOT_COMPLETE_ROUTING_KEY
+                SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID
         ));
 
         Map<Integer, List<String>> result = OddsFeedRoutingKeyBuilder.generateKeys(createdSessions, getMockedCfg());
@@ -355,7 +357,7 @@ public class RoutingKeyBuilderTests {
 
     private static SDKInternalConfiguration getMockedCfgWithNodeId() {
         SDKInternalConfiguration c = getMockedCfg();
-        Mockito.when(c.getSdkNodeId()).thenReturn(46);
+        Mockito.when(c.getSdkNodeId()).thenReturn(SDK_NODE_ID);
         return c;
     }
 }
