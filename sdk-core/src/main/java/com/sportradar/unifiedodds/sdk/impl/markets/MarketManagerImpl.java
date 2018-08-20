@@ -22,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -93,6 +94,10 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             }
         }
 
+        if(marketDescriptor.getMappings() == null) {
+            return Collections.emptyList();
+        }
+
         return marketDescriptor.getMappings().stream()
                 .filter(m -> m.getProducerIds().contains(producer.getId()))
                 .collect(Collectors.toList());
@@ -110,6 +115,10 @@ public class MarketManagerImpl implements MarketDescriptionManager {
                 logger.warn("Market mappings for the marketId: {} could not be provided, specifiers: [{}]. ex:", marketId, specifiers, e);
                 return null;
             }
+        }
+
+        if(marketDescriptor.getMappings() == null) {
+            return Collections.emptyList();
         }
 
         return marketDescriptor.getMappings().stream()

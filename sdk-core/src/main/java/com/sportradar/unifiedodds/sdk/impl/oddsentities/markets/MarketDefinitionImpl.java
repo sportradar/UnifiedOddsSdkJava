@@ -125,6 +125,10 @@ class MarketDefinitionImpl implements MarketDefinition {
             return null;
         }
 
+        if(completeDescriptor.getMappings() == null) {
+            return  Collections.emptyList();
+        }
+
         List<MarketMappingData> collect = completeDescriptor.getMappings().stream()
                 .filter(m -> m.canMap(producerId, sportEvent.getSportId(), specifiersMap))
                 .collect(Collectors.toList());
