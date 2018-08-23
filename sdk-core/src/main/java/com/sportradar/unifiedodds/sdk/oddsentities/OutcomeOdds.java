@@ -15,6 +15,7 @@ public interface OutcomeOdds extends OutcomeProbabilities {
      * The odds for this outcome in this market
      * 
      * @return the odds for this outcome in this market in decimal
+     * @deprecated from v2.0.13 in favour of {@link #getOdds(OddsDisplayType)}
      */
     double getOdds();
 
