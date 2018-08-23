@@ -100,7 +100,8 @@ public class MarketWriter {
             sb = new StringBuilder();
             sb.append("OutcomeId:").append(outcome.getId());
             sb.append(", Name:").append(outcome.getName());
-            sb.append(", Odds:").append(outcome.getOdds());
+            sb.append(", Odds:").append(outcome.getOdds(OddsDisplayType.Decimal));
+            sb.append(", OddsUS:").append(outcome.getOdds(OddsDisplayType.American));
             sb.append(", IsActive:").append(outcome.isActive());
             sb.append(", IsPlayerOutcome:").append(outcome.isPlayerOutcome());
             sb.append(", Probabilities:").append(outcome.getProbability());

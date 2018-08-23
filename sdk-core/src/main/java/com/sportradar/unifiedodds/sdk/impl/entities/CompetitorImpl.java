@@ -60,7 +60,6 @@ public class CompetitorImpl implements Competitor {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-
     /**
      * Returns the unique {@link URN} identifier representing the current {@link Competitor} instance
      *

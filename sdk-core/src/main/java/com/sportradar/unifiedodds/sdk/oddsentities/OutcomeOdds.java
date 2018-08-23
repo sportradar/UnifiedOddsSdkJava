@@ -24,4 +24,15 @@ public interface OutcomeOdds extends OutcomeProbabilities {
      * @return <code>true</code> if the current outcome is a player outcome, otherwise <code>false</code>
      */
     boolean isPlayerOutcome();
+
+    /**
+     * Gets the odds in specified format
+     * @param oddsDisplayType display type of the odds (default: @link OddsDisplayType.Decimal)
+     * @return the odds for this outcome in this market in wanted format
+     * @apiNote default method will be merged in next major version scheduled for January 2019
+     */
+    default Double getOdds(OddsDisplayType oddsDisplayType)
+    {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

@@ -29,7 +29,6 @@ public class PlayerOutcomeOddsImpl extends OutcomeOddsImpl implements PlayerOutc
      */
     private final Integer teamIndication;
 
-
     PlayerOutcomeOddsImpl(String id, NameProvider nameProvider, OutcomeDefinition outcomeDefinition, Locale defaultLocale, UFOutcomeActive active, Double odds, Double probability, Match match, Integer teamIndication) {
         super(id, nameProvider, outcomeDefinition, defaultLocale, active, odds, probability);
 
@@ -40,7 +39,6 @@ public class PlayerOutcomeOddsImpl extends OutcomeOddsImpl implements PlayerOutc
         this.match = match;
         this.teamIndication = teamIndication;
     }
-
 
     /**
      * Indicates if the associated team is home or away
