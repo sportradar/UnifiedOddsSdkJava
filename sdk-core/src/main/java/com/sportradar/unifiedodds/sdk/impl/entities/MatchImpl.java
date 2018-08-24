@@ -355,6 +355,11 @@ public class MatchImpl extends SportEventImpl implements Match {
         }
 
         // try to get the sport id from the tournament instance
+        LongTermEvent tour = getTournament();
+        if(tour == null)
+        {
+            return null;
+        }
         SportSummary sport = getTournament().getSport();
         if (sport != null) {
             return sport.getId();

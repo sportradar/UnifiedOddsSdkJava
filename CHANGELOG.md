@@ -1,5 +1,12 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.14 (2018-08-24)
+* Added support for getting outcome odds in different formats - getOdds(OddsDisplayType)
+* AMQP threads named based on Bookmaker/nodeId
+* Fix: added missing support for node_id on snapshot_complete routing keys
+* Fix: added missing null checks for getMappings
+* Fix: added null check when fetching sportId
+
 **2.0.13 (2018-08-02)
 * Fix: competitor references are saved per sport event
 

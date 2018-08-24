@@ -94,7 +94,7 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             }
         }
 
-        if(marketDescriptor.getMappings() == null) {
+        if (marketDescriptor.getMappings() == null) {
             return Collections.emptyList();
         }
 
@@ -117,7 +117,7 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             }
         }
 
-        if(marketDescriptor.getMappings() == null) {
+        if (marketDescriptor.getMappings() == null) {
             return Collections.emptyList();
         }
 

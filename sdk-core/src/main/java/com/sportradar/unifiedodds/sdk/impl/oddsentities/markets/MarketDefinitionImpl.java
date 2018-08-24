@@ -125,8 +125,8 @@ class MarketDefinitionImpl implements MarketDefinition {
             return null;
         }
 
-        if(completeDescriptor.getMappings() == null) {
-            return  Collections.emptyList();
+        if (completeDescriptor.getMappings() == null) {
+            return Collections.emptyList();
         }
 
         List<MarketMappingData> collect = completeDescriptor.getMappings().stream()
