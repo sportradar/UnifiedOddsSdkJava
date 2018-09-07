@@ -120,7 +120,14 @@ public class SportEventStatusDTO {
     public SportEventStatusDTO(SAPISportEventStatus sportEventStatus, SAPIMatchStatistics statistics, Map<HomeAway, String> homeAwayMap) {
         Preconditions.checkNotNull(sportEventStatus);
 
-        this.status = EventStatus.valueOfApiStatusName(sportEventStatus.getStatus());
+        if(sportEventStatus.getStatusCode() != null)
+        {
+            this.status = EventStatus.valueOfApiStatusId(sportEventStatus.getStatusCode());
+        }
+        else
+        {
+            this.status = EventStatus.valueOfApiStatusName(sportEventStatus.getStatus());
+        }
         this.matchStatusId = calculateMatchStatusId(sportEventStatus.getMatchStatusCode(), status);
         this.reportingStatus = ReportingStatus.Unknown;
         this.homeScore = sportEventStatus.getHomeScore() == null ? null :

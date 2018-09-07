@@ -64,7 +64,13 @@ public enum EventStatus {
     /**
      * Postponed
      */
-    Postponed("postponed", 9);
+    Postponed("postponed", 9),
+
+    /**
+     * Interrupted
+     */
+    Interrupted("interrupted", 10);
+
 
     private String apiName;
     private int apiId;
@@ -101,7 +107,6 @@ public enum EventStatus {
             case ENDED:
                 return Ended;
             case FINALIZED:
-                return Finished;
             default:
                 return Unknown;
         }
