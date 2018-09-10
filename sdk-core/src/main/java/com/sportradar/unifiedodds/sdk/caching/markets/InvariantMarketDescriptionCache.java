@@ -16,7 +16,7 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +126,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             }
 
             // validate the missing global locales so the SDK doesn't request infinite api requests, if a producer starts sending "unknown" markets
-            List<Locale> missingGlobalLocales = LanguageHelper.findMissingLocales(fetchedLocales, locales);
+            List<Locale> missingGlobalLocales = SdkHelper.findMissingLocales(fetchedLocales, locales);
             if (!missingGlobalLocales.isEmpty()) {
                 fetchMissingData(getMissingLocales(description, locales));
             }
@@ -179,6 +179,6 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             return requiredLocales;
         }
 
-        return LanguageHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
+        return SdkHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
     }
 }

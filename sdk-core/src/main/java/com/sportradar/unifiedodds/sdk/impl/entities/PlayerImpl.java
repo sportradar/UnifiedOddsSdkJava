@@ -42,7 +42,6 @@ public class PlayerImpl implements Player {
         this.names = ImmutableMap.copyOf(names);
     }
 
-
     /**
      * Returns the unique {@link URN} identifier representing the current {@link Player} instance
      *

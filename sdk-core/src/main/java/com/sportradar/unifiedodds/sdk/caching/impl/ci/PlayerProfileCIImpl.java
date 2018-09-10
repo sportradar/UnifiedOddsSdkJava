@@ -14,7 +14,7 @@ import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,6 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
     private final List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
     private final ReentrantLock fetchLock = new ReentrantLock();
-
 
     PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(id);
@@ -328,7 +327,7 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
     private void requestMissingPlayerData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -336,7 +335,7 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
         fetchLock.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

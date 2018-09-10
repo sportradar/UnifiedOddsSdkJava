@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -364,7 +364,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         Preconditions.checkNotNull(locale);
 
         List<Locale> requiredLocales = Collections.singletonList(locale);
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -372,7 +372,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         summaryRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }
@@ -399,7 +399,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         Preconditions.checkNotNull(locale);
 
         List<Locale> requiredLocales = Collections.singletonList(locale);
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -407,7 +407,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         fixtureRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

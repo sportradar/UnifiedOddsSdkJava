@@ -16,7 +16,7 @@ import com.sportradar.unifiedodds.sdk.entities.DrawStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,7 +268,7 @@ public class DrawCIImpl implements DrawCI {
     private void requestMissingSummaryData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -276,7 +276,7 @@ public class DrawCIImpl implements DrawCI {
         fetchLock.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

@@ -18,7 +18,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,7 +231,7 @@ public class LotteryCIImpl implements LotteryCI {
     private void requestMissingLotteryData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -239,7 +239,7 @@ public class LotteryCIImpl implements LotteryCI {
         fetchLock.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

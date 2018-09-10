@@ -12,7 +12,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.entities.LocalizedNamedValueImpl;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
 
         ConcurrentHashMap<Locale, String> cachedTranslations;
         synchronized (lock) {
-            List<Locale> missingLocales = LanguageHelper.findMissingLocales(fetchedLocales, locales);
+            List<Locale> missingLocales = SdkHelper.findMissingLocales(fetchedLocales, locales);
 
             if (!missingLocales.isEmpty()) {
                 getInternal(missingLocales);

@@ -22,7 +22,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -377,6 +377,15 @@ class CompetitorCIImpl implements CompetitorCI {
                 venue.merge(data.getVenue(), dataLocale);
             }
         }
+
+        if (!abbreviations.keySet().contains(dataLocale)) {
+            if(data.getCompetitor().getAbbreviation() == null) {
+                abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(data.getCompetitor().getName(), 3));
+            }
+            else {
+                abbreviations.put(dataLocale, data.getCompetitor().getAbbreviation());
+            }
+        }
     }
 
     private void internalMerge(SAPITeam competitor, Locale dataLocale) {
@@ -394,6 +403,13 @@ class CompetitorCIImpl implements CompetitorCI {
                 new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+
+        if(competitor.getAbbreviation() == null) {
+            abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
+        }
+        else {
+            abbreviations.put(dataLocale, competitor.getAbbreviation());
+        }
     }
 
     private void requestMissingCompetitorData(List<Locale> requiredLocales) {
@@ -404,7 +420,7 @@ class CompetitorCIImpl implements CompetitorCI {
             return;
         }
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -412,7 +428,7 @@ class CompetitorCIImpl implements CompetitorCI {
         fetchLock.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

@@ -24,7 +24,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -418,7 +418,7 @@ class TournamentStageCIImpl implements StageCI {
     private void requestMissingStageTournamentData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -426,7 +426,7 @@ class TournamentStageCIImpl implements StageCI {
         fetchRequestLock.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

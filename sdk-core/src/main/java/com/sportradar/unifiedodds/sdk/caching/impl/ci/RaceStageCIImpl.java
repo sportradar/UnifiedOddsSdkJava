@@ -25,7 +25,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -650,7 +650,7 @@ class RaceStageCIImpl implements StageCI {
     private void requestMissingFixtureData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -658,7 +658,7 @@ class RaceStageCIImpl implements StageCI {
         fixtureRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = LanguageHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }
@@ -689,7 +689,7 @@ class RaceStageCIImpl implements StageCI {
     private void requestMissingSummaryData(List<Locale> requiredLocales, boolean forceFetch) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = LanguageHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
         if (missingLocales.isEmpty() && !forceFetch) {
             return;
         }
@@ -697,7 +697,7 @@ class RaceStageCIImpl implements StageCI {
         summaryRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = forceFetch ? requiredLocales : LanguageHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
+            missingLocales = forceFetch ? requiredLocales : SdkHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }

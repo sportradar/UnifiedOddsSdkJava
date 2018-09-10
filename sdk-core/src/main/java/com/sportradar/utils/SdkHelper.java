@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * An utility class that contains various methods which perform common language tasks
  */
-public final class LanguageHelper {
+public final class SdkHelper {
     /**
      * Calculates and returns the missing locales within the provided {@link List}
      *
@@ -49,5 +49,24 @@ public final class LanguageHelper {
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)
                 );
+    }
+
+    /**
+     * Get the abbreviation from the input string
+     * @param input input text to be abbreviated
+     * @param length of the abbreviation
+     * @return the abbreviated input string in upper case
+     */
+    public static String getAbbreviationFromName(String input, int length)
+    {
+        if (length < 1)
+        {
+            length = Integer.MAX_VALUE;
+        }
+        if (input == null || input.isEmpty())
+        {
+            return null;
+        }
+        return input.length() > length ? input.substring(0, length).toUpperCase() : input.toUpperCase();
     }
 }

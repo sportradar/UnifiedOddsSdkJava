@@ -17,7 +17,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
-import com.sportradar.utils.LanguageHelper;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.List;
 import java.util.Locale;
@@ -122,6 +122,6 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             return requiredLocales;
         }
 
-        return LanguageHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
+        return SdkHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
     }
 }
