@@ -93,7 +93,7 @@ public interface SportEntityFactory {
      * Builds a {@link Competitor} instance associated with the provided {@link URN}
      *
      * @param id the competitor identifier
-     * @param qualifier the competitor qualifier(if available)
+     * @param qualifier the competitor qualifier (if available)
      * @param eventCompetitorsReferences the list of competitors and associated references
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object

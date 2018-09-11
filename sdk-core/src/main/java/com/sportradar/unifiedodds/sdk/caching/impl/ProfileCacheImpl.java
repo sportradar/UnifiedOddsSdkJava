@@ -8,6 +8,7 @@ import com.google.common.base.Equivalence;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.SAPICompetitorProfileEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerExtended;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.unifiedodds.sdk.caching.*;
@@ -75,7 +76,6 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
         this.competitorCache = competitorCache;
         this.simpleTeamCache = simpleTeamCache;
     }
-
 
     /**
      * Returns a {@link PlayerProfileCI} associated with the provided {@link URN}
@@ -198,6 +198,29 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
         }
     }
 
+    public void onPlayerCompetitorFetched(URN id, SAPIPlayerCompetitor data, Locale dataLocale, CacheItem requester) {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(dataLocale);
+
+        if(id.getType().equalsIgnoreCase("competitor")) {
+            handleOnCompetitorDataReceived(id, data, dataLocale, requester);
+        }
+        else {
+            PlayerProfileCI profileCI = playerCache.getIfPresent(id);
+
+            if (requester != null && !Equivalence.identity().equivalent(profileCI, requester)) {
+                requester.merge(data, dataLocale);
+            }
+
+            if (profileCI == null) {
+                playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale));
+            } else {
+                profileCI.merge(data, dataLocale);
+            }
+        }
+    }
+
     @Override
     public void onCompetitorFetched(URN id, SAPICompetitorProfileEndpoint data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(id);
@@ -205,6 +228,14 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
         Preconditions.checkNotNull(dataLocale);
 
         handleOnCompetitorDataReceived(id, data, dataLocale, requester);
+
+        if (data.getPlayers() != null && data.getPlayers().getPlayer() != null && !data.getPlayers().getPlayer().isEmpty())
+        {
+            for (SAPIPlayerExtended player : data.getPlayers().getPlayer())
+            {
+                onPlayerFetched(URN.parse(player.getId()), player, dataLocale, requester);
+            }
+        }
     }
 
     @Override
@@ -214,6 +245,14 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
         Preconditions.checkNotNull(dataLocale);
 
         handleOnCompetitorDataReceived(id, data, dataLocale, requester);
+
+        if (data.getPlayers() != null && data.getPlayers().getPlayer() != null && !data.getPlayers().getPlayer().isEmpty())
+        {
+            for (SAPIPlayerCompetitor player : data.getPlayers().getPlayer())
+            {
+                onPlayerCompetitorFetched(URN.parse(player.getId()), player, dataLocale, requester);
+            }
+        }
     }
 
     private  <T> void handleOnCompetitorDataReceived(URN id, T data, Locale dataLocale, CacheItem requester) {
@@ -243,6 +282,8 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
             provideRightCompetitorCacheFor(id).put(id, cacheItemFactory.buildCompetitorProfileCI(id, (SAPITeam) data, dataLocale));
         } else if (data instanceof SAPICompetitorProfileEndpoint) {
             provideRightCompetitorCacheFor(id).put(id, cacheItemFactory.buildCompetitorProfileCI(id, (SAPICompetitorProfileEndpoint) data, dataLocale));
+        } else if (data instanceof SAPIPlayerCompetitor) {
+            provideRightCompetitorCacheFor(id).put(id, cacheItemFactory.buildCompetitorProfileCI(id, (SAPIPlayerCompetitor) data, dataLocale));
         } else {
             logger.warn("Received create CI request for unsupported type => {}", data.getClass());
         }

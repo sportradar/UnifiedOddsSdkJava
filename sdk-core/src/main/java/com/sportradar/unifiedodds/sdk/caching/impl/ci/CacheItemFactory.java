@@ -39,10 +39,12 @@ public interface CacheItemFactory {
 
     PlayerProfileCI buildPlayerProfileCI(URN id);
     PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale);
+    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale);
 
     CompetitorCI buildCompetitorProfileCI(URN id);
     CompetitorCI buildCompetitorProfileCI(URN id, SAPICompetitorProfileEndpoint data, Locale dataLocale);
     CompetitorCI buildCompetitorProfileCI(URN id, SAPITeam data, Locale dataLocale);
+    CompetitorCI buildCompetitorProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale);
 
     LotteryCI buildLotteryCI(URN id);
     LotteryCI buildLotteryCI(URN id, SAPILottery data, Locale dataLocale);

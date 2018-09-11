@@ -61,7 +61,6 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
      */
     private final Locale defaultLocale;
 
-
     @Inject
     SportEventCacheImpl(CacheItemFactory cacheItemFactory,
                         MappingTypeProvider mappingTypeProvider,

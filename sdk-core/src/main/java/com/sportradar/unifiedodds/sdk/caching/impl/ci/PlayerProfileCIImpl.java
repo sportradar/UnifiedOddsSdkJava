@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerExtended;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
@@ -67,6 +68,11 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
     private final Map<Locale, String> nationalities = Maps.newConcurrentMap();
 
     /**
+     * A {@link Map} containing player's abbreviations in different languages
+     */
+    private final Map<Locale, String> abbreviations = Maps.newConcurrentMap();
+
+    /**
      * The value describing the type(e.g. forward, defense, ...) of the player represented by current instance
      */
     private String type;
@@ -121,6 +127,12 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
     }
 
     PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerExtended data, Locale dataLocale) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+
+        merge(data, dataLocale);
+    }
+
+    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerCompetitor data, Locale dataLocale) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
 
         merge(data, dataLocale);
@@ -284,6 +296,27 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
     }
 
     /**
+     * Returns the {@link Map} containing translated abbreviations of the player
+     *
+     * @param locales a {@link List} specifying the required languages
+     * @return the {@link Map} containing translated abbreviations of the player
+     */
+    @Override
+    public Map<Locale, String> getAbbreviations(List<Locale> locales) {
+        if (abbreviations.keySet().containsAll(locales)) {
+            return ImmutableMap.copyOf(abbreviations);
+        }
+
+        if (cachedLocales.containsAll(locales)) {
+            return ImmutableMap.copyOf(abbreviations);
+        }
+
+        requestMissingPlayerData(locales);
+
+        return ImmutableMap.copyOf(abbreviations);
+    }
+
+    /**
      * Determines whether the current instance has translations for the specified languages
      *
      * @param localeList a {@link List} specifying the required languages
@@ -296,12 +329,16 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
 
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (!(endpointData instanceof SAPIPlayerExtended)) {
-            return;
+        if (endpointData instanceof SAPIPlayerExtended) {
+            mergePlayerExtended((SAPIPlayerExtended) endpointData, dataLocale);
         }
+        else if(endpointData instanceof SAPIPlayerCompetitor){
+            mergePlayerCompetitor((SAPIPlayerCompetitor) endpointData, dataLocale);
+        }
+    }
 
-        SAPIPlayerExtended player = (SAPIPlayerExtended) endpointData;
-
+    public void mergePlayerExtended(SAPIPlayerExtended player, Locale dataLocale)
+    {
         type = player.getType();
 
         try {
@@ -321,7 +358,24 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
         Optional.ofNullable(player.getName()).ifPresent(name -> names.put(dataLocale, name));
         Optional.ofNullable(player.getFullName()).ifPresent(name -> fullNames.put(dataLocale, name));
 
+        if (!abbreviations.keySet().contains(dataLocale))
+        {
+            abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(player.getName(), 3));
+        }
+
         cachedLocales.add(dataLocale);
+    }
+
+    public void mergePlayerCompetitor(SAPIPlayerCompetitor player, Locale dataLocale)
+    {
+        Optional.ofNullable(player.getNationality()).ifPresent(nationality -> nationalities.put(dataLocale, nationality));
+        Optional.ofNullable(player.getName()).ifPresent(name -> names.put(dataLocale, name));
+        Optional.ofNullable(player.getAbbreviation()).ifPresent(abbr -> abbreviations.put(dataLocale, abbr));
+
+        if (!abbreviations.keySet().contains(dataLocale))
+        {
+            abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(player.getName(), 3));
+        }
     }
 
     private void requestMissingPlayerData(List<Locale> requiredLocales) {

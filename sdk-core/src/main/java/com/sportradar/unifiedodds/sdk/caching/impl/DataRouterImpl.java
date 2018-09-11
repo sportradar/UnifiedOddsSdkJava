@@ -302,7 +302,6 @@ public class DataRouterImpl implements DataRouter {
         });
     }
 
-
     public void setDataListeners(List<DataRouterListener> dataListeners) {
         Preconditions.checkNotNull(dataListeners);
         this.dataListeners = dataListeners;

@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPICompetitorProfileEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
@@ -133,6 +134,12 @@ class CompetitorCIImpl implements CompetitorCI {
     }
 
     CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPITeam data, Locale dataLocale) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+
+        merge(data, dataLocale);
+    }
+
+    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerCompetitor data, Locale dataLocale) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
 
         merge(data, dataLocale);
@@ -338,6 +345,8 @@ class CompetitorCIImpl implements CompetitorCI {
         } else if (endpointData instanceof SAPICompetitorProfileEndpoint) {
             internalMerge((SAPICompetitorProfileEndpoint) endpointData, dataLocale);
             cachedLocales.add(dataLocale);
+        } else if (endpointData instanceof SAPIPlayerCompetitor) {
+            internalMerge((SAPIPlayerCompetitor) endpointData, dataLocale);
         }
     }
     private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
@@ -356,7 +365,6 @@ class CompetitorCIImpl implements CompetitorCI {
         associatedPlayerIds = Optional.ofNullable(data.getPlayers())
                 .map(p -> p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList()))
                 .orElse(null);
-
 
         jerseys = Optional.ofNullable(data.getJerseys())
                 .map(j -> j.getJersey().stream().map(JerseyCI::new).collect(Collectors.toList()))
@@ -403,6 +411,22 @@ class CompetitorCIImpl implements CompetitorCI {
                 new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+
+        if(competitor.getAbbreviation() == null) {
+            abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
+        }
+        else {
+            abbreviations.put(dataLocale, competitor.getAbbreviation());
+        }
+    }
+
+    private void internalMerge(SAPIPlayerCompetitor competitor, Locale dataLocale) {
+        Preconditions.checkNotNull(competitor);
+        Preconditions.checkNotNull(dataLocale);
+
+        Optional.ofNullable(competitor.getName()).ifPresent(s -> names.put(dataLocale, s));
+//        Optional.ofNullable(competitor.getNationality()).ifPresent(s -> nat.put(dataLocale, s));
+        Optional.ofNullable(competitor.getAbbreviation()).ifPresent(s -> abbreviations.put(dataLocale, s));
 
         if(competitor.getAbbreviation() == null) {
             abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(competitor.getName(), 3));

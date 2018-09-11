@@ -68,6 +68,9 @@ class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
      * @param oddsEUDouble EU odds not null
      */
     private static Double convertEuOddsToUs(Double oddsEUDouble) {
+        if(oddsEUDouble == null || oddsEUDouble.isNaN()){
+            return oddsEUDouble;
+        }
         BigDecimal oddsEu = BigDecimal.valueOf(oddsEUDouble);
         Double oddUs;
         if (oddsEu.doubleValue() == 1) {

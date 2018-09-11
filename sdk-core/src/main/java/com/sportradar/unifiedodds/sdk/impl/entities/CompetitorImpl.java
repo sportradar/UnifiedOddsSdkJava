@@ -186,7 +186,7 @@ public class CompetitorImpl implements Competitor {
      * @return {@link List} of associated players
      */
     @Override
-    public List<PlayerProfile> getPlayers() {
+    public List<Player> getPlayers() {
         List<URN> singleton = Collections.singletonList(competitorId);
 
         try {
@@ -195,7 +195,13 @@ public class CompetitorImpl implements Competitor {
                     .map(pIds -> pIds.stream()
                         .map(id -> {
                             try {
-                                return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
+                                if(id.getType().equalsIgnoreCase("competitor")) {
+                                    return sportEntityFactory.buildCompetitor(id, null, null, locales);
+                                }
+                                else {
+                                    return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
+                                }
+
                             } catch (ObjectNotFoundException e) {
                                 throw new StreamWrapperException(e.getMessage(), e);
                             }

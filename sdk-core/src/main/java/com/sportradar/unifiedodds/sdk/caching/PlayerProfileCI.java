@@ -77,4 +77,12 @@ public interface PlayerProfileCI extends CacheItem  {
      * @return the player nickname if available; otherwise null
      */
     String getNickname();
+
+    /**
+     * Returns the {@link Map} containing translated abbreviations of the player
+     *
+     * @param locales a {@link List} specifying the required languages
+     * @return the {@link Map} containing translated abbreviations of the player
+     */
+    Map<Locale, String> getAbbreviations(List<Locale> locales);
 }

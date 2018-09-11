@@ -69,7 +69,7 @@ public interface Competitor extends Player {
      *
      * @return {@link List} of associated players
      */
-    List<PlayerProfile> getPlayers();
+    List<Player> getPlayers();
 
     /**
      * Returns a {@link List} of known competitor jerseys

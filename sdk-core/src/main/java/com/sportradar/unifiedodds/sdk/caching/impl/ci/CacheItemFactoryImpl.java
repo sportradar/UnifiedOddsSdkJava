@@ -130,6 +130,11 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
+    public PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale) {
+        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    }
+
+    @Override
     public CompetitorCI buildCompetitorProfileCI(URN id) {
         return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
     }
@@ -141,6 +146,11 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
 
     @Override
     public CompetitorCI buildCompetitorProfileCI(URN id, SAPITeam data, Locale dataLocale) {
+        return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    }
+
+    @Override
+    public CompetitorCI buildCompetitorProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale) {
         return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
     }
 
