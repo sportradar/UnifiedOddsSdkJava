@@ -252,8 +252,7 @@ public class DataRouterImpl implements DataRouter {
         }
 
         sportEvents.forEach(se -> {
-                dataListeners.forEach(l ->
-                        l.onSportEventFetched(URN.parse(se.getId()), se, locale)
+                dataListeners.forEach(l -> l.onSportEventFetched(URN.parse(se.getId()), se, locale)
                 );
                 if (se.getTournament() != null) {
                     dispatchTournament(se.getTournament(), locale);

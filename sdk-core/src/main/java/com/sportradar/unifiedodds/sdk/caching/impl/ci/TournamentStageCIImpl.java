@@ -19,6 +19,7 @@ import com.sportradar.unifiedodds.sdk.caching.StageCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -305,6 +306,16 @@ class TournamentStageCIImpl implements StageCI {
     @Override
     public SportEventStatusDTO getSportEventStatusDTO() {
         // no sport event status data
+        return null;
+    }
+
+    /**
+     * Get the event status
+     *
+     * @return the event status
+     */
+    @Override
+    public EventStatus getEventStatus() {
         return null;
     }
 

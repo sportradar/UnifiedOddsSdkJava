@@ -56,8 +56,19 @@ public class SportEntityWriter {
     public String writeData(Competition event) {
         String baselineDescription = writeBaseEventData(event);
 
-        return baselineDescription + String.format(", Status:[%s], BookingStatus:%s, %s, %s",
+        if(event.getStatus() != null)
+        {
+            EventStatus sesStatus = event.getStatus().getStatus();
+
+            if(event.getEventStatus() != sesStatus)
+            {
+                logger.warn(String.format("%s: status mismatch: ES:%s != SES:%s ", event.getId(), event.getEventStatus(), sesStatus));
+            }
+        }
+
+        return baselineDescription + String.format(", Status:[%s], EventStatus:%s, BookingStatus:%s, %s, %s",
                 writeData(event.getStatus()),
+                event.getEventStatus(),
                 event.getBookingStatus(),
                 event.getVenue(),
                 event.getConditions());
@@ -81,7 +92,8 @@ public class SportEntityWriter {
                 baselineDescription,
                 event.getCategory(),
                 event.getSport(),
-                event.getParentStage() != null ? writeData(event.getParentStage()) : "no parent event",
+//                event.getParentStage() != null ? writeData(event.getParentStage()) : "no parent event",
+                event.getParentStage() != null ? event.getParentStage().getId() : "no parent event",
                 event.getStageType(),
                 stages.toString());
     }

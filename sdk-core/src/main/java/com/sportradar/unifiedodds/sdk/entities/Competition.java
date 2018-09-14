@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 
+import java.awt.dnd.InvalidDnDOperationException;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,4 +64,13 @@ public interface Competition extends SportEvent {
      * associated with the current instance
      */
     List<Competitor> getCompetitors();
+
+    /**
+     * Get the event status
+     * @return the event status
+     */
+    default EventStatus getEventStatus()
+    {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

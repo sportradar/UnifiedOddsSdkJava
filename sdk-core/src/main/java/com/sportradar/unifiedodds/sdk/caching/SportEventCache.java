@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -56,4 +57,12 @@ public interface SportEventCache {
      * @param id the {@link URN} of the event that was successfully booked
      */
     void onEventBooked(URN id);
+
+    /**
+     * Adds a new cache entry
+     *
+     * @param id - the unique identifier of the sport event to which the status belongs to
+     * @param status - a {@link SportEventStatusDTO} to store in the cache
+     */
+    void addSportEventStatus(URN id, SportEventStatusDTO status);
 }

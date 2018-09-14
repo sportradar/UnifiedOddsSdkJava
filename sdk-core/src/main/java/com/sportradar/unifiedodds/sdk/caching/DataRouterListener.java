@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
 import java.util.Locale;
@@ -38,4 +39,6 @@ public interface DataRouterListener {
     default void onDrawSummaryEndpointFetched(URN id, SAPIDrawSummary data, Locale dataLocale, CacheItem requester) {}
     default void onDrawFixtureFetched(URN id, SAPIDrawFixture data, Locale locale, CacheItem requester) {}
     default void onDrawFetched(URN id, SAPIDrawEvent data, Locale locale, CacheItem requester) {}
+
+    default void onSportEventStatusFetched(URN id, SportEventStatusDTO data, String source) {}
 }

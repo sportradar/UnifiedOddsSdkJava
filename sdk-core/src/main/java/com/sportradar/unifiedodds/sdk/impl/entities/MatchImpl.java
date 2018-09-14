@@ -63,7 +63,6 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-
     /**
      * Initializes a new instance of the {@link MatchImpl}
      *
@@ -106,6 +105,36 @@ public class MatchImpl extends SportEventImpl implements Match {
         }
 
         return status;
+    }
+
+    /**
+     * Returns a {@link EventStatus}
+     *
+     * @return a {@link EventStatus}
+     */
+    @Override
+    public EventStatus getEventStatus() {
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getEventStatus", null);
+            return null;
+        }
+
+        EventStatus eventStatus = cacheItem.getEventStatus();
+
+        if(eventStatus == null)
+        {
+            if(status == null)
+            {
+                status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class);
+            }
+            if(status != null)
+            {
+                cacheItem.merge(status, null);
+            }
+        }
+        return cacheItem.getEventStatus();
     }
 
     /**

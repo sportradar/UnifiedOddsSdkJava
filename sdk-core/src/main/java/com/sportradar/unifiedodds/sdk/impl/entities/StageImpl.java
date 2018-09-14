@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
+import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
@@ -263,6 +264,36 @@ public class StageImpl extends SportEventImpl implements Stage {
         }
 
         return cacheItem.getBookingStatus();
+    }
+
+    /**
+     * Returns a {@link EventStatus}
+     *
+     * @return a {@link EventStatus}
+     */
+    @Override
+    public EventStatus getEventStatus() {
+        StageCI cacheItem = loadStageCI();
+
+        if (cacheItem == null) {
+            handleException("getEventStatus", null);
+            return null;
+        }
+
+        EventStatus eventStatus = cacheItem.getEventStatus();
+
+        if(eventStatus == null)
+        {
+            if(status == null)
+            {
+                status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class);
+            }
+            if(status != null)
+            {
+                cacheItem.merge(status, null);
+            }
+        }
+        return cacheItem.getEventStatus();
     }
 
     /**

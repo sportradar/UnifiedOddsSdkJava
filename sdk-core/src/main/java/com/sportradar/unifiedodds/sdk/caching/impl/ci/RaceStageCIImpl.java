@@ -20,7 +20,10 @@ import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.Competition;
+import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
+import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -114,6 +117,11 @@ class RaceStageCIImpl implements StageCI {
      * A {@link SportEventStatusDTO} instance providing the current event status information
      */
     private SportEventStatusDTO sportEventStatusDTO;
+
+    /**
+     * A {@link EventStatus} representing event status
+     */
+    private EventStatus eventStatus;
 
     /**
      * A {@link Map} storing the available sport event names
@@ -444,6 +452,16 @@ class RaceStageCIImpl implements StageCI {
     }
 
     /**
+     * Get the event status
+     *
+     * @return the event status
+     */
+    @Override
+    public EventStatus getEventStatus() {
+        return eventStatus;
+    }
+
+    /**
      * Returns the {@link Date} specifying when the sport event associated with the current
      * instance was scheduled
      *
@@ -489,6 +507,10 @@ class RaceStageCIImpl implements StageCI {
             internalMerge((SAPIStageSummaryEndpoint) endpointData, dataLocale);
         } else if (endpointData instanceof SAPISportEventChildren.SAPISportEvent) {
             internalMerge(((SAPISportEventChildren.SAPISportEvent) endpointData), dataLocale);
+        } else if (endpointData instanceof SportEventStatusDTO) {
+            internalMerge((SportEventStatusDTO) endpointData);
+        } else if (endpointData instanceof CompetitionStatus) {
+            internalMerge((CompetitionStatus) endpointData);
         }
     }
 
@@ -533,6 +555,8 @@ class RaceStageCIImpl implements StageCI {
         }
 
         this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
+
+        this.eventStatus = this.sportEventStatusDTO.getStatus();
 
         cachedSummaryLocales.add(dataLocale);
     }
@@ -618,6 +642,11 @@ class RaceStageCIImpl implements StageCI {
         if (sportEvent.getType() != null) {
             this.stageType = StageType.mapFromApiValue(sportEvent.getType());
         }
+
+        if(sportEvent.getStatus() != null && !sportEvent.getStatus().isEmpty())
+        {
+            eventStatus = EventStatus.valueOfApiStatusName(sportEvent.getStatus());
+        }
     }
 
     /**
@@ -639,6 +668,32 @@ class RaceStageCIImpl implements StageCI {
 
         if (endpointData.getType() != null) {
             this.stageType = StageType.mapFromApiValue(endpointData.getType());
+        }
+    }
+
+    /**
+     * Merges the current instance with the {@link SportEventStatusDTO}
+     *
+     * @param statusDTO the data to be merged
+     */
+    private void internalMerge(SportEventStatusDTO statusDTO) {
+        Preconditions.checkNotNull(statusDTO);
+
+        if(statusDTO.getStatus() != null){
+            eventStatus = statusDTO.getStatus();
+        }
+    }
+
+    /**
+     * Merges the current instance with the {@link SportEventStatusDTO}
+     *
+     * @param status the data to be merged
+     */
+    private void internalMerge(CompetitionStatus status) {
+        Preconditions.checkNotNull(status);
+
+        if(status.getStatus() != null){
+            eventStatus = status.getStatus();
         }
     }
 

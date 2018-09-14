@@ -27,6 +27,7 @@ public interface CompetitionStatus {
      * Returns an {@link EventStatus} describing the high-level status of the associated sport event
      *
      * @return an {@link EventStatus} describing the high-level status of the associated sport event
+     * @deprecated use getEventStatus available on the {@link com.sportradar.unifiedodds.sdk.entities.Competition}  sport event
      */
     EventStatus getStatus();
 

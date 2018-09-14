@@ -32,7 +32,6 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache {
      */
     private final SportEventCache sportEventCache;
 
-
     /**
      * Initializes a new {@link SportEventStatusCacheImpl} instance
      *
@@ -48,7 +47,6 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache {
         this.sportEventStatusCache = sportEventStatusCache;
         this.sportEventCache = sportEventCache;
     }
-
 
     /**
      * Returns the status of the event associated with the provided identifier. If the instance associated with

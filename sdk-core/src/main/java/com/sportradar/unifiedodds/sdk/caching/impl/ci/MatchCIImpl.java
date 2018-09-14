@@ -20,6 +20,7 @@ import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
+import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -129,6 +130,11 @@ class MatchCIImpl implements MatchCI {
      * A {@link SportEventStatusDTO} instance providing the current event status information
      */
     private SportEventStatusDTO sportEventStatusDTO;
+
+    /**
+     * A {@link EventStatus} representing event status
+     */
+    private EventStatus eventStatus;
 
     /**
      * A {@link List} indicating which fixture translations were already fetched
@@ -489,6 +495,16 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
+     * Get the event status
+     *
+     * @return the event status
+     */
+    @Override
+    public EventStatus getEventStatus() {
+        return eventStatus;
+    }
+
+    /**
      * Returns the {@link Date} specifying when the sport event associated with the current
      * instance was scheduled
      *
@@ -589,6 +605,10 @@ class MatchCIImpl implements MatchCI {
             internalMerge((SAPISportEventChildren.SAPISportEvent) endpointData, dataLocale);
         } else if (endpointData instanceof SAPIMatchTimelineEndpoint) {
             internalMerge((SAPIMatchTimelineEndpoint) endpointData, dataLocale);
+        } else if (endpointData instanceof SportEventStatusDTO) {
+            internalMerge((SportEventStatusDTO) endpointData);
+        } else if (endpointData instanceof MatchStatus) {
+            internalMerge((MatchStatus) endpointData);
         }
     }
 
@@ -764,6 +784,8 @@ class MatchCIImpl implements MatchCI {
 
         this.sportEventStatusDTO = new SportEventStatusDTO(summaryEndpoint.getSportEventStatus(), summaryEndpoint.getStatistics(), provideHomeAway(summaryEndpoint.getSportEvent()));
 
+        this.eventStatus = this.sportEventStatusDTO.getStatus();
+
         loadedSummaryLocales.add(locale);
     }
 
@@ -789,6 +811,11 @@ class MatchCIImpl implements MatchCI {
 
         if (endpointData.getTimeline() != null) {
             eventTimelines.put(dataLocale,new EventTimelineCI(endpointData.getTimeline(), dataLocale, isTimelineFinalized(endpointData)));
+        }
+
+        if(endpointData.getSportEventStatus() != null && endpointData.getSportEventStatus().getStatus() != null)
+        {
+            eventStatus = EventStatus.valueOfApiStatusName(endpointData.getSportEventStatus().getStatus());
         }
     }
 
@@ -845,6 +872,11 @@ class MatchCIImpl implements MatchCI {
             }
         }
 
+        if(sportEvent.getStatus() != null && !sportEvent.getStatus().isEmpty())
+        {
+            eventStatus = EventStatus.valueOfApiStatusName(sportEvent.getStatus());
+        }
+
         constructEventName(locale, sportEvent.getCompetitors());
     }
 
@@ -863,6 +895,32 @@ class MatchCIImpl implements MatchCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
+        }
+    }
+
+    /**
+     * Merges the current instance with the {@link SportEventStatusDTO}
+     *
+     * @param statusDTO the data to be merged
+     */
+    private void internalMerge(SportEventStatusDTO statusDTO) {
+        Preconditions.checkNotNull(statusDTO);
+
+        if(statusDTO.getStatus() != null){
+            eventStatus = statusDTO.getStatus();
+        }
+    }
+
+    /**
+     * Merges the current instance with the {@link MatchStatus}
+     *
+     * @param matchStatus the data to be merged
+     */
+    private void internalMerge(MatchStatus matchStatus) {
+        Preconditions.checkNotNull(matchStatus);
+
+        if(matchStatus.getStatus() != null){
+            eventStatus = matchStatus.getStatus();
         }
     }
 

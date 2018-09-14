@@ -131,8 +131,10 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
             return;
         }
 
-        sportEventStatusCache.addSportEventStatus(URN.parse(message.getEventId()),
-                new SportEventStatusDTO(message.getSportEventStatus()));
+        URN eventId = URN.parse(message.getEventId());
+        SportEventStatusDTO sportEventStatusDTO = new SportEventStatusDTO(message.getSportEventStatus());
+        sportEventStatusCache.addSportEventStatus(eventId, sportEventStatusDTO);
+        sportEventCache.addSportEventStatus(eventId, sportEventStatusDTO);
     }
 
     /**
