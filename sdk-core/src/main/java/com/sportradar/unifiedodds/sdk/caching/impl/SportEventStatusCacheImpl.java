@@ -72,20 +72,6 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
         return statusDto;
     }
 
-//    /**
-//     * Adds a new {@link #sportEventStatusCache} entry
-//     *
-//     * @param id - the unique identifier of the sport event to which the status belongs to
-//     * @param status - a {@link SportEventStatusDTO} to store in the cache
-//     */
-//    @Override
-//    public void addSportEventStatus(URN id, SportEventStatusDTO status) {
-//        Preconditions.checkNotNull(id);
-//        Preconditions.checkNotNull(status);
-//
-//        sportEventStatusCache.put(id.toString(), status);
-//    }
-
     /**
     * Adds a new {@link #sportEventStatusCache} entry
     *

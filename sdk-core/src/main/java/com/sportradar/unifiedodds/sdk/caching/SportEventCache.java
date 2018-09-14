@@ -56,12 +56,4 @@ public interface SportEventCache {
      * @param id the {@link URN} of the event that was successfully booked
      */
     void onEventBooked(URN id);
-
-//    /**
-//     * Adds a new cache entry
-//     *
-//     * @param id - the unique identifier of the sport event to which the status belongs to
-//     * @param status - a {@link SportEventStatusDTO} to store in the cache
-//     */
-//    void addSportEventStatus(URN id, SportEventStatusDTO status);
 }

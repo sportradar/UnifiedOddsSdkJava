@@ -19,7 +19,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -782,10 +781,6 @@ class MatchCIImpl implements MatchCI {
             }
         }
 
-//        this.sportEventStatusDTO = new SportEventStatusDTO(summaryEndpoint.getSportEventStatus(), summaryEndpoint.getStatistics(), provideHomeAway(summaryEndpoint.getSportEvent()));
-
-//        this.eventStatus = this.sportEventStatusDTO.getStatus();
-
         loadedSummaryLocales.add(locale);
     }
 
@@ -811,11 +806,6 @@ class MatchCIImpl implements MatchCI {
 
         if (endpointData.getTimeline() != null) {
             eventTimelines.put(dataLocale,new EventTimelineCI(endpointData.getTimeline(), dataLocale, isTimelineFinalized(endpointData)));
-        }
-
-        if(endpointData.getSportEventStatus() != null && endpointData.getSportEventStatus().getStatus() != null)
-        {
-            eventStatus = EventStatus.valueOfApiStatusName(endpointData.getSportEventStatus().getStatus());
         }
     }
 
@@ -871,11 +861,6 @@ class MatchCIImpl implements MatchCI {
                 venue.merge(sportEvent.getVenue(), locale);
             }
         }
-
-//        if(sportEvent.getStatus() != null && !sportEvent.getStatus().isEmpty())
-//        {
-//            eventStatus = EventStatus.valueOfApiStatusName(sportEvent.getStatus());
-//        }
 
         constructEventName(locale, sportEvent.getCompetitors());
     }

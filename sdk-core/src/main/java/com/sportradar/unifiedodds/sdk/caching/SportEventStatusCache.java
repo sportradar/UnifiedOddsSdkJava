@@ -20,14 +20,6 @@ public interface SportEventStatusCache {
      */
     SportEventStatusDTO getSportEventStatusDTO(URN eventId);
 
-//    /**
-//     * Adds a new cache entry
-//     *
-//     * @param id - the unique identifier of the sport event to which the status belongs to
-//     * @param status - a {@link SportEventStatusDTO} to store in the cache
-//     */
-//    void addSportEventStatus(URN id, SportEventStatusDTO status);
-
     /**
      * Purges the sport event status associated with the provided event id
      *

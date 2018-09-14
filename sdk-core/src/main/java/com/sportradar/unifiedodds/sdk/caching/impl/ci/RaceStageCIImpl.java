@@ -20,7 +20,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-import com.sportradar.unifiedodds.sdk.entities.Competition;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
@@ -554,10 +553,6 @@ class RaceStageCIImpl implements StageCI {
             }
         }
 
-//        this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
-//
-//        this.eventStatus = this.sportEventStatusDTO.getStatus();
-
         cachedSummaryLocales.add(dataLocale);
     }
 
@@ -641,11 +636,6 @@ class RaceStageCIImpl implements StageCI {
 
         if (sportEvent.getType() != null) {
             this.stageType = StageType.mapFromApiValue(sportEvent.getType());
-        }
-
-        if(sportEvent.getStatus() != null && !sportEvent.getStatus().isEmpty())
-        {
-            eventStatus = EventStatus.valueOfApiStatusName(sportEvent.getStatus());
         }
     }
 
