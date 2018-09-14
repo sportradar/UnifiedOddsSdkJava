@@ -6,10 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
-import com.sportradar.unifiedodds.sdk.caching.CompetitionCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
@@ -19,7 +16,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Cache storing sport event statuses
  */
-public class SportEventStatusCacheImpl implements SportEventStatusCache {
+public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRouterListener {
+
     private static final Logger logger = LoggerFactory.getLogger(SportEventStatusCacheImpl.class);
 
     /**
@@ -74,18 +72,35 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache {
         return statusDto;
     }
 
-    /**
-     * Adds a new {@link #sportEventStatusCache} entry
-     *
-     * @param id - the unique identifier of the sport event to which the status belongs to
-     * @param status - a {@link SportEventStatusDTO} to store in the cache
-     */
-    @Override
-    public void addSportEventStatus(URN id, SportEventStatusDTO status) {
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(status);
+//    /**
+//     * Adds a new {@link #sportEventStatusCache} entry
+//     *
+//     * @param id - the unique identifier of the sport event to which the status belongs to
+//     * @param status - a {@link SportEventStatusDTO} to store in the cache
+//     */
+//    @Override
+//    public void addSportEventStatus(URN id, SportEventStatusDTO status) {
+//        Preconditions.checkNotNull(id);
+//        Preconditions.checkNotNull(status);
+//
+//        sportEventStatusCache.put(id.toString(), status);
+//    }
 
-        sportEventStatusCache.put(id.toString(), status);
+    /**
+    * Adds a new {@link #sportEventStatusCache} entry
+    *
+    * @param id - the unique identifier of the sport event to which the status belongs to
+    * @param data - a {@link SportEventStatusDTO} to store in the cache
+    * @param source - a source of the data
+    */
+    @Override
+    public void onSportEventStatusFetched(URN id, SportEventStatusDTO data, String source) {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(data);
+
+        logger.info(String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus()));
+
+        sportEventStatusCache.put(id.toString(), data);
     }
 
     /**
@@ -121,7 +136,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache {
         }
 
         if (statusDto != null) {
-            addSportEventStatus(eventId, statusDto);
+            onSportEventStatusFetched(eventId, statusDto, "CompetitionCI");
         }
 
         return statusDto;

@@ -60,9 +60,14 @@ public class SportEntityWriter {
         {
             EventStatus sesStatus = event.getStatus().getStatus();
 
-            if(event.getEventStatus() != sesStatus)
-            {
+            if(event.getEventStatus() != sesStatus) {
                 logger.warn(String.format("%s: status mismatch: ES:%s != SES:%s ", event.getId(), event.getEventStatus(), sesStatus));
+            }
+            if(event.getStatus() instanceof MatchStatus) {
+                MatchStatus matchStatus = (MatchStatus) event.getStatus();
+                if(matchStatus != null && matchStatus.getMatchStatus()!=null) {
+                    logger.debug(String.format("%s: status: ES:%s || SES:%s || MS:%s-%s ", event.getId(), event.getEventStatus(), sesStatus, matchStatus.getMatchStatus().getId(), matchStatus.getMatchStatus().getDescription()));
+                }
             }
         }
 

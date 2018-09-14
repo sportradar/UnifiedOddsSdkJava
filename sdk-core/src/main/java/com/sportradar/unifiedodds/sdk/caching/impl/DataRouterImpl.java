@@ -9,13 +9,13 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
+import com.sportradar.unifiedodds.sdk.entities.HomeAway;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Implements methods used to trigger API fetches
@@ -52,6 +52,7 @@ public class DataRouterImpl implements DataRouter {
             dataListeners.forEach(l -> l.onMatchSummaryEndpointFetched(matchId, endpoint, locale, requester));
             dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
             Optional.ofNullable(endpoint.getSportEvent().getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
+            Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c, endpoint.getStatistics(), provideHomeAway(endpoint.getSportEvent())), "SAPIMatchSummaryEndpoint"));
         } else if (data instanceof SAPIStageSummaryEndpoint) {
             SAPIStageSummaryEndpoint endpoint = ((SAPIStageSummaryEndpoint) data);
 
@@ -59,6 +60,7 @@ public class DataRouterImpl implements DataRouter {
             dataListeners.forEach(l -> l.onStageSummaryEndpointFetched(stageId, endpoint, locale, requester));
             dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
             Optional.ofNullable(endpoint.getSportEvent().getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
+            Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c), "SAPIStageSummaryEndpoint"));
         } else {
             logger.warn("Received unsupported summary endpoint object[{}], requestedId:'{}'", data.getClass(), requestedId);
         }
@@ -218,6 +220,15 @@ public class DataRouterImpl implements DataRouter {
         dataListeners.forEach(l -> l.onMatchTimelineFetched(matchId, endpoint, locale, requester));
         dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
         Optional.ofNullable(endpoint.getSportEvent().getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
+        Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c, null, provideHomeAway(endpoint.getSportEvent())), "SAPIMatchTimelineEndpoint"));
+    }
+
+    @Override
+    public void onSportEventStatusFetched(URN eventId, SportEventStatusDTO data, String source) {
+        Preconditions.checkNotNull(eventId);
+        Preconditions.checkNotNull(data);
+
+        dataListeners.forEach(l -> l.onSportEventStatusFetched(eventId, data, source));
     }
 
     private void dispatchTournamentSchedule(SAPIRaceScheduleEndpoint endpoint, Locale locale) {
@@ -299,6 +310,37 @@ public class DataRouterImpl implements DataRouter {
             URN parsedId = URN.parse(c.getId());
             dataListeners.forEach(l -> l.onTeamFetched(parsedId, c, dataLocale, requester));
         });
+    }
+
+    /**
+     * Provides valid home away competitor identifiers. This method returns valid identifiers only for events of type match.
+     *
+     * @param se the sport event from which the valid competitors should be provided
+     * @return a map containing valid home/away competitor identifiers
+     */
+    private Map<HomeAway, String> provideHomeAway(SAPISportEvent se) {
+        Preconditions.checkNotNull(se);
+
+        if (se.getCompetitors() == null ||
+                (se.getCompetitors() != null && se.getCompetitors().getCompetitor() != null && se.getCompetitors().getCompetitor().size() != 2)) {
+            return null;
+        }
+
+        List<SAPITeamCompetitor> competitors = se.getCompetitors().getCompetitor();
+
+        SAPITeamCompetitor home = competitors.stream().filter(c -> c.getQualifier().equals("home")).findAny().orElse(null);
+        SAPITeamCompetitor away = competitors.stream().filter(c -> c.getQualifier().equals("away")).findAny().orElse(null);
+
+        if (home == null || away == null) {
+            logger.warn("Handling provideHomeAway with invalid competitors data. SportEvent:{}", se.getId());
+            return null;
+        }
+
+        Map<HomeAway, String> result = new HashMap<>(2);
+        result.put(HomeAway.Home, home.getId());
+        result.put(HomeAway.Away, away.getId());
+
+        return result;
     }
 
     public void setDataListeners(List<DataRouterListener> dataListeners) {

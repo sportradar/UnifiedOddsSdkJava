@@ -227,9 +227,9 @@ class MatchCIImpl implements MatchCI {
         this.conditions = data.getSportEventConditions() == null ? null :
                 new SportEventConditionsCI(data.getSportEventConditions(), dataLocale);
 
-        if (data.getSportEventStatus() != null) {
-            this.sportEventStatusDTO = new SportEventStatusDTO(data.getSportEventStatus(), data.getStatistics(), provideHomeAway(data.getSportEvent()));
-        }
+//        if (data.getSportEventStatus() != null) {
+//            this.sportEventStatusDTO = new SportEventStatusDTO(data.getSportEventStatus(), data.getStatistics(), provideHomeAway(data.getSportEvent()));
+//        }
 
         loadedSummaryLocales.add(dataLocale);
     }
@@ -782,9 +782,9 @@ class MatchCIImpl implements MatchCI {
             }
         }
 
-        this.sportEventStatusDTO = new SportEventStatusDTO(summaryEndpoint.getSportEventStatus(), summaryEndpoint.getStatistics(), provideHomeAway(summaryEndpoint.getSportEvent()));
+//        this.sportEventStatusDTO = new SportEventStatusDTO(summaryEndpoint.getSportEventStatus(), summaryEndpoint.getStatistics(), provideHomeAway(summaryEndpoint.getSportEvent()));
 
-        this.eventStatus = this.sportEventStatusDTO.getStatus();
+//        this.eventStatus = this.sportEventStatusDTO.getStatus();
 
         loadedSummaryLocales.add(locale);
     }
@@ -872,10 +872,10 @@ class MatchCIImpl implements MatchCI {
             }
         }
 
-        if(sportEvent.getStatus() != null && !sportEvent.getStatus().isEmpty())
-        {
-            eventStatus = EventStatus.valueOfApiStatusName(sportEvent.getStatus());
-        }
+//        if(sportEvent.getStatus() != null && !sportEvent.getStatus().isEmpty())
+//        {
+//            eventStatus = EventStatus.valueOfApiStatusName(sportEvent.getStatus());
+//        }
 
         constructEventName(locale, sportEvent.getCompetitors());
     }
@@ -905,6 +905,8 @@ class MatchCIImpl implements MatchCI {
      */
     private void internalMerge(SportEventStatusDTO statusDTO) {
         Preconditions.checkNotNull(statusDTO);
+
+        sportEventStatusDTO = statusDTO;
 
         if(statusDTO.getStatus() != null){
             eventStatus = statusDTO.getStatus();
@@ -1001,37 +1003,6 @@ class MatchCIImpl implements MatchCI {
         }
 
         logger.warn("MatchCI[{}] name generation failed, competitors count != 2 but '{}'", id, competitors == null ? null : competitors.getCompetitor().size());
-    }
-
-    /**
-     * Provides valid home away competitor identifiers. This method returns valid identifiers only for events of type match.
-     *
-     * @param se the sport event from which the valid competitors should be provided
-     * @return a map containing valid home/away competitor identifiers
-     */
-    private Map<HomeAway, String> provideHomeAway(SAPISportEvent se) {
-        Preconditions.checkNotNull(se);
-
-        if (se.getCompetitors() == null ||
-                (se.getCompetitors() != null && se.getCompetitors().getCompetitor() != null && se.getCompetitors().getCompetitor().size() != 2)) {
-            return null;
-        }
-
-        List<SAPITeamCompetitor> competitors = se.getCompetitors().getCompetitor();
-
-        SAPITeamCompetitor home = competitors.stream().filter(c -> c.getQualifier().equals("home")).findAny().orElse(null);
-        SAPITeamCompetitor away = competitors.stream().filter(c -> c.getQualifier().equals("away")).findAny().orElse(null);
-
-        if (home == null || away == null) {
-            logger.warn("Handling provideHomeAway with invalid competitors data. SportEvent:{}", id);
-            return null;
-        }
-
-        Map<HomeAway, String> result = new HashMap<>(2);
-        result.put(HomeAway.Home, home.getId());
-        result.put(HomeAway.Away, away.getId());
-
-        return result;
     }
 
     /**

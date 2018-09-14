@@ -554,9 +554,9 @@ class RaceStageCIImpl implements StageCI {
             }
         }
 
-        this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
-
-        this.eventStatus = this.sportEventStatusDTO.getStatus();
+//        this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
+//
+//        this.eventStatus = this.sportEventStatusDTO.getStatus();
 
         cachedSummaryLocales.add(dataLocale);
     }
@@ -678,6 +678,8 @@ class RaceStageCIImpl implements StageCI {
      */
     private void internalMerge(SportEventStatusDTO statusDTO) {
         Preconditions.checkNotNull(statusDTO);
+
+        sportEventStatusDTO = statusDTO;
 
         if(statusDTO.getStatus() != null){
             eventStatus = statusDTO.getStatus();

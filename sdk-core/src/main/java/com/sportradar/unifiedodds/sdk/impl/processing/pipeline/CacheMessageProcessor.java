@@ -9,6 +9,7 @@ import com.sportradar.uf.datamodel.UFBetSettlement;
 import com.sportradar.uf.datamodel.UFBetStop;
 import com.sportradar.uf.datamodel.UFFixtureChange;
 import com.sportradar.uf.datamodel.UFOddsChange;
+import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageProcessor;
@@ -43,7 +44,6 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
      */
     private FeedMessageProcessor nextMessageProcessor;
 
-
     /**
      * Initializes a new {@link CacheMessageProcessor} instance
      *
@@ -57,7 +57,6 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         this.sportEventStatusCache = sportEventStatusCache;
         this.sportEventCache = sportEventCache;
     }
-
 
     /**
      * Processes the provided message. If the {@link #nextMessageProcessor} is defined, the instance will forward the
@@ -133,8 +132,8 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
 
         URN eventId = URN.parse(message.getEventId());
         SportEventStatusDTO sportEventStatusDTO = new SportEventStatusDTO(message.getSportEventStatus());
-        sportEventStatusCache.addSportEventStatus(eventId, sportEventStatusDTO);
-        sportEventCache.addSportEventStatus(eventId, sportEventStatusDTO);
+        ((DataRouterListener) sportEventStatusCache).onSportEventStatusFetched(eventId, sportEventStatusDTO, "UFOddsChange");
+        ((DataRouterListener) sportEventCache).onSportEventStatusFetched(eventId, sportEventStatusDTO, "UFOddsChange");
     }
 
     /**

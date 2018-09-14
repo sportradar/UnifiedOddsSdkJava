@@ -457,7 +457,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
     @Override
     public void onEventBooked(URN id) {
         SportEventCI ifPresent = sportEventsCache.getIfPresent(id);
-        if (ifPresent != null && ifPresent instanceof CompetitionCI) {
+        if (ifPresent instanceof CompetitionCI) {
             ((CompetitionCI) ifPresent).onEventBooked();
         } else {
             logger.warn("Received onEventBooked event for an unsupported event type, id: {}", id);
@@ -547,14 +547,14 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
     }
 
     @Override
-    public void addSportEventStatus(URN id, SportEventStatusDTO sportEventStatusDTO) {
+    public void onSportEventStatusFetched(URN id, SportEventStatusDTO statusDTO, String source) {
         Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(sportEventStatusDTO);
+        Preconditions.checkNotNull(statusDTO);
 
         SportEventCI ifPresent = sportEventsCache.getIfPresent(id);
 
         if (ifPresent != null) {
-            ifPresent.merge(sportEventStatusDTO, null);
+            ifPresent.merge(statusDTO, null);
         }
         // else this will be obtained on getEventStatus from SportEventStatusCache
     }

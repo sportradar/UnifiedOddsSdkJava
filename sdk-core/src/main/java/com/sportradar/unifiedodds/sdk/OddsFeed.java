@@ -370,7 +370,8 @@ public class OddsFeed {
                     Lists.newArrayList(
                             (DataRouterListener) injector.getInstance(SportEventCache.class),
                             (DataRouterListener) injector.getInstance(SportsDataCache.class),
-                            (DataRouterListener) injector.getInstance(ProfileCache.class)
+                            (DataRouterListener) injector.getInstance(ProfileCache.class),
+                            (DataRouterListener) injector.getInstance(SportEventStatusCache.class)
                     ));
         }
 
