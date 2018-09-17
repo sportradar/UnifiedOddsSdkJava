@@ -1,0 +1,35 @@
+---
+sportradar:
+  sdk:
+    uf:
+      accessToken: test-token
+      nodeId: 46
+      maxInactivitySeconds: 25
+      maxRecoveryTime: 60
+      defaultLocale: it
+      desiredLocales:
+        - fr
+        - de
+        - en
+      messaging:
+        host: test-msg-host
+        port: 7777
+        username: msg-uname
+        password: msg-pass
+        virtualHost: msg-vhost
+      useMessagingSsl: true
+      apiHost: api-host
+      useApiSsl: true
+      disabledProducers:
+        - 5
+        - 6
+        - 7
+        - 8
+      exceptionHandlingStrategy: throw
+      cleanTrafficLogEntries: true
+      httpClientTimeout: 10
+      simpleVariantCaching: true
+      schedulerTasksToSkip:
+        - task1
+        - task2
+        - task3

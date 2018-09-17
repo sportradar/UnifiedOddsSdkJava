@@ -38,12 +38,14 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     private final SDKProducerManager producerManager;
     private final SDKProducerStatusListener producerStatusListener;
     private final SDKEventRecoveryStatusListener eventRecoveryStatusListener;
+    private final SnapshotRequestManager snapshotRequestManager;
     private final HttpHelper httpHelper;
     private final long maxRecoveryExecutionTime;
     private final ReentrantLock onAliveLock = new ReentrantLock();
     private final ReentrantLock onSnapshotCompleteLock = new ReentrantLock();
     private final SDKTaskScheduler taskScheduler;
     private final Map<String, String> sdkMdcContextDescription;
+    private final int bookmakerId;
     private final SequenceGenerator sequenceGenerator;
     private final TimeUtils timeUtils;
     private boolean initialized;
@@ -53,6 +55,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                         SDKProducerManager producerManager,
                         SDKProducerStatusListener producerStatusListener,
                         SDKEventRecoveryStatusListener eventRecoveryStatusListener,
+                        SnapshotRequestManager snapshotRequestManager,
                         SDKTaskScheduler taskScheduler,
                         HttpHelper httpHelper,
                         FeedMessageFactory messageFactory,
@@ -63,6 +66,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkNotNull(producerStatusListener);
         Preconditions.checkNotNull(eventRecoveryStatusListener);
+        Preconditions.checkNotNull(snapshotRequestManager);
         Preconditions.checkNotNull(taskScheduler);
         Preconditions.checkNotNull(httpHelper);
         Preconditions.checkNotNull(messageFactory);
@@ -74,12 +78,14 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         this.producerManager = producerManager;
         this.producerStatusListener = producerStatusListener;
         this.eventRecoveryStatusListener = eventRecoveryStatusListener;
+        this.snapshotRequestManager = snapshotRequestManager;
         this.httpHelper = httpHelper;
         this.messageFactory = messageFactory;
         this.maxRecoveryExecutionTime =
                 TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionMinutes(), TimeUnit.MINUTES);
         this.taskScheduler = taskScheduler;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
+        this.bookmakerId = whoAmIReader.getBookmakerId();
         this.sequenceGenerator = sequenceGenerator;
         this.timeUtils = timeUtils;
     }
@@ -186,16 +192,20 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 String msg = String.format("Recovery completed for %s - request %d - duration: %s", pi, requestId, between);
                 logger.info(msg);
 
+                try {
+                    snapshotRequestManager.requestCompleted(
+                            new SnapshotCompletedImpl(bookmakerId, pi.getProducerId(), requestId)
+                    );
+                } catch (Exception e) {
+                    logger.warn("An exception occurred while notifying the SnapshotRequestManager for a completed request, exc:", e);
+                }
+
                 if (pi.getRecoveryState() == RecoveryState.Interrupted) {
                     // restart the recovery from the last valid timestamp
                     logger.info("Recovery[{}] completed with interruption, repeating recovery from last valid alive gen timestamp[{}]",
                             requestId, pi.getLastValidAliveGenTimestampInRecovery());
 
-                    long now = timeUtils.now();
-                    int recoveryId = sequenceGenerator.getNext();
-                    pi.setProducerRecoveryState(recoveryId, now, RecoveryState.Started);
-
-                    initiateSnapshotRequest(pi, pi.getLastValidAliveGenTimestampInRecovery(), recoveryId);
+                    scheduleSnapshotRequest(pi, pi.getLastValidAliveGenTimestampInRecovery());
                     return;
                 }
 
@@ -477,11 +487,30 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             }
         }
 
+        scheduleSnapshotRequest(pi, recoveryFrom);
+    }
+
+    private void scheduleSnapshotRequest(ProducerInfo pi, long recoveryFrom) {
         long now = timeUtils.now();
         int recoveryId = sequenceGenerator.getNext();
         pi.setProducerRecoveryState(recoveryId, now, RecoveryState.Started);
 
-        initiateSnapshotRequest(pi, recoveryFrom, recoveryId);
+        logger.info("Scheduling recovery request for {}, recoveryId: {}, recoveryFrom: {}", pi, recoveryId, recoveryFrom);
+
+        try {
+            snapshotRequestManager.scheduleRequest(
+                    new SnapshotRequestImpl(bookmakerId, pi.getProducerId(), recoveryId, recoveryFrom, onRecoveryApproved(pi, recoveryFrom, recoveryId))
+            );
+        } catch (Exception e) {
+            logger.error("Failed to schedule recovery request for {}, recoveryId: {}. Exc: {}", pi, recoveryId, e);
+        }
+    }
+
+    private SnapshotRequestImpl.ScheduleApproval onRecoveryApproved(ProducerInfo pi, long recoveryFrom, Integer recoveryId) {
+        return () -> {
+            logger.info("Recovery request[{}] approved", recoveryId);
+            initiateSnapshotRequest(pi, recoveryFrom, recoveryId);
+        };
     }
 
     private void initiateSnapshotRequest(ProducerInfo producerInfo, long fromTimestamp, int recoveryId) {

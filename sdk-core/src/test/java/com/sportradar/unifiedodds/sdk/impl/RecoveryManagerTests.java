@@ -89,6 +89,7 @@ public class RecoveryManagerTests {
                 producerManager,
                 producerStatusListener,
                 mockedEventRecoveryListener,
+                new DefaultSnapshotRequestManager(),
                 taskScheduler,
                 mockedHttpHelper,
                 feedMessageFactory,
