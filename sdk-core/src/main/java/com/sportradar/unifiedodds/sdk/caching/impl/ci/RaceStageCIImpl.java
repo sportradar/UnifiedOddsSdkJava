@@ -135,12 +135,17 @@ class RaceStageCIImpl implements StageCI {
     /**
      * A {@link List} of locales that are already fully cached
      */
-    private List<Locale> cachedSummaryLocales = Collections.synchronizedList(new ArrayList<>());
+    private List<Locale> loadedSummaryLocales = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * A {@link List} of locales that are already fully cached
      */
-    private List<Locale> cachedFixtureLocales = Collections.synchronizedList(new ArrayList<>());
+    private List<Locale> loadedFixtureLocales = Collections.synchronizedList(new ArrayList<>());
+
+    /**
+     * A {@link List} indicating which event competitors translations were already fetched
+     */
+    private final List<Locale> loadedCompetitorLocales = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * An {@link ReentrantLock} used to synchronize summary request operations
@@ -151,7 +156,6 @@ class RaceStageCIImpl implements StageCI {
      * An {@link ReentrantLock} used to synchronize fixture request operations
      */
     private final ReentrantLock fixtureRequest = new ReentrantLock();
-
 
     RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(id);
@@ -185,6 +189,7 @@ class RaceStageCIImpl implements StageCI {
         this.competitorIds = endpointData.getCompetitors() == null ? null :
                 endpointData.getCompetitors().getCompetitor().stream()
                         .map(c -> URN.parse(c.getId())).collect(Collectors.toList());
+        loadedCompetitorLocales.add(dataLocale);
 
         this.childStagesIds = endpointData.getRaces() == null ? null :
                 endpointData.getRaces().getSportEvent().stream()
@@ -211,11 +216,11 @@ class RaceStageCIImpl implements StageCI {
                 null :
                 new SportEventConditionsCI(endpointData.getSportEvent().getSportEventConditions(), dataLocale);
 
-        if (endpointData.getSportEventStatus() != null) {
-            this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
-        }
+//        if (endpointData.getSportEventStatus() != null) {
+//            this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
+//        }
 
-        cachedSummaryLocales.add(dataLocale);
+        loadedSummaryLocales.add(dataLocale);
     }
 
     RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIFixture endpointData, Locale dataLocale) {
@@ -226,7 +231,7 @@ class RaceStageCIImpl implements StageCI {
 
         this.venue = endpointData.getVenue() == null ? null : new VenueCI(endpointData.getVenue(), dataLocale);
 
-        cachedFixtureLocales.add(dataLocale);
+        loadedFixtureLocales.add(dataLocale);
     }
 
     RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale) {
@@ -278,7 +283,7 @@ class RaceStageCIImpl implements StageCI {
             return ImmutableMap.copyOf(sportEventNames);
         }
 
-        if (cachedSummaryLocales.containsAll(locales)) {
+        if (loadedSummaryLocales.containsAll(locales)) {
             return ImmutableMap.copyOf(sportEventNames);
         }
 
@@ -295,7 +300,7 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public boolean hasTranslationsLoadedFor(List<Locale> localeList) {
-        return cachedSummaryLocales.containsAll(localeList) && cachedFixtureLocales.containsAll(localeList);
+        return loadedSummaryLocales.containsAll(localeList) && loadedFixtureLocales.containsAll(localeList);
     }
 
     /**
@@ -305,7 +310,11 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public URN getParentStageId() {
-        if (parentStageId != null || !cachedSummaryLocales.isEmpty()) {
+        if (parentStageId != null) {
+            return parentStageId;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return parentStageId;
         }
 
@@ -321,9 +330,14 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public List<URN> getStagesIds() {
-        if (childStagesIds != null || !cachedSummaryLocales.isEmpty()) {
+        if (childStagesIds != null) {
+            return ImmutableList.copyOf(childStagesIds);
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return childStagesIds == null ? null : ImmutableList.copyOf(childStagesIds);
         }
+
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
@@ -337,7 +351,11 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public StageType getStageType() {
-        if (stageType != null || !cachedSummaryLocales.isEmpty()) {
+        if (stageType != null) {
+            return stageType;
+        }
+
+        if (loadedSummaryLocales.isEmpty()) {
             return stageType;
         }
 
@@ -353,7 +371,11 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public URN getCategoryId() {
-        if (categoryId != null || !cachedSummaryLocales.isEmpty()) {
+        if (categoryId != null) {
+            return categoryId;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return categoryId;
         }
 
@@ -369,7 +391,7 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public BookingStatus getBookingStatus() {
-        if (!cachedFixtureLocales.isEmpty()) {
+        if (!loadedFixtureLocales.isEmpty()) {
             return bookingStatus;
         }
 
@@ -388,7 +410,8 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public List<URN> getCompetitorIds(List<Locale> locales) {
-        if (cachedSummaryLocales.containsAll(locales)) {
+
+        if (loadedCompetitorLocales.containsAll(locales)) {
             return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
         }
 
@@ -410,7 +433,7 @@ class RaceStageCIImpl implements StageCI {
             return venue;
         }
 
-        if (cachedSummaryLocales.containsAll(locales)) {
+        if (loadedSummaryLocales.containsAll(locales)) {
             return venue;
         }
 
@@ -428,7 +451,7 @@ class RaceStageCIImpl implements StageCI {
     @Override
     public SportEventConditionsCI getConditions(List<Locale> locales) {
         // conditions available only on summary locales
-        if (cachedSummaryLocales.containsAll(locales)) {
+        if (loadedSummaryLocales.containsAll(locales)) {
             return conditions;
         }
 
@@ -469,7 +492,11 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public Date getScheduled() {
-        if (scheduled != null || !cachedSummaryLocales.isEmpty()) {
+        if (scheduled != null) {
+            return scheduled;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return scheduled;
         }
 
@@ -487,7 +514,11 @@ class RaceStageCIImpl implements StageCI {
      */
     @Override
     public Date getScheduledEnd() {
-        if (scheduledEnd != null || !cachedSummaryLocales.isEmpty()) {
+        if (scheduledEnd != null) {
+            return scheduledEnd;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return scheduledEnd;
         }
 
@@ -531,7 +562,7 @@ class RaceStageCIImpl implements StageCI {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        if (cachedSummaryLocales.contains(dataLocale)) {
+        if (loadedSummaryLocales.contains(dataLocale)) {
             logger.info("RaceStageCI [{}] already contains summary info for language {}", id, dataLocale);
         }
 
@@ -553,7 +584,7 @@ class RaceStageCIImpl implements StageCI {
             }
         }
 
-        cachedSummaryLocales.add(dataLocale);
+        loadedSummaryLocales.add(dataLocale);
     }
 
     /**
@@ -566,7 +597,7 @@ class RaceStageCIImpl implements StageCI {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        if (cachedFixtureLocales.contains(dataLocale)) {
+        if (loadedFixtureLocales.contains(dataLocale)) {
             logger.info("RaceStageCI [{}] already contains fixture info for language {}", id, dataLocale);
         }
 
@@ -580,7 +611,7 @@ class RaceStageCIImpl implements StageCI {
             }
         }
 
-        cachedFixtureLocales.add(dataLocale);
+        loadedFixtureLocales.add(dataLocale);
     }
 
     /**
@@ -616,6 +647,7 @@ class RaceStageCIImpl implements StageCI {
         if (sportEvent.getCompetitors() != null && sportEvent.getCompetitors().getCompetitor() != null) {
             competitorIds = sportEvent.getCompetitors().getCompetitor().stream()
                     .map(c -> URN.parse(c.getId())).collect(Collectors.toList());
+            loadedCompetitorLocales.add(locale);
         }
 
         if (sportEvent.getRaces() != null) {
@@ -697,7 +729,7 @@ class RaceStageCIImpl implements StageCI {
     private void requestMissingFixtureData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(loadedFixtureLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
             return;
         }
@@ -705,7 +737,7 @@ class RaceStageCIImpl implements StageCI {
         fixtureRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
+            missingLocales = SdkHelper.findMissingLocales(loadedFixtureLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }
@@ -736,7 +768,7 @@ class RaceStageCIImpl implements StageCI {
     private void requestMissingSummaryData(List<Locale> requiredLocales, boolean forceFetch) {
         Preconditions.checkNotNull(requiredLocales);
 
-        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(loadedSummaryLocales, requiredLocales);
         if (missingLocales.isEmpty() && !forceFetch) {
             return;
         }
@@ -744,7 +776,7 @@ class RaceStageCIImpl implements StageCI {
         summaryRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = forceFetch ? requiredLocales : SdkHelper.findMissingLocales(cachedSummaryLocales, requiredLocales);
+            missingLocales = forceFetch ? requiredLocales : SdkHelper.findMissingLocales(loadedSummaryLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }
