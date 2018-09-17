@@ -28,9 +28,9 @@ public interface OutcomeOdds extends OutcomeProbabilities {
 
     /**
      * Gets the odds in specified format
+     * Note: default method will be merged in next major version scheduled for January 2019
      * @param oddsDisplayType display type of the odds (default: @link OddsDisplayType.Decimal)
      * @return the odds for this outcome in this market in wanted format
-     * @apiNote default method will be merged in next major version scheduled for January 2019
      */
     default Double getOdds(OddsDisplayType oddsDisplayType)
     {

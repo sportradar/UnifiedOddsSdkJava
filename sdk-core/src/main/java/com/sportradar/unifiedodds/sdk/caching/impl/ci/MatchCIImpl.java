@@ -146,6 +146,11 @@ class MatchCIImpl implements MatchCI {
     private final List<Locale> loadedSummaryLocales = Collections.synchronizedList(new ArrayList<>());
 
     /**
+     * A {@link List} indicating which event competitors translations were already fetched
+     */
+    private final List<Locale> loadedCompetitorLocales = Collections.synchronizedList(new ArrayList<>());
+
+    /**
      * A {@link Map} storing the available sport event names
      */
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
@@ -304,7 +309,11 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public URN getTournamentId() {
-        if (tournamentId != null || !loadedSummaryLocales.isEmpty()) {
+        if (tournamentId != null) {
+            return tournamentId;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return tournamentId;
         }
 
@@ -395,7 +404,8 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public List<URN> getCompetitorIds(List<Locale> locales) {
-        if (loadedSummaryLocales.containsAll(locales)) {
+
+        if (loadedCompetitorLocales.containsAll(locales)) {
             return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
         }
 
@@ -411,6 +421,10 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public Map<URN, String> getCompetitorQualifiers() {
+        if (competitorQualifiers != null && !competitorQualifiers.isEmpty()) {
+            return copyOf(competitorQualifiers);
+        }
+
         if (!loadedSummaryLocales.isEmpty()) {
             return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
         }
@@ -512,7 +526,11 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public Date getScheduled() {
-        if (scheduled != null || !loadedSummaryLocales.isEmpty()) {
+        if (scheduled != null) {
+            return scheduled;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return scheduled;
         }
 
@@ -530,7 +548,11 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public Date getScheduledEnd() {
-        if (scheduledEnd != null || !loadedSummaryLocales.isEmpty()) {
+        if (scheduledEnd != null) {
+            return scheduledEnd;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
             return scheduledEnd;
         }
 
@@ -583,6 +605,10 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+        if (competitorsReferences != null) {
+            return ImmutableMap.copyOf(competitorsReferences);
+        }
+
         if (!loadedSummaryLocales.isEmpty()) {
             return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
         }
@@ -616,6 +642,7 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public void onEventBooked() {
+
         bookingStatus = BookingStatus.Booked;
     }
 
@@ -636,8 +663,7 @@ class MatchCIImpl implements MatchCI {
         this.tournamentId = sportEvent.getTournament() == null ? null :
                 URN.parse(sportEvent.getTournament().getId());
         this.tournamentRound = sportEvent.getTournamentRound() == null ? null :
-                new LoadableRoundCIImpl(
-                        sportEvent.getTournamentRound(), isFixtureEndpoint, currentLocale, this, dataRouterManager, defaultLocale, exceptionHandlingStrategy
+                new LoadableRoundCIImpl(sportEvent.getTournamentRound(), isFixtureEndpoint, currentLocale, this, dataRouterManager, defaultLocale, exceptionHandlingStrategy
                 );
         this.season = sportEvent.getSeason() == null ? null :
                 new SeasonCI(sportEvent.getSeason(), currentLocale);
@@ -939,13 +965,15 @@ class MatchCIImpl implements MatchCI {
 
             AddOrUpdateReferenceId(parsedId, inputC.getReferenceIds());
         });
+
+        loadedCompetitorLocales.add(locale);
     }
 
     /**
      * Add or update existing competitor reference
+     * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
      * @param competitorId competitor id with which is associated reference
      * @param reference associated reference
-     * @apiNote reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
      */
     private void AddOrUpdateReferenceId(URN competitorId, SAPICompetitorReferenceIds reference)
     {

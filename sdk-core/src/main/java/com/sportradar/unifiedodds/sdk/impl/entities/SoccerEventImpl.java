@@ -32,7 +32,6 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
      */
     private SoccerStatus status;
 
-
     /**
      * Initializes a new instance of the {@link SoccerEventImpl}
      *
@@ -51,7 +50,6 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
 
         this.sportEventStatusFactory = statusFactory;
     }
-
 
     /**
      * Returns a {@link SoccerStatus} containing information about the progress of the soccer match

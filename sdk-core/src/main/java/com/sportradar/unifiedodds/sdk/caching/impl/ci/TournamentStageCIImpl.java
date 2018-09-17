@@ -235,7 +235,11 @@ class TournamentStageCIImpl implements StageCI {
      */
     @Override
     public URN getCategoryId() {
-        if (categoryId != null || !cachedLocales.isEmpty()) {
+        if (categoryId != null) {
+            return categoryId;
+        }
+
+        if (!cachedLocales.isEmpty()) {
             return categoryId;
         }
 
@@ -328,6 +332,10 @@ class TournamentStageCIImpl implements StageCI {
      */
     @Override
     public Date getScheduled() {
+        if (scheduled != null) {
+            return scheduled;
+        }
+
         if (!cachedLocales.isEmpty()) {
             return scheduled;
         }
@@ -346,6 +354,10 @@ class TournamentStageCIImpl implements StageCI {
      */
     @Override
     public Date getScheduledEnd() {
+        if (scheduledEnd != null) {
+            return scheduledEnd;
+        }
+
         if (!cachedLocales.isEmpty()) {
             return scheduledEnd;
         }
