@@ -971,9 +971,9 @@ class MatchCIImpl implements MatchCI {
 
     /**
      * Add or update existing competitor reference
+     * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
      * @param competitorId competitor id with which is associated reference
      * @param reference associated reference
-     * @apiNote reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
      */
     private void AddOrUpdateReferenceId(URN competitorId, SAPICompetitorReferenceIds reference)
     {
