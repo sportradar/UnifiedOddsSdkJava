@@ -1,16 +1,24 @@
 ### Unified Feed SDK 2.x changelog
 
-**2.0.14 (2018-08-24)
+**2.0.15 (2018-09-17)**
+* added new event status: EventStatus.Interrupted
+* updated api xsd schemas
+* added handling of PlayerCompetitor available in Competitor.Players
+* changed return type of method Competitor.getPlayers() to list of Player (to support players and competitors)
+* sport event EventStatus exposed directly on Competition.getEventStatus()
+* optimized data fetching on sport event (data from schedule for a day is not fetched again)
+
+**2.0.14 (2018-08-24)**
 * Added support for getting outcome odds in different formats - getOdds(OddsDisplayType)
 * AMQP threads named based on Bookmaker/nodeId
 * Fix: added missing support for node_id on snapshot_complete routing keys
 * Fix: added missing null checks for getMappings
 * Fix: added null check when fetching sportId
 
-**2.0.13 (2018-08-02)
+**2.0.13 (2018-08-02)**
 * Fix: competitor references are saved per sport event
 
-**2.0.12 (2018-07-25)
+**2.0.12 (2018-07-25)**
 * added check for feed opened before closing its components
 * added purging of Draw event data on BetStop and BetSettlement
 * added support for 2 routing keys for VirtualSports message interest
