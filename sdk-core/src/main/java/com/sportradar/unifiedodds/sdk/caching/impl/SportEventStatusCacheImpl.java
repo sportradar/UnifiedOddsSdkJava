@@ -84,9 +84,13 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
 
-        logger.info(String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus()));
-
-        sportEventStatusCache.put(id.toString(), data);
+        // sportEventStatus from oddsChange message has priority
+        if(source.equalsIgnoreCase("UFOddsChange") || sportEventStatusCache.getIfPresent(id) == null) {
+            logger.debug(String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus()));
+            sportEventStatusCache.put(id.toString(), data);
+            return;
+        }
+        logger.debug(String.format("Received SES for %s from %s with EventStatus:%s. Ignored", id, source, data.getStatus()));
     }
 
     /**

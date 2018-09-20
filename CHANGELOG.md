@@ -139,7 +139,6 @@
 * bug fixes
 * examples update
 
-
 **2.0.0 - BETA-4 (2017-11-06)**
 * SportEvent hierarchy overhaul - 'stage' support
 * added support for probability endpoints
@@ -186,7 +185,6 @@
 * Added support for accessing sports without tournaments (SportsInfoManager.getSports())
 * And other fixes
 * NOTE: There will be minor changes in the SportEventStatus interface(including the addition of match statistics)
-
 
 **2.0.0.0 - ALPHA (2017-07-25)**
 * Initial release
