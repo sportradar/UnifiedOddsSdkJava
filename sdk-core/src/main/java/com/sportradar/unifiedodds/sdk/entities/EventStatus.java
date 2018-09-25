@@ -107,6 +107,7 @@ public enum EventStatus {
             case ENDED:
                 return Ended;
             case FINALIZED:
+                return Finished;
             default:
                 return Unknown;
         }
