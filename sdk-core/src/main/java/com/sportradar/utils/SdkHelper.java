@@ -55,7 +55,7 @@ public final class SdkHelper {
      * Get the abbreviation from the input string
      * @param input input text to be abbreviated
      * @param length of the abbreviation
-     * @return the abbreviated input string in upper case
+     * @return the abbreviated input string in upper case (it does not return null)
      */
     public static String getAbbreviationFromName(String input, int length)
     {
@@ -65,7 +65,7 @@ public final class SdkHelper {
         }
         if (input == null || input.isEmpty())
         {
-            return null;
+            return "";
         }
         return input.length() > length ? input.substring(0, length).toUpperCase() : input.toUpperCase();
     }
