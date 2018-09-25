@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.entities.SoccerEvent;
 import com.sportradar.unifiedodds.sdk.entities.Tournament;
+import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
@@ -17,6 +18,7 @@ import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Provides methods used to access specific soccer event information
@@ -61,9 +63,27 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
     @Override
     public SoccerStatus getStatus() {
         if (status == null) {
-            status = sportEventStatusFactory.buildSportEventStatus(id, SoccerStatus.class);
+            status = sportEventStatusFactory.buildSportEventStatus(id, SoccerStatus.class, true);
         }
 
         return status;
+    }
+
+    /**
+     * Returns a {@link SoccerStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     *
+     * @return - a {@link SoccerStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     */
+    @Override
+    public Optional<CompetitionStatus> getStatusIfPresent()  {
+        if (status == null) {
+            status = sportEventStatusFactory.buildSportEventStatus(id, SoccerStatus.class, false);
+        }
+        if(status == null) {
+            return Optional.empty();
+        }
+        return Optional.of(status);
     }
 }

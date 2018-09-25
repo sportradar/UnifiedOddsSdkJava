@@ -38,14 +38,19 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
      *
      * @param eventId a {@link URN} representing the id of the sport event whose status to build
      * @param targetClass the expected return type class
+     * @param makeApiCall should the API call be made if necessary
      * @return a {@link CompetitionStatus} representing the status of the specified sport event
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass) {
+    public <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass, boolean makeApiCall) {
         Preconditions.checkNotNull(eventId);
 
-        SportEventStatusDTO statusDto = provideSportEventStatusDTO(eventId);
+        SportEventStatusDTO statusDto = provideSportEventStatusDTO(eventId, makeApiCall);
+
+        if(statusDto == null) {
+            return (T) null;
+        }
 
         if (targetClass == SoccerStatus.class) {
             return (T) new SoccerStatusImpl(statusDto, namedValuesProvider.getMatchStatuses());
@@ -56,9 +61,9 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
         }
     }
 
-    private SportEventStatusDTO provideSportEventStatusDTO(URN eventId) {
+    private SportEventStatusDTO provideSportEventStatusDTO(URN eventId, boolean makeApiCall) {
         Preconditions.checkNotNull(eventId);
 
-        return sportEventStatusCache.getSportEventStatusDTO(eventId);
+        return sportEventStatusCache.getSportEventStatusDTO(eventId, makeApiCall);
     }
 }

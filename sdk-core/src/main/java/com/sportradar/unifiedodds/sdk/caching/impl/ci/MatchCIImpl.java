@@ -228,12 +228,9 @@ class MatchCIImpl implements MatchCI {
 
         constructWithSportEventData(data.getSportEvent(), dataLocale, false);
 
-        this.conditions = data.getSportEventConditions() == null ? null :
-                new SportEventConditionsCI(data.getSportEventConditions(), dataLocale);
-
-//        if (data.getSportEventStatus() != null) {
-//            this.sportEventStatusDTO = new SportEventStatusDTO(data.getSportEventStatus(), data.getStatistics(), provideHomeAway(data.getSportEvent()));
-//        }
+        this.conditions = data.getSportEventConditions() == null
+                ? null
+                : new SportEventConditionsCI(data.getSportEventConditions(), dataLocale);
 
         loadedSummaryLocales.add(dataLocale);
     }

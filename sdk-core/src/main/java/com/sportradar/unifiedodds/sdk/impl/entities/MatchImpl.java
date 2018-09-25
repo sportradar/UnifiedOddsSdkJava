@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -101,10 +102,27 @@ public class MatchImpl extends SportEventImpl implements Match {
     @Override
     public MatchStatus getStatus() {
         if (status == null) {
-            status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class);
+            status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class, true);
         }
-
         return status;
+    }
+
+    /**
+     * Returns a {@link MatchStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     *
+     * @return - a {@link MatchStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     */
+    @Override
+    public Optional<CompetitionStatus> getStatusIfPresent()  {
+        if (status == null) {
+            status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class, false);
+        }
+        if(status == null) {
+            return Optional.empty();
+        }
+        return Optional.of(status);
     }
 
     /**
@@ -127,7 +145,7 @@ public class MatchImpl extends SportEventImpl implements Match {
         {
             if(status == null)
             {
-                status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class);
+                status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class, true);
             }
             if(status != null)
             {

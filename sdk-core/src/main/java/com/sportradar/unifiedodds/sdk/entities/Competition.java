@@ -6,9 +6,9 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 
-import java.awt.dnd.InvalidDnDOperationException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Defines methods implemented by classes representing sport events regardless to which sport they belong
@@ -32,6 +32,17 @@ public interface Competition extends SportEvent {
      * associated with the current instance
      */
     CompetitionStatus getStatus();
+
+    /**
+     * Returns a {@link CompetitionStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     *
+     * @return - a {@link CompetitionStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     */
+    default Optional<CompetitionStatus> getStatusIfPresent()  {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns a {@link BookingStatus} enum member providing booking status of the current instance

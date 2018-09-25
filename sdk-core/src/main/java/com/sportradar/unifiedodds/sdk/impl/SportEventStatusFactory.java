@@ -17,7 +17,8 @@ public interface SportEventStatusFactory {
      * @param eventId a {@link URN} representing the id of the sport event whose status to build
      * @param targetClass the expected return type class
      * @param <T> the expected return type
+     * @param makeApiCall should the API call be made if necessary
      * @return a {@link CompetitionStatus} representing the status of the specified sport event
      */
-    <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass);
+    <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass, boolean makeApiCall);
 }

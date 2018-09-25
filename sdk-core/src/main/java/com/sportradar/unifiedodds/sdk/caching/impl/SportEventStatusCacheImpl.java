@@ -51,15 +51,16 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * the specified event is not found, a {@link SportEventStatusDTO} instance indicating a 'not started' event is returned.
      *
      * @param eventId the event identifier
+     * @param makeApiCall should the API call be made if necessary
      * @return a {@link SportEventStatusDTO} instance describing the last known event status
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO(URN eventId) {
+    public SportEventStatusDTO getSportEventStatusDTO(URN eventId, boolean makeApiCall) {
         Preconditions.checkNotNull(eventId);
 
         SportEventStatusDTO statusDto = sportEventStatusCache.getIfPresent(eventId.toString());
 
-        if (statusDto != null) {
+        if (statusDto != null || !makeApiCall) {
             return statusDto;
         }
 
@@ -90,7 +91,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
             sportEventStatusCache.put(id.toString(), data);
             return;
         }
-        logger.debug(String.format("Received SES for %s from %s with EventStatus:%s. Ignored", id, source, data.getStatus()));
+        logger.debug(String.format("Received SES for %s from %s with EventStatus:%s (ignored)", id, source, data.getStatus()));
     }
 
     /**

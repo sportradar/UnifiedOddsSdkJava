@@ -16,9 +16,10 @@ public interface SportEventStatusCache {
      * the specified event is not found, a {@link SportEventStatusDTO} instance indicating a 'not started' event is returned.
      *
      * @param eventId the event identifier
+     * @param makeApiCall should the API call be made if necessary
      * @return a {@link SportEventStatusDTO} instance describing the last known event status
      */
-    SportEventStatusDTO getSportEventStatusDTO(URN eventId);
+    SportEventStatusDTO getSportEventStatusDTO(URN eventId, boolean makeApiCall);
 
     /**
      * Purges the sport event status associated with the provided event id

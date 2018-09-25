@@ -14,7 +14,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
-import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
@@ -23,10 +22,7 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Represents a race type of sport event (more than two competitors)
@@ -243,10 +239,28 @@ public class StageImpl extends SportEventImpl implements Stage {
         }
 
         if (status == null) {
-            status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class);
+            status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class, true);
         }
 
         return status;
+    }
+
+    /**
+     * Returns a {@link CompetitionStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     *
+     * @return - a {@link CompetitionStatus} containing information about the progress of the sport event
+     * associated with the current instance if already cached (does not make API call)
+     */
+    @Override
+    public Optional<CompetitionStatus> getStatusIfPresent()  {
+        if (status == null) {
+            status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class, false);
+        }
+        if(status == null) {
+            return Optional.empty();
+        }
+        return Optional.of(status);
     }
 
     /**
@@ -286,7 +300,7 @@ public class StageImpl extends SportEventImpl implements Stage {
         {
             if(status == null)
             {
-                status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class);
+                status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class, true);
             }
             if(status != null)
             {
