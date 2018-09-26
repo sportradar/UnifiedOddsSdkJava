@@ -15,7 +15,6 @@ public class EventPlayerAssistCI extends EventPlayerCI {
 
     private final String type;
 
-
     EventPlayerAssistCI(SAPIEventPlayerAssist assistData) {
         super(assistData);
 
@@ -23,7 +22,6 @@ public class EventPlayerAssistCI extends EventPlayerCI {
 
         type = assistData.getType();
     }
-
 
     public String getType() {
         return type;

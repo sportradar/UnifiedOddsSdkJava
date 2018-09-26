@@ -80,8 +80,7 @@ public interface Competition extends SportEvent {
      * Get the event status
      * @return the event status
      */
-    default EventStatus getEventStatus()
-    {
+    default EventStatus getEventStatus() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

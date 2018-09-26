@@ -17,14 +17,12 @@ public class EventPlayerCI {
     private final URN id;
     private final String name;
 
-
     EventPlayerCI(SAPIEventPlayer playerData) {
         Preconditions.checkNotNull(playerData);
 
         id = URN.parse(playerData.getId());
         name = playerData.getName();
     }
-
 
     public URN getId() {
         return id;

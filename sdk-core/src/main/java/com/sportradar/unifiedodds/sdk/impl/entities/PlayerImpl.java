@@ -27,7 +27,6 @@ public class PlayerImpl implements Player {
      */
     private final Map<Locale, String> names;
 
-
     /**
      * Initializes a new instance of the {@link PlayerImpl} class
      *

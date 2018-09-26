@@ -35,7 +35,8 @@ public class TimelineEventCI {
     private final List<EventPlayerAssistCI> assists;
     private final EventPlayerCI goalScorer;
     private final EventPlayerCI player;
-
+    private final Integer matchStatusCode;
+    private final String matchClock;
 
     TimelineEventCI(SAPIBasicEvent event) {
         Preconditions.checkNotNull(event);
@@ -61,12 +62,11 @@ public class TimelineEventCI {
 
         goalScorer = event.getGoalScorer() == null ? null : new EventPlayerCI(event.getGoalScorer());
         player = event.getPlayer() == null ? null : new EventPlayerCI(event.getPlayer());
+        matchStatusCode = event.getMatchStatusCode() == null ? null : event.getMatchStatusCode();
+        matchClock = event.getMatchClock();
     }
 
-
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 
     public Double getAwayScore() {
         return awayScore;
@@ -120,9 +120,7 @@ public class TimelineEventCI {
         return time;
     }
 
-    public List<EventPlayerAssistCI> getAssists() {
-        return assists;
-    }
+    public List<EventPlayerAssistCI> getAssists() { return assists; }
 
     public EventPlayerCI getGoalScorer() {
         return goalScorer;
@@ -130,5 +128,13 @@ public class TimelineEventCI {
 
     public EventPlayerCI getPlayer() {
         return player;
+    }
+
+    public Integer getMatchStatusCode() {
+        return matchStatusCode;
+    }
+
+    public String getMatchClock() {
+        return matchClock;
     }
 }

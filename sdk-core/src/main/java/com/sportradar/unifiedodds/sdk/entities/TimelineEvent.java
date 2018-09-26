@@ -5,9 +5,10 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import java.util.Date;
+import java.util.List;
 
 /**
- * Defines methods used to access timeline vent properties
+ * Defines methods used to access timeline event properties
  */
 public interface TimelineEvent {
     /**
@@ -18,18 +19,18 @@ public interface TimelineEvent {
     int getId();
 
     /**
-     * Returns the timeline event away score
-     *
-     * @return the away score
-     */
-    Double getAwayScore();
-
-    /**
      * Returns the timeline event home score
      *
      * @return the home score
      */
     Double getHomeScore();
+
+    /**
+     * Returns the timeline event away score
+     *
+     * @return the away score
+     */
+    Double getAwayScore();
 
     /**
      * Returns the timeline event match time
@@ -65,4 +66,103 @@ public interface TimelineEvent {
      * @return the timeline event time
      */
     Date getTime();
+
+    /**
+     * Returns the period to which the timeline event belongs to
+     *
+     * @return the period
+     */
+    default String getPeriod() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the points
+     *
+     * @return the points
+     */
+    default String getPoints() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the stoppage time
+     *
+     * @return the stoppage time
+     */
+    default String getStoppageTime() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the value
+     *
+     * @return the value
+     */
+    default String getValue() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the X value
+     *
+     * @return the X value
+     */
+    default Integer getX() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the Y value
+     *
+     * @return the Y value
+     */
+    default Integer getY() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the match status code
+     *
+     * @return the match status code
+     */
+    default Integer getMatchStatusCode() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the match clock
+     *
+     * @return the match clock
+     */
+    default String getMatchClock() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the period to which the timeline event belongs to
+     *
+     * @return the period
+     */
+    default Player getGoalScorer() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the period to which the timeline event belongs to
+     *
+     * @return the period
+     */
+    default Player getPlayer() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the period to which the timeline event belongs to
+     *
+     * @return the period
+     */
+    default List<Assist> getAssists() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

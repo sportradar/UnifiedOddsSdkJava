@@ -7,13 +7,7 @@ package com.sportradar.unifiedodds.sdk;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

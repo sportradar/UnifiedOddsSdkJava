@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Defines methods implemented by classes representing sport events of match type
@@ -69,13 +70,23 @@ public interface Match extends Competition {
     Fixture getFixture();
 
     /**
-     * Returns the associated event timeline
+     * Returns the associated {@link EventTimeline}
      * (NOTICE: the timeline is cached only after the event status indicates that the event has finished)
      *
      * @param locale the locale in which the timeline should be provided
      * @return the associated event timeline
      */
     EventTimeline getEventTimeline(Locale locale);
+
+    /**
+     * Returns the associated {@link EventTimeline} if already cached (does not make API call)
+     * (NOTICE: the timeline is cached only after the event status indicates that the event has finished)
+     *
+     * @return - a associated {@link EventTimeline} if already cached (does not make API call)
+     */
+    default Optional<EventTimeline> getEventTimelineIfPresent()  {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns a {@link DelayedInfo} instance describing possible information about a delay
