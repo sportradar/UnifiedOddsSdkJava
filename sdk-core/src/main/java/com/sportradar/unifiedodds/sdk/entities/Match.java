@@ -82,9 +82,10 @@ public interface Match extends Competition {
      * Returns the associated {@link EventTimeline} if already cached (does not make API call)
      * (NOTICE: the timeline is cached only after the event status indicates that the event has finished)
      *
+     * @param locale the locale in which the timeline should be provided
      * @return - a associated {@link EventTimeline} if already cached (does not make API call)
      */
-    default Optional<EventTimeline> getEventTimelineIfPresent()  {
+    default Optional<EventTimeline> getEventTimelineIfPresent(Locale locale)  {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 

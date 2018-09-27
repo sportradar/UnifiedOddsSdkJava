@@ -563,13 +563,17 @@ class MatchCIImpl implements MatchCI {
      * (the timeline is cached only after the event status indicates that the event has finished)
      *
      * @param locale the locale in which the timeline should be provided
+     * @param makeApiCall should the API call be made if necessary
      * @return the associated event timeline
      */
     @Override
-    public EventTimelineCI getEventTimeline(Locale locale) {
+    public EventTimelineCI getEventTimeline(Locale locale, boolean makeApiCall) {
         Preconditions.checkNotNull(locale);
 
         EventTimelineCI eventTimelineCI = eventTimelines.get(locale);
+        if (!makeApiCall) {
+            return eventTimelineCI;
+        }
         if (eventTimelineCI != null && eventTimelineCI.isFinalized()) {
             return eventTimelineCI;
         }

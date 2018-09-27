@@ -81,9 +81,10 @@ public interface MatchCI extends CompetitionCI {
      * (the timeline is cached only after the event status indicates that the event has finished)
      *
      * @param locale the locale in which the timeline should be provided
+     * @param makeApiCall should the API call be made if necessary
      * @return the associated event timeline
      */
-    EventTimelineCI getEventTimeline(Locale locale);
+    EventTimelineCI getEventTimeline(Locale locale, boolean makeApiCall);
 
     /**
      * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event

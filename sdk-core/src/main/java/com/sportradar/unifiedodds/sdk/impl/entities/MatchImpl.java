@@ -91,7 +91,6 @@ public class MatchImpl extends SportEventImpl implements Match {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-
     /**
      * Returns a {@link CompetitionStatus} containing information about the progress of a sport event
      * associated with the current instance
@@ -494,9 +493,38 @@ public class MatchImpl extends SportEventImpl implements Match {
             return null;
         }
 
-        EventTimelineCI eventTimeline = cacheItem.getEventTimeline(locale);
+        EventTimelineCI eventTimeline = cacheItem.getEventTimeline(locale, true);
 
         return eventTimeline == null ? null : new EventTimelineImpl(eventTimeline);
+    }
+
+    /**
+     * Returns the associated {@link EventTimeline} if already cached (does not make API call)
+     * (NOTICE: the timeline is cached only after the event status indicates that the event has finished)
+     *
+     * @return - a associated {@link EventTimeline} if already cached (does not make API call)
+     */
+    @Override
+    public Optional<EventTimeline> getEventTimelineIfPresent(Locale locale) {
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getEventTimeline", null);
+            return Optional.empty();
+        }
+
+        // this call is an exception on how the data is fetched from the cache,
+        // because it could trigger excessive timeline calls - the user might just need some
+        // basic timeline data which is not translatable so a prefetch of X locales would be excessive
+        if (!locales.contains(locale)) {
+            return Optional.empty();
+        }
+
+        EventTimelineCI eventTimeline = cacheItem.getEventTimeline(locale, false);
+
+        return eventTimeline == null
+                ? Optional.empty()
+                : Optional.of(new EventTimelineImpl(eventTimeline));
     }
 
     /**
