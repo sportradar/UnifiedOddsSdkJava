@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
@@ -53,13 +54,16 @@ public class OddsFeedConfiguration {
         this.messagingUsername = messagingUsername;
         this.messagingPassword = messagingPassword;
         this.sdkNodeId = sdkNodeId;
+        if (sdkNodeId < 0)
+        {
+            LoggerFactory.getLogger(OddsFeedConfiguration.class).warn(String.format("Setting nodeId to %s. Use only positive numbers; negative are reserved for internal use.", sdkNodeId));
+        }
         this.useStagingEnvironment = useStagingEnvironment;
         this.disabledProducers = disabledProducers;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.selectedEnvironment = selectedEnvironment;
         this.messagingVirtualHost = messagingVirtualHost;
     }
-
 
     /**
      * @return Host / IP for connection as provided by Sportradar
