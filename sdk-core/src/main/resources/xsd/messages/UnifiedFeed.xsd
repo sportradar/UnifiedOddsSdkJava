@@ -184,6 +184,9 @@
 		<xs:attribute name="home_score" type="xs:decimal" use="optional"/>
 		<xs:attribute name="away_score" type="xs:decimal" use="optional"/>
 
+		<xs:attribute name="home_penalty_score" type="xs:int" use="optional"/>
+		<xs:attribute name="away_penalty_score" type="xs:int" use="optional"/>
+
 		<xs:attribute name="home_gamescore" type="xs:int" use="optional"/>
 		<xs:attribute name="away_gamescore" type="xs:int" use="optional"/>
 

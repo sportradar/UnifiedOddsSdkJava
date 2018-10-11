@@ -113,8 +113,14 @@ public class CachingModule extends AbstractModule {
     private DataProvider<Object> provideSummaryEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                     LogHttpDataFetcher httpDataFetcher,
                                                                     @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+        String nodeIdStr = cfg.getSdkNodeId() != 0
+                ? "?node_id=" + cfg.getSdkNodeId()
+                : "";
+
         return new DataProvider<>(
-                "/sports/%s/sport_events/%s/summary.xml",
+                cfg.isReplaySession()
+                ? "/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr
+                : "/sports/%s/sport_events/%s/summary.xml",
                 cfg,
                 httpDataFetcher,
                 deserializer

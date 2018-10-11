@@ -114,7 +114,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         ValidationResult validationResult = feedMessageValidator.validate(unmarshalledMessage, routingKeyInfo);
         switch (validationResult) {
             case Success:
-                logger.debug("Message {} successfully validated. Message processing continues", unmarshalledMessage.getClass().getName());
+                logger.debug("Message {} successfully validated. ProducerId:{}, EventId:'{}'. Message processing continues", unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
                 break;
             case ProblemsDetected:
                 logger.warn("Problems were detected while validating message {}, but the message is still eligible fo further processing. ProducerId:{}, EventId:'{}'",
