@@ -82,7 +82,15 @@ public class SportEventStatusDTO {
      */
     private List<PeriodScoreDTO> periodScores;
 
+    /**
+     * The penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
+     */
+    private final Integer homePenaltyScore;
 
+    /**
+     * The penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
+     */
+    private final Integer awayPenaltyScore;
     /**
      * Initializes a new instance of the {@link SportEventStatusDTO} from the provided
      * {@link SAPIStageSportEventStatus} which is fetched from the API
@@ -107,6 +115,9 @@ public class SportEventStatusDTO {
         sportEventStatisticsDTO = null;
         eventClock = null;
 
+        homePenaltyScore = null;
+        awayPenaltyScore = null;
+
         cleanupProperties();
     }
 
@@ -124,9 +135,16 @@ public class SportEventStatusDTO {
         {
             this.status = EventStatus.valueOfApiStatusId(sportEventStatus.getStatusCode());
         }
-        else
-        {
-            this.status = EventStatus.valueOfApiStatusName(sportEventStatus.getStatus());
+        else {
+            Integer statusId;
+            try {
+                statusId = Integer.parseInt(sportEventStatus.getStatus());
+            } catch (Exception ex) {
+                statusId = -100;
+            }
+            this.status = statusId != -100
+                ? EventStatus.valueOfApiStatusId(statusId)
+                : EventStatus.valueOfApiStatusName(sportEventStatus.getStatus());
         }
         this.matchStatusId = calculateMatchStatusId(sportEventStatus.getMatchStatusCode(), status);
         this.reportingStatus = ReportingStatus.Unknown;
@@ -161,6 +179,9 @@ public class SportEventStatusDTO {
 
         eventResults = null;
         eventClock = null;
+
+        homePenaltyScore = null;
+        awayPenaltyScore = null;
 
         cleanupProperties();
     }
@@ -213,6 +234,8 @@ public class SportEventStatusDTO {
         properties.put("Tiebreak", seStatus.isTiebreak());
         properties.put("Visit", seStatus.getVisit());
         properties.put("Yards", seStatus.getYards());
+        properties.put("HomePenaltyScore", seStatus.getHomePenaltyScore());
+        properties.put("AwayPenaltyScore", seStatus.getAwayPenaltyScore());
 
         eventClock = seStatus.getClock() == null ? null :
                 new EventClockImpl(
@@ -239,6 +262,9 @@ public class SportEventStatusDTO {
 
         winnerId = null;
 
+        homePenaltyScore = seStatus.getHomePenaltyScore();
+        awayPenaltyScore = seStatus.getAwayPenaltyScore();
+
         cleanupProperties();
     }
 
@@ -257,8 +283,9 @@ public class SportEventStatusDTO {
         this.eventClock = null;
         this.eventResults = null;
         this.winnerId = null;
+        this.homePenaltyScore = null;
+        this.awayPenaltyScore = null;
     }
-
 
     /**
      * Constructs a new {@link SportEventStatusDTO} describing the associated event as "Not started"
@@ -384,6 +411,20 @@ public class SportEventStatusDTO {
             periodScores = new ArrayList<>();
         }
         periodScores.add(new PeriodScoreDTO(homeScore, awayScore, number));
+    }
+
+    /**
+     * Get the penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
+     */
+    public final Integer getHomePenaltyScore() {
+        return homePenaltyScore;
+    }
+
+    /**
+     * Get the penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
+     */
+    public final Integer getAwayPenaltyScore() {
+        return awayPenaltyScore;
     }
 
     /**

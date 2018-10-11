@@ -30,7 +30,6 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
     private final SportEventStatusDTO statusDto;
     private final LocalizedNamedValueCache matchStatuses;
 
-
     public MatchStatusImpl(SportEventStatusDTO statusDto, LocalizedNamedValueCache matchStatuses) {
         super(statusDto);
 
@@ -40,7 +39,6 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
         this.statusDto = statusDto;
         this.matchStatuses = matchStatuses;
     }
-
 
     /**
      * Returns an {@link EventClock} instance describing the timings in the current event
@@ -122,5 +120,22 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
     @Override
     public BigDecimal getAwayScore() {
         return statusDto.getAwayScore();
+    }
+
+    /**
+     * Get the penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
+     */
+    @Override
+    public Integer getHomePenaltyScore() {
+        return statusDto.getHomePenaltyScore();
+    }
+
+    /**
+     * Get the penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
+     */
+    @Override
+    public Integer getAwayPenaltyScore() {
+        return statusDto.getAwayPenaltyScore();
+
     }
 }
