@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 
@@ -345,6 +346,7 @@ public class OddsFeed {
 
         injector.getInstance(CloseableHttpClient.class).close();
         injector.getInstance(SDKTaskScheduler.class).shutdownNow();
+        injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
     }
 
     private void initOddsFeedInstance() {

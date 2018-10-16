@@ -54,7 +54,7 @@ public class OddsFeedConfiguration {
         this.messagingUsername = messagingUsername;
         this.messagingPassword = messagingPassword;
         this.sdkNodeId = sdkNodeId;
-        if (sdkNodeId < 0)
+        if (sdkNodeId != null && sdkNodeId < 0)
         {
             LoggerFactory.getLogger(OddsFeedConfiguration.class).warn(String.format("Setting nodeId to %s. Use only positive numbers; negative are reserved for internal use.", sdkNodeId));
         }

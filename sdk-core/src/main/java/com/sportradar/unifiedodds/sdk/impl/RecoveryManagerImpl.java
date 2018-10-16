@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sportradar.unifiedodds.sdk.*;
@@ -22,6 +23,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -44,6 +46,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     private final ReentrantLock onAliveLock = new ReentrantLock();
     private final ReentrantLock onSnapshotCompleteLock = new ReentrantLock();
     private final SDKTaskScheduler taskScheduler;
+    private final ScheduledExecutorService executorServices;
     private final Map<String, String> sdkMdcContextDescription;
     private final int bookmakerId;
     private final SequenceGenerator sequenceGenerator;
@@ -57,6 +60,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                         SDKEventRecoveryStatusListener eventRecoveryStatusListener,
                         SnapshotRequestManager snapshotRequestManager,
                         SDKTaskScheduler taskScheduler,
+                        @Named("DedicatedRecoveryManagerExecutor") ScheduledExecutorService executorServices,
                         HttpHelper httpHelper,
                         FeedMessageFactory messageFactory,
                         WhoAmIReader whoAmIReader,
@@ -68,6 +72,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         Preconditions.checkNotNull(eventRecoveryStatusListener);
         Preconditions.checkNotNull(snapshotRequestManager);
         Preconditions.checkNotNull(taskScheduler);
+        Preconditions.checkNotNull(executorServices);
         Preconditions.checkNotNull(httpHelper);
         Preconditions.checkNotNull(messageFactory);
         Preconditions.checkNotNull(whoAmIReader);
@@ -84,6 +89,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         this.maxRecoveryExecutionTime =
                 TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionMinutes(), TimeUnit.MINUTES);
         this.taskScheduler = taskScheduler;
+        this.executorServices = executorServices;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
         this.bookmakerId = whoAmIReader.getBookmakerId();
         this.sequenceGenerator = sequenceGenerator;
@@ -103,7 +109,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         }
 
         activeProducers.forEach((id, p) -> perProducerInfo.put(id, new ProducerInfo(p.getId(), producerManager)));
-        taskScheduler.scheduleAtFixedRate("ProducerStatusCheckerTask", this::onTimerElapsed, 20, 10, TimeUnit.SECONDS);
+        executorServices.scheduleAtFixedRate(this::onTimerElapsed, 20, 10, TimeUnit.SECONDS);
 
         if (!config.isReplaySession()) {
             logger.info("RecoveryManager initialized");

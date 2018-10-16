@@ -20,13 +20,21 @@ import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -42,6 +50,7 @@ public class RecoveryManagerTests {
     private SDKProducerManager producerManager;
     private ProducerStatusListener producerStatusListener;
     private TaskScheduler taskScheduler;
+    private MockedExecutor mockedExecutor;
 
     private SDKEventRecoveryStatusListener mockedEventRecoveryListener;
     private HttpHelper mockedHttpHelper;
@@ -70,6 +79,7 @@ public class RecoveryManagerTests {
         when(mockedTimeUtils.nowInstant()).thenReturn(now);
 
         taskScheduler = new TaskScheduler();
+        mockedExecutor = new MockedExecutor();
         producerStatusListener = new ProducerStatusListener();
 
         FeedMessageFactory feedMessageFactory = new FeedMessageFactoryImpl(
@@ -91,6 +101,7 @@ public class RecoveryManagerTests {
                 mockedEventRecoveryListener,
                 new DefaultSnapshotRequestManager(),
                 taskScheduler,
+                mockedExecutor,
                 mockedHttpHelper,
                 feedMessageFactory,
                 whoAmIReader,
@@ -115,10 +126,10 @@ public class RecoveryManagerTests {
 
     @Test
     public void recoveryManagerInitCheckupTest() {
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
 
         assertEquals(0, taskScheduler.getOneTimeTaskRuns());
-        assertEquals(1, taskScheduler.getTimerRuns());
+        assertEquals(1, mockedExecutor.getTimerRuns());
         assertTrue(producerManager.isProducerDown(1));
         assertTrue(producerManager.isProducerDown(3));
     }
@@ -182,7 +193,7 @@ public class RecoveryManagerTests {
         assertTrue(producer.isFlaggedDown());
 
         adjustMockedTimeUtils(10);
-        taskScheduler.execRecoveryManagerTimer(); // interrupted, no alive
+        mockedExecutor.execRecoveryManagerTimer(); // interrupted, no alive
         adjustMockedTimeUtils(10);
 
         adjustMockedTimeUtils(10);
@@ -224,7 +235,7 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(1);
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, true);
 
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertFalse(producer.isFlaggedDown());
 
         adjustMockedTimeUtils(12);
@@ -237,7 +248,7 @@ public class RecoveryManagerTests {
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.AliveIntervalViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.AliveIntervalViolation);
@@ -268,7 +279,7 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(1);
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, true);
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, false);
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
@@ -313,14 +324,14 @@ public class RecoveryManagerTests {
 
         adjustMockedTimeUtils(1);
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, true);
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
 
         // no alive received
         adjustMockedTimeUtils(25);
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(3, ProducerStatusReason.AliveIntervalViolation);
@@ -331,7 +342,7 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(1);
         recoveryManager.onMessageProcessingEnded(-33, 1, mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
-        taskScheduler.execRecoveryManagerTimer(); // queue delay stabilised but the producer needs to remain down - alive interval violation
+        mockedExecutor.execRecoveryManagerTimer(); // queue delay stabilised but the producer needs to remain down - alive interval violation
         assertTrue(producer.isFlaggedDown());
 
         assertEquals(1, taskScheduler.getOneTimeTaskRuns());
@@ -342,7 +353,7 @@ public class RecoveryManagerTests {
 
         int recoveryId1 = 55;
         when(mockedSequenceGenerator.getNext()).thenReturn(recoveryId1);
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
 
         assertEquals(2, taskScheduler.getOneTimeTaskRuns());
@@ -379,7 +390,7 @@ public class RecoveryManagerTests {
 
         adjustMockedTimeUtils(5);
         recoveryManager.onAliveReceived(1, userSessionAliveGenTimestamp, mockedTimeUtils.now(), true, false);
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
@@ -471,7 +482,7 @@ public class RecoveryManagerTests {
 
         adjustMockedTimeUtils(22);
 
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
 
         adjustMockedTimeUtils(5);
@@ -521,7 +532,7 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(1);
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, true);
 
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertFalse(producer.isFlaggedDown());
 
         adjustMockedTimeUtils(5);
@@ -561,7 +572,7 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(1);
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, true);
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, false);
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
@@ -571,7 +582,7 @@ public class RecoveryManagerTests {
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
@@ -581,7 +592,7 @@ public class RecoveryManagerTests {
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
-        taskScheduler.execRecoveryManagerTimer();
+        mockedExecutor.execRecoveryManagerTimer();
         assertTrue(producer.isFlaggedDown());
         producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(3, ProducerStatusReason.AliveIntervalViolation);
@@ -707,10 +718,8 @@ public class RecoveryManagerTests {
     }
 
     private class TaskScheduler implements SDKTaskScheduler {
-        private boolean timerSet = false;
-        private Runnable timerTask;
+
         private int oneTimeTaskRuns = 0;
-        private int timerRuns;
 
         @Override
         public void open() {
@@ -724,12 +733,7 @@ public class RecoveryManagerTests {
 
         @Override
         public void scheduleAtFixedRate(String name, Runnable command, long initialDelay, long period, TimeUnit unit) {
-            if (timerSet) {
-                throw new IllegalStateException("Recovery manager should set only 1 task - the timer checkup");
-            }
-
-            timerSet = true;
-            timerTask = command;
+            throw new IllegalStateException("Recovery manager should use only the #startOneTimeTask");
         }
 
         @Override
@@ -737,17 +741,8 @@ public class RecoveryManagerTests {
             oneTimeTaskRuns++;
         }
 
-        void execRecoveryManagerTimer() {
-            timerTask.run();
-            timerRuns++;
-        }
-
         int getOneTimeTaskRuns() {
             return oneTimeTaskRuns;
-        }
-
-        int getTimerRuns() {
-            return timerRuns;
         }
     }
 
@@ -794,6 +789,113 @@ public class RecoveryManagerTests {
         void assertProducerStatusChangeInvoked(int count, ProducerStatusReason reason) {
             assertEquals(count, producerStatusChangeTriggered);
             assertEquals(reason, lastProducerStatusReason);
+        }
+    }
+
+    private class MockedExecutor implements ScheduledExecutorService {
+        private int timerRuns;
+        private boolean timerSet = false;
+        private Runnable timerTask;
+
+        void execRecoveryManagerTimer() {
+            timerTask.run();
+            timerRuns++;
+        }
+
+        int getTimerRuns() {
+            return timerRuns;
+        }
+
+        @Override
+        public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+            if (timerSet) {
+                throw new IllegalStateException("Recovery manager should set only 1 task - the timer checkup");
+            }
+
+            timerSet = true;
+            timerTask = command;
+
+            return Mockito.mock(ScheduledFuture.class);
+        }
+
+        @Override
+        public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public void shutdown() {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public List<Runnable> shutdownNow() {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public boolean isShutdown() {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public boolean isTerminated() {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <T> Future<T> submit(Callable<T> task) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <T> Future<T> submit(Runnable task, T result) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public Future<?> submit(Runnable task) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
+        }
+
+        @Override
+        public void execute(Runnable command) {
+            throw new IllegalStateException("Shouldn't used by the RecoveryManager");
         }
     }
 }

@@ -282,4 +282,24 @@ public class GeneralModule implements Module {
 
         return new SDKTaskSchedulerImpl(mdcScheduledExecutorService, configuration);
     }
+
+    /**
+     * Provides an {@link ExecutorService} which is being used exclusively in the {@link RecoveryManager}
+     *
+     * @return the {@link ExecutorService} exclusive to the {@link RecoveryManager}
+     */
+    @Provides @Singleton @Named("DedicatedRecoveryManagerExecutor")
+    private ScheduledExecutorService provideDedicatedRecoveryManagerExecutor(SDKInternalConfiguration configuration, WhoAmIReader whoAmIReader) {
+        Preconditions.checkNotNull(configuration);
+        Preconditions.checkNotNull(whoAmIReader);
+
+        String sdkContextDescription = whoAmIReader.getSdkContextDescription();
+
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(sdkContextDescription + "-rm-t-%d").build();
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1, namedThreadFactory);
+
+        Map<String, String> mdcContext = whoAmIReader.getAssociatedSdkMdcContextMap();
+
+        return new MdcScheduledExecutorService(scheduledExecutorService, mdcContext);
+    }
 }
