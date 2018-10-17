@@ -1,5 +1,15 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.16 (2018-10-17)**
+* added Competition.getStatusIfPresent() to retrieve if from cache without API call
+* added Match.getEventTimelineIfPresent() to retrieve if from cache without API call
+* added properties to TimelineEvent (goalScorer, player, assists,...)
+* added warn message for negative nodeId (negative id is reserved for internal use only)
+* improvement: added a dedicated executor for the RecoveryManager
+* fix: SportEventStatusCache considers source of status and cache timeout
+* fix: for null competitor abbreviation (must not be null)
+* fix: calling the summary with nodeId if specified (on replay server) - sport event status changes during replay of the match
+
 **2.0.15 (2018-09-17)**
 * added new event status: EventStatus.Interrupted
 * updated api xsd schemas
@@ -9,14 +19,14 @@
 * optimized data fetching on sport event (data from schedule for a day is not fetched again)
 
 **2.0.14 (2018-08-24)**
-* Added support for getting outcome odds in different formats - getOdds(OddsDisplayType)
+* added support for getting outcome odds in different formats - getOdds(OddsDisplayType)
 * AMQP threads named based on Bookmaker/nodeId
-* Fix: added missing support for node_id on snapshot_complete routing keys
-* Fix: added missing null checks for getMappings
-* Fix: added null check when fetching sportId
+* fix: added missing support for node_id on snapshot_complete routing keys
+* fix: added missing null checks for getMappings
+* fix: added null check when fetching sportId
 
 **2.0.13 (2018-08-02)**
-* Fix: competitor references are saved per sport event
+* fix: competitor references are saved per sport event
 
 **2.0.12 (2018-07-25)**
 * added check for feed opened before closing its components
@@ -33,7 +43,7 @@
 * other minor fixes
 
 **2.0.10 (2018-06-11)**
-* exposure of Fixture.getScheduledStartTimeChanges
+* exposure of fixture.getScheduledStartTimeChanges
 * exposure of Reference.getRotationNumber
 * fixed OutcomeMappingData.getProducerOutcomeId return value
 * fixed Competition.getVenue return value
@@ -53,7 +63,7 @@
 * fixed system time validation(some locales had issues while parsing the server response time)
 
 **2.0.7 (2018-04-16)**
-* exposure of Fixture.getReplacedBy
+* exposure of fixture.getReplacedBy
 * exposure of Venue.getCountryCode
 * exposure of Round.getPhaseOrGroupLongName
 * sport event status caching improved
@@ -63,7 +73,7 @@
 * other logic & code improvements
 
 **2.0.6 (2018-03-28)**
-* exposure of Fixture.getStartTimeTbd
+* exposure of fixture.getStartTimeTbd
 * added support for decimal results on "EventResult"(Stage entity results)
 * added the possibility to set a custom messaging virtual host on the CustomConfigurationBuilder
 * added sample SDK properties to the included example
@@ -78,7 +88,7 @@
 * addition of the EventStatus.Postponed enum value
 * match status fetching logic improvements
 * fixed flex score market name generation(0.0 -> 0, 1.0 -> 1,...)
-* Fixture.getNextLiveTime date parsing fixed
+* fixture.getNextLiveTime date parsing fixed
 * improved handling of malformed market specifiers
 * added the possibility to get adjusted market mappings
 * added additional features to the ReplayManager play & playScenario methods
@@ -90,7 +100,7 @@
 * log fixes and improvements
 
 **2.0.4 (2018-02-20)**
-* exposure of additional information on the Fixture
+* exposure of additional information on the fixture
 * added SDK support for MDC context tag(uf-sdk-tag)
 * improved recovery id generation logic
 * fixed ReplayManager.addSportEventToReplay method
