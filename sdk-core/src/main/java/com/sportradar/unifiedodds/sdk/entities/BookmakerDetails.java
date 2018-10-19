@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
+import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import org.apache.http.HttpStatus;
 
 import java.util.Date;
@@ -39,7 +40,7 @@ public interface BookmakerDetails {
      * @return - the response code of the server's response
      * @see HttpStatus
      */
-    int getResponseCode();
+    ResponseCode getResponseCode();
 
     /**
      * Returns the specific virtual host of the bookmaker

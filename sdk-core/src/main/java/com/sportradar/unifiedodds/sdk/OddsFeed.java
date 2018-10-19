@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
+import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsException;
 import com.sportradar.unifiedodds.sdk.impl.AMQPConnectionFactory;
@@ -34,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
-
 
 /**
  * The main SDK object, this is the starting point of the UF SDK.
@@ -92,6 +92,11 @@ public class OddsFeed {
     private BookingManager bookingManager;
 
     /**
+     * The instance used to get bookmaker and used token details
+     */
+    private BookmakerDetails bookmakerDetails;
+
+    /**
      * Indicates if the feed object was initialized
      */
     private boolean feedInitialized = false;
@@ -100,7 +105,6 @@ public class OddsFeed {
      * Field that marks if the feed was already opened
      */
     private boolean feedOpened = false;
-
 
     /**
      * The most basic feed constructor
@@ -168,7 +172,6 @@ public class OddsFeed {
         this.tryCreateInjector(listener, customisableSDKModule);
     }
 
-
     /**
      * Returns a builder used to make {@link OddsFeedConfiguration} instances
      *
@@ -222,7 +225,6 @@ public class OddsFeed {
         return this.sportsInfoManager;
     }
 
-
     /**
      * Returns the {@link ProducerManager} instance used to manage available producers
      *
@@ -262,6 +264,16 @@ public class OddsFeed {
     public BookingManager getBookingManager() {
         this.initOddsFeedInstance();
         return bookingManager;
+    }
+
+    /**
+     * Returns the {@link BookmakerDetails} instance with bookmaker and token info
+     *
+     * @return the {@link BookmakerDetails} associated with the current {@link OddsFeed} instance
+     */
+    public BookmakerDetails getBookmakerDetails() {
+        this.initOddsFeedInstance();
+        return bookmakerDetails;
     }
 
     /**
@@ -383,6 +395,8 @@ public class OddsFeed {
         this.recoveryRequestIssuer = injector.getInstance(EventRecoveryRequestIssuer.class);
         this.cashOutProbabilitiesManager = injector.getInstance(CashOutProbabilitiesManager.class);
         this.bookingManager = injector.getInstance(BookingManager.class);
+        WhoAmIReader bookmakerDetailsProvider = injector.getInstance(WhoAmIReader.class);
+        this.bookmakerDetails = bookmakerDetailsProvider.getBookmakerDetails();
 
         feedInitialized = true;
     }

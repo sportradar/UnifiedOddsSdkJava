@@ -34,20 +34,18 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
      * The response code of the server's response
      * @see HttpStatus
      */
-    private final int responseCode;
+    private final ResponseCode responseCode;
 
     /**
      * The message of the request
      */
     private final String message;
 
-
     /**
      * Initializes a new instance of {@link BookmakerDetailsImpl}
      *
      * @param bookmakerDetails - a {@link com.sportradar.uf.sportsapi.datamodel.BookmakerDetails} containing the API response data
      *
-     * // TODO expose bookmaker details
      */
     public BookmakerDetailsImpl(com.sportradar.uf.sportsapi.datamodel.BookmakerDetails bookmakerDetails) {
         Preconditions.checkNotNull(bookmakerDetails);
@@ -55,10 +53,22 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
         this.bookmakerId = bookmakerDetails.getBookmakerId();
         this.virtualHost = bookmakerDetails.getVirtualHost();
         this.expireAt = bookmakerDetails.getExpireAt().toGregorianCalendar().getTime();
-        this.responseCode = mapReponseCode2HttpStatus(bookmakerDetails.getResponseCode());
+        this.responseCode = bookmakerDetails.getResponseCode();
         this.message = bookmakerDetails.getMessage();
     }
 
+    /**
+     * Initializes a new instance of {@link BookmakerDetailsImpl}
+     *
+     */
+    public BookmakerDetailsImpl(int bookmakerId, String virtualHost, Date expireAt, ResponseCode responseCode, String message) {
+
+        this.bookmakerId = bookmakerId;
+        this.virtualHost = virtualHost;
+        this.expireAt = expireAt;
+        this.responseCode = responseCode;
+        this.message = message;
+    }
 
     /**
      * Returns the message of the request
@@ -97,7 +107,7 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
      * @see HttpStatus
      */
     @Override
-    public int getResponseCode() {
+    public ResponseCode getResponseCode() {
         return responseCode;
     }
 

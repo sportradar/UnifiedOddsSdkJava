@@ -31,13 +31,10 @@ public class WhoAmIReader {
     private final DataProvider<BookmakerDetails> productionDataProvider;
     private final DataProvider<BookmakerDetails> stagingDataProvider;
     private final SDKInternalConfiguration config;
-    private int bookmakerId;
-    private Date expireAt;
-    private ResponseCode responseCode;
-    private String message;
     private boolean dataFetched;
     private boolean whoAmIValidated;
     private Map<String, String> associatedSdkMdcContextMap;
+    private com.sportradar.unifiedodds.sdk.entities.BookmakerDetails bookmakerDetails;
 
     @Inject
     public WhoAmIReader(
@@ -65,35 +62,41 @@ public class WhoAmIReader {
         dataFetched = true;
 
         if (bookmakerDetails == null) {
-            responseCode = ResponseCode.NOT_FOUND;
-            message = "Bookmaker details could not be fetched, please verify your connection";
+            this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(
+                    0,
+                    null,
+                    null,
+                    ResponseCode.NOT_FOUND,
+                    "Bookmaker details could not be fetched, please verify your connection");
             return;
         }
 
-        bookmakerId = bookmakerDetails.getBookmakerId() == null ? 0 : bookmakerDetails.getBookmakerId();
-        expireAt = bookmakerDetails.getExpireAt() == null ? null : bookmakerDetails.getExpireAt().toGregorianCalendar().getTime();
-        responseCode = bookmakerDetails.getResponseCode();
-        message = bookmakerDetails.getMessage();
+        this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(bookmakerDetails);
     }
 
     public int getBookmakerId() {
         retrieveInfo();
-        return bookmakerId;
+        return bookmakerDetails.getBookmakerId();
     }
 
     public Date getExpiry() {
         retrieveInfo();
-        return expireAt;
+        return bookmakerDetails.getExpireAt();
+    }
+
+    public String getVirtualHost() {
+        retrieveInfo();
+        return bookmakerDetails.getVirtualHost();
     }
 
     public ResponseCode getResponseCode() {
         retrieveInfo();
-        return responseCode;
+        return bookmakerDetails.getResponseCode();
     }
 
     public String getSdkContextDescription() {
         return String.format("uf-sdk-%s%s",
-                getBookmakerId(),
+                bookmakerDetails.getBookmakerId(),
                 config.getSdkNodeId() == null ? "" : "-" + config.getSdkNodeId());
     }
 
@@ -108,7 +111,11 @@ public class WhoAmIReader {
     }
 
     public String getMessage() {
-        return message;
+        return bookmakerDetails.getMessage();
+    }
+
+    public com.sportradar.unifiedodds.sdk.entities.BookmakerDetails getBookmakerDetails() {
+        return bookmakerDetails;
     }
 
     public void validateBookmakerDetails() {
@@ -117,27 +124,27 @@ public class WhoAmIReader {
             return;
         }
         logger.info("Bookmaker validation initiated");
-        if (bookmakerId != 0) {
-            logger.info("Client id: " + bookmakerId);
+        if (bookmakerDetails.getBookmakerId() != 0) {
+            logger.info("Client id: " + bookmakerDetails.getBookmakerId());
             Date now = new Date();
             Calendar cal = Calendar.getInstance();
-            if (now.after(expireAt)) {
-                String errMsg = "Access token has expired (" + expireAt + ")";
+            if (now.after(bookmakerDetails.getExpireAt())) {
+                String errMsg = "Access token has expired (" + bookmakerDetails.getExpireAt() + ")";
                 logger.error(errMsg);
-                throw new IllegalStateException("Access token has expired (" + expireAt + ")");
+                throw new IllegalStateException("Access token has expired (" + bookmakerDetails.getExpireAt() + ")");
             }
             cal.add(Calendar.DATE, 7);
-            if (cal.getTime().after(expireAt)) {
-                logger.warn("Access token will expire during the next 7 days ({})", expireAt);
+            if (cal.getTime().after(bookmakerDetails.getExpireAt())) {
+                logger.warn("Access token will expire during the next 7 days ({})", bookmakerDetails.getExpireAt());
             }
-            logger.info("Token validation completed successfully, valid until: {}", expireAt);
+            logger.info("Token validation completed successfully, valid until: {}", bookmakerDetails.getExpireAt());
             whoAmIValidated = true;
         } else {
             String errMsg;
-            if (ResponseCode.NOT_FOUND == responseCode) {
-                errMsg = String.format("Access token could not be validated. [%s]", responseCode);
-            } else if (ResponseCode.FORBIDDEN == responseCode) {
-                errMsg = String.format("Looks like the access token has expired (or is invalid) - Access was denied. [msg: %s]", responseCode);
+            if (ResponseCode.NOT_FOUND == bookmakerDetails.getResponseCode()) {
+                errMsg = String.format("Access token could not be validated. [%s]", bookmakerDetails.getResponseCode());
+            } else if (ResponseCode.FORBIDDEN == bookmakerDetails.getResponseCode()) {
+                errMsg = String.format("Looks like the access token has expired (or is invalid) - Access was denied. [msg: %s]", bookmakerDetails.getResponseCode());
             } else {
                 errMsg = "Bookmaker token validation endpoint could not be reached, please verify your connection setup";
             }
