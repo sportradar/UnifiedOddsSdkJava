@@ -50,9 +50,9 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
     public BookmakerDetailsImpl(com.sportradar.uf.sportsapi.datamodel.BookmakerDetails bookmakerDetails) {
         Preconditions.checkNotNull(bookmakerDetails);
 
-        this.bookmakerId = bookmakerDetails.getBookmakerId();
+        this.bookmakerId = bookmakerDetails.getBookmakerId() == null ? 0 : bookmakerDetails.getBookmakerId();
         this.virtualHost = bookmakerDetails.getVirtualHost();
-        this.expireAt = bookmakerDetails.getExpireAt().toGregorianCalendar().getTime();
+        this.expireAt = bookmakerDetails.getExpireAt() == null ? null : bookmakerDetails.getExpireAt().toGregorianCalendar().getTime();
         this.responseCode = bookmakerDetails.getResponseCode();
         this.message = bookmakerDetails.getMessage();
     }
