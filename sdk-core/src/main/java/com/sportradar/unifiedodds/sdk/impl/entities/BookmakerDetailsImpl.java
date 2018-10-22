@@ -9,9 +9,7 @@ import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import org.apache.http.HttpStatus;
 
-import java.sql.Time;
 import java.time.Duration;
-import java.time.Period;
 import java.util.Date;
 
 /**

@@ -261,7 +261,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             return betradarId;
         }
 
-        initiateFixtureRequest(defaultLocale);
+        initiateSummaryRequest(defaultLocale);
 
         return betradarId;
     }
@@ -295,7 +295,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             return phaseOrGroupLongNames.get(locale);
         }
 
-        initiateFixtureRequest(locale);
+        initiateSummaryRequest(locale);
 
         return phaseOrGroupLongNames.get(locale);
     }
@@ -357,7 +357,6 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
 
     private boolean summaryLoadedCheck(Object value2check, Locale locale) {
         return value2check != null || cachedSummaryLocales.contains(locale);
-
     }
 
     private void initiateSummaryRequest(Locale locale) {
@@ -392,41 +391,6 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             handleException(String.format("initiateSummaryRequest(%s)", missingLocales), e);
         } finally {
             summaryRequest.unlock();
-        }
-    }
-
-    private void initiateFixtureRequest(Locale locale) {
-        Preconditions.checkNotNull(locale);
-
-        List<Locale> requiredLocales = Collections.singletonList(locale);
-        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
-        if (missingLocales.isEmpty()) {
-            return;
-        }
-
-        fixtureRequest.lock();
-        try {
-            // recheck missing locales after lock
-            missingLocales = SdkHelper.findMissingLocales(cachedFixtureLocales, requiredLocales);
-            if (missingLocales.isEmpty()) {
-                return;
-            }
-
-            logger.debug("Fetching fixture for LoadableRoundCIImpl[EventId:'{}'] for languages '{}'",
-                    associatedEventId, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
-
-            missingLocales.forEach(l -> {
-                try {
-                    dataRouterManager.requestFixtureEndpoint(l, associatedEventId, associatedEventCI);
-                } catch (CommunicationException e) {
-                    throw new DataRouterStreamException(e.getMessage(), e);
-                }
-            });
-        } catch (DataRouterStreamException e) {
-            handleException(String.format("initiateFixtureRequest(%s)", missingLocales), e);
-        } finally {
-            fixtureRequest.unlock();
         }
     }
 

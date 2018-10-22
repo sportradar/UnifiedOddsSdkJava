@@ -7,9 +7,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import org.apache.http.HttpStatus;
 
-import java.sql.Time;
 import java.time.Duration;
-import java.time.Period;
 import java.util.Date;
 
 /**
