@@ -9,6 +9,9 @@ import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import org.apache.http.HttpStatus;
 
+import java.sql.Time;
+import java.time.Duration;
+import java.time.Period;
 import java.util.Date;
 
 /**
@@ -42,12 +45,17 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
     private final String message;
 
     /**
+     * Returns the difference with the server time
+     */
+    private final Duration serverTimeDifference;
+
+    /**
      * Initializes a new instance of {@link BookmakerDetailsImpl}
      *
      * @param bookmakerDetails - a {@link com.sportradar.uf.sportsapi.datamodel.BookmakerDetails} containing the API response data
      *
      */
-    public BookmakerDetailsImpl(com.sportradar.uf.sportsapi.datamodel.BookmakerDetails bookmakerDetails) {
+    public BookmakerDetailsImpl(com.sportradar.uf.sportsapi.datamodel.BookmakerDetails bookmakerDetails, Duration period) {
         Preconditions.checkNotNull(bookmakerDetails);
 
         this.bookmakerId = bookmakerDetails.getBookmakerId() == null ? 0 : bookmakerDetails.getBookmakerId();
@@ -55,19 +63,21 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
         this.expireAt = bookmakerDetails.getExpireAt() == null ? null : bookmakerDetails.getExpireAt().toGregorianCalendar().getTime();
         this.responseCode = bookmakerDetails.getResponseCode();
         this.message = bookmakerDetails.getMessage();
+        this.serverTimeDifference = period;
     }
 
     /**
      * Initializes a new instance of {@link BookmakerDetailsImpl}
      *
      */
-    public BookmakerDetailsImpl(int bookmakerId, String virtualHost, Date expireAt, ResponseCode responseCode, String message) {
+    public BookmakerDetailsImpl(int bookmakerId, String virtualHost, Date expireAt, ResponseCode responseCode, String message, Duration period) {
 
         this.bookmakerId = bookmakerId;
         this.virtualHost = virtualHost;
         this.expireAt = expireAt;
         this.responseCode = responseCode;
         this.message = message;
+        this.serverTimeDifference = period;
     }
 
     /**
@@ -119,6 +129,16 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
     @Override
     public String getVirtualHost() {
         return virtualHost;
+    }
+
+    /**
+     * Returns the difference with the server time
+     *
+     * @return - the difference with the server time
+     */
+    @Override
+    public Duration getServerTimeDifference() {
+        return serverTimeDifference;
     }
 
     /**

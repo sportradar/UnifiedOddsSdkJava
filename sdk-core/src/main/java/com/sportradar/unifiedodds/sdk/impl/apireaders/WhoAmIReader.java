@@ -19,6 +19,9 @@ import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -35,6 +38,7 @@ public class WhoAmIReader {
     private boolean whoAmIValidated;
     private Map<String, String> associatedSdkMdcContextMap;
     private com.sportradar.unifiedodds.sdk.entities.BookmakerDetails bookmakerDetails;
+    private Duration serverTimeDifference;
 
     @Inject
     public WhoAmIReader(
@@ -50,6 +54,7 @@ public class WhoAmIReader {
         this.configDataProvider = configDataProvider;
         this.productionDataProvider = productionDataProvider;
         this.stagingDataProvider = stagingDataProvider;
+        this.serverTimeDifference = Duration.ofSeconds(0);
     }
 
     private void retrieveInfo() {
@@ -67,11 +72,12 @@ public class WhoAmIReader {
                     null,
                     null,
                     ResponseCode.NOT_FOUND,
-                    "Bookmaker details could not be fetched, please verify your connection");
+                    "Bookmaker details could not be fetched, please verify your connection",
+                    serverTimeDifference);
             return;
         }
 
-        this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(bookmakerDetails);
+        this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(bookmakerDetails, serverTimeDifference);
     }
 
     public int getBookmakerId() {
@@ -111,6 +117,7 @@ public class WhoAmIReader {
     }
 
     public String getMessage() {
+        retrieveInfo();
         return bookmakerDetails.getMessage();
     }
 
@@ -192,7 +199,7 @@ public class WhoAmIReader {
         return bookmakerDetails;
     }
 
-    private static BookmakerDetails provideBookmakerDetails(DataProvider<BookmakerDetails> provider) throws DataProviderException {
+    private BookmakerDetails provideBookmakerDetails(DataProvider<BookmakerDetails> provider) throws DataProviderException {
         Preconditions.checkNotNull(provider);
 
         DataWrapper<BookmakerDetails> dataWithAdditionalInfo = provider.getDataWithAdditionalInfo(Locale.ENGLISH);
@@ -202,7 +209,7 @@ public class WhoAmIReader {
         return dataWithAdditionalInfo.getData();
     }
 
-    private static void validateLocalTimeWithServerTime(ZonedDateTime serverResponseTime) {
+    private void validateLocalTimeWithServerTime(ZonedDateTime serverResponseTime) {
         if (serverResponseTime == null) {
             logger.warn("Could not validate local time against server time - SDK time related operations might cause issues");
             return;
@@ -218,5 +225,6 @@ public class WhoAmIReader {
         } else if (absDiff > 2) {
             logger.warn("Local time is out of sync for more than 2s({}s), SDK time related operations might cause issues", diff);
         }
+        serverTimeDifference = Duration.between(localisedServerTime.toInstant(), Instant.now());
     }
 }

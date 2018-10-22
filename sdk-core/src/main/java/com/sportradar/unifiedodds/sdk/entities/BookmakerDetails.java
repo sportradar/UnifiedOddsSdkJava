@@ -7,6 +7,9 @@ package com.sportradar.unifiedodds.sdk.entities;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import org.apache.http.HttpStatus;
 
+import java.sql.Time;
+import java.time.Duration;
+import java.time.Period;
 import java.util.Date;
 
 /**
@@ -48,4 +51,11 @@ public interface BookmakerDetails {
      * @return - the specific virtual host of the bookmaker
      */
     String getVirtualHost();
+
+    /**
+     * Returns the difference with the server time
+     *
+     * @return - the difference with the server time
+     */
+    Duration getServerTimeDifference();
 }
