@@ -4,15 +4,15 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCoverageCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.TournamentCoverageCI;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Defines methods used to access cached tournament data
@@ -85,4 +85,10 @@ public interface TournamentCI extends SportEventCI {
      * @return a list of associated season identifiers
      */
     List<URN> getSeasonIds();
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     */
+    Map<URN, ReferenceIdCI> getCompetitorsReferences();
 }

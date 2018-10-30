@@ -106,10 +106,11 @@ public interface SportEntityFactory {
      * <i>Notice: a {@link com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException} is thrown if any problems are encountered</i>
      *
      * @param competitorIds the ids representing the instances that should be built
+     * @param eventCompetitorsReferences the list of competitors and associated references
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed objects
      */
-    List<Competitor> buildStreamCompetitors(List<URN> competitorIds, List<Locale> locales);
+    List<Competitor> buildStreamCompetitors(List<URN> competitorIds, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales);
 
     /**
      *

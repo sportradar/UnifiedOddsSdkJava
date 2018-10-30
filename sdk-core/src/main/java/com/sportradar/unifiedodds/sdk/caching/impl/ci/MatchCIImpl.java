@@ -412,26 +412,6 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
-     * Returns a map of available team qualifiers
-     *
-     * @return a map of available team qualifiers
-     */
-    @Override
-    public Map<URN, String> getCompetitorQualifiers() {
-        if (competitorQualifiers != null && !competitorQualifiers.isEmpty()) {
-            return copyOf(competitorQualifiers);
-        }
-
-        if (!loadedSummaryLocales.isEmpty()) {
-            return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
-        }
-
-        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
-
-        return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
-    }
-
-    /**
      * Returns a {@link VenueCI} instance representing a venue where the sport event associated with the
      * current instance will take place
      *
@@ -600,23 +580,39 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
+     * Returns a map of available team qualifiers
+     *
+     * @return a map of available team qualifiers
+     */
+    @Override
+    public Map<URN, String> getCompetitorQualifiers() {
+        if (competitorQualifiers != null && !competitorQualifiers.isEmpty()) {
+            return copyOf(competitorQualifiers);
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+
+        return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
+    }
+
+    /**
      * Returns list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
      *
      * @return list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-        if (competitorsReferences != null) {
-            return ImmutableMap.copyOf(competitorsReferences);
+        if(competitorsReferences == null || loadedFixtureLocales.isEmpty()) {
+            requestMissingFixtureData(Collections.singletonList(defaultLocale));
         }
 
-        if (!loadedSummaryLocales.isEmpty()) {
-            return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
-        }
-
-        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
-
-        return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
+        return competitorsReferences == null
+                ? null
+                : ImmutableMap.copyOf(competitorsReferences);
     }
 
     @Override
@@ -656,23 +652,27 @@ class MatchCIImpl implements MatchCI {
      */
     private void constructWithSportEventData(SAPISportEvent sportEvent, Locale currentLocale, boolean isFixtureEndpoint) {
         this.bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
-        this.scheduled = sportEvent.getScheduled() == null ? null :
-                sportEvent.getScheduled().toGregorianCalendar().getTime();
-        this.scheduledEnd = sportEvent.getScheduledEnd() == null ? null :
-                sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
-
-        this.tournamentId = sportEvent.getTournament() == null ? null :
-                URN.parse(sportEvent.getTournament().getId());
-        this.tournamentRound = sportEvent.getTournamentRound() == null ? null :
-                new LoadableRoundCIImpl(sportEvent.getTournamentRound(), isFixtureEndpoint, currentLocale, this, dataRouterManager, defaultLocale, exceptionHandlingStrategy
-                );
-        this.season = sportEvent.getSeason() == null ? null :
-                new SeasonCI(sportEvent.getSeason(), currentLocale);
-
-        this.venue = sportEvent.getVenue() == null ? null :
-                new VenueCI(sportEvent.getVenue(), currentLocale);
-
-        cacheCompetitors(sportEvent.getCompetitors() == null ? null : sportEvent.getCompetitors().getCompetitor(), currentLocale);
+        this.scheduled = sportEvent.getScheduled() == null
+                ? null
+                : sportEvent.getScheduled().toGregorianCalendar().getTime();
+        this.scheduledEnd = sportEvent.getScheduledEnd() == null
+                ? null
+                :sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        this.tournamentId = sportEvent.getTournament() == null
+                ? null
+                : URN.parse(sportEvent.getTournament().getId());
+        this.tournamentRound = sportEvent.getTournamentRound() == null
+                ? null
+                : new LoadableRoundCIImpl(sportEvent.getTournamentRound(), isFixtureEndpoint, currentLocale, this, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+        this.season = sportEvent.getSeason() == null
+                ? null
+                : new SeasonCI(sportEvent.getSeason(), currentLocale);
+        this.venue = sportEvent.getVenue() == null
+                ? null
+                : new VenueCI(sportEvent.getVenue(), currentLocale);
+        cacheCompetitors(sportEvent.getCompetitors() == null
+                ? null
+                : sportEvent.getCompetitors().getCompetitor(), currentLocale);
 
         constructEventName(currentLocale, sportEvent.getCompetitors());
     }
@@ -943,56 +943,31 @@ class MatchCIImpl implements MatchCI {
      *
      * The competitors data should always be over-written(not merged!) because the competitor list could change over time
      *
-     * @param inputCompetitor a {@link List} of {@link SAPITeamCompetitor} which should be added to the instance
+     * @param competitors a {@link List} of {@link SAPITeamCompetitor} which should be added to the instance
      * @param locale the {@link Locale} in which the data is provided
      */
-    private void cacheCompetitors(List<SAPITeamCompetitor> inputCompetitor, Locale locale) {
+    private void cacheCompetitors(List<SAPITeamCompetitor> competitors, Locale locale) {
         Preconditions.checkNotNull(locale);
 
-        if (inputCompetitor == null) {
+        if (competitors == null) {
             return;
         }
 
-        competitorIds = new ArrayList<>(inputCompetitor.size());
-        competitorQualifiers = new HashMap<>(inputCompetitor.size());
+        competitorIds = new ArrayList<>(competitors.size());
+        competitorQualifiers = new HashMap<>(competitors.size());
 
-        inputCompetitor.forEach(inputC -> {
+        competitors.forEach(inputC -> {
             URN parsedId = URN.parse(inputC.getId());
                 competitorIds.add(parsedId);
 
             if (inputC.getQualifier() != null) {
                 competitorQualifiers.put(parsedId, inputC.getQualifier());
             }
-
-            AddOrUpdateReferenceId(parsedId, inputC.getReferenceIds());
         });
 
+        competitorsReferences = SdkHelper.ParseTeamCompetitorsReferences(competitors, competitorsReferences);
+
         loadedCompetitorLocales.add(locale);
-    }
-
-    /**
-     * Add or update existing competitor reference
-     * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
-     * @param competitorId competitor id with which is associated reference
-     * @param reference associated reference
-     */
-    private void AddOrUpdateReferenceId(URN competitorId, SAPICompetitorReferenceIds reference)
-    {
-        ReferenceIdCI referenceId = reference == null
-                ? null
-                : new ReferenceIdCI(reference.getReferenceId().stream()
-                        .filter(r -> r.getName() != null && r.getValue() != null)
-                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
-
-        if(referenceId==null)
-        {
-            return;
-        }
-        if(competitorsReferences == null)
-        {
-            competitorsReferences = new HashMap<>();
-        }
-        competitorsReferences.put(competitorId, referenceId);
     }
 
     /**

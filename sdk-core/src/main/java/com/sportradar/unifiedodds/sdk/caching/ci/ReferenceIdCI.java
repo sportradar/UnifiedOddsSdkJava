@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,31 +16,55 @@ public class ReferenceIdCI {
     /**
      * The betradarId property backing field
      */
-    private final Integer betradarId;
+    private Integer betradarId;
 
     /**
      * The betfairId property backing field
      */
-    private final Integer betfairId;
+    private Integer betfairId;
 
     /**
      * The rotation number for this instance
      */
-    private final Integer rotationNumber;
+    private Integer rotationNumber;
 
     /**
      * A {@link ImmutableMap} containing all the referenceIds
      */
-    private final ImmutableMap<String, String> referenceIds;
+    private ImmutableMap<String, String> referenceIds;
 
     /**
      * Initializes a new instance of the {@link ReferenceIdCI} class
      *
-     * @param referenceIds - A {@link Map} with the available references
+     * @param newReferenceIds - A {@link Map} with the available references
      */
-    public ReferenceIdCI(Map<String, String> referenceIds) {
-        if (referenceIds != null) {
-            this.referenceIds = ImmutableMap.copyOf(referenceIds);
+    public ReferenceIdCI(Map<String, String> newReferenceIds) {
+        if (newReferenceIds != null) {
+            merge(newReferenceIds);
+        }
+        else {
+            this.betradarId = null;
+            this.betfairId = null;
+            this.rotationNumber = null;
+            this.referenceIds = null;
+        }
+    }
+
+    public void merge(Map<String, String> newReferenceIds) {
+        if (newReferenceIds != null) {
+            if (this.referenceIds == null) {
+                this.referenceIds = ImmutableMap.copyOf(newReferenceIds);
+            }
+            else {
+                Map<String, String> refs = new HashMap<>();
+                refs.putAll(this.referenceIds);
+                for(Map.Entry e : this.referenceIds.entrySet()) {
+                    if(!refs.containsKey(e.getKey())) {
+                        refs.put(e.getKey().toString(), e.getValue().toString());
+                    }
+                }
+                this.referenceIds = ImmutableMap.copyOf(refs);
+            }
 
             Integer betradarId;
             try {
@@ -54,7 +79,6 @@ public class ReferenceIdCI {
                 betradarId = null;
             }
             this.betradarId = betradarId;
-
 
             Integer betfairId;
             try {
@@ -81,12 +105,6 @@ public class ReferenceIdCI {
                 rotationNbr = null;
             }
             this.rotationNumber = rotationNbr;
-
-        } else {
-            this.betradarId = null;
-            this.betfairId = null;
-            this.rotationNumber = null;
-            this.referenceIds = null;
         }
     }
 

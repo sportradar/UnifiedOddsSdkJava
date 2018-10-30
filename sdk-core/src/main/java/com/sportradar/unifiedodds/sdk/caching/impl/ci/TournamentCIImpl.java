@@ -13,6 +13,8 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -111,6 +113,12 @@ class TournamentCIImpl implements TournamentCI {
     private List<URN> competitorIds;
 
     /**
+     * A {@link Map} of competitors id and their references that participate in the sport event
+     * associated with the current instance
+     */
+    private Map<URN, ReferenceIdCI> competitorsReferences;
+
+    /**
      * An indication if the associated season ids were loaded
      */
     private boolean associatedSeasonIdsLoaded;
@@ -161,9 +169,15 @@ class TournamentCIImpl implements TournamentCI {
         SAPICompetitors endpointCompetitors = endpointData.getCompetitors() != null ?
                 endpointData.getCompetitors() :
                 endpointData.getTournament().getCompetitors();
-        this.competitorIds = endpointCompetitors == null ? null :
-                Collections.synchronizedList(endpointCompetitors.getCompetitor().stream()
-                        .map(c -> URN.parse(c.getId())).collect(Collectors.toList()));
+        if(endpointCompetitors != null) {
+            this.competitorIds = Collections.synchronizedList(endpointCompetitors.getCompetitor().stream()
+                            .map(c -> URN.parse(c.getId())).collect(Collectors.toList()));
+            competitorsReferences = SdkHelper.ParseCompetitorsReferences(endpointCompetitors.getCompetitor(), competitorsReferences);
+        }
+        else  {
+            this.competitorIds = null;
+            this.competitorsReferences = null;
+        }
 
         this.tournamentCoverage = endpointData.getCoverageInfo() == null ? null :
                 new TournamentCoverageCI(endpointData.getCoverageInfo());
@@ -434,6 +448,22 @@ class TournamentCIImpl implements TournamentCI {
         requestAssociatedSeasonIds();
 
         return associatedSeasonIds;
+    }
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     *
+     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     */
+    @Override
+    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+        if(competitorsReferences == null || cachedLocales.isEmpty()) {
+            requestMissingTournamentData(Collections.singletonList(defaultLocale));
+        }
+
+        return competitorsReferences == null
+                ? null
+                : ImmutableMap.copyOf(competitorsReferences);
     }
 
     /**

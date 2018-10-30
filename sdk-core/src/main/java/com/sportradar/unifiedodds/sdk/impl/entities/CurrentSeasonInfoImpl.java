@@ -83,7 +83,6 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-
     /**
      * Initializes a new intance of the {@link CurrentSeasonInfoImpl}
      *
@@ -94,7 +93,12 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      * @param locales a {@link List} of supported locales
      * @param exceptionHandlingStrategy - the exception handling policy
      */
-    CurrentSeasonInfoImpl(SeasonCI currentSeasonCi, TournamentCI seasonEndpointCI, SportEventCache sportEventCache, SportEntityFactory sportEntityFactory, List<Locale> locales, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    CurrentSeasonInfoImpl(SeasonCI currentSeasonCi,
+                          TournamentCI seasonEndpointCI,
+                          SportEventCache sportEventCache,
+                          SportEntityFactory sportEntityFactory,
+                          List<Locale> locales,
+                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(currentSeasonCi);
         Preconditions.checkNotNull(seasonEndpointCI);
         Preconditions.checkNotNull(sportEventCache);
@@ -118,7 +122,6 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
-
 
     /**
      * Returns the {@link URN} uniquely identifying the current season
@@ -216,7 +219,7 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     public List<Competitor> getCompetitors() {
         try {
             return seasonEndpointCI.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCI.getCompetitorIds(locales), locales);
+                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCI.getCompetitorIds(locales), seasonEndpointCI.getCompetitorsReferences(), locales);
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;

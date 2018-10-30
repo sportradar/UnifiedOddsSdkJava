@@ -189,7 +189,7 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         try {
             categoryCI = sportsDataCache.getCategory(categoryId, locales);
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {
-            throw new ObjectNotFoundException("Could provide the sport data - category CI missing[" + categoryId + "]", e);
+            throw new ObjectNotFoundException("Could not provide the sport data - category CI missing[" + categoryId + "]", e);
         }
 
         return buildSport(categoryCI.getSportId(), locales);
@@ -288,18 +288,19 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * <i>Notice: a {@link com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException} is thrown if any problems are encountered</i>
      *
      * @param competitorIds the ids representing the instances that should be built
+     * @param eventCompetitorsReferences the list of competitors and associated references
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed objects
      */
     @Override
-    public List<Competitor> buildStreamCompetitors(List<URN> competitorIds, List<Locale> locales) {
+    public List<Competitor> buildStreamCompetitors(List<URN> competitorIds, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales) {
         Preconditions.checkNotNull(competitorIds);
         Preconditions.checkNotNull(locales);
 
         return competitorIds.stream()
                 .map(c -> {
                     try {
-                        return this.buildCompetitor(c, null, null, locales);
+                        return this.buildCompetitor(c, null, eventCompetitorsReferences, locales);
                     } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
                         throw new StreamWrapperException(e.getMessage(), e);
                     }

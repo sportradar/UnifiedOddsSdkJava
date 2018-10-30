@@ -77,8 +77,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Map<Locale, String> getNames() {
-        return loadCacheItem().map(ci -> ci.getNames(locales)).map(Collections::unmodifiableMap)
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getNames(locales)).map(Collections::unmodifiableMap).orElse(null);
     }
 
     /**
@@ -89,8 +88,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getName(Locale locale) {
-        return loadCacheItem().map(ci -> ci.getNames(locales).get(locale))
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getNames(locales).get(locale)).orElse(null);
     }
 
     /**
@@ -101,8 +99,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Map<Locale, String> getCountries() {
-        return loadCacheItem().map(ci -> ci.getCountryNames(locales)).map(Collections::unmodifiableMap)
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getCountryNames(locales)).map(Collections::unmodifiableMap).orElse(null);
     }
 
     /**
@@ -113,8 +110,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Map<Locale, String> getAbbreviations() {
-        return loadCacheItem().map(ci -> ci.getAbbreviations(locales)).map(Collections::unmodifiableMap)
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getAbbreviations(locales)).map(Collections::unmodifiableMap).orElse(null);
     }
 
     /**
@@ -141,8 +137,7 @@ public class CompetitorImpl implements Competitor {
             return new ReferenceImpl(eventCompetitorsReferences.get(competitorId));
         }
 
-        return loadCacheItem().map(CompetitorCI::getReferenceId).map(ReferenceImpl::new)
-                .orElse(null);
+        return loadCacheItem().map(CompetitorCI::getReferenceId).map(ReferenceImpl::new).orElse(null);
     }
 
     /**
@@ -152,8 +147,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getCountryCode() {
-        return loadCacheItem().map(CompetitorCI::getCountryCode)
-                .orElse(null);
+        return loadCacheItem().map(CompetitorCI::getCountryCode).orElse(null);
     }
 
     /**
@@ -164,8 +158,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getCountry(Locale locale) {
-        return loadCacheItem().map(ci -> ci.getCountryNames(locales).get(locale))
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getCountryNames(locales).get(locale)).orElse(null);
     }
 
     /**
@@ -176,8 +169,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getAbbreviation(Locale locale) {
-        return loadCacheItem().map(ci -> ci.getAbbreviations(locales).get(locale))
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getAbbreviations(locales).get(locale)).orElse(null);
     }
 
     /**

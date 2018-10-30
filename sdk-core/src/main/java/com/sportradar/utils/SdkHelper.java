@@ -5,11 +5,11 @@
 package com.sportradar.utils;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,5 +68,87 @@ public final class SdkHelper {
             return "";
         }
         return input.length() > length ? input.substring(0, length).toUpperCase() : input.toUpperCase();
+    }
+
+    /**
+     * Get competitor reference from a list of competitors
+     * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
+     * @param competitors competitor id with which is associated reference
+     * @return map of references per competitor id
+     */
+    public static Map<URN, ReferenceIdCI> ParseCompetitorsReferences(List<SAPITeam> competitors,
+                                                                         Map<URN, ReferenceIdCI> currentCompetitorsReferences)
+    {
+        if(competitors == null){
+            return currentCompetitorsReferences;
+        }
+
+        Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
+                ? new HashMap<>()
+                : currentCompetitorsReferences;
+        for (SAPITeam competitor : competitors) {
+            if(competitor.getReferenceIds() != null) {
+                ReferenceIdCI newReferenceId = new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
+                        .filter(r -> r.getName() != null && r.getValue() != null)
+                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+
+                if(newReferenceId==null) {
+                    continue;
+                }
+
+                URN competitorId = URN.parse(competitor.getId());
+                if(competitorsReferences.containsKey(competitorId)) {
+                    ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
+                    oldReference.merge(newReferenceId.getReferenceIds());
+                    competitorsReferences.put(competitorId, newReferenceId);
+                }
+                else {
+                    competitorsReferences.put(competitorId, newReferenceId);
+                }
+            }
+        }
+
+        return competitorsReferences;
+    }
+
+    /**
+     * Get competitor reference from a list of competitors
+     * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
+     * @param competitors competitor id with which is associated reference
+     * @return map of references per competitor id
+     */
+    public static Map<URN, ReferenceIdCI> ParseTeamCompetitorsReferences(List<SAPITeamCompetitor> competitors,
+                                                                         Map<URN, ReferenceIdCI> currentCompetitorsReferences)
+    {
+        if(competitors == null){
+            return currentCompetitorsReferences;
+        }
+
+        Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
+                ? new HashMap<>()
+                : currentCompetitorsReferences;
+        for (SAPITeam competitor : competitors) {
+            if(competitor.getReferenceIds() != null) {
+                ReferenceIdCI newReferenceId = new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
+                        .filter(r -> r.getName() != null && r.getValue() != null)
+                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+
+                if(newReferenceId==null) {
+                    continue;
+                }
+
+                URN competitorId = URN.parse(competitor.getId());
+                if(competitorsReferences.containsKey(competitorId)) {
+                    ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
+                    oldReference.merge(newReferenceId.getReferenceIds());
+                    competitorsReferences.put(competitorId, newReferenceId);
+                }
+                else {
+                    competitorsReferences.put(competitorId, newReferenceId);
+                }
+            }
+        }
+
+        return competitorsReferences;
     }
 }

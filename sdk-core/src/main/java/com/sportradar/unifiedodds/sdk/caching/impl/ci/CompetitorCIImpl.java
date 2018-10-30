@@ -114,7 +114,6 @@ class CompetitorCIImpl implements CompetitorCI {
 
     private final ReentrantLock fetchLock = new ReentrantLock();
 
-
     CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);

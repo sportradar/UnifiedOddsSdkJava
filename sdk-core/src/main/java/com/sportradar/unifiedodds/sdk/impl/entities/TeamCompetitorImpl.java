@@ -36,7 +36,13 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public TeamCompetitorImpl(URN competitorId, ProfileCache profileCache, String qualifier, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public TeamCompetitorImpl(URN competitorId,
+                              ProfileCache profileCache,
+                              String qualifier,
+                              Map<URN, ReferenceIdCI> eventCompetitorsReferences,
+                              List<Locale> locales,
+                              SportEntityFactory sportEntityFactory,
+                              ExceptionHandlingStrategy exceptionHandlingStrategy) {
         super(competitorId, profileCache, eventCompetitorsReferences, locales, sportEntityFactory, exceptionHandlingStrategy);
 
         this.qualifier = qualifier;

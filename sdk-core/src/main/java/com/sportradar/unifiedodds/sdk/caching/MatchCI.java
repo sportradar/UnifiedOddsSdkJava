@@ -4,10 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.caching.ci.DelayedInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.URN;
 
 import java.util.List;
@@ -62,13 +63,6 @@ public interface MatchCI extends CompetitionCI {
     Fixture getFixture(List<Locale> locales);
 
     /**
-     * Returns a map of available team qualifiers
-     *
-     * @return a map of available team qualifiers
-     */
-    Map<URN, String> getCompetitorQualifiers();
-
-    /**
      * Returns a {@link DelayedInfoCI} instance describing possible information about a delay
      *
      * @param locales the {@link Locale}s in which the data should be provided
@@ -87,8 +81,9 @@ public interface MatchCI extends CompetitionCI {
     EventTimelineCI getEventTimeline(Locale locale, boolean makeApiCall);
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
-     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * Returns a map of available team qualifiers
+     *
+     * @return a map of available team qualifiers
      */
-    Map<URN, ReferenceIdCI> getCompetitorsReferences();
+    Map<URN, String> getCompetitorQualifiers();
 }

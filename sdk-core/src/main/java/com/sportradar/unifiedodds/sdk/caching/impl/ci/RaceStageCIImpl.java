@@ -17,11 +17,10 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.StageCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-import com.sportradar.unifiedodds.sdk.entities.EventStatus;
-import com.sportradar.unifiedodds.sdk.entities.StageType;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -85,6 +84,12 @@ class RaceStageCIImpl implements StageCI {
      * associated with the current instance
      */
     private List<URN> competitorIds;
+
+    /**
+     * A {@link Map} of competitors id and their references that participate in the sport event
+     * associated with the current instance
+     */
+    private Map<URN, ReferenceIdCI> competitorsReferences;
 
     /**
      * The {@link URN} specifying the id of the parent stage
@@ -338,7 +343,6 @@ class RaceStageCIImpl implements StageCI {
             return childStagesIds == null ? null : ImmutableList.copyOf(childStagesIds);
         }
 
-
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
         return childStagesIds == null ? null : ImmutableList.copyOf(childStagesIds);
@@ -553,6 +557,22 @@ class RaceStageCIImpl implements StageCI {
     }
 
     /**
+     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     *
+     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     */
+    @Override
+    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+        if(competitorsReferences == null || loadedFixtureLocales.isEmpty()) {
+            requestMissingFixtureData(Collections.singletonList(defaultLocale));
+        }
+
+        return competitorsReferences == null
+                ? null
+                : ImmutableMap.copyOf(competitorsReferences);
+    }
+
+    /**
      * Merges the current instance with the provided {@link SAPIStageSummaryEndpoint}
      *
      * @param endpointData the endpoint data which should be merged into the current instance
@@ -648,6 +668,7 @@ class RaceStageCIImpl implements StageCI {
             competitorIds = sportEvent.getCompetitors().getCompetitor().stream()
                     .map(c -> URN.parse(c.getId())).collect(Collectors.toList());
             loadedCompetitorLocales.add(locale);
+            competitorsReferences = SdkHelper.ParseTeamCompetitorsReferences(sportEvent.getCompetitors().getCompetitor(), competitorsReferences);
         }
 
         if (sportEvent.getRaces() != null) {

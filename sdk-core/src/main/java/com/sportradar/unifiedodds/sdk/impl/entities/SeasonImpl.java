@@ -282,7 +282,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
 
         try {
             return seasonEndpointCi.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCi.getCompetitorIds(locales), locales);
+                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCi.getCompetitorIds(locales), seasonEndpointCi.getCompetitorsReferences(), locales);
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;

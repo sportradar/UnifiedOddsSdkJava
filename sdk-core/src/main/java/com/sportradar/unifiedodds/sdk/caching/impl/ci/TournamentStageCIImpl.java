@@ -16,11 +16,10 @@ import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.StageCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-import com.sportradar.unifiedodds.sdk.entities.EventStatus;
-import com.sportradar.unifiedodds.sdk.entities.StageType;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -80,6 +79,12 @@ class TournamentStageCIImpl implements StageCI {
     private List<URN> competitorIds;
 
     /**
+     * A {@link Map} of competitors id and their references that participate in the sport event
+     * associated with the current instance
+     */
+    private Map<URN, ReferenceIdCI> competitorsReferences;
+
+    /**
      * A {@link Map} storing the available sport event names
      */
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
@@ -98,7 +103,6 @@ class TournamentStageCIImpl implements StageCI {
      * An {@link ReentrantLock} used to synchronize summary request operations
      */
     private final ReentrantLock fetchRequestLock = new ReentrantLock();
-
 
     TournamentStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPITournament endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(id);
@@ -382,6 +386,23 @@ class TournamentStageCIImpl implements StageCI {
     @Override
     public void onEventBooked() {
         // tournament can not be booked
+    }
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     *
+     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     */
+    @Override
+    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+
+        if(competitorsReferences == null || cachedLocales.isEmpty()) {
+            requestMissingStageTournamentData(Collections.singletonList(defaultLocale));
+        }
+
+        return competitorsReferences == null
+                ? null
+                : ImmutableMap.copyOf(competitorsReferences);
     }
 
     private void internalMerge(SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
