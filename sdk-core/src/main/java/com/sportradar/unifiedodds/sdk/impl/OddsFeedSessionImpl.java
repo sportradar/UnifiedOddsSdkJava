@@ -117,7 +117,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
                 logger.debug("Message {} successfully validated. ProducerId:{}, EventId:'{}'. Message processing continues", unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
                 break;
             case ProblemsDetected:
-                logger.warn("Problems were detected while validating message {}, but the message is still eligible fo further processing. ProducerId:{}, EventId:'{}'",
+                logger.warn("Problems were detected while validating message {}, but the message is still eligible for further processing. ProducerId:{}, EventId:'{}'",
                         unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
                 break;
             case Failure:
@@ -389,7 +389,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
 
     /**
      * Provides the id of the associated event if available, otherwise an explanation why
-     * the eventId is not available(ex: for a snapshot complete -> system message)
+     * the eventId is not available get(ex: for a snapshot complete -> system message)
      *
      * @param o - the message from which the eventIdd should be provided
      * @return - the associated eventId or an explanation why the eventId is not available

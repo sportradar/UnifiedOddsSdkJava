@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.ArrayList;
 
@@ -40,6 +41,9 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
      */
     @Override
     public OddsFeedConfiguration build() {
+
+        SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
+
         return new OddsFeedConfiguration(
                 accessToken,
                 defaultLocale,

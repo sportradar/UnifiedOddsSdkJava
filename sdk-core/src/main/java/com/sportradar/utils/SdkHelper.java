@@ -9,6 +9,7 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -150,5 +151,25 @@ public final class SdkHelper {
         }
 
         return competitorsReferences;
+    }
+
+    public static void checkConfigurationLocales(Locale defaultLocale, Set<Locale> supportedLocales) {
+        if (defaultLocale == null && !supportedLocales.isEmpty())
+        {
+            defaultLocale = supportedLocales.iterator().next();
+        }
+        if (!supportedLocales.contains(defaultLocale))
+        {
+            supportedLocales.add(defaultLocale);
+        }
+
+        if (defaultLocale == null)
+        {
+            throw new InvalidParameterException("Missing default locale");
+        }
+        if (supportedLocales == null || supportedLocales.isEmpty())
+        {
+            throw new InvalidParameterException("Missing supported locales");
+        }
     }
 }

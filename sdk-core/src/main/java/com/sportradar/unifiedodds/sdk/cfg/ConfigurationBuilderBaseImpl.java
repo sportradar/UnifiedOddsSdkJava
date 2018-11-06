@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 
+import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +25,7 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
 
     private final Set<Locale> supportedLocales = new HashSet<>();
     final Set<Integer> disabledProducers = new HashSet<>();
-    Locale defaultLocale = Locale.ENGLISH;
+    Locale defaultLocale = null;
     ExceptionHandlingStrategy exceptionHandlingStrategy = ExceptionHandlingStrategy.Catch;
     Integer nodeId = null;
 
@@ -79,6 +80,7 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         Preconditions.checkNotNull(defaultLocale);
 
         this.defaultLocale = defaultLocale;
+
         return (T) this;
     }
 
@@ -93,7 +95,9 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     public T setDesiredLocales(List<Locale> supportedLocales) {
         Preconditions.checkNotNull(supportedLocales);
 
+        this.supportedLocales.clear();
         this.supportedLocales.addAll(supportedLocales);
+
         return (T) this;
     }
 
@@ -147,10 +151,6 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
      * @return a full list of all supported locales, including the default one
      */
     Set<Locale> getSupportedLocales() {
-        if (!supportedLocales.contains(defaultLocale)) {
-            supportedLocales.add(defaultLocale);
-        }
-
         return supportedLocales;
     }
 

@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.ArrayList;
 
@@ -169,6 +170,9 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      */
     @Override
     public OddsFeedConfiguration build() {
+
+        SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
+
         return new OddsFeedConfiguration(
                 accessToken,
                 defaultLocale,
