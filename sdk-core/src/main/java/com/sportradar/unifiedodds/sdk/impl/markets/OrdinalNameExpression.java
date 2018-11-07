@@ -31,7 +31,11 @@ public class OrdinalNameExpression implements NameExpression {
         RuleBasedNumberFormat nf = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
         int intValue = operand.getIntValue();
 
+        // if the ordinal rule cannot be found, we return the int value in 'ordinal format: 3. instead of 3rd
         String ordinalRule = getOrdinalRuleName(nf);
+        if(ordinalRule == null) {
+            return intValue + ".";
+        }
 
         return nf.format(intValue, ordinalRule);
     }
@@ -58,7 +62,13 @@ public class OrdinalNameExpression implements NameExpression {
             }
         }
 
-        throw new UnsupportedOperationException("The locale " + rbnf.getLocale(ULocale.ACTUAL_LOCALE)
-                + " doesn't supports ordinal spelling.");
+        return null;
+
+//        if(l.contains("%spellout-numbering")) {
+//            return "%spellout-numbering";
+//        }
+//
+//        throw new UnsupportedOperationException("The locale " + rbnf.getLocale(ULocale.ACTUAL_LOCALE)
+//                + " doesn't supports ordinal spelling.");
     }
 }
