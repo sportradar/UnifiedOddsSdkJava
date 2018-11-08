@@ -171,7 +171,7 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     @Override
     public OddsFeedConfiguration build() {
 
-        SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
+        defaultLocale = SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
 
         return new OddsFeedConfiguration(
                 accessToken,

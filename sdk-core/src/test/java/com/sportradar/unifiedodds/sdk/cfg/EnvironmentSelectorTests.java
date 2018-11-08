@@ -12,6 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 /**
  * Created on 27/03/2018.
  * // TODO @eti: Javadoc
@@ -81,7 +84,7 @@ public class EnvironmentSelectorTests {
     public void stagingEnvironmentResultValidation() {
         EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
 
-        OddsFeedConfiguration cfg = environmentSelector.selectStaging().build();
+        OddsFeedConfiguration cfg = environmentSelector.selectStaging().setDefaultLocale(Locale.CHINESE).build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
@@ -93,13 +96,16 @@ public class EnvironmentSelectorTests {
         Assert.assertEquals(cfg.getPort(), 5671);
         Assert.assertEquals(cfg.getUseMessagingSsl(), true);
         Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertEquals(cfg.getDefaultLocale(), Locale.CHINESE);
+        Assert.assertEquals(cfg.getDesiredLocales().size(), 1);
+        Assert.assertEquals(cfg.getDesiredLocales().iterator().next(), Locale.CHINESE);
     }
 
     @Test
     public void productionEnvironmentResultValidation() {
         EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
 
-        OddsFeedConfiguration cfg = environmentSelector.selectProduction().build();
+        OddsFeedConfiguration cfg = environmentSelector.selectProduction().setDefaultLocale(Locale.CHINESE).build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
@@ -111,13 +117,16 @@ public class EnvironmentSelectorTests {
         Assert.assertEquals(cfg.getPort(), 5671);
         Assert.assertEquals(cfg.getUseMessagingSsl(), true);
         Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertEquals(cfg.getDefaultLocale(), Locale.CHINESE);
+        Assert.assertEquals(cfg.getDesiredLocales().size(), 1);
+        Assert.assertEquals(cfg.getDesiredLocales().iterator().next(), Locale.CHINESE);
     }
 
     @Test
     public void replayEnvironmentResultValidation() {
         EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
 
-        OddsFeedConfiguration cfg = environmentSelector.selectReplay().build();
+        OddsFeedConfiguration cfg = environmentSelector.selectReplay().setDesiredLocales(Arrays.asList(Locale.CHINESE)).build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
@@ -129,13 +138,16 @@ public class EnvironmentSelectorTests {
         Assert.assertEquals(cfg.getPort(), 5671);
         Assert.assertEquals(cfg.getUseMessagingSsl(), true);
         Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertEquals(cfg.getDefaultLocale(), Locale.CHINESE);
+        Assert.assertEquals(cfg.getDesiredLocales().size(), 1);
+        Assert.assertEquals(cfg.getDesiredLocales().iterator().next(), Locale.CHINESE);
     }
 
     @Test
     public void customEnvironmentDefaultResultValidation() {
         EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
 
-        OddsFeedConfiguration cfg = environmentSelector.selectCustom().build();
+        OddsFeedConfiguration cfg = environmentSelector.selectCustom().setDesiredLocales(Arrays.asList(Locale.CHINESE)).build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
@@ -147,5 +159,8 @@ public class EnvironmentSelectorTests {
         Assert.assertEquals(cfg.getPort(), 5671);
         Assert.assertEquals(cfg.getUseMessagingSsl(), true);
         Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertEquals(cfg.getDefaultLocale(), Locale.CHINESE);
+        Assert.assertEquals(cfg.getDesiredLocales().size(), 1);
+        Assert.assertEquals(cfg.getDesiredLocales().iterator().next(), Locale.CHINESE);
     }
 }

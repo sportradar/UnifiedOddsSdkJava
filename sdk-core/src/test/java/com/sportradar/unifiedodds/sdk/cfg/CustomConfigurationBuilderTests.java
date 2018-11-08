@@ -11,6 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Locale;
+
 /**
  * Created on 27/03/2018.
  * // TODO @eti: Javadoc
@@ -98,6 +100,7 @@ public class CustomConfigurationBuilderTests {
                 .setMessagingPort(999)
                 .useMessagingSsl(false)
                 .useApiSsl(false)
+                .setDefaultLocale(Locale.CHINESE)
                 .build();
 
         Assert.assertNotNull(cfg);
@@ -110,6 +113,9 @@ public class CustomConfigurationBuilderTests {
         Assert.assertEquals(cfg.getPort(), 999);
         Assert.assertEquals(cfg.getUseMessagingSsl(), false);
         Assert.assertEquals(cfg.getUseApiSsl(), false);
+        Assert.assertEquals(cfg.getDefaultLocale(), Locale.CHINESE);
+        Assert.assertEquals(cfg.getDesiredLocales().size(), 1);
+        Assert.assertEquals(cfg.getDesiredLocales().iterator().next(), Locale.CHINESE);
     }
 
     @Test(expected = IllegalArgumentException.class)
