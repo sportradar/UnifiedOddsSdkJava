@@ -8,12 +8,19 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
+import com.sportradar.uf.sportsapi.datamodel.Mappings;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -31,6 +38,8 @@ public class MarketDescriptionCI {
     private final List<MarketSpecifierCI> specifiers;
     private final List<MarketAttributeCI> attributes;
     private final List<Locale> fetchedLocales;
+    private final MappingValidatorFactory mappingValidatorFactory;
+
     private String includesOutcomesOfType;
     private List<String> groups;
     private String variant;
@@ -71,6 +80,8 @@ public class MarketDescriptionCI {
 
         fetchedLocales = Collections.synchronizedList(new ArrayList<>());
         fetchedLocales.add(locale);
+
+        this.mappingValidatorFactory = mappingValidatorFactory;
     }
 
     public void merge(DescMarket market, Locale locale) {
@@ -166,5 +177,31 @@ public class MarketDescriptionCI {
 
     public List<Locale> getCachedLocales() {
         return ImmutableList.copyOf(fetchedLocales);
+    }
+
+    public void mergeAdditionalMappings(List<Mappings.Mapping> additionalMappings) {
+        if (additionalMappings == null) {
+            return;
+        }
+
+        for (Mappings.Mapping additionalMapping : additionalMappings) {
+            MarketMappingCI newMappingElement = new MarketMappingCI(additionalMapping, Locale.ENGLISH, mappingValidatorFactory);
+
+            boolean added = false;
+            for (int i = 0; i < mappings.size(); i++) {
+                MarketMappingCI cm = mappings.get(i);
+                if (MarketMappingCI.compareMappingsData(cm, additionalMapping)) {
+                    logger.info("Over-riding mapping with additional mapping for market[{}] -> {}", id, newMappingElement);
+                    mappings.set(i, newMappingElement);
+                    added = true;
+                    break;
+                }
+            }
+
+            if (!added) {
+                logger.info("Adding new additional mapping for market[{}] -> {}", id, newMappingElement);
+                mappings.add(newMappingElement);
+            }
+        }
     }
 }

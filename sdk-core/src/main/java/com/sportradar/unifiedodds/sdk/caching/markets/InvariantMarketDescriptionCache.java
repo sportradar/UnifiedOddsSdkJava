@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
+import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
@@ -13,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.impl.ObservableDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
@@ -36,6 +38,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
     private final Cache<String, MarketDescriptionCI> cache;
     private final DataProvider<MarketDescriptions> dataProvider;
+    private final ObservableDataProvider<MarketDescriptions> additionalMappingsProvider;
     private final MappingValidatorFactory mappingValidatorFactory;
     private final List<Locale> prefetchLocales;
     private final List<Locale> fetchedLocales;
@@ -44,16 +47,27 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
     public InvariantMarketDescriptionCache(Cache<String, MarketDescriptionCI> cache,
                                            DataProvider<MarketDescriptions> dataProvider,
+                                           ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
                                            MappingValidatorFactory mappingValidatorFactory,
                                            SDKTaskScheduler scheduler,
                                            List<Locale> prefetchLocales) {
+        Preconditions.checkNotNull(cache);
+        Preconditions.checkNotNull(dataProvider);
+        Preconditions.checkNotNull(additionalMappingsProvider);
+        Preconditions.checkNotNull(mappingValidatorFactory);
+        Preconditions.checkNotNull(scheduler);
+        Preconditions.checkNotNull(prefetchLocales);
+
         this.cache = cache;
         this.dataProvider = dataProvider;
+        this.additionalMappingsProvider = additionalMappingsProvider;
         this.mappingValidatorFactory = mappingValidatorFactory;
         this.prefetchLocales = prefetchLocales;
         this.fetchedLocales = new ArrayList<>();
 
         scheduler.scheduleAtFixedRate("InvariantMarketCacheRefreshTask", this::onTimerElapsed, 5, 60 * 60 * 6, TimeUnit.SECONDS);
+
+        additionalMappingsProvider.registerWatcher(this.getClass(), this::additionalMappingsChanged);
     }
 
     @Override
@@ -79,6 +93,8 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     }
 
     private void onTimerElapsed() {
+        logger.info("Executing invariant market cache refresh");
+
         List<Locale> locales2fetch;
 
         if (hasTimerElapsedOnce) {
@@ -149,6 +165,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             for (Locale missingLocale : missingLocales) {
                 merge(missingLocale, dataProvider.getData(missingLocale));
             }
+            initStaticMappingsEnrichment();
         } catch (DataProviderException e) {
             throw new IllegalCacheStateException("An error occurred while fetching invariant descriptors in [" + missingLocales + "]", e);
         }
@@ -169,6 +186,54 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             }
         });
         fetchedLocales.add(locale);
+    }
+
+    private void initStaticMappingsEnrichment() {
+        try {
+            MarketDescriptions data = additionalMappingsProvider.getData();
+            if (data == null || data.getMarket() == null) {
+                if (additionalMappingsProvider.logErrors()) {
+                    logger.warn("Additional mappings provider returned null data");
+                }
+                return;
+            }
+
+            enrichStaticMappings(data.getMarket());
+        } catch (Exception e) {
+            if (additionalMappingsProvider.logErrors()) {
+                logger.warn("An exception occurred while enriching static mappings with additional mappings, exc:", e);
+            }
+        }
+    }
+
+    private void enrichStaticMappings(List<DescMarket> markets) {
+        Preconditions.checkNotNull(markets);
+
+        markets.forEach(m -> {
+            String processingCacheItemId = String.valueOf(m.getId());
+            MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
+            if (cachedItem == null) {
+                if (additionalMappingsProvider.logErrors()) {
+                    logger.warn("Handling additional mappings for unknown market: {}", m.getId());
+                }
+                return;
+            }
+
+            if (m.getMappings() == null || m.getMappings().getMapping() == null || m.getMappings().getMapping().isEmpty()) {
+                if (additionalMappingsProvider.logErrors()) {
+                    logger.warn("Handling empty/null additional mappings for market: {}", m.getId());
+                }
+                return;
+            }
+
+            cachedItem.mergeAdditionalMappings(m.getMappings().getMapping());
+        });
+    }
+
+    private void additionalMappingsChanged() {
+        logger.info("Additional mappings callback invoked - triggering cache refresh");
+
+        onTimerElapsed();
     }
 
     private List<Locale> getMissingLocales(MarketDescriptionCI item, List<Locale> requiredLocales) {
