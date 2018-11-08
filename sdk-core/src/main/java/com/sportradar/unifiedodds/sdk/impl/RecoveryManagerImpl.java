@@ -9,11 +9,23 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
-import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.EventRecoveryRequestIssuer;
+import com.sportradar.unifiedodds.sdk.MessageInterest;
+import com.sportradar.unifiedodds.sdk.RecoveryManager;
+import com.sportradar.unifiedodds.sdk.SDKEventRecoveryStatusListener;
+import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SDKProducerStatusListener;
+import com.sportradar.unifiedodds.sdk.SnapshotRequestManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
-import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUpReason;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -390,8 +402,10 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                     flagProducerUp(pi, ProducerUpReason.ProcessingQueDelayStabilized);
                 }
             } else if (pi.getRecoveryState() == RecoveryState.NotStarted || pi.getRecoveryState() == RecoveryState.Error) {
+                logger.info("Recovery needed because of state == NotStarted || Error");
                 performProducerRecovery(pi);
             } else if (pi.isFlaggedDown() && !pi.isPerformingRecovery() && pi.getProducerDownReason() != ProducerDownReason.ProcessingQueueDelayViolation) {
+                logger.info("Recovery needed because of state == Down && NotInRecovery && !NotInDelayViolation");
                 performProducerRecovery(pi);
             } else if (pi.isPerformingRecovery() && (now - pi.getLastRecoveryStartedAt()) > maxRecoveryExecutionTime) {
                 // reset the recovery and restart it
