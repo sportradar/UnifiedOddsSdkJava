@@ -49,7 +49,7 @@ public class ConfigurationBuilderBaseTests {
         Assert.assertNotEquals(builderWithFullProperties.defaultLocale, SDKPropertiesReaderUtil.DEFAULT_LOCALE);
         Assert.assertNotEquals(builderWithFullProperties.exceptionHandlingStrategy, SDKPropertiesReaderUtil.EXCEPTION_HANDLING);
         Assert.assertFalse(builderWithFullProperties.nodeId != null && builderWithFullProperties.nodeId == SDKPropertiesReaderUtil.SDK_NODE_ID);
-        Assert.assertTrue(builderWithFullProperties.getSupportedLocales().size() == 1); // only the default preset locale, English
+        Assert.assertTrue(builderWithFullProperties.getSupportedLocales().size() == 0); // there are no default locale
         Assert.assertTrue(builderWithFullProperties.disabledProducers.isEmpty());
 
         builderWithFullProperties.loadConfigFromSdkProperties();
@@ -72,7 +72,7 @@ public class ConfigurationBuilderBaseTests {
         Assert.assertNotEquals(builderWithFullProperties.defaultLocale, SDKPropertiesReaderUtil.DEFAULT_LOCALE);
         Assert.assertNotEquals(builderWithFullProperties.exceptionHandlingStrategy, SDKPropertiesReaderUtil.EXCEPTION_HANDLING);
         Assert.assertFalse(builderWithFullProperties.nodeId != null && builderWithFullProperties.nodeId == SDKPropertiesReaderUtil.SDK_NODE_ID);
-        Assert.assertTrue(builderWithFullProperties.getSupportedLocales().size() == 1); // only the default preset locale, English
+        Assert.assertTrue(builderWithFullProperties.getSupportedLocales().size() == 0);
         Assert.assertTrue(builderWithFullProperties.disabledProducers.isEmpty());
 
         builderWithFullProperties.loadConfigFromApplicationYml();

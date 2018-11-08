@@ -42,7 +42,7 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
     @Override
     public OddsFeedConfiguration build() {
 
-        SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
+        defaultLocale = SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
 
         return new OddsFeedConfiguration(
                 accessToken,

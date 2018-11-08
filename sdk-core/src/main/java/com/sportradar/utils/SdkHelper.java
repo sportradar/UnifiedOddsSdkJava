@@ -153,7 +153,7 @@ public final class SdkHelper {
         return competitorsReferences;
     }
 
-    public static void checkConfigurationLocales(Locale defaultLocale, Set<Locale> supportedLocales) {
+    public static Locale checkConfigurationLocales(Locale defaultLocale, Set<Locale> supportedLocales) {
         if (defaultLocale == null && !supportedLocales.isEmpty())
         {
             defaultLocale = supportedLocales.iterator().next();
@@ -171,5 +171,6 @@ public final class SdkHelper {
         {
             throw new InvalidParameterException("Missing supported locales");
         }
+        return defaultLocale;
     }
 }
