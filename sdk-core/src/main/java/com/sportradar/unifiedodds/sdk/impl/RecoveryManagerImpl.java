@@ -402,10 +402,10 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                     flagProducerUp(pi, ProducerUpReason.ProcessingQueDelayStabilized);
                 }
             } else if (pi.getRecoveryState() == RecoveryState.NotStarted || pi.getRecoveryState() == RecoveryState.Error) {
-                logger.info("Recovery needed because of state == NotStarted || Error");
+                logger.info("Recovery needed for {} because of state[{}] == NotStarted || Error", pi, pi.getRecoveryState());
                 performProducerRecovery(pi);
             } else if (pi.isFlaggedDown() && !pi.isPerformingRecovery() && pi.getProducerDownReason() != ProducerDownReason.ProcessingQueueDelayViolation) {
-                logger.info("Recovery needed because of state == Down && NotInRecovery && !NotInDelayViolation");
+                logger.info("Recovery needed for {} because of state[{}] == Down && NotInRecovery && !NotInDelayViolation", pi, pi.getRecoveryState());
                 performProducerRecovery(pi);
             } else if (pi.isPerformingRecovery() && (now - pi.getLastRecoveryStartedAt()) > maxRecoveryExecutionTime) {
                 // reset the recovery and restart it
@@ -693,6 +693,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     private ProducerInfo provideProducerInfo(int producerId) {
         ProducerInfo pi = perProducerInfo.get(producerId);
         if (pi == null) {
+            logger.info("Creating new ProducerInfo[{}]", producerId);
             pi = new ProducerInfo(producerId, producerManager);
             perProducerInfo.put(producerId, pi);
         }

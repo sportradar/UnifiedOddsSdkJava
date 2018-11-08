@@ -187,6 +187,8 @@ class ProducerInfo {
     }
 
     void setProducerRecoveryState(int recoveryId, long recoveryStartedAt, RecoveryState recoveryState) {
+        logger.info("{} recovery state set to: recoveryId[{}], recoveryStartedAt[{}], recoveryState[{}]", this, recoveryId, recoveryStartedAt, recoveryState);
+
         this.recoveryState = recoveryState;
 
         if (recoveryState == RecoveryState.Interrupted) {
