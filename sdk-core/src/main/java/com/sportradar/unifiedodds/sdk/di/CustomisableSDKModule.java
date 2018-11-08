@@ -7,10 +7,15 @@ package com.sportradar.unifiedodds.sdk.di;
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
+import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.SnapshotRequestManager;
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumerImpl;
+import com.sportradar.unifiedodds.sdk.impl.DefaultAdditionalMarketMappingsProvider;
 import com.sportradar.unifiedodds.sdk.impl.DefaultSnapshotRequestManager;
+import com.sportradar.unifiedodds.sdk.impl.ObservableDataProvider;
 
 /**
  * An injection module which is used to customise some of the SDK internal components
@@ -24,6 +29,11 @@ public class CustomisableSDKModule extends AbstractModule {
 
         bind(ChannelMessageConsumer.class).to(provideMessageConsumerImplementationClass());
         bind(SnapshotRequestManager.class).to(provideSnapshotRequestSchedulerImplementationClass()).in(Singleton.class);
+
+        bind(new TypeLiteral<ObservableDataProvider<MarketDescriptions>>() { })
+                .annotatedWith(Names.named("AdditionalMarketMappingsProvider"))
+                .to(providesAdditionalMarketMappingsProviderClass())
+                .in(Singleton.class);
     }
 
     /**
@@ -38,5 +48,12 @@ public class CustomisableSDKModule extends AbstractModule {
      */
     protected Class<? extends SnapshotRequestManager> provideSnapshotRequestSchedulerImplementationClass() {
         return DefaultSnapshotRequestManager.class;
+    }
+
+    /**
+     * Binds the optional additional market mappings provider
+     */
+    protected Class<? extends ObservableDataProvider<MarketDescriptions>> providesAdditionalMarketMappingsProviderClass() {
+        return DefaultAdditionalMarketMappingsProvider.class;
     }
 }

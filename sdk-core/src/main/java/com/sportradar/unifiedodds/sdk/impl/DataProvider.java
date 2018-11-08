@@ -21,7 +21,7 @@ import java.util.Locale;
  *
  * @param <TOut> valid Unified API endpoint object generated from API xsd schemas
  */
-public class DataProvider <TOut>{
+public class DataProvider<TOut> {
 
     private final String uriFormat;
     private final LogHttpDataFetcher logHttpDataFetcher;
@@ -30,8 +30,10 @@ public class DataProvider <TOut>{
     private final boolean useApiSsl;
     private final Locale defaultLocale;
 
-    public DataProvider(String uriFormat, SDKInternalConfiguration config,
-                        LogHttpDataFetcher logHttpDataFetcher, Deserializer deserializer) {
+    public DataProvider(String uriFormat,
+                        SDKInternalConfiguration config,
+                        LogHttpDataFetcher logHttpDataFetcher,
+                        Deserializer deserializer) {
         Preconditions.checkNotNull(uriFormat);
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(logHttpDataFetcher);
@@ -46,7 +48,12 @@ public class DataProvider <TOut>{
         defaultLocale = config.getDefaultLocale();
     }
 
-    public DataProvider(String uriFormat, String apiHost, boolean useApiSsl, Locale defaultLocale, LogHttpDataFetcher logHttpDataFetcher, Deserializer deserializer) {
+    public DataProvider(String uriFormat,
+                        String apiHost,
+                        boolean useApiSsl,
+                        Locale defaultLocale,
+                        LogHttpDataFetcher logHttpDataFetcher,
+                        Deserializer deserializer) {
         Preconditions.checkNotNull(uriFormat);
         Preconditions.checkNotNull(apiHost);
         Preconditions.checkNotNull(defaultLocale);

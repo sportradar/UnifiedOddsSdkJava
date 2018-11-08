@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching.ci.markets;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.uf.sportsapi.datamodel.Mappings;
@@ -12,7 +13,11 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidator;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.URN;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,17 +126,7 @@ public class MarketMappingCI {
         }
     }
 
-    // k -> id, v -> subTypeId
-    private static AbstractMap.SimpleImmutableEntry<Integer, Integer> parseMappingMarketId(String id) {
-        String[] split = id.split(":");
-        if (split.length == 2) {
-            return new AbstractMap.SimpleImmutableEntry<>(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
-        } else {
-            return new AbstractMap.SimpleImmutableEntry<>(Integer.valueOf(split[0]), null);
-        }
-    }
-
-    public static boolean compareMappingsData(MarketMappingCI exm, Mappings.Mapping o) {
+    static boolean compareMappingsData(MarketMappingCI exm, Mappings.Mapping o) {
         Preconditions.checkNotNull(exm);
         Preconditions.checkNotNull(o);
 
@@ -156,6 +151,16 @@ public class MarketMappingCI {
                 || (marketIds.getValue() != null && marketIds.getValue().equals(exm.getMarketSubTypeId())));
     }
 
+    // k -> id, v -> subTypeId
+    private static AbstractMap.SimpleImmutableEntry<Integer, Integer> parseMappingMarketId(String id) {
+        String[] split = id.split(":");
+        if (split.length == 2) {
+            return new AbstractMap.SimpleImmutableEntry<>(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
+        } else {
+            return new AbstractMap.SimpleImmutableEntry<>(Integer.valueOf(split[0]), null);
+        }
+    }
+
     private static boolean compareMappingsProducerIds(Set<Integer> producerIds, Set<Integer> newProducerIds) {
         // both null - ok
         if (producerIds == null && newProducerIds == null) {
@@ -168,5 +173,17 @@ public class MarketMappingCI {
         }
 
         return producerIds.containsAll(newProducerIds);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("producerIds", producerIds)
+                .add("sportId", sportId)
+                .add("marketTypeId", marketTypeId)
+                .add("marketSubTypeId", marketSubTypeId)
+                .add("sovTemplate", sovTemplate)
+                .add("validFor", validFor)
+                .toString();
     }
 }
