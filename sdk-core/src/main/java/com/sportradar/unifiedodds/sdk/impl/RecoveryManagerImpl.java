@@ -120,7 +120,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             logger.warn("No active producers available");
         }
 
-        activeProducers.forEach((id, p) -> perProducerInfo.put(id, new ProducerInfo(p.getId(), producerManager)));
+        activeProducers.forEach((id, p) -> perProducerInfo.computeIfAbsent(id, (producerId) -> new ProducerInfo(producerId, producerManager)));
         executorServices.scheduleAtFixedRate(this::onTimerElapsed, 20, 10, TimeUnit.SECONDS);
 
         if (!config.isReplaySession()) {

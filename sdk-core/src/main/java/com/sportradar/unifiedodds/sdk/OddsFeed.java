@@ -10,9 +10,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.DataRouter;
+import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
+import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
+import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -303,6 +312,8 @@ public class OddsFeed {
                                 .collect(Collectors.toMap(Object::hashCode, v -> v.messageInterest)), oddsFeedConfiguration);
 
                 try {
+                    injector.getInstance(RecoveryManager.class).init();
+
                     boolean aliveRoutingKeySessionPresent = createdSessionData.stream()
                             .anyMatch(cs -> cs.messageInterest == MessageInterest.SystemAliveMessages);
                     if (!aliveRoutingKeySessionPresent) {
@@ -325,7 +336,7 @@ public class OddsFeed {
                                 sessionData.listener
                         );
                     }
-                    injector.getInstance(RecoveryManager.class).init();
+
                     injector.getInstance(SDKTaskScheduler.class).open();
                 } catch (IOException exception) {
                     throw new InitException("Unexpected issue initializing OddsFeed", exception);
