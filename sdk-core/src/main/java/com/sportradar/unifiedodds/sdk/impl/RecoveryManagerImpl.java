@@ -319,6 +319,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             }
             notificationString.append("(").append(pi).append(":").append(secondsAgo).append(")");
 
+            dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
         }
         notificationString.append(" seconds ago. Recovery will be initiated when the Alive messages start to process.");
@@ -410,6 +411,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             } else if (pi.isPerformingRecovery() && (now - pi.getLastRecoveryStartedAt()) > maxRecoveryExecutionTime) {
                 // reset the recovery and restart it
                 logger.warn("Recovery[{}] did not complete in the max RecoveryExecution time frame({}) - restarting recovery", pi, maxRecoveryExecutionTime);
+                dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
                 pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
                 performProducerRecovery(pi);
             }
@@ -701,6 +703,22 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         return pi;
     }
 
+    private void dispatchSnapshotFailed(ProducerInfo pi, long recoveryId) {
+        Preconditions.checkNotNull(pi);
+
+        if (recoveryId == 0) {
+            logger.debug("Ignoring snapshot failed dispatch for {}, recoveryId was 0");
+            return;
+        }
+
+        try {
+            snapshotRequestManager.requestFailed(
+                    new SnapshotFailedImpl(bookmakerId, pi.getProducerId(), recoveryId)
+            );
+        } catch (Exception e) {
+            logger.warn("An exception occurred while notifying the SnapshotRequestManager for a failed request, exc:", e);
+        }
+    }
 
     /**
      * The runnable class used to perform async producer recovery requests
@@ -768,6 +786,8 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             }
 
             logger.warn("Failed to request recovery for {}, message: {}", pi, responseMessage);
+
+            dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
         }
     }

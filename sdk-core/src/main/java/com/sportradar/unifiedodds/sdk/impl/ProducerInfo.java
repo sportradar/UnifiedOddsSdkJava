@@ -138,6 +138,10 @@ class ProducerInfo {
         return recoveryState;
     }
 
+    int getCurrentRecoveryId() {
+        return recoveryId;
+    }
+
     long getLastRecoveryStartedAt() {
         return recoveryStartedAt;
     }
