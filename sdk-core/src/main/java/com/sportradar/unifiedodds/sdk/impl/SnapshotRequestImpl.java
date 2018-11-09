@@ -40,6 +40,12 @@ class SnapshotRequestImpl implements SnapshotRequest {
     }
 
     @Override
+    public long getRecoveryFromTimestamp() {
+        return fromTimestamp;
+    }
+
+    @Override
+    @Deprecated
     public long recoveryFromTimestamp() {
         return fromTimestamp;
     }
