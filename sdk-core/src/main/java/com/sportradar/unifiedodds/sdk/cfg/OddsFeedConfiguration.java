@@ -178,6 +178,7 @@ public class OddsFeedConfiguration {
 
     /**
      * Returns the assigned SDK node identifier
+     * MTS customer must set this value! Use only positive numbers; negative are reserved for internal use.
      *
      * @return the assigned SDK node identifier
      */

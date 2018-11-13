@@ -61,6 +61,7 @@ public interface ConfigurationBuilderBase<T> {
 
     /**
      * Sets the node id used to separate between SDK instances associated with the same account
+     * MTS customer must set this value! Use only positive numbers; negative are reserved for internal use.
      *
      * @param nodeId the node id to be set
      * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
