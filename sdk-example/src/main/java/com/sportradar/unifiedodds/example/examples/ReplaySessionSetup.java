@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.URN;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * A basic example demonstrating on how to start the SDK with a single session and perform replay operations
@@ -26,7 +27,7 @@ public class ReplaySessionSetup {
         logEntry("Running the OddsFeed SDK Basic example - single session with replay server");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().setDefaultLocale(Locale.ENGLISH).build();
 
         logEntry("Creating a new ReplayOddsFeed instance");
         oddsFeed = new ReplayOddsFeed(new GlobalEventsListener(), configuration);

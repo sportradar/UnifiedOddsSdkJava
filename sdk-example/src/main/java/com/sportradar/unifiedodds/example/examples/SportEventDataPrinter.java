@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * A basic example which demonstrates how to access and print static spot event data
@@ -24,7 +25,7 @@ public class SportEventDataPrinter {
         logEntry("Running the OddsFeed SDK Basic example - multiple session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().setDefaultLocale(Locale.ENGLISH).build();
 
         logEntry("Creating a new OddsFeed instance");
         oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);

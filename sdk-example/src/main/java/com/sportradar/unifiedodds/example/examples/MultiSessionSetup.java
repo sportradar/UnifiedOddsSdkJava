@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * A basic example demonstrating on how to start the SDK with multiple sessions
@@ -23,7 +24,7 @@ public class MultiSessionSetup {
         logEntry("Running the OddsFeed SDK Basic example - multiple session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().setDefaultLocale(Locale.ENGLISH).build();
 
         logEntry("Creating a new OddsFeed instance");
         oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);
