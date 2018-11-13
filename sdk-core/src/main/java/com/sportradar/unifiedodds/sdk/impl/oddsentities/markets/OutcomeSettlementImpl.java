@@ -29,7 +29,7 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
 
         this.isWinning = result == UFResult.WON;
         this.voidFactor = voidFactor == null ? 0.0 : voidFactor.value();
-        this.deadHeatFactor = deadHeatFactor == null ? 0.0 : deadHeatFactor;
+        this.deadHeatFactor = deadHeatFactor == null ? 1 : deadHeatFactor;
 
         switch (result) {
             case WON:
