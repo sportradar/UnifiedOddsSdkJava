@@ -163,8 +163,6 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
 
         URN relatedEventId = URN.parse(message.getEventId());
 
-        sportEventStatusCache.purgeSportEventStatus(relatedEventId);
-
         if (isDrawEvent(relatedEventId)) {
             sportEventCache.purgeCacheItem(relatedEventId);
         }
