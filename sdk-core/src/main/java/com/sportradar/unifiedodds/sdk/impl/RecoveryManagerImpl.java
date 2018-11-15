@@ -488,6 +488,9 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         }
         if (pi.isPerformingRecovery()) {
             logger.warn("Received a recovery request even if the producer is already requesting a recovery - {}", pi);
+
+            // since we are initiating another recovery, the previous recovery will be forgotten - never completed
+            dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
         }
 
         if (recoveryFrom != 0) {
