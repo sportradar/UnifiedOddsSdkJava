@@ -71,9 +71,6 @@ public class AvailableMarketsPrinter {
         logEntry("Listing static market descriptions - END");
         logEntry("");
 
-        logEntry("Closing the odds feed instance");
-        oddsFeed.close();
-
         logEntry("AvailableMarketsPrinter example finished");
         logEntry("");
     }

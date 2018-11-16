@@ -59,7 +59,7 @@ public class DataSessionSetup {
     }
 
     private void setProducersRecoveryTimestamp() {
-        logEntry("Setting last message timestamp(used for recovery) for all the active producers to two hours back");
+        logEntry("Setting last message timestamp (used for recovery) for all the active producers to two hours back");
 
         // using the timestamp from 2 hours back, in real case scenarios you need to monitor the timestamp for recovery
         // with the producerManager.getProducer(producerId).getTimestampForRecovery(); method

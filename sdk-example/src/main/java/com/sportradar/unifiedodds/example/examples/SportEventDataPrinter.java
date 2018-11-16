@@ -59,9 +59,6 @@ public class SportEventDataPrinter {
         logEntry("Listing sport event data - END");
         logEntry("");
 
-        logEntry("Closing the odds feed instance");
-        oddsFeed.close();
-
         logEntry("SportEventDataPrinter example finished");
         logEntry("");
     }

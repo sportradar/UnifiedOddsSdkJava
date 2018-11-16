@@ -34,7 +34,7 @@ public class AdvancedConfigurationSetup {
         logEntry("Setting the default locale to German");
         cfgBuilder.setDefaultLocale(Locale.GERMAN);
 
-        logEntry("Setting the max inactivity to 30 seconds(max interval between alive messages)");
+        logEntry("Setting the max inactivity to 30 seconds (max interval between alive messages)");
         cfgBuilder.setMaxInactivitySeconds(30);
 
         logEntry("Adding additional desired locales - these locales will be directly available on the exposed entities");

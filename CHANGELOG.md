@@ -1,5 +1,15 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.17 (2018-11-16)**
+* Exposed BookmakerDetails method on OddsFeed - exposing bookmakerId, serverTimeDifference and token expiration date
+* Removed fetching of fixture for TournamentRound (only summary, if needed)
+* Improved handling of competitor reference id(s)
+* Minimized rest api calls - removed calls for eng, when not needed
+* OutcomeSettlement default deadHeatFactor set to 1 (before 0)
+* Removed purging of sportEventStatus on betSettlement message
+* Fix: null bug for nodeId in configuration
+* Fix: the ordinal name spelling for all languages
+
 **2.0.16 (2018-10-17)**
 * added Competition.getStatusIfPresent() to retrieve if from cache without API call
 * added Match.getEventTimelineIfPresent() to retrieve if from cache without API call

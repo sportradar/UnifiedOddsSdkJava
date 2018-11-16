@@ -49,7 +49,7 @@ public class ReplaySessionSetup {
         replayManager.addSportEventToReplay(eventId);
         replayManager.addSportEventToReplay(eventId1);
 
-        logEntry("Opening the feed instance & starting the replay procedure(30x faster, max delay between messages 500ms)");
+        logEntry("Opening the feed instance & starting the replay procedure (30x faster, max delay between messages 500ms)");
         logEntry("Feed instance will remain open for 30 minutes, processing replay messages");
         oddsFeed.open();
         replayManager.play(30, 500);
