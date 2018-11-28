@@ -312,8 +312,6 @@ public class OddsFeed {
                                 .collect(Collectors.toMap(Object::hashCode, v -> v.messageInterest)), oddsFeedConfiguration);
 
                 try {
-                    injector.getInstance(RecoveryManager.class).init();
-
                     boolean aliveRoutingKeySessionPresent = createdSessionData.stream()
                             .anyMatch(cs -> cs.messageInterest == MessageInterest.SystemAliveMessages);
                     if (!aliveRoutingKeySessionPresent) {
@@ -337,6 +335,7 @@ public class OddsFeed {
                         );
                     }
 
+                    injector.getInstance(RecoveryManager.class).init();
                     injector.getInstance(SDKTaskScheduler.class).open();
                 } catch (IOException exception) {
                     throw new InitException("Unexpected issue initializing OddsFeed", exception);

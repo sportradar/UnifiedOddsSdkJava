@@ -63,7 +63,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     private final int bookmakerId;
     private final SequenceGenerator sequenceGenerator;
     private final TimeUtils timeUtils;
-    private boolean initialized;
+    private volatile boolean initialized;
 
     @Inject
     RecoveryManagerImpl(SDKInternalConfiguration config,
@@ -483,6 +483,11 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     private void performProducerRecovery(ProducerInfo pi, long recoveryFrom) {
         Preconditions.checkNotNull(pi);
 
+        if (!initialized) {
+            logger.info("Skipping recovery request for {}, RecoveryManager not initialised yet");
+            return;
+        }
+
         if (config.isReplaySession()) {
             return;
         }
@@ -696,14 +701,10 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     }
 
     private ProducerInfo provideProducerInfo(int producerId) {
-        ProducerInfo pi = perProducerInfo.get(producerId);
-        if (pi == null) {
+        return perProducerInfo.computeIfAbsent(producerId, (pid) -> {
             logger.info("Creating new ProducerInfo[{}]", producerId);
-            pi = new ProducerInfo(producerId, producerManager);
-            perProducerInfo.put(producerId, pi);
-        }
-
-        return pi;
+            return new ProducerInfo(producerId, producerManager);
+        });
     }
 
     private void dispatchSnapshotFailed(ProducerInfo pi, long recoveryId) {
