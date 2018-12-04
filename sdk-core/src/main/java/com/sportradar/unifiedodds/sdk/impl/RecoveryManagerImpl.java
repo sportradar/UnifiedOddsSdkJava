@@ -210,15 +210,17 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 String msg = String.format("Recovery completed for %s - request %d - duration: %s", pi, requestId, between);
                 logger.info(msg);
 
+                boolean needsToBeRestarted = pi.getRecoveryState() == RecoveryState.Interrupted;
+
                 try {
                     snapshotRequestManager.requestCompleted(
-                            new SnapshotCompletedImpl(bookmakerId, pi.getProducerId(), requestId)
+                            new SnapshotCompletedImpl(bookmakerId, pi.getProducerId(), requestId, needsToBeRestarted)
                     );
                 } catch (Exception e) {
                     logger.warn("An exception occurred while notifying the SnapshotRequestManager for a completed request, exc:", e);
                 }
 
-                if (pi.getRecoveryState() == RecoveryState.Interrupted) {
+                if (needsToBeRestarted) {
                     // restart the recovery from the last valid timestamp
                     logger.info("Recovery[{}] completed with interruption, repeating recovery from last valid alive gen timestamp[{}]",
                             requestId, pi.getLastValidAliveGenTimestampInRecovery());

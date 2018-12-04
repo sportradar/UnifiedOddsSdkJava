@@ -10,11 +10,13 @@ class SnapshotCompletedImpl implements SnapshotCompleted {
     private final int bookmakerId;
     private final int producerId;
     private final long recoveryId;
+    private final boolean willBeRestarted;
 
-    SnapshotCompletedImpl(int bookmakerId, int producerId, long recoveryId) {
+    SnapshotCompletedImpl(int bookmakerId, int producerId, long recoveryId, boolean willBeRestarted) {
         this.bookmakerId = bookmakerId;
         this.producerId = producerId;
         this.recoveryId = recoveryId;
+        this.willBeRestarted = willBeRestarted;
     }
 
     @Override
@@ -30,5 +32,10 @@ class SnapshotCompletedImpl implements SnapshotCompleted {
     @Override
     public long getRecoveryId() {
         return recoveryId;
+    }
+
+    @Override
+    public boolean getWillBeRestarted() {
+        return willBeRestarted;
     }
 }

@@ -10,4 +10,6 @@ public interface SnapshotCompleted {
     int getProducerId();
 
     long getRecoveryId();
+
+    boolean getWillBeRestarted();
 }
