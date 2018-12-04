@@ -71,7 +71,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
 
     @Override
     public <T extends SportEvent> OddsChange<T> buildOddsChange(T sportEvent, UFOddsChange message, byte[] rawMessage) {
-        return new OddsChangeImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, namedValuesProvider);
+        return new OddsChangeImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, namedValuesProvider, message.getOddsGenerationProperties());
     }
 
     @Override

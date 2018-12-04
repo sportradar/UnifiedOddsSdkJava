@@ -4,7 +4,7 @@
 * Exposed BookmakerDetails method on OddsFeed - exposing bookmakerId, serverTimeDifference and token expiration date
 * Removed fetching of fixture for TournamentRound (only summary, if needed)
 * Improved handling of competitor reference id(s)
-* Minimized rest api calls - removed calls for eng, when not needed
+* Minimized rest api calls - removed calls for eng, when not needed (requires language to be set in configuration)
 * OutcomeSettlement default deadHeatFactor set to 1 (before 0)
 * Removed purging of sportEventStatus on betSettlement message
 * Fix: null bug for nodeId in configuration

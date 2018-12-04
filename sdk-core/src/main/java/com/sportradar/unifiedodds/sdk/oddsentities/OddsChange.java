@@ -57,5 +57,17 @@ public interface OddsChange<T extends SportEvent> extends MarketMessage<T> {
      */
     String getBettingStatus();
 
+    /**
+     * Returns a list of {@link MarketWithOdds} associated with the message
+     * @return a list of {@link MarketWithOdds} associated with the message
+     */
     List<MarketWithOdds> getMarkets();
+
+    /**
+     * Gets the odds generation properties (contains a few key-parameters that can be used in a client’s own special odds model, or even offer spread betting bets based on it)
+     * @return the odds generation properties
+     */
+    default OddsGeneration getOddsGenerationProperties(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }
