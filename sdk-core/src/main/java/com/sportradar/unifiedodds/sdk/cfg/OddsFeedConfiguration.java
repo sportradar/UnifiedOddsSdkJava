@@ -80,6 +80,11 @@ public class OddsFeedConfiguration {
     }
 
     /**
+     * @return The selected environment used for API-access
+     */
+    public Environment getEnvironment() { return selectedEnvironment; }
+
+    /**
      * @return The longest inactivity interval between producer alive messages(seconds)
      */
     public int getLongestInactivityInterval() {

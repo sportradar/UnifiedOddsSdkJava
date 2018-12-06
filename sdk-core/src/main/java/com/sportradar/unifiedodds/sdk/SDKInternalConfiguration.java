@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 
 import java.util.HashSet;
@@ -38,6 +39,7 @@ public class SDKInternalConfiguration {
     private final Set<String> schedulerTasksToSkip;
     private final String messagingVirtualHost;
     private String apiHost;
+    private final Environment selectedEnvironment;
 
     SDKInternalConfiguration(OddsFeedConfiguration cfg,
                              SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
@@ -71,6 +73,7 @@ public class SDKInternalConfiguration {
         sdkNodeId = cfg.getSdkNodeId();
         disabledProducers = cfg.getDisabledProducers();
         exceptionHandlingStrategy = cfg.getExceptionHandlingStrategy();
+        selectedEnvironment = cfg.getEnvironment();
 
         cleanTrafficLogEntries = sdkConfigurationPropertiesReader.readCleanTrafficLogEntries()
                 .orElse(sdkConfigurationYamlReader.readCleanTrafficLogEntries()
@@ -99,9 +102,12 @@ public class SDKInternalConfiguration {
     /**
      * @return The Sportradar host used for API-access
      */
-    public String getAPIHost() {
-        return apiHost;
-    }
+    public String getAPIHost() { return apiHost; }
+
+    /**
+     * @return The selected environment used for API-access
+     */
+    public Environment getEnvironment() { return selectedEnvironment; }
 
     /**
      * @return The longest inactivity interval between producer alive messages(seconds)

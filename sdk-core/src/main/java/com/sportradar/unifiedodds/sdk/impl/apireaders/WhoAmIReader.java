@@ -61,7 +61,9 @@ public class WhoAmIReader {
             return;
         }
 
-        BookmakerDetails bookmakerDetails = config.isReplaySession() ? fetchReplayBookmakerDetails() : fetchBookmakerDetails();
+        BookmakerDetails bookmakerDetails = config.isReplaySession()
+                ? fetchReplayBookmakerDetails()
+                : fetchBookmakerDetails();
 
         dataFetched = true;
 
@@ -163,9 +165,34 @@ public class WhoAmIReader {
     private BookmakerDetails fetchBookmakerDetails() {
         BookmakerDetails bookmakerDetails = null;
         try {
+            // we can have 3 types of hosts: production, staging and custom
+
             bookmakerDetails = provideBookmakerDetails(configDataProvider);
+
         } catch (DataProviderException e) {
             // bookmaker details fetch failed
+            if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.STAGING_API_HOST))
+            {
+                try {
+                    bookmakerDetails = provideBookmakerDetails(stagingDataProvider);
+                    String message = String.format("Access denied. The provided access token is for the Staging environment but the SDK is configured to access the %s environment.", config.getEnvironment());
+                    logger.error(message);
+                    throw new IllegalStateException(message);
+                }
+                catch (DataProviderException e1) {
+                }
+            }
+            if (bookmakerDetails == null && !config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.PRODUCTION_API_HOST))
+            {
+                try {
+                    bookmakerDetails = provideBookmakerDetails(productionDataProvider);
+                    String message = String.format("Access denied. The provided access token is for the Production environment but the SDK is configured to access the %s environment.", config.getEnvironment());
+                    logger.error(message);
+                    throw new IllegalStateException(message);
+                }
+                catch (DataProviderException e1) {
+                }
+            }
         }
         return bookmakerDetails;
     }
