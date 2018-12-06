@@ -145,7 +145,8 @@ public class DataProvider<TOut> {
 
         HttpData fetchedContent;
         try {
-            fetchedContent = logHttpDataFetcher.get(httpHttps + "://" + apiHost + "/v1" + formattedPath);
+            String finalUrl = uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHost + "/v1" + formattedPath;
+            fetchedContent = logHttpDataFetcher.get(finalUrl);
         } catch (CommunicationException e) {
             throw new DataProviderException("The requested data was not accessible on the provided URL", e);
         }

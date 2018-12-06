@@ -62,12 +62,7 @@ import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProviderI
 import com.sportradar.unifiedodds.sdk.caching.markets.VariantDescriptionCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.VariantDescriptionCacheImpl;
 import com.sportradar.unifiedodds.sdk.caching.markets.VariantMarketDescriptionCache;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
-import com.sportradar.unifiedodds.sdk.impl.ObservableDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
-import com.sportradar.unifiedodds.sdk.impl.SportEntityFactoryImpl;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.URN;
@@ -162,9 +157,12 @@ public class CachingModule extends AbstractModule {
                 ? "?node_id=" + cfg.getSdkNodeId()
                 : "";
 
+        String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
+        String replaySummary = httpHttps + "://" + UnifiedFeedConstants.PRODUCTION_API_HOST + "/v1/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
+
         return new DataProvider<>(
                 cfg.isReplaySession()
-                ? "/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr
+                ? replaySummary
                 : "/sports/%s/sport_events/%s/summary.xml",
                 cfg,
                 httpDataFetcher,
