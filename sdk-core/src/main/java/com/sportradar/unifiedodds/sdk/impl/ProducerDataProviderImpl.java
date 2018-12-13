@@ -11,6 +11,7 @@ import com.sportradar.uf.sportsapi.datamodel.Producer;
 import com.sportradar.uf.sportsapi.datamodel.Producers;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  */
 public class ProducerDataProviderImpl implements ProducerDataProvider {
     private final DataProvider<Producers> dataProvider;
+    private final SDKInternalConfiguration config;
 
     @Inject
     public ProducerDataProviderImpl(SDKInternalConfiguration configuration,
@@ -32,6 +34,7 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
         Preconditions.checkNotNull(logHttpDataFetcher);
         Preconditions.checkNotNull(deserializer);
 
+        this.config = configuration;
         this.dataProvider = new DataProvider<>("/descriptions/producers.xml", configuration, logHttpDataFetcher, deserializer);
     }
 
@@ -59,9 +62,20 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
                 p.getName(),
                 p.getDescription(),
                 p.isActive(),
-                p.getApiUrl(),
+                config.getEnvironment() != Environment.Custom
+                        ? p.getApiUrl()
+                        : ReplaceProducerApiUrl(p.getApiUrl()),
                 p.getScope(),
                 p.getStatefulRecoveryWindowInMinutes()
         )).collect(Collectors.toList());
+    }
+
+    private String ReplaceProducerApiUrl(String url)
+    {
+        if (url.contains(UnifiedFeedConstants.STAGING_API_HOST))
+        {
+            return url.replace(UnifiedFeedConstants.STAGING_API_HOST, config.getAPIHost());
+        }
+        return url.replace(UnifiedFeedConstants.PRODUCTION_API_HOST, config.getAPIHost());
     }
 }
