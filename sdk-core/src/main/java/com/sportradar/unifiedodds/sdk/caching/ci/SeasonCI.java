@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISeasonExtended;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
 import java.util.*;
@@ -82,6 +83,14 @@ public class SeasonCI extends SportEntityCI {
 
         if (season.getTournamentId() != null) {
             tournamentId = URN.parse(season.getTournamentId());
+        }
+
+        if (season.getStartTime() != null) {
+            startDate = SdkHelper.combineDateAndTime(season .getStartDate().toGregorianCalendar().getTime(), season.getStartTime().toGregorianCalendar().getTime());
+        }
+
+        if (season.getEndTime() != null) {
+            endDate = SdkHelper.combineDateAndTime(season .getEndDate().toGregorianCalendar().getTime(), season.getEndTime().toGregorianCalendar().getTime());
         }
 
         name.put(locale, season.getName());

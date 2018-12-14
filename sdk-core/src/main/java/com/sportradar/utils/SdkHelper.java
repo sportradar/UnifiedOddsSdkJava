@@ -173,4 +173,14 @@ public final class SdkHelper {
         }
         return defaultLocale;
     }
+
+    public static Date combineDateAndTime(Date date, Date time) {
+        if(date == null) {
+            return time;
+        }
+        if(time == null) {
+            return date;
+        }
+        return new Date(date.getTime() + time.getTime());
+    }
 }
