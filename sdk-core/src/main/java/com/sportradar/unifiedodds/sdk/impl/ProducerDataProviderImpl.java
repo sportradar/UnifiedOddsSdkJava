@@ -72,9 +72,9 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
 
     private String ReplaceProducerApiUrl(String url)
     {
-        if (url.contains(UnifiedFeedConstants.STAGING_API_HOST))
+        if (url.contains(UnifiedFeedConstants.INTEGRATION_API_HOST))
         {
-            return url.replace(UnifiedFeedConstants.STAGING_API_HOST, config.getAPIHost());
+            return url.replace(UnifiedFeedConstants.INTEGRATION_API_HOST, config.getAPIHost());
         }
         return url.replace(UnifiedFeedConstants.PRODUCTION_API_HOST, config.getAPIHost());
     }

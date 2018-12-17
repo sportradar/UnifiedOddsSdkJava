@@ -29,7 +29,7 @@ public class OddsFeedConfiguration {
     private final String messagingUsername;
     private final String messagingPassword;
     private final Integer sdkNodeId;
-    private final boolean useStagingEnvironment;
+    private final boolean useIntegrationEnvironment;
     private final List<Integer> disabledProducers;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Environment selectedEnvironment;
@@ -38,7 +38,7 @@ public class OddsFeedConfiguration {
     OddsFeedConfiguration(String accessToken, Locale defaultLocale, List<Locale> desiredLocales,
                           String host, String apiHost, int inactivitySeconds, int maxRecoveryExecutionMinutes,
                           boolean useMessagingSsl, boolean useApiSsl, int port, String messagingUsername, String messagingPassword, Integer sdkNodeId,
-                          boolean useStagingEnvironment, List<Integer> disabledProducers, ExceptionHandlingStrategy exceptionHandlingStrategy, Environment selectedEnvironment,
+                          boolean useIntegrationEnvironment, List<Integer> disabledProducers, ExceptionHandlingStrategy exceptionHandlingStrategy, Environment selectedEnvironment,
                           String messagingVirtualHost) {
         // ctor parameters are validated in the cfg builder instance
         this.accessToken = accessToken;
@@ -58,7 +58,7 @@ public class OddsFeedConfiguration {
         {
             LoggerFactory.getLogger(OddsFeedConfiguration.class).warn(String.format("Setting nodeId to %s. Use only positive numbers; negative are reserved for internal use.", sdkNodeId));
         }
-        this.useStagingEnvironment = useStagingEnvironment;
+        this.useIntegrationEnvironment = useIntegrationEnvironment;
         this.disabledProducers = disabledProducers;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.selectedEnvironment = selectedEnvironment;
@@ -192,12 +192,24 @@ public class OddsFeedConfiguration {
     }
 
     /**
-     * Returns an indication if the SDK should connect to the staging environment
+     * Returns an indication if the SDK should connect to the integration environment
      *
-     * @return <code>true</code> if the SDK should connect to the staging environment, otherwise <code>false</code>
+     * @deprecated in favour of {{@link #getUseIntegrationEnvironment()}} from v2.0.18
+     *
+     * @return <code>true</code> if the SDK should connect to the integration environment, otherwise <code>false</code>
      */
+    @Deprecated
     public boolean getUseStagingEnvironment() {
-        return useStagingEnvironment;
+        return useIntegrationEnvironment;
+    }
+
+    /**
+     * Returns an indication if the SDK should connect to the integration environment
+     *
+     * @return <code>true</code> if the SDK should connect to the integration environment, otherwise <code>false</code>
+     */
+    public boolean getUseIntegrationEnvironment() {
+        return useIntegrationEnvironment;
     }
 
     /**
@@ -237,7 +249,7 @@ public class OddsFeedConfiguration {
                 ",\n\tmessagingUsername='" + messagingUsername + '\'' +
                 ",\n\tmessagingPassword='" + messagingPassword + '\'' +
                 ",\n\tsdkNodeId=" + sdkNodeId +
-                ",\n\tuseStagingEnvironment=" + useStagingEnvironment +
+                ",\n\tuseIntegrationEnvironment=" + useIntegrationEnvironment +
                 ",\n\tdisabledProducers=" + disabledProducers +
                 ",\n\texceptionHandlingStrategy=" + exceptionHandlingStrategy +
                 ",\n\tselectedEnvironment=" + selectedEnvironment +

@@ -21,8 +21,8 @@ First you need to implement the SDK event listeners that will receive callbacks 
         MySDKGlobalEventsListener globalEventsListener = new MySDKGlobalEventsListener();
 
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
-            .setAccessToken("your-staging-token-here")
-            .selectStaging()
+            .setAccessToken("your-integration-token-here")
+            .selectIntegration()
             .build();
 
         OddsFeed oddsFeed = new OddsFeed(globalEventsListener, config);
@@ -89,8 +89,8 @@ To create two different sessions for the high and low-priority messages you do t
         MySDKGlobalEventsListener globalEventsListener = new MySDKGlobalEventsListener();
 
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
-            .setAccessToken("your-staging-token-here")
-            .selectStaging()
+            .setAccessToken("your-integration-token-here")
+            .selectIntegration()
             .build();
 
         OddsFeed oddsFeed = new OddsFeed(globalEventsListener, config);

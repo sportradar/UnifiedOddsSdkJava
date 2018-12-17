@@ -107,13 +107,27 @@ public interface OddsFeedConfigurationBuilder {
     OddsFeedConfigurationBuilder setSdkNodeId(int id);
 
     /**
-     * Set the setting property which will ensure the SDK connects to the staging environment
-     * (please note that the staging environment requires different access tokens than the production ones)
+     * Set the setting property which will ensure the SDK connects to the integration environment
+     * (please note that the integration environment requires different access tokens than the production ones)
      *
-     * @param useStagingEnvironment an indication if the staging environment should be used
+     * @deprecated in favour of {{@link #setUseIntegrationEnvironment(boolean)}} from v2.0.18
+     *
+     * @param useStagingEnvironment an indication if the integration environment should be used
      * @return the current instance {@link OddsFeedConfigurationBuilder}
      */
-    OddsFeedConfigurationBuilder setUseStagingEnvironment(boolean useStagingEnvironment);
+    @Deprecated
+    default OddsFeedConfigurationBuilder setUseStagingEnvironment(boolean useStagingEnvironment) {
+        return setUseIntegrationEnvironment(useStagingEnvironment);
+    }
+
+    /**
+     * Set the setting property which will ensure the SDK connects to the integration environment
+     * (please note that the integration environment requires different access tokens than the production ones)
+     *
+     * @param useIntegrationEnvironment an indication if the integration environment should be used
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setUseIntegrationEnvironment(boolean useIntegrationEnvironment);
 
     /**
      * Set a list of producer identifiers which should be disabled automatically when the SDK starts

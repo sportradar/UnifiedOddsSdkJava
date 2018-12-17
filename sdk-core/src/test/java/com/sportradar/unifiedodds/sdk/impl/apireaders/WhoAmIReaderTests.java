@@ -32,7 +32,7 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 33);
@@ -40,12 +40,12 @@ public class WhoAmIReaderTests {
     }
 
     @Test
-    public void validTokenStagingConfig() throws DataProviderException {
+    public void validTokenIntegrationConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.STAGING_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidStagingDataProvider(), getInvalidProductionDataProvider(), getValidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidIntegrationDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 3311);
@@ -58,17 +58,17 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void invalidTokenStagingConfig() throws DataProviderException {
+    public void invalidTokenIntegrationConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.STAGING_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidStagingDataProvider(), getInvalidProductionDataProvider(), getInvalidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
     }
 
@@ -78,24 +78,24 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(true);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
 
-        Mockito.verify(config, Mockito.times(0)).updateApiHost(UnifiedFeedConstants.STAGING_API_HOST);
+        Mockito.verify(config, Mockito.times(0)).updateApiHost(UnifiedFeedConstants.INTEGRATION_API_HOST);
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 33);
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
     }
 
     @Test
-    public void replayServerConfigSelectionTestValidStagingEndpoint() throws DataProviderException {
+    public void replayServerConfigSelectionTestValidIntegrationEndpoint() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
 
-        Mockito.verify(config, Mockito.times(1)).updateApiHost(UnifiedFeedConstants.STAGING_API_HOST);
+        Mockito.verify(config, Mockito.times(1)).updateApiHost(UnifiedFeedConstants.INTEGRATION_API_HOST);
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 3311);
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
     }
@@ -106,29 +106,29 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(true);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidStagingDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
     }
 
     @SuppressWarnings("unchecked")
-    private static DataProvider<BookmakerDetails> getValidStagingDataProvider() throws DataProviderException {
+    private static DataProvider<BookmakerDetails> getValidIntegrationDataProvider() throws DataProviderException {
         XMLGregorianCalendar expirationDate = XMLGregorianCalendarImpl.LEAP_YEAR_DEFAULT;
         expirationDate.setYear(2020);
 
-        BookmakerDetails sampleStagingWhoAmIResponse = new BookmakerDetails();
-        sampleStagingWhoAmIResponse.setBookmakerId(3311);
-        sampleStagingWhoAmIResponse.setExpireAt(expirationDate);
-        sampleStagingWhoAmIResponse.setMessage("Token valid staging");
-        sampleStagingWhoAmIResponse.setResponseCode(ResponseCode.OK);
-        sampleStagingWhoAmIResponse.setVirtualHost("/vhost3311-staging");
+        BookmakerDetails sampleIntegrationWhoAmIResponse = new BookmakerDetails();
+        sampleIntegrationWhoAmIResponse.setBookmakerId(3311);
+        sampleIntegrationWhoAmIResponse.setExpireAt(expirationDate);
+        sampleIntegrationWhoAmIResponse.setMessage("Token valid integration");
+        sampleIntegrationWhoAmIResponse.setResponseCode(ResponseCode.OK);
+        sampleIntegrationWhoAmIResponse.setVirtualHost("/vhost3311-integration");
 
-        DataProvider<BookmakerDetails> stagingDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
-        Mockito.when(stagingDataProvider.getData()).thenReturn(sampleStagingWhoAmIResponse);
+        DataProvider<BookmakerDetails> integrationDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        Mockito.when(integrationDataProvider.getData()).thenReturn(sampleIntegrationWhoAmIResponse);
 
-        DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleStagingWhoAmIResponse);
-        Mockito.when(stagingDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleIntegrationWhoAmIResponse);
+        Mockito.when(integrationDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
 
-        return stagingDataProvider;
+        return integrationDataProvider;
     }
 
     @SuppressWarnings("unchecked")
@@ -143,28 +143,28 @@ public class WhoAmIReaderTests {
         sampleProductionWhoAmIResponse.setResponseCode(ResponseCode.OK);
         sampleProductionWhoAmIResponse.setVirtualHost("/vhost33-production");
 
-        DataProvider<BookmakerDetails> stagingDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
-        Mockito.when(stagingDataProvider.getData()).thenReturn(sampleProductionWhoAmIResponse);
+        DataProvider<BookmakerDetails> productionDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        Mockito.when(productionDataProvider.getData()).thenReturn(sampleProductionWhoAmIResponse);
 
         DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleProductionWhoAmIResponse);
-        Mockito.when(stagingDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        Mockito.when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
 
-        return stagingDataProvider;
+        return productionDataProvider;
     }
 
     @SuppressWarnings("unchecked")
-    private static DataProvider<BookmakerDetails> getInvalidStagingDataProvider() throws DataProviderException {
-        BookmakerDetails sampleStagingWhoAmIResponse = new BookmakerDetails();
-        sampleStagingWhoAmIResponse.setMessage("Token invalid staging");
-        sampleStagingWhoAmIResponse.setResponseCode(ResponseCode.FORBIDDEN);
+    private static DataProvider<BookmakerDetails> getInvalidIntegrationDataProvider() throws DataProviderException {
+        BookmakerDetails sampleIntegrationWhoAmIResponse = new BookmakerDetails();
+        sampleIntegrationWhoAmIResponse.setMessage("Token invalid integration");
+        sampleIntegrationWhoAmIResponse.setResponseCode(ResponseCode.FORBIDDEN);
 
-        DataProvider<BookmakerDetails> stagingDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
-        Mockito.when(stagingDataProvider.getData()).thenReturn(sampleStagingWhoAmIResponse);
+        DataProvider<BookmakerDetails> integrationDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        Mockito.when(integrationDataProvider.getData()).thenReturn(sampleIntegrationWhoAmIResponse);
 
-        DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleStagingWhoAmIResponse);
-        Mockito.when(stagingDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleIntegrationWhoAmIResponse);
+        Mockito.when(integrationDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
 
-        return stagingDataProvider;
+        return integrationDataProvider;
     }
 
     @SuppressWarnings("unchecked")
@@ -173,13 +173,13 @@ public class WhoAmIReaderTests {
         sampleProductionWhoAmIResponse.setMessage("Token invalid valid prod");
         sampleProductionWhoAmIResponse.setResponseCode(ResponseCode.FORBIDDEN);
 
-        DataProvider<BookmakerDetails> stagingDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
-        Mockito.when(stagingDataProvider.getData()).thenReturn(sampleProductionWhoAmIResponse);
+        DataProvider<BookmakerDetails> productionDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        Mockito.when(productionDataProvider.getData()).thenReturn(sampleProductionWhoAmIResponse);
 
         DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleProductionWhoAmIResponse);
-        Mockito.when(stagingDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        Mockito.when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
 
-        return stagingDataProvider;
+        return productionDataProvider;
     }
 
     @SuppressWarnings("unchecked")

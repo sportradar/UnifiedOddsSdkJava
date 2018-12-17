@@ -9,11 +9,23 @@ package com.sportradar.unifiedodds.sdk.cfg;
  */
 public interface EnvironmentSelector {
     /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access staging environment
+     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
      *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access staging environment
+     * @deprecated in favour of {{@link #selectIntegration()}} from v2.0.18
+     *
+     * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
      */
-    ConfigurationBuilder selectStaging();
+    @Deprecated
+    default ConfigurationBuilder selectStaging() {
+        return selectIntegration();
+    };
+
+    /**
+     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
+     *
+     * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
+     */
+    ConfigurationBuilder selectIntegration();
 
     /**
      * Returns a {@link ConfigurationBuilder} with properties set to values needed to access production environment

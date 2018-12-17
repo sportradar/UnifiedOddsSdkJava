@@ -31,7 +31,7 @@ public class WhoAmIReader {
     private final static Logger logger = LoggerFactory.getLogger(WhoAmIReader.class);
     private final DataProvider<BookmakerDetails> configDataProvider;
     private final DataProvider<BookmakerDetails> productionDataProvider;
-    private final DataProvider<BookmakerDetails> stagingDataProvider;
+    private final DataProvider<BookmakerDetails> integrationDataProvider;
     private final SDKInternalConfiguration config;
     private boolean dataFetched;
     private boolean whoAmIValidated;
@@ -44,15 +44,15 @@ public class WhoAmIReader {
             SDKInternalConfiguration config,
             @Named("ConfigDataProvider") DataProvider<BookmakerDetails> configDataProvider,
             @Named("ProductionDataProvider") DataProvider<BookmakerDetails> productionDataProvider,
-            @Named("StagingDataProvider") DataProvider<BookmakerDetails> stagingDataProvider) {
+            @Named("IntegrationDataProvider") DataProvider<BookmakerDetails> integrationDataProvider) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(productionDataProvider);
-        Preconditions.checkNotNull(stagingDataProvider);
+        Preconditions.checkNotNull(integrationDataProvider);
 
         this.config = config;
         this.configDataProvider = configDataProvider;
         this.productionDataProvider = productionDataProvider;
-        this.stagingDataProvider = stagingDataProvider;
+        this.integrationDataProvider = integrationDataProvider;
         this.serverTimeDifference = Duration.ofSeconds(0);
     }
 
@@ -165,17 +165,17 @@ public class WhoAmIReader {
     private BookmakerDetails fetchBookmakerDetails() {
         BookmakerDetails bookmakerDetails = null;
         try {
-            // we can have 3 types of hosts: production, staging and custom
+            // we can have 3 types of hosts: production, integration and custom
 
             bookmakerDetails = provideBookmakerDetails(configDataProvider);
 
         } catch (DataProviderException e) {
             // bookmaker details fetch failed
-            if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.STAGING_API_HOST))
+            if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.INTEGRATION_API_HOST))
             {
                 try {
-                    bookmakerDetails = provideBookmakerDetails(stagingDataProvider);
-                    String message = String.format("Access denied. The provided access token is for the Staging environment but the SDK is configured to access the %s environment.", config.getEnvironment());
+                    bookmakerDetails = provideBookmakerDetails(integrationDataProvider);
+                    String message = String.format("Access denied. The provided access token is for the Integration environment but the SDK is configured to access the %s environment.", config.getEnvironment());
                     logger.error(message);
                     throw new IllegalStateException(message);
                 }
@@ -210,16 +210,16 @@ public class WhoAmIReader {
             return bookmakerDetails;
         }
 
-        logger.info("Production API request failed, fetching staging WhoAmI endpoint");
+        logger.info("Production API request failed, fetching integration WhoAmI endpoint");
         try {
-            bookmakerDetails = provideBookmakerDetails(stagingDataProvider);
+            bookmakerDetails = provideBookmakerDetails(integrationDataProvider);
         } catch (DataProviderException e) {
             // bookmaker details fetch failed
         }
 
         if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
-            logger.info("Staging WhoAmI request successful, switching SDK configuration to staging API");
-            config.updateApiHost(UnifiedFeedConstants.STAGING_API_HOST);
+            logger.info("Integration WhoAmI request successful, switching SDK configuration to integration API");
+            config.updateApiHost(UnifiedFeedConstants.INTEGRATION_API_HOST);
         }
 
         return bookmakerDetails;

@@ -187,7 +187,7 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
                 username,
                 password,
                 nodeId,
-                environment == Environment.Staging,
+                environment == Environment.Integration || environment == Environment.Staging,
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,

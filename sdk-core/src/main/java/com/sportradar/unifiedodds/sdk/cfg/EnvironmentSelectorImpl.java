@@ -29,14 +29,14 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
     }
 
     /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access staging environment
+     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
      *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access staging environment
+     * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
      */
     @Override
-    public ConfigurationBuilder selectStaging() {
-        String messagingHost = UnifiedFeedConstants.STAGING_MESSAGING_HOST;
-        String apiHost = UnifiedFeedConstants.STAGING_API_HOST;
+    public ConfigurationBuilder selectIntegration() {
+        String messagingHost = UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST;
+        String apiHost = UnifiedFeedConstants.INTEGRATION_API_HOST;
         int messagingPort = 5671;
 
         return new ConfigurationBuilderImpl(accessToken,
@@ -47,7 +47,7 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
                 true,
                 sdkConfigurationPropertiesReader,
                 sdkConfigurationYamlReader,
-                Environment.Staging);
+                Environment.Integration);
     }
 
     /**
@@ -101,8 +101,8 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      */
     @Override
     public CustomConfigurationBuilder selectCustom() {
-        String messagingHost = UnifiedFeedConstants.STAGING_MESSAGING_HOST;
-        String apiHost = UnifiedFeedConstants.STAGING_API_HOST;
+        String messagingHost = UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST;
+        String apiHost = UnifiedFeedConstants.INTEGRATION_API_HOST;
         int messagingPort = 5671;
 
         return new CustomConfigurationBuilderImpl(accessToken,

@@ -38,7 +38,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private int maxRecoveryExecutionMinutes;
     private String messagingPassword;
     private Integer sdkNodeId;
-    private boolean useStagingEnvironment;
+    private boolean useIntegrationEnvironment;
     private List<Integer> disabledProducers;
 
     public OddsFeedConfigurationBuilderImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader) {
@@ -252,15 +252,15 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     }
 
     /**
-     * Set the setting property which will ensure the SDK connects to the staging environment
-     * (please note that the staging environment requires different access tokens than the production ones)
+     * Set the setting property which will ensure the SDK connects to the integration environment
+     * (please note that the integration environment requires different access tokens than the production ones)
      *
-     * @param useStagingEnvironment an indication if the staging environment should be used
+     * @param useIntegrationEnvironment an indication if the integration environment should be used
      * @return the current instance {@link OddsFeedConfigurationBuilder}
      */
     @Override
-    public OddsFeedConfigurationBuilder setUseStagingEnvironment(boolean useStagingEnvironment) {
-        this.useStagingEnvironment = useStagingEnvironment;
+    public OddsFeedConfigurationBuilder setUseIntegrationEnvironment(boolean useIntegrationEnvironment) {
+        this.useIntegrationEnvironment = useIntegrationEnvironment;
         return this;
     }
 
@@ -291,7 +291,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         sdkConfigurationPropertiesReader.readUseApiSsl().ifPresent(val -> useApiSsl = val);
         sdkConfigurationPropertiesReader.readUseMessagingSsl().ifPresent(val -> useMessagingSsl = val);
         sdkConfigurationPropertiesReader.readMaxRecoveryTime().ifPresent(val -> maxRecoveryExecutionMinutes = val);
-        sdkConfigurationPropertiesReader.readUseStaging().ifPresent(val -> useStagingEnvironment = val);
+        sdkConfigurationPropertiesReader.readUseIntegration().ifPresent(val -> useIntegrationEnvironment = val);
         sdkConfigurationPropertiesReader.readSdkNodeId().ifPresent(val -> sdkNodeId = val);
         sdkConfigurationPropertiesReader.readDefaultLocale().ifPresent(val -> defaultLocale = val);
 
@@ -308,7 +308,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
      */
     @Override
     public OddsFeedConfiguration build() {
-        if (useStagingEnvironment) {
+        if (useIntegrationEnvironment) {
             host = "stgmq.betradar.com";
             apiHost = "stgapi.betradar.com";
             useApiSsl = true;
@@ -333,7 +333,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
                 null,
                 messagingPassword,
                 sdkNodeId,
-                useStagingEnvironment,
+                useIntegrationEnvironment,
                 disabledProducers,
                 exceptionHandlingStrategy,
                 null,
@@ -356,7 +356,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         maxRecoveryExecutionMinutes = MAX_RECOVERY_EXECUTION_MINUTES;
         messagingPassword = null;
         sdkNodeId = null;
-        useStagingEnvironment = false;
+        useIntegrationEnvironment = false;
         disabledProducers = new ArrayList<>();
     }
 }

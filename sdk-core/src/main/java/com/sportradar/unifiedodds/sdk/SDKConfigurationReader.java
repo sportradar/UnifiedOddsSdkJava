@@ -105,9 +105,15 @@ public abstract class SDKConfigurationReader {
         });
     }
 
-    public Optional<Boolean> readUseStaging() {
-        return Optional.ofNullable(sdkProperties.get("uf.sdk.useStaging"))
+    public Optional<Boolean> readUseIntegration() {
+        Optional<Boolean> useIntegration = Optional.ofNullable(sdkProperties.get("uf.sdk.useIntegration"))
                 .map(value -> value.equals("true"));
+
+        if (!useIntegration.isPresent())
+            useIntegration = Optional.ofNullable(sdkProperties.get("uf.sdk.useStaging"))
+                    .map(value -> value.equals("true"));
+
+        return useIntegration;
     }
 
     public Optional<Integer> readSdkNodeId() {

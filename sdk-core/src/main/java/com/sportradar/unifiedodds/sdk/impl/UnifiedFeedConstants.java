@@ -12,8 +12,8 @@ public final class UnifiedFeedConstants {
     public static final String PRODUCTION_MESSAGING_HOST = "mq.betradar.com";
     public static final String PRODUCTION_API_HOST = "api.betradar.com";
 
-    public static final String STAGING_MESSAGING_HOST = "stgmq.betradar.com";
-    public static final String STAGING_API_HOST = "stgapi.betradar.com";
+    public static final String INTEGRATION_MESSAGING_HOST = "stgmq.betradar.com";
+    public static final String INTEGRATION_API_HOST = "stgapi.betradar.com";
 
     public static final String REPLAY_MESSAGING_HOST = "replaymq.betradar.com";
     public static final String REPLAY_API_HOST = PRODUCTION_API_HOST;

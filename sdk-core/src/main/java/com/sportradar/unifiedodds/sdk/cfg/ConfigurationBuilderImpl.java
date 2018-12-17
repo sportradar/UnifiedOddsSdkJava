@@ -58,7 +58,7 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
                 null,
                 null,
                 nodeId,
-                environment == Environment.Staging,
+                environment == Environment.Integration || environment == Environment.Staging,
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,

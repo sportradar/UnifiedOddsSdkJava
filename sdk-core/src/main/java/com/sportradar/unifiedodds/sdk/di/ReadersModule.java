@@ -67,12 +67,12 @@ public class ReadersModule extends AbstractModule {
         );
     }
 
-    @Provides @Named("StagingDataProvider")
-    private DataProvider<BookmakerDetails> providesStagingDataProvider(LogHttpDataFetcher httpDataFetcher,
-                                                                       @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+    @Provides @Named("IntegrationDataProvider")
+    private DataProvider<BookmakerDetails> providesIntegrationDataProvider(LogHttpDataFetcher httpDataFetcher,
+                                                                           @Named("ApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/users/whoami.xml",
-                UnifiedFeedConstants.STAGING_API_HOST,
+                UnifiedFeedConstants.INTEGRATION_API_HOST,
                 true,
                 Locale.ENGLISH,
                 httpDataFetcher,

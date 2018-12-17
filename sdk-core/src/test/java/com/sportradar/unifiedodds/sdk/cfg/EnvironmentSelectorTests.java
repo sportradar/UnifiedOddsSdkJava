@@ -45,10 +45,10 @@ public class EnvironmentSelectorTests {
     }
 
     @Test
-    public void selectStagingEnvironmentReturnTest() {
+    public void selectIntegrationEnvironmentReturnTest() {
         EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
 
-        ConfigurationBuilder configurationBuilder = environmentSelector.selectStaging();
+        ConfigurationBuilder configurationBuilder = environmentSelector.selectIntegration();
 
         Assert.assertNotNull(configurationBuilder);
     }
@@ -81,15 +81,15 @@ public class EnvironmentSelectorTests {
     }
 
     @Test
-    public void stagingEnvironmentResultValidation() {
+    public void integrationEnvironmentResultValidation() {
         EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
 
-        OddsFeedConfiguration cfg = environmentSelector.selectStaging().setDefaultLocale(Locale.CHINESE).build();
+        OddsFeedConfiguration cfg = environmentSelector.selectIntegration().setDefaultLocale(Locale.CHINESE).build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
-        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.STAGING_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.STAGING_API_HOST);
+        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST);
+        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.INTEGRATION_API_HOST);
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
@@ -151,8 +151,8 @@ public class EnvironmentSelectorTests {
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
-        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.STAGING_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.STAGING_API_HOST);
+        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST);
+        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.INTEGRATION_API_HOST);
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
