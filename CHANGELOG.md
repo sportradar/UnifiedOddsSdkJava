@@ -1,5 +1,14 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.18 (2018-12-18)**
+* Added method getWillBeRestarted() to SnapshotCompleted message
+* Added OddsGenerationProperties to the OddsChange message
+* Replay session using any token returns production replay summary endpoint
+* Added support for custom api hosts (recovery for producers uses custom urls)
+* Added Season start time and end time to exposed dates
+* Rename Staging to Integration environment
+* other minor fixes and improvements
+
 **2.0.17 (2018-11-16)**
 * Exposed BookmakerDetails method on OddsFeed - exposing bookmakerId, serverTimeDifference and token expiration date
 * Removed fetching of fixture for TournamentRound (only summary, if needed)
