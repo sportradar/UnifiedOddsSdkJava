@@ -137,7 +137,8 @@ public class FixtureImpl implements Fixture {
                         fixture.getCoverageInfo().isLiveCoverage(),
                         fixture.getCoverageInfo().getCoverage()
                                 .stream().map(SAPICoverage::getIncludes)
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()),
+                        fixture.getCoverageInfo().getCoveredFrom());
         this.producerInfo = fixture.getProductInfo() == null ? null :
                 new ProducerInfoImpl(
                         fixture.getProductInfo().getIsAutoTraded() != null,

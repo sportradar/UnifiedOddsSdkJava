@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
 import com.sportradar.uf.sportsapi.datamodel.SAPICoverageInfo;
+import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,11 @@ public class CoverageInfoCI {
      * The includes property backing field
      */
     private List<String> includes;
+
+    /**
+     * The coverage location field
+     */
+    private CoveredFrom coveredFrom;
 
     /**
      * Initializes a new instance of the {@link SAPICoverageInfo} class.
@@ -60,6 +66,8 @@ public class CoverageInfoCI {
             includes = coverageInfo.getCoverage().stream().
                             map(SAPICoverage::getIncludes).collect(Collectors.toList());
         }
+
+        coveredFrom = mapCoveredFrom(coverageInfo.getCoveredFrom());
     }
 
     /**
@@ -87,5 +95,25 @@ public class CoverageInfoCI {
      */
     public List<String> getIncludes() {
         return includes == null ? null : ImmutableList.copyOf(includes);
+    }
+
+    /**
+     * Returns coverage location
+     *
+     * @return - coverage location
+     */
+    public CoveredFrom getCoveredFrom() {
+        return coveredFrom;
+    }
+
+    private static CoveredFrom mapCoveredFrom(String value) {
+        switch (value) {
+            case "tv":
+                return CoveredFrom.Tv;
+            case "venue":
+                return CoveredFrom.Venue;
+            default:
+                return null;
+        }
     }
 }

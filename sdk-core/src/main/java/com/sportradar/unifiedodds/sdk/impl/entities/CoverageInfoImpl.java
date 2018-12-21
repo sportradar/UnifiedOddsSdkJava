@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
+import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 
 import java.util.List;
 
@@ -29,6 +30,10 @@ public class CoverageInfoImpl implements CoverageInfo {
      */
     private final List<String> includes;
 
+    /**
+     * The coverage location field
+     */
+    private CoveredFrom coveredFrom;
 
     /**
      * Initializes a new instance of {@link CoverageInfoImpl}
@@ -36,11 +41,13 @@ public class CoverageInfoImpl implements CoverageInfo {
      * @param level - a {@link String}
      * @param isLive - a value indicating whether the coverage represented by current instance is live coverage
      * @param includes - a {@link List} specifying what is included in the coverage represented by the current {@link CoverageInfo} instance
+     * @param coveredFrom - a {@link String} describing coverage location
      */
-    CoverageInfoImpl(String level, boolean isLive, List<String> includes) {
+    CoverageInfoImpl(String level, boolean isLive, List<String> includes, String coveredFrom) {
         this.level = level;
         this.isLive = isLive;
         this.includes = includes == null ?  null : ImmutableList.copyOf(includes);
+        this.coveredFrom = mapCoveredFrom(coveredFrom);
     }
 
 
@@ -76,6 +83,16 @@ public class CoverageInfoImpl implements CoverageInfo {
     }
 
     /**
+     * Returns coverage location
+     *
+     * @return - coverage location
+     */
+    @Override
+    public CoveredFrom getCoveredFrom() {
+        return coveredFrom;
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link CoverageInfo} instance
      *
      * @return - a {@link String} describing the current {@link CoverageInfo} instance
@@ -86,6 +103,18 @@ public class CoverageInfoImpl implements CoverageInfo {
                 "level='" + level + '\'' +
                 ", isLive=" + isLive +
                 ", includes=" + includes +
+                ", coveredFrom=" + coveredFrom +
                 '}';
+    }
+
+    private static CoveredFrom mapCoveredFrom(String value) {
+        switch (value) {
+            case "tv":
+                return CoveredFrom.Tv;
+            case "venue":
+                return CoveredFrom.Venue;
+            default:
+                return null;
+        }
     }
 }

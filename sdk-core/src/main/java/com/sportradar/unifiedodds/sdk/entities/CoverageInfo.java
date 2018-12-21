@@ -31,4 +31,13 @@ public interface CoverageInfo {
      *           otherwise null
      */
     List<String> getIncludes();
+
+    /**
+     * Returns coverage location
+     *
+     * @return - coverage location
+     */
+    default CoveredFrom getCoveredFrom() {
+        return null;
+    };
 }
