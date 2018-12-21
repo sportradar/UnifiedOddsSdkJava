@@ -118,6 +118,6 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
     }
 
     private static boolean isMarketOutcomeText(MarketDescription marketDescriptor) {
-        return marketDescriptor.getIncludesOutcomesOfType() != null && marketDescriptor.getIncludesOutcomesOfType().equals(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE);
+        return marketDescriptor.getOutcomeType() != null && marketDescriptor.getOutcomeType().equals(UnifiedFeedConstants.FREETEXT_VARIANT_VALUE);
     }
 }

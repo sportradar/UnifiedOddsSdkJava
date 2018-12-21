@@ -18,8 +18,20 @@ public interface MarketDefinition {
      * Returns the market attribute "includes_outcomes_of_type"
      *
      * @return the market attribute "includes_outcomes_of_type"
+     *
+     * @deprecated in favour of {{@link #getOutcomeType()}} from v2.0.19
      */
+    @Deprecated
     String getIncludesOutcomesOfType();
+
+    /**
+     * Returns the market attribute "outcome_type"
+     *
+     * @return the market attribute "outcome_type"
+     */
+    default String getOutcomeType() {
+        return null;
+    }
 
     /**
      * Returns the market name template translated in the default locale.

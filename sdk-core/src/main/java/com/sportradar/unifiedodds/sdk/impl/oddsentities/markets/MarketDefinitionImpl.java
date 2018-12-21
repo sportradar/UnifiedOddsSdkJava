@@ -58,9 +58,15 @@ class MarketDefinitionImpl implements MarketDefinition {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
+    @Deprecated
     @Override
     public String getIncludesOutcomesOfType() {
         return marketDescriptor.getIncludesOutcomesOfType();
+    }
+
+    @Override
+    public String getOutcomeType() {
+        return marketDescriptor.getOutcomeType();
     }
 
     @Override

@@ -69,7 +69,10 @@ public interface MarketDescription {
      * Returns the market attribute "includes_outcomes_of_type"
      *
      * @return the market attribute "includes_outcomes_of_type"
+     *
+     * @deprecated in favour of {{@link #getOutcomeType()}} from v2.0.19
      */
+    @Deprecated
     String getIncludesOutcomesOfType();
 
     /**
@@ -80,4 +83,13 @@ public interface MarketDescription {
      * @return a {@link List} of groups to which the market belongs to
      */
     List<String> getGroups();
+
+    /**
+     * Returns the market attribute "outcome_type"
+     *
+     * @return the market attribute "outcome_type"
+     */
+    default String getOutcomeType() {
+        return null;
+    }
 }

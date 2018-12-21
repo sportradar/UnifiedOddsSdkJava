@@ -15,13 +15,16 @@ import com.sportradar.unifiedodds.sdk.entities.markets.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.FREETEXT_VARIANT_VALUE;
+import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE;
+
 /**
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
 public class MarketDescriptionImpl implements MarketDescription {
     private final int id;
-    private final String includesOutcomesOfType;
+    private final String outcomeType;
     private final Map<Locale, String> names;
     private final Map<Locale, String> descriptions;
     private final List<Specifier> specifiers;
@@ -38,7 +41,7 @@ public class MarketDescriptionImpl implements MarketDescription {
         Preconditions.checkArgument(!locales.isEmpty());
 
         id = cachedItem.getId();
-        includesOutcomesOfType = cachedItem.getIncludesOutcomesOfType();
+        outcomeType = cachedItem.getOutcomeType();
         groups = cachedItem.getGroups();
         names = ImmutableMap.copyOf(locales.stream()
                 .collect(Collectors.toMap(k -> k, cachedItem::getName)));
@@ -106,14 +109,26 @@ public class MarketDescriptionImpl implements MarketDescription {
         return attributes;
     }
 
+    @Deprecated
     @Override
     public String getIncludesOutcomesOfType() {
-        return includesOutcomesOfType;
+        if (outcomeType == null)
+            return null;
+
+        if (outcomeType.equals(FREETEXT_VARIANT_VALUE))
+            return OUTCOMETEXT_VARIANT_VALUE;
+        else
+            return "sr:" + outcomeType;
     }
 
     @Override
     public List<String> getGroups() {
         return groups;
+    }
+
+    @Override
+    public String getOutcomeType() {
+        return outcomeType;
     }
 
     // outcomes get only merged because some of them might be static

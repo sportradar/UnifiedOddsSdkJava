@@ -24,6 +24,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.FREETEXT_VARIANT_VALUE;
+import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE;
+
 /**
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
@@ -40,7 +43,7 @@ public class MarketDescriptionCI {
     private final List<Locale> fetchedLocales;
     private final MappingValidatorFactory mappingValidatorFactory;
 
-    private String includesOutcomesOfType;
+    private String outcomeType;
     private List<String> groups;
     private String variant;
 
@@ -52,7 +55,7 @@ public class MarketDescriptionCI {
         id = market.getId();
         names = new ConcurrentHashMap<>();
         names.put(locale, market.getName());
-        includesOutcomesOfType = market.getIncludesOutcomesOfType();
+        outcomeType = combineOutcomeType(market.getOutcomeType(), market.getIncludesOutcomesOfType());
         variant = market.getVariant();
         descriptions = new ConcurrentHashMap<>();
         if (!Strings.isNullOrEmpty(market.getDescription())) {
@@ -89,7 +92,7 @@ public class MarketDescriptionCI {
         Preconditions.checkNotNull(locale);
 
         names.put(locale, market.getName());
-        includesOutcomesOfType = market.getIncludesOutcomesOfType();
+        outcomeType =  combineOutcomeType(market.getOutcomeType(), market.getIncludesOutcomesOfType());
         variant = market.getVariant();
         if (!Strings.isNullOrEmpty(market.getDescription())) {
             descriptions.put(locale, market.getDescription());
@@ -163,8 +166,8 @@ public class MarketDescriptionCI {
         return attributes == null ? null : ImmutableList.copyOf(attributes);
     }
 
-    public String getIncludesOutcomesOfType() {
-        return includesOutcomesOfType;
+    public String getOutcomeType() {
+        return outcomeType;
     }
 
     public List<String> getGroups() {
@@ -203,5 +206,20 @@ public class MarketDescriptionCI {
                 mappings.add(newMappingElement);
             }
         }
+    }
+
+    private String combineOutcomeType(String outcomeType, String includesOutcomesOfType) {
+        if (outcomeType != null)
+            return outcomeType;
+
+        if (includesOutcomesOfType == null)
+            return null;
+
+        else if (includesOutcomesOfType.equals(OUTCOMETEXT_VARIANT_VALUE))
+            return FREETEXT_VARIANT_VALUE;
+        else if (includesOutcomesOfType.startsWith("sr:"))
+            return includesOutcomesOfType.substring(3);
+        else
+            return null;
     }
 }

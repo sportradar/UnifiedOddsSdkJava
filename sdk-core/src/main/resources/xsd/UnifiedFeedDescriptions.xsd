@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
-  -->
-
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <xs:include schemaLocation="UnifiedFeedResponse.xsd"/>
   <xs:element name="market_descriptions">
@@ -29,6 +25,7 @@
     <xs:attribute name="description" type="xs:string"/>
     <xs:attribute name="includes_outcomes_of_type" type="xs:string"/>
     <xs:attribute name="variant" type="xs:string"/>
+    <xs:attribute name="outcome_type" type="xs:string"/>
   </xs:complexType>
 
   <xs:complexType name="desc_outcomes">
@@ -150,6 +147,20 @@
   </xs:element>
 
   <xs:complexType name="desc_match_status">
+    <xs:sequence>
+      <xs:element name="sports" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sport" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:attribute name="id" type="xs:string"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="all" type="xs:boolean" default="false"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
     <xs:attribute name="id" type="xs:long" use="required"/>
     <xs:attribute name="description" type="xs:string" use="required"/>
     <xs:attribute name="period_number" type="xs:int"/>
@@ -187,7 +198,7 @@
     <xs:attribute name="api_url" type="xs:string" use="required"/>
     <xs:attribute name="active" type="xs:boolean" use="required"/>
     <xs:attribute name="scope" type="xs:string"/>
-    <xs:attribute name="stateful_recovery_window_in_minutes" type="xs:int"/>
+    <xs:attribute name="stateful_recovery_window_in_minutes" type="xs:int" use="required"/>
   </xs:complexType>
 
   <xs:element name="variant_descriptions">
