@@ -9,13 +9,11 @@ import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
 import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Represents a competing team

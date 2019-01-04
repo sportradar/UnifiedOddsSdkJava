@@ -11,11 +11,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.SnapshotRequestManager;
-import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
-import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumerImpl;
-import com.sportradar.unifiedodds.sdk.impl.DefaultAdditionalMarketMappingsProvider;
-import com.sportradar.unifiedodds.sdk.impl.DefaultSnapshotRequestManager;
-import com.sportradar.unifiedodds.sdk.impl.ObservableDataProvider;
+import com.sportradar.unifiedodds.sdk.impl.*;
 
 /**
  * An injection module which is used to customise some of the SDK internal components

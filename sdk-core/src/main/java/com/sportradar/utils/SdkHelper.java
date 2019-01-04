@@ -5,9 +5,9 @@
 package com.sportradar.utils;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
+import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.entities.Reference;
 
 import java.security.InvalidParameterException;
 import java.util.*;

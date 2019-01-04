@@ -195,6 +195,7 @@ class MatchCIImpl implements MatchCI {
         this.dataRouterManager = dataRouterManager;
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.bookingStatus = null;
     }
 
     MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent data, Locale dataLocale) {
@@ -247,6 +248,7 @@ class MatchCIImpl implements MatchCI {
         this.dataRouterManager = dataRouterManager;
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.bookingStatus = null;
 
         scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
@@ -382,6 +384,10 @@ class MatchCIImpl implements MatchCI {
      */
     @Override
     public BookingStatus getBookingStatus() {
+        if (bookingStatus != null) {
+            return bookingStatus;
+        }
+
         if (!loadedFixtureLocales.isEmpty()) {
             return bookingStatus;
         }
@@ -580,39 +586,39 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
-     * Returns a map of available team qualifiers
-     *
-     * @return a map of available team qualifiers
-     */
-    @Override
-    public Map<URN, String> getCompetitorQualifiers() {
-        if (competitorQualifiers != null && !competitorQualifiers.isEmpty()) {
-            return copyOf(competitorQualifiers);
-        }
-
-        if (!loadedSummaryLocales.isEmpty()) {
-            return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
-        }
-
-        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
-
-        return competitorQualifiers == null ? null : copyOf(competitorQualifiers);
-    }
-
-    /**
      * Returns list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
      *
      * @return list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-        if(competitorsReferences == null || loadedFixtureLocales.isEmpty()) {
+        if(loadedFixtureLocales.isEmpty()) {
             requestMissingFixtureData(Collections.singletonList(defaultLocale));
         }
 
         return competitorsReferences == null
                 ? null
                 : ImmutableMap.copyOf(competitorsReferences);
+    }
+
+    /**
+     * Returns list of {@link URN} of {@link CompetitorCI} and associated qualifier for this sport event
+     *
+     * @return list of {@link URN} of {@link CompetitorCI} and associated qualifier for this sport event
+     */
+    @Override
+    public Map<URN, String> getCompetitorsQualifiers() {
+        if (competitorQualifiers != null && !competitorQualifiers.isEmpty()) {
+            return copyOf(competitorQualifiers);
+        }
+
+        if (loadedSummaryLocales.isEmpty()) {
+            requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+        }
+
+        return competitorQualifiers == null
+                ? null
+                : copyOf(competitorQualifiers);
     }
 
     @Override

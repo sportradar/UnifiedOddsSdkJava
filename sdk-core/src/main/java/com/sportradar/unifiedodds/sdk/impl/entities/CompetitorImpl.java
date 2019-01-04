@@ -12,9 +12,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.*;
 import com.sportradar.unifiedodds.sdk.impl.ManagerImpl;
-import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 
-import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
