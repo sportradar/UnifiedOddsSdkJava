@@ -374,7 +374,7 @@ public class StageImpl extends SportEventImpl implements Stage {
         }
 
         try {
-            return sportEntityFactory.buildStreamCompetitors(competitors, cacheItem.getCompetitorsReferences(), locales);
+            return sportEntityFactory.buildStreamCompetitors(competitors, cacheItem, locales);
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;

@@ -395,7 +395,6 @@ class TournamentStageCIImpl implements StageCI {
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-
         if(competitorsReferences == null || cachedLocales.isEmpty()) {
             requestMissingStageTournamentData(Collections.singletonList(defaultLocale));
         }

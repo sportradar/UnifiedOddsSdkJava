@@ -8,6 +8,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.DelayedInfoCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
 import com.sportradar.utils.URN;
 
@@ -81,9 +82,8 @@ public interface MatchCI extends CompetitionCI {
     EventTimelineCI getEventTimeline(Locale locale, boolean makeApiCall);
 
     /**
-     * Returns a map of available team qualifiers
-     *
-     * @return a map of available team qualifiers
+     * Returns list of {@link URN} of {@link Competitor} and associated qualifier for this sport event
+     * @return list of {@link URN} of {@link Competitor} and associated qualifier for this sport event
      */
-    Map<URN, String> getCompetitorQualifiers();
+    Map<URN, String> getCompetitorsQualifiers();
 }

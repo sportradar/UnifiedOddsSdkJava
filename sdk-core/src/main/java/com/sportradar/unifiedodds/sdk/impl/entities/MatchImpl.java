@@ -221,14 +221,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public List<Competitor> getCompetitors() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCI matchCI = loadMatchCI();
 
-        if (cacheItem == null) {
+        if (matchCI == null) {
             handleException("getCompetitors", null);
             return null;
         }
 
-        List<URN> competitors = cacheItem.getCompetitorIds(locales);
+        List<URN> competitors = matchCI.getCompetitorIds(locales);
 
         if (competitors == null) {
             return null;
@@ -238,7 +238,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return competitors.stream()
                     .map(c -> {
                         try {
-                            return sportEntityFactory.buildCompetitor(c, provideCompetitorQualifier(cacheItem, c), cacheItem.getCompetitorsReferences(), locales);
+                            return sportEntityFactory.buildCompetitor(c, provideCompetitorQualifier(matchCI, c), matchCI, locales);
                         } catch (ObjectNotFoundException e) {
                             throw new StreamWrapperException(e.getMessage(), e);
                         }
@@ -625,6 +625,8 @@ public class MatchImpl extends SportEventImpl implements Match {
         Preconditions.checkNotNull(ci);
         Preconditions.checkNotNull(competitorId);
 
-        return ci.getCompetitorQualifiers() == null ? null : ci.getCompetitorQualifiers().get(competitorId);
+        return ci.getCompetitorsQualifiers() == null
+                ? null
+                : ci.getCompetitorsQualifiers().get(competitorId);
     }
 }

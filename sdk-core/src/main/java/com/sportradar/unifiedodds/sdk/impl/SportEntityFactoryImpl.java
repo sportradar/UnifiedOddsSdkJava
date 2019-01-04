@@ -266,21 +266,21 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      *
      * @param id the competitor identifier
      * @param qualifier the competitor qualifier (if available)
-     * @param eventCompetitorsReferences the list of competitors and associated references
+     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
     @Override
-    public Competitor buildCompetitor(URN id, String qualifier, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales) throws ObjectNotFoundException {
+    public Competitor buildCompetitor(URN id, String qualifier, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
 
         if(qualifier != null) {
-            return new TeamCompetitorImpl(id, profileCache, qualifier, eventCompetitorsReferences, locales, this, exceptionHandlingStrategy);
+            return new TeamCompetitorImpl(id, profileCache, qualifier, parentSportEventCI, locales, this, exceptionHandlingStrategy);
         }
 
-        return new CompetitorImpl(id, profileCache, eventCompetitorsReferences, locales, this, exceptionHandlingStrategy);
+        return new CompetitorImpl(id, profileCache, parentSportEventCI, locales, this, exceptionHandlingStrategy);
     }
 
     /**
@@ -288,19 +288,19 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * <i>Notice: a {@link com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException} is thrown if any problems are encountered</i>
      *
      * @param competitorIds the ids representing the instances that should be built
-     * @param eventCompetitorsReferences the list of competitors and associated references
+     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed objects
      */
     @Override
-    public List<Competitor> buildStreamCompetitors(List<URN> competitorIds, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales) {
+    public List<Competitor> buildStreamCompetitors(List<URN> competitorIds, SportEventCI parentSportEventCI, List<Locale> locales) {
         Preconditions.checkNotNull(competitorIds);
         Preconditions.checkNotNull(locales);
 
         return competitorIds.stream()
                 .map(c -> {
                     try {
-                        return this.buildCompetitor(c, null, eventCompetitorsReferences, locales);
+                        return this.buildCompetitor(c, null, parentSportEventCI, locales);
                     } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
                         throw new StreamWrapperException(e.getMessage(), e);
                     }

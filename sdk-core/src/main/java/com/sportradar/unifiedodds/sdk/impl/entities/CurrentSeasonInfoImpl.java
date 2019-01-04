@@ -219,7 +219,7 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     public List<Competitor> getCompetitors() {
         try {
             return seasonEndpointCI.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCI.getCompetitorIds(locales), seasonEndpointCI.getCompetitorsReferences(), locales);
+                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCI.getCompetitorIds(locales), seasonEndpointCI, locales);
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;

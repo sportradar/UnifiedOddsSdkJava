@@ -4,14 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Defines methods implemented by classes used to build {@link Sport} and {@link Tournament} instances.
@@ -94,23 +93,23 @@ public interface SportEntityFactory {
      *
      * @param id the competitor identifier
      * @param qualifier the competitor qualifier (if available)
-     * @param eventCompetitorsReferences the list of competitors and associated references
+     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
-    Competitor buildCompetitor(URN id, String qualifier, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales) throws ObjectNotFoundException;
+    Competitor buildCompetitor(URN id, String qualifier, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException;
 
     /**
      * Builds a {@link List} of {@link Competitor} instances
      * <i>Notice: a {@link com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException} is thrown if any problems are encountered</i>
      *
      * @param competitorIds the ids representing the instances that should be built
-     * @param eventCompetitorsReferences the list of competitors and associated references
+     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed objects
      */
-    List<Competitor> buildStreamCompetitors(List<URN> competitorIds, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales);
+    List<Competitor> buildStreamCompetitors(List<URN> competitorIds, SportEventCI parentSportEventCI, List<Locale> locales);
 
     /**
      *

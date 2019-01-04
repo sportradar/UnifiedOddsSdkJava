@@ -173,7 +173,7 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
 
         try {
             return tournamentCi.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(tournamentCi.getCompetitorIds(locales), tournamentCi.getCompetitorsReferences(), locales);
+                    sportEntityFactory.buildStreamCompetitors(tournamentCi.getCompetitorIds(locales), tournamentCi, locales);
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;
