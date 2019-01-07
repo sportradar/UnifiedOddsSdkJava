@@ -34,9 +34,6 @@ public class MarketWriter {
             return;
         }
 
-        if(5>1)
-            return;
-
         for (Market market:markets) {
             if(market instanceof MarketCancel)
             {

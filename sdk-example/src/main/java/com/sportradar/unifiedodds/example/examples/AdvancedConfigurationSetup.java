@@ -26,13 +26,13 @@ public class AdvancedConfigurationSetup {
         logEntry("Running the OddsFeed SDK Basic example - advanced configuration setup");
 
         logEntry("Building the configuration using the provided token");
-        ConfigurationBuilder cfgBuilder = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging();
+        ConfigurationBuilder cfgBuilder = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectIntegration();
 
         logEntry("Setting the max recovery execution time to 3 hours");
         cfgBuilder.setMaxRecoveryExecutionTime(3, TimeUnit.HOURS);
 
         logEntry("Setting the default locale to German");
-        cfgBuilder.setDefaultLocale(Locale.GERMAN);
+        cfgBuilder.setDefaultLocale(Locale.ENGLISH);
 
         logEntry("Setting the max inactivity to 30 seconds (max interval between alive messages)");
         cfgBuilder.setMaxInactivitySeconds(30);

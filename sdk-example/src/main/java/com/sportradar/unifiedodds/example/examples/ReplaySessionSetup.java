@@ -27,7 +27,7 @@ public class ReplaySessionSetup {
         logEntry("Running the OddsFeed SDK Basic example - single session with replay server");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().setDefaultLocale(Locale.ENGLISH).build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectIntegration().setDefaultLocale(Locale.ENGLISH).build();
 
         logEntry("Creating a new ReplayOddsFeed instance");
         oddsFeed = new ReplayOddsFeed(new GlobalEventsListener(), configuration);

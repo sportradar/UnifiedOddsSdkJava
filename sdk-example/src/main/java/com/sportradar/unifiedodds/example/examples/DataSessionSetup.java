@@ -26,7 +26,7 @@ public class DataSessionSetup {
         logEntry("Running the OddsFeed SDK data example - single session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectStaging().setDefaultLocale(Locale.ENGLISH).build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectIntegration().setDefaultLocale(Locale.ENGLISH).build();
 
         logEntry("Creating a new OddsFeed instance");
         oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);

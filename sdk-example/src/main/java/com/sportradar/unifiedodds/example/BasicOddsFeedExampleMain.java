@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * The following example is a very simple example that just connects to the Unified Odds Feed and
@@ -26,7 +27,8 @@ public class BasicOddsFeedExampleMain {
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken("your-staging-token-here")
-                .selectStaging()
+                .selectIntegration()
+                .setDefaultLocale(Locale.ENGLISH)
                 .build();
 
         // create the new feed

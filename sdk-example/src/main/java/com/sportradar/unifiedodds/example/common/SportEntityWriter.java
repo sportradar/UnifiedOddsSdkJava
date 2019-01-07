@@ -385,8 +385,6 @@ public class SportEntityWriter {
     }
     
     public void writeData(SportEvent sportEvent) {
-        if(5>1)
-            return;
 
         String description = null;
         if (sportEvent != null) {

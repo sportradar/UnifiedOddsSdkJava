@@ -17,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.URN;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
@@ -29,6 +30,7 @@ public class AdvancedReplayScenarios {
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken("your-token-here")
                 .selectReplay()
+                .setDefaultLocale(Locale.ENGLISH)
                 .build();
 
         // create new ReplayOddsFeed instance
