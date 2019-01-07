@@ -4,17 +4,21 @@
 
 package com.sportradar.unifiedodds.example.custom;
 
+import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.example.common.MarketWriter;
 import com.sportradar.unifiedodds.example.common.SportEntityWriter;
 import com.sportradar.unifiedodds.sdk.OddsFeedListener;
 import com.sportradar.unifiedodds.sdk.OddsFeedSession;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Match;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -26,12 +30,17 @@ public class CustomMessageListener implements OddsFeedListener {
     private final CustomSportEntityWriter customSportEntityWriter;
     private final MarketWriter marketWriter;
     private final Locale locale = Locale.ENGLISH;
+    private final Date startDate;
 
     public CustomMessageListener(String listener_version) {
         this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
         sportEntityWriter = new SportEntityWriter(Locale.ENGLISH, true, true);
         customSportEntityWriter = new CustomSportEntityWriter(Locale.ENGLISH, true, true);
         marketWriter = new MarketWriter(Locale.ENGLISH, true, true);
+//        startDate = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, 1);
+        startDate = cal.getTime();
     }
 
     private void writeSportEvent(SportEvent sportEvent) {
@@ -80,29 +89,50 @@ public class CustomMessageListener implements OddsFeedListener {
 //        if(5>1)
 //            return;
 
-        if(oddsChanges.getOddsGenerationProperties() != null) {
-            Double x = oddsChanges.getOddsGenerationProperties().getExpectedTotals();
-            if(x != null)
-                x = Double.valueOf(1);
+        if(new Date().before(startDate)){
+            return;
         }
 
+        Calendar cal1 = Calendar.getInstance();
+        cal1.add(Calendar.HOUR,  -new Date().getHours());
+        Date d1 = cal1.getTime();
+        Calendar cal2 = Calendar.getInstance();
+        cal2.add(Calendar.DATE, 4);
+        cal2.add(Calendar.HOUR,  -new Date().getHours());
+        Date d2 = cal2.getTime();
+
         SportEvent sportEvent = oddsChanges.getEvent();
-        customSportEntityWriter.writeData(sportEvent);
+//        customSportEntityWriter.writeData(sportEvent);
 //        Calendar c = Calendar.getInstance();
 //        c.setTime(new Date());
 //        c.add(Calendar.DATE, 5);
-        if((sportEvent instanceof Match)) {
+        List<Long> ids = Lists.newArrayList();
+        if(sportEvent instanceof Match) {
             Match match = (Match)sportEvent;
-            MatchStatus status = match.getStatus();
-            if (status != null)
-            {
+//            if(ids.contains(match.getId().getId())) {
+//                Competitor comp = match.getHomeCompetitor();
+//            }
+            if(match.getScheduledTime().after(d1) && match.getScheduledTime().before(d2)) { // && !ids.contains(match.getId().getId())) {
+                logger.warn("SportEvent {}: START", match.getId());
+                Competitor comp = match.getHomeCompetitor();
+//                if(match.getFixture().getCoverageInfo() != null)
+                logger.warn("SportEvent {}: {}", match.getId(), match.getFixture().getCoverageInfo().getCoveredFrom());
+                customSportEntityWriter.writeData(sportEvent);
+//                Fixture fixture = match.getFixture();
+//                String name = match.getEventStatus().name();
+                logger.warn("SportEvent {}: END", match.getId());
+            }
+            ids.add(match.getId().getId());
+//            MatchStatus status = match.getStatus();
+//            if (status != null)
+//            {
 //                logger.warn("SportEvent {} has score: {}:{}. {}", sportEvent.getId(), status.getHomeScore(), status.getAwayScore(), status.getStatus());
 
                 //if (status.EventResults != null && status.EventResults.Any())
                 //{
                 //    _log.Warn("Have EventResults");
                 //}
-            }
+//            }
 //            Optional<CompetitionStatus> status1 = match.getStatusIfPresent();
 //            if(status1.isPresent()) {
 //                MatchStatus matchStatus1 = (MatchStatus)status1.get();

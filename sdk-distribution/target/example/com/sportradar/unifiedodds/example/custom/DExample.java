@@ -9,8 +9,9 @@ import com.sportradar.unifiedodds.example.common.MarketWriter;
 import com.sportradar.unifiedodds.example.common.SportEntityWriter;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
-import com.sportradar.unifiedodds.sdk.entities.*;
-import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
+import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
+import com.sportradar.unifiedodds.sdk.entities.SportEvent;
+import com.sportradar.unifiedodds.sdk.entities.Stage;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.replay.ReplayStatus;
 import com.sportradar.utils.URN;
@@ -18,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -34,24 +34,24 @@ public class DExample {
         //      - as a system property(JVM argument -Duf.accesstoken=<your-access-token>)
         //        and than invoking setAccessTokenFromSystemVar on the builder
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
-//        OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
-//                .setAccessToken("D9ONDiNaaph3ByCEtS")
-//                .selectReplay()
-//                .setSdkNodeId(15)
-//                .setDefaultLocale(Locale.forLanguageTag("cs"))
-//                .build();
+        OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
+                .setAccessToken("3nK9rHzjWqVK2tifi6")
+                .selectIntegration()
+                .setSdkNodeId(15)
+                .setDefaultLocale(Locale.forLanguageTag("de"))
+                .build();
 //        executeReplayScenario(config, logger);
 //        if(5 > 1)
 //            return;
 
-        OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
-                .setAccessToken("t16Mojb2lRoTwSckxa")
-                .selectProduction()
-                .setSdkNodeId(12)
-                .setDesiredLocales(Arrays.asList(Locale.FRENCH, Locale.GERMAN))
-                .setDefaultLocale(Locale.forLanguageTag("cs"))
-//                .setApiHost("custom-api.betradar.com")
-                .build();
+//        OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
+//                .setAccessToken("t16Mojb2lRoTwSckxa")
+//                .selectProduction()
+//                .setSdkNodeId(125)
+//                .setDesiredLocales(Arrays.asList(Locale.FRENCH, Locale.GERMAN))
+//                .setDefaultLocale(Locale.forLanguageTag("cs"))
+////                .setApiHost("custom-api.betradar.com")
+//                .build();
 
         // create the new feed
         OddsFeed oddsFeed = new OddsFeed(new GlobalEventsListener(), config);
@@ -59,18 +59,18 @@ public class DExample {
 
         // access the producer manager
         ProducerManager producerManager = oddsFeed.getProducerManager();
-        producerManager.disableProducer(1);
-//        producerManager.disableProducer(2);
-        producerManager.disableProducer(3);
-        producerManager.disableProducer(4);
-        producerManager.disableProducer(5);
-//        producerManager.disableProducer(6);
-//        producerManager.disableProducer(7);
-//        producerManager.disableProducer(8);
-//        producerManager.disableProducer(9);
-//        producerManager.disableProducer(10);
-//        producerManager.disableProducer(11);
-//        producerManager.disableProducer(12);
+//        producerManager.disableProducer(1);
+////        producerManager.disableProducer(2);
+//        producerManager.disableProducer(3);
+//        producerManager.disableProducer(4);
+//        producerManager.disableProducer(5);
+        producerManager.disableProducer(6);
+        producerManager.disableProducer(7);
+        producerManager.disableProducer(8);
+        producerManager.disableProducer(9);
+        producerManager.disableProducer(10);
+        producerManager.disableProducer(11);
+        producerManager.disableProducer(12);
 
         // set the last received message timestamp trough the producer - if known
         // (as an example, we set the last message received timestamp as 2 days ago)
@@ -123,11 +123,11 @@ public class DExample {
 
 //        Thread.sleep(1000 * 30);
 
-        SportEvent sportEvent = oddsFeed.getSportsInfoManager().getSportEvent(URN.parse("sr:match:15688272"));
-        Match match = (Match)sportEvent;
-        Round round = match.getTournamentRound();
-        MatchStatus matchStatus = match.getStatus();
-        writeSportEvent(sportEvent, logger);
+//        SportEvent sportEvent = oddsFeed.getSportsInfoManager().getSportEvent(URN.parse("sr:match:15688272"));
+//        Match match = (Match)sportEvent;
+//        Round round = match.getTournamentRound();
+//        MatchStatus matchStatus = match.getStatus();
+//        writeSportEvent(sportEvent, logger);
 //        sportEvent = oddsFeed.getSportsInfoManager().getSportEvent(URN.parse("sr:stage:340475"));
 //        writeSportEvent(sportEvent, logger);
 

@@ -1,23 +1,29 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.19 (2019-01-07)**
+* added Fixture.CoverageInfo.CoveredFrom property
+* added getOutcomeType method to MarketDefinition (to replace includes_outcomes_of_type)
+* fix: Competitor.References - fixture is fetched only if competitor references are explicitly requested by user
+* fix: avoiding fetching fixture for BookingStatus when received via schedule
+
 **2.0.18 (2018-12-18)**
-* Added method getWillBeRestarted() to SnapshotCompleted message
-* Added OddsGenerationProperties to the OddsChange message
-* Replay session using any token returns production replay summary endpoint
-* Added support for custom api hosts (recovery for producers uses custom urls)
-* Added Season start time and end time to exposed dates
-* Rename Staging to Integration environment
+* added method getWillBeRestarted() to SnapshotCompleted message
+* added OddsGenerationProperties to the OddsChange message
+* replay session using any token returns production replay summary endpoint
+* added support for custom api hosts (recovery for producers uses custom urls)
+* added Season start time and end time to exposed dates
+* rename Staging to Integration environment
 * other minor fixes and improvements
 
 **2.0.17 (2018-11-16)**
-* Exposed BookmakerDetails method on OddsFeed - exposing bookmakerId, serverTimeDifference and token expiration date
-* Removed fetching of fixture for TournamentRound (only summary, if needed)
-* Improved handling of competitor reference id(s)
-* Minimized rest api calls - removed calls for eng, when not needed (requires language to be set in configuration)
+* exposed BookmakerDetails method on OddsFeed - exposing bookmakerId, serverTimeDifference and token expiration date
+* removed fetching of fixture for TournamentRound (only summary, if needed)
+* improved handling of competitor reference id(s)
+* minimized rest api calls - removed calls for eng, when not needed (requires language to be set in configuration)
 * OutcomeSettlement default deadHeatFactor set to 1 (before 0)
-* Removed purging of sportEventStatus on betSettlement message
-* Fix: null bug for nodeId in configuration
-* Fix: the ordinal name spelling for all languages
+* removed purging of sportEventStatus on betSettlement message
+* fix: null bug for nodeId in configuration
+* fix: the ordinal name spelling for all languages
 
 **2.0.16 (2018-10-17)**
 * added Competition.getStatusIfPresent() to retrieve if from cache without API call

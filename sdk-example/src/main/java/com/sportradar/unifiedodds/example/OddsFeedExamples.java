@@ -37,7 +37,7 @@ public class OddsFeedExamples {
 
         String selection = getConsoleInput();
 
-        System.out.println("Please enter a valid Unified Feed token - staging:");
+        System.out.println("Please enter a valid Unified Feed token for integration environment:");
         String token = getConsoleInput();
 
         switch (selection) {
