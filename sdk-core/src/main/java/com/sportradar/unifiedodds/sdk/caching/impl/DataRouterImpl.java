@@ -231,6 +231,14 @@ public class DataRouterImpl implements DataRouter {
         dataListeners.forEach(l -> l.onSportEventStatusFetched(eventId, data, source));
     }
 
+    @Override
+    public void onSportCategoriesFetched(SAPISportCategoriesEndpoint endpoint, Locale locale, CacheItem requester) {
+        Preconditions.checkNotNull(endpoint);
+        Preconditions.checkNotNull(locale);
+        URN sportId = URN.parse(endpoint.getSport().getId());
+        dataListeners.forEach(l -> l.onSportCategoriesFetched(sportId, endpoint, locale, requester));
+    }
+
     private void dispatchTournamentSchedule(SAPIRaceScheduleEndpoint endpoint, Locale locale) {
         if (endpoint.getTournament() != null) {
             URN trnId = URN.parse(endpoint.getTournament().getId());

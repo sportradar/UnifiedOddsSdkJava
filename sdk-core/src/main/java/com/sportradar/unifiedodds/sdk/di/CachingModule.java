@@ -239,6 +239,18 @@ public class CachingModule extends AbstractModule {
     }
 
     @Provides
+    private DataProvider<SAPISportCategoriesEndpoint> provideSportCategoriesEndpointProvider(SDKInternalConfiguration cfg,
+                                                                                                 LogHttpDataFetcher httpDataFetcher,
+                                                                                                 @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider<>(
+                "/sports/%s/sports/%s/categories.xml",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
+
+    @Provides
     private DataProvider<SAPILotteries> provideLotteriesDataProvider(SDKInternalConfiguration cfg,
                                                                                  LogHttpDataFetcher httpDataFetcher,
                                                                                  @Named("ApiJaxbDeserializer") Deserializer deserializer) {

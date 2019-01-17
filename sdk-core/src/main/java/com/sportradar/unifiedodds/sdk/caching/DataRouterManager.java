@@ -43,4 +43,6 @@ public interface DataRouterManager {
     List<URN> requestSeasonsFor(Locale locale, URN tournamentID) throws CommunicationException;
 
     void requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+
+    void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
 }
