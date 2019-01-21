@@ -35,6 +35,8 @@ public interface DataRouter {
 
     void onMatchTimelineFetched(URN matchId, SAPIMatchTimelineEndpoint endpoint, Locale locale, CacheItem requester);
 
+    void onSportCategoriesFetched(SAPISportCategoriesEndpoint endpoint, Locale locale, CacheItem requester);
+
     void onDrawSummaryFetched(URN drawId, SAPIDrawSummary endpoint, Locale locale, CacheItem requester);
 
     void onDrawFixtureFetched(URN drawId, SAPIDrawFixture endpoint, Locale locale, CacheItem requester);

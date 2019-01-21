@@ -182,9 +182,12 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
         SportCI ifPresentSport = sportsCache.getIfPresent(sportId);
         if (ifPresentSport == null) {
-            sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, null, dataLocale));
+            SportCI sportCI = cacheItemFactory.buildSportCI(sportId, sport, null, dataLocale);
+            sportsCache.put(sportId, sportCI);
+            ensureSportCategoriesPreFetched(dataLocale, sportId, sportCI);
         } else {
             ifPresentSport.merge(sport, dataLocale);
+            ensureSportCategoriesPreFetched(dataLocale, sportId, ifPresentSport);
         }
     }
 
@@ -213,6 +216,16 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
         Preconditions.checkNotNull(locale);
 
         onLotteryReceived(data.getLottery(), locale);
+    }
+
+    @Override
+    public void onSportCategoriesFetched(URN sportId, SAPISportCategoriesEndpoint data, Locale locale, CacheItem requester) {
+        Preconditions.checkNotNull(sportId);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(locale);
+
+        List<SAPICategory> categories = data.getCategories() != null ? data.getCategories().getCategory() : new ArrayList<>();
+        onSportAndCategoriesReceived(null, data, data.getSport(), categories, locale);
     }
 
     private void onLotteryReceived(SAPILottery lottery, Locale dataLocale) {
@@ -253,24 +266,33 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
     private void onSportAndCategoryReceived(URN tournamentId, Object sourceApiObject, SAPISport sport, SAPICategory category, Locale dataLocale) {
         Preconditions.checkNotNull(tournamentId);
+        onSportAndCategoriesReceived(tournamentId, sourceApiObject, sport, Collections.singletonList(category), dataLocale);
+    }
+
+    private void onSportAndCategoriesReceived(URN tournamentId, Object sourceApiObject, SAPISport sport, List<SAPICategory> categories, Locale dataLocale) {
         Preconditions.checkNotNull(sourceApiObject);
         Preconditions.checkNotNull(sport);
-        Preconditions.checkNotNull(category);
+        Preconditions.checkNotNull(categories);
         Preconditions.checkNotNull(dataLocale);
 
         URN sportId = URN.parse(sport.getId());
-        URN categoryId = URN.parse(category.getId());
+        List<URN> tournamentIds = tournamentId != null ? Collections.singletonList(tournamentId) : new ArrayList<>();
+        List<URN> categoryIds = new ArrayList<>(categories.size());
 
-        CategoryCI ifPresentCategory = categoriesCache.getIfPresent(categoryId);
-        if (ifPresentCategory == null) {
-            categoriesCache.put(categoryId, cacheItemFactory.buildCategoryCI(categoryId, category, Collections.singletonList(tournamentId), sportId, dataLocale));
-        } else {
-            ifPresentCategory.merge(sourceApiObject, dataLocale);
+        for (SAPICategory category : categories) {
+            URN categoryId = URN.parse(category.getId());
+            categoryIds.add(categoryId);
+            CategoryCI ifPresentCategory = categoriesCache.getIfPresent(categoryId);
+            if (ifPresentCategory == null) {
+                categoriesCache.put(categoryId, cacheItemFactory.buildCategoryCI(categoryId, category, tournamentIds, sportId, dataLocale));
+            } else {
+                ifPresentCategory.merge(sourceApiObject, dataLocale);
+            }
         }
 
         SportCI ifPresentSport = sportsCache.getIfPresent(sportId);
         if (ifPresentSport == null) {
-            sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, Collections.singletonList(categoryId), dataLocale));
+            sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, categoryIds, dataLocale));
         } else {
             ifPresentSport.merge(sourceApiObject, dataLocale);
         }
@@ -295,6 +317,21 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
             } catch (CommunicationException e) {
                 logger.warn("Lotteries endpoint request failed while ensuring cache integrity", e);
             }
+        }
+    }
+
+    /**
+     * Ensures that the sports categories was already pre-fetched by the {@link DataRouter}
+     *
+     * @param locale the needed locale
+     * @param id a {@link URN} specifying the id of the sport
+     * @param requester a {@link CacheItem} specifying the sport cache item
+     */
+    private void ensureSportCategoriesPreFetched(Locale locale, URN id, CacheItem requester) {
+        try {
+            dataRouterManager.requestSportCategoriesEndpoint(locale, id, requester);
+        } catch (CommunicationException e) {
+            logger.warn("Sport categories endpoint request failed while ensuring cache integrity", e);
         }
     }
 

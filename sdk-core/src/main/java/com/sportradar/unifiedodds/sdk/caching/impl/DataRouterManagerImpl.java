@@ -148,6 +148,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
      */
     private final DataProvider<SAPIMatchTimelineEndpoint> matchTimelineEndpointDataProvider;
 
+    /**
+     * A {@link DataProvider} used to fetch sport categories
+     */
+    private final DataProvider<SAPISportCategoriesEndpoint> sportCategoriesEndpointDataProvider;
+
     private final ReentrantLock tournamentListLock = new ReentrantLock();
     private final ReentrantLock sportsListLock = new ReentrantLock();
     private final ReentrantLock lotteriesListLock = new ReentrantLock();
@@ -167,6 +172,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPICompetitorProfileEndpoint> competitorProvider,
                           DataProvider<SAPITournamentSeasons> tournamentSeasonsDataProvider,
                           DataProvider<SAPIMatchTimelineEndpoint> matchTimelineEndpointDataProvider,
+                          DataProvider<SAPISportCategoriesEndpoint> sportCategoriesEndpointDataProvider,
                           DataProvider<SAPIDrawSummary> drawSummaryDataProvider,
                           DataProvider<SAPIDrawFixtures> drawFixtureDataProvider,
                           DataProvider<SAPILotteries> lotteriesListProvider,
@@ -185,6 +191,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(competitorProvider);
         Preconditions.checkNotNull(tournamentSeasonsDataProvider);
         Preconditions.checkNotNull(matchTimelineEndpointDataProvider);
+        Preconditions.checkNotNull(sportCategoriesEndpointDataProvider);
         Preconditions.checkNotNull(drawSummaryDataProvider);
         Preconditions.checkNotNull(drawFixtureDataProvider);
         Preconditions.checkNotNull(lotteriesListProvider);
@@ -204,6 +211,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.competitorProvider = competitorProvider;
         this.tournamentSeasonsDataProvider = tournamentSeasonsDataProvider;
         this.matchTimelineEndpointDataProvider = matchTimelineEndpointDataProvider;
+        this.sportCategoriesEndpointDataProvider = sportCategoriesEndpointDataProvider;
         this.drawSummaryDataProvider = drawSummaryDataProvider;
         this.drawFixtureDataProvider = drawFixtureDataProvider;
         this.lotteriesListProvider = lotteriesListProvider;
@@ -526,6 +534,21 @@ public class DataRouterManagerImpl implements DataRouterManager {
         }
 
         dataRouter.onMatchTimelineFetched(id, data, locale, requester);
+    }
+
+    @Override
+    public void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+        Preconditions.checkNotNull(locale);
+        Preconditions.checkNotNull(id);
+
+        SAPISportCategoriesEndpoint endpoint;
+        try {
+            endpoint = sportCategoriesEndpointDataProvider.getData(locale, id.toString());
+        } catch (DataProviderException e) {
+            throw new CommunicationException(String.format("Error executing sport categories request for id=%s, locale=%s", id, locale), e);
+        }
+
+        dataRouter.onSportCategoriesFetched(endpoint, locale, requester);
     }
 
     private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {

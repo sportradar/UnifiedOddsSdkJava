@@ -37,7 +37,6 @@ public class CategoryImpl extends CategorySummaryImpl implements Category {
         super(id, names, countryCode);
 
         Preconditions.checkNotNull(tournaments);
-        Preconditions.checkArgument(!tournaments.isEmpty());
 
         this.tournaments = ImmutableList.copyOf(tournaments);
     }

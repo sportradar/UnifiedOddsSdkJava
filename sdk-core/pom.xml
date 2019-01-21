@@ -264,6 +264,7 @@
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/tournament_info.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/match_summary.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/sport_tournaments.xsd</source>
+                                <source>${project.build.directory}/schemas/v1/endpoints/unified/sport_categories.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/tournaments.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/sports.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/race_summary.xsd</source>

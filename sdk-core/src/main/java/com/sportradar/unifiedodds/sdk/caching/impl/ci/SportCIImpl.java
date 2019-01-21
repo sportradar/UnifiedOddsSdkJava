@@ -7,10 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.sportsapi.datamodel.SAPICategory;
-import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
-import com.sportradar.uf.sportsapi.datamodel.SAPISport;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.SportCI;
 import com.sportradar.utils.URN;
 
@@ -105,6 +102,12 @@ class SportCIImpl implements SportCI {
             if (lData.getSport() != null) {
                 mergeData(lData.getSport(), lData.getCategory(), dataLocale);
             }
+        } else if (endpointData instanceof SAPISportCategoriesEndpoint) {
+            SAPISportCategoriesEndpoint cData = (SAPISportCategoriesEndpoint) endpointData;
+            if (cData.getCategories() != null)
+                for (SAPICategory category : cData.getCategories().getCategory()) {
+                    mergeData(cData.getSport(), category, dataLocale);
+                }
         }
     }
 
