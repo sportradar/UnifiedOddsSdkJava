@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.URN;
@@ -105,7 +106,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
      */
     @Override
-    public void onMessageReceived(UnmarshalledMessage unmarshalledMessage, byte[] body, RoutingKeyInfo routingKeyInfo) {
+    public void onMessageReceived(UnmarshalledMessage unmarshalledMessage, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
         if (isMessageDiscardable(unmarshalledMessage)) {
             return;
         }
@@ -128,7 +129,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
                         null :
                         getSportEventFor(routingKeyInfo.getEventId().toString(), routingKeyInfo.getSportId());
 
-                dispatchUnparsableMessage(body, event, provideProducerIdFromMessage(unmarshalledMessage));
+                dispatchUnparsableMessage(body, event, provideProducerIdFromMessage(unmarshalledMessage), timestamp);
                 return;
             default:
                 logger.error("Validation result '{}' is not supported. Aborting message processing. Type:{} ProducerId:{}, EventId:'{}'",
@@ -141,7 +142,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         int producerId = provideProducerIdFromMessage(unmarshalledMessage);
 
         recoveryManager.onMessageProcessingStarted(this.hashCode(), producerId, now);
-        messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo);
+        messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp);
         recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, provideMessageGenTimestampFromMessage(unmarshalledMessage));
 
         clientInteractionLog.info("Message -> ({}|{}|{}|{}) processing finished on {}, duration: {}",
@@ -169,7 +170,8 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
                     sportsInfoManager.getCompetition(eventId);
         }
 
-        dispatchUnparsableMessage(rawMessage, se, null);
+        long time = new TimeUtilsImpl().now();
+        dispatchUnparsableMessage(rawMessage, se, null, new MessageTimestampImpl(time));
     }
 
     /**
@@ -188,63 +190,66 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
      * @param o - the message that should be processed
      * @param body - the raw body of the received message
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
+     * @param timestamp - all message timestamps
      */
-    public void processMessage(UnmarshalledMessage o, byte[] body, RoutingKeyInfo routingKeyInfo) {
-        long now = System.currentTimeMillis();
+    public void processMessage(UnmarshalledMessage o, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
+//        long now = System.currentTimeMillis();
         try {
             if (o instanceof UFOddsChange) {
                 UFOddsChange message = (UFOddsChange) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                OddsChange<SportEvent> oc = messageFactory.buildOddsChange(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                OddsChange<SportEvent> oc = messageFactory.buildOddsChange(se, message, body, timestamp);
                 oddsFeedListener.onOddsChange(this, oc);
             } else if (o instanceof UFBetStop) {
                 UFBetStop message = (UFBetStop) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                BetStop<SportEvent> sdkBetStop = messageFactory.buildBetStop(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                BetStop<SportEvent> sdkBetStop = messageFactory.buildBetStop(se, message, body, timestamp);
                 oddsFeedListener.onBetStop(this, sdkBetStop);
             } else if (o instanceof UFBetSettlement) {
                 UFBetSettlement message = (UFBetSettlement) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                BetSettlement<SportEvent> bs = messageFactory.buildBetSettlement(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                BetSettlement<SportEvent> bs = messageFactory.buildBetSettlement(se, message, body, timestamp);
                 logger.trace("Bet Settlement");
                 oddsFeedListener.onBetSettlement(this, bs);
             } else if (o instanceof UFRollbackBetSettlement) {
                 UFRollbackBetSettlement message = (UFRollbackBetSettlement) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                RollbackBetSettlement<SportEvent> rbs = messageFactory.buildRollbackBetSettlement(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                RollbackBetSettlement<SportEvent> rbs = messageFactory.buildRollbackBetSettlement(se, message, body, timestamp);
                 oddsFeedListener.onRollbackBetSettlement(this, rbs);
             } else if (o instanceof UFBetCancel) {
                 UFBetCancel message = (UFBetCancel) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                BetCancel<SportEvent> cb = messageFactory.buildBetCancel(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                BetCancel<SportEvent> cb = messageFactory.buildBetCancel(se, message, body, timestamp);
                 logger.trace("Bet Cancel");
                 oddsFeedListener.onBetCancel(this, cb);
             } else if (o instanceof UFFixtureChange) {
                 UFFixtureChange message = (UFFixtureChange) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                FixtureChange<SportEvent> fc = messageFactory.buildFixtureChange(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                FixtureChange<SportEvent> fc = messageFactory.buildFixtureChange(se, message, body, timestamp);
                 logger.trace("Fixture Change");
                 oddsFeedListener.onFixtureChange(this, fc);
             } else if (o instanceof UFRollbackBetCancel) {
                 UFRollbackBetCancel message = (UFRollbackBetCancel) o;
-                SportEvent se =
-                        getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                RollbackBetCancel<SportEvent> rbc = messageFactory.buildRollbackBetCancel(se, message, body);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
+                RollbackBetCancel<SportEvent> rbc = messageFactory.buildRollbackBetCancel(se, message, body, timestamp);
                 logger.trace("Rollback Bet Cancel");
                 oddsFeedListener.onRollbackBetCancel(this, rbc);
             } else if (o instanceof UFSnapshotComplete) {
                 UFSnapshotComplete sc = (UFSnapshotComplete) o;
-                recoveryManager.onSnapshotCompleteReceived(sc.getProduct(), now, sc.getRequestId(), messageInterest);
+                timestamp = new MessageTimestampImpl(sc.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                recoveryManager.onSnapshotCompleteReceived(sc.getProduct(), timestamp.getDispatched(), sc.getRequestId(), messageInterest);
             } else if (o instanceof UFAlive) {
                 logger.trace("Alive");
                 UFAlive message = (UFAlive) o;
-                recoveryManager.onAliveReceived(message.getProduct(), message.getTimestamp(), now, message.getSubscribed() == 1, messageInterest == MessageInterest.SystemAliveMessages);
+                timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+                recoveryManager.onAliveReceived(message.getProduct(), message.getTimestamp(), timestamp.getDispatched(), message.getSubscribed() == 1, messageInterest == MessageInterest.SystemAliveMessages);
             } else {
                 logger.warn("Unsupported Message: " + o.getClass().getName());
                 throw new UnsupportedOperationException("Unsupported message");
@@ -254,7 +259,8 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
             dispatchUnparsableMessage(
                     body,
                     routingKeyInfo.getEventId() == null ? null : getSportEventFor(routingKeyInfo.getEventId(), routingKeyInfo.getSportId()),
-                    provideProducerIdFromMessage(o));
+                    provideProducerIdFromMessage(o),
+                    timestamp);
         }
     }
 
@@ -288,14 +294,14 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         return messageInterest;
     }
 
-    private void dispatchUnparsableMessage(byte[] body, SportEvent event, Integer producerId) {
+    private void dispatchUnparsableMessage(byte[] body, SportEvent event, Integer producerId, MessageTimestamp timestamp) {
         try {
             oddsFeedListener.onUnparseableMessage(
                     this,
                     body,
                     event
             );
-            oddsFeedListener.onUnparsableMessage(this, messageFactory.buildUnparsableMessage(event, producerId, body, System.currentTimeMillis()));
+            oddsFeedListener.onUnparsableMessage(this, messageFactory.buildUnparsableMessage(event, producerId, body, timestamp));
         } catch (Exception re) {
             logger.warn("Problems dispatching onUnparseableMessage(), message body: \n" + new String(body), re);
         }

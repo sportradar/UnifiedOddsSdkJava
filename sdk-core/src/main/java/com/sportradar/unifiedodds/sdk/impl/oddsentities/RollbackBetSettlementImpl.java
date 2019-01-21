@@ -9,6 +9,7 @@ import com.sportradar.uf.datamodel.UFRollbackBetSettlement;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement;
 import org.slf4j.Logger;
@@ -27,8 +28,8 @@ class RollbackBetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T
     private final static Logger logger = LoggerFactory.getLogger(RollbackBetSettlementImpl.class);
     private final List<Market> affectedMarkets;
 
-    RollbackBetSettlementImpl(T sportEvent, UFRollbackBetSettlement message, Producer producer, byte[] rawMessage, MarketFactory factory) {
-        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+    RollbackBetSettlementImpl(T sportEvent, UFRollbackBetSettlement message, Producer producer, byte[] rawMessage, MarketFactory factory, MessageTimestamp timestamp) {
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
         Preconditions.checkNotNull(factory);
 
         if (message.getMarket() != null) {

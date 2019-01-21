@@ -8,4 +8,5 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
  * An interface implemented by all the feed schema message objects
  */
 public interface UnmarshalledMessage {
+
 }

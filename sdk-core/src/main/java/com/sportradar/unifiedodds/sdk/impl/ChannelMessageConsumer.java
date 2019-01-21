@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
+import com.rabbitmq.client.AMQP;
+
 /**
  * Defines methods implemented by classes that can handle message payloads
  */
@@ -23,6 +25,8 @@ public interface ChannelMessageConsumer {
      *
      * @param routingKey - the source routing key of the payload
      * @param body - the message payload
+     * @param properties - the BasicProperties associated to the message
+     * @param receivedAt - the time when message was received (in milliseconds since EPOCH UTC)
      */
-    void onMessageReceived(String routingKey, byte[] body);
+    void onMessageReceived(String routingKey, byte[] body, AMQP.BasicProperties properties, long receivedAt);
 }

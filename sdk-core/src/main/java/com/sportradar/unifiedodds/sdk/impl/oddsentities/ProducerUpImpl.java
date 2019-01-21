@@ -31,7 +31,7 @@ class ProducerUpImpl extends MessageImpl implements ProducerUp {
      * @param timestamp A UTC based timestamp specifying when the message was generated
      */
     ProducerUpImpl(Producer producer, ProducerUpReason reason, long timestamp) {
-        super(producer, timestamp);
+        super(producer, new MessageTimestampImpl(timestamp));
         checkNotNull(reason, "reason cannot be a null reference");
 
         this.reason = reason;

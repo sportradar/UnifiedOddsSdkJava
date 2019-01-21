@@ -9,6 +9,7 @@ import com.sportradar.uf.datamodel.UFFixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChangeType;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 
 import java.util.Date;
@@ -22,8 +23,8 @@ class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implem
     private final Date nextLiveTime;
     private final Date startTime;
 
-    FixtureChangeImpl(T sportEvent, UFFixtureChange message, Producer producer, byte[] rawMessage) {
-        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+    FixtureChangeImpl(T sportEvent, UFFixtureChange message, Producer producer, byte[] rawMessage, MessageTimestamp timestamp) {
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
 
         UFChangeType type = message.getChangeType();
         if (type == null) {

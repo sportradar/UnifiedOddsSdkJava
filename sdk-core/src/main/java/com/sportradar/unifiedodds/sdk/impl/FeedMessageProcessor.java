@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 
 /**
@@ -25,8 +26,9 @@ public interface FeedMessageProcessor {
      * @param message - the message that should be processed
      * @param body - the raw body of the received message
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
+     * @param timestamp - all message timestamps
      */
-    void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo);
+    void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp);
 
     /**
      * Sets the next message processor that should be invoked after the message processing is finished

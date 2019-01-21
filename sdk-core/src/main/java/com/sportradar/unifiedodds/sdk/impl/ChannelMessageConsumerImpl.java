@@ -7,9 +7,13 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.rabbitmq.client.AMQP;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +71,6 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
      */
     private MessageConsumer messageConsumer;
 
-
     /**
      *
      * @param unmarshaller an {@link Unmarshaller} instance used to deserialize the payloads
@@ -82,7 +85,6 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         this.routingKeyParser = routingKeyParser;
         this.configuration = configuration;
     }
-
 
     /**
      * Opens the channel message consumer and prepares the required instances
@@ -102,9 +104,11 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
      *
      * @param routingKey - the source routing key of the payload
      * @param body       - the message payload
+     * @param properties - the BasicProperties associated to the message
+     * @param receivedAt - the time when message was received (in milliseconds since EPOCH UTC)
      */
     @Override
-    public void onMessageReceived(String routingKey, byte[] body) {
+    public void onMessageReceived(String routingKey, byte[] body, AMQP.BasicProperties properties, long receivedAt) {
         if (!isOpened || messageConsumer == null) {
             throw new IllegalStateException("Received message on an un-opened message consumer");
         }
@@ -113,11 +117,23 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
             logger.warn("A message with {} body received. Aborting message processing", body == null ? "null" : "empty");
         }
 
+        long createAt = 0;
+        long sentAt = 0;
+
+        if (properties != null && properties.getHeaders() != null)
+        {
+            sentAt = properties.getHeaders().containsKey("timestamp_in_ms")
+                    ? Long.parseLong(properties.getHeaders().get("timestamp_in_ms").toString())
+                    : createAt;
+        }
+
+        MessageTimestamp timestamp = new MessageTimestampImpl(createAt, sentAt, receivedAt, 0);
+
         RoutingKeyInfo routingKeyInfo = routingKeyParser.getRoutingKeyInfo(routingKey);
 
         if (body == null) {
             loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, "Message payload is a null reference");
-            dispatchUnparsableMessage(String.format("Received a null message from routingKey:%s", routingKey), null, routingKeyInfo.getEventId());
+            dispatchUnparsableMessage(String.format("Received a null message from routingKey:%s", routingKey), null, routingKeyInfo.getEventId(), timestamp);
             return;
         }
 
@@ -131,15 +147,16 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                     String.format("Problems deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
                             routingKey, new String(body), e),
                     body,
-                    routingKeyInfo.getEventId());
+                    routingKeyInfo.getEventId(),
+                    timestamp);
             return;
         }
 
         // TODO add other checks as in .NET
-        messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo);
+        messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo, timestamp);
     }
 
-    private void dispatchUnparsableMessage(String msg, byte[] body, URN eventId) {
+    private void dispatchUnparsableMessage(String msg, byte[] body, URN eventId, MessageTimestamp timestamp) {
         logger.warn(msg);
         messageConsumer.onMessageDeserializationFailed(body, eventId);
     }

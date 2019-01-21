@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketStatus;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 
 import java.util.Arrays;
@@ -23,8 +24,8 @@ class BetStopImpl<T extends SportEvent> extends EventMessageImpl<T> implements B
     private final MarketStatus marketStatus;
     private final List<String> groups;
 
-    BetStopImpl(T sportEvent, UFBetStop message, Producer producer, byte[] rawMessage) {
-        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+    BetStopImpl(T sportEvent, UFBetStop message, Producer producer, byte[] rawMessage, MessageTimestamp timestamp) {
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
 
         if (message.getMarketStatus() == null) {
             marketStatus = MarketStatus.Suspended;

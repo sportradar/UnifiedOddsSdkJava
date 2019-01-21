@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -189,7 +190,8 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
         }
 
         return feedMessageFactory.buildCashOutProbabilities(sportEvent,
-                                                            cashoutData);
+                                                            cashoutData,
+                                                            new MessageTimestampImpl(new TimeUtilsImpl().now()));
     }
 
     @SuppressWarnings("unchecked")

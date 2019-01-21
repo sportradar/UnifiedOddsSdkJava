@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetCancel;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketCancel;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +32,8 @@ class BetCancelImpl<T extends SportEvent> extends EventMessageImpl<T> implements
     private final String supercededBy;
     private final List<MarketCancel> affectedMarkets;
 
-    BetCancelImpl(T sportEvent, UFBetCancel message, Producer producer, byte[] rawMessage, MarketFactory factory) {
-        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+    BetCancelImpl(T sportEvent, UFBetCancel message, Producer producer, byte[] rawMessage, MarketFactory factory, MessageTimestamp timestamp) {
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
         Preconditions.checkNotNull(factory);
 
         startTime = message.getStartTime() == null ? null : new Date(message.getStartTime());

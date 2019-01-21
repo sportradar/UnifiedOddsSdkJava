@@ -34,8 +34,8 @@ class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implement
     private final NamedValuesProvider namedValuesProvider;
     private final OddsGeneration oddsGeneration;
 
-    OddsChangeImpl(T sportEvent, UFOddsChange message, Producer producer, byte[] rawMessage, MarketFactory marketFactory, NamedValuesProvider namedValuesProvider, UFOddsGenerationProperties oddsGenerationProperties) {
-        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+    OddsChangeImpl(T sportEvent, UFOddsChange message, Producer producer, byte[] rawMessage, MarketFactory marketFactory, NamedValuesProvider namedValuesProvider, UFOddsGenerationProperties oddsGenerationProperties, MessageTimestamp timestamp) {
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
         Preconditions.checkNotNull(marketFactory);
         Preconditions.checkNotNull(namedValuesProvider);
 

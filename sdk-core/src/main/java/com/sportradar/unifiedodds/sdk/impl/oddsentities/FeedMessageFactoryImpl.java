@@ -50,47 +50,47 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     }
 
     @Override
-    public <T extends SportEvent> BetStop<T> buildBetStop(T sportEvent, UFBetStop message, byte[] rawMessage) {
-        return new BetStopImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage);
+    public <T extends SportEvent> BetStop<T> buildBetStop(T sportEvent, UFBetStop message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new BetStopImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> FixtureChange<T> buildFixtureChange(T sportEvent, UFFixtureChange message, byte[] rawMessage) {
-        return new FixtureChangeImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage);
+    public <T extends SportEvent> FixtureChange<T> buildFixtureChange(T sportEvent, UFFixtureChange message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new FixtureChangeImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> BetSettlement<T> buildBetSettlement(T sportEvent, UFBetSettlement message, byte[] rawMessage) {
-        return new BetSettlementImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory);
+    public <T extends SportEvent> BetSettlement<T> buildBetSettlement(T sportEvent, UFBetSettlement message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new BetSettlementImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> RollbackBetSettlement<T> buildRollbackBetSettlement(T sportEvent, UFRollbackBetSettlement message, byte[] rawMessage) {
-        return new RollbackBetSettlementImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory);
+    public <T extends SportEvent> RollbackBetSettlement<T> buildRollbackBetSettlement(T sportEvent, UFRollbackBetSettlement message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new RollbackBetSettlementImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> OddsChange<T> buildOddsChange(T sportEvent, UFOddsChange message, byte[] rawMessage) {
-        return new OddsChangeImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, namedValuesProvider, message.getOddsGenerationProperties());
+    public <T extends SportEvent> OddsChange<T> buildOddsChange(T sportEvent, UFOddsChange message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new OddsChangeImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, namedValuesProvider, message.getOddsGenerationProperties(), timestamp);
     }
 
     @Override
-    public <T extends SportEvent> RollbackBetCancel<T> buildRollbackBetCancel(T sportEvent, UFRollbackBetCancel message, byte[] rawMessage) {
-        return new RollbackBetCancelImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory);
+    public <T extends SportEvent> RollbackBetCancel<T> buildRollbackBetCancel(T sportEvent, UFRollbackBetCancel message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new RollbackBetCancelImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> BetCancel<T> buildBetCancel(T sportEvent, UFBetCancel message, byte[] rawMessage) {
-        return new BetCancelImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory);
+    public <T extends SportEvent> BetCancel<T> buildBetCancel(T sportEvent, UFBetCancel message, byte[] rawMessage, MessageTimestamp timestamp) {
+        return new BetCancelImpl<>(sportEvent, message, producerManager.getProducer(message.getProduct()), rawMessage, marketFactory, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> CashOutProbabilities<T> buildCashOutProbabilities(T sportEvent, UFCashout cashoutData) {
-        return new CashOutProbabilitiesImpl<>(sportEvent, cashoutData, producerManager.getProducer(cashoutData.getProduct()), marketFactory, namedValuesProvider);
+    public <T extends SportEvent> CashOutProbabilities<T> buildCashOutProbabilities(T sportEvent, UFCashout cashoutData, MessageTimestamp timestamp) {
+        return new CashOutProbabilitiesImpl<>(sportEvent, cashoutData, producerManager.getProducer(cashoutData.getProduct()), marketFactory, namedValuesProvider, timestamp);
     }
 
     @Override
-    public <T extends SportEvent> UnparsableMessage<T> buildUnparsableMessage(T sportEvent, Integer producerId, byte[] rawMessage, long timestamp) {
+    public <T extends SportEvent> UnparsableMessage<T> buildUnparsableMessage(T sportEvent, Integer producerId, byte[] rawMessage, MessageTimestamp timestamp) {
         return new UnparsableMessageImpl<>(
                 sportEvent,
                 rawMessage,

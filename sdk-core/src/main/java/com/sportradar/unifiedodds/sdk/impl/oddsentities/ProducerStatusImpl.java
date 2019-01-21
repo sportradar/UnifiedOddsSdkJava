@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
@@ -76,5 +77,15 @@ class ProducerStatusImpl implements ProducerStatus {
     @Override
     public long getTimestamp() {
         return timestamp;
+    }
+
+    /**
+     * Gets the timestamps when the message was generated, sent, received and dispatched by the sdk
+     *
+     * @return gets the timestamps when the message was generated, sent, received and dispatched by the sdk
+     */
+    @Override
+    public MessageTimestamp getTimestamps() {
+        return new MessageTimestampImpl(timestamp);
     }
 }

@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.unifiedodds.sdk.MessageInterest;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.URN;
 
@@ -18,8 +19,9 @@ public interface MessageConsumer {
      * @param unmarshalledMessage - an unmarshalled message payload
      * @param body - the raw payload (mainly used for logging and user exposure)
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
+     * @param timestamp - all message timestamps
      */
-    void onMessageReceived(UnmarshalledMessage unmarshalledMessage, byte[] body, RoutingKeyInfo routingKeyInfo);
+    void onMessageReceived(UnmarshalledMessage unmarshalledMessage, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp);
 
     /**
      * Dispatches the "unparsable message received event"

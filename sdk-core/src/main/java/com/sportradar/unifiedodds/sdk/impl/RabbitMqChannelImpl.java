@@ -78,7 +78,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
     }
 
-
     /**
      * Opens the current channel and binds the created queue to the provided routing keys
      *
@@ -103,7 +102,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
 
         this.channelMessageConsumer = channelMessageConsumer;
         try {
-            this.initChannelQue(routingKeys);
+            initChannelQue(routingKeys);
             isOpened = true;
         } catch (IOException e) {
             throw new IOException("Channel queue declaration failed, ex: ", e);
@@ -121,6 +120,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
 
         String qName = channel.queueDeclare().getQueue();
         for (String routingKey : routingKeys) {
+            logger.debug("Binding queue={} with routingKey={}", qName, routingKey);
             channel.queueBind(qName, INFO_EXCHANGE, routingKey);
         }
 
@@ -129,7 +129,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             public synchronized void handleDelivery(String tag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                 MDC.setContextMap(sdkMdcContextDescription);
                 try {
-                    channelMessageConsumer.onMessageReceived(envelope.getRoutingKey(), body);
+                    channelMessageConsumer.onMessageReceived(envelope.getRoutingKey(), body, properties, new TimeUtilsImpl().now());
                 } catch (Exception e) {
                     logger.error("An exception occurred while processing AMQP message. Routing key: '{}', body: '{}'",
                             envelope.getRoutingKey(),

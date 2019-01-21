@@ -8,10 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFBetSettlement;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement;
-import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlementCertainty;
-import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithSettlement;
-import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +26,8 @@ class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implem
     private final BetSettlementCertainty certainty;
     private final List<MarketWithSettlement> affectedMarkets;
 
-    BetSettlementImpl(T sportEvent, UFBetSettlement message, Producer producer, byte[] rawMessage, MarketFactory marketFactory) {
-        super(sportEvent, rawMessage, producer, message.getTimestamp(), message.getRequestId());
+    BetSettlementImpl(T sportEvent, UFBetSettlement message, Producer producer, byte[] rawMessage, MarketFactory marketFactory, MessageTimestamp timestamp) {
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
         Preconditions.checkNotNull(marketFactory);
 
         if (message.getCertainty() == 1) {

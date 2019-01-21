@@ -24,7 +24,6 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
      */
     private final ChannelMessageConsumer channelMessageConsumer;
 
-
     /**
      * Initializes a new instance of {@link RabbitMqMessageReceiver}
      *
@@ -38,7 +37,6 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
         this.rabbitMqChannel = rabbitMqChannel;
         this.channelMessageConsumer = channelMessageConsumer;
     }
-
 
     /**
      * Opens the current instance so it starts receiving messages

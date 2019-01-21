@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.impl.CompositeFeedMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 
 import java.util.List;
@@ -92,13 +93,14 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
      * @param message - the message that should be processed
      * @param body - the raw body of the received message
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
+     * @param timestamp - all message timestamps
      */
     @Override
-    public void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo) {
+    public void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
         if (!initialized) {
             throw new IllegalStateException("The composite message processor needs to be initialized");
         }
-        this.firstProcessor.processMessage(message, body, routingKeyInfo);
+        this.firstProcessor.processMessage(message, body, routingKeyInfo, timestamp);
     }
 
     /**

@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.URN;
 
@@ -65,9 +66,10 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
      * @param message - the message that should be processed
      * @param body - the raw body of the received message
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
+     * @param timestamp - all message timestamps
      */
     @Override
-    public void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo) {
+    public void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
         if (message instanceof UFOddsChange) {
             processOddsChangeMessage((UFOddsChange) message);
         } else if (message instanceof UFFixtureChange) {
@@ -79,7 +81,7 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         }
 
         if (nextMessageProcessor != null) {
-            nextMessageProcessor.processMessage(message, body, routingKeyInfo);
+            nextMessageProcessor.processMessage(message, body, routingKeyInfo, timestamp);
         }
     }
 

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.oddsentities.Message;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 
 /**
@@ -14,13 +15,13 @@ import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
  */
 abstract class MessageImpl implements Message {
     private final Producer producer;
-    private final long timestamp;
+    private final MessageTimestamp timestamps;
 
-    MessageImpl(Producer producer, long timestamp) {
-        Preconditions.checkArgument(timestamp > 0);
+    MessageImpl(Producer producer, MessageTimestamp timestamp) {
+        Preconditions.checkNotNull(timestamp);
 
         this.producer = producer;
-        this.timestamp = timestamp;
+        this.timestamps = timestamp;
     }
 
     /**
@@ -35,11 +36,20 @@ abstract class MessageImpl implements Message {
 
     /**
      * Returns a timestamp indicating when was this message created in milliseconds since EPOCH UTC
-     *
+     * @deprecated check getTimestamps for all available message timestamps
      * @return a timestamp indicating when was this message created in milliseconds since EPOCH UTC
      */
     @Override
     public long getTimestamp() {
-        return timestamp;
+        return timestamps.getCreated();
+    }
+
+    /**
+     * Gets the timestamps when the message was generated, sent, received and dispatched by the sdk
+     * @return gets the timestamps when the message was generated, sent, received and dispatched by the sdk
+     */
+    @Override
+    public MessageTimestamp getTimestamps() {
+        return timestamps;
     }
 }
