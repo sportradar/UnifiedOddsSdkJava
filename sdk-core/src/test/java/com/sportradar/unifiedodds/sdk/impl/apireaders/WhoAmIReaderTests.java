@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.apireaders;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
@@ -52,24 +53,44 @@ public class WhoAmIReaderTests {
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void invalidTokenProductionConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
+        Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
-        whoAmIReader.validateBookmakerDetails();
+
+        try {
+            whoAmIReader.validateBookmakerDetails();
+        } catch (Exception e) {
+            Assert.assertEquals(IllegalStateException.class, e.getClass());
+            Assert.assertEquals("UOF SDK failed to fetch required bookmaker details, check logs for additional information", e.getMessage());
+            return;
+        }
+
+        Assert.fail("Should not be reached");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void invalidTokenIntegrationConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
+        Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
-        whoAmIReader.validateBookmakerDetails();
+
+        try {
+            whoAmIReader.validateBookmakerDetails();
+        } catch (Exception e) {
+            Assert.assertEquals(IllegalStateException.class, e.getClass());
+            Assert.assertEquals("UOF SDK failed to fetch required bookmaker details, check logs for additional information", e.getMessage());
+            return;
+        }
+
+        Assert.fail("Should not be reached");
     }
 
     @Test
@@ -100,14 +121,64 @@ public class WhoAmIReaderTests {
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void replayServerConfigSelectionTestBothEndpointsInvalid() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
+        Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
-        whoAmIReader.validateBookmakerDetails();
+
+        try {
+            whoAmIReader.validateBookmakerDetails();
+        } catch (Exception e) {
+            Assert.assertEquals(IllegalStateException.class, e.getClass());
+            Assert.assertEquals("Looks like the access token has expired (or is invalid) - Access was denied. [msg: FORBIDDEN]", e.getMessage());
+            return;
+        }
+
+        Assert.fail("Should not be reached");
+    }
+
+    @Test
+    public void switchedTokenProductionIntegrationConfig() throws DataProviderException {
+        SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
+        Mockito.when(config.isReplaySession()).thenReturn(false);
+        Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
+        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
+
+        try {
+            whoAmIReader.validateBookmakerDetails();
+        } catch (Exception e) {
+            Assert.assertEquals(IllegalStateException.class, e.getClass());
+            Assert.assertEquals("The provided access token is for the 'Integration' environment but the SDK is configured to access the 'Production' environment", e.getMessage());
+            return;
+        }
+
+        Assert.fail("Should not be reached");
+    }
+
+    @Test
+    public void switchedTokenIntegrationProductionConfig() throws DataProviderException {
+        SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
+        Mockito.when(config.isReplaySession()).thenReturn(false);
+        Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
+        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
+
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
+
+        try {
+            whoAmIReader.validateBookmakerDetails();
+        } catch (Exception e) {
+            Assert.assertEquals(IllegalStateException.class, e.getClass());
+            Assert.assertEquals("The provided access token is for the 'Production' environment but the SDK is configured to access the 'Integration' environment", e.getMessage());
+            return;
+        }
+
+        Assert.fail("Should not be reached");
     }
 
     @SuppressWarnings("unchecked")

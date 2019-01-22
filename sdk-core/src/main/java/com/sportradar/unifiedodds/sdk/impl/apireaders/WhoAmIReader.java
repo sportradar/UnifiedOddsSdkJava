@@ -12,6 +12,7 @@ import com.ibm.icu.util.Calendar;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
@@ -56,31 +57,6 @@ public class WhoAmIReader {
         this.serverTimeDifference = Duration.ofSeconds(0);
     }
 
-    private void retrieveInfo() {
-        if (dataFetched) {
-            return;
-        }
-
-        BookmakerDetails bookmakerDetails = config.isReplaySession()
-                ? fetchReplayBookmakerDetails()
-                : fetchBookmakerDetails();
-
-        dataFetched = true;
-
-        if (bookmakerDetails == null) {
-            this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(
-                    0,
-                    null,
-                    null,
-                    ResponseCode.NOT_FOUND,
-                    "Bookmaker details could not be fetched, please verify your connection",
-                    serverTimeDifference);
-            return;
-        }
-
-        this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(bookmakerDetails, serverTimeDifference);
-    }
-
     public int getBookmakerId() {
         retrieveInfo();
         return bookmakerDetails.getBookmakerId();
@@ -101,13 +77,27 @@ public class WhoAmIReader {
         return bookmakerDetails.getResponseCode();
     }
 
+    public String getMessage() {
+        retrieveInfo();
+        return bookmakerDetails.getMessage();
+    }
+
+    public com.sportradar.unifiedodds.sdk.entities.BookmakerDetails getBookmakerDetails() {
+        retrieveInfo();
+        return bookmakerDetails;
+    }
+
     public String getSdkContextDescription() {
+        Preconditions.checkState(whoAmIValidated);
+
         return String.format("uf-sdk-%s%s",
                 bookmakerDetails.getBookmakerId(),
                 config.getSdkNodeId() == null ? "" : "-" + config.getSdkNodeId());
     }
 
     public Map<String, String> getAssociatedSdkMdcContextMap() {
+        Preconditions.checkState(whoAmIValidated);
+
         if (associatedSdkMdcContextMap == null) {
             associatedSdkMdcContextMap = ImmutableMap.<String, String>builder()
                     .put("uf-sdk-tag", getSdkContextDescription())
@@ -115,15 +105,6 @@ public class WhoAmIReader {
         }
 
         return associatedSdkMdcContextMap;
-    }
-
-    public String getMessage() {
-        retrieveInfo();
-        return bookmakerDetails.getMessage();
-    }
-
-    public com.sportradar.unifiedodds.sdk.entities.BookmakerDetails getBookmakerDetails() {
-        return bookmakerDetails;
     }
 
     public void validateBookmakerDetails() {
@@ -162,59 +143,90 @@ public class WhoAmIReader {
         }
     }
 
+    private void retrieveInfo() {
+        if (dataFetched) {
+            return;
+        }
+
+        BookmakerDetails bookmakerDetails = config.isReplaySession()
+                ? fetchReplayBookmakerDetails()
+                : fetchBookmakerDetails();
+
+        dataFetched = true;
+
+        if (bookmakerDetails == null) {
+            throw new IllegalStateException("UOF SDK failed to fetch required bookmaker details, check logs for additional information");
+        }
+
+        this.bookmakerDetails = new com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl(bookmakerDetails, serverTimeDifference);
+    }
+
     private BookmakerDetails fetchBookmakerDetails() {
+        logger.info("Attempting bookmaker details fetch from the configured environment[{}], API: '{}'", config.getEnvironment(), config.getAPIHost());
+
         BookmakerDetails bookmakerDetails = null;
         try {
-            // we can have 3 types of hosts: production, integration and custom
-
             bookmakerDetails = provideBookmakerDetails(configDataProvider);
-
         } catch (DataProviderException e) {
-            // bookmaker details fetch failed
-            if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.INTEGRATION_API_HOST))
-            {
-                try {
-                    bookmakerDetails = provideBookmakerDetails(integrationDataProvider);
-                    String message = String.format("Access denied. The provided access token is for the Integration environment but the SDK is configured to access the %s environment.", config.getEnvironment());
-                    logger.error(message);
-                    throw new IllegalStateException(message);
-                }
-                catch (DataProviderException e1) {
-                }
-            }
-            if (bookmakerDetails == null && !config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.PRODUCTION_API_HOST))
-            {
-                try {
-                    bookmakerDetails = provideBookmakerDetails(productionDataProvider);
-                    String message = String.format("Access denied. The provided access token is for the Production environment but the SDK is configured to access the %s environment.", config.getEnvironment());
-                    logger.error(message);
-                    throw new IllegalStateException(message);
-                }
-                catch (DataProviderException e1) {
-                }
-            }
+            logger.warn("Bookmaker settings failed to fetch from the configured environment[{}], exc:", config.getEnvironment(), e);
         }
-        return bookmakerDetails;
+
+        if (isBookmakerResponseOk(bookmakerDetails)) {
+            return bookmakerDetails;
+        }
+
+        logger.warn("Bookmaker details fetch failed from the configured environment, checking token status on other available environments...");
+
+        if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.INTEGRATION_API_HOST)) {
+            attemptTokenValidationOn(Environment.Integration, UnifiedFeedConstants.INTEGRATION_API_HOST, integrationDataProvider);
+        }
+        if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.PRODUCTION_API_HOST)) {
+            attemptTokenValidationOn(Environment.Production, UnifiedFeedConstants.PRODUCTION_API_HOST, productionDataProvider);
+        }
+
+        logger.info("Bookmaker details fetch failed on all available environments");
+
+        return null;
+    }
+
+    private void attemptTokenValidationOn(Environment environment, String environmentApiUrl, DataProvider<BookmakerDetails> dataProvider) {
+        logger.info("Attempting bookmaker details fetch from the '{}' environment, API URL: '{}'", environment, environmentApiUrl);
+
+        BookmakerDetails bookmakerDetails = null;
+        try {
+            bookmakerDetails = provideBookmakerDetails(dataProvider);
+        } catch (DataProviderException e) {
+            logger.warn("Bookmaker settings failed to fetch from the '{}' environment with exc:", environment, e);
+        }
+
+        if (isBookmakerResponseOk(bookmakerDetails)) {
+            String message = String.format("The provided access token is for the '%s' environment but the SDK is configured to access the '%s' environment", environment, config.getEnvironment());
+            logger.error(message);
+            throw new IllegalStateException(message);
+        }
+
+        logger.info("Bookmaker details fetch failed on '{}'", environment);
     }
 
     private BookmakerDetails fetchReplayBookmakerDetails() {
-        logger.info("Fetching production WhoAmI endpoint");
+        logger.info("Fetching 'production' WhoAmI endpoint");
+
         BookmakerDetails bookmakerDetails = null;
         try {
             bookmakerDetails = provideBookmakerDetails(productionDataProvider);
         } catch (DataProviderException e) {
-            // bookmaker details fetch failed
+            logger.warn("Replay WhoAmI fetch failed on 'production' with exc:", e);
         }
 
         if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
             return bookmakerDetails;
         }
 
-        logger.info("Production API request failed, fetching integration WhoAmI endpoint");
+        logger.info("Production API request failed, fetching 'integration' WhoAmI endpoint");
         try {
             bookmakerDetails = provideBookmakerDetails(integrationDataProvider);
         } catch (DataProviderException e) {
-            // bookmaker details fetch failed
+            logger.warn("Replay WhoAmI fetch failed on 'integration' with exc:", e);
         }
 
         if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
@@ -251,6 +263,11 @@ public class WhoAmIReader {
         } else if (absDiff > 2) {
             logger.warn("Local time is out of sync for more than 2s({}s), SDK time related operations might cause issues", diff);
         }
+
         serverTimeDifference = Duration.between(localisedServerTime.toInstant(), Instant.now());
+    }
+
+    private static boolean isBookmakerResponseOk(BookmakerDetails bookmakerDetails) {
+        return bookmakerDetails != null && bookmakerDetails.getResponseCode().equals(ResponseCode.OK);
     }
 }

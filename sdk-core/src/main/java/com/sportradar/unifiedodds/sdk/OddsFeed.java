@@ -10,9 +10,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.DataRouter;
+import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
+import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
+import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -396,8 +405,7 @@ public class OddsFeed {
         this.recoveryRequestIssuer = injector.getInstance(EventRecoveryRequestIssuer.class);
         this.cashOutProbabilitiesManager = injector.getInstance(CashOutProbabilitiesManager.class);
         this.bookingManager = injector.getInstance(BookingManager.class);
-        WhoAmIReader bookmakerDetailsProvider = injector.getInstance(WhoAmIReader.class);
-        this.bookmakerDetails = bookmakerDetailsProvider.getBookmakerDetails();
+        this.bookmakerDetails = whoAmI.getBookmakerDetails();
 
         feedInitialized = true;
     }
