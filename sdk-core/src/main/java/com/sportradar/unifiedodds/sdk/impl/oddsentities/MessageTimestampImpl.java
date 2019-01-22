@@ -16,11 +16,6 @@ public class MessageTimestampImpl implements MessageTimestamp {
 
     public MessageTimestampImpl(long created, long sent, long received, long dispatched)
     {
-//        Preconditions.checkArgument(created > 0);
-        Preconditions.checkArgument(sent > 0);
-        Preconditions.checkArgument(received > 0);
-//        Preconditions.checkArgument(dispatched > 0);
-
         this.created = created;
         this.sent = sent;
         this.received = received;
