@@ -23,6 +23,7 @@ class SportCIImpl implements SportCI {
     private final Map<Locale, String> names;
     private final List<URN> associatedCategories;
     private final List<Locale> cachedLocales;
+    private boolean shouldFetchCategories;
 
     SportCIImpl(URN id, SAPISport sportData, List<URN> associatedCategoryIds, Locale dataLocale) {
         Preconditions.checkNotNull(id);
@@ -30,6 +31,7 @@ class SportCIImpl implements SportCI {
         Preconditions.checkNotNull(dataLocale);
 
         this.id = id;
+        this.shouldFetchCategories = true;
 
         this.names = new ConcurrentHashMap<>();
         if (sportData.getName() != null) {
@@ -85,6 +87,16 @@ class SportCIImpl implements SportCI {
     @Override
     public List<URN> getCategoryIds() {
         return ImmutableList.copyOf(associatedCategories);
+    }
+
+    @Override
+    public boolean getShouldFetchCategories() {
+        return shouldFetchCategories;
+    }
+
+    @Override
+    public void categoriesFetched() {
+        shouldFetchCategories = false;
     }
 
     @Override

@@ -182,12 +182,9 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
         SportCI ifPresentSport = sportsCache.getIfPresent(sportId);
         if (ifPresentSport == null) {
-            SportCI sportCI = cacheItemFactory.buildSportCI(sportId, sport, null, dataLocale);
-            sportsCache.put(sportId, sportCI);
-            ensureSportCategoriesPreFetched(dataLocale, sportId, sportCI);
+            sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, null, dataLocale));
         } else {
             ifPresentSport.merge(sport, dataLocale);
-            ensureSportCategoriesPreFetched(dataLocale, sportId, ifPresentSport);
         }
     }
 
@@ -347,6 +344,11 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
         SportCI sportCI = sportsCache.getIfPresent(sportId);
         if (sportCI == null) {
             return null;
+        }
+
+        if (sportCI.getShouldFetchCategories()) {
+            locales.forEach(l -> ensureSportCategoriesPreFetched(l, sportId, sportCI));
+            sportCI.categoriesFetched();
         }
 
         List<CategoryData> cachedCategories = new ArrayList<>();

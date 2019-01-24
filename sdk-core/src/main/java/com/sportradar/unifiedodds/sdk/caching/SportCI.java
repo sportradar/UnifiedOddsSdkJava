@@ -18,4 +18,16 @@ public interface SportCI extends CacheItem {
      * @return a {@link List} specifying the id's of associated categories
      */
     List<URN> getCategoryIds();
+
+    /**
+     * Returns if categories should be fetched
+     *
+     * @return if categories should be fetched
+     */
+    boolean getShouldFetchCategories();
+
+    /**
+     * Clears ShouldFetchCategories flag
+     */
+    void categoriesFetched();
 }
