@@ -63,10 +63,17 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             throw new CacheItemNotFoundException("The requested market descriptor could not be found", e);
         }
 
-        List<Locale> missingLocales = getMissingLocales(marketCI, locales);
-        if (!missingLocales.isEmpty()) {
+        List<Locale> missingLocales;
+        try {
             lock.lock();
+            missingLocales = getMissingLocales(marketCI, locales);
+        } finally {
+            lock.unlock();
+        }
+
+        if (!missingLocales.isEmpty()) {
             try {
+                lock.lock();
                 missingLocales = getMissingLocales(marketCI, locales);
                 if (!missingLocales.isEmpty()) {
                     loadMarketDescriptorData(marketCI, marketId, variant, missingLocales);
