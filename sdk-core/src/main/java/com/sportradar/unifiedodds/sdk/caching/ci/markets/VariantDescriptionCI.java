@@ -116,7 +116,8 @@ public class VariantDescriptionCI {
         Preconditions.checkNotNull(source);
 
         Mappings.Mapping target = new Mappings.Mapping();
-        target.setMarketId(source.getMarketId());
+//        target.setMarketId(source.getMarketId());
+        target.setMarketId(source.getProductMarketId());
         target.setProductId(source.getProductId());
         target.setProductIds(source.getProductIds());
         target.setSovTemplate(source.getSovTemplate());

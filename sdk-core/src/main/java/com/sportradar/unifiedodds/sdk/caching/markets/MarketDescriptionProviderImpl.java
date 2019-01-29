@@ -59,7 +59,9 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
             throw new CacheItemNotFoundException("Market descriptor with id " + marketId + " could not be found", e);
         }
 
-        String variantValue = marketSpecifiers == null ? null : marketSpecifiers.get(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME);
+        String variantValue = marketSpecifiers == null
+                ? null
+                : marketSpecifiers.get(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME);
 
         // case 1: if its not a variant market, return the static market descriptor as is
         if (Strings.isNullOrEmpty(variantValue)) {

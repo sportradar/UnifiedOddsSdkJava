@@ -112,4 +112,12 @@ public interface Producer {
      * @return the max allowed stateful recovery window in minutes
      */
     int getStatefulRecoveryWindowInMinutes();
+
+    /**
+     * Gets the recovery info about last recovery attempt
+     * @return the recovery info about last recovery attempt
+     */
+    default RecoveryInfo getRecoveryInfo(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

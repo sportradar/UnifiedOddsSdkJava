@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.RecoveryInfoImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -722,7 +723,6 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         private final long fromTimestamp;
         private final int recoveryId;
 
-
         ProducerRecoveryRequester(ProducerInfo pi, long fromTimestamp, int recoveryId) {
             Preconditions.checkNotNull(pi);
 
@@ -731,12 +731,13 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             this.recoveryId = recoveryId;
         }
 
-
         @Override
         public void run() {
             if (pi.isDisabled()) {
                 return;
             }
+
+            long timestampRequested = timeUtils.now();
 
             StringBuilder msg = new StringBuilder();
             if (fromTimestamp == 0) {
@@ -764,14 +765,24 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             reqBuilder.append("request_id=").append(recoveryId);
 
             String responseMessage;
+            HttpHelper.ResponseData responseData = null;
             try {
-                HttpHelper.ResponseData responseData = httpHelper.post(reqBuilder.toString());
+                responseData = httpHelper.post(reqBuilder.toString());
                 boolean recoveryRequestStatus = responseData.isSuccessful();
                 responseMessage = responseData.getMessage();
 
                 logger.info("Recovery request executed for: {}, status: {}, message: {}", pi, recoveryRequestStatus ? "SUCCESSFUL" : "FAILED", responseMessage);
                 if (recoveryRequestStatus) {
                     // recovery executed successfully, thread end
+                    RecoveryInfo recoveryInfo;
+                    if(responseData != null)
+                    {
+                        recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
+                    }
+                    else{
+                        recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, 0, "no response data", config.getSdkNodeId());
+                    }
+                    producerManager.setProducerRecoveryInfo(pi.getProducerId(), recoveryInfo);
                     return;
                 }
             } catch (CommunicationException e) {
@@ -783,6 +794,16 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
 
             dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
+
+            RecoveryInfo recoveryInfo;
+            if(responseData != null)
+            {
+                recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
+            }
+            else{
+                recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, 0, "no response data", config.getSdkNodeId());
+            }
+            producerManager.setProducerRecoveryInfo(pi.getProducerId(), recoveryInfo);
         }
     }
 }

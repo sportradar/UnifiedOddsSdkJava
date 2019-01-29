@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -27,6 +28,7 @@ public class ProducerImpl implements Producer {
     private final String apiUrl;
     private final Set<ProducerScope> producerScopes;
     private final int statefulRecoveryWindowInMinutes;
+    private RecoveryInfo recoveryInfo;
 
     ProducerImpl(ProducerData pData) {
         Preconditions.checkNotNull(pData);
@@ -40,6 +42,7 @@ public class ProducerImpl implements Producer {
         apiUrl = producerData.getApiUrl();
         producerScopes = producerData.getProducerScopes();
         statefulRecoveryWindowInMinutes = producerData.getStatefulRecoveryWindowInMinutes();
+        recoveryInfo = producerData.getRecoveryInfo();
     }
 
     private ProducerImpl(int unknownProducerId, SDKInternalConfiguration configuration) {
@@ -127,6 +130,11 @@ public class ProducerImpl implements Producer {
     @Override
     public int getStatefulRecoveryWindowInMinutes() {
         return statefulRecoveryWindowInMinutes;
+    }
+
+    @Override
+    public RecoveryInfo getRecoveryInfo(){
+        return recoveryInfo;
     }
 
     @Override

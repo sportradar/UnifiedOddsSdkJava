@@ -24,6 +24,6 @@ public interface Message {
      * @return gets the timestamps when the message was generated, sent, received and dispatched by the sdk
      */
     default MessageTimestamp getTimestamps() {
-        return null;
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

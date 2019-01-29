@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
-import org.apache.commons.codec.binary.StringUtils;
 
 import java.util.List;
 

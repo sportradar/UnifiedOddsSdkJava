@@ -130,9 +130,7 @@ class ProducerInfo {
         return firstRecoveryCompleted;
     }
 
-    int getProducerId() {
-        return producerId;
-    }
+    int getProducerId() { return producerId; }
 
     RecoveryState getRecoveryState() {
         return recoveryState;

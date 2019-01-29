@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
+import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,7 @@ public class ProducerData {
     private long lastProcessedMessageGenTimestamp;
     private long lastAliveReceivedGenTimestamp = 0;
     private long recoveryFromTimestamp;
+    private RecoveryInfo lastRecoveryInfo;
 
     ProducerData(int id, String name, String description, boolean active, String apiUrl, String producerScopes, Integer statefulRecoveryWindowInMinutes) {
         Preconditions.checkArgument(id > 0);
@@ -81,6 +83,7 @@ public class ProducerData {
         this.statefulRecoveryWindowInMinutes = statefulRecoveryWindowInMinutes == null ?
                 DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES :
                 statefulRecoveryWindowInMinutes;
+        this.lastRecoveryInfo = null;
     }
 
     public int getId() {
@@ -161,5 +164,11 @@ public class ProducerData {
 
     public void setRecoveryFromTimestamp(long recoveryFromTimestamp) {
         this.recoveryFromTimestamp = recoveryFromTimestamp;
+    }
+
+    public RecoveryInfo getRecoveryInfo() { return lastRecoveryInfo; }
+
+    public void setRecoveryInfo(RecoveryInfo recoveryInfo){
+        this.lastRecoveryInfo = recoveryInfo;
     }
 }

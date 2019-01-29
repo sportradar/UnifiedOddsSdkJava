@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.unifiedodds.sdk.ProducerManager;
+import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
 
 /**
  * Created on 03/07/2017.
@@ -20,4 +21,6 @@ public interface SDKProducerManager extends ProducerManager {
     void setLastProcessedMessageGenTimestamp(int producerId, long lastProcessedMessageGenTimestamp);
 
     void setLastAliveReceivedGenTimestamp(int producerId, long aliveReceivedGenTimestamp);
+
+    void setProducerRecoveryInfo(int producerId, RecoveryInfo recoveryInfo);
 }

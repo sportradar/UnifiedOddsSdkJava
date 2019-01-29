@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,6 +207,24 @@ public class ProducerManagerImpl implements SDKProducerManager {
         if (producers.containsKey(producerId)) {
             ProducerData producerData = producers.get(producerId);
             producerData.setLastAliveReceivedGenTimestamp(aliveReceivedGenTimestamp);
+        }
+    }
+
+    @Override
+    public void setProducerRecoveryInfo(int producerId, RecoveryInfo recoveryInfo) {
+        try {
+            if(producers.containsKey(producerId)) {
+                ProducerData producer = producers.get(producerId);
+                if (producer != null && recoveryInfo != null) {
+                    producer.setRecoveryInfo(recoveryInfo);
+                }
+            }
+            else{
+                logger.warn("Error saving recovery info to the producer " + producerId + ". Producer is missing.");
+            }
+        }
+        catch(Exception ex) {
+            logger.warn("Error saving recovery info to the producer " + producerId, ex);
         }
     }
 }
