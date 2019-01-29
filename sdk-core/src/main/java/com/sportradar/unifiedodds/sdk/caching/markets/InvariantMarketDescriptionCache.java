@@ -129,12 +129,17 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         Preconditions.checkArgument(!locales.isEmpty());
 
         MarketDescriptionCI description = cache.getIfPresent(id);
-        if (description != null && getMissingLocales(description, locales).isEmpty()) {
-            return description;
+        try {
+            fetchLock.lock();
+            if (description != null && getMissingLocales(description, locales).isEmpty()) {
+                return description;
+            }
+        } finally {
+            fetchLock.unlock();
         }
 
-        fetchLock.lock();
         try {
+            fetchLock.lock();
             description = cache.getIfPresent(id);
             List<Locale> missingLocales = getMissingLocales(description, locales);
             if (missingLocales.isEmpty()) {
