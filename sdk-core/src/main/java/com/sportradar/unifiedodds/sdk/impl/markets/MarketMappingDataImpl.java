@@ -132,7 +132,8 @@ public class MarketMappingDataImpl implements MarketMappingData {
 
     @Override
     public boolean canMap(int producerId, URN sportId, Map<String, String> specifiers) {
-        if (this.producerId != producerId || (this.sportId != null && !this.sportId.equals(sportId))) {
+        if ((producerIds == null || !producerIds.contains(producerId)) ||
+                (this.sportId != null && !this.sportId.equals(sportId))) {
             return false;
         }
 
