@@ -17,11 +17,7 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
+import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -128,7 +124,7 @@ public class OddsFeed {
 
         logger.info("OddsFeed instance created with \n{}", config);
 
-        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
 
         this.tryCreateInjector(listener, null);
     }

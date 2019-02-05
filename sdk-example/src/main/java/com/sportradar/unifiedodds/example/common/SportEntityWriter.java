@@ -385,7 +385,6 @@ public class SportEntityWriter {
     }
     
     public void writeData(SportEvent sportEvent) {
-
         String description = null;
         if (sportEvent != null) {
             // the same kind of entities are returned on the callbacks of the OddsFeedListener/MessageListener
