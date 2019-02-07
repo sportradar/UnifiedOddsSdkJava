@@ -11,21 +11,14 @@
     <version>2.0.20-SNAPSHOT</version>
     <name>Unified Odds feed SDK</name>
 
-    <repositories>
-        <repository>
-            <id>archiva-zrh-oslo</id>
-            <url>https://archiva.sportradar.ag/repository/oslo/</url>
-        </repository>
-    </repositories>
-
     <distributionManagement>
         <snapshotRepository>
-            <id>archiva-zrh-oslo</id>
-            <url>https://archiva.sportradar.ag/repository/oslo/</url>
+            <id>${sr.snapshotRepository.id}</id>
+            <url>${sr.snapshotRepository.url}</url>
         </snapshotRepository>
         <repository>
-            <id>archiva-zrh-oslo</id>
-            <url>https://archiva.sportradar.ag/repository/betradar-java/</url>
+            <id>${sr.repository.id}</id>
+            <url>${sr.repository.url}</url>
             <uniqueVersion>true</uniqueVersion>
         </repository>
     </distributionManagement>
@@ -108,6 +101,31 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
