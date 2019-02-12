@@ -60,6 +60,7 @@ public class PeriodScoreImpl implements PeriodScore {
     public PeriodScoreImpl(PeriodScoreDTO ps, LocalizedNamedValueCache matchStatuses) {
         Preconditions.checkNotNull(ps);
         Preconditions.checkNotNull(matchStatuses);
+
         this.homeScore = ps.getHomeScore();
         this.awayScore = ps.getAwayScore();
         this.number = ps.getPeriodNumber();
@@ -123,7 +124,7 @@ public class PeriodScoreImpl implements PeriodScore {
      */
     @Override
     public LocalizedNamedValue getPeriodDescription() {
-        if (number < 0) {
+        if (number == null || number < 0) {
             return null;
         }
 
@@ -138,7 +139,7 @@ public class PeriodScoreImpl implements PeriodScore {
      */
     @Override
     public LocalizedNamedValue getPeriodDescription(Locale locale) {
-        if (number < 0) {
+        if (number == null || number < 0) {
             return null;
         }
 
