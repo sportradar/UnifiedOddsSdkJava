@@ -34,6 +34,7 @@ public class EventResultImpl implements EventResult {
     private final Double pointsDecimal;
     private final Double sprintDecimal;
     private final Double climberDecimal;
+    private final Integer grid;
 
     public EventResultImpl(SAPIStageResult.SAPICompetitor c) {
         Preconditions.checkNotNull(c);
@@ -56,6 +57,8 @@ public class EventResultImpl implements EventResult {
         sprintDecimal = c.getSprint();
         climberDecimal = c.getClimber();
         wcPoints = c.getWcPoints();
+
+        grid = c.getGrid();
 
         awayScore = null;
         matchStatus = null;
@@ -84,6 +87,7 @@ public class EventResultImpl implements EventResult {
         pointsDecimal = null;
         sprintDecimal = null;
         climberDecimal = null;
+        grid = null;
     }
 
     @Override
@@ -174,6 +178,11 @@ public class EventResultImpl implements EventResult {
     @Override
     public Double getWcPoints() {
         return wcPoints;
+    }
+
+    @Override
+    public Integer getGrid() {
+        return grid;
     }
 
     private static BigInteger assignIfFullNumber(Double value) {

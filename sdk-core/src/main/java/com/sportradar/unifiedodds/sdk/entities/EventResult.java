@@ -136,4 +136,11 @@ public interface EventResult {
      * @return the wc points
      */
     Double getWcPoints();
+
+    /**
+     * Returns the grid value
+     *
+     * @return the grid value
+     */
+    Integer getGrid();
 }
