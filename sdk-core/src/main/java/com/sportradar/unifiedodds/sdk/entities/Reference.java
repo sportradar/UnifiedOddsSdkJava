@@ -32,6 +32,13 @@ public interface Reference {
     Integer getRotationNumber();
 
     /**
+     * Returns the AAMS id for this instance if provided amount reference ids, null otherwise
+     *
+     * @return - the AAMS id for this instance if provided amount reference ids, null otherwise
+     */
+    Integer getAamsId();
+
+    /**
      * Returns a {@link Map} with all the reference ids associated with the current instance
      *
      * @return - all the reference ids associated with the current instance

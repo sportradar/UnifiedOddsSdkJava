@@ -31,6 +31,11 @@ public class ReferenceImpl implements Reference {
     private final Integer rotationNumber;
 
     /**
+     * The AAMS id for this instance
+     */
+    private final Integer aamsId;
+
+    /**
      * All the reference ids associated with the current instance
      *
      * @see com.google.common.collect.ImmutableMap
@@ -48,6 +53,7 @@ public class ReferenceImpl implements Reference {
         this.betfairId = referenceIdCI.getBetfairId();
         this.betradarId = referenceIdCI.getBetradarId();
         this.rotationNumber = referenceIdCI.getRotationNumber();
+        this.aamsId = referenceIdCI.getAamsId();
         this.references = ImmutableMap.copyOf(referenceIdCI.getReferenceIds());
     }
 
@@ -77,6 +83,16 @@ public class ReferenceImpl implements Reference {
      */
     @Override
     public Integer getRotationNumber() { return rotationNumber; }
+
+    /**
+     * Returns the AAMS id for this instance if provided amount reference ids, null otherwise
+     *
+     * @return - the AAMS id for this instance if provided amount reference ids, null otherwise
+     */
+    @Override
+    public Integer getAamsId() {
+        return aamsId;
+    }
 
     /**
      * Returns a {@link Map} with all the reference ids associated with the current instance

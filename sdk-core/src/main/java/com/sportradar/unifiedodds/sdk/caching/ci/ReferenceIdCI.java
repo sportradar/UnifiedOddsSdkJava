@@ -29,6 +29,11 @@ public class ReferenceIdCI {
     private Integer rotationNumber;
 
     /**
+     * The AAMS id for this instance
+     */
+    private Integer aamsId;
+
+    /**
      * A {@link ImmutableMap} containing all the referenceIds
      */
     private ImmutableMap<String, String> referenceIds;
@@ -41,8 +46,7 @@ public class ReferenceIdCI {
     public ReferenceIdCI(Map<String, String> newReferenceIds) {
         if (newReferenceIds != null) {
             merge(newReferenceIds);
-        }
-        else {
+        } else {
             this.betradarId = null;
             this.betfairId = null;
             this.rotationNumber = null;
@@ -54,13 +58,11 @@ public class ReferenceIdCI {
         if (newReferenceIds != null) {
             if (this.referenceIds == null) {
                 this.referenceIds = ImmutableMap.copyOf(newReferenceIds);
-            }
-            else {
-                Map<String, String> refs = new HashMap<>();
-                refs.putAll(this.referenceIds);
-                for(Map.Entry e : this.referenceIds.entrySet()) {
+            } else {
+                Map<String, String> refs = new HashMap<>(this.referenceIds);
+                for (Map.Entry<String, String> e : newReferenceIds.entrySet()) {
                     if(!refs.containsKey(e.getKey())) {
-                        refs.put(e.getKey().toString(), e.getValue().toString());
+                        refs.put(e.getKey(), e.getValue());
                     }
                 }
                 this.referenceIds = ImmutableMap.copyOf(refs);
@@ -105,6 +107,18 @@ public class ReferenceIdCI {
                 rotationNbr = null;
             }
             this.rotationNumber = rotationNbr;
+
+            Integer aamsId;
+            try {
+                if (this.referenceIds.containsKey("aams")) {
+                    aamsId = Integer.parseInt(this.referenceIds.get("aams"));
+                } else {
+                    aamsId = null;
+                }
+            } catch (NumberFormatException e) {
+                aamsId = null;
+            }
+            this.aamsId = aamsId;
         }
     }
 
@@ -133,6 +147,15 @@ public class ReferenceIdCI {
      */
     public Integer getRotationNumber()  {
         return rotationNumber;
+    }
+
+    /**
+     * Returns the AAMS id for this instance if provided amount reference ids, null otherwise
+     *
+     * @return - the AAMS id for this instance if provided amount reference ids, null otherwise
+     */
+    public Integer getAamsId() {
+        return aamsId;
     }
 
     /**
