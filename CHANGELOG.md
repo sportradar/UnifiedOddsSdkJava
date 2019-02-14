@@ -1,5 +1,16 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.20 (2019-02-14)**
+* exposed getTimestamps() on Message
+* added getRecoveryInfo() (info about last recovery) to the Producer
+* added support for replay feed to the Feed instance
+* fix: MarketMappingDataImpl.canMap - added producerId check
+* fix: Sport.getCategories now returns all categories, delayed fetching until needed
+* fix: Locking problem with market description fetching.
+* fix: null check when mapping CoveredFrom
+* fix: added null check in PeriodScoreImpl
+* note: artifact moved to maven central
+
 **2.0.19 (2019-01-07)**
 * added Fixture.CoverageInfo.CoveredFrom property
 * added getOutcomeType method to MarketDefinition (to replace includes_outcomes_of_type)
