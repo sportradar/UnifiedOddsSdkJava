@@ -142,5 +142,8 @@ public interface EventResult {
      *
      * @return the grid value
      */
-    Integer getGrid();
+    default Integer getGrid()
+    {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }
