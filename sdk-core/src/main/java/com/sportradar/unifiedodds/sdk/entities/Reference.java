@@ -36,7 +36,9 @@ public interface Reference {
      *
      * @return - the AAMS id for this instance if provided amount reference ids, null otherwise
      */
-    Integer getAamsId();
+    default Integer getAamsId(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns a {@link Map} with all the reference ids associated with the current instance
