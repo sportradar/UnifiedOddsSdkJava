@@ -32,9 +32,9 @@ public interface Reference {
     Integer getRotationNumber();
 
     /**
-     * Returns the AAMS id for this instance if provided amount reference ids, null otherwise
+     * Returns the AAMS id for this instance if provided among reference ids, null otherwise
      *
-     * @return - the AAMS id for this instance if provided amount reference ids, null otherwise
+     * @return - the AAMS id for this instance if provided among reference ids, null otherwise
      */
     default Integer getAamsId(){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");

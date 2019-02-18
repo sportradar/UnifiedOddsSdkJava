@@ -57,7 +57,6 @@ public class ReferenceImpl implements Reference {
         this.references = ImmutableMap.copyOf(referenceIdCI.getReferenceIds());
     }
 
-
     /**
      * Returns the Betradar id for this instance if provided amount reference ids, null otherwise
      *
