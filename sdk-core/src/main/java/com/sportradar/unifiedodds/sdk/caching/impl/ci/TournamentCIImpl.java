@@ -8,11 +8,21 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.uf.sportsapi.datamodel.SAPICompetitors;
+import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
+import com.sportradar.uf.sportsapi.datamodel.SAPITournamentExtended;
+import com.sportradar.uf.sportsapi.datamodel.SAPITournamentInfoEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SAPITournamentLength;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.*;
+import com.sportradar.unifiedodds.sdk.caching.ci.CompleteRoundCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.CompleteRoundCIImpl;
+import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCoverageCI;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
@@ -23,7 +33,14 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -457,13 +474,11 @@ class TournamentCIImpl implements TournamentCI {
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-        if(competitorsReferences == null || cachedLocales.isEmpty()) {
+        if(cachedLocales.isEmpty()) {
             requestMissingTournamentData(Collections.singletonList(defaultLocale));
         }
 
-        return competitorsReferences == null
-                ? null
-                : ImmutableMap.copyOf(competitorsReferences);
+        return prepareCompetitorReferences(competitorsReferences, () -> getGroups(Collections.singletonList(defaultLocale)));
     }
 
     /**
@@ -534,6 +549,7 @@ class TournamentCIImpl implements TournamentCI {
                     this.competitorIds.add(parsedId);
                 }
             });
+            competitorsReferences = SdkHelper.ParseCompetitorsReferences(endpointCompetitors.getCompetitor(), competitorsReferences);
         }
 
         if (endpointData.getSeason() != null) {
@@ -680,10 +696,29 @@ class TournamentCIImpl implements TournamentCI {
         if (groupSupplier != null && groupSupplier.get() != null) {
             return ImmutableList.copyOf(
                     groupSupplier.get().stream()
-                            .flatMap(g -> g.getCompetitorIds().stream())
+                            .map(GroupCI::getCompetitorIds)
+                            .filter(Objects::nonNull)
+                            .flatMap(Collection::stream)
                             .distinct()
                             .collect(Collectors.toList())
             );
+        }
+
+        return null;
+    }
+
+    private static Map<URN, ReferenceIdCI> prepareCompetitorReferences(Map<URN, ReferenceIdCI> references, Supplier<List<GroupCI>> groupSupplier) {
+        if (references != null && !references.isEmpty()) {
+            return ImmutableMap.copyOf(references);
+        }
+
+        if (groupSupplier != null && groupSupplier.get() != null) {
+            return ImmutableMap.copyOf(
+                    groupSupplier.get().stream()
+                            .map(GroupCI::getCompetitorsReferences)
+                            .filter(Objects::nonNull)
+                            .flatMap(g -> g.entrySet().stream())
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         }
 
         return null;
