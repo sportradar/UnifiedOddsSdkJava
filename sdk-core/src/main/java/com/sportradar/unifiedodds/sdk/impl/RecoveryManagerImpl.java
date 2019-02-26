@@ -248,6 +248,8 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 dispatchEventRecoveryCompleted(recoveryData.getEventId(), recoveryData.getRecoveryId());
 
                 pi.onEventRecoveryCompleted(requestId);
+            } else {
+                logger.warn("Snapshot[{}] from {} validation failed - message discarded", requestId, pi);
             }
         } finally {
             onSnapshotCompleteLock.unlock();
