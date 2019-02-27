@@ -6,12 +6,18 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentGroup;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +35,12 @@ public class GroupCI {
     private final List<URN> competitorIds;
 
     /**
+     * A {@link Map} of competitors id and their references that participate in the sport event
+     * associated with the current instance
+     */
+    private Map<URN, ReferenceIdCI> competitorsReferences;
+
+    /**
      * Initializes a new instance of the {@link GroupCI} class.
      *
      * @param group - {@link SAPITournamentGroup} containing information about the group
@@ -41,9 +53,11 @@ public class GroupCI {
         name = group.getName();
 
         competitorIds = new ArrayList<>();
+        competitorsReferences = new HashMap<>();
         if (group.getCompetitor() != null) {
             competitorIds.addAll(group.getCompetitor().stream().
                     map(cmp -> URN.parse(cmp.getId())).collect(Collectors.toList()));
+            competitorsReferences = SdkHelper.ParseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
     }
 
@@ -64,6 +78,7 @@ public class GroupCI {
                     competitorIds.add(cId);
                 }
             });
+            competitorsReferences = SdkHelper.ParseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
     }
 
@@ -83,5 +98,14 @@ public class GroupCI {
      */
     public List<URN> getCompetitorIds() {
         return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
+    }
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     *
+     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     */
+    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+        return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
     }
 }
