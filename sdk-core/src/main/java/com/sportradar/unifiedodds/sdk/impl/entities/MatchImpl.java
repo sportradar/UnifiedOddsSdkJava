@@ -131,14 +131,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public EventStatus getEventStatus() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCI matchCI = loadMatchCI();
 
-        if (cacheItem == null) {
+        if (matchCI == null) {
             handleException("getEventStatus", null);
             return null;
         }
 
-        EventStatus eventStatus = cacheItem.getEventStatus();
+        EventStatus eventStatus = matchCI.getEventStatus();
 
         if(eventStatus == null)
         {
@@ -148,10 +148,10 @@ public class MatchImpl extends SportEventImpl implements Match {
             }
             if(status != null)
             {
-                cacheItem.merge(status, null);
+                matchCI.merge(status, null);
             }
         }
-        return cacheItem.getEventStatus();
+        return matchCI.getEventStatus();
     }
 
     /**
