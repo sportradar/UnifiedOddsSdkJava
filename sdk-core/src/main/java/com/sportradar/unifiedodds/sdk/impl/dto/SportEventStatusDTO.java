@@ -8,8 +8,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.sportradar.uf.datamodel.UFPeriodScoreType;
 import com.sportradar.uf.datamodel.UFSportEventStatus;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchStatistics;
+import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodScore;
 import com.sportradar.uf.sportsapi.datamodel.SAPISportEventStatus;
 import com.sportradar.uf.sportsapi.datamodel.SAPIStageSportEventStatus;
 import com.sportradar.unifiedodds.sdk.entities.*;
@@ -169,10 +171,7 @@ public class SportEventStatusDTO {
 
         if (sportEventStatus.getPeriodScores() != null) {
             sportEventStatus.getPeriodScores().getPeriodScore()
-                    .forEach(p -> this.addPeriodScore(
-                            p.getNumber(),
-                            new BigDecimal(p.getHomeScore()),
-                            new BigDecimal(p.getAwayScore())));
+                    .forEach(p -> this.addPeriodScore(p));
         }
 
         sportEventStatisticsDTO = statistics == null ? null : new SportEventStatisticsDTO(statistics, homeAwayMap);
@@ -248,10 +247,7 @@ public class SportEventStatusDTO {
 
         if (seStatus.getPeriodScores() != null) {
             seStatus.getPeriodScores().getPeriodScore()
-                    .forEach(p -> this.addPeriodScore(
-                            p.getNumber(),
-                            p.getHomeScore(),
-                            p.getAwayScore()));
+                    .forEach(p -> this.addPeriodScore(p));
         }
 
         eventResults = seStatus.getResults() == null ? null :
@@ -402,15 +398,25 @@ public class SportEventStatusDTO {
     /**
      * Adds a period entry to the {@link #periodScores} collection
      *
-     * @param number - the numeric sequence of the current instance period score
-     * @param homeScore - the score of the home team in the representing period
-     * @param awayScore - the score of the away team in the representing period
+     * @param periodScore - the period score received from the API
      */
-    private void addPeriodScore(Integer number, BigDecimal homeScore, BigDecimal awayScore) {
+    private void addPeriodScore(SAPIPeriodScore periodScore) {
         if (periodScores == null) {
             periodScores = new ArrayList<>();
         }
-        periodScores.add(new PeriodScoreDTO(homeScore, awayScore, number));
+        periodScores.add(new PeriodScoreDTO(periodScore));
+    }
+
+    /**
+     * Adds a period entry to the {@link #periodScores} collection
+     *
+     * @param periodScore - the period score received from the feed
+     */
+    private void addPeriodScore(UFPeriodScoreType periodScore) {
+        if (periodScores == null) {
+            periodScores = new ArrayList<>();
+        }
+        periodScores.add(new PeriodScoreDTO(periodScore));
     }
 
     /**

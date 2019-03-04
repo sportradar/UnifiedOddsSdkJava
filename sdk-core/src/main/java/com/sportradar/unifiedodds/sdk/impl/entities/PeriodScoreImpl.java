@@ -46,10 +46,14 @@ public class PeriodScoreImpl implements PeriodScore {
     private final PeriodType periodType;
 
     /**
+     * The match status code
+     */
+    private final int matchStatusCode;
+
+    /**
      * A cache of possible match/round descriptions
      */
     private final LocalizedNamedValueCache matchStatuses;
-
 
     /**
      * Initializes a new instance of {@link PeriodScoreImpl}
@@ -64,28 +68,40 @@ public class PeriodScoreImpl implements PeriodScore {
         this.homeScore = ps.getHomeScore();
         this.awayScore = ps.getAwayScore();
         this.number = ps.getPeriodNumber();
+        this.matchStatusCode = ps.getMatchStatusCode();
         this.matchStatuses = matchStatuses;
 
-        // TODO cleanup hack to map the number -> period type when the api gets updated
-        if (number != null) {
+        PeriodType tempPeriodType = null;
+        if(ps.getPeriodType() != null) {
+            if (ps.getPeriodType().equalsIgnoreCase("overtime")) {
+                tempPeriodType = PeriodType.Overtime;
+            } else if (ps.getPeriodType().equalsIgnoreCase("penalties")) {
+                tempPeriodType = PeriodType.Penalties;
+            } else if (ps.getPeriodType().equalsIgnoreCase("regular_period")) {
+                tempPeriodType = PeriodType.RegularPeriod;
+            }
+        }
+
+        if (number != null && tempPeriodType == null) {
             if (number == 40) {
                 // <match_status description="Overtime" id="40"/>
-                periodType = PeriodType.Overtime;
+                tempPeriodType = PeriodType.Overtime;
             } else if (number == 50 || number == 51 || number == 52) {
                 // <match_status description="Penalties" id="50"/>
                 // <match_status description="Penalties" id="51"/>
                 // <match_status description="Penalties" id="52"/>
-                periodType = PeriodType.Penalties;
+                tempPeriodType = PeriodType.Penalties;
             } else if (number != 0) {
-                periodType = PeriodType.RegularPeriod;
+                tempPeriodType = PeriodType.RegularPeriod;
             } else {
-                periodType = PeriodType.Other;
+                tempPeriodType = PeriodType.Other;
             }
         } else {
-            periodType = PeriodType.Other;
+            tempPeriodType = PeriodType.Other;
         }
-    }
 
+        this.periodType = tempPeriodType;
+    }
 
     /**
      * Returns the score of the home team in the period represented by the current instance
@@ -124,11 +140,11 @@ public class PeriodScoreImpl implements PeriodScore {
      */
     @Override
     public LocalizedNamedValue getPeriodDescription() {
-        if (number == null || number < 0) {
+        if (matchStatusCode < 0) {
             return null;
         }
 
-        return matchStatuses.get(number, null);
+        return matchStatuses.get(matchStatusCode, null);
     }
 
     /**
@@ -139,11 +155,11 @@ public class PeriodScoreImpl implements PeriodScore {
      */
     @Override
     public LocalizedNamedValue getPeriodDescription(Locale locale) {
-        if (number == null || number < 0) {
+        if (matchStatusCode < 0) {
             return null;
         }
 
-        return matchStatuses.get(number, Collections.singletonList(locale));
+        return matchStatuses.get(matchStatusCode, Collections.singletonList(locale));
     }
 
     /**
@@ -167,6 +183,8 @@ public class PeriodScoreImpl implements PeriodScore {
                 "homeScore=" + homeScore +
                 ", awayScore=" + awayScore +
                 ", number=" + number +
+                ", matchStatusCode=" + matchStatusCode +
+                ", type=" + periodType +
                 '}';
     }
 }
