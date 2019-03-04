@@ -486,6 +486,59 @@ public class RecoveryManagerTests {
     }
 
     @Test
+    public void handleChannelDisconnectWhileInRecoveryTest() {
+        Producer producer = producerManager.getProducer(1);
+        assertTrue(producer.isFlaggedDown());
+
+        int recoveryId = 55;
+        when(mockedSequenceGenerator.getNext()).thenReturn(recoveryId);
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), false, true);
+        assertEquals(1, taskScheduler.getOneTimeTaskRuns());
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.shutdownCompleted(mock(ShutdownSignalException.class));
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
+        assertEquals(2, taskScheduler.getOneTimeTaskRuns());
+        assertTrue(producer.isFlaggedDown());
+    }
+
+    @Test
+    public void handleChannelDisconnectWhileProducerIsUpTest() {
+        Producer producer = producerManager.getProducer(1);
+        assertTrue(producer.isFlaggedDown());
+
+        int recoveryId = 55;
+        when(mockedSequenceGenerator.getNext()).thenReturn(recoveryId);
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), false, true);
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(10);
+        recoveryManager.onSnapshotCompleteReceived(1, mockedTimeUtils.now(), recoveryId, MessageInterest.AllMessages);
+        assertFalse(producer.isFlaggedDown());
+        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
+        producerStatusListener.assertProducerStatusChangeInvoked(1, ProducerStatusReason.FirstRecoveryCompleted);
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.shutdownCompleted(mock(ShutdownSignalException.class));
+
+        adjustMockedTimeUtils(5);
+
+        mockedExecutor.execRecoveryManagerTimer();
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
+        assertEquals(2, taskScheduler.getOneTimeTaskRuns());
+    }
+
+    @Test
     public void handleMultipleScopeProducerRecoveryOnSingleSessionTest() {
         Producer producer = producerManager.getProducer(5);
         assertTrue(producer.isFlaggedDown());

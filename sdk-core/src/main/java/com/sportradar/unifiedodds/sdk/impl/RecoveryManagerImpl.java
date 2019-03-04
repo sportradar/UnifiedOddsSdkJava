@@ -310,9 +310,6 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 secondsAgo = -99;
             }
             notificationString.append("(").append(pi).append(":").append(secondsAgo).append(")");
-
-            dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
-            pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
         }
         notificationString.append(" seconds ago. Recovery will be initiated when the Alive messages start to process.");
         logger.info(notificationString.toString());
@@ -332,6 +329,16 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         } else {
             logger.warn("Channel disconnect detected. Cause:", cause);
         }
+
+        for (ProducerInfo pi : perProducerInfo.values()) {
+            if (pi.isDisabled()) {
+                continue;
+            }
+
+            dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
+            pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
+        }
+
         MDC.clear();
     }
 
