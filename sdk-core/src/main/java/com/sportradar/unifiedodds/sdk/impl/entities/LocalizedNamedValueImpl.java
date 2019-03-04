@@ -24,7 +24,6 @@ public class LocalizedNamedValueImpl extends NamedValueImpl implements Localized
      */
     private final Locale defaultLocale;
 
-
     /**
      * Initializes a new instance of {@link LocalizedNamedValueImpl}
      *

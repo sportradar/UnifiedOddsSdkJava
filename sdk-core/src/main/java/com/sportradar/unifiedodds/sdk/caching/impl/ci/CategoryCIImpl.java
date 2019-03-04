@@ -42,6 +42,9 @@ class CategoryCIImpl implements CategoryCI {
         if (category.getName() != null) {
             this.names.put(dataLocale, category.getName());
         }
+        else{
+            this.names.put(dataLocale, "");
+        }
 
         this.associatedTournaments = Collections.synchronizedList(new ArrayList<>());
         this.associatedTournaments.addAll(tournamentIds);

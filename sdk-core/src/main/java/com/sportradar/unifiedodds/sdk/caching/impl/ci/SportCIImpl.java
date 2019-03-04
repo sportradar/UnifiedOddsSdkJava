@@ -37,6 +37,9 @@ class SportCIImpl implements SportCI {
         if (sportData.getName() != null) {
             this.names.put(dataLocale, sportData.getName());
         }
+        else{
+            this.names.put(dataLocale, "");
+        }
 
         this.associatedCategories = Collections.synchronizedList(new ArrayList<>());
         if (associatedCategoryIds != null) {
