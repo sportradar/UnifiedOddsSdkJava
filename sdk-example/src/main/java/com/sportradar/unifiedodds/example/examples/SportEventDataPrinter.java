@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.example.examples;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
+import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.example.common.SportEntityWriter;
 import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.SportsInfoManager;
@@ -25,7 +26,12 @@ public class SportEventDataPrinter {
         logEntry("Running the OddsFeed SDK Basic example - multiple session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectIntegration().setDefaultLocale(Locale.ENGLISH).build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder()
+                .setAccessToken(token)
+                .selectIntegration()
+                .setSdkNodeId(SdkConstants.NODE_ID)
+                .setDefaultLocale(Locale.ENGLISH)
+                .build();
 
         logEntry("Creating a new OddsFeed instance");
         oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);
@@ -33,7 +39,7 @@ public class SportEventDataPrinter {
         logEntry("The odds feed instance was created, the API data is now available");
     }
 
-    public void print() throws IOException {
+    public void print() {
         SportsInfoManager sportsInfoManager = oddsFeed.getSportsInfoManager();
 
         logEntry("");
