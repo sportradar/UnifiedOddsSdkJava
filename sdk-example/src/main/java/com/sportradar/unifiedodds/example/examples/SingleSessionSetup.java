@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.example.examples;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
+import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.ProducerManager;
@@ -26,7 +27,12 @@ public class SingleSessionSetup {
         logEntry("Running the OddsFeed SDK Basic example - single session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectIntegration().setDefaultLocale(Locale.ENGLISH).build();
+        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder()
+                .setAccessToken(token)
+                .selectIntegration()
+                .setSdkNodeId(SdkConstants.NODE_ID)
+                .setDefaultLocale(Locale.ENGLISH)
+                .build();
 
         logEntry("Creating a new OddsFeed instance");
         oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);

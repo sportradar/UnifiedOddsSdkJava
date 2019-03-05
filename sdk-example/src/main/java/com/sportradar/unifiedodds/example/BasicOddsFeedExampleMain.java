@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.example;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
+import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
@@ -28,6 +29,7 @@ public class BasicOddsFeedExampleMain {
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken("your-staging-token-here")
                 .selectIntegration()
+                .setSdkNodeId(SdkConstants.NODE_ID)
                 .setDefaultLocale(Locale.ENGLISH)
                 .build();
 

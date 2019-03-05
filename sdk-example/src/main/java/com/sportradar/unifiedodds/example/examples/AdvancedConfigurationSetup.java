@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.example.examples;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
+import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
@@ -26,7 +27,10 @@ public class AdvancedConfigurationSetup {
         logEntry("Running the OddsFeed SDK Basic example - advanced configuration setup");
 
         logEntry("Building the configuration using the provided token");
-        ConfigurationBuilder cfgBuilder = OddsFeed.getOddsFeedConfigurationBuilder().setAccessToken(token).selectIntegration();
+        ConfigurationBuilder cfgBuilder = OddsFeed.getOddsFeedConfigurationBuilder()
+                .setAccessToken(token)
+                .selectIntegration()
+                .setSdkNodeId(SdkConstants.NODE_ID);
 
         logEntry("Setting the max recovery execution time to 3 hours");
         cfgBuilder.setMaxRecoveryExecutionTime(3, TimeUnit.HOURS);

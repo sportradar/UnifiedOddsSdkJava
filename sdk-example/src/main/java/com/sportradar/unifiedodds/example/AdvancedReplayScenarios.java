@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.example;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
+import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.example.examples.replay.ExampleReplayEvents;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.OddsFeed;
@@ -25,11 +26,13 @@ import java.util.stream.IntStream;
  * An example that has a list of sample events that illustrate various sports and behaviours.
  */
 public class AdvancedReplayScenarios {
+
     public static void main(String[] args) throws InitException, IOException, InterruptedException {
         // create a new OddsFeedConfiguration, the settings should be the same as for a normal(non-replay) feed instance
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken("your-token-here")
                 .selectReplay()
+                .setSdkNodeId(SdkConstants.NODE_ID)
                 .setDefaultLocale(Locale.ENGLISH)
                 .build();
 
