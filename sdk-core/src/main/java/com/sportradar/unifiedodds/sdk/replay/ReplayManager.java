@@ -240,6 +240,22 @@ public class ReplayManager {
     }
 
     /**
+     * Starts playing the messages for the SportEvents in the play list.
+     *
+     * @param speedupFactor how much faster to replay the recorded events (by default this is 10x
+     *        faster)
+     * @param maxDelayInMs the longest delay between two messages, if the delay would have been longer
+     *        than this it is shortened to this much. This is to avoid waiting for very long if two
+     *        messages were very far apart.
+     * @param runParallel an indication if every event in the queue should be replayed independently. Speed factor and
+     *        delay will be applied for each event separately.
+     * @return an indication of the request success
+     */
+    public boolean play(double speedupFactor, int maxDelayInMs, Boolean runParallel) {
+        return play(speedupFactor, maxDelayInMs, null, null, runParallel);
+    }
+
+    /**
      * Starts playing the messages for the SportEvents in the play list
      *
      * @param speedupFactor how much faster to replay the recorded events (by default this is 10x
@@ -252,12 +268,31 @@ public class ReplayManager {
      * @return an indication of the request success
      */
     public boolean play(double speedupFactor, int maxDelayInMs, Integer producerId, Boolean rewriteTimestamps) {
+        return play(speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, null);
+    }
+
+    /**
+     * Starts playing the messages for the SportEvents in the play list
+     *
+     * @param speedupFactor how much faster to replay the recorded events (by default this is 10x
+     *        faster)
+     * @param maxDelayInMs the longest delay between two messages, if the delay would have been longer
+     *        than this it is shortened to this much. This is to avoid waiting for very long if two
+     *        messages were very far apart
+     * @param producerId the producer from which the messages should be played
+     * @param rewriteTimestamps an indication if the message timestamps should be rewritten with current timestamps
+     * @param runParallel an indication if every event in the queue should be replayed independently. Speed factor and
+     *        delay will be applied for each event separately.
+     * @return an indication of the request success
+     */
+    public boolean play(double speedupFactor, int maxDelayInMs, Integer producerId, Boolean rewriteTimestamps, Boolean runParallel) {
         List<NameValuePair> queryParams = Stream.of(
                     new BasicNameValuePair("speed", String.valueOf((int) speedupFactor)),
                     new BasicNameValuePair("max_delay", String.valueOf(maxDelayInMs)),
                     new BasicNameValuePair("node_id", config.getSdkNodeId() != null ? config.getSdkNodeId().toString() : null),
                     new BasicNameValuePair("product", producerId != null ? producerId.toString() : null),
-                    new BasicNameValuePair("use_replay_timestamp", rewriteTimestamps != null ? rewriteTimestamps.toString() : null))
+                    new BasicNameValuePair("use_replay_timestamp", rewriteTimestamps != null ? rewriteTimestamps.toString() : null),
+                    new BasicNameValuePair("run_parallel", runParallel != null ? runParallel.toString() : null))
                 .filter(v -> v.getValue() != null)
                 .collect(Collectors.toList());
 
