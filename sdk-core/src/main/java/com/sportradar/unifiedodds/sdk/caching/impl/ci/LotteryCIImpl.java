@@ -226,6 +226,9 @@ public class LotteryCIImpl implements LotteryCI {
         if (lottery.getName() != null) {
             names.put(dataLocale, lottery.getName());
         }
+        else{
+            names.put(dataLocale, "");
+        }
     }
 
     private void requestMissingLotteryData(List<Locale> requiredLocales) {

@@ -96,7 +96,9 @@ public class PeriodScoreImpl implements PeriodScore {
             } else {
                 tempPeriodType = PeriodType.Other;
             }
-        } else {
+        }
+
+        if(tempPeriodType == null){
             tempPeriodType = PeriodType.Other;
         }
 
