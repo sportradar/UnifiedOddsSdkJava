@@ -40,6 +40,7 @@ public class NameProviderImpl implements NameProvider {
     private static final Logger logger = LoggerFactory.getLogger(NameProviderImpl.class);
     private final static String PLAYER_PROFILE_MARKET_PREFIX = "sr:player:";
     private final static String COMPETITOR_PROFILE_MARKET_PREFIX = "sr:competitor";
+    private final static String SIMPLETEAM_PROFILE_MARKET_PREFIX = "sr:simpleteam";
     private final static String COMPOSITE_ID_SEPARATOR = ",";
 
     private final MarketDescriptionProvider descriptorProvider;
@@ -209,7 +210,7 @@ public class NameProviderImpl implements NameProvider {
             if (idPart.startsWith(PLAYER_PROFILE_MARKET_PREFIX)) {
                 PlayerProfileCI playerProfile = profileCache.getPlayerProfile(profileId, Lists.newArrayList(locale), competitorList.get());
                 names.add(playerProfile.getNames(Collections.singletonList(locale)).get(locale));
-            } else if (idPart.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX)) {
+            } else if (idPart.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX) || idPart.startsWith(SIMPLETEAM_PROFILE_MARKET_PREFIX)) {
                 CompetitorCI competitorProfile = profileCache.getCompetitorProfile(profileId, Lists.newArrayList(locale));
                 names.add(competitorProfile.getNames(Collections.singletonList(locale)).get(locale));
             }

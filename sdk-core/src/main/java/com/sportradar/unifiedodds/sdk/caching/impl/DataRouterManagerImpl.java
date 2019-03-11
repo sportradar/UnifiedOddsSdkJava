@@ -119,6 +119,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<SAPICompetitorProfileEndpoint> competitorProvider;
 
     /**
+     * A {@link DataProvider} used to fetch simpleteam profiles
+     */
+    private final DataProvider<SAPISimpleTeamProfileEndpoint> simpleTeamProvider;
+
+    /**
      * A {@link DataProvider} used to fetch tournament seasons
      */
     private final DataProvider<SAPITournamentSeasons> tournamentSeasonsDataProvider;
@@ -170,6 +175,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPISportsEndpoint> sportsListProvider,
                           DataProvider<SAPIPlayerProfileEndpoint> playerProvider,
                           DataProvider<SAPICompetitorProfileEndpoint> competitorProvider,
+                          DataProvider<SAPISimpleTeamProfileEndpoint> simpleTeamProvider,
                           DataProvider<SAPITournamentSeasons> tournamentSeasonsDataProvider,
                           DataProvider<SAPIMatchTimelineEndpoint> matchTimelineEndpointDataProvider,
                           DataProvider<SAPISportCategoriesEndpoint> sportCategoriesEndpointDataProvider,
@@ -189,6 +195,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(sportsListProvider);
         Preconditions.checkNotNull(playerProvider);
         Preconditions.checkNotNull(competitorProvider);
+        Preconditions.checkNotNull(simpleTeamProvider);
         Preconditions.checkNotNull(tournamentSeasonsDataProvider);
         Preconditions.checkNotNull(matchTimelineEndpointDataProvider);
         Preconditions.checkNotNull(sportCategoriesEndpointDataProvider);
@@ -209,6 +216,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.sportsListProvider = sportsListProvider;
         this.playerProvider = playerProvider;
         this.competitorProvider = competitorProvider;
+        this.simpleTeamProvider = simpleTeamProvider;
         this.tournamentSeasonsDataProvider = tournamentSeasonsDataProvider;
         this.matchTimelineEndpointDataProvider = matchTimelineEndpointDataProvider;
         this.sportCategoriesEndpointDataProvider = sportCategoriesEndpointDataProvider;
@@ -496,6 +504,24 @@ public class DataRouterManagerImpl implements DataRouterManager {
         URN competitorId = URN.parse(competitor.getId());
 
         dataRouter.onCompetitorFetched(competitorId, endpoint, locale, requester);
+    }
+
+    @Override
+    public void requestSimpleTeamEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+        Preconditions.checkNotNull(locale);
+        Preconditions.checkNotNull(id);
+
+        SAPISimpleTeamProfileEndpoint endpoint;
+        try {
+            endpoint = simpleTeamProvider.getData(locale, id.toString());
+        } catch (DataProviderException e) {
+            throw new CommunicationException(String.format("Error executing simpleteam profile request for id=%s, locale=%s", id, locale), e);
+        }
+
+        SAPITeam competitor = endpoint.getCompetitor();
+        URN competitorId = URN.parse(competitor.getId());
+
+        dataRouter.onSimpleTeamFetched(competitorId, endpoint, locale, requester);
     }
 
     @Override

@@ -31,6 +31,8 @@ public interface DataRouter {
 
     void onCompetitorFetched(URN competitorId, SAPICompetitorProfileEndpoint data, Locale locale, CacheItem requester);
 
+    void onSimpleTeamFetched(URN competitorId, SAPISimpleTeamProfileEndpoint data, Locale locale, CacheItem requester);
+
     void onTournamentSeasonsFetched(URN tournamentId, SAPITournamentSeasons data, Locale locale);
 
     void onMatchTimelineFetched(URN matchId, SAPIMatchTimelineEndpoint endpoint, Locale locale, CacheItem requester);

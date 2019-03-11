@@ -203,6 +203,15 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
+    public void onSimpleTeamFetched(URN competitorId, SAPISimpleTeamProfileEndpoint data, Locale locale, CacheItem requester) {
+        Preconditions.checkNotNull(competitorId);
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(locale);
+
+        dataListeners.forEach(l -> l.onSimpleTeamFetched(competitorId, data, locale, requester));
+    }
+
+    @Override
     public void onTournamentSeasonsFetched(URN tournamentId, SAPITournamentSeasons data, Locale locale) {
         Preconditions.checkNotNull(tournamentId);
         Preconditions.checkNotNull(data);

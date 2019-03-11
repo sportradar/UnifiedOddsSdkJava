@@ -5,36 +5,20 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.CompetitionCI;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
-import com.sportradar.unifiedodds.sdk.caching.MatchCI;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.entities.Competitor;
-import com.sportradar.unifiedodds.sdk.entities.Jersey;
-import com.sportradar.unifiedodds.sdk.entities.Manager;
-import com.sportradar.unifiedodds.sdk.entities.Player;
-import com.sportradar.unifiedodds.sdk.entities.Reference;
-import com.sportradar.unifiedodds.sdk.entities.Venue;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
+import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.*;
 import com.sportradar.unifiedodds.sdk.impl.ManagerImpl;
+import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -69,7 +53,6 @@ public class CompetitorImpl implements Competitor {
      */
     public CompetitorImpl(URN competitorId, ProfileCache profileCache, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(profileCache);
-        Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -103,7 +86,6 @@ public class CompetitorImpl implements Competitor {
      * @param exceptionHandlingStrategy the exception handling strategy
      */
     public CompetitorImpl(URN competitorId, ProfileCache profileCache, SportEventCI parentSportEventCI, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
-        Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -244,11 +226,11 @@ public class CompetitorImpl implements Competitor {
                     .map(pIds -> pIds.stream()
                         .map(id -> {
                             try {
-                                if(id.getType().equalsIgnoreCase("competitor")) {
-                                    return sportEntityFactory.buildCompetitor(id, null, null, locales);
+                                if(id.getType().equals(UnifiedFeedConstants.PLAYER_URN_TYPE)) {
+                                    return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
                                 }
                                 else {
-                                    return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
+                                    return sportEntityFactory.buildCompetitor(id, null, null, locales);
                                 }
 
                             } catch (ObjectNotFoundException e) {
@@ -361,6 +343,10 @@ public class CompetitorImpl implements Competitor {
             } else if (sportEventCI != null && sportEventCI instanceof TournamentCI) {
                 TournamentCI tournamentCI = (TournamentCI) sportEventCI;
                 competitorsReferences = tournamentCI.getCompetitorsReferences();
+            } else {
+                ReferenceIdCI referenceIdCI = loadCacheItem().map(CompetitorCI::getReferenceId).orElse(null);
+                if (referenceIdCI != null)
+                    competitorsReferences = ImmutableMap.of(competitorId, referenceIdCI);
             }
 
             if (competitorsReferences != null && !competitorsReferences.isEmpty()) {

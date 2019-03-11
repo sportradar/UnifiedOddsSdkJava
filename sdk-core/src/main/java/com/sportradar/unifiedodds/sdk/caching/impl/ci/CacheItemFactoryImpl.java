@@ -155,6 +155,11 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
+    public CompetitorCI buildCompetitorProfileCI(URN id, SAPISimpleTeamProfileEndpoint data, Locale dataLocale) {
+        return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    }
+
+    @Override
     public LotteryCI buildLotteryCI(URN id) {
         return new LotteryCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
     }

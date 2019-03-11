@@ -8,10 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.sportradar.uf.sportsapi.datamodel.SAPICompetitorProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerCompetitor;
-import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
-import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
@@ -139,6 +136,12 @@ class CompetitorCIImpl implements CompetitorCI {
     }
 
     CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerCompetitor data, Locale dataLocale) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+
+        merge(data, dataLocale);
+    }
+
+    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISimpleTeamProfileEndpoint data, Locale dataLocale) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
 
         merge(data, dataLocale);
@@ -346,8 +349,12 @@ class CompetitorCIImpl implements CompetitorCI {
             cachedLocales.add(dataLocale);
         } else if (endpointData instanceof SAPIPlayerCompetitor) {
             internalMerge((SAPIPlayerCompetitor) endpointData, dataLocale);
+        } else if (endpointData instanceof SAPISimpleTeamProfileEndpoint) {
+            internalMerge((SAPISimpleTeamProfileEndpoint) endpointData, dataLocale);
+            cachedLocales.add(dataLocale);
         }
     }
+
     private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -410,6 +417,9 @@ class CompetitorCIImpl implements CompetitorCI {
                 new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+        if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE)) {
+            handleSimpleTeamReference();
+        }
 
         if(competitor.getAbbreviation() == null) {
             abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
@@ -435,13 +445,15 @@ class CompetitorCIImpl implements CompetitorCI {
         }
     }
 
+    private void internalMerge(SAPISimpleTeamProfileEndpoint data, Locale dataLocale) {
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(dataLocale);
+
+        internalMerge(data.getCompetitor(), dataLocale);
+    }
+
     private void requestMissingCompetitorData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
-
-        if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE)) {
-            handleSimpleTeamLoad();
-            return;
-        }
 
         List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
         if (missingLocales.isEmpty()) {
@@ -462,7 +474,11 @@ class CompetitorCIImpl implements CompetitorCI {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestCompetitorEndpoint(l, id, this);
+                    if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE)) {
+                        dataRouterManager.requestSimpleTeamEndpoint(l, id, this);
+                    } else {
+                        dataRouterManager.requestCompetitorEndpoint(l, id, this);
+                    }
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }
@@ -474,14 +490,15 @@ class CompetitorCIImpl implements CompetitorCI {
         }
     }
 
-    private void handleSimpleTeamLoad() {
-        if (referenceId != null) {
+    private void handleSimpleTeamReference() {
+        if (referenceId != null && referenceId.getReferenceIds().containsKey("betradar")) {
             return;
         }
 
         referenceId = new ReferenceIdCI(
                 ImmutableMap.<String, String>builder()
                         .put("betradar", String.valueOf(id.getId()))
+                        .putAll(referenceId != null ? referenceId.getReferenceIds() : ImmutableMap.of())
                         .build()
         );
     }
