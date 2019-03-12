@@ -80,9 +80,9 @@ public class ProducerData {
             builder.addAll(Arrays.stream(ProducerScope.values()).collect(Collectors.toList()));
         }
         this.producerScopes = builder.build();
-        this.statefulRecoveryWindowInMinutes = statefulRecoveryWindowInMinutes == null ?
-                DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES :
-                statefulRecoveryWindowInMinutes;
+        this.statefulRecoveryWindowInMinutes = statefulRecoveryWindowInMinutes == null
+                ? DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES
+                : statefulRecoveryWindowInMinutes;
         this.lastRecoveryInfo = null;
     }
 

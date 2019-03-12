@@ -1,5 +1,16 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.21 (2019-03-12)**
+* exposed EventResult.getGrid()
+* exposed Reference.getAamsId()
+* added support for ReferenceIds for competitors within season/tournament groups
+* added support for simpleteam competitors and related API calls
+* improved recovery logic on channel disconnect
+* improved how type on PeriodScore is loaded
+* added runParallel argument on play method on ReplayManager
+* fix: null check for names in Category and Sport
+* fix: how periods score data is saved and exposed (period type and description was wrong)
+
 **2.0.20 (2019-02-14)**
 * exposed getTimestamps() on Message
 * added getRecoveryInfo() (info about last recovery) to the Producer
