@@ -44,6 +44,7 @@ public class DrawCIImpl implements DrawCI {
     private Date scheduled;
     private DrawStatus status;
     private List<DrawResultCI> results;
+    private Integer displayId;
 
 
     DrawCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
@@ -163,6 +164,22 @@ public class DrawCIImpl implements DrawCI {
     }
 
     /**
+     * Returns the display id
+     *
+     * @return the display id
+     */
+    @Override
+    public Integer getDisplayId() {
+        if (displayId != null || !cachedLocales.isEmpty()) {
+            return displayId;
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale));
+
+        return displayId;
+    }
+
+    /**
      * Returns the {@link Date} specifying when the sport event associated with the current
      * instance was scheduled to end
      *
@@ -231,19 +248,36 @@ public class DrawCIImpl implements DrawCI {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getDrawDate() == null ? null : endpointData.getDrawDate().toGregorianCalendar().getTime();
+        scheduled = endpointData.getDrawDate() == null
+                ? null
+                : endpointData.getDrawDate().toGregorianCalendar().getTime();
 
-        lotteryId = endpointData.getLottery() == null ? null : URN.parse(endpointData.getLottery().getId());
+        lotteryId = endpointData.getLottery() == null
+                ? null
+                : URN.parse(endpointData.getLottery().getId());
 
         status = map(endpointData.getStatus());
+
+        if(endpointData.getDisplayId() != null)
+        {
+            displayId = endpointData.getDisplayId();
+        }
     }
 
     private void internalMerge(SAPIDrawEvent endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null
+                ? null
+                : endpointData.getScheduled().toGregorianCalendar().getTime();
+
         status = map(endpointData.getStatus());
+
+        if(endpointData.getDisplayId() != null)
+        {
+            displayId = endpointData.getDisplayId();
+        }
     }
 
     private void mergeResults(SAPIDrawResult.SAPIDraws endpointData, Locale dataLocale) {

@@ -5,5 +5,6 @@
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="scheduled" type="xs:dateTime"/>
         <xs:attribute name="status" type="drawStatus"/>
+        <xs:attribute name="display_id" type="xs:int"/>
     </xs:complexType>
 </xs:schema>

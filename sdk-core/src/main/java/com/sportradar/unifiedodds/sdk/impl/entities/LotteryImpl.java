@@ -280,7 +280,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
                 ", sportId=" + sportId +
                 ", locales=" + locales +
                 ", exceptionHandlingStrategy=" + exceptionHandlingStrategy +
-                "} " + super.toString();
+                "} ";
     }
 
     /**
