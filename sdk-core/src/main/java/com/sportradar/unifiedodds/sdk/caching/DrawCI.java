@@ -36,4 +36,10 @@ public interface DrawCI extends SportEventCI {
      * @return the associated lottery id
      */
     URN getLotteryId();
+
+    /**
+     * Returns the display id
+     * @return the display id
+     */
+    Integer getDisplayId();
 }

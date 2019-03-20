@@ -8,6 +8,7 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="draw_date" type="xs:dateTime"/>
-        <xs:attribute name="status" type="drawStatus" />
+        <xs:attribute name="status" type="drawStatus"/>
+        <xs:attribute name="display_id" type="xs:int"/>
     </xs:complexType>
 </xs:schema>

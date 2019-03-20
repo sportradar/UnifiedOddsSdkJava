@@ -205,6 +205,22 @@ public class DrawImpl extends SportEventImpl implements Draw {
     }
 
     /**
+     * Returns the display id
+     * @return the display id
+     */
+    @Override
+    public Integer getDisplayId(){
+        DrawCI drawCI = loadDrawCI();
+
+        if (drawCI == null) {
+            handleException("DrawCI missing", null);
+            return null;
+        }
+
+        return drawCI.getDisplayId();
+    }
+
+    /**
      * Loads the associated entity cache item from the sport event cache
      *
      * @return the associated cache item
