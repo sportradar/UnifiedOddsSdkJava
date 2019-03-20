@@ -414,7 +414,7 @@ public class CachingModule extends AbstractModule {
                                                                          SDKTaskScheduler sdkTaskScheduler) {
         return new VariantDescriptionCacheImpl(
                 variantDescriptionCache,
-                new DataProvider<>("/descriptions/%s/variants.xml", cfg, httpDataFetcher, deserializer),
+                new DataProvider<>("/descriptions/%s/variants.xml?include_mappings=true", cfg, httpDataFetcher, deserializer),
                 mappingFactory,
                 sdkTaskScheduler,
                 cfg.getDesiredLocales()

@@ -522,6 +522,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         URN competitorId = URN.parse(competitor.getId());
 
         dataRouter.onSimpleTeamFetched(competitorId, endpoint, locale, requester);
+        if (!competitorId.equals(id))
+            dataRouter.onSimpleTeamFetched(id, endpoint, locale, requester);
     }
 
     @Override

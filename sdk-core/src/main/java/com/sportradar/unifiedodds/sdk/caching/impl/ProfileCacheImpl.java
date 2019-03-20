@@ -170,7 +170,8 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
         Preconditions.checkNotNull(locales);
 
         for (URN competitorId : possibleAssociatedCompetitorIds) {
-            boolean isSimpleTeam = (competitorId.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE));
+            boolean isSimpleTeam = (competitorId.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE) ||
+                    competitorId.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE));
             for (Locale locale : locales) {
                 if (isSimpleTeam) {
                     dataRouterManager.requestSimpleTeamEndpoint(locale, competitorId, null);
@@ -318,7 +319,8 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
     private Cache<URN, CompetitorCI> provideRightCompetitorCacheFor(URN id) {
         Preconditions.checkNotNull(id);
 
-        if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE)) {
+        if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE) ||
+                id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
             return simpleTeamCache;
         }
 
