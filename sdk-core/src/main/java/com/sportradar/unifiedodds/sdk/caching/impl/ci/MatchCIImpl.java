@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -185,21 +186,28 @@ class MatchCIImpl implements MatchCI {
      */
     private final DataRouterManager dataRouterManager;
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    /**
+     * The {@link Cache} used to cache the sport events fixture timestamps
+     */
+    private final Cache<URN, Date> fixtureTimestampCache;
+
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
+        Preconditions.checkNotNull(fixtureTimestampCache);
 
         this.id = id;
         this.dataRouterManager = dataRouterManager;
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.bookingStatus = null;
+        this.fixtureTimestampCache = fixtureTimestampCache;
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent data, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent data, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
 
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -207,8 +215,8 @@ class MatchCIImpl implements MatchCI {
         constructWithSportEventData(data, dataLocale, false);
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIFixture data, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIFixture data, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
 
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -221,8 +229,8 @@ class MatchCIImpl implements MatchCI {
         loadedFixtureLocales.add(dataLocale);
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIMatchSummaryEndpoint data, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIMatchSummaryEndpoint data, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
 
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -236,19 +244,21 @@ class MatchCIImpl implements MatchCI {
         loadedSummaryLocales.add(dataLocale);
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale) {
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
+        Preconditions.checkNotNull(fixtureTimestampCache);
 
         this.id = id;
         this.dataRouterManager = dataRouterManager;
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.bookingStatus = null;
+        this.fixtureTimestampCache = fixtureTimestampCache;
 
         scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
@@ -710,7 +720,7 @@ class MatchCIImpl implements MatchCI {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestFixtureEndpoint(l, id, this);
+                    dataRouterManager.requestFixtureEndpoint(l, id, fixtureTimestampCache.getIfPresent(id) == null, this);
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }

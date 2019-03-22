@@ -18,7 +18,7 @@ import java.util.Locale;
 public interface DataRouterManager {
     void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
 
-    void requestFixtureEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester) throws CommunicationException;
 
     void requestDrawSummary(Locale locale, URN id, CacheItem requester) throws CommunicationException;
 

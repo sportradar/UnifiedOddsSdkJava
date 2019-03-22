@@ -118,6 +118,7 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
 
         sportEventCache.purgeCacheItem(relatedEventId);
         sportEventStatusCache.purgeSportEventStatus(relatedEventId);
+        sportEventCache.addFixtureTimestamp(relatedEventId);
     }
 
     /**

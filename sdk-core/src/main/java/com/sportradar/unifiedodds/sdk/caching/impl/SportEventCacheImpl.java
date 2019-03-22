@@ -464,6 +464,17 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
         }
     }
 
+    /**
+     * Adds fixture timestamp to cache so that the next fixture calls for the event goes through non-cached fixture provider
+     *
+     * @param id the {@link URN} of the event
+     */
+    @Override
+    public void addFixtureTimestamp(URN id) {
+        Cache<URN, Date> cache = cacheItemFactory.getFixtureTimestampCache();
+        cache.put(id, new Date());
+    }
+
     private SportEventCI provideEventCI(URN id) throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 

@@ -27,6 +27,7 @@ import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.URN;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,6 +45,7 @@ public class CachingModule extends AbstractModule {
     private final Cache<String, MarketDescriptionCI> variantMarketCache;
     private final Cache<String, String> dispatchedFixtureChanges;
     private final Cache<String, VariantDescriptionCI> variantDescriptionCache;
+    private final Cache<URN, Date> fixtureTimestampCache;
 
     CachingModule() {
         super();
@@ -76,6 +78,7 @@ public class CachingModule extends AbstractModule {
         invariantMarketCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
         variantDescriptionCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
         variantMarketCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.HOURS).build();
+        fixtureTimestampCache = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
 
         dispatchedFixtureChanges = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     }
@@ -109,6 +112,11 @@ public class CachingModule extends AbstractModule {
         return categoryDataCache;
     }
 
+    @Provides @Singleton
+    private Cache<URN, Date> provideFixtureTimestampCache() {
+        return fixtureTimestampCache;
+    }
+
     @Provides @Named("SummaryEndpointDataProvider")
     private DataProvider<Object> provideSummaryEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                     LogHttpDataFetcher httpDataFetcher,
@@ -130,12 +138,24 @@ public class CachingModule extends AbstractModule {
         );
     }
 
-    @Provides
+    @Provides @Named("FixtureEndpointDataProvider")
     private DataProvider<SAPIFixturesEndpoint> provideFixtureEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                                   LogHttpDataFetcher httpDataFetcher,
                                                                                   @Named("ApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/sports/%s/sport_events/%s/fixture.xml",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
+
+    @Provides @Named("FixtureChangeFixtureEndpointDataProvider")
+    private DataProvider<SAPIFixturesEndpoint> provideFixtureChangeFixtureEndpointDataProvider(SDKInternalConfiguration cfg,
+                                                                                  LogHttpDataFetcher httpDataFetcher,
+                                                                                  @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider<>(
+                "/sports/%s/sport_events/%s/fixture_change_fixture.xml",
                 cfg,
                 httpDataFetcher,
                 deserializer
