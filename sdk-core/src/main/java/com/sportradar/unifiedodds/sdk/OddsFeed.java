@@ -17,7 +17,12 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -52,9 +57,9 @@ public class OddsFeed {
     private static final Logger logger = LoggerFactory.getLogger(OddsFeed.class);
 
     /**
-     * The injector used in this feed instance
+     * The injector used by this feed instance
      */
-    private Injector injector;
+    private final Injector injector;
 
     /**
      * The OddsFeed main configuration file
@@ -125,8 +130,7 @@ public class OddsFeed {
         logger.info("OddsFeed instance created with \n{}", config);
 
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
-
-        this.tryCreateInjector(listener, null);
+        this.injector = createSdkInjector(listener, null);
     }
 
     /**
@@ -139,9 +143,10 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        this.oddsFeedConfiguration = config;
+        logger.info("OddsFeed instance created with \n{}", config);
 
-        this.tryCreateInjector(listener, null);
+        this.oddsFeedConfiguration = config;
+        this.injector = createSdkInjector(listener, null);
     }
 
     /**
@@ -155,9 +160,10 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        logger.info("OddsFeed instance created with \n{}", config);
 
-        this.tryCreateInjector(listener, customisableSDKModule);
+        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        this.injector = createSdkInjector(listener, customisableSDKModule);
     }
 
     /**
@@ -172,9 +178,28 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        this.oddsFeedConfiguration = config;
+        logger.info("OddsFeed instance created with \n{}", config);
 
-        this.tryCreateInjector(listener, customisableSDKModule);
+        this.oddsFeedConfiguration = config;
+        this.injector = createSdkInjector(listener, customisableSDKModule);
+    }
+
+    /**
+     * The following constructor should be used only for testing purposes
+     *
+     * @param injector a predefined injector
+     * @param config {@link SDKInternalConfiguration}, the configuration class used to configure the new feed
+     */
+    protected OddsFeed(SDKInternalConfiguration config, Injector injector) {
+        Preconditions.checkNotNull(config);
+        Preconditions.checkNotNull(injector);
+
+        logger.info("OddsFeed instance created with \n{}", config);
+
+        this.oddsFeedConfiguration = config;
+        this.injector = injector;
+
+        logger.warn("OddsFeed initialised with a provided predefined injector");
     }
 
     /**
@@ -406,12 +431,8 @@ public class OddsFeed {
         feedInitialized = true;
     }
 
-    private void tryCreateInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
-        if (injector != null) {
-            return;
-        }
-
-        injector = Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
+    private Injector createSdkInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
+        return Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
     }
 
     private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, OddsFeedListener listener) {
