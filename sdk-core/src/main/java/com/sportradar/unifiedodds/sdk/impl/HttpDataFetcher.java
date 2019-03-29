@@ -9,9 +9,12 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -50,19 +53,42 @@ class HttpDataFetcher {
      * @return the content of the request
      */
     public HttpData get(String path) throws CommunicationException {
-        HttpGet httpGet = new HttpGet(path);
+        return send(new HttpGet(path));
+    }
+
+    /**
+     * Gets the content on the given path trough a POST request
+     *
+     * @param path a valid HTTP POST request path
+     * @param content a content to send using POST request
+     * @return the content of the request
+     */
+    public HttpData post(String path, HttpEntity content) throws CommunicationException {
+        HttpPost httpPost = new HttpPost(path);
+        httpPost.setEntity(content);
+        return send(httpPost);
+    }
+
+    /**
+     * Gets the content on the given HTTP request
+     *
+     * @param request a valid HTTP request
+     * @return the content of the request
+     */
+    private HttpData send(HttpRequestBase request) throws CommunicationException {
+        String path = request.getURI().toString();
         try {
             if (statsBean != null) {
                 statsBean.onStreamingHttpGet(path);
             }
-            httpGet.addHeader("x-access-token", config.getAccessToken());
+            request.addHeader("x-access-token", config.getAccessToken());
 
             CloseableHttpResponse resp = null;
             String respString = null;
             String errorMessage = null;
             Integer statusCode;
             try {
-                resp = httpClient.execute(httpGet);
+                resp = httpClient.execute(request);
                 statusCode = resp.getStatusLine().getStatusCode();
 
                 // the whoami endpoint is a special case since we are interested in the response even if the response code is forbidden
@@ -92,7 +118,7 @@ class HttpDataFetcher {
         } catch (IOException | CommunicationException e) {
             throw new CommunicationException("There was a problem retrieving the requested data", e);
         } finally {
-            httpGet.releaseConnection();
+            request.releaseConnection();
         }
     }
 }

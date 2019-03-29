@@ -40,6 +40,7 @@ public class MasterInjectionModule extends AbstractModule {
         install(new GeneralModule(sdkListener, config));
         install(new ReadersModule());
         install(new CachingModule());
+        install(new CustomBetModule());
         install(new MessageProcessorPipeline());
         install(new MarketsModule());
 

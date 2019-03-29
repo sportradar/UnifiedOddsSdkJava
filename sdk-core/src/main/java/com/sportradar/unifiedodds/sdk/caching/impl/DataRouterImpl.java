@@ -5,10 +5,13 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
+import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
@@ -246,6 +249,20 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(locale);
         URN sportId = URN.parse(endpoint.getSport().getId());
         dataListeners.forEach(l -> l.onSportCategoriesFetched(sportId, endpoint, locale, requester));
+    }
+
+    @Override
+    public void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections) {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(availableSelections);
+        dataListeners.forEach(l -> l.onAvailableSelectionsFetched(id, availableSelections));
+    }
+
+    @Override
+    public void onCalculateProbabilityFetched(List<Selection> selections, CAPICalculationResponse calculation) {
+        Preconditions.checkNotNull(selections);
+        Preconditions.checkNotNull(calculation);
+        dataListeners.forEach(l -> l.onCalculateProbabilityFetched(selections, calculation));
     }
 
     private void dispatchTournamentSchedule(SAPIRaceScheduleEndpoint endpoint, Locale locale) {

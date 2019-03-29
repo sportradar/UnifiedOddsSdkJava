@@ -36,7 +36,7 @@ public class HttpHelper {
     private final Deserializer apiDeserializer;
 
     @Inject
-    public HttpHelper(SDKInternalConfiguration config, CloseableHttpClient httpClient, @Named("ApiJaxbDeserializer") Deserializer apiDeserializer) {
+    public HttpHelper(SDKInternalConfiguration config, CloseableHttpClient httpClient, @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(httpClient);
         Preconditions.checkNotNull(apiDeserializer);

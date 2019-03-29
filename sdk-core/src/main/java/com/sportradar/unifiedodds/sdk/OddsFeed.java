@@ -10,12 +10,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.DataRouter;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
-import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
@@ -95,6 +90,11 @@ public class OddsFeed {
      * The instance used to perform booking calendar operations
      */
     private BookingManager bookingManager;
+
+    /**
+     * The instance used to perform custom bet operations
+     */
+    private CustomBetManager customBetManager;
 
     /**
      * The instance used to get bookmaker and used token details
@@ -272,6 +272,16 @@ public class OddsFeed {
     }
 
     /**
+     * Returns the {@link CustomBetManager} instance which can be used to perform custom bet operations
+     *
+     * @return the {@link CustomBetManager} associated with the current {@link OddsFeed} instance
+     */
+    public CustomBetManager getCustomBetManager() {
+        this.initOddsFeedInstance();
+        return customBetManager;
+    }
+
+    /**
      * Returns the {@link BookmakerDetails} instance with bookmaker and token info
      *
      * @return the {@link BookmakerDetails} associated with the current {@link OddsFeed} instance
@@ -401,6 +411,7 @@ public class OddsFeed {
         this.recoveryRequestIssuer = injector.getInstance(EventRecoveryRequestIssuer.class);
         this.cashOutProbabilitiesManager = injector.getInstance(CashOutProbabilitiesManager.class);
         this.bookingManager = injector.getInstance(BookingManager.class);
+        this.customBetManager = injector.getInstance(CustomBetManager.class);
         this.bookmakerDetails = whoAmI.getBookmakerDetails();
 
         feedInitialized = true;

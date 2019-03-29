@@ -29,7 +29,7 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
     @Inject
     public ProducerDataProviderImpl(SDKInternalConfiguration configuration,
                                     LogHttpDataFetcher logHttpDataFetcher,
-                                    @Named("ApiJaxbDeserializer")  Deserializer deserializer) {
+                                    @Named("SportsApiJaxbDeserializer")  Deserializer deserializer) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(logHttpDataFetcher);
         Preconditions.checkNotNull(deserializer);

@@ -191,6 +191,7 @@
                             <target>
                                 <echo message="unzipping file" />
                                 <unzip src="src/main/resources/sportsapi_unified_schemas.zip" dest="${basedir}/target/schemas" />
+                                <unzip src="src/main/resources/custombet_schemas.zip" dest="${basedir}/target/schemas-custombet" />
                             </target>
                         </configuration>
                         <goals>
@@ -346,6 +347,24 @@
                             <outputDirectory>${project.build.directory}/generated-sources/sportsapi</outputDirectory>						
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>xjc-custombet</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/schemas-custombet/v1/endpoints</source>
+                            </sources>
+                            <packageName>com.sportradar.uf.custombet.datamodel</packageName>
+                            <xjbSources>
+                                <xjbSource>
+                                    ${basedir}/src/main/xjb/BindingsCustomBetAPI.xjb
+                                </xjbSource>
+                            </xjbSources>
+                            <outputDirectory>${project.build.directory}/generated-sources/custombet</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- Ensure the generate UF-DataModel classes are added to the source path for Eclipse and the like. -->
@@ -364,6 +383,7 @@
                             <sources>
                                 <source>${project.build.directory}/generated-sources/messages/</source>
                                 <source>${project.build.directory}/generated-sources/sportsapi/</source>
+                                <source>${project.build.directory}/generated-sources/custombet/</source>
                             </sources>
                         </configuration>
                     </execution>

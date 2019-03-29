@@ -7,17 +7,26 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CAPISelectionType;
+import com.sportradar.uf.custombet.datamodel.CAPISelections;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
+import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
+import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,6 +172,16 @@ public class DataRouterManagerImpl implements DataRouterManager {
      */
     private final DataProvider<SAPISportCategoriesEndpoint> sportCategoriesEndpointDataProvider;
 
+    /**
+     * A {@link DataProvider} used to fetch available selections
+     */
+    DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider;
+
+    /**
+     * A {@link DataProvider} used to fetch probability calculations
+     */
+    DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider;
+
     private final ReentrantLock tournamentListLock = new ReentrantLock();
     private final ReentrantLock sportsListLock = new ReentrantLock();
     private final ReentrantLock lotteriesListLock = new ReentrantLock();
@@ -188,7 +207,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPIDrawSummary> drawSummaryDataProvider,
                           DataProvider<SAPIDrawFixtures> drawFixtureDataProvider,
                           DataProvider<SAPILotteries> lotteriesListProvider,
-                          DataProvider<SAPILotterySchedule> lotteryScheduleProvider) {
+                          DataProvider<SAPILotterySchedule> lotteryScheduleProvider,
+                          DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
+                          DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkNotNull(scheduler);
@@ -210,6 +231,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(drawFixtureDataProvider);
         Preconditions.checkNotNull(lotteriesListProvider);
         Preconditions.checkNotNull(lotteryScheduleProvider);
+        Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
+        Preconditions.checkNotNull(calculateProbabilityDataProvider);
 
         this.prefetchLocales = configuration.getDesiredLocales();
         this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7);
@@ -232,6 +255,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.drawFixtureDataProvider = drawFixtureDataProvider;
         this.lotteriesListProvider = lotteriesListProvider;
         this.lotteryScheduleProvider = lotteryScheduleProvider;
+        this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
+        this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
 
         this.tournamentListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.sportsListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
@@ -586,6 +611,48 @@ public class DataRouterManagerImpl implements DataRouterManager {
         }
 
         dataRouter.onSportCategoriesFetched(endpoint, locale, requester);
+    }
+
+    @Override
+    public AvailableSelections requestAvailableSelections(URN id) throws CommunicationException {
+        Preconditions.checkNotNull(id);
+
+        CAPIAvailableSelections availableSelections;
+        try {
+            availableSelections = availableSelectionsTypeDataProvider.getData(id.toString());
+        } catch (DataProviderException e) {
+            throw new CommunicationException(String.format("Error executing available selections request for id=%s", id), e);
+        }
+
+        dataRouter.onAvailableSelectionsFetched(id, availableSelections);
+        return new AvailableSelectionsImpl(availableSelections);
+    }
+
+    @Override
+    public Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException {
+        Preconditions.checkNotNull(selections);
+
+        CAPICalculationResponse calculation;
+        try {
+            CAPISelections content = new CAPISelections();
+            content.getSelections().addAll(selections.stream()
+            .map(s -> {
+                CAPISelectionType selection = new CAPISelectionType();
+                selection.setId(s.getEventId().toString());
+                selection.setMarketId(s.getMarketId());
+                selection.setSpecifiers(s.getSpecifiers());
+                selection.setOutcomeId(s.getOutcomeId());
+                return selection;
+            })
+            .collect(Collectors.toList()));
+
+            calculation = calculateProbabilityDataProvider.postData(content);
+        } catch (DataProviderException e) {
+            throw new CommunicationException("Error executing calculate probability request", e);
+        }
+
+        dataRouter.onCalculateProbabilityFetched(selections, calculation);
+        return new CalculationImpl(calculation);
     }
 
     private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {

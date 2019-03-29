@@ -45,7 +45,7 @@ public class ReadersModule extends AbstractModule {
     @Provides @Named("ConfigDataProvider")
     private DataProvider<BookmakerDetails> providesConfigDataProvider(SDKInternalConfiguration cfg,
                                                                       LogHttpDataFetcher httpDataFetcher,
-                                                                      @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+                                                                      @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/users/whoami.xml",
                 cfg,
@@ -56,7 +56,7 @@ public class ReadersModule extends AbstractModule {
 
     @Provides @Named("ProductionDataProvider")
     private DataProvider<BookmakerDetails> providesProductionDataProvider(LogHttpDataFetcher httpDataFetcher,
-                                                                          @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+                                                                          @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/users/whoami.xml",
                 UnifiedFeedConstants.PRODUCTION_API_HOST,
@@ -69,7 +69,7 @@ public class ReadersModule extends AbstractModule {
 
     @Provides @Named("IntegrationDataProvider")
     private DataProvider<BookmakerDetails> providesIntegrationDataProvider(LogHttpDataFetcher httpDataFetcher,
-                                                                           @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+                                                                           @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/users/whoami.xml",
                 UnifiedFeedConstants.INTEGRATION_API_HOST,

@@ -64,9 +64,14 @@ public class GeneralModule implements Module {
     private final JAXBContext messagesJaxbContext;
 
     /**
-     * The {@link JAXBContext} used to unmarshall API responses
+     * The {@link JAXBContext} used to unmarshall sports API responses
      */
-    private final JAXBContext apiJaxbContext;
+    private final JAXBContext sportsApiJaxbContext;
+
+    /**
+     * The {@link JAXBContext} used to unmarshall custom bet API responses
+     */
+    private final JAXBContext customBetApiJaxbContext;
 
     /**
      * The associated SDK configuration
@@ -90,7 +95,8 @@ public class GeneralModule implements Module {
 
         try {
             messagesJaxbContext = JAXBContext.newInstance("com.sportradar.uf.datamodel");
-            apiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
+            sportsApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
+            customBetApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.custombet.datamodel");
         } catch (JAXBException e) {
             throw new IllegalStateException("JAXB contexts creation failed, ex: ", e);
         }
@@ -127,6 +133,7 @@ public class GeneralModule implements Module {
         binder.bind(CashOutProbabilitiesManager.class).to(CashOutProbabilitiesManagerImpl.class).in(Singleton.class);
         binder.bind(MappingTypeProvider.class).to(MappingTypeProviderImpl.class).in(Singleton.class);
         binder.bind(BookingManager.class).to(BookingManagerImpl.class).in(Singleton.class);
+        binder.bind(CustomBetManager.class).to(CustomBetManagerImpl.class).in(Singleton.class);
 
         // session
         binder.bind(OddsFeedSessionImpl.class);
@@ -179,14 +186,28 @@ public class GeneralModule implements Module {
     }
 
     /**
-     * Provides the {@link Deserializer} used to deserialize API xmls
+     * Provides the {@link Deserializer} used to deserialize sports API xmls
      *
      * @return The {@link Deserializer} instance to be registered with the DI container
      */
-    @Provides @Named("ApiJaxbDeserializer")
-    private Deserializer provideApiJaxbDeserializer() {
+    @Provides @Named("SportsApiJaxbDeserializer")
+    private Deserializer provideSportsApiJaxbDeserializer() {
         try {
-            return new DeserializerImpl(apiJaxbContext.createUnmarshaller());
+            return new DeserializerImpl(sportsApiJaxbContext.createUnmarshaller(), null);
+        } catch (JAXBException e) {
+            throw new IllegalStateException("Failed to create unmarshaller for 'api', ex: ", e);
+        }
+    }
+
+    /**
+     * Provides the {@link Deserializer} used to deserialize custom bet API xmls
+     *
+     * @return The {@link Deserializer} instance to be registered with the DI container
+     */
+    @Provides @Named("CustomBetApiJaxbDeserializer")
+    private Deserializer provideCustomBetApiJaxbDeserializer() {
+        try {
+            return new DeserializerImpl(customBetApiJaxbContext.createUnmarshaller(), customBetApiJaxbContext.createMarshaller());
         } catch (JAXBException e) {
             throw new IllegalStateException("Failed to create unmarshaller for 'api', ex: ", e);
         }
@@ -199,7 +220,7 @@ public class GeneralModule implements Module {
      */
     @Provides @Named("MessageDeserializer")
     private Deserializer provideMessageDeserializer(@Named("MessageUnmarshaller") Unmarshaller unmarshaller) {
-            return new DeserializerImpl(unmarshaller);
+            return new DeserializerImpl(unmarshaller, null);
     }
 
     /**
