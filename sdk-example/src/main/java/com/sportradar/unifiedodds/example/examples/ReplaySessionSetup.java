@@ -30,7 +30,7 @@ public class ReplaySessionSetup {
         logEntry("Building the configuration using the provided token");
         OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
-                .selectIntegration()
+                .selectReplay()
                 .setSdkNodeId(SdkConstants.NODE_ID)
                 .setDefaultLocale(Locale.ENGLISH).build();
 
