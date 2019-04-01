@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * Represents a competition group
@@ -91,14 +90,14 @@ public class GroupImpl implements Group {
     public List<Competitor> getCompetitors() {
         try {
             return competitorIds == null ? null :
-                    ImmutableList.copyOf(competitorIds.stream()
+                    competitorIds.stream()
                             .map(c -> {
                                 try {
                                     return sportEntityFactory.buildCompetitor(c, null, null, locales);
                                 } catch (ObjectNotFoundException e) {
                                     throw new StreamWrapperException(e.getMessage(), e);
                                 }
-                            }).collect(Collectors.toList()));
+                            }).collect(ImmutableList.toImmutableList());
         } catch (StreamWrapperException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException("Group competitors could not be provided", e);

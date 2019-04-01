@@ -12,7 +12,6 @@ import com.sportradar.unifiedodds.sdk.entities.DelayedInfo;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * A basic event delay info implementation
@@ -34,9 +33,9 @@ class DelayedInfoImpl implements DelayedInfo {
 
         id = delayedInfo.getId();
 
-        this.descriptions = ImmutableMap.copyOf(locales.stream()
+        this.descriptions = locales.stream()
                 .filter(l -> delayedInfo.getDescription(l) != null)
-                .collect(Collectors.toMap(k -> k, delayedInfo::getDescription)));
+                .collect(ImmutableMap.toImmutableMap(k -> k, delayedInfo::getDescription));
     }
 
 

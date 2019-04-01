@@ -12,7 +12,12 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
-import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.entities.Competition;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.CurrentSeasonInfo;
+import com.sportradar.unifiedodds.sdk.entities.Group;
+import com.sportradar.unifiedodds.sdk.entities.Round;
+import com.sportradar.unifiedodds.sdk.entities.SeasonCoverage;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
@@ -111,9 +116,9 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
         this.year = currentSeasonCi.getYear();
         this.startDate = currentSeasonCi.getStartDate();
         this.endDate = currentSeasonCi.getEndDate();
-        this.names = ImmutableMap.copyOf(locales.stream()
+        this.names = locales.stream()
                 .filter(l -> currentSeasonCi.getName(l) != null)
-                .collect(Collectors.toMap(k -> k, currentSeasonCi::getName)));
+                .collect(ImmutableMap.toImmutableMap(k -> k, currentSeasonCi::getName));
 
         this.seasonEndpointCI = seasonEndpointCI;
 

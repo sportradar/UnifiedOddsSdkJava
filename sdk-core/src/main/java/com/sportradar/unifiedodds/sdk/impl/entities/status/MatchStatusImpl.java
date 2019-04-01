@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * Provides methods used to access match status information
@@ -58,9 +57,9 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
     @Override
     public List<PeriodScore> getPeriodScores() {
         return statusDto.getPeriodScores() == null ? null :
-                ImmutableList.copyOf(statusDto.getPeriodScores().stream()
+                statusDto.getPeriodScores().stream()
                         .map(ps -> new PeriodScoreImpl(ps, matchStatuses))
-                        .collect(Collectors.toList()));
+                        .collect(ImmutableList.toImmutableList());
     }
 
     /**

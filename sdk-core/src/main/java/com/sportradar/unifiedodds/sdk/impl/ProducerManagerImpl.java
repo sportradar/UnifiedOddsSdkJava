@@ -60,25 +60,23 @@ public class ProducerManagerImpl implements SDKProducerManager {
 
     @Override
     public Map<Integer, Producer> getAvailableProducers() {
-        return ImmutableMap.copyOf(producers.entrySet().stream()
+        return producers.entrySet().stream()
                 .collect(
-                        Collectors.toMap(
+                        ImmutableMap.toImmutableMap(
                                 Map.Entry::getKey,
                                 v -> new ProducerImpl(v.getValue())
-                        )
-                ));
+                        ));
     }
 
     @Override
     public Map<Integer, Producer> getActiveProducers() {
-        return ImmutableMap.copyOf(producers.entrySet().stream()
+        return producers.entrySet().stream()
                 .filter(p -> p.getValue().isActive())
                 .collect(
-                        Collectors.toMap(
+                        ImmutableMap.toImmutableMap(
                                 Map.Entry::getKey,
                                 v -> new ProducerImpl(v.getValue())
-                        )
-                ));
+                        ));
     }
 
     @Override

@@ -53,6 +53,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
                 .removalListener(new SDKCacheRemovalListener<>("CompetitorProfileCache"))
                 .build();
         simpleTeamCompetitorCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(24, TimeUnit.HOURS)
                 .removalListener(new SDKCacheRemovalListener<>("SimpleTeamCompetitorCache"))
                 .build();
 
@@ -64,7 +65,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
         invariantMarketCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
         variantDescriptionCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
         variantMarketCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.HOURS).build();
-        fixtureTimestampCache = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
+        fixtureTimestampCache = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
 
         dispatchedFixtureChanges = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     }

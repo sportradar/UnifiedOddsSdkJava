@@ -7,9 +7,21 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
+import com.sportradar.uf.sportsapi.datamodel.SAPIFixture;
+import com.sportradar.uf.sportsapi.datamodel.SAPIInfo;
+import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfoLinks;
+import com.sportradar.uf.sportsapi.datamodel.SAPIReferenceIds;
+import com.sportradar.uf.sportsapi.datamodel.SAPIStreamingChannels;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
+import com.sportradar.unifiedodds.sdk.entities.Fixture;
+import com.sportradar.unifiedodds.sdk.entities.ProducerInfo;
+import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
+import com.sportradar.unifiedodds.sdk.entities.ScheduledStartTimeChange;
+import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
+import com.sportradar.unifiedodds.sdk.entities.TvChannel;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -123,14 +135,14 @@ public class FixtureImpl implements Fixture {
         replacedBy = urnReplacedBy;
 
         this.extraInfo = fixture.getExtraInfo() == null ? null :
-                ImmutableMap.copyOf(fixture.getExtraInfo().getInfo().stream()
-                        .collect(Collectors.toMap(SAPIInfo::getKey, SAPIInfo::getValue)));
+                fixture.getExtraInfo().getInfo().stream()
+                        .collect(ImmutableMap.toImmutableMap(SAPIInfo::getKey, SAPIInfo::getValue));
         this.tvChannels = fixture.getTvChannels() == null ? null :
-                ImmutableList.copyOf(fixture.getTvChannels().getTvChannel().stream()
+                fixture.getTvChannels().getTvChannel().stream()
                         .map(ch -> new TvChannelImpl(
                                 ch.getName(),
                                 ch.getStartTime() == null ? null : ch.getStartTime().toGregorianCalendar().getTime()))
-                        .collect(Collectors.toList()));
+                        .collect(ImmutableList.toImmutableList());
         this.coverageInfo = fixture.getCoverageInfo() == null ? null :
                 new CoverageInfoImpl(
                         fixture.getCoverageInfo().getLevel(),
@@ -154,12 +166,12 @@ public class FixtureImpl implements Fixture {
                                 fixture.getReferenceIds().getReferenceId()
                                         .stream().collect(Collectors.toMap(SAPIReferenceIds.SAPIReferenceId::getName, SAPIReferenceIds.SAPIReferenceId::getValue))));
         this.scheduledStartTimeChanges = fixture.getScheduledStartTimeChanges() == null ? null :
-                ImmutableList.copyOf(fixture.getScheduledStartTimeChanges().getScheduledStartTimeChange().stream()
+                fixture.getScheduledStartTimeChanges().getScheduledStartTimeChange().stream()
                         .map(ch -> new ScheduledStartTimeChangeImpl(
                                 ch.getOldTime() == null ? null : ch.getOldTime().toGregorianCalendar().getTime(),
                                 ch.getNewTime() == null ? null : ch.getNewTime().toGregorianCalendar().getTime(),
                                 ch.getChangedAt() == null ? null : ch.getChangedAt().toGregorianCalendar().getTime()))
-                        .collect(Collectors.toList()));
+                        .collect(ImmutableList.toImmutableList());
     }
 
     /**
