@@ -28,7 +28,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     /**
      * The main sdk logger instance used to log sdk events
      */
-    private static final Logger logger = LoggerFactory.getLogger(RabbitMqMessageReceiver.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChannelMessageConsumerImpl.class);
 
     /**
      * A {@link Logger} instance used to log received payloads
