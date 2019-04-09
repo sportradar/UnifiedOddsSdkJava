@@ -1,5 +1,11 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.22 (2019-04-08)**
+* added support for non-cached fixture endpoint
+* improved fetching logic for the summary endpoint
+* fix: handling pre:outcometext and simpleteam ids in cache
+* fix: null check for names in Category and Sport
+
 **2.0.21 (2019-03-12)**
 * exposed EventResult.getGrid()
 * exposed Reference.getAamsId()
