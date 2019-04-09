@@ -298,7 +298,11 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
      * @return the validation result
      */
     private ValidationResult validateBasicMarkets(List<UFMarket> market, int producerId) {
-        if (market == null || market.isEmpty()) {
+        if (market == null) {
+            return ValidationResult.Failure;
+        }
+
+        if (market.isEmpty()) {
             return ValidationResult.Success;
         }
 
@@ -359,10 +363,9 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             }
 
             if (descriptor.getSpecifiers().size() != specifiers.size()) {
-                String requiredSpecifiers = String.join(",",
-                        descriptor.getSpecifiers().stream()
-                                .map(Specifier::getName)
-                                .collect(Collectors.toList()));
+                String requiredSpecifiers = descriptor.getSpecifiers().stream()
+                        .map(Specifier::getName)
+                        .collect(Collectors.joining(","));
                 logger.info("Specifiers validation failed. ProducerId={}, MarketId={}, Required={}, Actual={}", producerId, marketId, requiredSpecifiers, receivedSpecifiers);
                 return false;
             }
@@ -370,11 +373,10 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             long matchCounter = specifiers.stream().filter(s -> descriptor.getSpecifiers().stream().anyMatch(spec -> spec.getName().equals(s))).count();
 
             if (matchCounter != descriptor.getSpecifiers().size()) {
-                String requiredSpecifiers = String.join(",",
-                        descriptor.getSpecifiers().stream()
-                                .map(Specifier::getName)
-                                .collect(Collectors.toList()));
-                logger.info("Specifiers validation for market[id={}] failed. Required={}, Actual={}", requiredSpecifiers, receivedSpecifiers);
+                String requiredSpecifiers = descriptor.getSpecifiers().stream()
+                        .map(Specifier::getName)
+                        .collect(Collectors.joining(","));
+                logger.info("Specifiers validation for market[id={}] failed. Required={}, Actual={}", marketId, requiredSpecifiers, receivedSpecifiers);
                 return false;
             }
         }
