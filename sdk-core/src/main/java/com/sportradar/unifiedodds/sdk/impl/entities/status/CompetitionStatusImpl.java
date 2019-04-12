@@ -5,11 +5,11 @@
 package com.sportradar.unifiedodds.sdk.impl.entities.status;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
 import java.util.List;
@@ -19,12 +19,12 @@ import java.util.Map;
  * The most basic status implementation describing core competition attributes
  */
 public class CompetitionStatusImpl implements CompetitionStatus {
-    private final SportEventStatusDTO statusDTO;
+    private final SportEventStatusCI statusCI;
 
-    public CompetitionStatusImpl(SportEventStatusDTO statusDto) {
-        Preconditions.checkNotNull(statusDto);
+    public CompetitionStatusImpl(SportEventStatusCI statusCI) {
+        Preconditions.checkNotNull(statusCI);
 
-        this.statusDTO = statusDto;
+        this.statusCI = statusCI;
     }
 
     /**
@@ -34,7 +34,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      */
     @Override
     public URN getWinnerId() {
-        return statusDTO.getWinnerId();
+        return statusCI.getWinnerId();
     }
 
     /**
@@ -44,7 +44,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      */
     @Override
     public EventStatus getStatus() {
-        return statusDTO.getStatus();
+        return statusCI.getStatus();
     }
 
     /**
@@ -54,7 +54,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      */
     @Override
     public ReportingStatus getReportingStatus() {
-        return statusDTO.getReportingStatus();
+        return statusCI.getReportingStatus();
     }
 
     /**
@@ -64,7 +64,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      */
     @Override
     public List<EventResult> getEventResults() {
-        return statusDTO.getEventResults();
+        return statusCI.getEventResults();
     }
 
     /**
@@ -147,7 +147,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      */
     @Override
     public Map<String, Object> getProperties() {
-        return statusDTO.getProperties();
+        return statusCI.getProperties();
     }
 
     /**
@@ -157,6 +157,6 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      */
     @Override
     public Map<String, Object> toKeyValueStore() {
-        return statusDTO.toKeyValueStore();
+        return statusCI.toKeyValueStore();
     }
 }

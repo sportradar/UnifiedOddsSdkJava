@@ -13,13 +13,13 @@ import com.sportradar.utils.URN;
 public interface SportEventStatusCache {
     /**
      * Returns the status of the event associated with the provided identifier. If the instance associated with
-     * the specified event is not found, a {@link SportEventStatusDTO} instance indicating a 'not started' event is returned.
+     * the specified event is not found, a {@link SportEventStatusCI} instance indicating a 'not started' event is returned.
      *
      * @param eventId the event identifier
      * @param makeApiCall should the API call be made if necessary
-     * @return a {@link SportEventStatusDTO} instance describing the last known event status
+     * @return a {@link SportEventStatusCI} instance describing the last known event status
      */
-    SportEventStatusDTO getSportEventStatusDTO(URN eventId, boolean makeApiCall);
+    SportEventStatusCI getSportEventStatusCI(URN eventId, boolean makeApiCall);
 
     /**
      * Purges the sport event status associated with the provided event id

@@ -1,14 +1,9 @@
 package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.common.cache.Cache;
-import com.sportradar.unifiedodds.sdk.caching.CategoryCI;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
-import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
-import com.sportradar.unifiedodds.sdk.caching.SportCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -31,7 +26,7 @@ public interface InternalCachesProvider {
 
     Cache<URN, CompetitorCI> getSimpleTeamCompetitorCache();
 
-    Cache<String, SportEventStatusDTO> getSportEventStatusCache();
+    Cache<String, SportEventStatusCI> getSportEventStatusCache();
 
     Cache<String, MarketDescriptionCI> getInvariantMarketCache();
 

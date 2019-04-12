@@ -2,15 +2,9 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.sportradar.unifiedodds.sdk.caching.CategoryCI;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
-import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
-import com.sportradar.unifiedodds.sdk.caching.SDKCacheRemovalListener;
-import com.sportradar.unifiedodds.sdk.caching.SportCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -28,7 +22,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     private final Cache<URN, PlayerProfileCI> playerProfileCache;
     private final Cache<URN, CompetitorCI> competitorCache;
     private final Cache<URN, CompetitorCI> simpleTeamCompetitorCache;
-    private final Cache<String, SportEventStatusDTO> sportEventStatusCache;
+    private final Cache<String, SportEventStatusCI> sportEventStatusCache;
     private final Cache<String, MarketDescriptionCI> invariantMarketCache;
     private final Cache<String, MarketDescriptionCI> variantMarketCache;
     private final Cache<String, String> dispatchedFixtureChanges;
@@ -101,7 +95,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     }
 
     @Override
-    public Cache<String, SportEventStatusDTO> getSportEventStatusCache() {
+    public Cache<String, SportEventStatusCI> getSportEventStatusCache() {
         return sportEventStatusCache;
     }
 
