@@ -134,7 +134,7 @@ class MatchCIImpl implements MatchCI {
     /**
      * A {@link EventStatus} representing event status
      */
-    private EventStatus eventStatus;
+    private EventStatus eventStatus = EventStatus.NotStarted;
 
     /**
      * A {@link List} indicating which fixture translations were already fetched

@@ -126,7 +126,7 @@ class RaceStageCIImpl implements StageCI {
     /**
      * A {@link EventStatus} representing event status
      */
-    private EventStatus eventStatus;
+    private EventStatus eventStatus = EventStatus.NotStarted;
 
     /**
      * A {@link Map} storing the available sport event names
