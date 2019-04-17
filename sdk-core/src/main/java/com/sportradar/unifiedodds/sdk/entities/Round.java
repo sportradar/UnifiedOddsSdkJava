@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
+import com.sportradar.utils.URN;
+
 import java.util.Locale;
 import java.util.Map;
 
@@ -86,4 +88,13 @@ public interface Round {
      * @return the name or group long name if exists, or null
      */
     String getPhaseOrGroupLongName(Locale locale);
+
+    /**
+     * Returns the id of the group associated with the current round
+     *
+     * @return - the id of the group associated with the current round
+     */
+    default URN getGroupId() {
+        return null;
+    }
 }

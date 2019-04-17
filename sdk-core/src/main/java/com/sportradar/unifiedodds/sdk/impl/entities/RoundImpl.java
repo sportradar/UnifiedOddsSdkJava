@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
 import com.sportradar.unifiedodds.sdk.entities.Round;
+import com.sportradar.utils.URN;
 
 import java.util.List;
 import java.util.Locale;
@@ -148,6 +149,11 @@ public class RoundImpl implements Round {
         }
 
         return roundCI.getPhaseOrGroupLongName(locale);
+    }
+
+    @Override
+    public URN getGroupId() {
+        return roundCI.getGroupId();
     }
 
     /**
