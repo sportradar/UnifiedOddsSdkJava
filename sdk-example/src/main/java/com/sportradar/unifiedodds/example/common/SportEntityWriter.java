@@ -252,7 +252,7 @@ public class SportEntityWriter {
             return "No tournament round info available";
         }
 
-        return String.format("Name:'%s', GroupName:'%s', Type:%s, Number:%s", tournamentRound.getName(locale), tournamentRound.getGroupName(), tournamentRound.getType(), tournamentRound.getNumber());
+        return String.format("Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s", tournamentRound.getName(locale), tournamentRound.getGroupName(), tournamentRound.getGroupId(), tournamentRound.getType(), tournamentRound.getNumber());
     }
 
     /**

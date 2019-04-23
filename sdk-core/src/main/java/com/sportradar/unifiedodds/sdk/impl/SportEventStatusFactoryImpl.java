@@ -7,11 +7,11 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.unifiedodds.sdk.impl.entities.status.CompetitionStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.status.MatchStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.status.SoccerStatusImpl;
@@ -46,24 +46,24 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
     public <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass, boolean makeApiCall) {
         Preconditions.checkNotNull(eventId);
 
-        SportEventStatusDTO statusDto = provideSportEventStatusDTO(eventId, makeApiCall);
+        SportEventStatusCI statusCI = provideSportEventStatusCI(eventId, makeApiCall);
 
-        if(statusDto == null) {
+        if(statusCI == null) {
             return (T) null;
         }
 
         if (targetClass == SoccerStatus.class) {
-            return (T) new SoccerStatusImpl(statusDto, namedValuesProvider.getMatchStatuses());
+            return (T) new SoccerStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
         } else if (targetClass == MatchStatus.class) {
-            return (T) new MatchStatusImpl(statusDto, namedValuesProvider.getMatchStatuses());
+            return (T) new MatchStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
         } else {
-            return (T) new CompetitionStatusImpl(statusDto);
+            return (T) new CompetitionStatusImpl(statusCI);
         }
     }
 
-    private SportEventStatusDTO provideSportEventStatusDTO(URN eventId, boolean makeApiCall) {
+    private SportEventStatusCI provideSportEventStatusCI(URN eventId, boolean makeApiCall) {
         Preconditions.checkNotNull(eventId);
 
-        return sportEventStatusCache.getSportEventStatusDTO(eventId, makeApiCall);
+        return sportEventStatusCache.getSportEventStatusCI(eventId, makeApiCall);
     }
 }

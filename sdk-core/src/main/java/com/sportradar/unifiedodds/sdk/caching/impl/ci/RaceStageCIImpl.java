@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -125,7 +126,7 @@ class RaceStageCIImpl implements StageCI {
     /**
      * A {@link EventStatus} representing event status
      */
-    private EventStatus eventStatus;
+    private EventStatus eventStatus = EventStatus.NotStarted;
 
     /**
      * A {@link Map} storing the available sport event names
@@ -162,13 +163,19 @@ class RaceStageCIImpl implements StageCI {
      */
     private final ReentrantLock fixtureRequest = new ReentrantLock();
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent endpointData, Locale dataLocale) {
+    /**
+     * The {@link Cache} used to cache the sport events fixture timestamps
+     */
+    private final Cache<URN, Date> fixtureTimestampCache;
+
+    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
+        Preconditions.checkNotNull(fixtureTimestampCache);
 
         this.id = id;
         this.dataRouterManager = dataRouterManager;
@@ -208,10 +215,12 @@ class RaceStageCIImpl implements StageCI {
         }
 
         this.stageType = StageType.mapFromApiValue(endpointData.getType());
+
+        this.fixtureTimestampCache = fixtureTimestampCache;
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIStageSummaryEndpoint endpointData, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, endpointData.getSportEvent(), dataLocale);
+    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIStageSummaryEndpoint endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, endpointData.getSportEvent(), dataLocale, fixtureTimestampCache);
 
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
@@ -231,8 +240,8 @@ class RaceStageCIImpl implements StageCI {
         loadedSummaryLocales.add(dataLocale);
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIFixture endpointData, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, (SAPISportEvent) endpointData, dataLocale);
+    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIFixture endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, (SAPISportEvent) endpointData, dataLocale, fixtureTimestampCache);
 
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
@@ -242,13 +251,14 @@ class RaceStageCIImpl implements StageCI {
         loadedFixtureLocales.add(dataLocale);
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale) {
+    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
+        Preconditions.checkNotNull(fixtureTimestampCache);
 
         this.id = id;
         this.dataRouterManager = dataRouterManager;
@@ -268,6 +278,8 @@ class RaceStageCIImpl implements StageCI {
                 endpointData.getScheduledEnd().toGregorianCalendar().getTime();
 
         this.stageType = StageType.mapFromApiValue(endpointData.getType());
+
+        this.fixtureTimestampCache = fixtureTimestampCache;
     }
 
 
@@ -780,7 +792,7 @@ class RaceStageCIImpl implements StageCI {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestFixtureEndpoint(l, id, this);
+                    dataRouterManager.requestFixtureEndpoint(l, id, fixtureTimestampCache.getIfPresent(id) == null,this);
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }

@@ -56,4 +56,11 @@ public interface SportEventCache {
      * @param id the {@link URN} of the event that was successfully booked
      */
     void onEventBooked(URN id);
+
+    /**
+     * Adds fixture timestamp to cache so that the next fixture calls for the event goes through non-cached fixture provider
+     *
+     * @param id the {@link URN} of the event
+     */
+    void addFixtureTimestamp(URN id);
 }

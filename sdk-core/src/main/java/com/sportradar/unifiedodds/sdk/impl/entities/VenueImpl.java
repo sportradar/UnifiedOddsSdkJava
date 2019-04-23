@@ -13,7 +13,6 @@ import com.sportradar.utils.URN;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Represents a sport event venue
@@ -74,15 +73,15 @@ public class VenueImpl implements Venue {
         this.coordinates = venueCI.getCoordinates();
         this.countryCode = venueCI.getCountryCode();
 
-        this.names = ImmutableMap.copyOf(locales.stream()
+        this.names = locales.stream()
                 .filter(l -> venueCI.getName(l) != null)
-                .collect(Collectors.toMap(k -> k, venueCI::getName)));
-        this.cities = ImmutableMap.copyOf(locales
-                .stream().filter(l -> venueCI.getCityName(l) != null)
-                .collect(Collectors.toMap(k -> k, venueCI::getCityName)));
-        this.countries = ImmutableMap.copyOf(locales
-                .stream().filter(l -> venueCI.getCountryName(l) != null)
-                .collect(Collectors.toMap(k -> k, venueCI::getCountryName)));
+                .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getName));
+        this.cities = locales.stream()
+                .filter(l -> venueCI.getCityName(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getCityName));
+        this.countries = locales.stream()
+                .filter(l -> venueCI.getCountryName(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getCountryName));
     }
 
 

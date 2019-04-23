@@ -13,7 +13,6 @@ import com.sportradar.utils.URN;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Provides season information about an entity (sport, category, season, ...)
@@ -43,9 +42,9 @@ public class SeasonInfoImpl implements SeasonInfo {
         Preconditions.checkArgument(!locales.isEmpty());
 
         this.id = seasonCI.getId();
-        this.names = ImmutableMap.copyOf(locales.stream()
+        this.names = locales.stream()
                 .filter(l -> seasonCI.getName(l) != null)
-                .collect(Collectors.toMap(k -> k, seasonCI::getName)));
+                .collect(ImmutableMap.toImmutableMap(k -> k, seasonCI::getName));
     }
 
     /**

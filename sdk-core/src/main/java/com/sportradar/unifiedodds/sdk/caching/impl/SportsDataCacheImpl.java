@@ -79,8 +79,8 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
         ensureLocalesPreFetched(locales);
 
-        return sportsCache.asMap().entrySet().stream()
-                .map(entry -> getSportFromCache(entry.getKey(), locales))
+        return sportsCache.asMap().keySet().stream()
+                .map(sportCI -> getSportFromCache(sportCI, locales))
                 .collect(Collectors.toList());
     }
 
@@ -360,18 +360,22 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
             cachedCategories.add(new CategoryData(
                     categoryCI.getId(),
-                    categoryCI.getNames(locales).entrySet().stream().
+                    ensureNamesNotEmpty(categoryCI.getNames(locales).entrySet().stream().
                             filter(lsEntry -> locales.contains(lsEntry.getKey())).
-                            collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                            collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), locales),
                     categoryCI.getTournamentIds(),
                     categoryCI.getCountryCode()));
         }
 
         return new SportData(
                 sportCI.getId(),
-                sportCI.getNames(locales).entrySet().stream().
+                ensureNamesNotEmpty(sportCI.getNames(locales).entrySet().stream().
                         filter(lsEntry -> locales.contains(lsEntry.getKey())).
-                        collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                        collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), locales),
                 cachedCategories);
+    }
+
+    private Map<Locale, String> ensureNamesNotEmpty(Map<Locale, String> names, List<Locale> locales) {
+        return names.isEmpty() ? locales.stream().collect(Collectors.toMap(l -> l, l -> "")) : names;
     }
 }

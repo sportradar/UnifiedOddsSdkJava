@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
@@ -72,6 +73,11 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
      * The name of the group associated with the current round
      */
     private String group;
+
+    /**
+     * The id of the group associated with the current round
+     */
+    private URN groupId;
 
     /**
      * The id of the other match
@@ -180,6 +186,22 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         initiateSummaryRequest(defaultLocale);
 
         return group;
+    }
+
+    /**
+     * Returns the id of the group associated with the current round
+     *
+     * @return the id of the group associated with the current round
+     */
+    @Override
+    public URN getGroupId() {
+        if (summaryLoadedCheck(groupId, defaultLocale)) {
+            return groupId;
+        }
+
+        initiateSummaryRequest(defaultLocale);
+
+        return groupId;
     }
 
     /**
@@ -320,6 +342,10 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             group = round.getGroup();
         }
 
+        if (!Strings.isNullOrEmpty(round.getGroupId())) {
+            groupId = URN.parse(round.getGroupId());
+        }
+
         if (round.getOtherMatchId() != null) {
             otherMatchId = round.getOtherMatchId();
         }
@@ -380,8 +406,8 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             }
 
             logger.debug("Fetching summary for LoadableRoundCIImpl[EventId:'{}'] for languages '{}'",
-                    associatedEventId, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    associatedEventId, missingLocales.stream()
+                            .map(Locale::toString).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -425,6 +451,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
                 ", dataRouterManager=" + dataRouterManager +
                 ", type='" + type + '\'' +
                 ", group='" + group + '\'' +
+                ", groupId='" + groupId + '\'' +
                 ", otherMatchId='" + otherMatchId + '\'' +
                 ", number=" + number +
                 ", cupRoundMatches=" + cupRoundMatches +

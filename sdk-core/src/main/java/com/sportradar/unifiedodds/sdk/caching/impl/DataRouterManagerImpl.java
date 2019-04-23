@@ -89,6 +89,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<SAPIFixturesEndpoint> fixtureProvider;
 
     /**
+     * The {@link DataProvider} used to fetch fixture data without cache
+     */
+    private final DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureProvider;
+
+    /**
      * A {@link DataProvider} instance used to fetch the tournament list API endpoint
      */
     private final DataProvider<SAPITournamentsEndpoint> tournamentsListProvider;
@@ -168,7 +173,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           SDKProducerManager producerManager,
                           DataRouter dataRouter,
                           @Named("SummaryEndpointDataProvider") DataProvider<Object> summaryEndpointProvider,
-                          DataProvider<SAPIFixturesEndpoint> fixtureProvider,
+                          @Named("FixtureEndpointDataProvider") DataProvider<SAPIFixturesEndpoint> fixtureProvider,
+                          @Named("FixtureChangeFixtureEndpointDataProvider") DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureProvider,
                           DataProvider<SAPITournamentsEndpoint> tournamentsListProvider,
                           DataProvider<SAPIScheduleEndpoint> dateScheduleProvider,
                           @Named("TournamentScheduleProvider") DataProvider<Object> tournamentScheduleProvider,
@@ -189,6 +195,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(dataRouter);
         Preconditions.checkNotNull(summaryEndpointProvider);
         Preconditions.checkNotNull(fixtureProvider);
+        Preconditions.checkNotNull(fixtureChangeFixtureProvider);
         Preconditions.checkNotNull(tournamentsListProvider);
         Preconditions.checkNotNull(dateScheduleProvider);
         Preconditions.checkNotNull(tournamentScheduleProvider);
@@ -210,6 +217,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.dataRouter = dataRouter;
         this.summaryEndpointProvider = summaryEndpointProvider;
         this.fixtureProvider = fixtureProvider;
+        this.fixtureChangeFixtureProvider = fixtureChangeFixtureProvider;
         this.tournamentsListProvider = tournamentsListProvider;
         this.dateScheduleProvider = dateScheduleProvider;
         this.tournamentScheduleProvider = tournamentScheduleProvider;
@@ -252,13 +260,14 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public void requestFixtureEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+    public void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
         SAPIFixturesEndpoint endpoint;
         try {
-            endpoint = fixtureProvider.getData(locale, id.toString());
+            DataProvider<SAPIFixturesEndpoint> provider = useCachedProvider ? fixtureProvider : fixtureChangeFixtureProvider;
+            endpoint = provider.getData(locale, id.toString());
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing fixture request for id=%s, locale=%s", id, locale), e);
         }

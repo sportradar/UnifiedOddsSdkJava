@@ -41,6 +41,11 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
     private final SportEventCache sportEventCache;
 
     /**
+     * A {@link ProcessedFixtureChangesTracker} used to track processed fixture change messages
+     */
+    private final ProcessedFixtureChangesTracker processedFixtureChangesTracker;
+
+    /**
      * The {@link FeedMessageProcessor} implementation which should be called after the message has been processed
      */
     private FeedMessageProcessor nextMessageProcessor;
@@ -48,15 +53,22 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
     /**
      * Initializes a new {@link CacheMessageProcessor} instance
      *
-     * @param sportEventStatusCache - a {@link SportEventStatusCache} used to store sport event statuses
+     * @param sportEventStatusCache the {@link SportEventStatusCache} used by the associated SDK instance
+     * @param sportEventCache the {@link SportEventCache} used by the associated SDK instance
+     * @param processedFixtureChangesTracker used to track processed fixture change messages
      */
-    public CacheMessageProcessor(SportEventStatusCache sportEventStatusCache, SportEventCache sportEventCache) {
+    public CacheMessageProcessor(
+            SportEventStatusCache sportEventStatusCache,
+            SportEventCache sportEventCache,
+            ProcessedFixtureChangesTracker processedFixtureChangesTracker) {
         Preconditions.checkNotNull(sportEventStatusCache);
         Preconditions.checkNotNull(sportEventCache);
+        Preconditions.checkNotNull(processedFixtureChangesTracker);
 
         this.processorId = UUID.randomUUID().toString();
         this.sportEventStatusCache = sportEventStatusCache;
         this.sportEventCache = sportEventCache;
+        this.processedFixtureChangesTracker = processedFixtureChangesTracker;
     }
 
     /**
@@ -114,10 +126,15 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
     private void processFixtureChangeMessage(UFFixtureChange message) {
         Preconditions.checkNotNull(message);
 
+        if (processedFixtureChangesTracker.onFixtureChangeReceived(message)) {
+            return;
+        }
+
         URN relatedEventId = URN.parse(message.getEventId());
 
         sportEventCache.purgeCacheItem(relatedEventId);
         sportEventStatusCache.purgeSportEventStatus(relatedEventId);
+        sportEventCache.addFixtureTimestamp(relatedEventId);
     }
 
     /**

@@ -8,11 +8,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
 import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.unifiedodds.sdk.impl.entities.PeriodScoreImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,23 +20,22 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * Provides methods used to access match status information
  */
 public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatus {
     private final static Logger logger = LoggerFactory.getLogger(MatchStatusImpl.class);
-    private final SportEventStatusDTO statusDto;
+    private final SportEventStatusCI statusCI;
     private final LocalizedNamedValueCache matchStatuses;
 
-    public MatchStatusImpl(SportEventStatusDTO statusDto, LocalizedNamedValueCache matchStatuses) {
-        super(statusDto);
+    public MatchStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
+        super(statusCI);
 
-        Preconditions.checkNotNull(statusDto);
+        Preconditions.checkNotNull(statusCI);
         Preconditions.checkNotNull(matchStatuses);
 
-        this.statusDto = statusDto;
+        this.statusCI = statusCI;
         this.matchStatuses = matchStatuses;
     }
 
@@ -47,7 +46,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public EventClock getEventClock() {
-        return statusDto.getEventClock();
+        return statusCI.getEventClock();
     }
 
     /**
@@ -57,10 +56,10 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public List<PeriodScore> getPeriodScores() {
-        return statusDto.getPeriodScores() == null ? null :
-                ImmutableList.copyOf(statusDto.getPeriodScores().stream()
+        return statusCI.getPeriodScores() == null ? null :
+                statusCI.getPeriodScores().stream()
                         .map(ps -> new PeriodScoreImpl(ps, matchStatuses))
-                        .collect(Collectors.toList()));
+                        .collect(ImmutableList.toImmutableList());
     }
 
     /**
@@ -70,7 +69,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public int getMatchStatusId() {
-        return statusDto.getMatchStatusId();
+        return statusCI.getMatchStatusId();
     }
 
     /**
@@ -80,11 +79,11 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public LocalizedNamedValue getMatchStatus() {
-        if (statusDto.getMatchStatusId() < 0) {
+        if (statusCI.getMatchStatusId() < 0) {
             logger.warn("Processing match status with id < 0");
             return null;
         }
-        return matchStatuses.get(statusDto.getMatchStatusId(), null);
+        return matchStatuses.get(statusCI.getMatchStatusId(), null);
     }
 
     /**
@@ -95,11 +94,11 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public LocalizedNamedValue getMatchStatus(Locale locale) {
-        if (statusDto.getMatchStatusId() < 0) {
+        if (statusCI.getMatchStatusId() < 0) {
             logger.warn("Processing match status with id < 0");
             return null;
         }
-        return matchStatuses.get(statusDto.getMatchStatusId(), Lists.newArrayList(locale));
+        return matchStatuses.get(statusCI.getMatchStatusId(), Lists.newArrayList(locale));
     }
 
     /**
@@ -109,7 +108,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public BigDecimal getHomeScore() {
-        return statusDto.getHomeScore();
+        return statusCI.getHomeScore();
     }
 
     /**
@@ -119,7 +118,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public BigDecimal getAwayScore() {
-        return statusDto.getAwayScore();
+        return statusCI.getAwayScore();
     }
 
     /**
@@ -127,7 +126,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public Integer getHomePenaltyScore() {
-        return statusDto.getHomePenaltyScore();
+        return statusCI.getHomePenaltyScore();
     }
 
     /**
@@ -135,7 +134,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public Integer getAwayPenaltyScore() {
-        return statusDto.getAwayPenaltyScore();
+        return statusCI.getAwayPenaltyScore();
 
     }
 }

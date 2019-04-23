@@ -5,20 +5,20 @@
 package com.sportradar.unifiedodds.sdk.impl.entities.status;
 
 import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 
 /**
  * Provides methods used to access soccer status information
  */
 public class SoccerStatusImpl extends MatchStatusImpl implements SoccerStatus {
-    private final SportEventStatusDTO statusDto;
+    private final SportEventStatusCI statusCI;
 
-    public SoccerStatusImpl(SportEventStatusDTO statusDto, LocalizedNamedValueCache matchStatuses) {
-        super(statusDto, matchStatuses);
+    public SoccerStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
+        super(statusCI, matchStatuses);
 
-        this.statusDto = statusDto;
+        this.statusCI = statusCI;
     }
 
     /**
@@ -28,6 +28,6 @@ public class SoccerStatusImpl extends MatchStatusImpl implements SoccerStatus {
      */
     @Override
     public SoccerStatistics getStatistics() {
-        return statusDto.getSportEventStatisticsDTO() == null ? null : new SoccerStatisticsImpl(statusDto.getSportEventStatisticsDTO());
+        return statusCI.getSportEventStatisticsDTO() == null ? null : new SoccerStatisticsImpl(statusCI.getSportEventStatisticsDTO());
     }
 }

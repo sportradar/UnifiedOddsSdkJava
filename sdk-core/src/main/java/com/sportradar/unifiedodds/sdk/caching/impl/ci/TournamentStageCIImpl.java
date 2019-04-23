@@ -327,7 +327,7 @@ class TournamentStageCIImpl implements StageCI {
      */
     @Override
     public EventStatus getEventStatus() {
-        return null;
+        return EventStatus.Unknown;
     }
 
     /**

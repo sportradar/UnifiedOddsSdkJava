@@ -642,8 +642,10 @@ class TournamentCIImpl implements TournamentCI {
             }
 
             logger.debug("Fetching missing tournament data for id='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id,
+                    missingLocales.stream()
+                            .map(Locale::toString)
+                            .collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -700,14 +702,12 @@ class TournamentCIImpl implements TournamentCI {
         }
 
         if (groupSupplier != null && groupSupplier.get() != null) {
-            return ImmutableList.copyOf(
-                    groupSupplier.get().stream()
+            return groupSupplier.get().stream()
                             .map(GroupCI::getCompetitorIds)
                             .filter(Objects::nonNull)
                             .flatMap(Collection::stream)
                             .distinct()
-                            .collect(Collectors.toList())
-            );
+                    .collect(ImmutableList.toImmutableList());
         }
 
         return null;
@@ -719,12 +719,11 @@ class TournamentCIImpl implements TournamentCI {
         }
 
         if (groupSupplier != null && groupSupplier.get() != null) {
-            return ImmutableMap.copyOf(
-                    groupSupplier.get().stream()
+            return groupSupplier.get().stream()
                             .map(GroupCI::getCompetitorsReferences)
                             .filter(Objects::nonNull)
                             .flatMap(g -> g.entrySet().stream())
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
         }
 
         return null;

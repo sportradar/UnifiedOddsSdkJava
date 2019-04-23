@@ -4,10 +4,12 @@
 
 package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
+import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.utils.URN;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,4 +57,5 @@ public interface CacheItemFactory {
     DrawCI buildDrawCI(URN id, SAPIDrawSummary data, Locale dataLocale);
     DrawCI buildDrawCI(URN id, SAPIDrawFixture data, Locale dataLocale);
 
+    Cache<URN, Date> getFixtureTimestampCache();
 }

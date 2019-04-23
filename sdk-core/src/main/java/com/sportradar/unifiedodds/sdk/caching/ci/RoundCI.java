@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
+import com.sportradar.utils.URN;
+
 import java.util.Locale;
 
 /**
@@ -23,6 +25,13 @@ public interface RoundCI {
      * @return the name of the group associated with the current round
      */
     String getGroup();
+
+    /**
+     * Returns the id of the group associated with the current round
+     *
+     * @return the id of the group associated with the current round
+     */
+    URN getGroupId();
 
     /**
      * Returns the id of the other match
