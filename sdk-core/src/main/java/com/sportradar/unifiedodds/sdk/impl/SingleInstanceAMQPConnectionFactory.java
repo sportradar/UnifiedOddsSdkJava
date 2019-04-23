@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -27,11 +26,16 @@ import org.slf4j.MDC;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.*;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -68,6 +72,11 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      * A {@link ConnectionFactory} instance used to create the {@link Connection} instance
      */
     private final ConnectionFactory rabbitConnectionFactory;
+
+    /**
+     * A {@link ExecutorService} dedicated to the underlying RabbitMQ connection
+     */
+    private final ExecutorService dedicatedRabbitMqExecutor;
 
     /**
      * A {@link SDKConnectionStatusListener} used to notify the outside world when the connection is
@@ -107,15 +116,19 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     @Inject
     public SingleInstanceAMQPConnectionFactory(ConnectionFactory rabbitConnectionFactory, SDKInternalConfiguration config,
                                                SDKConnectionStatusListener connectionStatusListener,
-                                               @Named("version") String version, WhoAmIReader whoAmIReader) {
+                                               @Named("version") String version, WhoAmIReader whoAmIReader,
+                                               @Named("DedicatedRabbitMqExecutor") ExecutorService dedicatedRabbitMqExecutor) {
         checkNotNull(rabbitConnectionFactory, "rabbitConnectionFactory cannot be a null reference");
         checkNotNull(config, "config cannot be a null reference");
         checkNotNull(connectionStatusListener, "connectionStatusListener cannot be a null reference");
+        checkNotNull(dedicatedRabbitMqExecutor, "dedicatedRabbitMqExecutor cannot be a null reference");
+
         this.rabbitConnectionFactory = rabbitConnectionFactory;
         this.config = config;
         this.connectionStatusListener = connectionStatusListener;
         this.version = version;
         this.whoAmIReader = whoAmIReader;
+        this.dedicatedRabbitMqExecutor = dedicatedRabbitMqExecutor;
 
         this.messagingPassword = Strings.isNullOrEmpty(config.getMessagingPassword()) ? "" : config.getMessagingPassword();
     }
@@ -173,11 +186,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
         rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
 
-        rabbitConnectionFactory.setThreadFactory(
-                new ThreadFactoryBuilder().setNameFormat(whoAmIReader.getSdkContextDescription() + "-amqp-t-%d").build()
-        );
-
-        Connection con = rabbitConnectionFactory.newConnection();
+        Connection con = rabbitConnectionFactory.newConnection(dedicatedRabbitMqExecutor);
         logger.info("Connection created successfully");
         return con;
     }
