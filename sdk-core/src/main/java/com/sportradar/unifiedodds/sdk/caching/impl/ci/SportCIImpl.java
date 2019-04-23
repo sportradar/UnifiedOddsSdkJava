@@ -147,6 +147,9 @@ class SportCIImpl implements SportCI {
         if (sData.getName() != null) {
             names.put(dataLocale, sData.getName());
         }
+        else{
+            names.put(dataLocale, "");
+        }
 
         cachedLocales.add(dataLocale);
     }

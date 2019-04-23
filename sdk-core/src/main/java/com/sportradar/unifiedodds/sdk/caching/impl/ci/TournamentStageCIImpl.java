@@ -120,6 +120,9 @@ class TournamentStageCIImpl implements StageCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
         }
+        else{
+            this.sportEventNames.put(dataLocale, "");
+        }
 
         this.categoryId = URN.parse(endpointData.getCategory().getId());
         this.scheduled = endpointData.getScheduled() == null ? null :
@@ -433,6 +436,9 @@ class TournamentStageCIImpl implements StageCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
+        }
+        else{
+            this.sportEventNames.put(dataLocale, "");
         }
 
         if (endpointData.getCategory() != null) {

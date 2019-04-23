@@ -32,6 +32,9 @@ public class DrawResultCI {
         if (dr.getName() != null) {
             names.put(dataLocale, dr.getName());
         }
+        else{
+            names.put(dataLocale, "");
+        }
     }
 
     public Integer getValue() {
@@ -52,6 +55,9 @@ public class DrawResultCI {
 
         if (dr.getName() != null) {
             names.put(dataLocale, dr.getName());
+        }
+        else{
+            this.names.put(dataLocale, "");
         }
     }
 }

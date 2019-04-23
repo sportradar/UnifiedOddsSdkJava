@@ -343,6 +343,9 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         if (round.getName() != null) {
             names.put(locale, round.getName());
         }
+        else{
+            names.put(locale, "");
+        }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());

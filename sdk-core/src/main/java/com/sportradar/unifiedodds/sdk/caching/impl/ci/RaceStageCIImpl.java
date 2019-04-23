@@ -203,6 +203,9 @@ class RaceStageCIImpl implements StageCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
         }
+        else{
+            this.sportEventNames.put(defaultLocale, "");
+        }
 
         this.stageType = StageType.mapFromApiValue(endpointData.getType());
     }
@@ -254,6 +257,9 @@ class RaceStageCIImpl implements StageCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
+        }
+        else{
+            this.sportEventNames.put(defaultLocale, "");
         }
 
         this.scheduled = endpointData.getScheduled() == null ? null :
@@ -686,6 +692,9 @@ class RaceStageCIImpl implements StageCI {
         if (sportEvent.getName() != null) {
             this.sportEventNames.put(locale, sportEvent.getName());
         }
+        else{
+            this.sportEventNames.put(locale, "");
+        }
 
         if (sportEvent.getType() != null) {
             this.stageType = StageType.mapFromApiValue(sportEvent.getType());
@@ -708,7 +717,9 @@ class RaceStageCIImpl implements StageCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
         }
-
+        else{
+            this.sportEventNames.put(dataLocale, "");
+        }
         if (endpointData.getType() != null) {
             this.stageType = StageType.mapFromApiValue(endpointData.getType());
         }
