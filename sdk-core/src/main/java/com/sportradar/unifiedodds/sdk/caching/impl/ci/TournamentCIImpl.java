@@ -223,6 +223,9 @@ class TournamentCIImpl implements TournamentCI {
         if (endpointData.getName() != null) {
             this.names.put(dataLocale, endpointData.getName());
         }
+        else{
+            this.names.put(dataLocale, "");
+        }
 
         this.categoryId = URN.parse(endpointData.getCategory().getId());
         this.scheduled = endpointData.getScheduled() == null ? null :
@@ -594,6 +597,9 @@ class TournamentCIImpl implements TournamentCI {
 
         if (endpointData.getName() != null) {
             this.names.put(dataLocale, endpointData.getName());
+        }
+        else{
+            this.names.put(dataLocale, "");
         }
 
         if (endpointData.getCategory() != null) {

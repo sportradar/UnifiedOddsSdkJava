@@ -142,6 +142,9 @@ class CategoryCIImpl implements CategoryCI {
         if (categoryData.getName() != null) {
             names.put(locale, categoryData.getName());
         }
+        else{
+            names.put(locale, "");
+        }
 
         cachedLocales.add(locale);
     }

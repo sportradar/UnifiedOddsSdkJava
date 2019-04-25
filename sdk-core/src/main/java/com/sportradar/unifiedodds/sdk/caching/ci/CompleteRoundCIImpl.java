@@ -109,6 +109,9 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         if (round.getName() != null) {
             names.put(locale, round.getName());
         }
+        else{
+            this.names.put(locale, "");
+        }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());

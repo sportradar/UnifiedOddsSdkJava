@@ -259,6 +259,8 @@ class MatchCIImpl implements MatchCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
+        }else{
+            this.sportEventNames.put(dataLocale, "");
         }
     }
 
@@ -905,6 +907,9 @@ class MatchCIImpl implements MatchCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
+        }
+        else{
+            this.sportEventNames.put(dataLocale, "");
         }
     }
 
