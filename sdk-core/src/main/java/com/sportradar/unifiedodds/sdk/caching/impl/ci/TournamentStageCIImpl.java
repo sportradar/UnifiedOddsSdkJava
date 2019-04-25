@@ -19,7 +19,10 @@ import com.sportradar.unifiedodds.sdk.caching.StageCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
+import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -318,16 +321,6 @@ class TournamentStageCIImpl implements StageCI {
     }
 
     /**
-     * Get the event status
-     *
-     * @return the event status
-     */
-    @Override
-    public EventStatus getEventStatus() {
-        return EventStatus.Unknown;
-    }
-
-    /**
      * Returns the {@link Date} specifying when the sport event associated with the current
      * instance was scheduled
      *
@@ -475,8 +468,8 @@ class TournamentStageCIImpl implements StageCI {
             }
 
             logger.debug("Fetching missing stage tournament data for id='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::toString).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
