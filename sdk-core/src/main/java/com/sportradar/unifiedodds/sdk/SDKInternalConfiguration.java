@@ -9,11 +9,7 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * The internal SDK configuration
@@ -176,7 +172,7 @@ public class SDKInternalConfiguration {
      */
     public List<Locale> getDesiredLocales() {
         if (!desiredLocales.contains(defaultLocale))
-            desiredLocales.add(defaultLocale);
+            desiredLocales.add(0, defaultLocale);
         return desiredLocales;
     }
 

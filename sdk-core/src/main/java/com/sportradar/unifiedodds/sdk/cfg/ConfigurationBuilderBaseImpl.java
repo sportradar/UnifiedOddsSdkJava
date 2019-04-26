@@ -10,10 +10,7 @@ import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The base class for configuration builders
@@ -22,7 +19,7 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
     final SDKConfigurationYamlReader sdkConfigurationYamlReader;
 
-    private final Set<Locale> supportedLocales = new HashSet<>();
+    private final Set<Locale> supportedLocales = new LinkedHashSet<>();
     final Set<Integer> disabledProducers = new HashSet<>();
     Locale defaultLocale = null;
     ExceptionHandlingStrategy exceptionHandlingStrategy = ExceptionHandlingStrategy.Catch;
