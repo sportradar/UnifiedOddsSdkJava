@@ -475,7 +475,7 @@ class TournamentStageCIImpl implements StageCI {
 
             logger.debug("Fetching missing stage tournament data for id='{}' for languages '{}'",
                     id, missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.joining(", ")));
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

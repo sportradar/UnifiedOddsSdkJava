@@ -316,8 +316,8 @@ public class DrawCIImpl implements DrawCI {
             }
 
             logger.debug("Fetching missing draw data for id='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

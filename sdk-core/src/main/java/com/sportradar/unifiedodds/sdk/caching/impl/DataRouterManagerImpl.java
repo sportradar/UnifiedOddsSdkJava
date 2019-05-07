@@ -603,13 +603,13 @@ public class DataRouterManagerImpl implements DataRouterManager {
         try {
             triggerAllSportsDataFetch(prefetchLocales);
             logger.info("Tournament data for languages [" +
-                    String.join(", ", prefetchLocales.stream().
-                            map(Locale::toString).collect(Collectors.toList())) +
+                    prefetchLocales.stream().
+                            map(Locale::getLanguage).collect(Collectors.joining(", ")) +
                     "] successfully fetched and merged.");
         } catch (Exception e) { // so the timer does not die
             logger.warn("onSportsDataTimerElapsed: An exception occurred while attempting to fetch tournament list data for: [" +
-                    String.join(", ", prefetchLocales.stream().
-                            map(Locale::toString).collect(Collectors.toList())) +
+                    prefetchLocales.stream().
+                            map(Locale::getLanguage).collect(Collectors.joining(", ")) +
                     "]. Exception was:", e);
         }
     }
@@ -659,8 +659,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(locales);
 
         logger.info("DataRouterImpl->triggerAllSportsDataFetch [" +
-                String.join(", ", locales.stream().
-                        map(Locale::toString).collect(Collectors.toList())) +
+                locales.stream().
+                        map(Locale::getLanguage).collect(Collectors.joining(", ")) +
                 "]");
 
         logger.info("DataRouterImpl->Refreshing tournaments/sports data");

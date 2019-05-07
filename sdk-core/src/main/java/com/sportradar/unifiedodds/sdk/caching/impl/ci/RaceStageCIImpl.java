@@ -756,7 +756,7 @@ class RaceStageCIImpl implements StageCI {
 
             logger.debug("Fetching stage fixtures for eventId='{}' for languages '{}'",
                     id, missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.joining(", ")));
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -795,7 +795,7 @@ class RaceStageCIImpl implements StageCI {
 
             logger.debug("Fetching stage summary for eventId='{}' for languages '{}'",
                     id, missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.joining(", ")));
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

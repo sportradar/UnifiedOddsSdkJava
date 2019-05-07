@@ -10,19 +10,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.DataRouter;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
-import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
+import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -39,10 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -132,6 +119,7 @@ public class OddsFeed {
 
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
         this.injector = createSdkInjector(listener, null);
+        checkLocales();
     }
 
     /**
@@ -392,6 +380,23 @@ public class OddsFeed {
         injector.getInstance(SDKTaskScheduler.class).shutdownNow();
         injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
         injector.getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor"))).shutdownNow();
+    }
+
+    public List<Locale> getAvailableLanguages() {
+        String[] languages = "it,en,de,fr,se,es,ru,zh,ja,hr,tr,sk,sl,no,da,nl,pl,pt,cs,fi,th,hu,bg,ek,ro,et,lv,bs,sr,ml,lt,id,vi,ko,aa,ka,br,zht,ukr,aze,heb,kaz,sqi,srl".split(",");
+        return Arrays.stream(languages)
+                .sorted()
+                .map(Locale::forLanguageTag)
+                .collect(Collectors.toList());
+    }
+
+    private void checkLocales() {
+        List<Locale> availableLanguages = getAvailableLanguages();
+        List<Locale> unsupportedLocales = oddsFeedConfiguration.getDesiredLocales().stream()
+                .filter(l -> !availableLanguages.contains(l))
+                .collect(Collectors.toList());
+        if (!unsupportedLocales.isEmpty())
+            logger.warn("Unsupported locales: {}", unsupportedLocales);
     }
 
     private void initOddsFeedInstance() {

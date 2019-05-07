@@ -407,7 +407,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
 
             logger.debug("Fetching summary for LoadableRoundCIImpl[EventId:'{}'] for languages '{}'",
                     associatedEventId, missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.joining(", ")));
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

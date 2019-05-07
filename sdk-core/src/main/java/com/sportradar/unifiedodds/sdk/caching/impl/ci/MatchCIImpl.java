@@ -700,7 +700,7 @@ class MatchCIImpl implements MatchCI {
 
             logger.debug("Fetching fixtures for eventId='{}' for languages '{}'",
                     id, missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.joining(", ")));
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -739,7 +739,7 @@ class MatchCIImpl implements MatchCI {
 
             logger.debug("Fetching summary for eventId='{}' for languages '{}'",
                     id, missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.joining(", ")));
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

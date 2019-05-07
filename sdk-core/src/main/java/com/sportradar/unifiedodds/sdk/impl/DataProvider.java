@@ -131,7 +131,7 @@ public class DataProvider<TOut> {
 
         int destPos = 0;
         if (locale != null) {
-            forwardArgs[0] = locale.toString();
+            forwardArgs[0] = locale.getLanguage();
             destPos++;
         }
 
