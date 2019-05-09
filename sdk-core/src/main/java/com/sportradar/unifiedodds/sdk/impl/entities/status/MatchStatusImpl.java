@@ -133,8 +133,5 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      * Get the penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
      */
     @Override
-    public Integer getAwayPenaltyScore() {
-        return statusCI.getAwayPenaltyScore();
-
-    }
+    public Integer getAwayPenaltyScore() { return statusCI.getAwayPenaltyScore(); }
 }

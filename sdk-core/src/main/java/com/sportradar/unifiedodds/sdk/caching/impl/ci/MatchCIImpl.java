@@ -126,11 +126,6 @@ class MatchCIImpl implements MatchCI {
     private SportEventConditionsCI conditions;
 
     /**
-     * A {@link SportEventStatusDTO} instance providing the current event status information
-     */
-    private SportEventStatusDTO sportEventStatusDTO;
-
-    /**
      * A {@link List} indicating which fixture translations were already fetched
      */
     private final List<Locale> loadedFixtureLocales = Collections.synchronizedList(new ArrayList<>());
@@ -485,15 +480,11 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO() {
+    public void fetchSportEventStatus() {
         requestMissingSummaryData(Collections.singletonList(defaultLocale), true);
-
-        return sportEventStatusDTO;
     }
 
     /**
@@ -629,8 +620,6 @@ class MatchCIImpl implements MatchCI {
             internalMerge((SAPISportEventChildren.SAPISportEvent) endpointData, dataLocale);
         } else if (endpointData instanceof SAPIMatchTimelineEndpoint) {
             internalMerge((SAPIMatchTimelineEndpoint) endpointData, dataLocale);
-        } else if (endpointData instanceof SportEventStatusDTO) {
-            internalMerge((SportEventStatusDTO) endpointData);
         }
     }
 
@@ -911,17 +900,6 @@ class MatchCIImpl implements MatchCI {
         else{
             this.sportEventNames.put(dataLocale, "");
         }
-    }
-
-    /**
-     * Merges the current instance with the {@link SportEventStatusDTO}
-     *
-     * @param statusDTO the data to be merged
-     */
-    private void internalMerge(SportEventStatusDTO statusDTO) {
-        Preconditions.checkNotNull(statusDTO);
-
-        sportEventStatusDTO = statusDTO;
     }
 
     /**

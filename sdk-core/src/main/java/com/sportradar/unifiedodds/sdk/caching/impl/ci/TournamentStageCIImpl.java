@@ -313,14 +313,10 @@ class TournamentStageCIImpl implements StageCI {
     }
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO() {
-        // no sport event status data
-        return null;
+    public void fetchSportEventStatus() {
     }
 
     /**

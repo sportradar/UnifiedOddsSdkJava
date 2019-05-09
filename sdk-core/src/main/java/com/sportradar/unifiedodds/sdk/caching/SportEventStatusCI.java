@@ -27,28 +27,28 @@ public interface SportEventStatusCI {
      *
      * @return the {@link SportEventStatusDTO} received from the feed
      */
-    SportEventStatusDTO getFeedDTO();
+    SportEventStatusDTO getFeedStatusDTO();
 
     /**
      * Sets the {@link SportEventStatusDTO} received from the feed
      *
      * @param feedDTO the {@link SportEventStatusDTO} received from the feed
      */
-    void setFeedDTO(SportEventStatusDTO feedDTO);
+    void setFeedStatus(SportEventStatusDTO feedDTO);
 
     /**
      * Returns the {@link SportEventStatusDTO} received from the Sports API
      *
      * @return the {@link SportEventStatusDTO} received from the Sports API
      */
-    SportEventStatusDTO getSapiDTO();
+    SportEventStatusDTO getSapiStatusDTO();
 
     /**
      * Sets the {@link SportEventStatusDTO} received from the Sports API
      *
      * @param sapiDTO the {@link SportEventStatusDTO} received from the Sports API
      */
-    void setSapiDTO(SportEventStatusDTO sapiDTO);
+    void setSapiStatus(SportEventStatusDTO sapiDTO);
 
     /**
      * Returns the sport event winner identifier

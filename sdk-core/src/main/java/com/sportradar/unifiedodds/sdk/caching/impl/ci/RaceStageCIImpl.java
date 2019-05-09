@@ -121,11 +121,6 @@ class RaceStageCIImpl implements StageCI {
     private List<URN> childStagesIds;
 
     /**
-     * A {@link SportEventStatusDTO} instance providing the current event status information
-     */
-    private SportEventStatusDTO sportEventStatusDTO;
-
-    /**
      * A {@link Map} storing the available sport event names
      */
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
@@ -480,16 +475,11 @@ class RaceStageCIImpl implements StageCI {
     }
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO() {
-
+    public void fetchSportEventStatus() {
         requestMissingSummaryData(Collections.singletonList(defaultLocale), true);
-
-        return sportEventStatusDTO;
     }
 
     /**
@@ -546,8 +536,6 @@ class RaceStageCIImpl implements StageCI {
             internalMerge((SAPIStageSummaryEndpoint) endpointData, dataLocale);
         } else if (endpointData instanceof SAPISportEventChildren.SAPISportEvent) {
             internalMerge(((SAPISportEventChildren.SAPISportEvent) endpointData), dataLocale);
-        } else if (endpointData instanceof SportEventStatusDTO) {
-            internalMerge((SportEventStatusDTO) endpointData);
         }
     }
 
@@ -720,17 +708,6 @@ class RaceStageCIImpl implements StageCI {
         if (endpointData.getType() != null) {
             this.stageType = StageType.mapFromApiValue(endpointData.getType());
         }
-    }
-
-    /**
-     * Merges the current instance with the {@link SportEventStatusDTO}
-     *
-     * @param statusDTO the data to be merged
-     */
-    private void internalMerge(SportEventStatusDTO statusDTO) {
-        Preconditions.checkNotNull(statusDTO);
-
-        sportEventStatusDTO = statusDTO;
     }
 
     /**

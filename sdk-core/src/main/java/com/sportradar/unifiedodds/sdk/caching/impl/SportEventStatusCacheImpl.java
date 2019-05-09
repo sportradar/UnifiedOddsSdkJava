@@ -91,19 +91,26 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
         if(source.equalsIgnoreCase("UFOddsChange") ||
                 source.contains("Summary") ||
                 sportEventStatusCache.getIfPresent(id.toString()) == null) {
+
             logger.debug(String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus()));
+
             SportEventStatusCI cacheItem = sportEventStatusCache.getIfPresent(id.toString());
-            SportEventStatusDTO feedDTO = (cacheItem != null) ? cacheItem.getFeedDTO() : null;
-            SportEventStatusDTO sapiDTO = (cacheItem != null) ? cacheItem.getSapiDTO() : null;
-            if (source.equalsIgnoreCase("UFOddsChange"))
+            SportEventStatusDTO feedDTO = (cacheItem != null) ? cacheItem.getFeedStatusDTO() : null;
+            SportEventStatusDTO sapiDTO = (cacheItem != null) ? cacheItem.getSapiStatusDTO() : null;
+
+            if (source.equalsIgnoreCase("UFOddsChange")) {
                 feedDTO = data;
-            else
-                sapiDTO = data;
-            if (cacheItem == null)
-                cacheItem = new SportEventStatusCIImpl(feedDTO, sapiDTO);
+            }
             else {
-                cacheItem.setFeedDTO(feedDTO);
-                cacheItem.setSapiDTO(sapiDTO);
+                sapiDTO = data;
+            }
+
+            if (cacheItem == null) {
+                cacheItem = new SportEventStatusCIImpl(feedDTO, sapiDTO);
+            }
+            else {
+                cacheItem.setFeedStatus(feedDTO);
+                cacheItem.setSapiStatus(sapiDTO);
             }
             sportEventStatusCache.put(id.toString(), cacheItem);
             return;
@@ -130,20 +137,15 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
     private void tryFetchCacheSportEventStatus(URN eventId) {
         Preconditions.checkNotNull(eventId);
 
-        SportEventStatusDTO statusDto = null;
         try {
             SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(eventId);
             if (eventCacheItem instanceof CompetitionCI) {
-                statusDto = ((CompetitionCI) eventCacheItem).getSportEventStatusDTO();
+                ((CompetitionCI) eventCacheItem).fetchSportEventStatus();
             } else {
                 logger.warn("Received sport event[{}] status fetch-cache request for unsupported entity type: {}", eventId, eventCacheItem.getClass().getSimpleName());
             }
         } catch (CacheItemNotFoundException e) {
             logger.warn("Could not access a valid cache item for the requested event[{}] status, exc: ", eventId, e);
-        }
-
-        if (statusDto != null) {
-            onSportEventStatusFetched(eventId, statusDto, "CompetitionCI");
         }
     }
 }

@@ -35,148 +35,178 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
     }
 
     @Override
-    public SportEventStatusDTO getFeedDTO() {
+    public SportEventStatusDTO getFeedStatusDTO() {
         return feedDTO;
     }
 
     @Override
-    public void setFeedDTO(SportEventStatusDTO feedDTO) {
-        this.feedDTO = feedDTO;
+    public void setFeedStatus(SportEventStatusDTO feedDTO) {
+        if(feedDTO != null) {
+            this.feedDTO = feedDTO;
+        }
     }
 
     @Override
-    public SportEventStatusDTO getSapiDTO() {
-        return sapiDTO;
-    }
+    public SportEventStatusDTO getSapiStatusDTO() { return sapiDTO; }
 
     @Override
-    public void setSapiDTO(SportEventStatusDTO sapiDTO) {
-        this.sapiDTO = sapiDTO;
+    public void setSapiStatus(SportEventStatusDTO sapiDTO) {
+        if(sapiDTO != null) {
+            this.sapiDTO = sapiDTO;
+        }
     }
 
     @Override
     public URN getWinnerId() {
-        if (feedDTO != null && feedDTO.getWinnerId() != null)
+        if (feedDTO != null && feedDTO.getWinnerId() != null) {
             return feedDTO.getWinnerId();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getWinnerId();
+        }
         return null;
     }
 
     @Override
     public EventStatus getStatus() {
-        if (feedDTO != null && feedDTO.getStatus() != null)
+        if (feedDTO != null && feedDTO.getStatus() != null) {
             return feedDTO.getStatus();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getStatus();
+        }
         return null;
     }
 
     @Override
     public int getMatchStatusId() {
-        if (feedDTO != null)
+        if (feedDTO != null) {
             return feedDTO.getMatchStatusId();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getMatchStatusId();
+        }
         return 0;
     }
 
     @Override
     public ReportingStatus getReportingStatus() {
-        if (feedDTO != null && feedDTO.getReportingStatus() != null)
+        if (feedDTO != null && feedDTO.getReportingStatus() != null) {
             return feedDTO.getReportingStatus();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getReportingStatus();
+        }
         return null;
     }
 
     @Override
     public BigDecimal getHomeScore() {
-        if (feedDTO != null && feedDTO.getHomeScore() != null)
+        if (feedDTO != null && feedDTO.getHomeScore() != null) {
             return feedDTO.getHomeScore();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getHomeScore();
+        }
         return null;
     }
 
     @Override
     public BigDecimal getAwayScore() {
-        if (feedDTO != null && feedDTO.getAwayScore() != null)
+        if (feedDTO != null && feedDTO.getAwayScore() != null) {
             return feedDTO.getAwayScore();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getAwayScore();
+        }
         return null;
     }
 
     @Override
     public List<PeriodScoreDTO> getPeriodScores() {
-        if (feedDTO != null && feedDTO.getPeriodScores() != null)
+        if (feedDTO != null && feedDTO.getPeriodScores() != null) {
             return feedDTO.getPeriodScores();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getPeriodScores();
+        }
         return null;
     }
 
     @Override
     public EventClock getEventClock() {
-        if (feedDTO != null && feedDTO.getEventClock() != null)
+        if (feedDTO != null && feedDTO.getEventClock() != null) {
             return feedDTO.getEventClock();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getEventClock();
+        }
         return null;
     }
 
     @Override
     public List<EventResult> getEventResults() {
-        if (feedDTO != null && feedDTO.getEventResults() != null)
+        if (feedDTO != null && feedDTO.getEventResults() != null) {
             return feedDTO.getEventResults();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getEventResults();
+        }
         return null;
     }
 
     @Override
     public SportEventStatisticsDTO getSportEventStatisticsDTO() {
-        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null)
+        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
             return feedDTO.getSportEventStatisticsDTO();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getSportEventStatisticsDTO();
+        }
         return null;
     }
 
     @Override
     public Map<String, Object> getProperties() {
-        if (feedDTO != null && feedDTO.getProperties() != null)
+        if (feedDTO != null && feedDTO.getProperties() != null) {
             return feedDTO.getProperties();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getProperties();
+        }
         return null;
     }
 
     @Override
     public Integer getHomePenaltyScore() {
-        if (feedDTO != null && feedDTO.getHomePenaltyScore() != null)
+        if (feedDTO != null && feedDTO.getHomePenaltyScore() != null) {
             return feedDTO.getHomePenaltyScore();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getHomePenaltyScore();
+        }
         return null;
     }
 
     @Override
     public Integer getAwayPenaltyScore() {
-        if (feedDTO != null && feedDTO.getAwayPenaltyScore() != null)
+        if (feedDTO != null && feedDTO.getAwayPenaltyScore() != null) {
             return feedDTO.getAwayPenaltyScore();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.getAwayPenaltyScore();
+        }
         return null;
     }
 
     @Override
     public Map<String, Object> toKeyValueStore() {
-        if (feedDTO != null && feedDTO.toKeyValueStore() != null)
+        if (feedDTO != null && feedDTO.toKeyValueStore() != null) {
             return feedDTO.toKeyValueStore();
-        if (sapiDTO != null)
+        }
+        if (sapiDTO != null) {
             return sapiDTO.toKeyValueStore();
+        }
         return null;
     }
 }

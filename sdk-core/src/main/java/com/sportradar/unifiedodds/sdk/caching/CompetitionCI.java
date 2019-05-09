@@ -56,11 +56,9 @@ public interface CompetitionCI extends SportEventCI {
     SportEventConditionsCI getConditions(List<Locale> locales);
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
-    SportEventStatusDTO getSportEventStatusDTO();
+    void fetchSportEventStatus();
 
     /**
      * Method that gets triggered when the associated event gets booked trough the {@link com.sportradar.unifiedodds.sdk.BookingManager}
