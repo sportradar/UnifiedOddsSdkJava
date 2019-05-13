@@ -40,9 +40,7 @@ abstract class OutcomeImpl implements Outcome {
      * @return - the outcome id
      */
     @Override
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
     /**
      * Returns the outcome name

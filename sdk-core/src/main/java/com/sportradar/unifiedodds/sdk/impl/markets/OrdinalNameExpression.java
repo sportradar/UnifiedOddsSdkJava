@@ -27,16 +27,24 @@ public class OrdinalNameExpression implements NameExpression {
     @Override
     public String buildName(Locale locale) {
         // TODO maybe we should "cache" RuleBasedNumberFormat objects
-        RuleBasedNumberFormat nf = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
         int intValue = operand.getIntValue();
 
-        // if the ordinal rule cannot be found, we return the int value in 'ordinal format: 3. instead of 3rd
+        // first check Ordinal, then Spellout
+        RuleBasedNumberFormat nf = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.ORDINAL);
         String ordinalRule = getOrdinalRuleName(nf);
-        if(ordinalRule == null) {
-            return intValue + ".";
+        if(ordinalRule == null)
+        {
+            nf = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
+            ordinalRule = getSpelloutRuleName(nf);
+
+            // if the ordinal rule cannot be found, we return the int value in 'ordinal format: 3. instead of 3rd
+            if(ordinalRule == null) {
+                return intValue + ".";
+            }
         }
 
-        return nf.format(intValue, ordinalRule);
+        String result = nf.format(intValue, ordinalRule);
+        return result;
     }
 
     /**
@@ -47,7 +55,7 @@ public class OrdinalNameExpression implements NameExpression {
      * @param rbnf The RuleBasedNumberFormat from where we will try to extract the rule name.
      * @return The rule name for "ordinal spell out".
      */
-    private static String getOrdinalRuleName(final RuleBasedNumberFormat rbnf) {
+    private static String getSpelloutRuleName(final RuleBasedNumberFormat rbnf) {
         List<String> l = Arrays.asList(rbnf.getRuleSetNames());
         if (l.contains("%spellout-ordinal")) {
             return "%spellout-ordinal";
@@ -60,14 +68,27 @@ public class OrdinalNameExpression implements NameExpression {
                 }
             }
         }
-
         return null;
+    }
 
-//        if(l.contains("%spellout-numbering")) {
-//            return "%spellout-numbering";
-//        }
-//
-//        throw new UnsupportedOperationException("The locale " + rbnf.getLocale(ULocale.ACTUAL_LOCALE)
-//                + " doesn't supports ordinal spelling.");
+    /**
+     * Try to extract the rule name for "expand ordinal" from the given RuleBasedNumberFormat.
+     * The rule name is locale sensitive, but usually starts with "%digits-ordinal".
+     * (the reason for this check is that not all the locales have the same "%digits-ordinal" rule)
+     *
+     * @param rbnf The RuleBasedNumberFormat from where we will try to extract the rule name.
+     * @return The rule name for "ordinal spell out".
+     */
+    private static String getOrdinalRuleName(final RuleBasedNumberFormat rbnf) {
+        List<String> l = Arrays.asList(rbnf.getRuleSetNames());
+        if (l.contains("%digits-ordinal")) {
+            return "%digits-ordinal";
+        }
+        for (String string : l) {
+            if (string.startsWith("%digits-ordinal")) {
+                return string;
+            }
+        }
+        return null;
     }
 }
