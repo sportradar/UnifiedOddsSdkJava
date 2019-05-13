@@ -355,8 +355,11 @@ public class DataRouterImpl implements DataRouter {
     private Map<HomeAway, String> provideHomeAway(SAPISportEvent se) {
         Preconditions.checkNotNull(se);
 
-        if (se.getCompetitors() == null ||
-                (se.getCompetitors() != null && se.getCompetitors().getCompetitor() != null && se.getCompetitors().getCompetitor().size() != 2)) {
+        if (se.getCompetitors() == null) {
+            return null;
+        }
+
+        if (se.getCompetitors().getCompetitor() != null && se.getCompetitors().getCompetitor().size() != 2) {
             return null;
         }
 

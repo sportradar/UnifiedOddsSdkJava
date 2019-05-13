@@ -19,7 +19,10 @@ import com.sportradar.unifiedodds.sdk.caching.StageCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
+import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -119,6 +122,9 @@ class TournamentStageCIImpl implements StageCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
+        }
+        else{
+            this.sportEventNames.put(dataLocale, "");
         }
 
         this.categoryId = URN.parse(endpointData.getCategory().getId());
@@ -307,24 +313,10 @@ class TournamentStageCIImpl implements StageCI {
     }
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO() {
-        // no sport event status data
-        return null;
-    }
-
-    /**
-     * Get the event status
-     *
-     * @return the event status
-     */
-    @Override
-    public EventStatus getEventStatus() {
-        return null;
+    public void fetchSportEventStatus() {
     }
 
     /**
@@ -434,6 +426,9 @@ class TournamentStageCIImpl implements StageCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
         }
+        else{
+            this.sportEventNames.put(dataLocale, "");
+        }
 
         if (endpointData.getCategory() != null) {
             this.categoryId = URN.parse(endpointData.getCategory().getId());
@@ -475,8 +470,8 @@ class TournamentStageCIImpl implements StageCI {
             }
 
             logger.debug("Fetching missing stage tournament data for id='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

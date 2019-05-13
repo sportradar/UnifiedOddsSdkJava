@@ -5,8 +5,10 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
+import com.sportradar.utils.URN;
 
 import java.util.*;
 
@@ -34,6 +36,11 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      * The name of the group associated with the current round
      */
     private String group;
+
+    /**
+     * The id of the group associated with the current round
+     */
+    private URN groupId;
 
     /**
      * The id of the other match
@@ -92,6 +99,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
 
         type = round.getType();
         group = round.getGroup();
+        groupId = Strings.isNullOrEmpty(round.getGroupId()) ? null : URN.parse(round.getGroupId());
         otherMatchId = round.getOtherMatchId();
         number = round.getNumber();
         cupRoundMatches = round.getCupRoundMatches();
@@ -100,6 +108,9 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
 
         if (round.getName() != null) {
             names.put(locale, round.getName());
+        }
+        else{
+            this.names.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
@@ -125,6 +136,16 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     @Override
     public String getGroup() {
         return group;
+    }
+
+    /**
+     * Returns the id of the group associated with the current round
+     *
+     * @return - the id of the group associated with the current round
+     */
+    @Override
+    public URN getGroupId() {
+        return groupId;
     }
 
     /**
@@ -221,6 +242,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
                 ", phaseOrGroupLongNames=" + phaseOrGroupLongNames +
                 ", type='" + type + '\'' +
                 ", group='" + group + '\'' +
+                ", groupId='" + groupId + '\'' +
                 ", otherMatchId='" + otherMatchId + '\'' +
                 ", number=" + number +
                 ", cupRoundMatches=" + cupRoundMatches +

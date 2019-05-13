@@ -9,7 +9,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
-import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
@@ -57,17 +56,9 @@ public interface CompetitionCI extends SportEventCI {
     SportEventConditionsCI getConditions(List<Locale> locales);
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
-    SportEventStatusDTO getSportEventStatusDTO();
-
-    /**
-     * Get the event status
-     * @return the event status
-     */
-    EventStatus getEventStatus();
+    void fetchSportEventStatus();
 
     /**
      * Method that gets triggered when the associated event gets booked trough the {@link com.sportradar.unifiedodds.sdk.BookingManager}

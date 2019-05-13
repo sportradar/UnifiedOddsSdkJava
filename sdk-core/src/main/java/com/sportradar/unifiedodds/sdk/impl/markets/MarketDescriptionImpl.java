@@ -10,10 +10,17 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
-import com.sportradar.unifiedodds.sdk.entities.markets.*;
+import com.sportradar.unifiedodds.sdk.entities.markets.MarketAttribute;
+import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
+import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
+import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
+import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.FREETEXT_VARIANT_VALUE;
 import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE;
@@ -43,25 +50,25 @@ public class MarketDescriptionImpl implements MarketDescription {
         id = cachedItem.getId();
         outcomeType = cachedItem.getOutcomeType();
         groups = cachedItem.getGroups();
-        names = ImmutableMap.copyOf(locales.stream()
-                .collect(Collectors.toMap(k -> k, cachedItem::getName)));
+        names = locales.stream()
+                .collect(ImmutableMap.toImmutableMap(k -> k, cachedItem::getName));
 
-        descriptions = ImmutableMap.copyOf(locales.stream()
+        descriptions = locales.stream()
                 .filter(l -> cachedItem.getCachedLocales().contains(l))
                 .filter(l -> cachedItem.getDescription(l) != null)
-                .collect(Collectors.toMap(k -> k, cachedItem::getDescription)));
+                .collect(ImmutableMap.toImmutableMap(k -> k, cachedItem::getDescription));
 
         outcomes = buildOutcomes(cachedItem.getOutcomes(), locales);
 
         specifiers = cachedItem.getSpecifiers() == null ? null :
-                ImmutableList.copyOf(cachedItem.getSpecifiers().stream()
-                        .map(SpecifierImpl::new).collect(Collectors.toList()));
+                cachedItem.getSpecifiers().stream()
+                        .map(SpecifierImpl::new).collect(ImmutableList.toImmutableList());
 
         staticMappingsData = cachedItem.getMappings();
 
         attributes = cachedItem.getAttributes() == null ? null :
-                ImmutableList.copyOf(cachedItem.getAttributes().stream()
-                        .map(MarketAttributeImpl::new).collect(Collectors.toList()));
+                cachedItem.getAttributes().stream()
+                        .map(MarketAttributeImpl::new).collect(ImmutableList.toImmutableList());
     }
 
     @Override
@@ -98,8 +105,8 @@ public class MarketDescriptionImpl implements MarketDescription {
         if (!mappingsBuilt) {
             mappingsBuilt = true;
             mappings = staticMappingsData == null ? null :
-                    ImmutableList.copyOf(staticMappingsData.stream()
-                            .map(MarketMappingDataImpl::new).collect(Collectors.toList()));
+                    staticMappingsData.stream()
+                            .map(MarketMappingDataImpl::new).collect(ImmutableList.toImmutableList());
         }
         return mappings;
     }
@@ -155,7 +162,7 @@ public class MarketDescriptionImpl implements MarketDescription {
 
     private static List<OutcomeDescription> buildOutcomes(List<MarketOutcomeCI> outcomeCis, List<Locale> locales) {
         return outcomeCis == null ? Collections.emptyList() :
-                ImmutableList.copyOf(outcomeCis.stream()
-                        .map(o -> new OutcomeDescriptionImpl(o, locales)).collect(Collectors.toList()));
+                outcomeCis.stream()
+                        .map(o -> new OutcomeDescriptionImpl(o, locales)).collect(ImmutableList.toImmutableList());
     }
 }

@@ -248,8 +248,8 @@ public class LotteryCIImpl implements LotteryCI {
             }
 
             logger.debug("Fetching missing lottery data for id='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

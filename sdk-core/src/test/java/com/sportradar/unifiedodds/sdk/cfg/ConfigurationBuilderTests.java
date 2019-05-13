@@ -36,18 +36,21 @@ public class ConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "t-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
         Assert.assertEquals(cfg.getAPIHost(), "api-host");
-        Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
-        Assert.assertEquals(cfg.getMessagingUsername(), null);
-        Assert.assertEquals(cfg.getMessagingPassword(), null);
+        Assert.assertNull(cfg.getMessagingVirtualHost());
+        Assert.assertNull(cfg.getMessagingUsername());
+        Assert.assertNull(cfg.getMessagingPassword());
         Assert.assertEquals(cfg.getPort(), 7878);
-        Assert.assertEquals(cfg.getUseMessagingSsl(), true);
-        Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertTrue(cfg.getUseMessagingSsl());
+        Assert.assertTrue(cfg.getUseApiSsl());
 
         Assert.assertEquals(cfg.getExceptionHandlingStrategy(), ExceptionHandlingStrategy.Throw);
         Assert.assertEquals(cfg.getDefaultLocale(), Locale.ITALIAN);
-        Assert.assertTrue(cfg.getSdkNodeId() == -99);
+        Assert.assertEquals((int) cfg.getSdkNodeId(), -99);
         Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(Arrays.asList(5, 6, 7)));
         Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(Arrays.asList(Locale.CHINESE, Locale.FRENCH, Locale.ITALIAN)));
+        Assert.assertSame(cfg.getDesiredLocales().get(0), Locale.ITALIAN);
+        Assert.assertSame(cfg.getDesiredLocales().get(1), Locale.CHINESE);
+        Assert.assertSame(cfg.getDesiredLocales().get(2), Locale.FRENCH);
 
         Assert.assertEquals(cfg.getMaxRecoveryExecutionMinutes(), 30);
         Assert.assertEquals(cfg.getLongestInactivityInterval(), 25);
@@ -62,16 +65,16 @@ public class ConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "t-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
         Assert.assertEquals(cfg.getAPIHost(), "api-host");
-        Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
-        Assert.assertEquals(cfg.getMessagingUsername(), null);
-        Assert.assertEquals(cfg.getMessagingPassword(), null);
+        Assert.assertNull(cfg.getMessagingVirtualHost());
+        Assert.assertNull(cfg.getMessagingUsername());
+        Assert.assertNull(cfg.getMessagingPassword());
         Assert.assertEquals(cfg.getPort(), 7878);
-        Assert.assertEquals(cfg.getUseMessagingSsl(), true);
-        Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertTrue(cfg.getUseMessagingSsl());
+        Assert.assertTrue(cfg.getUseApiSsl());
 
         Assert.assertEquals(cfg.getExceptionHandlingStrategy(), SDKPropertiesReaderUtil.EXCEPTION_HANDLING);
         Assert.assertEquals(cfg.getDefaultLocale(), SDKPropertiesReaderUtil.DEFAULT_LOCALE);
-        Assert.assertTrue(cfg.getSdkNodeId() == SDKPropertiesReaderUtil.SDK_NODE_ID);
+        Assert.assertEquals((int) cfg.getSdkNodeId(), SDKPropertiesReaderUtil.SDK_NODE_ID);
         Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS));
         Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES));
 
@@ -88,16 +91,16 @@ public class ConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "t-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
         Assert.assertEquals(cfg.getAPIHost(), "api-host");
-        Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
-        Assert.assertEquals(cfg.getMessagingUsername(), null);
-        Assert.assertEquals(cfg.getMessagingPassword(), null);
+        Assert.assertNull(cfg.getMessagingVirtualHost());
+        Assert.assertNull(cfg.getMessagingUsername());
+        Assert.assertNull(cfg.getMessagingPassword());
         Assert.assertEquals(cfg.getPort(), 7878);
-        Assert.assertEquals(cfg.getUseMessagingSsl(), true);
-        Assert.assertEquals(cfg.getUseApiSsl(), true);
+        Assert.assertTrue(cfg.getUseMessagingSsl());
+        Assert.assertTrue(cfg.getUseApiSsl());
 
         Assert.assertEquals(cfg.getExceptionHandlingStrategy(), SDKPropertiesReaderUtil.EXCEPTION_HANDLING);
         Assert.assertEquals(cfg.getDefaultLocale(), SDKPropertiesReaderUtil.DEFAULT_LOCALE);
-        Assert.assertTrue(cfg.getSdkNodeId() == SDKPropertiesReaderUtil.SDK_NODE_ID);
+        Assert.assertEquals((int) cfg.getSdkNodeId(), SDKPropertiesReaderUtil.SDK_NODE_ID);
         Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS));
         Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES));
 

@@ -9,10 +9,7 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The internal SDK configuration
@@ -175,7 +172,7 @@ public class SDKInternalConfiguration {
      */
     public List<Locale> getDesiredLocales() {
         if (!desiredLocales.contains(defaultLocale))
-            desiredLocales.add(defaultLocale);
+            desiredLocales.add(0, defaultLocale);
         return desiredLocales;
     }
 
@@ -291,5 +288,35 @@ public class SDKInternalConfiguration {
         if (isReplaySession) {
             apiHost = newApiHost;
         }
+    }
+
+    @Override
+    public String toString() {
+        String obfuscatedToken = String.format("%s***%s", accessToken.substring(0, 3), accessToken.substring(accessToken.length()-3));
+
+        return new StringJoiner(", ", SDKInternalConfiguration.class.getSimpleName() + "[", "]")
+                .add("accessToken='" + obfuscatedToken + "'")
+                .add("defaultLocale=" + defaultLocale)
+                .add("desiredLocales=" + desiredLocales)
+                .add("host='" + host + "'")
+                .add("inactivitySeconds=" + inactivitySeconds)
+                .add("maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes)
+                .add("useMessagingSsl=" + useMessagingSsl)
+                .add("useApiSsl=" + useApiSsl)
+                .add("port=" + port)
+                .add("isReplaySession=" + isReplaySession)
+                .add("messagingUsername='" + messagingUsername + "'")
+                .add("messagingPassword='" + messagingPassword + "'")
+                .add("exceptionHandlingStrategy=" + exceptionHandlingStrategy)
+                .add("sdkNodeId=" + sdkNodeId)
+                .add("cleanTrafficLogEntries=" + cleanTrafficLogEntries)
+                .add("httpClientTimeout=" + httpClientTimeout)
+                .add("disabledProducers=" + disabledProducers)
+                .add("simpleVariantCaching=" + simpleVariantCaching)
+                .add("schedulerTasksToSkip=" + schedulerTasksToSkip)
+                .add("messagingVirtualHost='" + messagingVirtualHost + "'")
+                .add("apiHost='" + apiHost + "'")
+                .add("selectedEnvironment=" + selectedEnvironment)
+                .toString();
     }
 }

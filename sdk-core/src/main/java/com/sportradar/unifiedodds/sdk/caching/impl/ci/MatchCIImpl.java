@@ -20,7 +20,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -125,16 +124,6 @@ class MatchCIImpl implements MatchCI {
      * A {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
      */
     private SportEventConditionsCI conditions;
-
-    /**
-     * A {@link SportEventStatusDTO} instance providing the current event status information
-     */
-    private SportEventStatusDTO sportEventStatusDTO;
-
-    /**
-     * A {@link EventStatus} representing event status
-     */
-    private EventStatus eventStatus;
 
     /**
      * A {@link List} indicating which fixture translations were already fetched
@@ -265,6 +254,8 @@ class MatchCIImpl implements MatchCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
+        }else{
+            this.sportEventNames.put(dataLocale, "");
         }
     }
 
@@ -489,25 +480,11 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO() {
+    public void fetchSportEventStatus() {
         requestMissingSummaryData(Collections.singletonList(defaultLocale), true);
-
-        return sportEventStatusDTO;
-    }
-
-    /**
-     * Get the event status
-     *
-     * @return the event status
-     */
-    @Override
-    public EventStatus getEventStatus() {
-        return eventStatus;
     }
 
     /**
@@ -643,10 +620,6 @@ class MatchCIImpl implements MatchCI {
             internalMerge((SAPISportEventChildren.SAPISportEvent) endpointData, dataLocale);
         } else if (endpointData instanceof SAPIMatchTimelineEndpoint) {
             internalMerge((SAPIMatchTimelineEndpoint) endpointData, dataLocale);
-        } else if (endpointData instanceof SportEventStatusDTO) {
-            internalMerge((SportEventStatusDTO) endpointData);
-        } else if (endpointData instanceof MatchStatus) {
-            internalMerge((MatchStatus) endpointData);
         }
     }
 
@@ -715,8 +688,8 @@ class MatchCIImpl implements MatchCI {
             }
 
             logger.debug("Fetching fixtures for eventId='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -754,8 +727,8 @@ class MatchCIImpl implements MatchCI {
             }
 
             logger.debug("Fetching summary for eventId='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -924,33 +897,8 @@ class MatchCIImpl implements MatchCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
         }
-    }
-
-    /**
-     * Merges the current instance with the {@link SportEventStatusDTO}
-     *
-     * @param statusDTO the data to be merged
-     */
-    private void internalMerge(SportEventStatusDTO statusDTO) {
-        Preconditions.checkNotNull(statusDTO);
-
-        sportEventStatusDTO = statusDTO;
-
-        if(statusDTO.getStatus() != null){
-            eventStatus = statusDTO.getStatus();
-        }
-    }
-
-    /**
-     * Merges the current instance with the {@link MatchStatus}
-     *
-     * @param matchStatus the data to be merged
-     */
-    private void internalMerge(MatchStatus matchStatus) {
-        Preconditions.checkNotNull(matchStatus);
-
-        if(matchStatus.getStatus() != null){
-            eventStatus = matchStatus.getStatus();
+        else{
+            this.sportEventNames.put(dataLocale, "");
         }
     }
 

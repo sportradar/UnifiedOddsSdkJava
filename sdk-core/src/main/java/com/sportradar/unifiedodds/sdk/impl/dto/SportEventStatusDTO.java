@@ -108,11 +108,13 @@ public class SportEventStatusDTO {
         this.homeScore = null;
         this.awayScore = null;
 
-        this.winnerId = Strings.isNullOrEmpty(sportEventStatus.getWinnerId()) ? null : URN.parse(sportEventStatus.getWinnerId());
+        this.winnerId = Strings.isNullOrEmpty(sportEventStatus.getWinnerId())
+                ? null
+                : URN.parse(sportEventStatus.getWinnerId());
 
-        eventResults = sportEventStatus.getResults() == null ? null :
-                sportEventStatus.getResults().getCompetitor()
-                        .stream().map(EventResultImpl::new).collect(Collectors.toList());
+        eventResults = sportEventStatus.getResults() == null
+                ? null
+                : sportEventStatus.getResults().getCompetitor().stream().map(EventResultImpl::new).collect(Collectors.toList());
 
         sportEventStatisticsDTO = null;
         eventClock = null;
@@ -138,7 +140,7 @@ public class SportEventStatusDTO {
             this.status = EventStatus.valueOfApiStatusId(sportEventStatus.getStatusCode());
         }
         else {
-            Integer statusId;
+            int statusId;
             try {
                 statusId = Integer.parseInt(sportEventStatus.getStatus());
             } catch (Exception ex) {
@@ -170,8 +172,7 @@ public class SportEventStatusDTO {
         }*/
 
         if (sportEventStatus.getPeriodScores() != null) {
-            sportEventStatus.getPeriodScores().getPeriodScore()
-                    .forEach(p -> this.addPeriodScore(p));
+            sportEventStatus.getPeriodScores().getPeriodScore().forEach(this::addPeriodScore);
         }
 
         sportEventStatisticsDTO = statistics == null ? null : new SportEventStatisticsDTO(statistics, homeAwayMap);
@@ -246,8 +247,7 @@ public class SportEventStatusDTO {
                         seStatus.getClock().isStopped());
 
         if (seStatus.getPeriodScores() != null) {
-            seStatus.getPeriodScores().getPeriodScore()
-                    .forEach(p -> this.addPeriodScore(p));
+            seStatus.getPeriodScores().getPeriodScore().forEach(this::addPeriodScore);
         }
 
         eventResults = seStatus.getResults() == null ? null :
@@ -288,9 +288,7 @@ public class SportEventStatusDTO {
      *
      * @return - a new {@link SportEventStatusDTO} which is in a "Not started" state
      */
-    public static SportEventStatusDTO getNotStarted(){
-        return new SportEventStatusDTO(EventStatus.NotStarted);
-    }
+    public static SportEventStatusDTO getNotStarted(){ return new SportEventStatusDTO(EventStatus.NotStarted); }
 
     /**
      * Returns the sport event winner identifier
@@ -392,7 +390,7 @@ public class SportEventStatusDTO {
      * which aren't specifically exposed
      */
     public Map<String, Object> getProperties() {
-        return properties == null ? null : ImmutableMap.copyOf(properties);
+        return ImmutableMap.copyOf(properties);
     }
 
     /**

@@ -12,7 +12,6 @@ import com.sportradar.utils.URN;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Represents a sport event referee
@@ -45,9 +44,9 @@ public class RefereeImpl implements Referee {
 
         this.id = refereeCI.getId();
         this.name = refereeCI.getName();
-        this.nationalities = ImmutableMap.copyOf(locales.stream()
+        this.nationalities = locales.stream()
                 .filter(l -> refereeCI.getNationality(l) != null)
-                .collect(Collectors.toMap(k -> k, refereeCI::getNationality)));
+                .collect(ImmutableMap.toImmutableMap(k -> k, refereeCI::getNationality));
     }
 
 

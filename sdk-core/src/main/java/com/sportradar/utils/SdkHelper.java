@@ -93,10 +93,6 @@ public final class SdkHelper {
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
 
-                if(newReferenceId==null) {
-                    continue;
-                }
-
                 URN competitorId = URN.parse(competitor.getId());
                 if(competitorsReferences.containsKey(competitorId)) {
                     ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
@@ -134,10 +130,6 @@ public final class SdkHelper {
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
 
-                if(newReferenceId==null) {
-                    continue;
-                }
-
                 URN competitorId = URN.parse(competitor.getId());
                 if(competitorsReferences.containsKey(competitorId)) {
                     ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
@@ -158,16 +150,20 @@ public final class SdkHelper {
         {
             defaultLocale = supportedLocales.iterator().next();
         }
-        if (!supportedLocales.contains(defaultLocale))
+        if (!supportedLocales.contains(defaultLocale) || supportedLocales.iterator().next() != defaultLocale)
         {
-            supportedLocales.add(defaultLocale);
+            List<Locale> locales = new ArrayList<>();
+            locales.add(defaultLocale);
+            locales.addAll(supportedLocales);
+            supportedLocales.clear();
+            supportedLocales.addAll(locales);
         }
 
         if (defaultLocale == null)
         {
             throw new InvalidParameterException("Missing default locale");
         }
-        if (supportedLocales == null || supportedLocales.isEmpty())
+        if (supportedLocales.isEmpty())
         {
             throw new InvalidParameterException("Missing supported locales");
         }

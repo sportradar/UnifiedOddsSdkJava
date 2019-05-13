@@ -21,8 +21,10 @@ import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.entities.*;
-import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
+import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Reference;
+import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -119,16 +121,6 @@ class RaceStageCIImpl implements StageCI {
     private List<URN> childStagesIds;
 
     /**
-     * A {@link SportEventStatusDTO} instance providing the current event status information
-     */
-    private SportEventStatusDTO sportEventStatusDTO;
-
-    /**
-     * A {@link EventStatus} representing event status
-     */
-    private EventStatus eventStatus;
-
-    /**
      * A {@link Map} storing the available sport event names
      */
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
@@ -210,6 +202,9 @@ class RaceStageCIImpl implements StageCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
         }
+        else{
+            this.sportEventNames.put(defaultLocale, "");
+        }
 
         this.stageType = StageType.mapFromApiValue(endpointData.getType());
 
@@ -264,6 +259,9 @@ class RaceStageCIImpl implements StageCI {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
+        }
+        else{
+            this.sportEventNames.put(defaultLocale, "");
         }
 
         this.scheduled = endpointData.getScheduled() == null ? null :
@@ -477,26 +475,11 @@ class RaceStageCIImpl implements StageCI {
     }
 
     /**
-     * Returns a {@link SportEventStatusDTO} instance providing the current event status information
-     *
-     * @return a {@link SportEventStatusDTO} instance providing the current event status information
+     * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public SportEventStatusDTO getSportEventStatusDTO() {
-
+    public void fetchSportEventStatus() {
         requestMissingSummaryData(Collections.singletonList(defaultLocale), true);
-
-        return sportEventStatusDTO;
-    }
-
-    /**
-     * Get the event status
-     *
-     * @return the event status
-     */
-    @Override
-    public EventStatus getEventStatus() {
-        return eventStatus;
     }
 
     /**
@@ -553,10 +536,6 @@ class RaceStageCIImpl implements StageCI {
             internalMerge((SAPIStageSummaryEndpoint) endpointData, dataLocale);
         } else if (endpointData instanceof SAPISportEventChildren.SAPISportEvent) {
             internalMerge(((SAPISportEventChildren.SAPISportEvent) endpointData), dataLocale);
-        } else if (endpointData instanceof SportEventStatusDTO) {
-            internalMerge((SportEventStatusDTO) endpointData);
-        } else if (endpointData instanceof CompetitionStatus) {
-            internalMerge((CompetitionStatus) endpointData);
         }
     }
 
@@ -698,6 +677,9 @@ class RaceStageCIImpl implements StageCI {
         if (sportEvent.getName() != null) {
             this.sportEventNames.put(locale, sportEvent.getName());
         }
+        else{
+            this.sportEventNames.put(locale, "");
+        }
 
         if (sportEvent.getType() != null) {
             this.stageType = StageType.mapFromApiValue(sportEvent.getType());
@@ -720,37 +702,11 @@ class RaceStageCIImpl implements StageCI {
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
         }
-
+        else{
+            this.sportEventNames.put(dataLocale, "");
+        }
         if (endpointData.getType() != null) {
             this.stageType = StageType.mapFromApiValue(endpointData.getType());
-        }
-    }
-
-    /**
-     * Merges the current instance with the {@link SportEventStatusDTO}
-     *
-     * @param statusDTO the data to be merged
-     */
-    private void internalMerge(SportEventStatusDTO statusDTO) {
-        Preconditions.checkNotNull(statusDTO);
-
-        sportEventStatusDTO = statusDTO;
-
-        if(statusDTO.getStatus() != null){
-            eventStatus = statusDTO.getStatus();
-        }
-    }
-
-    /**
-     * Merges the current instance with the {@link SportEventStatusDTO}
-     *
-     * @param status the data to be merged
-     */
-    private void internalMerge(CompetitionStatus status) {
-        Preconditions.checkNotNull(status);
-
-        if(status.getStatus() != null){
-            eventStatus = status.getStatus();
         }
     }
 
@@ -776,8 +732,8 @@ class RaceStageCIImpl implements StageCI {
             }
 
             logger.debug("Fetching stage fixtures for eventId='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -815,8 +771,8 @@ class RaceStageCIImpl implements StageCI {
             }
 
             logger.debug("Fetching stage summary for eventId='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

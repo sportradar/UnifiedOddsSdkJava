@@ -287,27 +287,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public EventStatus getEventStatus() {
-        StageCI cacheItem = loadStageCI();
-
-        if (cacheItem == null) {
-            handleException("getEventStatus", null);
-            return null;
-        }
-
-        EventStatus eventStatus = cacheItem.getEventStatus();
-
-        if(eventStatus == null)
-        {
-            if(status == null)
-            {
-                status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class, true);
-            }
-            if(status != null)
-            {
-                cacheItem.merge(status, null);
-            }
-        }
-        return cacheItem.getEventStatus();
+        return getStatus().getStatus();
     }
 
     /**

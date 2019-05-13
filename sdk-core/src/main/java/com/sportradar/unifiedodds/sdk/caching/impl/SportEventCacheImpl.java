@@ -18,7 +18,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.MappingTypeProvider;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -555,18 +554,5 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
 
         return mappingTypeProvider.getMappingType(id)
                 .orElseThrow(() -> new IllegalCacheStateException(String.format("Error providing mapping type for [%s]", id)));
-    }
-
-    @Override
-    public void onSportEventStatusFetched(URN id, SportEventStatusDTO statusDTO, String source) {
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(statusDTO);
-
-        SportEventCI ifPresent = sportEventsCache.getIfPresent(id);
-
-        if (ifPresent != null) {
-            ifPresent.merge(statusDTO, null);
-        }
-        // else this will be obtained on getEventStatus from SportEventStatusCache
     }
 }

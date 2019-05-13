@@ -131,27 +131,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public EventStatus getEventStatus() {
-        MatchCI matchCI = loadMatchCI();
-
-        if (matchCI == null) {
-            handleException("getEventStatus", null);
-            return null;
-        }
-
-        EventStatus eventStatus = matchCI.getEventStatus();
-
-        if(eventStatus == null)
-        {
-            if(status == null)
-            {
-                status = sportEventStatusFactory.buildSportEventStatus(id, MatchStatus.class, true);
-            }
-            if(status != null)
-            {
-                matchCI.merge(status, null);
-            }
-        }
-        return matchCI.getEventStatus();
+        return getStatus().getStatus();
     }
 
     /**

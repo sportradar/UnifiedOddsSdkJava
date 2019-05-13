@@ -51,6 +51,11 @@ public class URN {
     private static final Pattern REGEX_PATTERN = Pattern.compile(REGEX_STRING);
 
     /**
+     * toString value used to lower mem usage
+     */
+    private String toStringCache;
+
+    /**
      * Defines supported resource types
      */
     private static final ImmutableMap<String, ResourceTypeGroup> TYPES = new ImmutableMap.Builder<String, ResourceTypeGroup>().
@@ -77,17 +82,17 @@ public class URN {
     /**
      * Prefix of the current instance
      */
-    private String prefix;
+    private final String prefix;
 
     /**
      * Type of the current instance
      */
-    private String type;
+    private final String type;
 
     /**
      * Id of the current instance
      */
-    private long id;
+    private final long id;
 
     /**
      * The corresponding {@link ResourceTypeGroup} of the current instance
@@ -132,7 +137,7 @@ public class URN {
                     matcher.group(TYPE_GROUP_NAME),
                     Long.valueOf(matcher.group(ID_GROUP_NAME))
             );
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.warn("URN could not be parsed [{}] ", urnString, e);
             throw new UnsupportedUrnFormatException("URN could not be parsed [" + urnString + "] ", e);
         }
@@ -210,7 +215,9 @@ public class URN {
      */
     @Override
     public String toString() {
-        return prefix + ":" + type + ":" + id;
+        if (toStringCache == null)
+            toStringCache = prefix + ":" + type + ":" + id;
+        return toStringCache;
     }
 
     /**

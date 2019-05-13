@@ -395,8 +395,8 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
             }
 
             logger.debug("Fetching player profile for id='{}' for languages '{}'",
-                    id, String.join(", ", missingLocales.stream()
-                            .map(Locale::toString).collect(Collectors.toList())));
+                    id, missingLocales.stream()
+                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {

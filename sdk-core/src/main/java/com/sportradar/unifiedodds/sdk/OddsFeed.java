@@ -29,10 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
@@ -47,9 +45,9 @@ public class OddsFeed {
     private static final Logger logger = LoggerFactory.getLogger(OddsFeed.class);
 
     /**
-     * The injector used in this feed instance
+     * The injector used by this feed instance
      */
-    private Injector injector;
+    private final Injector injector;
 
     /**
      * The OddsFeed main configuration file
@@ -125,8 +123,8 @@ public class OddsFeed {
         logger.info("OddsFeed instance created with \n{}", config);
 
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
-
-        this.tryCreateInjector(listener, null);
+        this.injector = createSdkInjector(listener, null);
+        checkLocales();
     }
 
     /**
@@ -139,9 +137,10 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        this.oddsFeedConfiguration = config;
+        logger.info("OddsFeed instance created with \n{}", config);
 
-        this.tryCreateInjector(listener, null);
+        this.oddsFeedConfiguration = config;
+        this.injector = createSdkInjector(listener, null);
     }
 
     /**
@@ -155,9 +154,10 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        logger.info("OddsFeed instance created with \n{}", config);
 
-        this.tryCreateInjector(listener, customisableSDKModule);
+        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        this.injector = createSdkInjector(listener, customisableSDKModule);
     }
 
     /**
@@ -172,9 +172,28 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        this.oddsFeedConfiguration = config;
+        logger.info("OddsFeed instance created with \n{}", config);
 
-        this.tryCreateInjector(listener, customisableSDKModule);
+        this.oddsFeedConfiguration = config;
+        this.injector = createSdkInjector(listener, customisableSDKModule);
+    }
+
+    /**
+     * The following constructor should be used only for testing purposes
+     *
+     * @param injector a predefined injector
+     * @param config {@link SDKInternalConfiguration}, the configuration class used to configure the new feed
+     */
+    protected OddsFeed(SDKInternalConfiguration config, Injector injector) {
+        Preconditions.checkNotNull(config);
+        Preconditions.checkNotNull(injector);
+
+        logger.info("OddsFeed instance created with \n{}", config);
+
+        this.oddsFeedConfiguration = config;
+        this.injector = injector;
+
+        logger.warn("OddsFeed initialised with a provided predefined injector");
     }
 
     /**
@@ -375,6 +394,24 @@ public class OddsFeed {
         injector.getInstance(CloseableHttpClient.class).close();
         injector.getInstance(SDKTaskScheduler.class).shutdownNow();
         injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
+        injector.getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor"))).shutdownNow();
+    }
+
+    public List<Locale> getAvailableLanguages() {
+        String[] languages = "it,en,de,fr,se,es,ru,zh,ja,hr,tr,sk,sl,no,da,nl,pl,pt,cs,fi,th,hu,bg,ek,ro,et,lv,bs,sr,ml,lt,id,vi,ko,aa,ka,br,zht,ukr,aze,heb,kaz,sqi,srl".split(",");
+        return Arrays.stream(languages)
+                .sorted()
+                .map(Locale::forLanguageTag)
+                .collect(Collectors.toList());
+    }
+
+    private void checkLocales() {
+        List<Locale> availableLanguages = getAvailableLanguages();
+        List<Locale> unsupportedLocales = oddsFeedConfiguration.getDesiredLocales().stream()
+                .filter(l -> !availableLanguages.contains(l))
+                .collect(Collectors.toList());
+        if (!unsupportedLocales.isEmpty())
+            logger.warn("Unsupported locales: {}", unsupportedLocales);
     }
 
     private void initOddsFeedInstance() {
@@ -417,12 +454,8 @@ public class OddsFeed {
         feedInitialized = true;
     }
 
-    private void tryCreateInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
-        if (injector != null) {
-            return;
-        }
-
-        injector = Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
+    private Injector createSdkInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
+        return Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
     }
 
     private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, OddsFeedListener listener) {

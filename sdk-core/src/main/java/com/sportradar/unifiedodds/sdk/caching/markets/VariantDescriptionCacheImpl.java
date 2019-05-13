@@ -91,7 +91,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
             }
         } catch (Exception e) { // so the timer does not die
             logger.warn("An error occurred while periodically fetching variant descriptions for languages [{}]",
-                    locales2fetch.stream().map(Locale::toString).collect(Collectors.joining(", ")),
+                    locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")),
                     e);
         } finally {
             fetchLock.unlock();
