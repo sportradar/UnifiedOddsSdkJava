@@ -20,7 +20,7 @@ public final class DefaultAdditionalMarketMappingsProvider extends ObservableDat
     DefaultAdditionalMarketMappingsProvider(
             SDKInternalConfiguration config,
             LogHttpDataFetcher logHttpDataFetcher,
-            @Named("ApiJaxbDeserializer") Deserializer deserializer) {
+            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         super("no-op-uri", config, logHttpDataFetcher, deserializer);
     }
 

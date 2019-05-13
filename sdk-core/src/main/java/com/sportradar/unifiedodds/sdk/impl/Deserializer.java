@@ -13,4 +13,5 @@ import java.io.InputStream;
  */
 public interface Deserializer {
     Object deserialize(InputStream inStr) throws DeserializationException;
+    String serialize(Object inObj) throws DeserializationException;
 }

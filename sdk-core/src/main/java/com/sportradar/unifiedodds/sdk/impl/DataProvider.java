@@ -11,6 +11,9 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderStreamException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -93,7 +96,7 @@ public class DataProvider<TOut> {
      * @return the requested API endpoint object
      */
     public TOut getData(Locale locale, String... args) throws DataProviderException {
-        HttpData fetchedContent = fetchData(locale, args);
+        HttpData fetchedContent = fetchData(null, locale, args);
 
         return deserializeData(fetchedContent);
     }
@@ -106,11 +109,27 @@ public class DataProvider<TOut> {
      * @return the requested API endpoint object and other related information wrapped in a {@link DataWrapper} instance
      */
     public DataWrapper<TOut> getDataWithAdditionalInfo(Locale locale, String... args) throws DataProviderException {
-        HttpData fetchedContent = fetchData(locale, args);
+        HttpData fetchedContent = fetchData(null, locale, args);
 
         TOut deserializeData = deserializeData(fetchedContent);
 
         return new DataWrapper<>(deserializeData, fetchedContent.getHeaders());
+    }
+
+    /**
+     * If successful returns the requested API endpoint object
+     *
+     * @param content the content used to make POST request
+     * @return the requested API endpoint object
+     */
+    public TOut postData(Object content) throws DataProviderException {
+        try {
+            StringEntity entity = new StringEntity(deserializer.serialize(content), ContentType.APPLICATION_XML);
+            HttpData fetchedContent = fetchData(entity, null, null);
+            return deserializeData(fetchedContent);
+        } catch (DeserializationException e) {
+            throw new DataProviderException("Data serialization failed", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -124,7 +143,7 @@ public class DataProvider<TOut> {
         }
     }
 
-    private HttpData fetchData(Locale locale, String[] args) throws DataProviderException {
+    private HttpData fetchData(HttpEntity content, Locale locale, String[] args) throws DataProviderException {
         int fwArgSize = (args != null) ? (args.length + 1) : 1;
 
         String[] forwardArgs = new String[fwArgSize];
@@ -146,7 +165,9 @@ public class DataProvider<TOut> {
         HttpData fetchedContent;
         try {
             String finalUrl = uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHost + "/v1" + formattedPath;
-            fetchedContent = logHttpDataFetcher.get(finalUrl);
+            fetchedContent = content == null ?
+                    logHttpDataFetcher.get(finalUrl) :
+                    logHttpDataFetcher.post(finalUrl, content);
         } catch (CommunicationException e) {
             throw new DataProviderException("The requested data was not accessible on the provided URL", e);
         }

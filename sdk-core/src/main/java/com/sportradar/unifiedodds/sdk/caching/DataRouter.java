@@ -4,10 +4,14 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
+import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -48,4 +52,8 @@ public interface DataRouter {
     void onLotteryScheduleFetched(SAPILotterySchedule endpoint, Locale locale, CacheItem requester);
 
     void onSportEventStatusFetched(URN eventId, SportEventStatusDTO statusDTO, String source);
+
+    void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections);
+
+    void onCalculateProbabilityFetched(List<Selection> selections, CAPICalculationResponse calculation);
 }

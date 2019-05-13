@@ -22,7 +22,7 @@ public class LogHttpDataFetcher extends HttpDataFetcher {
     private final static Logger trafficLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkRestTrafficLog.class);
 
     @Inject
-    public LogHttpDataFetcher(SDKInternalConfiguration config, CloseableHttpClient httpClient, UnifiedOddsStatistics statsBean, @Named("ApiJaxbDeserializer") Deserializer apiDeserializer) {
+    public LogHttpDataFetcher(SDKInternalConfiguration config, CloseableHttpClient httpClient, UnifiedOddsStatistics statsBean, @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
         super(config, httpClient, statsBean, apiDeserializer);
     }
 

@@ -56,7 +56,7 @@ public class ReplayManager {
 
     @Inject
     ReplayManager(SDKInternalConfiguration config, SportsInfoManager sportsInfoManager, HttpHelper httpHelper,
-                  @Named("ApiJaxbDeserializer") Deserializer deserializer, LogHttpDataFetcher logHttpDataFetcher,
+                  @Named("SportsApiJaxbDeserializer") Deserializer deserializer, LogHttpDataFetcher logHttpDataFetcher,
                   SportEntityFactory sportEntityFactory) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(sportsInfoManager);
