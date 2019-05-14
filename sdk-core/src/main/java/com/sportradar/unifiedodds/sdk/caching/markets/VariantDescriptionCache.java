@@ -17,4 +17,6 @@ import java.util.Locale;
  */
 public interface VariantDescriptionCache {
     VariantDescriptionCI getVariantDescription(String id, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException;
+
+    boolean loadMarketDescriptions();
 }

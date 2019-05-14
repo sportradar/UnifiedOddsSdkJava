@@ -86,6 +86,11 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         return new MarketDescriptionImpl(marketCI, locales);
     }
 
+    @Override
+    public boolean loadMarketDescriptions() {
+        return true;
+    }
+
     private MarketDescriptionCI loadMarketDescriptorData(MarketDescriptionCI existingMarketDescriptor, int marketId, String variant, List<Locale> locales) throws IllegalCacheStateException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(variant));
@@ -93,8 +98,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
 
         try {
             for (Locale mLoc : locales) {
-                MarketDescriptions data =
-                        dataProvider.getData(mLoc, String.valueOf(marketId), variant);
+                MarketDescriptions data = dataProvider.getData(mLoc, String.valueOf(marketId), variant);
                 if (data == null || data.getMarket().size() != 1) {
                     throw new IllegalCacheStateException("Received variant market[" + marketId + " " + variant + "] response with invalid market entry count");
                 }
