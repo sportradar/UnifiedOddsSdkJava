@@ -6,8 +6,10 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
+import com.sportradar.utils.URN;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +35,7 @@ class OddsFeedRoutingKeyBuilder {
      * @param oddsFeedConfiguration - the associated feed SDK configuration instance
      * @return - a collection of session identifiers associated with a valid list of valid routing keys
      */
-    static Map<Integer, List<String>> generateKeys(Map<Integer, MessageInterest> sessionsData, SDKInternalConfiguration oddsFeedConfiguration) {
+    static Map<Integer, List<String>> generateKeys(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData, SDKInternalConfiguration oddsFeedConfiguration) {
         Preconditions.checkNotNull(sessionsData);
         Preconditions.checkArgument(!sessionsData.isEmpty());
         Preconditions.checkNotNull(oddsFeedConfiguration);
@@ -49,7 +51,7 @@ class OddsFeedRoutingKeyBuilder {
         sessionsData.forEach((k, v) -> {
             List<String> sessionRoutingKeys = new ArrayList<>();
 
-            List<String> basicRoutingKeys = v.getRoutingKeys();
+            List<String> basicRoutingKeys = getBasicRoutingKeys(v.getKey(), v.getValue());
             for (String basicRoutingKey: basicRoutingKeys) {
                 if (oddsFeedConfiguration.getSdkNodeId() != null) {
                     sessionRoutingKeys.add(basicRoutingKey + "." + oddsFeedConfiguration.getSdkNodeId() + ".#");
@@ -58,14 +60,14 @@ class OddsFeedRoutingKeyBuilder {
                     basicRoutingKey = basicRoutingKey + ".#";
                 }
 
-                if (bothLowAndHigh && v == MessageInterest.LoPrioMessagesOnly) {
+                if (bothLowAndHigh && v.getKey() == MessageInterest.LoPrioMessagesOnly) {
                     sessionRoutingKeys.add(basicRoutingKey);
                 } else {
                     sessionRoutingKeys.add(snapshotRoutingKey);
                     sessionRoutingKeys.add(basicRoutingKey);
                 }
             }
-            if (v != MessageInterest.SystemAliveMessages) {
+            if (v.getKey() != MessageInterest.SystemAliveMessages) {
                 sessionRoutingKeys.add(MessageInterest.SystemAliveMessages.getRoutingKeys().get(0));
             }
             result.put(k, sessionRoutingKeys.stream().distinct().collect(Collectors.toList()));
@@ -74,7 +76,13 @@ class OddsFeedRoutingKeyBuilder {
         return result;
     }
 
-    private static void validateInterestCombination(Map<Integer, MessageInterest> sessionsData) {
+    private static List<String> getBasicRoutingKeys(MessageInterest messageInterest, Set<URN> eventIds) {
+        return messageInterest != MessageInterest.SpecifiedMatchesOnly ?
+                messageInterest.getRoutingKeys() :
+                eventIds.stream().map(e -> String.format("#.%s:%s.%d", e.getPrefix(), e.getType(), e.getId())).collect(Collectors.toList());
+    }
+
+    private static void validateInterestCombination(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData) {
         Preconditions.checkNotNull(sessionsData);
 
         if (sessionsData.isEmpty()) {
@@ -85,13 +93,13 @@ class OddsFeedRoutingKeyBuilder {
             return;
         }
 
-        Collection<MessageInterest> allUserValues = sessionsData.values();
-        Set<MessageInterest> uniqueValues = new HashSet<>(allUserValues);
+        Collection<Entry<MessageInterest, Set<URN>>> allUserValues = sessionsData.values();
+        Set<Entry<MessageInterest, Set<URN>>> uniqueValues = new HashSet<>(allUserValues);
         if (allUserValues.size() != uniqueValues.size()) {
             throw new UnsupportedMessageInterestCombination("Session message interest must be unique per SDK instance, found duplicates. " + allUserValues);
         }
 
-        if (allUserValues.stream().anyMatch(v -> v == MessageInterest.AllMessages)) {
+        if (allUserValues.stream().anyMatch(v -> v.getKey() == MessageInterest.AllMessages)) {
             throw new UnsupportedMessageInterestCombination("The AllMessages message interest can only be used in a single session setup. " + allUserValues);
         }
 
@@ -101,23 +109,28 @@ class OddsFeedRoutingKeyBuilder {
         }
     }
 
-    private static boolean containsLowOrHigh(Map<Integer, MessageInterest> sessionsData) {
+    private static boolean containsLowOrHigh(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData) {
         Preconditions.checkNotNull(sessionsData);
-        return sessionsData.containsValue(MessageInterest.HiPrioMessagesOnly) ||
-                sessionsData.containsValue(MessageInterest.LoPrioMessagesOnly);
+        List<MessageInterest> messageInterests = sessionsData.values().stream().map(Entry::getKey).collect(Collectors.toList());
+
+        return messageInterests.contains(MessageInterest.HiPrioMessagesOnly) ||
+                messageInterests.contains(MessageInterest.LoPrioMessagesOnly);
     }
 
-    private static boolean containsMessageTypeInterest(Map<Integer, MessageInterest> sessionsData) {
+    private static boolean containsMessageTypeInterest(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData) {
         Preconditions.checkNotNull(sessionsData);
+        List<MessageInterest> messageInterests = sessionsData.values().stream().map(Entry::getKey).collect(Collectors.toList());
 
-        return sessionsData.containsValue(MessageInterest.PrematchMessagesOnly) ||
-                sessionsData.containsValue(MessageInterest.LiveMessagesOnly) ||
-                 sessionsData.containsValue(MessageInterest.VirtualSports);
+        return messageInterests.contains(MessageInterest.PrematchMessagesOnly) ||
+                messageInterests.contains(MessageInterest.LiveMessagesOnly) ||
+                messageInterests.contains(MessageInterest.VirtualSports);
     }
 
-    private static boolean haveBothLowAndHigh(Map<Integer, MessageInterest> sessionsData) {
+    private static boolean haveBothLowAndHigh(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData) {
         Preconditions.checkNotNull(sessionsData);
-        return sessionsData.containsValue(MessageInterest.LoPrioMessagesOnly) &&
-                sessionsData.containsValue(MessageInterest.HiPrioMessagesOnly);
+        List<MessageInterest> messageInterests = sessionsData.values().stream().map(Entry::getKey).collect(Collectors.toList());
+
+        return messageInterests.contains(MessageInterest.LoPrioMessagesOnly) &&
+                messageInterests.contains(MessageInterest.HiPrioMessagesOnly);
     }
 }

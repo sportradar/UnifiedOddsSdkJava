@@ -24,11 +24,13 @@ import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
+import com.sportradar.utils.URN;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -334,7 +336,7 @@ public class OddsFeed {
 
                 Map<Integer, List<String>> sessionRoutingKeys =
                         OddsFeedRoutingKeyBuilder.generateKeys(createdSessionData.stream()
-                                .collect(Collectors.toMap(Object::hashCode, v -> v.messageInterest)), oddsFeedConfiguration);
+                                .collect(Collectors.toMap(Object::hashCode, v -> new SimpleEntry<>(v.messageInterest, v.eventIds))), oddsFeedConfiguration);
 
                 try {
                     boolean aliveRoutingKeySessionPresent = createdSessionData.stream()
@@ -458,11 +460,11 @@ public class OddsFeed {
         return Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
     }
 
-    private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, OddsFeedListener listener) {
+    private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, Set<URN> eventIds, OddsFeedListener listener) {
         if (this.feedOpened){
             throw new IllegalStateException("Sessions can not be created once the feed has been opened");
         } else {
-            SessionData sessionData = new SessionData(session, oddsInterest, listener);
+            SessionData sessionData = new SessionData(session, oddsInterest, eventIds, listener);
 
             createdSessionData.add(sessionData);
         }
@@ -485,11 +487,13 @@ public class OddsFeed {
     class SessionData {
         private final OddsFeedSessionImpl session;
         private final MessageInterest messageInterest;
+        private final Set<URN> eventIds;
         private final OddsFeedListener listener;
 
-        SessionData(OddsFeedSessionImpl session, MessageInterest messageInterest, OddsFeedListener listener) {
+        SessionData(OddsFeedSessionImpl session, MessageInterest messageInterest, Set<URN> eventIds, OddsFeedListener listener) {
             this.session = session;
             this.messageInterest = messageInterest;
+            this.eventIds = eventIds;
             this.listener = listener;
         }
     }
@@ -498,6 +502,7 @@ public class OddsFeed {
         private OddsFeed oddsFeed;
         private OddsFeedListener mainOddsFeedListener;
         private MessageInterest msgInterestLevel;
+        private HashSet<URN> eventIds;
         private HashSet<GenericOddsFeedListener> specificOddsFeedListeners;
 
         OddsFeedSessionBuilderImpl(OddsFeed oddsFeed) {
@@ -537,12 +542,30 @@ public class OddsFeed {
         }
 
         @Override
+        public OddsFeedSessionBuilder setSpecificEventsOnly(Set<URN> specificEventsOnly) {
+            this.msgInterestLevel = MessageInterest.SpecifiedMatchesOnly;
+
+            if (this.eventIds == null)
+                this.eventIds = new HashSet<>();
+
+            this.eventIds.addAll(specificEventsOnly);
+
+            return this;
+        }
+
+        @Override
+        public OddsFeedSessionBuilder setSpecificEventsOnly(URN specificEventsOnly) {
+            return setSpecificEventsOnly(Collections.singleton(specificEventsOnly));
+        }
+
+        @Override
         public OddsFeedSession build() {
             // TODO @eti: handle specific event listeners
             OddsFeedSessionImpl session = injector.getInstance(OddsFeedSessionImpl.class);
-            this.oddsFeed.createSession(session, msgInterestLevel, mainOddsFeedListener);
+            this.oddsFeed.createSession(session, msgInterestLevel, eventIds, mainOddsFeedListener);
 
             this.msgInterestLevel = null;
+            this.eventIds = null;
             this.mainOddsFeedListener = null;
             this.specificOddsFeedListeners = null;
 

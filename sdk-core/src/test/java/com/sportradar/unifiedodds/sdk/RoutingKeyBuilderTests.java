@@ -5,12 +5,15 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
+import com.sportradar.utils.URN;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created on 03/07/2018.
@@ -21,7 +24,7 @@ public class RoutingKeyBuilderTests {
     private static final String SNAPSHOT_COMPLETE_ROUTING_KEY_WITHOUT_NODE_ID = "-.-.-.snapshot_complete.-.-.-.-";
     private static final String SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID = "-.-.-.snapshot_complete.-.-.-." + SDK_NODE_ID;
 
-    private Map<Integer, MessageInterest> createdSessions = new HashMap<>();
+    private Map<Integer, Entry<MessageInterest, Set<URN>>> createdSessions = new HashMap<>();
     private Map<Integer, List<String>> validationMap = new HashMap<>();
 
     @Before
@@ -31,7 +34,7 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test1() {
-        createdSessions.put(1, MessageInterest.AllMessages);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.AllMessages, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".#",
@@ -46,7 +49,7 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test1_nodeId() {
-        createdSessions.put(1, MessageInterest.AllMessages);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.AllMessages, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".46.#",
@@ -62,7 +65,7 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test2_1() {
-        createdSessions.put(1, MessageInterest.PrematchMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.PrematchMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -77,8 +80,8 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test2_2_1() {
-        createdSessions.put(1, MessageInterest.PrematchMessagesOnly);
-        createdSessions.put(2, MessageInterest.LiveMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.PrematchMessagesOnly, null));
+        createdSessions.put(2, new SimpleEntry<>(MessageInterest.LiveMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -98,8 +101,8 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test2_2_2() {
-        createdSessions.put(1, MessageInterest.PrematchMessagesOnly);
-        createdSessions.put(3, MessageInterest.VirtualSports);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.PrematchMessagesOnly, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.VirtualSports, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -120,9 +123,9 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test2_3() {
-        createdSessions.put(1, MessageInterest.PrematchMessagesOnly);
-        createdSessions.put(2, MessageInterest.LiveMessagesOnly);
-        createdSessions.put(3, MessageInterest.VirtualSports);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.PrematchMessagesOnly, null));
+        createdSessions.put(2, new SimpleEntry<>(MessageInterest.LiveMessagesOnly, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.VirtualSports, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -148,9 +151,9 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test2_3_nodeId() {
-        createdSessions.put(1, MessageInterest.PrematchMessagesOnly);
-        createdSessions.put(2, MessageInterest.LiveMessagesOnly);
-        createdSessions.put(3, MessageInterest.VirtualSports);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.PrematchMessagesOnly, null));
+        createdSessions.put(2, new SimpleEntry<>(MessageInterest.LiveMessagesOnly, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.VirtualSports, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".46.#",
@@ -180,7 +183,7 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test3_1_1() {
-        createdSessions.put(1, MessageInterest.HiPrioMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.HiPrioMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -195,7 +198,7 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test3_1_2() {
-        createdSessions.put(2, MessageInterest.LoPrioMessagesOnly);
+        createdSessions.put(2, new SimpleEntry<>(MessageInterest.LoPrioMessagesOnly, null));
 
         validationMap.put(2, Arrays.asList(
                 MessageInterest.LoPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -210,8 +213,8 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test3_2() {
-        createdSessions.put(1, MessageInterest.HiPrioMessagesOnly);
-        createdSessions.put(2, MessageInterest.LoPrioMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.HiPrioMessagesOnly, null));
+        createdSessions.put(2, new SimpleEntry<>(MessageInterest.LoPrioMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -230,8 +233,8 @@ public class RoutingKeyBuilderTests {
 
     @Test
     public void validMsgInterestsCombination_Test3_2_nodeId() {
-        createdSessions.put(1, MessageInterest.HiPrioMessagesOnly);
-        createdSessions.put(2, MessageInterest.LoPrioMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.HiPrioMessagesOnly, null));
+        createdSessions.put(2, new SimpleEntry<>(MessageInterest.LoPrioMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.HiPrioMessagesOnly.getRoutingKeys().get(0) + ".46.#",
@@ -252,8 +255,8 @@ public class RoutingKeyBuilderTests {
 
     @Test(expected = UnsupportedMessageInterestCombination.class)
     public void invalidMsgInterestCombination_Test1() {
-        createdSessions.put(1, MessageInterest.PrematchMessagesOnly);
-        createdSessions.put(3, MessageInterest.HiPrioMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.PrematchMessagesOnly, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.HiPrioMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.PrematchMessagesOnly.getRoutingKeys().get(0) + ".#",
@@ -273,8 +276,8 @@ public class RoutingKeyBuilderTests {
 
     @Test(expected = UnsupportedMessageInterestCombination.class)
     public void invalidMsgInterestCombination_Test2() {
-        createdSessions.put(1, MessageInterest.AllMessages);
-        createdSessions.put(3, MessageInterest.HiPrioMessagesOnly);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.AllMessages, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.HiPrioMessagesOnly, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".#",
@@ -294,8 +297,8 @@ public class RoutingKeyBuilderTests {
 
     @Test(expected = UnsupportedMessageInterestCombination.class)
     public void invalidMsgInterestCombination_Test3() {
-        createdSessions.put(1, MessageInterest.AllMessages);
-        createdSessions.put(3, MessageInterest.VirtualSports);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.AllMessages, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.VirtualSports, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.AllMessages.getRoutingKeys().get(0) + ".#",
@@ -315,8 +318,8 @@ public class RoutingKeyBuilderTests {
 
     @Test(expected = UnsupportedMessageInterestCombination.class)
     public void invalidMsgInterestCombination_Test4() {
-        createdSessions.put(1, MessageInterest.LoPrioMessagesOnly);
-        createdSessions.put(3, MessageInterest.VirtualSports);
+        createdSessions.put(1, new SimpleEntry<>(MessageInterest.LoPrioMessagesOnly, null));
+        createdSessions.put(3, new SimpleEntry<>(MessageInterest.VirtualSports, null));
 
         validationMap.put(1, Arrays.asList(
                 MessageInterest.LoPrioMessagesOnly.getRoutingKeys().get(0) + ".#",

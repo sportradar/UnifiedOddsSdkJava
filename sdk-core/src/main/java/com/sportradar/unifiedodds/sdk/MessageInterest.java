@@ -38,7 +38,6 @@ public enum MessageInterest {
     LoPrioMessagesOnly(true, "lo.*.*.*.*.*.*"),
 
     /**
-     * ** NOT IMPLEMENTED **
      * Interested only in messages for specific matches
      */
     SpecifiedMatchesOnly(false, ""),
@@ -154,6 +153,7 @@ public enum MessageInterest {
             case AllMessages:
             case HiPrioMessagesOnly:
             case LoPrioMessagesOnly:
+            case SpecifiedMatchesOnly:
             default:
                 possibleProducers.addAll(
                         availableProducers.values().stream()
@@ -184,6 +184,7 @@ public enum MessageInterest {
             case AllMessages:
             case HiPrioMessagesOnly:
             case LoPrioMessagesOnly:
+            case SpecifiedMatchesOnly:
             default:
                 return true;
         }

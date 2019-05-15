@@ -4,7 +4,10 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import com.sportradar.utils.URN;
+
 import java.util.HashSet;
+import java.util.Set;
 
 public interface OddsFeedSessionBuilder {
     /**
@@ -38,6 +41,24 @@ public interface OddsFeedSessionBuilder {
      * @return the current session builder
      */
     OddsFeedSessionBuilder setSpecificListeners(GenericOddsFeedListener specificOddsFeedListener);
+
+    /**
+     *
+     * @param specificEventsOnly the specific target events
+     * @return the current session builder
+     */
+    default OddsFeedSessionBuilder setSpecificEventsOnly(Set<URN> specificEventsOnly) {
+        return null;
+    }
+
+    /**
+     *
+     * @param specificEventsOnly the specific target events
+     * @return the current session builder
+     */
+    default OddsFeedSessionBuilder setSpecificEventsOnly(URN specificEventsOnly) {
+        return null;
+    }
 
     /**
      * This function creates the newly configured session using the supplied message interest and listeners
