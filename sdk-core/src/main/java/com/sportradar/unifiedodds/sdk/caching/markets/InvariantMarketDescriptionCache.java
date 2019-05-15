@@ -80,6 +80,22 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         return new MarketDescriptionImpl(cachedItem, locales);
     }
 
+    @Override
+    public boolean loadMarketDescriptions() {
+        try{
+            fetchedLocales.clear();
+            logger.debug("Loading invariant market descriptions for [{}] (user request).",
+                    prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
+            fetchMissingData(prefetchLocales);
+        }
+        catch(Exception e){
+            logger.warn("An error occurred while fetching market description for languages [{}]",
+                    prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")), e);
+            return false;
+        }
+        return true;
+    }
+
     public List<MarketDescription> getAllInvariantMarketDescriptions(List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
@@ -103,7 +119,8 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             locales2fetch = prefetchLocales.stream()
                     .filter(pLocale -> !fetchedLocales.contains(pLocale)).collect(Collectors.toList());
         }
-
+        logger.debug("Loading invariant market descriptions for [{}] (timer).",
+                locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
         fetchLock.lock();
         try {
             if (hasTimerElapsedOnce) {
@@ -115,7 +132,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             }
         } catch (Exception e) { // so the timer does not die
             logger.warn("An error occurred while periodically fetching market description for languages [{}]",
-                    locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")),
+                    locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
                     e);
         } finally {
             fetchLock.unlock();

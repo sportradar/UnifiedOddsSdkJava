@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.markets.InvariantMarketDescriptionCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
+import com.sportradar.unifiedodds.sdk.caching.markets.VariantDescriptionCache;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
@@ -33,17 +34,23 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     private final SDKInternalConfiguration config;
     private final MarketDescriptionProvider marketDescriptionProvider;
     private final InvariantMarketDescriptionCache invariantMarketDescriptionCache;
+    private final VariantDescriptionCache variantDescriptionCache;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     @Inject
-    public MarketManagerImpl(SDKInternalConfiguration config, MarketDescriptionProvider marketDescriptionProvider, @Named("InvariantMarketCache") InvariantMarketDescriptionCache invariantMarketDescriptionCache) {
+    public MarketManagerImpl(SDKInternalConfiguration config,
+                             MarketDescriptionProvider marketDescriptionProvider,
+                             @Named("InvariantMarketCache") InvariantMarketDescriptionCache invariantMarketDescriptionCache,
+                             VariantDescriptionCache variantMarketDescriptionCache) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(marketDescriptionProvider);
         Preconditions.checkNotNull(invariantMarketDescriptionCache);
+        Preconditions.checkNotNull(variantMarketDescriptionCache);
 
         this.config = config;
         this.marketDescriptionProvider = marketDescriptionProvider;
         this.invariantMarketDescriptionCache = invariantMarketDescriptionCache;
+        this.variantDescriptionCache = variantMarketDescriptionCache;
         this.exceptionHandlingStrategy = config.getExceptionHandlingStrategy();
     }
 
@@ -124,5 +131,17 @@ public class MarketManagerImpl implements MarketDescriptionManager {
         return marketDescriptor.getMappings().stream()
                 .filter(m -> m.getProducerIds().contains(producer.getId()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Loads the invariant and variant list of market descriptions from the Sports API
+     *
+     * @return true if the action succeeded
+     */
+    @Override
+    public boolean loadMarketDescriptions() {
+        boolean a = invariantMarketDescriptionCache.loadMarketDescriptions();
+        boolean b = variantDescriptionCache.loadMarketDescriptions();
+        return a && b;
     }
 }

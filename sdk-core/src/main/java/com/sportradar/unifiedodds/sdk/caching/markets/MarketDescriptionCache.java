@@ -17,4 +17,6 @@ import java.util.Locale;
  */
 public interface MarketDescriptionCache {
     MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException;
+
+    boolean loadMarketDescriptions();
 }
