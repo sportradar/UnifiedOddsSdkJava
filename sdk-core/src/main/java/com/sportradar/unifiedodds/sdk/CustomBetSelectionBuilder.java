@@ -9,38 +9,38 @@ import com.sportradar.utils.URN;
 /**
  * Defines methods used to build selections
  */
-public interface SelectionBuilder {
+public interface CustomBetSelectionBuilder {
     /**
      * Sets event id to the provided {@link URN}
      *
      * @param eventId the {@link URN} representing the event id
-     * @return the {@link SelectionBuilder} instance used to set additional values
+     * @return the {@link CustomBetSelectionBuilder} instance used to set additional values
      */
-    SelectionBuilder setEventId(URN eventId);
+    CustomBetSelectionBuilder setEventId(URN eventId);
 
     /**
      * Sets market id to the provided value
      *
      * @param marketId the value representing the market id
-     * @return the {@link SelectionBuilder} instance used to set additional values
+     * @return the {@link CustomBetSelectionBuilder} instance used to set additional values
      */
-    SelectionBuilder setMarketId(int marketId);
+    CustomBetSelectionBuilder setMarketId(int marketId);
 
     /**
      * Sets specifiers to the provided value
      *
      * @param specifiers the value representing the specifiers
-     * @return the {@link SelectionBuilder} instance used to set additional values
+     * @return the {@link CustomBetSelectionBuilder} instance used to set additional values
      */
-    SelectionBuilder setSpecifiers(String specifiers);
+    CustomBetSelectionBuilder setSpecifiers(String specifiers);
 
     /**
      * Sets outcome id to the provided value
      *
      * @param outcomeId the value representing the outcome id
-     * @return the {@link SelectionBuilder} instance used to set additional values
+     * @return the {@link CustomBetSelectionBuilder} instance used to set additional values
      */
-    SelectionBuilder setOutcomeId(String outcomeId);
+    CustomBetSelectionBuilder setOutcomeId(String outcomeId);
 
     /**
      * Builds and returns a {@link Selection} instance

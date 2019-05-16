@@ -234,4 +234,20 @@ public interface SportsInfoManager {
      * @param playerId the identifier of the cache item to purge
      */
     void purgePlayerProfileCacheData(URN playerId);
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     */
+    default List<FixtureChange> getFixtureChanges() {
+        return null;
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param locale - the {@link Locale} in which to provide the data
+     */
+    default List<FixtureChange> getFixtureChanges(Locale locale) {
+        return null;
+    }
 }

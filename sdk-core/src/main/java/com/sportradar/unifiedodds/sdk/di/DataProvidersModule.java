@@ -3,20 +3,7 @@ package com.sportradar.unifiedodds.sdk.di;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
-import com.sportradar.uf.sportsapi.datamodel.SAPICompetitorProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawFixtures;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawSummary;
-import com.sportradar.uf.sportsapi.datamodel.SAPIFixturesEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPILotteries;
-import com.sportradar.uf.sportsapi.datamodel.SAPILotterySchedule;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPIScheduleEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPISimpleTeamProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportCategoriesEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportsEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentSeasons;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentsEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
@@ -75,6 +62,18 @@ public class DataProvidersModule extends AbstractModule {
                                                                                                @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/sports/%s/sport_events/%s/fixture_change_fixture.xml",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
+
+    @Provides
+    private DataProvider<SAPIFixtureChangesEndpoint> provideFixtureChangesDataProvider(SDKInternalConfiguration cfg,
+                                                                                                     LogHttpDataFetcher httpDataFetcher,
+                                                                                                     @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider<>(
+                "/sports/%s/fixtures/changes.xml",
                 cfg,
                 httpDataFetcher,
                 deserializer

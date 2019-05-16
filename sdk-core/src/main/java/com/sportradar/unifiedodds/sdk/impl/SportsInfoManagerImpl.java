@@ -9,11 +9,13 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.utils.URN;
@@ -76,6 +78,11 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
+    /**
+     * A {@link DataRouterManager} instance used to get sports info
+     */
+    private final DataRouterManager dataRouterManager;
+
 
     /**
      * Initializes a new instance of the {@link SportsInfoManagerImpl}
@@ -85,9 +92,10 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      * @param eventCache a {@link SportEventCache} instance used to retrieve and purge sport event cache items
      * @param profileCache a {@link ProfileCache} instance used to purge competitor/player profile cache items
      * @param sportEventStatusCache a {@link SportEventStatusCache} instance used to purge cached sport event statuses
+     * @param dataRouterManager a {@link DataRouterManager} instance used to get sports info
      */
     @Inject
-    SportsInfoManagerImpl(SDKInternalConfiguration config, SportEntityFactory entityFactory, SportEventCache eventCache, ProfileCache profileCache, SportEventStatusCache sportEventStatusCache) {
+    SportsInfoManagerImpl(SDKInternalConfiguration config, SportEntityFactory entityFactory, SportEventCache eventCache, ProfileCache profileCache, SportEventStatusCache sportEventStatusCache, DataRouterManager dataRouterManager) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(config.getDesiredLocales());
         Preconditions.checkArgument(!config.getDesiredLocales().isEmpty());
@@ -95,6 +103,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(eventCache);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(sportEventStatusCache);
+        Preconditions.checkNotNull(dataRouterManager);
 
         this.sportEntityFactory = entityFactory;
         this.sportEventCache = eventCache;
@@ -103,6 +112,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         this.desiredLocales = config.getDesiredLocales();
         this.exceptionHandlingStrategy = config.getExceptionHandlingStrategy();
         this.sportEventStatusCache = sportEventStatusCache;
+        this.dataRouterManager = dataRouterManager;
     }
 
 
@@ -531,6 +541,30 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
 
         clientInteractionLog.info("sportsInfo.purgePlayerProfileCacheData({})", playerId);
         profileCache.purgePlayerProfileCacheItem(playerId);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     */
+    @Override
+    public List<FixtureChange> getFixtureChanges() {
+        return getFixtureChanges(defaultLocale);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param locale - the {@link Locale} in which to provide the data
+     */
+    @Override
+    public List<FixtureChange> getFixtureChanges(Locale locale) {
+        Preconditions.checkNotNull(locale);
+
+        try {
+            return dataRouterManager.requestFixtureChanges(locale);
+        } catch (CommunicationException e) {
+            return handleException("getFixtureChanges", e);
+        }
     }
 
     private List<Sport> internalGetSports(List<Locale> locales) {

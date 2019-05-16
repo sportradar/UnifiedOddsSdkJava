@@ -26,17 +26,17 @@ public class CustomBetManagerImpl implements CustomBetManager {
     private static final Logger clientInteractionLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
     private final DataRouterManager dataRouterManager;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
-    private final SelectionBuilder selectionBuilder;
+    private final CustomBetSelectionBuilder customBetSelectionBuilder;
 
     @Inject
-    CustomBetManagerImpl(DataRouterManager dataRouterManager, SDKInternalConfiguration configuration, SelectionBuilder selectionBuilder) {
+    CustomBetManagerImpl(DataRouterManager dataRouterManager, SDKInternalConfiguration configuration, CustomBetSelectionBuilder customBetSelectionBuilder) {
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(configuration);
-        Preconditions.checkNotNull(selectionBuilder);
+        Preconditions.checkNotNull(customBetSelectionBuilder);
 
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = configuration.getExceptionHandlingStrategy();
-        this.selectionBuilder = selectionBuilder;
+        this.customBetSelectionBuilder = customBetSelectionBuilder;
     }
 
     @Override
@@ -66,8 +66,8 @@ public class CustomBetManagerImpl implements CustomBetManager {
     }
 
     @Override
-    public SelectionBuilder getSelectionBuilder() {
-        return selectionBuilder;
+    public CustomBetSelectionBuilder getCustomBetSelectionBuilder() {
+        return customBetSelectionBuilder;
     }
 
     private <T> T handleException(String message, Exception e) {

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
+import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.utils.URN;
 
@@ -54,4 +55,6 @@ public interface DataRouterManager {
     AvailableSelections requestAvailableSelections(URN id) throws CommunicationException;
 
     Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException;
+
+    List<FixtureChange> requestFixtureChanges(Locale locale) throws CommunicationException;
 }

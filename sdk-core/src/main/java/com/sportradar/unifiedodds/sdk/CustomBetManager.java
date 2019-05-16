@@ -33,9 +33,9 @@ public interface CustomBetManager {
     Calculation calculateProbability(List<Selection> selections);
 
     /**
-     * Returns an {@link SelectionBuilder} instance used to build selections
+     * Returns an {@link CustomBetSelectionBuilder} instance used to build selections
      *
-     * @return an {@link SelectionBuilder} instance used to build selections
+     * @return an {@link CustomBetSelectionBuilder} instance used to build selections
      */
-    SelectionBuilder getSelectionBuilder();
+    CustomBetSelectionBuilder getCustomBetSelectionBuilder();
 }

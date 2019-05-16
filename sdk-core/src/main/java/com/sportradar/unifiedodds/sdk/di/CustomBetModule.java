@@ -10,9 +10,9 @@ import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
+import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilder;
+import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilderImpl;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.SelectionBuilder;
-import com.sportradar.unifiedodds.sdk.SelectionBuilderImpl;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
@@ -26,7 +26,7 @@ public class CustomBetModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        bind(SelectionBuilder.class).to(SelectionBuilderImpl.class);
+        bind(CustomBetSelectionBuilder.class).to(CustomBetSelectionBuilderImpl.class);
     }
 
     @Provides

@@ -9,34 +9,34 @@ import com.sportradar.unifiedodds.sdk.impl.custombetentities.SelectionImpl;
 import com.sportradar.utils.URN;
 
 /**
- * The basic implementation of the {@link SelectionBuilder}
+ * The basic implementation of the {@link CustomBetSelectionBuilder}
  */
-public class SelectionBuilderImpl implements SelectionBuilder {
+public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder {
     private URN eventId;
     private int marketId;
     private String specifiers;
     private String outcomeId;
 
     @Override
-    public SelectionBuilder setEventId(URN eventId) {
+    public CustomBetSelectionBuilder setEventId(URN eventId) {
         this.eventId = eventId;
         return this;
     }
 
     @Override
-    public SelectionBuilder setMarketId(int marketId) {
+    public CustomBetSelectionBuilder setMarketId(int marketId) {
         this.marketId = marketId;
         return this;
     }
 
     @Override
-    public SelectionBuilder setSpecifiers(String specifiers) {
+    public CustomBetSelectionBuilder setSpecifiers(String specifiers) {
         this.specifiers = specifiers;
         return this;
     }
 
     @Override
-    public SelectionBuilder setOutcomeId(String outcomeId) {
+    public CustomBetSelectionBuilder setOutcomeId(String outcomeId) {
         this.outcomeId = outcomeId;
         return this;
     }

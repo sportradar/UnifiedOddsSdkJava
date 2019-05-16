@@ -304,6 +304,7 @@
                             <sources>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/competitor_profile.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/fixtures_fixture.xsd</source>
+                                <source>${project.build.directory}/schemas/v1/endpoints/unified/fixture_changes.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/player_profile.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/schedule.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/race_schedule.xsd</source>

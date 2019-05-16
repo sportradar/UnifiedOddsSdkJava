@@ -19,6 +19,7 @@ import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
+import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -27,6 +28,7 @@ import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,12 +177,17 @@ public class DataRouterManagerImpl implements DataRouterManager {
     /**
      * A {@link DataProvider} used to fetch available selections
      */
-    DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider;
+    private final DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch probability calculations
      */
-    DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider;
+    private final DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider;
+
+    /**
+     * A {@link DataProvider} used to fetch fixture changes
+     */
+    private final DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider;
 
     private final ReentrantLock tournamentListLock = new ReentrantLock();
     private final ReentrantLock sportsListLock = new ReentrantLock();
@@ -209,7 +216,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPILotteries> lotteriesListProvider,
                           DataProvider<SAPILotterySchedule> lotteryScheduleProvider,
                           DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
-                          DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider) {
+                          DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider,
+                          DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkNotNull(scheduler);
@@ -233,6 +241,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(lotteryScheduleProvider);
         Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
         Preconditions.checkNotNull(calculateProbabilityDataProvider);
+        Preconditions.checkNotNull(fixtureChangesDataProvider);
 
         this.prefetchLocales = configuration.getDesiredLocales();
         this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7);
@@ -257,6 +266,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.lotteryScheduleProvider = lotteryScheduleProvider;
         this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
         this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
+        this.fixtureChangesDataProvider = fixtureChangesDataProvider;
 
         this.tournamentListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.sportsListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
@@ -653,6 +663,20 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dataRouter.onCalculateProbabilityFetched(selections, calculation);
         return new CalculationImpl(calculation);
+    }
+
+    @Override
+    public List<FixtureChange> requestFixtureChanges(Locale locale) throws CommunicationException {
+        Preconditions.checkNotNull(locale);
+        try {
+            return fixtureChangesDataProvider.getData(locale)
+                    .getFixtureChange()
+                    .stream()
+                    .map(FixtureChangeImpl::new)
+                    .collect(Collectors.toList());
+        } catch (DataProviderException e) {
+            throw new CommunicationException("Error executing fixture changes request", e);
+        }
     }
 
     private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {
