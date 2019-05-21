@@ -74,7 +74,7 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
      * a particular team/player to place and this particular player has placed but the place is
      * shared with multiple players, reducing the payout)
      *
-     * @return deadheat factor or 0 if none.
+     * @return deadheat factor or 1 if none.
      */
     @Override
     public double getDeadHeatFactor() {
