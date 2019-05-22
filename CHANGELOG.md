@@ -1,5 +1,14 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.24 (2019-05-22)**
+* added support for custom bets
+* added customBetManager and getAvailableLanguages to the OddsFeed
+* added setSpecificEventsOnly to the OddsFeedSessionBuilder
+* added getFixtureChanges to the SportsInfoManager interface
+* exposed option to reload market descriptions
+* fix: preserving the order of default and desired locales in configuration
+* fix: return cached event status for sport events
+
 **2.0.23 (2019-04-18)**
 * exposed Round.getGroupId()
 * improved handling of SportEventStatus updates
