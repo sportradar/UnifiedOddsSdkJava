@@ -82,24 +82,20 @@ public class PeriodScoreImpl implements PeriodScore {
             }
         }
 
-        if (number != null && tempPeriodType == null) {
-            if (number == 40) {
+        if (tempPeriodType == null) {
+            if (matchStatusCode == 40) {
                 // <match_status description="Overtime" id="40"/>
                 tempPeriodType = PeriodType.Overtime;
-            } else if (number == 50 || number == 51 || number == 52) {
+            } else if (matchStatusCode == 50 || matchStatusCode == 51 || matchStatusCode == 52) {
                 // <match_status description="Penalties" id="50"/>
                 // <match_status description="Penalties" id="51"/>
                 // <match_status description="Penalties" id="52"/>
                 tempPeriodType = PeriodType.Penalties;
-            } else if (number != 0) {
+            } else if (matchStatusCode != 0) {
                 tempPeriodType = PeriodType.RegularPeriod;
             } else {
                 tempPeriodType = PeriodType.Other;
             }
-        }
-
-        if(tempPeriodType == null){
-            tempPeriodType = PeriodType.Other;
         }
 
         this.periodType = tempPeriodType;
