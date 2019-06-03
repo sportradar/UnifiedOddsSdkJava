@@ -19,10 +19,12 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
 import com.sportradar.utils.SdkHelper;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.ibm.icu.impl.ValidIdentifiers.Datatype.variant;
 
 /**
  * Created on 15/06/2017.
@@ -34,6 +36,8 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     private final MappingValidatorFactory mappingValidatorFactory;
     private final ReentrantLock lock = new ReentrantLock();
     private final boolean simpleVariantCaching;
+    private Map<String,Date> fetchedVariants = new ConcurrentHashMap<>();
+    private Date lastTimeFetchedVariantsWereCleared;
 
     public VariantMarketDescriptionCache(Cache<String, MarketDescriptionCI> cache,
                                          DataProvider<MarketDescriptions> dataProvider,
@@ -47,6 +51,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         this.dataProvider = dataProvider;
         this.mappingValidatorFactory = mappingValidatorFactory;
         this.simpleVariantCaching = simpleVariantCaching;
+        this.lastTimeFetchedVariantsWereCleared = new Date();
     }
 
     @Override
@@ -74,9 +79,15 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         if (!missingLocales.isEmpty()) {
             try {
                 lock.lock();
+                if(!isFetchingAllowed(getCacheKey(marketId, variant)))
+                {
+                    return new MarketDescriptionImpl(marketCI, locales);
+                }
                 missingLocales = getMissingLocales(marketCI, locales);
                 if (!missingLocales.isEmpty()) {
+
                     loadMarketDescriptorData(marketCI, marketId, variant, missingLocales);
+                    fetchedVariants.put(getCacheKey(marketId, variant), new Date());
                 }
             } finally {
                 lock.unlock();
@@ -89,6 +100,12 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     @Override
     public boolean loadMarketDescriptions() {
         return true;
+    }
+
+    @Override
+    public void deleteCacheItem(int marketId, String variant) {
+        String cacheId  = getCacheKey(marketId, variant);
+        cache.invalidate(cacheId);
     }
 
     private MarketDescriptionCI loadMarketDescriptorData(MarketDescriptionCI existingMarketDescriptor, int marketId, String variant, List<Locale> locales) throws IllegalCacheStateException {
@@ -134,5 +151,33 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         }
 
         return SdkHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
+    }
+
+    private boolean isFetchingAllowed(String cacheId)
+    {
+        if (!fetchedVariants.containsKey(cacheId))
+        {
+            return true;
+        }
+        Date date = fetchedVariants.get(cacheId);
+        if (SdkHelper.getTimeDifferenceInSeconds(new Date(), date) > 30)
+        {
+            return true;
+        }
+
+        // clear records from fetchedVariants once a min
+        if (SdkHelper.getTimeDifferenceInSeconds(new Date(), lastTimeFetchedVariantsWereCleared) > 60)
+        {
+            Set<String> keys = fetchedVariants.keySet();
+
+            for (String key : keys) {
+                Date currDate = fetchedVariants.get(key);
+                if (SdkHelper.getTimeDifferenceInSeconds(new Date(), currDate) > 30) {
+                    fetchedVariants.remove(variant);
+                }
+            }
+            lastTimeFetchedVariantsWereCleared = new Date();
+        }
+        return false;
     }
 }

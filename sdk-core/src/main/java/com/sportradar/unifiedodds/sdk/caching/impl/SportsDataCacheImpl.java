@@ -66,7 +66,6 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
         this.dataRouterManager = dataRouterManager;
     }
 
-
     /**
      * Returns a {@link List} sports supported by the feed.
      *

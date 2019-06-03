@@ -659,7 +659,7 @@ class RaceStageCIImpl implements StageCI {
             competitorIds = sportEvent.getCompetitors().getCompetitor().stream()
                     .map(c -> URN.parse(c.getId())).collect(Collectors.toList());
             loadedCompetitorLocales.add(locale);
-            competitorsReferences = SdkHelper.ParseTeamCompetitorsReferences(sportEvent.getCompetitors().getCompetitor(), competitorsReferences);
+            competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(sportEvent.getCompetitors().getCompetitor(), competitorsReferences);
         }
 
         if (sportEvent.getRaces() != null) {

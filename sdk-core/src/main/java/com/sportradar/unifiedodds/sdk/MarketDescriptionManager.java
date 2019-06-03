@@ -66,4 +66,13 @@ public interface MarketDescriptionManager {
     default boolean loadMarketDescriptions(){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
+
+    /**
+     * Deletes the variant market description from cache
+     * @param marketId the market id used to delete variant market description from the cache
+     * @param variantValue the variant value used to delete variant market description from the cache
+     */
+    default void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

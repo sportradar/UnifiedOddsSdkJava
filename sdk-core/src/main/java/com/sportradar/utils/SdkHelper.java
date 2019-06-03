@@ -77,8 +77,8 @@ public final class SdkHelper {
      * @param competitors competitor id with which is associated reference
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> ParseCompetitorsReferences(List<SAPITeam> competitors,
-                                                                         Map<URN, ReferenceIdCI> currentCompetitorsReferences)
+    public static Map<URN, ReferenceIdCI> parseCompetitorsReferences(List<SAPITeam> competitors,
+                                                                     Map<URN, ReferenceIdCI> currentCompetitorsReferences)
     {
         if(competitors == null){
             return currentCompetitorsReferences;
@@ -114,7 +114,7 @@ public final class SdkHelper {
      * @param competitors competitor id with which is associated reference
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> ParseTeamCompetitorsReferences(List<SAPITeamCompetitor> competitors,
+    public static Map<URN, ReferenceIdCI> parseTeamCompetitorsReferences(List<SAPITeamCompetitor> competitors,
                                                                          Map<URN, ReferenceIdCI> currentCompetitorsReferences)
     {
         if(competitors == null){
@@ -178,5 +178,10 @@ public final class SdkHelper {
             return date;
         }
         return new Date(date.getTime() + time.getTime());
+    }
+
+    public static long getTimeDifferenceInSeconds(Date d1, Date d2)
+    {
+        return Math.abs(d1.getTime()-d2.getTime())/1000;
     }
 }

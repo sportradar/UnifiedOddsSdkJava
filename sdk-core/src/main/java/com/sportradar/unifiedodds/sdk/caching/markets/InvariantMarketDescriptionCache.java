@@ -96,6 +96,12 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         return true;
     }
 
+    @Override
+    public void deleteCacheItem(int marketId, String variant) {
+        String processingCacheItemId = String.valueOf(marketId);
+        cache.invalidate(processingCacheItemId);
+    }
+
     public List<MarketDescription> getAllInvariantMarketDescriptions(List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());

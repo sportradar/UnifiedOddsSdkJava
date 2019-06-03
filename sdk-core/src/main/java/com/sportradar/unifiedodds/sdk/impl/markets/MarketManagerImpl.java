@@ -11,9 +11,7 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.markets.InvariantMarketDescriptionCache;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
-import com.sportradar.unifiedodds.sdk.caching.markets.VariantDescriptionCache;
+import com.sportradar.unifiedodds.sdk.caching.markets.*;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
@@ -34,14 +32,16 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     private final SDKInternalConfiguration config;
     private final MarketDescriptionProvider marketDescriptionProvider;
     private final InvariantMarketDescriptionCache invariantMarketDescriptionCache;
-    private final VariantDescriptionCache variantDescriptionCache;
+    private final VariantDescriptionCache variantMarketDescriptionListCache;
+    private final MarketDescriptionCache variantMarketDescriptionCache;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     @Inject
     public MarketManagerImpl(SDKInternalConfiguration config,
                              MarketDescriptionProvider marketDescriptionProvider,
                              @Named("InvariantMarketCache") InvariantMarketDescriptionCache invariantMarketDescriptionCache,
-                             VariantDescriptionCache variantMarketDescriptionCache) {
+                             VariantDescriptionCache variantMarketDescriptionListCache,
+                             @Named("VariantMarketCache") MarketDescriptionCache variantMarketDescriptionCache) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(marketDescriptionProvider);
         Preconditions.checkNotNull(invariantMarketDescriptionCache);
@@ -50,7 +50,8 @@ public class MarketManagerImpl implements MarketDescriptionManager {
         this.config = config;
         this.marketDescriptionProvider = marketDescriptionProvider;
         this.invariantMarketDescriptionCache = invariantMarketDescriptionCache;
-        this.variantDescriptionCache = variantMarketDescriptionCache;
+        this.variantMarketDescriptionListCache = variantMarketDescriptionListCache;
+        this.variantMarketDescriptionCache = variantMarketDescriptionCache;
         this.exceptionHandlingStrategy = config.getExceptionHandlingStrategy();
     }
 
@@ -141,7 +142,17 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     @Override
     public boolean loadMarketDescriptions() {
         boolean a = invariantMarketDescriptionCache.loadMarketDescriptions();
-        boolean b = variantDescriptionCache.loadMarketDescriptions();
+        boolean b = variantMarketDescriptionListCache.loadMarketDescriptions();
         return a && b;
+    }
+
+    /**
+     * Deletes the variant market description from cache
+     * @param marketId the market id used to delete variant market description from the cache
+     * @param variantValue the variant value used to delete variant market description from the cache
+     */
+    @Override
+    public void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue){
+        variantMarketDescriptionCache.deleteCacheItem(marketId, variantValue);
     }
 }

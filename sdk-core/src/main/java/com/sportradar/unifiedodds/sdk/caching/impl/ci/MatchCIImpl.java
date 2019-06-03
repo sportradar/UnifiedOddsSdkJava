@@ -929,7 +929,7 @@ class MatchCIImpl implements MatchCI {
             }
         });
 
-        competitorsReferences = SdkHelper.ParseTeamCompetitorsReferences(competitors, competitorsReferences);
+        competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
 
         loadedCompetitorLocales.add(locale);
     }

@@ -57,7 +57,7 @@ public class GroupCI {
         if (group.getCompetitor() != null) {
             competitorIds.addAll(group.getCompetitor().stream().
                     map(cmp -> URN.parse(cmp.getId())).collect(Collectors.toList()));
-            competitorsReferences = SdkHelper.ParseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
+            competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
     }
 
@@ -78,7 +78,7 @@ public class GroupCI {
                     competitorIds.add(cId);
                 }
             });
-            competitorsReferences = SdkHelper.ParseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
+            competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
     }
 

@@ -172,7 +172,7 @@ class TournamentCIImpl implements TournamentCI {
         if(endpointCompetitors != null) {
             this.competitorIds = Collections.synchronizedList(endpointCompetitors.getCompetitor().stream()
                             .map(c -> URN.parse(c.getId())).collect(Collectors.toList()));
-            competitorsReferences = SdkHelper.ParseCompetitorsReferences(endpointCompetitors.getCompetitor(), competitorsReferences);
+            competitorsReferences = SdkHelper.parseCompetitorsReferences(endpointCompetitors.getCompetitor(), competitorsReferences);
         }
         else  {
             this.competitorIds = null;
@@ -535,7 +535,7 @@ class TournamentCIImpl implements TournamentCI {
                     this.competitorIds.add(parsedId);
                 }
             });
-            competitorsReferences = SdkHelper.ParseCompetitorsReferences(endpointCompetitors.getCompetitor(), competitorsReferences);
+            competitorsReferences = SdkHelper.parseCompetitorsReferences(endpointCompetitors.getCompetitor(), competitorsReferences);
         }
 
         if (endpointData.getSeason() != null) {
