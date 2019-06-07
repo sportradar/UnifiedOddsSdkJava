@@ -151,10 +151,20 @@ public class RoundImpl implements Round {
         return roundCI.getPhaseOrGroupLongName(locale);
     }
 
+    /**
+     * Returns the id of the group associated with the current round
+     *
+     * @return - the id of the group associated with the current round
+     */
     @Override
-    public URN getGroupId() {
-        return roundCI.getGroupId();
-    }
+    public URN getGroupId() { return roundCI.getGroupId(); }
+
+    /**
+     * Returns the phase of the round
+     * @return the phase of the round
+     */
+    @Override
+    public String getPhase() { return roundCI.getPhase(); }
 
     /**
      * Returns a {@link String} describing the current {@link Round} instance

@@ -97,4 +97,10 @@ public interface Round {
     default URN getGroupId() {
         return null;
     }
+
+     /**
+     * Returns the phase of the round
+     * @return the phase of the round
+     */
+     default String getPhase(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
 }

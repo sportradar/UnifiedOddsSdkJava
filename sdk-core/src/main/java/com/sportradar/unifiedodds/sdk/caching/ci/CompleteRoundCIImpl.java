@@ -67,6 +67,11 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      */
     private Integer betradarId;
 
+    /**
+     * The phase
+     */
+    private String phase;
+
     private final List<Locale> cachedLocales;
 
     /**
@@ -116,6 +121,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
         }
+        phase = round.getPhase();
     }
 
     /**
@@ -225,6 +231,14 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     }
 
     /**
+     * Returns the phase of the round
+     *
+     * @return the phase of the round
+     */
+    @Override
+    public String getPhase() { return phase; }
+
+    /**
      * Checks if the associated cache item contains all the provided {@link Locale}s
      *
      * @param locales the {@link Locale}s that should be checked
@@ -248,6 +262,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
                 ", cupRoundMatches=" + cupRoundMatches +
                 ", cupRoundMatchNumber=" + cupRoundMatchNumber +
                 ", betradarId=" + betradarId +
+                ", phase=" + phase +
                 ", cachedLocales=" + cachedLocales +
                 '}';
     }

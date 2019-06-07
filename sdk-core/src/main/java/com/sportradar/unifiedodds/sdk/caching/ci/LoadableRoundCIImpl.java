@@ -105,6 +105,11 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     private Integer betradarId;
 
     /**
+     * The phase
+     */
+    private String phase;
+
+    /**
      * A list of cached locales
      */
     private final List<Locale> cachedSummaryLocales = Collections.synchronizedList(new ArrayList<>());
@@ -323,6 +328,22 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     }
 
     /**
+     * Returns the phase of the round
+     *
+     * @return the phase of the round
+     */
+    @Override
+    public String getPhase() {
+        if (summaryLoadedCheck(phase, defaultLocale)) {
+            return phase;
+        }
+
+        initiateSummaryRequest(defaultLocale);
+
+        return phase;
+    }
+
+    /**
      * Merges the information from the provided {@link SAPIMatchRound} into the current instance
      *
      * @param round             {@link SAPIMatchRound} containing information about the round
@@ -375,6 +396,10 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
+        }
+
+        if (round.getPhase() != null) {
+            phase = round.getPhase();
         }
 
         cachedSummaryLocales.add(locale);
@@ -461,6 +486,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
                 ", cachedFixtureLocales=" + cachedFixtureLocales +
                 ", summaryRequest=" + summaryRequest +
                 ", fixtureRequest=" + fixtureRequest +
+                ", phase=" + phase +
                 '}';
     }
 }

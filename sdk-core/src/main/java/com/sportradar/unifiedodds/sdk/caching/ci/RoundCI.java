@@ -87,4 +87,10 @@ public interface RoundCI {
      * @return the name or group long name if exists, or null
      */
     String getPhaseOrGroupLongName(Locale locale);
+
+    /**
+     * Returns the phase of the round
+     * @return the phase of the round
+     */
+    String getPhase();
 }
