@@ -23,6 +23,10 @@ public class TvChannelImpl implements TvChannel {
      */
     private final Date time;
 
+    /**
+     * The stream url
+     */
+    private final String streamUrl;
 
     /**
      *Initializes a new instance of the {@link TvChannelImpl} class
@@ -31,11 +35,11 @@ public class TvChannelImpl implements TvChannel {
      * @param time - a {@link Date} specifying when the coverage on the channel
      *               represented by the current {@link TvChannel} starts
      */
-    public TvChannelImpl(String name, Date time) {
+    public TvChannelImpl(String name, Date time, String streamUrl) {
         this.name = name;
         this.time = time;
+        this.streamUrl = streamUrl;
     }
-
 
     /**
      * Returns the name of the channel represented by the current instance
@@ -59,6 +63,16 @@ public class TvChannelImpl implements TvChannel {
     }
 
     /**
+     * Returns the stream url of the channel represented by the current instance
+     *
+     * @return - the stream url of the channel represented by the current instance
+     */
+    @Override
+    public String getStreamUrl() {
+        return streamUrl;
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link TvChannel} instance
      *
      * @return - a {@link String} describing the current {@link TvChannel} instance
@@ -67,7 +81,8 @@ public class TvChannelImpl implements TvChannel {
     public String toString() {
         return "TvChannelImpl{" +
                 "name='" + name + '\'' +
-                ", time=" + time +
+                ", time=" + time + '\'' +
+                ", streamUrl=" + streamUrl +
                 '}';
     }
 }

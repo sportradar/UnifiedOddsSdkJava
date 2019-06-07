@@ -24,4 +24,13 @@ public interface TvChannel {
      * current {@link TvChannel} starts, or a null reference if the time is not known
      */
     Date getTime();
+
+    /**
+     * Returns the stream url
+     *
+     * @return the stream url; otherwise null
+     */
+    default String getStreamUrl(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

@@ -141,7 +141,8 @@ public class FixtureImpl implements Fixture {
                 fixture.getTvChannels().getTvChannel().stream()
                         .map(ch -> new TvChannelImpl(
                                 ch.getName(),
-                                ch.getStartTime() == null ? null : ch.getStartTime().toGregorianCalendar().getTime()))
+                                ch.getStartTime() == null ? null : ch.getStartTime().toGregorianCalendar().getTime(),
+                                ch.getStreamUrl()))
                         .collect(ImmutableList.toImmutableList());
         this.coverageInfo = fixture.getCoverageInfo() == null ? null :
                 new CoverageInfoImpl(
