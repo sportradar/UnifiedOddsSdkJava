@@ -85,4 +85,10 @@ public interface CompetitorCI extends CacheItem {
      * @return the associated competitor home venue
      */
     VenueCI getVenue(List<Locale> locales);
+
+    /**
+     * Get the gender of the player
+     * @return the gender
+     */
+    String getGender();
 }

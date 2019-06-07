@@ -17,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +107,11 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
      * The player nickname
      */
     private String nickname;
+
+    /**
+     * The gender of the player
+     */
+    private String gender;
 
     /**
      * The locales which are merged into the CI
@@ -317,6 +323,17 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
     }
 
     /**
+     * Get the gender of the player
+     *
+     * @return the gender
+     */
+    @Override
+    public String getGender() {
+        ensureDataLoaded(gender);
+        return gender;
+    }
+
+    /**
      * Determines whether the current instance has translations for the specified languages
      *
      * @param localeList a {@link List} specifying the required languages
@@ -361,6 +378,9 @@ class PlayerProfileCIImpl implements PlayerProfileCI {
         if (!abbreviations.keySet().contains(dataLocale))
         {
             abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(player.getName(), 3));
+        }
+        if(player.getGender() != null) {
+            gender = player.getGender();
         }
 
         cachedLocales.add(dataLocale);

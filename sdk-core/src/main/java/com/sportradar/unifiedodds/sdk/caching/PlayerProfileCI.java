@@ -85,4 +85,10 @@ public interface PlayerProfileCI extends CacheItem  {
      * @return the {@link Map} containing translated abbreviations of the player
      */
     Map<Locale, String> getAbbreviations(List<Locale> locales);
+
+    /**
+     * Get the gender of the player
+     * @return the gender
+     */
+    String getGender();
 }

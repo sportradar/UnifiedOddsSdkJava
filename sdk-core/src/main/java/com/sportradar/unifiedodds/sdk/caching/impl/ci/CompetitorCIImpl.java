@@ -105,6 +105,11 @@ class CompetitorCIImpl implements CompetitorCI {
     private VenueCI venue;
 
     /**
+     * The gender of the competitor
+     */
+    private String gender;
+
+    /**
      * The locales which are merged into the CI
      */
     private final List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
@@ -228,7 +233,6 @@ class CompetitorCIImpl implements CompetitorCI {
     @Override
     public boolean isVirtual() {
         ensureDataLoaded(isVirtual);
-
         return isVirtual;
     }
 
@@ -240,7 +244,6 @@ class CompetitorCIImpl implements CompetitorCI {
     @Override
     public String getCountryCode() {
         ensureDataLoaded(countryCode);
-
         return countryCode;
     }
 
@@ -252,7 +255,6 @@ class CompetitorCIImpl implements CompetitorCI {
     @Override
     public ReferenceIdCI getReferenceId() {
         ensureDataLoaded(referenceId);
-
         return referenceId;
     }
 
@@ -281,7 +283,6 @@ class CompetitorCIImpl implements CompetitorCI {
     @Override
     public List<JerseyCI> getJerseys() {
         ensureDataLoaded(jerseys);
-
         return jerseys;
     }
 
@@ -325,6 +326,17 @@ class CompetitorCIImpl implements CompetitorCI {
         requestMissingCompetitorData(locales);
 
         return venue;
+    }
+
+    /**
+     * Get the gender of the player
+     *
+     * @return the gender
+     */
+    @Override
+    public String getGender() {
+        ensureDataLoaded(gender);
+        return gender;
     }
 
     /**
@@ -427,6 +439,9 @@ class CompetitorCIImpl implements CompetitorCI {
         }
         else {
             abbreviations.put(dataLocale, competitor.getAbbreviation());
+        }
+        if(competitor.getGender() != null) {
+            gender = competitor.getGender();
         }
     }
 

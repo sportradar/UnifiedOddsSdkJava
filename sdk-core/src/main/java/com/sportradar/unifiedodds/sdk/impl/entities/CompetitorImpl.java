@@ -284,6 +284,14 @@ public class CompetitorImpl implements Competitor {
     }
 
     /**
+     * Returns gender of the competitor
+     *
+     * @return the gender of the competitor if available; otherwise null
+     */
+    @Override
+    public String getGender() { return loadCacheItem().map(ci -> ci.getGender()).orElse(null);  }
+
+    /**
      * Loads the associated entity cache item from the sport event cache
      *
      * @return the associated cache item

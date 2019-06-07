@@ -83,4 +83,13 @@ public interface PlayerProfile extends Player {
      * @return the player nickname if available; otherwise null
      */
     String getNickname();
+
+    /**
+     * Returns gender of the player
+     *
+     * @return the gender of the player if available; otherwise null
+     */
+    default String getGender(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

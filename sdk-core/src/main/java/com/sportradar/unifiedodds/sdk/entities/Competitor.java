@@ -91,4 +91,13 @@ public interface Competitor extends Player {
      * @return the associated competitor home venue
      */
     Venue getVenue();
+
+    /**
+     * Returns gender of the competitor
+     *
+     * @return the gender of the competitor if available; otherwise null
+     */
+    default String getGender(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

@@ -190,6 +190,14 @@ public class PlayerProfileImpl implements PlayerProfile {
     }
 
     /**
+     * Returns gender of the player
+     *
+     * @return the gender of the player if available; otherwise null
+     */
+    @Override
+    public String getGender() { return loadCacheItem().map(PlayerProfileCI::getGender).orElse(null);  }
+
+    /**
      * Loads the associated entity cache item from the sport event cache
      *
      * @return the associated cache item
