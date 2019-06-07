@@ -87,6 +87,11 @@ class MatchCIImpl implements MatchCI {
     private Map<URN, String> competitorQualifiers;
 
     /**
+     * A map of available competitor qualifiers
+     */
+    private Map<URN, Integer> competitorDivisions;
+
+    /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
@@ -608,6 +613,26 @@ class MatchCIImpl implements MatchCI {
                 : copyOf(competitorQualifiers);
     }
 
+    /**
+     * Returns list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     *
+     * @return list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     */
+    @Override
+    public Map<URN, Integer> getCompetitorsDivisions() {
+        if (competitorDivisions != null && !competitorDivisions.isEmpty()) {
+            return copyOf(competitorDivisions);
+        }
+
+        if (loadedSummaryLocales.isEmpty()) {
+            requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+        }
+
+        return competitorDivisions == null
+                ? null
+                : copyOf(competitorDivisions);
+    }
+
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
         if (endpointData instanceof SAPIFixture) {
@@ -919,6 +944,7 @@ class MatchCIImpl implements MatchCI {
 
         competitorIds = new ArrayList<>(competitors.size());
         competitorQualifiers = new HashMap<>(competitors.size());
+        competitorDivisions = new HashMap<>(competitors.size());
 
         competitors.forEach(inputC -> {
             URN parsedId = URN.parse(inputC.getId());
@@ -926,6 +952,9 @@ class MatchCIImpl implements MatchCI {
 
             if (inputC.getQualifier() != null) {
                 competitorQualifiers.put(parsedId, inputC.getQualifier());
+            }
+            if (inputC.getDivision() != null) {
+                competitorDivisions.put(parsedId, inputC.getDivision());
             }
         });
 

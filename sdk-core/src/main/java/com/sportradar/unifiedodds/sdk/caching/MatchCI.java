@@ -86,4 +86,11 @@ public interface MatchCI extends CompetitionCI {
      * @return list of {@link URN} of {@link Competitor} and associated qualifier for this sport event
      */
     Map<URN, String> getCompetitorsQualifiers();
+
+    /**
+     * Returns list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     *
+     * @return list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     */
+    Map<URN, Integer> getCompetitorsDivisions();
 }

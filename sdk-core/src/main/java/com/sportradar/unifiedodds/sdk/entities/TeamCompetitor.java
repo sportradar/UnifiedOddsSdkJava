@@ -14,4 +14,13 @@ public interface TeamCompetitor extends Competitor {
      * @return - the qualifier additionally describing the competitor (e.g. home, away, ...)
      */
     String getQualifier();
+
+    /**
+     * Returns division of the competitor
+     *
+     * @return the division of the competitor if available; otherwise null
+     */
+    default Integer getDivision(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

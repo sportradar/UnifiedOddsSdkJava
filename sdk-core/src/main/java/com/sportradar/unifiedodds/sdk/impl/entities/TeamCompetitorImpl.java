@@ -19,11 +19,6 @@ import java.util.Locale;
  * Represents a competing team
  */
 public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor {
-//    /**
-//     * A qualifier additionally describing the competitor (e.g. home, away, ...)
-//     */
-//    private final String qualifier;
-
     /**
      * Initializes a new instance of the {@link TeamCompetitorImpl} class
      *
@@ -38,6 +33,7 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
     public TeamCompetitorImpl(URN competitorId,
                               ProfileCache profileCache,
                               String qualifier,
+                              Integer division,
                               SportEventCI parentSportEventCI,
                               List<Locale> locales,
                               SportEntityFactory sportEntityFactory,
@@ -45,6 +41,7 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
         super(competitorId, profileCache, parentSportEventCI, locales, sportEntityFactory, exceptionHandlingStrategy);
 
         TeamQualifier = qualifier;
+        TeamDivision = division;
     }
 
     /**
@@ -56,6 +53,12 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
     public String getQualifier() {
         FetchEventCompetitorsQualifiers();
         return TeamQualifier;
+    }
+
+    @Override
+    public Integer getDivision(){
+        FetchEventCompetitorsDivisions();
+        return TeamDivision;
     }
 
     /**

@@ -35,6 +35,7 @@ public class CompetitorImpl implements Competitor {
     private ReferenceIdCI referenceIdCI;
     private final SportEventCI sportEventCI;
     protected String TeamQualifier;
+    protected Integer TeamDivision;
 
     /**
      * A {@link ReentrantLock} used to synchronize api request operations
@@ -230,7 +231,7 @@ public class CompetitorImpl implements Competitor {
                                     return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
                                 }
                                 else {
-                                    return sportEntityFactory.buildCompetitor(id, null, null, locales);
+                                    return sportEntityFactory.buildCompetitor(id, null, null, null, locales);
                                 }
 
                             } catch (ObjectNotFoundException e) {
@@ -386,6 +387,27 @@ public class CompetitorImpl implements Competitor {
             }
         } catch (DataRouterStreamException e) {
             handleException(String.format("getCompetitorsQualifiers(%s)", competitorId), e);
+        } finally {
+            reentrantLock.unlock();
+        }
+    }
+
+    protected void FetchEventCompetitorsDivisions()
+    {
+        reentrantLock.lock();
+        try {
+            if (TeamDivision == null && sportEventCI != null && sportEventCI instanceof MatchCI)
+            {
+                MatchCI matchCI = (MatchCI) sportEventCI;
+                Map<URN, Integer> competitorsDivisions = matchCI.getCompetitorsDivisions();
+
+                if (competitorsDivisions != null && !competitorsDivisions.isEmpty())
+                {
+                    TeamDivision = competitorsDivisions.get(competitorId);
+                }
+            }
+        } catch (DataRouterStreamException e) {
+            handleException(String.format("getCompetitorsDivisions(%s)", competitorId), e);
         } finally {
             reentrantLock.unlock();
         }
