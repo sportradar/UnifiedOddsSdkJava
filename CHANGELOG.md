@@ -1,5 +1,14 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.25 (2019-06-07)**
+* added getDivision to the TeamCompetitor
+* added getGender to the Competitor and PlayerProfile
+* added getStreamUrl to the TvChannel
+* added getPhase to the Round
+* CompetitionStatus.getStatus() no more deprecated (fixed underlining issue)
+* improved caching of variant market descriptions
+* fix: wrong periodType in PeriodScore
+
 **2.0.24 (2019-05-22)**
 * added support for custom bets
 * added customBetManager and getAvailableLanguages to the OddsFeed
