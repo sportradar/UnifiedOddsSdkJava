@@ -53,4 +53,11 @@ public interface PeriodScore {
      * @return the period type
      */
     PeriodType getPeriodType();
+
+    /**
+     * Returns the match status code
+     *
+     * @return - the match status code
+     */
+    Integer getMatchStatusCode();
 }

@@ -171,6 +171,16 @@ public class PeriodScoreImpl implements PeriodScore {
     }
 
     /**
+     * Returns the match status code
+     *
+     * @return - the match status code
+     */
+    @Override
+    public Integer getMatchStatusCode() {
+        return matchStatusCode;
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link PeriodScore} instance
      *
      * @return - a {@link String} describing the current {@link PeriodScore} instance
