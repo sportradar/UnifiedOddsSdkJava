@@ -59,5 +59,7 @@ public interface PeriodScore {
      *
      * @return - the match status code
      */
-    Integer getMatchStatusCode();
+    default Integer getMatchStatusCode() {
+        return null;
+    }
 }
