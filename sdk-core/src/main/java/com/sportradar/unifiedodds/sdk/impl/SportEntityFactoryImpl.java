@@ -194,6 +194,10 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
             throw new ObjectNotFoundException("Could not provide the sport data - category CI missing[" + categoryId + "]", e);
         }
 
+        if(categoryCI.getSportId()==null){
+            return null;
+        }
+
         return buildSport(categoryCI.getSportId(), locales);
     }
 

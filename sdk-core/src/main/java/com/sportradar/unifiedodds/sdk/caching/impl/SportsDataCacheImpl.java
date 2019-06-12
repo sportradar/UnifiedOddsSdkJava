@@ -267,11 +267,11 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
     private void onSportAndCategoriesReceived(URN tournamentId, Object sourceApiObject, SAPISport sport, List<SAPICategory> categories, Locale dataLocale) {
         Preconditions.checkNotNull(sourceApiObject);
-        Preconditions.checkNotNull(sport);
+//        Preconditions.checkNotNull(sport); // can be null in lotteries
         Preconditions.checkNotNull(categories);
         Preconditions.checkNotNull(dataLocale);
 
-        URN sportId = URN.parse(sport.getId());
+        URN sportId = sport == null ? null : URN.parse(sport.getId());
         List<URN> tournamentIds = tournamentId != null ? Collections.singletonList(tournamentId) : new ArrayList<>();
         List<URN> categoryIds = new ArrayList<>(categories.size());
 
@@ -286,6 +286,9 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
             }
         }
 
+        if(sportId==null) {
+            return;
+        }
         SportCI ifPresentSport = sportsCache.getIfPresent(sportId);
         if (ifPresentSport == null) {
             sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, categoryIds, dataLocale));
