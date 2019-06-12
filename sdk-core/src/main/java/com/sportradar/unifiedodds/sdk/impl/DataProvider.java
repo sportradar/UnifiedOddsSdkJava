@@ -92,7 +92,7 @@ public class DataProvider<TOut> {
      * If successful returns the requested API endpoint object
      *
      * @param locale the locale that is used with the supplied URI format
-     * @param args that are used with the supplied URI format
+     * @param args   that are used with the supplied URI format
      * @return the requested API endpoint object
      */
     public TOut getData(Locale locale, String... args) throws DataProviderException {
@@ -105,7 +105,7 @@ public class DataProvider<TOut> {
      * If successful returns the requested API endpoint object
      *
      * @param locale the locale that is used with the supplied URI format
-     * @param args that are used with the supplied URI format
+     * @param args   that are used with the supplied URI format
      * @return the requested API endpoint object and other related information wrapped in a {@link DataWrapper} instance
      */
     public DataWrapper<TOut> getDataWithAdditionalInfo(Locale locale, String... args) throws DataProviderException {
@@ -144,30 +144,13 @@ public class DataProvider<TOut> {
     }
 
     private HttpData fetchData(HttpEntity content, Locale locale, String[] args) throws DataProviderException {
-        int fwArgSize = (args != null) ? (args.length + 1) : 1;
-
-        String[] forwardArgs = new String[fwArgSize];
-
-        int destPos = 0;
-        if (locale != null) {
-            forwardArgs[0] = locale.getLanguage();
-            destPos++;
-        }
-
-        if (args != null){
-            System.arraycopy(args, 0, forwardArgs, destPos, args.length);
-        }
-
-        String formattedPath = String.format(uriFormat, (Object[]) forwardArgs);
-
-        String httpHttps = useApiSsl ? "https" : "http";
 
         HttpData fetchedContent;
         try {
-            String finalUrl = uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHost + "/v1" + formattedPath;
-            fetchedContent = content == null ?
-                    logHttpDataFetcher.get(finalUrl) :
-                    logHttpDataFetcher.post(finalUrl, content);
+            String finalUrl = getFinalUrl(locale, args);
+            fetchedContent = content == null
+                    ? logHttpDataFetcher.get(finalUrl)
+                    : logHttpDataFetcher.post(finalUrl, content);
         } catch (CommunicationException e) {
             throw new DataProviderException("The requested data was not accessible on the provided URL", e);
         }
@@ -177,6 +160,35 @@ public class DataProvider<TOut> {
         }
 
         return fetchedContent;
+    }
+
+    public String getFinalUrl(Locale locale, String arg) {
+        String[] forwardArgs = new String[0];
+        if(arg != null && !arg.isEmpty())
+        {
+            forwardArgs = new String[1];
+            forwardArgs[0] = arg;
+        }
+        return getFinalUrl(locale, forwardArgs);
+    }
+
+    public String getFinalUrl(Locale locale, String[] args) {
+        int fwArgSize = (args != null) ? (args.length + 1) : 1;
+        String[] forwardArgs = new String[fwArgSize];
+
+        int destPos = 0;
+        if (locale != null) {
+            forwardArgs[0] = locale.getLanguage();
+            destPos++;
+        }
+
+        if (args != null) {
+            System.arraycopy(args, 0, forwardArgs, destPos, args.length);
+        }
+        String formattedPath = String.format(uriFormat, (Object[]) forwardArgs);
+        String httpHttps = useApiSsl ? "https" : "http";
+        String finalUrl = uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHost + "/v1" + formattedPath;
+        return finalUrl;
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsException;
+import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.AMQPConnectionFactory;
 import com.sportradar.unifiedodds.sdk.impl.OddsFeedSessionImpl;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
@@ -49,7 +50,7 @@ public class OddsFeed {
     /**
      * The injector used by this feed instance
      */
-    private final Injector injector;
+    protected final Injector injector;
 
     /**
      * The OddsFeed main configuration file
@@ -112,6 +113,11 @@ public class OddsFeed {
     private boolean feedOpened = false;
 
     /**
+     * The {@link OddsFeedExtListener} used to dispatch raw feed messages and api data
+     */
+    private OddsFeedExtListener oddsFeedExtListener;
+
+    /**
      * The most basic feed constructor
      *
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
@@ -127,6 +133,7 @@ public class OddsFeed {
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
         this.injector = createSdkInjector(listener, null);
         checkLocales();
+        this.oddsFeedExtListener = null;
     }
 
     /**
@@ -134,8 +141,9 @@ public class OddsFeed {
      *
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
      * @param config {@link SDKInternalConfiguration}, the configuration class used to configure the new feed
+     * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    protected OddsFeed(SDKGlobalEventsListener listener, SDKInternalConfiguration config) {
+    protected OddsFeed(SDKGlobalEventsListener listener, SDKInternalConfiguration config, OddsFeedExtListener oddsFeedExtListener) {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
@@ -143,6 +151,7 @@ public class OddsFeed {
 
         this.oddsFeedConfiguration = config;
         this.injector = createSdkInjector(listener, null);
+        this.oddsFeedExtListener = oddsFeedExtListener;
     }
 
     /**
@@ -151,8 +160,9 @@ public class OddsFeed {
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
      * @param config {@link OddsFeedConfiguration}, the configuration class used to configure the new feed
      * @param customisableSDKModule the customised injection module
+     * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    protected OddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config, CustomisableSDKModule customisableSDKModule) {
+    protected OddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config, CustomisableSDKModule customisableSDKModule, OddsFeedExtListener oddsFeedExtListener) {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
@@ -160,6 +170,7 @@ public class OddsFeed {
 
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
         this.injector = createSdkInjector(listener, customisableSDKModule);
+        this.oddsFeedExtListener = oddsFeedExtListener;
     }
 
     /**
@@ -169,8 +180,9 @@ public class OddsFeed {
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
      * @param config {@link SDKInternalConfiguration}, the configuration class used to configure the new feed
      * @param customisableSDKModule the customised injection module
+     * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    protected OddsFeed(SDKGlobalEventsListener listener, SDKInternalConfiguration config, CustomisableSDKModule customisableSDKModule) {
+    protected OddsFeed(SDKGlobalEventsListener listener, SDKInternalConfiguration config, CustomisableSDKModule customisableSDKModule, OddsFeedExtListener oddsFeedExtListener) {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
@@ -178,6 +190,7 @@ public class OddsFeed {
 
         this.oddsFeedConfiguration = config;
         this.injector = createSdkInjector(listener, customisableSDKModule);
+        this.oddsFeedExtListener = oddsFeedExtListener;
     }
 
     /**
@@ -350,7 +363,8 @@ public class OddsFeed {
                         systemMessagesSession.open(
                                 Lists.newArrayList(MessageInterest.SystemAliveMessages.getRoutingKeys()),
                                 MessageInterest.SystemAliveMessages,
-                                firstCreatedSession.listener
+                                firstCreatedSession.oddsFeedListener,
+                                oddsFeedExtListener
                         );
                     }
 
@@ -358,7 +372,8 @@ public class OddsFeed {
                         sessionData.session.open(
                                 sessionRoutingKeys.get(sessionData.hashCode()),
                                 sessionData.messageInterest,
-                                sessionData.listener
+                                sessionData.oddsFeedListener,
+                                oddsFeedExtListener
                         );
                     }
 
@@ -416,7 +431,7 @@ public class OddsFeed {
             logger.warn("Unsupported locales: {}", unsupportedLocales);
     }
 
-    private void initOddsFeedInstance() {
+    protected void initOddsFeedInstance() {
         if (feedInitialized) {
             return;
         }
@@ -460,11 +475,11 @@ public class OddsFeed {
         return Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
     }
 
-    private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, Set<URN> eventIds, OddsFeedListener listener) {
+    private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, Set<URN> eventIds, OddsFeedListener oddsFeedListener) {
         if (this.feedOpened){
             throw new IllegalStateException("Sessions can not be created once the feed has been opened");
         } else {
-            SessionData sessionData = new SessionData(session, oddsInterest, eventIds, listener);
+            SessionData sessionData = new SessionData(session, oddsInterest, eventIds, oddsFeedListener);
 
             createdSessionData.add(sessionData);
         }
@@ -488,13 +503,13 @@ public class OddsFeed {
         private final OddsFeedSessionImpl session;
         private final MessageInterest messageInterest;
         private final Set<URN> eventIds;
-        private final OddsFeedListener listener;
+        private final OddsFeedListener oddsFeedListener;
 
-        SessionData(OddsFeedSessionImpl session, MessageInterest messageInterest, Set<URN> eventIds, OddsFeedListener listener) {
+        SessionData(OddsFeedSessionImpl session, MessageInterest messageInterest, Set<URN> eventIds, OddsFeedListener oddsFeedListener) {
             this.session = session;
             this.messageInterest = messageInterest;
             this.eventIds = eventIds;
-            this.listener = listener;
+            this.oddsFeedListener = oddsFeedListener;
         }
     }
 

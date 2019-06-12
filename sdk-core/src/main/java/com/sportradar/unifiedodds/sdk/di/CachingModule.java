@@ -115,7 +115,7 @@ public class CachingModule extends AbstractModule {
 
     @Provides @Singleton
     protected ProfileCache provideProfileCache(CacheItemFactory cacheItemFactory,
-                                             DataRouterManager dataRouterManager) {
+                                               DataRouterManager dataRouterManager) {
         return new ProfileCacheImpl(
                 cacheItemFactory,
                 dataRouterManager,

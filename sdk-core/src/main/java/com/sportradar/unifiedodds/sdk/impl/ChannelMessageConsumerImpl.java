@@ -143,13 +143,29 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         } catch (JAXBException e) {
             loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
             dispatchUnparsableMessage(
-                    String.format("Problems deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
-                            routingKey, new String(body), e),
-                    body,
-                    routingKeyInfo.getEventId(),
-                    timestamp);
+                            String.format("Problems deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
+                                          routingKey,
+                                          new String(body),
+                                          e),
+                            body,
+                            routingKeyInfo.getEventId(),
+                            timestamp);
             return;
         }
+
+        // send RawFeedMessage if needed
+        try
+        {
+            logger.debug("Raw msg [{}]: {} for {feedMessage.EventId}.",
+                    messageConsumer.getMessageInterest(),
+                    unmarshalledMessage.getClass().getName());
+            messageConsumer.onRawFeedMessageReceived(routingKeyInfo, unmarshalledMessage, timestamp, messageConsumer.getMessageInterest());
+        }
+        catch (Exception e)
+        {
+            logger.error("Error dispatching raw message for {feedMessage.EventId}", e);
+        }
+        // continue normal processing
 
         // TODO add other checks as in .NET
         messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo, timestamp);

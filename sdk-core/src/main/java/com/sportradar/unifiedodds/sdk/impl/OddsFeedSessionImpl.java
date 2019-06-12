@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
@@ -44,6 +45,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
     private final Cache<String, String> dispatchedFixtureChangesCache;
     private OddsFeedListener oddsFeedListener;
     private MessageInterest messageInterest;
+    private OddsFeedExtListener oddsFeedExtListener;
 
     @Inject
     public OddsFeedSessionImpl(SDKInternalConfiguration config,
@@ -83,14 +85,15 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         this.processorId = UUID.randomUUID().toString();
     }
 
-    public void open(List<String> routingKeys, MessageInterest messageInterest, OddsFeedListener listener) throws IOException {
+    public void open(List<String> routingKeys, MessageInterest messageInterest, OddsFeedListener oddsFeedListener, OddsFeedExtListener oddsFeedExtListener) throws IOException {
         checkNotNull(routingKeys, "Session routing keys can not be a null reference");
         checkNotNull(messageInterest, "oddsInterest cannot be a null reference");
-        checkNotNull(listener, "listener cannot be a null reference");
+        checkNotNull(oddsFeedListener, "listener cannot be a null reference");
         checkArgument(!routingKeys.isEmpty(), "session routing keys can not be empty");
 
-        this.oddsFeedListener = listener;
+        this.oddsFeedListener = oddsFeedListener;
         this.messageInterest = messageInterest;
+        this.oddsFeedExtListener = oddsFeedExtListener;
 
         messageProcessor.init(this);
         messageReceiver.open(routingKeys, this);
@@ -292,6 +295,22 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
     @Override
     public MessageInterest getMessageInterest() {
         return messageInterest;
+    }
+
+    /**
+     * Occurs when any feed message arrives
+     *
+     * @param routingKey      the routing key associated with this message
+     * @param feedMessage     the message received
+     * @param timestamp       the message timestamps
+     * @param messageInterest the associated {@link MessageInterest}
+     */
+    @Override
+    public void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest) {
+        if(oddsFeedExtListener != null)
+        {
+            oddsFeedExtListener.onRawFeedMessageReceived(routingKey, feedMessage, timestamp, messageInterest);
+        }
     }
 
     private void dispatchUnparsableMessage(byte[] body, SportEvent event, Integer producerId, MessageTimestamp timestamp) {

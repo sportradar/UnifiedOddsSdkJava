@@ -25,7 +25,7 @@ public class ReplayOddsFeed extends OddsFeed {
      * @param config {@link OddsFeedConfiguration}, the configuration class used to configure the new feed
      */
     public ReplayOddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config) {
-        super(listener, new SDKInternalConfiguration(config, true, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader()));
+        super(listener, new SDKInternalConfiguration(config, true, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader()), null);
 
         logger.info("ReplayOddsFeed instance created with \n{}", config);
     }
@@ -39,7 +39,7 @@ public class ReplayOddsFeed extends OddsFeed {
      * @param customisableSDKModule the customised injection module
      */
     public ReplayOddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config, CustomisableSDKModule customisableSDKModule) {
-        super(listener, new SDKInternalConfiguration(config, true, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader()), customisableSDKModule);
+        super(listener, new SDKInternalConfiguration(config, true, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader()), customisableSDKModule, null);
 
         logger.info("ReplayOddsFeed instance created with \n{}", config);
     }

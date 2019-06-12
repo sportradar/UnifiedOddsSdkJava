@@ -45,4 +45,14 @@ public interface MessageConsumer {
      * @return the consumer {@link MessageInterest}
      */
     MessageInterest getMessageInterest();
+
+    /**
+     * Occurs when any feed message arrives
+     *
+     * @param routingKey the routing key associated with this message
+     * @param feedMessage the message received
+     * @param timestamp the message timestamps
+     * @param messageInterest the associated {@link MessageInterest}
+     */
+    void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest);
 }

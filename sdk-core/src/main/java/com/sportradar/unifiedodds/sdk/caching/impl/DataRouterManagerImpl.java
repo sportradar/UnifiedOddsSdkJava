@@ -23,6 +23,7 @@ import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
+import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
@@ -33,6 +34,7 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -189,6 +191,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
      */
     private final DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider;
 
+    /**
+     * The extended odds feed listener
+     */
+    private OddsFeedExtListener oddsFeedExtListener;
+
     private final ReentrantLock tournamentListLock = new ReentrantLock();
     private final ReentrantLock sportsListLock = new ReentrantLock();
     private final ReentrantLock lotteriesListLock = new ReentrantLock();
@@ -279,19 +286,27 @@ public class DataRouterManagerImpl implements DataRouterManager {
         scheduler.scheduleAtFixedRate("SportsDataRefreshTask", this::onSportsDataTimerElapsed, 12, 12, TimeUnit.HOURS);
     }
 
+    public void addOddsFeedExtListener(OddsFeedExtListener oddsFeedExtListener)
+    {
+        Preconditions.checkNotNull(oddsFeedExtListener);
+        this.oddsFeedExtListener = oddsFeedExtListener;
+    }
+
     @Override
     public void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        Object data;
+        Object endpoint;
         try {
-            data = summaryEndpointProvider.getData(locale, id.toString());
+            endpoint = summaryEndpointProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing summary request for id=%s, locale=%s", id, locale), e);
         }
 
-        dataRouter.onSummaryFetched(id, data, locale, requester);
+        dispatchReceivedRawApiData(summaryEndpointProvider.getFinalUrl(locale, id.toString()), endpoint);
+
+        dataRouter.onSummaryFetched(id, endpoint, locale, requester);
     }
 
     @Override
@@ -307,8 +322,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing fixture request for id=%s, locale=%s", id, locale), e);
         }
 
-        SAPIFixture fixture = endpoint.getFixture();
+        String finalUrl = useCachedProvider
+                ? fixtureProvider.getFinalUrl(locale, id.toString())
+                : fixtureChangeFixtureProvider.getFinalUrl(locale, id.toString());
+        dispatchReceivedRawApiData(finalUrl, endpoint);
 
+        SAPIFixture fixture = endpoint.getFixture();
         URN fixtureId = URN.parse(fixture.getId());
         dataRouter.onFixtureFetched(fixtureId, fixture, locale, requester);
     }
@@ -325,6 +344,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing draw summary request for id=%s, locale=%s", id, locale), e);
         }
 
+        dispatchReceivedRawApiData(drawSummaryDataProvider.getFinalUrl(locale, id.toString()), endpoint);
+
         URN drawId = URN.parse(endpoint.getDrawFixture().getId());
         dataRouter.onDrawSummaryFetched(drawId, endpoint, locale, requester);
     }
@@ -340,6 +361,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing draw fixture request for id=%s, locale=%s", id, locale), e);
         }
+
+        dispatchReceivedRawApiData(drawFixtureDataProvider.getFinalUrl(locale, id.toString()), endpoint);
 
         SAPIDrawFixture drawFixture = endpoint.getDrawFixture();
         if (drawFixture != null) {
@@ -371,6 +394,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 throw new CommunicationException(String.format("Error executing all tournaments list request for locale=%s", locale), e);
             }
 
+            dispatchReceivedRawApiData(tournamentsListProvider.getFinalUrl(locale, ""), endpoint);
+
             dataRouter.onAllTournamentsListFetched(endpoint, locale);
 
             tournamentListDataFetched.add(locale);
@@ -397,6 +422,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
             } catch (DataProviderException e) {
                 throw new CommunicationException(String.format("Error execution all sports request for locale=%s", locale), e);
             }
+
+            dispatchReceivedRawApiData(sportsListProvider.getFinalUrl(locale, ""), endpoint);
 
             dataRouter.onSportsListFetched(endpoint, locale);
 
@@ -432,6 +459,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 throw new CommunicationException(String.format("Error executing all lotteries list request for locale=%s", locale), e);
             }
 
+            dispatchReceivedRawApiData(lotteriesListProvider.getFinalUrl(locale, ""), endpoint);
+
             dataRouter.onAllLotteriesListFetched(endpoint, locale);
 
             lotteriesListDataFetched.add(locale);
@@ -451,6 +480,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing tournament schedule request for id=%s, locale=%s", tournamentId, locale), e);
         }
+
+        dispatchReceivedRawApiData(tournamentScheduleProvider.getFinalUrl(locale, tournamentId.toString()), endpoint);
 
         dataRouter.onTournamentScheduleFetched(endpoint, locale);
 
@@ -482,6 +513,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing lottery schedule request for id=%s, locale=%s", lotteryId, locale), e);
         }
 
+        dispatchReceivedRawApiData(lotteryScheduleProvider.getFinalUrl(locale, lotteryId.toString()), endpoint);
+
         dataRouter.onLotteryScheduleFetched(endpoint, locale, requester);
 
         if (endpoint.getDrawEvents() != null && endpoint.getDrawEvents().getDrawEvent() != null) {
@@ -509,6 +542,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing tournament schedule request for id=%s, locale=%s", date == null ? "live" : date, locale), e);
         }
 
+        dispatchReceivedRawApiData(dateScheduleProvider.getFinalUrl(locale, ""), endpoint);
+
         dataRouter.onDateScheduleFetched(endpoint, locale);
 
         return extractEventIds(endpoint.getSportEvent());
@@ -526,8 +561,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing player profile request for id=%s, locale=%s", id, locale), e);
         }
 
-        SAPIPlayerExtended player = endpoint.getPlayer();
+        dispatchReceivedRawApiData(playerProvider.getFinalUrl(locale, id.toString()), endpoint);
 
+        SAPIPlayerExtended player = endpoint.getPlayer();
         URN playerId = URN.parse(player.getId());
         dataRouter.onPlayerFetched(playerId, player, locale, requester);
     }
@@ -544,9 +580,10 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing competitor profile request for id=%s, locale=%s", id, locale), e);
         }
 
+        dispatchReceivedRawApiData(competitorProvider.getFinalUrl(locale, id.toString()), endpoint);
+
         SAPITeamExtended competitor = endpoint.getCompetitor();
         URN competitorId = URN.parse(competitor.getId());
-
         dataRouter.onCompetitorFetched(competitorId, endpoint, locale, requester);
     }
 
@@ -562,12 +599,14 @@ public class DataRouterManagerImpl implements DataRouterManager {
             throw new CommunicationException(String.format("Error executing simpleteam profile request for id=%s, locale=%s", id, locale), e);
         }
 
+        dispatchReceivedRawApiData(simpleTeamProvider.getFinalUrl(locale, id.toString()), endpoint);
+
         SAPITeam competitor = endpoint.getCompetitor();
         URN competitorId = URN.parse(competitor.getId());
-
         dataRouter.onSimpleTeamFetched(competitorId, endpoint, locale, requester);
-        if (!competitorId.equals(id))
+        if (!competitorId.equals(id)) {
             dataRouter.onSimpleTeamFetched(id, endpoint, locale, requester);
+        }
     }
 
     @Override
@@ -581,6 +620,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing tournament seasons request for id=%s, locale=%s", tournamentId, locale), e);
         }
+
+        dispatchReceivedRawApiData(tournamentSeasonsDataProvider.getFinalUrl(locale, tournamentId.toString()), endpoint);
 
         dataRouter.onTournamentSeasonsFetched(tournamentId, endpoint, locale);
 
@@ -598,14 +639,16 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPIMatchTimelineEndpoint data;
+        SAPIMatchTimelineEndpoint endpoint;
         try {
-            data = matchTimelineEndpointDataProvider.getData(locale, id.toString());
+            endpoint = matchTimelineEndpointDataProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing match timeline request for id=%s, locale=%s", id, locale), e);
         }
 
-        dataRouter.onMatchTimelineFetched(id, data, locale, requester);
+        dispatchReceivedRawApiData(matchTimelineEndpointDataProvider.getFinalUrl(locale, id.toString()), endpoint);
+
+        dataRouter.onMatchTimelineFetched(id, endpoint, locale, requester);
     }
 
     @Override
@@ -619,6 +662,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing sport categories request for id=%s, locale=%s", id, locale), e);
         }
+
+        dispatchReceivedRawApiData(sportCategoriesEndpointDataProvider.getFinalUrl(locale, id.toString()), endpoint);
 
         dataRouter.onSportCategoriesFetched(endpoint, locale, requester);
     }
@@ -776,5 +821,22 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } catch (DataRouterStreamException e) {
             throw new CommunicationException("Error occurred while executing request to refresh all tournaments", e);
         }
+    }
+
+    private void dispatchReceivedRawApiData(String uri, Object restMessage)
+    {
+        // send RawFeedMessage if needed
+        try
+        {
+            if(oddsFeedExtListener != null)
+            {
+                oddsFeedExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("Error dispatching raw api data for {}", uri);
+        }
+        // continue normal processing
     }
 }
