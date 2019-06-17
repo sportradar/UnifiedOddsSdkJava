@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Strings;
 import com.google.inject.name.Named;
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
@@ -90,11 +91,6 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private final WhoAmIReader whoAmIReader;
 
     /**
-     * An object used for thread synchronisation.
-     */
-    private final Object lock = new Object();
-
-    /**
      * A {@link Connection} instance representing connection to the Rabbit MQ
      */
     private Connection connection;
@@ -102,7 +98,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     /**
      * A {@link ShutdownListener} used to detect when the connection gets closed
      */
-    private final ShutdownListener shutdownListener = new ShutdownListenerImpl();
+    private final ShutdownListener shutdownListener;
 
     /**
      * Initializes a new instance of the {@link SingleInstanceAMQPConnectionFactory} class
@@ -131,6 +127,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         this.dedicatedRabbitMqExecutor = dedicatedRabbitMqExecutor;
 
         this.messagingPassword = Strings.isNullOrEmpty(config.getMessagingPassword()) ? "" : config.getMessagingPassword();
+        this.shutdownListener = new ShutdownListenerImpl(this);
     }
 
     /**
@@ -199,6 +196,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private SDKConnection createSdkConnection()
                 throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
         checkFirewall();
+        logger.info("Creating new SDKConnection for {}", config.getMessagingHost());
         Connection actualConnection = newConnectionInternal(rabbitConnectionFactory, config, version, whoAmIReader);
         SDKConnection sdkConnection = new SDKConnection(actualConnection);
         sdkConnection.addShutdownListener(shutdownListener);
@@ -253,19 +251,22 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      * @throws KeyManagementException An error occurred while configuring the factory to use SSL
      */
     @Override
-    public Connection newConnection()
+    public synchronized Connection newConnection()
                 throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
-        synchronized (lock) {
-            if (this.connection == null) {
-                this.connection = createSdkConnection();
-                // it can happen that the connection is being closed, but the shutdown listener
-                // hasn't been fired yed.
-                // In this case the connection can no longer be used to create channels, and new
-                // connection has to be created
-            } else if (!this.connection.isOpen()) {
-                logger.warn("The connection has been closed, but the factory has not yet been notified. New connection will be created.");
-                this.connection.removeShutdownListener(shutdownListener);
-                this.connection = createSdkConnection();
+        Channel channel = null;
+        try {
+            channel = this.connection.createChannel();
+        } catch (Exception exc) {
+            this.close();
+            SDKConnection sdkConnection = this.createSdkConnection();
+            this.connection = sdkConnection;
+            return sdkConnection;
+        } finally {
+            try {
+                if (channel != null) {
+                    channel.close();
+                }
+            } catch (Exception ignored) {
             }
         }
         return connection;
@@ -277,53 +278,53 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      * @throws IOException if the connection couldn't be terminated
      */
     @Override
-    public void close() throws IOException {
-        synchronized (lock) {
-            if (isConnectionOpen()) {
-                logger.info("Connection closed");
+    public synchronized void close() throws IOException {
+        logger.info("Closing underlying AMQP connection");
+        try {
+            if (this.connection != null) {
                 this.connection.close();
-            } else {
-                logger.info("Connection closure requested, but the connection is not established.");
             }
+        } finally {
+            this.connection = null;
         }
+        logger.info("Connection closed");
     }
 
-    /**
-     * Check if the connection is currently alive
-     *
-     * @return the status of the connection
-     */
     @Override
-    public boolean isConnectionOpen(){
+    public synchronized boolean isConnectionOpen() {
         return this.connection != null && this.connection.isOpen();
     }
 
-    private class ShutdownListenerImpl implements ShutdownListener {
+    private synchronized void handleShutdown(ShutdownSignalException cause) {
+        try {
+            MDC.setContextMap(whoAmIReader.getAssociatedSdkMdcContextMap());
+            try {
+                this.connectionStatusListener.onConnectionDown();
+            } catch (Exception re) {
+                logger.warn("Problems dispatching onConnectionDown()", re);
+            }
+
+            if (cause.isInitiatedByApplication()) {
+                logger.info("Existing AMQP connection has been shut-down. [initiated by application]");
+            } else {
+                logger.warn("Existing AMQP connection has been shut-down. Ex:", cause);
+            }
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    private final static class ShutdownListenerImpl implements ShutdownListener {
+
+        private final SingleInstanceAMQPConnectionFactory parent;
+
+        private ShutdownListenerImpl(final SingleInstanceAMQPConnectionFactory parent) {
+            this.parent = parent;
+        }
 
         @Override
         public void shutdownCompleted(ShutdownSignalException cause) {
-            synchronized (lock) {
-                MDC.setContextMap(whoAmIReader.getAssociatedSdkMdcContextMap());
-                // make sure the reference points to closed connection
-                if (connection.isOpen()) {
-                    logger.warn("Existing AMQP connection shutdown detected, but the connection instance is opened. Message will be ignored. Ex:", cause);
-                    return;
-                }
-                SingleInstanceAMQPConnectionFactory.this.connection = null;
-
-                try {
-                    SingleInstanceAMQPConnectionFactory.this.connectionStatusListener.onConnectionDown();
-                } catch (Exception re) {
-                    logger.warn("Problems dispatching onConnectionDown()", re);
-                }
-
-                if (cause.isInitiatedByApplication()) {
-                    logger.info("Existing AMQP connection has been shut-down. Clearing the reference to it. [initiated by application]");
-                } else {
-                    logger.warn("Existing AMQP connection has been shut-down. Clearing the reference to it. Ex:", cause);
-                }
-                MDC.clear();
-            }
+            this.parent.handleShutdown(cause);
         }
     }
 }

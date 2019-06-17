@@ -10,9 +10,19 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.DataRouter;
+import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
+import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
+import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -32,7 +42,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -403,11 +419,8 @@ public class OddsFeed {
         }
 
         logger.warn("OddsFeed.close invoked - closing the feed instance");
-        AMQPConnectionFactory amqpConnectionFactory = injector.getInstance(AMQPConnectionFactory.class);
 
-        if (amqpConnectionFactory.isConnectionOpen())
-            amqpConnectionFactory.close();
-
+        injector.getInstance(AMQPConnectionFactory.class).close();
         injector.getInstance(CloseableHttpClient.class).close();
         injector.getInstance(SDKTaskScheduler.class).shutdownNow();
         injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();

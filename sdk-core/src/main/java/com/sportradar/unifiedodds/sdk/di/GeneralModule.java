@@ -15,7 +15,20 @@ import com.google.inject.name.Names;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.BookingManager;
+import com.sportradar.unifiedodds.sdk.BookingManagerImpl;
+import com.sportradar.unifiedodds.sdk.CashOutProbabilitiesManager;
+import com.sportradar.unifiedodds.sdk.CustomBetManager;
+import com.sportradar.unifiedodds.sdk.CustomBetManagerImpl;
+import com.sportradar.unifiedodds.sdk.EventRecoveryRequestIssuer;
+import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
+import com.sportradar.unifiedodds.sdk.RecoveryManager;
+import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.SDKEventRecoveryStatusListener;
+import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
+import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SDKProducerStatusListener;
+import com.sportradar.unifiedodds.sdk.SportsInfoManager;
 import com.sportradar.unifiedodds.sdk.impl.AMQPConnectionFactory;
 import com.sportradar.unifiedodds.sdk.impl.CashOutProbabilitiesManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
@@ -161,7 +174,8 @@ public class GeneralModule implements Module {
 
         // rabbit MQ connection factory & rabbit MQ connection factory wrapper
         binder.bind(ConnectionFactory.class).in(Singleton.class);
-        binder.bind(AMQPConnectionFactory.class).to(SingleInstanceAMQPConnectionFactory.class).in(Singleton.class);
+        binder.bind(AMQPConnectionFactory.class).to(SingleInstanceAMQPConnectionFactory.class);
+        binder.bind(SingleInstanceAMQPConnectionFactory.class).in(Singleton.class);
 
         // other rabbit instances
         binder.bind(RabbitMqChannel.class).to(RabbitMqChannelImpl.class);
