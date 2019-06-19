@@ -531,18 +531,19 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(locale);
 
         SAPIScheduleEndpoint endpoint;
+        String formattedDate = "live";
         try {
             if (date != null) {
-                String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
                 endpoint = dateScheduleProvider.getData(locale, formattedDate);
             } else {
-                endpoint = dateScheduleProvider.getData(locale, "live");
+                endpoint = dateScheduleProvider.getData(locale, formattedDate);
             }
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing tournament schedule request for id=%s, locale=%s", date == null ? "live" : date, locale), e);
         }
 
-        dispatchReceivedRawApiData(dateScheduleProvider.getFinalUrl(locale, ""), endpoint);
+        dispatchReceivedRawApiData(dateScheduleProvider.getFinalUrl(locale, formattedDate), endpoint);
 
         dataRouter.onDateScheduleFetched(endpoint, locale);
 
