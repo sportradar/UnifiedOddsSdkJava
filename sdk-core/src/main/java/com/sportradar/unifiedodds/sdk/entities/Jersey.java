@@ -35,4 +35,41 @@ public interface Jersey {
      * @return the jersey type
      */
     String getType();
+
+    /**
+     * Returns the jersey stripes color
+     *
+     * @return the jersey stripes color
+     */
+    default String getStripesColor() {
+        return null;
+    }
+
+    /**
+     * Returns the jersey split color
+     *
+     * @return the jersey split color
+     */
+    default String getSplitColor() {
+        return null;
+    }
+
+    /**
+     * Returns the jersey shirt type
+     *
+     * @return the jersey shirt type
+     */
+    default String getShirtType() {
+        return null;
+    }
+
+    /**
+     * Returns the jersey sleeve detail
+     *
+     * @return the jersey sleeve detail
+     */
+    default String getSleeveDetail() {
+        return null;
+    }
+
 }
