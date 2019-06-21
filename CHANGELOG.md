@@ -1,5 +1,12 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.26 (2019-06-21)**
+* added isStartTimeTbd and getReplacedBy to the SportEvent
+* added getStripesColor, getSplitColor, getShirtType and getSleeveDetail to the Jersey
+* added getMatchStatusCode to PeriodScore
+* improved on updating when new outcomes are available (outrights)
+* exposed option for user to receive raw feed and api data
+
 **2.0.25 (2019-06-07)**
 * added getDivision to the TeamCompetitor
 * added getGender to the Competitor and PlayerProfile
