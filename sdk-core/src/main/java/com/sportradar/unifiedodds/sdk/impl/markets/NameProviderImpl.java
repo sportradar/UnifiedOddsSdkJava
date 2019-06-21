@@ -24,7 +24,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
-import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,9 +265,9 @@ public class NameProviderImpl implements NameProvider {
                 .append(sportEvent)
                 .append("], market=[");
         String specifierString = marketSpecifiers == null ? "null" :
-                String.join("|", marketSpecifiers.entrySet().stream()
+                marketSpecifiers.entrySet().stream()
                         .map(e -> "{" + e.getKey() + "}={" + e.getValue() + "}")
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.joining("|"));
         sb.append(" MarketId=").append(marketId);
         sb.append(" Specifiers=[").append(specifierString).append("]");
 
@@ -330,9 +329,7 @@ public class NameProviderImpl implements NameProvider {
             return null;
         }
 
-        int r = new Random().nextInt(10);
-        if (marketDescription.getOutcomes() == null || marketDescription.getOutcomes().isEmpty()
-                || (((MarketDescriptionImpl)marketDescription).getSourceCache() == SdkHelper.VariantMarketSingleCache)) {
+        if (marketDescription.getOutcomes() == null || marketDescription.getOutcomes().isEmpty()) {
             if(firstTime){
                 handleErrorCondition("Retrieved market descriptor is lacking outcomes", outcomeId, null, locale, null);
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
