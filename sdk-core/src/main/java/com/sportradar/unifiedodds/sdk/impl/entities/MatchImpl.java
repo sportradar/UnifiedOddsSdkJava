@@ -433,6 +433,40 @@ public class MatchImpl extends SportEventImpl implements Match {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getScheduledEndTime", null);
+            return null;
+        }
+
+        return cacheItem.isStartTimeTbd();
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getScheduledEndTime", null);
+            return null;
+        }
+
+        return cacheItem.getReplacedBy();
+    }
+
+    /**
      * Returns the {@link Fixture} instance containing information about the arranged sport event
      * <i>A Fixture is a sport event that has been arranged for a particular time and place</i>
      *

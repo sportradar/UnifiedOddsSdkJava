@@ -32,6 +32,26 @@ public class JerseyCI {
      */
     private final String type;
 
+    /**
+     * The jersey stripes color
+     */
+    private final String stripesColor;
+
+    /**
+     * The jersey split color
+     */
+    private final String splitColor;
+
+    /**
+     * The jersey shirt type
+     */
+    private final String shirtType;
+
+    /**
+     * The jersey sleeve detail
+     */
+    private final String sleeveDetail;
+
 
     /**
      * Initializes a new {@link JerseyCI}
@@ -45,6 +65,10 @@ public class JerseyCI {
         number = jersey.getNumber();
         sleeve = jersey.getSleeve();
         type = jersey.getType();
+        stripesColor = jersey.getStripesColor();
+        splitColor = jersey.getSplitColor();
+        shirtType = jersey.getShirtType();
+        sleeveDetail = jersey.getSleeveDetail();
     }
 
 
@@ -82,5 +106,41 @@ public class JerseyCI {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * Returns the jersey stripes color
+     *
+     * @return the jersey stripes color
+     */
+    public String getStripesColor() {
+        return stripesColor;
+    }
+
+    /**
+     * Returns the jersey split color
+     *
+     * @return the jersey split color
+     */
+    public String getSplitColor() {
+        return splitColor;
+    }
+
+    /**
+     * Returns the jersey shirt type
+     *
+     * @return the jersey shirt type
+     */
+    public String getShirtType() {
+        return shirtType;
+    }
+
+    /**
+     * Returns the jersey sleeve detail
+     *
+     * @return the jersey sleeve detail
+     */
+    public String getSleeveDetail() {
+        return sleeveDetail;
     }
 }

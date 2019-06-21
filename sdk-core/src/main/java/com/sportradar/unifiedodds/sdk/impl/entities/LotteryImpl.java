@@ -273,6 +273,40 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
         return lotteryCI.getScheduledEnd();
     }
 
+    /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        LotteryCI lotteryCI = loadLotteryCI();
+
+        if (lotteryCI == null) {
+            handleException("LotteryCI missing", null);
+            return null;
+        }
+
+        return lotteryCI.isStartTimeTbd();
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        LotteryCI lotteryCI = loadLotteryCI();
+
+        if (lotteryCI == null) {
+            handleException("LotteryCI missing", null);
+            return null;
+        }
+
+        return lotteryCI.getReplacedBy();
+    }
+
     @Override
     public String toString() {
         return "LotteryImpl{" +

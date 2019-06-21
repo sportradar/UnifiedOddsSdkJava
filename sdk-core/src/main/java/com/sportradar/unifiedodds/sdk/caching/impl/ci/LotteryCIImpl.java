@@ -186,6 +186,26 @@ public class LotteryCIImpl implements LotteryCI {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        return null;
+    }
+
+    /**
      * Determines whether the current instance has translations for the specified languages
      *
      * @param localeList a {@link List} specifying the required languages

@@ -52,4 +52,22 @@ public interface SportEvent {
      * instance was scheduled to end
      */
     Date getScheduledEndTime();
+
+    /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    default Boolean isStartTimeTbd() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    default URN getReplacedBy() {
+        return null;
+    }
 }

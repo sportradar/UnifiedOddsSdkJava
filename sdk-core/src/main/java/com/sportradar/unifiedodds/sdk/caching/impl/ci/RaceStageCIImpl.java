@@ -160,6 +160,16 @@ class RaceStageCIImpl implements StageCI {
      */
     private final Cache<URN, Date> fixtureTimestampCache;
 
+    /**
+     * The {@link Boolean} indicating if the start time to be determined is set
+     */
+    private Boolean startTimeTbd;
+
+    /**
+     * The {@link URN} indicating the replacement sport event
+     */
+    private URN replacedBy;
+
     RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -179,6 +189,10 @@ class RaceStageCIImpl implements StageCI {
                 endpointData.getScheduled().toGregorianCalendar().getTime();
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
                 endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        this.startTimeTbd = endpointData.isStartTimeTbd();
+        this.replacedBy = endpointData.getReplacedBy() == null
+                ? null
+                : URN.parse(endpointData.getReplacedBy());
 
         this.parentStageId = endpointData.getParent() != null ?
                 URN.parse(endpointData.getParent().getId()) :
@@ -268,6 +282,10 @@ class RaceStageCIImpl implements StageCI {
                 endpointData.getScheduled().toGregorianCalendar().getTime();
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
                 endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        this.startTimeTbd = endpointData.isStartTimeTbd();
+        this.replacedBy = endpointData.getReplacedBy() == null
+                ? null
+                : URN.parse(endpointData.getReplacedBy());
 
         this.stageType = StageType.mapFromApiValue(endpointData.getType());
 
@@ -526,6 +544,46 @@ class RaceStageCIImpl implements StageCI {
         return scheduledEnd;
     }
 
+    /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        if (startTimeTbd != null) {
+            return startTimeTbd;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return startTimeTbd;
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+
+        return startTimeTbd;
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        if (replacedBy != null) {
+            return replacedBy;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return replacedBy;
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+
+        return replacedBy;
+    }
+
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
         if (endpointData instanceof SAPIFixture) {
@@ -643,6 +701,10 @@ class RaceStageCIImpl implements StageCI {
 
         scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        this.startTimeTbd = sportEvent.isStartTimeTbd();
+        this.replacedBy = sportEvent.getReplacedBy() == null
+                ? null
+                : URN.parse(sportEvent.getReplacedBy());
 
         if (sportEvent.getParent() != null) {
             parentStageId = URN.parse(sportEvent.getParent().getId());
@@ -698,6 +760,10 @@ class RaceStageCIImpl implements StageCI {
 
         scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        this.startTimeTbd = endpointData.isStartTimeTbd();
+        this.replacedBy = endpointData.getReplacedBy() == null
+                ? null
+                : URN.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
