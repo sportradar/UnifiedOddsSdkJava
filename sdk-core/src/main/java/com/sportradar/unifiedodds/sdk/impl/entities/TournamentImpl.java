@@ -137,6 +137,40 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        TournamentCI tournamentCi = loadTournamentCI();
+
+        if (tournamentCi == null) {
+            handleException("TournamentCI missing", null);
+            return null;
+        }
+
+        return tournamentCi.isStartTimeTbd();
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        TournamentCI tournamentCi = loadTournamentCI();
+
+        if (tournamentCi == null) {
+            handleException("TournamentCI missing", null);
+            return null;
+        }
+
+        return tournamentCi.getReplacedBy();
+    }
+
+    /**
      * Returns a {@link CategorySummary} representing the category associated with the current instance
      *
      * @return - a {@link CategorySummary} representing the category associated with the current instance

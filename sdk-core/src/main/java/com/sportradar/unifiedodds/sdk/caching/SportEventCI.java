@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
+import com.sportradar.utils.URN;
+
 import java.util.Date;
 
 /**
@@ -27,4 +29,18 @@ public interface SportEventCI extends CacheItem {
      * instance was scheduled to end; otherwise null;
      */
     Date getScheduledEnd();
+
+    /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    Boolean isStartTimeTbd();
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    URN getReplacedBy();
 }

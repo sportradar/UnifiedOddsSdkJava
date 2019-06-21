@@ -185,6 +185,16 @@ class MatchCIImpl implements MatchCI {
      */
     private final Cache<URN, Date> fixtureTimestampCache;
 
+    /**
+     * The {@link Boolean} indicating if the start time to be determined is set
+     */
+    private Boolean startTimeTbd;
+
+    /**
+     * The {@link URN} indicating the replacement sport event
+     */
+    private URN replacedBy;
+
     MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -256,6 +266,10 @@ class MatchCIImpl implements MatchCI {
 
         scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        startTimeTbd = endpointData.isStartTimeTbd();
+        replacedBy = endpointData.getReplacedBy() == null
+                ? null
+                : URN.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
@@ -537,6 +551,46 @@ class MatchCIImpl implements MatchCI {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        if (startTimeTbd != null) {
+            return startTimeTbd;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return startTimeTbd;
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+
+        return startTimeTbd;
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        if (replacedBy != null) {
+            return replacedBy;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return replacedBy;
+        }
+
+        requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+
+        return replacedBy;
+    }
+
+    /**
      * Returns the associated event timeline
      * (the timeline is cached only after the event status indicates that the event has finished)
      *
@@ -687,6 +741,10 @@ class MatchCIImpl implements MatchCI {
         cacheCompetitors(sportEvent.getCompetitors() == null
                 ? null
                 : sportEvent.getCompetitors().getCompetitor(), currentLocale);
+        this.startTimeTbd = sportEvent.isStartTimeTbd();
+        this.replacedBy = sportEvent.getReplacedBy() == null
+                ? null
+                : URN.parse(sportEvent.getReplacedBy());
 
         constructEventName(currentLocale, sportEvent.getCompetitors());
     }
@@ -868,6 +926,10 @@ class MatchCIImpl implements MatchCI {
 
         scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        this.startTimeTbd = sportEvent.isStartTimeTbd();
+        this.replacedBy = sportEvent.getReplacedBy() == null
+                ? null
+                : URN.parse(sportEvent.getReplacedBy());
 
         if (sportEvent.getTournament() != null) {
             tournamentId = URN.parse(sportEvent.getTournament().getId());
@@ -918,6 +980,10 @@ class MatchCIImpl implements MatchCI {
 
         scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        this.startTimeTbd = endpointData.isStartTimeTbd();
+        this.replacedBy = endpointData.getReplacedBy() == null
+                ? null
+                : URN.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());

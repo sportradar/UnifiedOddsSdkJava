@@ -179,6 +179,40 @@ public class DrawImpl extends SportEventImpl implements Draw {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     *
+     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     */
+    @Override
+    public Boolean isStartTimeTbd() {
+        DrawCI drawCI = loadDrawCI();
+
+        if (drawCI == null) {
+            handleException("DrawCI missing", null);
+            return null;
+        }
+
+        return drawCI.isStartTimeTbd();
+    }
+
+    /**
+     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     *
+     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     */
+    @Override
+    public URN getReplacedBy() {
+        DrawCI drawCI = loadDrawCI();
+
+        if (drawCI == null) {
+            handleException("DrawCI missing", null);
+            return null;
+        }
+
+        return drawCI.getReplacedBy();
+    }
+
+    /**
      * Returns the associated sport identifier
      * (This method its overridden because the superclass SportEvent does not contain the sportId in all cases)
      *
