@@ -122,7 +122,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
 
                 DescMarket descMarket = data.getMarket().get(0);
                 if (existingMarketDescriptor == null) {
-                    existingMarketDescriptor = new MarketDescriptionCI(descMarket, mappingValidatorFactory, mLoc);
+                    existingMarketDescriptor = new MarketDescriptionCI(descMarket, mappingValidatorFactory, mLoc, SdkHelper.VariantMarketSingleCache);
                 } else {
                     existingMarketDescriptor.merge(descMarket, mLoc);
                 }

@@ -207,7 +207,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             String processingCacheItemId = String.valueOf(market.getId());
             MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
             if (cachedItem == null) {
-                cachedItem = new MarketDescriptionCI(market, mappingValidatorFactory, locale);
+                cachedItem = new MarketDescriptionCI(market, mappingValidatorFactory, locale, SdkHelper.InVariantMarketListCache);
                 cache.put(processingCacheItemId, cachedItem);
             } else {
                 cachedItem.merge(market, locale);

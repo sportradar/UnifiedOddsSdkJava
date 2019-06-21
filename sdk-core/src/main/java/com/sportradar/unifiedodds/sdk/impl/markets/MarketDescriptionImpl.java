@@ -15,12 +15,9 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
+import com.sportradar.utils.SdkHelper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.FREETEXT_VARIANT_VALUE;
 import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE;
@@ -41,6 +38,8 @@ public class MarketDescriptionImpl implements MarketDescription {
     private List<OutcomeDescription> outcomes;
     private List<MarketMappingData> mappings;
     private boolean mappingsBuilt;
+    private Date lastDataReceived;
+    private String sourceCache;
 
     public MarketDescriptionImpl(MarketDescriptionCI cachedItem, List<Locale> locales) {
         Preconditions.checkNotNull(cachedItem);
@@ -69,6 +68,8 @@ public class MarketDescriptionImpl implements MarketDescription {
         attributes = cachedItem.getAttributes() == null ? null :
                 cachedItem.getAttributes().stream()
                         .map(MarketAttributeImpl::new).collect(ImmutableList.toImmutableList());
+        this.sourceCache = cachedItem.getSourceCache();
+        this.lastDataReceived = cachedItem.getLastDataReceived();
     }
 
     @Override
@@ -164,5 +165,24 @@ public class MarketDescriptionImpl implements MarketDescription {
         return outcomeCis == null ? Collections.emptyList() :
                 outcomeCis.stream()
                         .map(o -> new OutcomeDescriptionImpl(o, locales)).collect(ImmutableList.toImmutableList());
+    }
+
+    public String getSourceCache() { return sourceCache; }
+
+    public Date getLastDataReceived() { return lastDataReceived; }
+
+    public void setFetchInfo(String sourceCache, Date lastDataReceived)
+    {
+        if(sourceCache != null){
+            this.sourceCache = sourceCache;
+        }
+        if(lastDataReceived != null){
+            this.lastDataReceived = lastDataReceived;
+        }
+    }
+
+    public boolean canBeFetched()
+    {
+        return Math.abs(new Date().getTime() - lastDataReceived.getTime())/1000 > SdkHelper.MarketDescriptionMinFetchInterval;
     }
 }

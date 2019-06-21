@@ -73,6 +73,7 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
             return null;
         }
 
+        // TODO: could throw exception if not found (need fix)
         return translatedDescriptor.getOutcomes().stream()
                 .filter(o -> o.getId().equals(outcomeId))
                 .findFirst()

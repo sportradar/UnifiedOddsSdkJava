@@ -10,11 +10,14 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
+import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CachingException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
+import com.sportradar.utils.SdkHelper;
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,10 +90,11 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
 
     private Optional<MarketDescription> provideFullVariantListEndpointMarket(int marketId, List<Locale> locales, MarketDescription marketDescriptor, String variantValue) {
         try {
-            VariantDescriptionCI variantDescription = variantDescriptionCache.getVariantDescription(variantValue, locales);
+            VariantDescriptionCI variantDescriptionCI = variantDescriptionCache.getVariantDescription(variantValue, locales);
 
-            ((MarketDescriptionImpl) marketDescriptor).mergeOutcomes(variantDescription.getOutcomes(), locales);
-            ((MarketDescriptionImpl) marketDescriptor).setStaticMappingsData(variantDescription.getMappings());
+            ((MarketDescriptionImpl) marketDescriptor).mergeOutcomes(variantDescriptionCI.getOutcomes(), locales);
+            ((MarketDescriptionImpl) marketDescriptor).setStaticMappingsData(variantDescriptionCI.getMappings());
+            ((MarketDescriptionImpl) marketDescriptor).setFetchInfo(variantDescriptionCI.getSourceCache(), variantDescriptionCI.getLastDataReceived());
 
             return Optional.of(marketDescriptor);
         } catch (CacheItemNotFoundException e) {
@@ -103,16 +107,16 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
     }
 
     private MarketDescription provideDynamicVariantEndpointMarket(int marketId, List<Locale> locales, MarketDescription marketDescriptor, String variantValue) {
-        MarketDescription variantDescriptor;
+        MarketDescription dynamicVariantMarketDescirption;
         try {
-            variantDescriptor = variantMarketCache.getMarketDescriptor(marketId, variantValue, locales);
+            dynamicVariantMarketDescirption = variantMarketCache.getMarketDescriptor(marketId, variantValue, locales);
         } catch (CachingException e) {
             logger.warn("There was an error providing the explicit variant market descriptor -> marketId:{}, variantValue: {}, locales: {}",
                     marketId, variantValue, locales, e);
             return marketDescriptor;
         }
 
-        return variantDescriptor;
+        return dynamicVariantMarketDescirption;
     }
 
     private static boolean isMarketPlayerProps(MarketDescription marketDescriptor) {
@@ -121,5 +125,53 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
 
     private static boolean isMarketOutcomeText(MarketDescription marketDescriptor) {
         return marketDescriptor.getOutcomeType() != null && marketDescriptor.getOutcomeType().equals(UnifiedFeedConstants.FREETEXT_VARIANT_VALUE);
+    }
+
+    /**
+     * Reloads market description (one or list)
+     * @param marketId the market identifier
+     * @param specifiers a list of specifiers or a null reference if market is invariant
+     * @param sourceCache the source cache cache item belongs to
+     * @return true if succeeded, false otherwise
+     */
+    public boolean reloadMarketDescription(int marketId, List<Specifier> specifiers, String sourceCache){
+        if (sourceCache == null || sourceCache.isEmpty())
+        {
+            logger.warn("Calling reloadMarketDescriptionAsync without sourceCache. (marketId={})", sourceCache);
+            return false;
+        }
+        try
+        {
+            if (sourceCache.equals(SdkHelper.InVariantMarketListCache))
+            {
+                logger.debug("Reloading invariant market description list");
+                return invariantMarketCache.loadMarketDescriptions();
+            }
+            if (sourceCache.equals(SdkHelper.VariantMarketListCache))
+            {
+                logger.debug("Reloading variant market description list");
+                return variantDescriptionCache.loadMarketDescriptions();
+            }
+            if (sourceCache.equals(SdkHelper.VariantMarketSingleCache))
+            {
+                Specifier variantSpecifier = specifiers == null || !specifiers.contains(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME)
+                        ? null
+                        : specifiers.stream().filter(s -> s.getName().equals(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME)).findFirst().orElse(null);
+                if(variantSpecifier != null) {
+                    logger.debug("Deleting variant market description for market={} and variant={}", marketId, variantSpecifier.getType());
+                    variantMarketCache.deleteCacheItem(marketId, variantSpecifier.getType());
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logger.warn("Error reloading market description(s).", e);
+        }
+        logger.warn("Calling ReloadMarketDescriptionAsync with unknown sourceCache={}. (marketId={})", sourceCache, marketId);
+        return false;
     }
 }

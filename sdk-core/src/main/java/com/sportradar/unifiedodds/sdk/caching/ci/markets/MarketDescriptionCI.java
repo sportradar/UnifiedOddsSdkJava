@@ -11,6 +11,7 @@ import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.Mappings;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,10 @@ public class MarketDescriptionCI {
     private String outcomeType;
     private List<String> groups;
     private String variant;
+    private Date lastDataReceived;
+    private String sourceCache;
 
-    public MarketDescriptionCI(DescMarket market, MappingValidatorFactory mappingValidatorFactory, Locale locale) {
+    public MarketDescriptionCI(DescMarket market, MappingValidatorFactory mappingValidatorFactory, Locale locale, String sourceCache) {
         Preconditions.checkNotNull(market);
         Preconditions.checkNotNull(mappingValidatorFactory);
         Preconditions.checkNotNull(locale);
@@ -79,6 +82,8 @@ public class MarketDescriptionCI {
         fetchedLocales.add(locale);
 
         this.mappingValidatorFactory = mappingValidatorFactory;
+        this.sourceCache = sourceCache;
+        this.lastDataReceived = new Date();
     }
 
     public void merge(DescMarket market, Locale locale) {
@@ -126,6 +131,7 @@ public class MarketDescriptionCI {
         }
 
         fetchedLocales.add(locale);
+        this.lastDataReceived = new Date();
     }
 
     public int getId() {
@@ -215,5 +221,14 @@ public class MarketDescriptionCI {
             return includesOutcomesOfType.substring(3);
         else
             return null;
+    }
+
+    public String getSourceCache() { return sourceCache; }
+
+    public Date getLastDataReceived() { return lastDataReceived; }
+
+    public boolean canBeFetched()
+    {
+        return Math.abs(new Date().getTime() - lastDataReceived.getTime())/1000 > SdkHelper.MarketDescriptionMinFetchInterval;
     }
 }

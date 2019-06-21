@@ -38,6 +38,7 @@ public class OutcomeDescriptionImpl implements OutcomeDescription {
         descriptions = locales.stream().filter(l -> ci.getDescription(l) != null)
                 .collect(Collectors.toMap(k -> k, ci::getDescription));
     }
+
     public OutcomeDescriptionImpl(String id, Map<Locale, String> names) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(id));
         Preconditions.checkNotNull(names);

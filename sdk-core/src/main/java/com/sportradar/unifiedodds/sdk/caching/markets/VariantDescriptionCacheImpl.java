@@ -43,10 +43,10 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
     private boolean hasTimerElapsedOnce;
 
     public VariantDescriptionCacheImpl(Cache<String, VariantDescriptionCI> cache,
-                                DataProvider<VariantDescriptions> dataProvider,
-                                MappingValidatorFactory mappingValidatorFactory,
-                                SDKTaskScheduler scheduler,
-                                List<Locale> prefetchLocales) {
+                                        DataProvider<VariantDescriptions> dataProvider,
+                                        MappingValidatorFactory mappingValidatorFactory,
+                                        SDKTaskScheduler scheduler,
+                                        List<Locale> prefetchLocales) {
         Preconditions.checkNotNull(cache);
         Preconditions.checkNotNull(dataProvider);
         Preconditions.checkNotNull(mappingValidatorFactory);
@@ -175,7 +175,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
             if (ifPresent != null) {
                 ifPresent.merge(market, dataLocale);
             } else {
-                ifPresent = new VariantDescriptionCI(market, mappingValidatorFactory, dataLocale);
+                ifPresent = new VariantDescriptionCI(market, mappingValidatorFactory, dataLocale, SdkHelper.VariantMarketListCache);
                 cache.put(id, ifPresent);
             }
         });

@@ -24,6 +24,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,19 +140,15 @@ public class NameProviderImpl implements NameProvider {
             }
         }
 
-        MarketDescription marketDescription;
-        try {
-            marketDescription = getMarketDescriptor(locale);
-        } catch (ObjectNotFoundException ex) {
-            return handleErrorCondition("Failed to retrieve market name description", outcomeId, null, locale, ex);
+        MarketDescription marketDescription = getMarketDescriptionForOutcome(outcomeId, locale, true);
+        if(marketDescription == null){
+            return null;
         }
 
-        Optional<OutcomeDescription> optDesc = marketDescription.getOutcomes().stream()
-                .filter(o -> o.getId().equals(outcomeId)).findFirst();
+        Optional<OutcomeDescription> optDesc = marketDescription.getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
 
         if (!optDesc.isPresent() || optDesc.get().getName(locale) == null) {
-            return handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language",
-                    outcomeId, null, locale, null);
+            return handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locale, null);
         }
 
         String nameDescription = optDesc.get().getName(locale);
@@ -316,5 +313,56 @@ public class NameProviderImpl implements NameProvider {
         }
 
         return Collections.emptyList();
+    }
+
+    private MarketDescription getMarketDescriptionForOutcome(String outcomeId, Locale locale, boolean firstTime)
+    {
+        MarketDescription marketDescription = null;
+        try {
+            marketDescription = getMarketDescriptor(locale);
+        } catch (ObjectNotFoundException ex) {
+            handleErrorCondition("Failed to retrieve market name description", outcomeId, null, locale, ex);
+            return marketDescription;
+        }
+
+        if(marketDescription == null){
+            handleErrorCondition("Failed to retrieve market name description", outcomeId, null, locale, null);
+            return null;
+        }
+
+        int r = new Random().nextInt(10);
+        if (marketDescription.getOutcomes() == null || marketDescription.getOutcomes().isEmpty()
+                || (((MarketDescriptionImpl)marketDescription).getSourceCache() == SdkHelper.VariantMarketSingleCache)) {
+            if(firstTime){
+                handleErrorCondition("Retrieved market descriptor is lacking outcomes", outcomeId, null, locale, null);
+                if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
+                    handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
+                    descriptorProvider.reloadMarketDescription(marketDescription.getId(),
+                                                               marketDescription.getSpecifiers(),
+                                                               ((MarketDescriptionImpl) marketDescription).getSourceCache());
+                    return getMarketDescriptionForOutcome(outcomeId, locale, false);
+                }
+            }
+            handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locale, null);
+            return null;
+        }
+
+        Optional<OutcomeDescription> optDesc = marketDescription.getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
+        if (!optDesc.isPresent() || optDesc.get().getName(locale) == null) {
+            if(firstTime){
+                handleErrorCondition("Retrieved market descriptor is missing outcome", outcomeId, null, locale, null);
+                if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
+                    handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
+                    descriptorProvider.reloadMarketDescription(marketDescription.getId(),
+                                                               marketDescription.getSpecifiers(),
+                                                               ((MarketDescriptionImpl) marketDescription).getSourceCache());
+                    return getMarketDescriptionForOutcome(outcomeId, locale, false);
+                }
+            }
+            handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locale, null);
+            return null;
+        }
+
+        return marketDescription;
     }
 }

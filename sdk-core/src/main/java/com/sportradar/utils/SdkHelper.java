@@ -17,6 +17,12 @@ import java.util.stream.Collectors;
  * An utility class that contains various methods which perform common language tasks
  */
 public final class SdkHelper {
+
+    public static int MarketDescriptionMinFetchInterval = 30;
+    public static String InVariantMarketListCache = "InVariantMarketListCache";
+    public static String VariantMarketSingleCache = "VariantMarketSingleCache";
+    public static String VariantMarketListCache = "VariantMarketListCache";
+
     /**
      * Calculates and returns the missing locales within the provided {@link List}
      *

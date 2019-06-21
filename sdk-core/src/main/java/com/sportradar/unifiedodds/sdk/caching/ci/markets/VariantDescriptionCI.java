@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,10 @@ public class VariantDescriptionCI {
     private final List<MarketOutcomeCI> outcomes;
     private final List<MarketMappingCI> mappings;
     private final List<Locale> cachedLocales;
+    private Date lastDataReceived;
+    private String sourceCache;
 
-    public VariantDescriptionCI(DescVariant descVariant, MappingValidatorFactory mappingValidatorFactory, Locale dataLocale) {
+    public VariantDescriptionCI(DescVariant descVariant, MappingValidatorFactory mappingValidatorFactory, Locale dataLocale, String sourceCache) {
         Preconditions.checkNotNull(descVariant);
         Preconditions.checkNotNull(mappingValidatorFactory);
         Preconditions.checkNotNull(dataLocale);
@@ -49,6 +52,9 @@ public class VariantDescriptionCI {
 
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
         cachedLocales.add(dataLocale);
+
+        this.sourceCache = sourceCache;
+        this.lastDataReceived = new Date();
     }
 
     public String getId() {
@@ -96,6 +102,8 @@ public class VariantDescriptionCI {
         }
 
         cachedLocales.add(dataLocale);
+
+        this.lastDataReceived = new Date();
     }
 
     public List<Locale> getCachedLocales() {
@@ -137,5 +145,14 @@ public class VariantDescriptionCI {
         }
 
         return target;
+    }
+
+    public String getSourceCache() { return sourceCache; }
+
+    public Date getLastDataReceived() { return lastDataReceived; }
+
+    public boolean canBeFetched()
+    {
+        return Math.abs(new Date().getTime() - lastDataReceived.getTime())/1000 > SdkHelper.MarketDescriptionMinFetchInterval;
     }
 }
