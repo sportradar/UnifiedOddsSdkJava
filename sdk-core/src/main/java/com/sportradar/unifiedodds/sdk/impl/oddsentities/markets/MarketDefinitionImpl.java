@@ -99,8 +99,7 @@ class MarketDefinitionImpl implements MarketDefinition {
             return null;
         }
 
-        return marketDescriptor.getAttributes().stream()
-                .collect(Collectors.toMap(MarketAttribute::getName, MarketAttribute::getDescription));
+        return marketDescriptor.getAttributes().stream().collect(Collectors.toMap(MarketAttribute::getName, MarketAttribute::getDescription));
     }
 
     @Override

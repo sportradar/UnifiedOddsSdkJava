@@ -57,4 +57,6 @@ public interface DataRouterManager {
     Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException;
 
     List<FixtureChange> requestFixtureChanges(Locale locale) throws CommunicationException;
+
+    List<URN> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException;
 }

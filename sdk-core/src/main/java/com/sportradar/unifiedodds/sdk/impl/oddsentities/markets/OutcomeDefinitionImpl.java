@@ -60,6 +60,9 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
 
     @Override
     public String getNameTemplate(Locale locale) {
+        Preconditions.checkNotNull(locale);
+        Preconditions.checkNotNull(outcomeId);
+
         MarketDescription translatedDescriptor = null;
         try {
             translatedDescriptor = provideDynamicVariantMarket(locale);
@@ -73,7 +76,6 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
             return null;
         }
 
-        // TODO: could throw exception if not found (need fix)
         return translatedDescriptor.getOutcomes().stream()
                 .filter(o -> o.getId().equals(outcomeId))
                 .findFirst()

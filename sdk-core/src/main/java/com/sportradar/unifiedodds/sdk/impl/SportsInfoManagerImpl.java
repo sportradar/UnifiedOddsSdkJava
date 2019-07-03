@@ -115,7 +115,6 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         this.dataRouterManager = dataRouterManager;
     }
 
-
     /**
      * Returns all the available sports
      * (the returned data is translated in the configured {@link Locale}s using the {@link OddsFeedConfiguration})
@@ -157,6 +156,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     @Override
     public List<SportEvent> getActiveTournaments() {
         Stopwatch timer = Stopwatch.createStarted();
+        //TODO: check if here would need desiredLocales call
         List<SportEvent> tournaments = internalGetActiveTournaments(defaultLocale);
         clientInteractionLog.info("SportsInfoManager.getActiveTournaments() invoked. Execution time: {}", timer.stop());
         return tournaments;
@@ -193,6 +193,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(sportName), "Sport name can not be null/empty");
 
         Stopwatch timer = Stopwatch.createStarted();
+        //TODO: check if here would need desiredLocales call
         List<SportEvent> tournaments = internalGetActiveTournaments(sportName, defaultLocale);
         clientInteractionLog.info("SportsInfoManager.getActiveTournaments({}) invoked. Execution time: {}", sportName, timer.stop());
         return tournaments;
@@ -565,6 +566,84 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         } catch (CommunicationException e) {
             return handleException("getFixtureChanges", e);
         }
+    }
+
+    /**
+     * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
+     * @param startIndex starting index (zero based)
+     * @param limit how many records to return (max: 1000)
+     * @return a list of sport events
+     */
+    @Override
+    public List<Competition> getListOfSportEvents(int startIndex, int limit) {
+
+        if(startIndex < 0)
+        {
+            throw new IllegalArgumentException("Wrong startIndex");
+        }
+        if(limit < 1 || limit > 1000)
+        {
+            throw new IllegalArgumentException("Wrong limit");
+        }
+
+        Stopwatch timer = Stopwatch.createStarted();
+
+        List<Competition> sportEvents = null;
+
+        try {
+            List<URN> eventIds = null;
+            for (Locale locale : desiredLocales) {
+                eventIds = this.dataRouterManager.requestListSportEvents(locale, startIndex, limit);
+            }
+            if(eventIds != null && !eventIds.isEmpty()){
+                sportEvents = sportEntityFactory.buildSportEvents(eventIds, desiredLocales);
+            }
+            clientInteractionLog.info("sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}", startIndex, limit, desiredLocales, timer.stop());
+        } catch (ObjectNotFoundException e) {
+            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, desiredLocales), e);
+        } catch (CommunicationException e) {
+            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, desiredLocales), e);
+        }
+        return sportEvents;
+    }
+
+    /**
+     * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
+     * @param startIndex starting index (zero based)
+     * @param limit how many records to return (max: 1000)
+     * @param locale the {@link Locale} in which to provide the data
+     * @return a list of sport events
+     */
+    @Override
+    public List<Competition> getListOfSportEvents(int startIndex, int limit, Locale locale) {
+        Preconditions.checkNotNull(locale);
+
+        if(startIndex < 0)
+        {
+            throw new IllegalArgumentException("Wrong startIndex");
+        }
+        if(limit < 1 || limit > 1000)
+        {
+            throw new IllegalArgumentException("Wrong limit");
+        }
+
+        Stopwatch timer = Stopwatch.createStarted();
+
+        List<Competition> sportEvents = null;
+        List<Locale> builtLocales = Lists.newArrayList(locale);
+
+        try {
+            List<URN> eventIds = this.dataRouterManager.requestListSportEvents(locale, startIndex, limit);
+            if(eventIds != null && !eventIds.isEmpty()){
+                sportEvents = sportEntityFactory.buildSportEvents(eventIds, builtLocales);
+            }
+            clientInteractionLog.info("sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}", startIndex, limit, builtLocales, timer.stop());
+        } catch (ObjectNotFoundException e) {
+            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, locale), e);
+        } catch (CommunicationException e) {
+            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, locale), e);
+        }
+        return sportEvents;
     }
 
     private List<Sport> internalGetSports(List<Locale> locales) {

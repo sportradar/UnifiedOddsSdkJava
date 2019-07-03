@@ -265,6 +265,14 @@ public class DataRouterImpl implements DataRouter {
         dataListeners.forEach(l -> l.onCalculateProbabilityFetched(selections, calculation));
     }
 
+    @Override
+    public void onListSportEventsFetched(SAPIScheduleEndpoint endpoint, Locale locale) {
+        Preconditions.checkNotNull(endpoint);
+        Preconditions.checkNotNull(locale);
+
+        dispatchSportEvents(endpoint.getSportEvent(), locale);
+    }
+
     private void dispatchTournamentSchedule(SAPIRaceScheduleEndpoint endpoint, Locale locale) {
         if (endpoint.getTournament() != null) {
             URN trnId = URN.parse(endpoint.getTournament().getId());

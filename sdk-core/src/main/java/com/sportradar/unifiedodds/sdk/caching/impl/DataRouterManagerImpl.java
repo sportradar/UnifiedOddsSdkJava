@@ -192,6 +192,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider;
 
     /**
+     * A {@link DataProvider} instance which is used to get list of sport events
+     */
+    private final DataProvider<SAPIScheduleEndpoint> listSportEventsProvider;
+
+    /**
      * The extended odds feed listener
      */
     private OddsFeedExtListener oddsFeedExtListener;
@@ -209,7 +214,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           @Named("FixtureEndpointDataProvider") DataProvider<SAPIFixturesEndpoint> fixtureProvider,
                           @Named("FixtureChangeFixtureEndpointDataProvider") DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureProvider,
                           DataProvider<SAPITournamentsEndpoint> tournamentsListProvider,
-                          DataProvider<SAPIScheduleEndpoint> dateScheduleProvider,
+                          @Named("DateScheduleEndpointDataProvider") DataProvider<SAPIScheduleEndpoint> dateScheduleProvider,
                           @Named("TournamentScheduleProvider") DataProvider<Object> tournamentScheduleProvider,
                           DataProvider<SAPISportsEndpoint> sportsListProvider,
                           DataProvider<SAPIPlayerProfileEndpoint> playerProvider,
@@ -224,7 +229,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPILotterySchedule> lotteryScheduleProvider,
                           DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
                           DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider,
-                          DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider) {
+                          DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider,
+                          @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkNotNull(scheduler);
@@ -249,6 +255,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
         Preconditions.checkNotNull(calculateProbabilityDataProvider);
         Preconditions.checkNotNull(fixtureChangesDataProvider);
+        Preconditions.checkNotNull(listSportEventsProvider);
 
         this.prefetchLocales = configuration.getDesiredLocales();
         this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7);
@@ -274,6 +281,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
         this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
         this.fixtureChangesDataProvider = fixtureChangesDataProvider;
+        this.listSportEventsProvider = listSportEventsProvider;
 
         this.tournamentListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.sportsListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
@@ -723,6 +731,24 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } catch (DataProviderException e) {
             throw new CommunicationException("Error executing fixture changes request", e);
         }
+    }
+
+    @Override
+    public List<URN> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException {
+        Preconditions.checkNotNull(locale);
+
+        SAPIScheduleEndpoint endpoint;
+        try {
+            endpoint = listSportEventsProvider.getData(locale, String.valueOf(startIndex), String.valueOf(limit));
+        } catch (DataProviderException e) {
+            throw new CommunicationException(String.format("Error executing list sport events request for startIndex=%s, limit=%s, locale=%s", startIndex, limit, locale), e);
+        }
+
+        dispatchReceivedRawApiData(listSportEventsProvider.getFinalUrl(locale, new String[]{String.valueOf(startIndex), String.valueOf(limit)}), endpoint);
+
+        dataRouter.onListSportEventsFetched(endpoint, locale);
+
+        return extractEventIds(endpoint.getSportEvent());
     }
 
     private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {

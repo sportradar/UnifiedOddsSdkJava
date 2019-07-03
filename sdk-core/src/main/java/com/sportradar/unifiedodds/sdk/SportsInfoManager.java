@@ -250,4 +250,21 @@ public interface SportsInfoManager {
     default List<FixtureChange> getFixtureChanges(Locale locale) {
         return null;
     }
+
+    /**
+     * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
+     * @param startIndex starting index (zero based)
+     * @param limit how many records to return (max: 1000)
+     * @return a list of sport events
+     */
+    default List<Competition> getListOfSportEvents(int startIndex, int limit) { return null; }
+
+    /**
+     * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
+     * @param startIndex starting index (zero based)
+     * @param limit how many records to return (max: 1000)
+     * @param locale the {@link Locale} in which to provide the data
+     * @return a list of sport events
+     */
+    default List<Competition> getListOfSportEvents(int startIndex, int limit, Locale locale) { return null; }
 }

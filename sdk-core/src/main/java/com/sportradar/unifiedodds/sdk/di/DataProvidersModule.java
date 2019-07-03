@@ -104,7 +104,7 @@ public class DataProvidersModule extends AbstractModule {
         );
     }
 
-    @Provides
+    @Provides @Named("DateScheduleEndpointDataProvider")
     private DataProvider<SAPIScheduleEndpoint> provideDateScheduleEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                                        LogHttpDataFetcher httpDataFetcher,
                                                                                        @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
@@ -242,6 +242,18 @@ public class DataProvidersModule extends AbstractModule {
                                                                              @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/wns/sports/%s/lotteries/%s/schedule.xml",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
+
+    @Provides @Named("ListSportEventsDataProvider")
+    private DataProvider<SAPIScheduleEndpoint> provideListSportEventsProvider(SDKInternalConfiguration cfg,
+                                                                              LogHttpDataFetcher httpDataFetcher,
+                                                                              @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider<>(
+                "/sports/%s/schedules/pre/schedule.xml?start=%s&limit=%s",
                 cfg,
                 httpDataFetcher,
                 deserializer
