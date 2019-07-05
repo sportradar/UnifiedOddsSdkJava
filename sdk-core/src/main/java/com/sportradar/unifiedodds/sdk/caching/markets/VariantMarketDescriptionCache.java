@@ -24,8 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.ibm.icu.impl.ValidIdentifiers.Datatype.variant;
-
 /**
  * Created on 15/06/2017.
  * // TODO @eti: Javadoc
@@ -79,7 +77,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         if (!missingLocales.isEmpty()) {
             try {
                 lock.lock();
-                if(!isFetchingAllowed(getCacheKey(marketId, variant)))
+                if(!isFetchingAllowed(marketId, variant, missingLocales))
                 {
                     return new MarketDescriptionImpl(marketCI, locales);
                 }
@@ -87,7 +85,10 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
                 if (!missingLocales.isEmpty()) {
 
                     loadMarketDescriptorData(marketCI, marketId, variant, missingLocales);
-                    fetchedVariants.put(getCacheKey(marketId, variant), new Date());
+
+                    for (Locale l : missingLocales) {
+                        fetchedVariants.put(getFetchedVariantsKey(marketId, variant, l), new Date());
+                    }
                 }
             } finally {
                 lock.unlock();
@@ -153,19 +154,49 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         return SdkHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
     }
 
-    private boolean isFetchingAllowed(String cacheId)
+    private boolean isFetchingAllowed(int marketId, String variant, List<Locale> locales)
     {
-        if (!fetchedVariants.containsKey(cacheId))
+        for (Locale l : locales) {
+        if(isFetchingAllowed(marketId, variant, l))
         {
             return true;
         }
-        Date date = fetchedVariants.get(cacheId);
+    }
+        return false;
+    }
+
+    private boolean isFetchingAllowed(int marketId, String variant, Locale locale)
+    {
+        if(fetchedVariants.size() > 1000)
+        {
+            clearFetchedVariants();
+        }
+
+        String cacheKey = getFetchedVariantsKey(marketId, variant, locale);
+        if (!fetchedVariants.containsKey(cacheKey))
+        {
+            return true;
+        }
+        Date date = fetchedVariants.get(cacheKey);
         if (SdkHelper.getTimeDifferenceInSeconds(new Date(), date) > 30)
         {
             return true;
         }
+        clearFetchedVariants();
 
-        // clear records from fetchedVariants once a min
+        return false;
+    }
+
+    private String getFetchedVariantsKey(int marketId, String variant, Locale locale)
+    {
+        return getCacheKey(marketId, variant) + "_" + locale;
+    }
+
+    /**
+     * clear records from fetchedVariants once a min
+     */
+    private void clearFetchedVariants()
+    {
         if (SdkHelper.getTimeDifferenceInSeconds(new Date(), lastTimeFetchedVariantsWereCleared) > 60)
         {
             Set<String> keys = fetchedVariants.keySet();
@@ -173,11 +204,10 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             for (String key : keys) {
                 Date currDate = fetchedVariants.get(key);
                 if (SdkHelper.getTimeDifferenceInSeconds(new Date(), currDate) > 30) {
-                    fetchedVariants.remove(variant);
+                    fetchedVariants.remove(key);
                 }
             }
             lastTimeFetchedVariantsWereCleared = new Date();
         }
-        return false;
     }
 }

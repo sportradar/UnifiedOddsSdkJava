@@ -156,9 +156,10 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         // send RawFeedMessage if needed
         try
         {
-            logger.debug("Raw msg [{}]: {} for {feedMessage.EventId}.",
-                    messageConsumer.getMessageInterest(),
-                    unmarshalledMessage.getClass().getName());
+//            logger.debug("Raw msg [{}]: {} for event {}.",
+//                    messageConsumer.getMessageInterest(),
+//                    unmarshalledMessage.getClass().getSimpleName(),
+//                    routingKeyInfo.getEventId());
             messageConsumer.onRawFeedMessageReceived(routingKeyInfo, unmarshalledMessage, timestamp, messageConsumer.getMessageInterest());
         }
         catch (Exception e)

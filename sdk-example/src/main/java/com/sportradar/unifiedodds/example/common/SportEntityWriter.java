@@ -303,8 +303,9 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link Reference}
      */
     private String writeData(Reference reference) {
-        if(reference == null)
+        if(reference == null) {
             return "";
+        }
         return String.format("BetfairId:%s, BetradarId:%s, RN:%s",
                 reference.getBetfairId(),
                 reference.getBetradarId(),
@@ -338,6 +339,9 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link CompetitionStatus}
      */
     private String writeData(CompetitionStatus status) {
+        if(status == null){
+            return null;
+        }
         return String.format("Status:%s, ReportingStatus:%s, WinnerId:%s", status.getStatus(), status.getReportingStatus(), status.getWinnerId());
     }
 
@@ -348,6 +352,9 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link MatchStatus}
      */
     private String writeData(MatchStatus status) {
+        if(status == null){
+            return null;
+        }
         return writeData((CompetitionStatus) status) + ", " + String.format("HomeScore:%s, AwayScore:%s", status.getHomeScore(), status.getAwayScore());
     }
 

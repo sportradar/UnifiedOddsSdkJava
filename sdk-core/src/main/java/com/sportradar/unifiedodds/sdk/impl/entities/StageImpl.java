@@ -287,6 +287,9 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public EventStatus getEventStatus() {
+        if(getStatus() == null){
+            return null;
+        }
         return getStatus().getStatus();
     }
 
