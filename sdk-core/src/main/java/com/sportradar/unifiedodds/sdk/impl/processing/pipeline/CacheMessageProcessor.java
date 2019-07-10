@@ -151,8 +151,7 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
 
         URN eventId = URN.parse(message.getEventId());
         SportEventStatusDTO sportEventStatusDTO = new SportEventStatusDTO(message.getSportEventStatus());
-        ((DataRouterListener) sportEventStatusCache).onSportEventStatusFetched(eventId, sportEventStatusDTO, "UFOddsChange");
-        ((DataRouterListener) sportEventCache).onSportEventStatusFetched(eventId, sportEventStatusDTO, "UFOddsChange");
+        ((DataRouterListener) sportEventStatusCache).onSportEventStatusFetched(eventId, sportEventStatusDTO, null, "UFOddsChange");
     }
 
     /**

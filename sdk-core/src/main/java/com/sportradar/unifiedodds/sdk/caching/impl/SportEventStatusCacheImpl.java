@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.SportEventStatusCIImpl;
@@ -38,7 +39,8 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * @param sportEventCache - the {@link SportEventCache} instance used to fetch sport event
      *                          statuses if they are not yet cached
      */
-    public SportEventStatusCacheImpl(Cache<String, SportEventStatusCI> sportEventStatusCache,
+    public SportEventStatusCacheImpl(Cache<String,
+                                     SportEventStatusCI> sportEventStatusCache,
                                      SportEventCache sportEventCache) {
         Preconditions.checkNotNull(sportEventStatusCache);
         Preconditions.checkNotNull(sportEventCache);
@@ -80,10 +82,11 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
     *
     * @param id - the unique identifier of the sport event to which the status belongs to
     * @param data - a {@link SportEventStatusDTO} to store in the cache
+    * @param statusOnEvent - a status obtained directly on the sport event
     * @param source - a source of the data
     */
     @Override
-    public void onSportEventStatusFetched(URN id, SportEventStatusDTO data, String source) {
+    public void onSportEventStatusFetched(URN id, SportEventStatusDTO data, String statusOnEvent, String source) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
 

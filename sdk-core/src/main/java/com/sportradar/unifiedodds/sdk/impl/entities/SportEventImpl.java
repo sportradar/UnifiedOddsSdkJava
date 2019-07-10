@@ -22,7 +22,6 @@ abstract class SportEventImpl implements SportEvent {
      */
     final URN sportId;
 
-
     /**
      * Initializes a new instance of {@link SportEventImpl}
      *
@@ -35,7 +34,6 @@ abstract class SportEventImpl implements SportEvent {
         this.id = id;
         this.sportId = sportId;
     }
-
 
     /**
      * Returns an {@link URN} uniquely identifying the tournament associated with the current instance

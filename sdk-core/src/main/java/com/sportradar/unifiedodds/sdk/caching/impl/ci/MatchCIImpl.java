@@ -924,6 +924,10 @@ class MatchCIImpl implements MatchCI {
             bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
         }
 
+        if(!Strings.isNullOrEmpty(sportEvent.getStatus())){
+            String status = sportEvent.getStatus();
+        }
+
         scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
         scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
         this.startTimeTbd = sportEvent.isStartTimeTbd();

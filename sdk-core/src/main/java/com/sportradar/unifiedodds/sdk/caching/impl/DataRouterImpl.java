@@ -55,7 +55,7 @@ public class DataRouterImpl implements DataRouter {
             dataListeners.forEach(l -> l.onMatchSummaryEndpointFetched(matchId, endpoint, locale, requester));
             dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
             Optional.ofNullable(endpoint.getSportEvent().getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
-            Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c, endpoint.getStatistics(), provideHomeAway(endpoint.getSportEvent())), "SAPIMatchSummaryEndpoint"));
+            Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c, endpoint.getStatistics(), provideHomeAway(endpoint.getSportEvent())), endpoint.getSportEvent().getStatus(), "SAPIMatchSummaryEndpoint"));
         } else if (data instanceof SAPIStageSummaryEndpoint) {
             SAPIStageSummaryEndpoint endpoint = ((SAPIStageSummaryEndpoint) data);
 
@@ -63,7 +63,7 @@ public class DataRouterImpl implements DataRouter {
             dataListeners.forEach(l -> l.onStageSummaryEndpointFetched(stageId, endpoint, locale, requester));
             dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
             Optional.ofNullable(endpoint.getSportEvent().getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
-            Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c), "SAPIStageSummaryEndpoint"));
+            Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c), endpoint.getSportEvent().getStatus(), "SAPIStageSummaryEndpoint"));
         } else {
             logger.warn("Received unsupported summary endpoint object[{}], requestedId:'{}'", data.getClass(), requestedId);
         }
@@ -232,15 +232,15 @@ public class DataRouterImpl implements DataRouter {
         dataListeners.forEach(l -> l.onMatchTimelineFetched(matchId, endpoint, locale, requester));
         dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
         Optional.ofNullable(endpoint.getSportEvent().getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
-        Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c, null, provideHomeAway(endpoint.getSportEvent())), "SAPIMatchTimelineEndpoint"));
+        Optional.ofNullable(endpoint.getSportEventStatus()).ifPresent(c -> onSportEventStatusFetched(URN.parse(endpoint.getSportEvent().getId()), new SportEventStatusDTO(c, null, provideHomeAway(endpoint.getSportEvent())), endpoint.getSportEvent().getStatus(), "SAPIMatchTimelineEndpoint"));
     }
 
     @Override
-    public void onSportEventStatusFetched(URN eventId, SportEventStatusDTO data, String source) {
+    public void onSportEventStatusFetched(URN eventId, SportEventStatusDTO data, String statusOnEvent, String source) {
         Preconditions.checkNotNull(eventId);
         Preconditions.checkNotNull(data);
 
-        dataListeners.forEach(l -> l.onSportEventStatusFetched(eventId, data, source));
+        dataListeners.forEach(l -> l.onSportEventStatusFetched(eventId, data, statusOnEvent, source));
     }
 
     @Override

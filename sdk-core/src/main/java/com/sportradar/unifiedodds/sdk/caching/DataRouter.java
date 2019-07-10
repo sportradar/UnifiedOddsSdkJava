@@ -51,7 +51,7 @@ public interface DataRouter {
 
     void onLotteryScheduleFetched(SAPILotterySchedule endpoint, Locale locale, CacheItem requester);
 
-    void onSportEventStatusFetched(URN eventId, SportEventStatusDTO statusDTO, String source);
+    void onSportEventStatusFetched(URN eventId, SportEventStatusDTO statusDTO, String statusOnEvent, String source);
 
     void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections);
 
