@@ -4,10 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.JerseyCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.utils.URN;
 
 import java.util.List;
@@ -91,4 +88,11 @@ public interface CompetitorCI extends CacheItem {
      * @return the gender
      */
     String getGender();
+
+    /**
+     * Returns race driver of the competitor
+     *
+     * @return the race driver of the competitor if available; otherwise null
+     */
+    RaceDriverProfileCI getRaceDriver();
 }

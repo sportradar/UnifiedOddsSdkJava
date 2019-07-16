@@ -147,4 +147,11 @@ public interface SportEventStatusCI {
      * @return - a {@link Map} containing data of the sport event status ordered in key/value pairs
      */
     Map<String,Object> toKeyValueStore();
+
+    /**
+     * Returns an indication if the status is decided by fed
+     *
+     * @return an indication if the status is decided by fed if available; otherwise null
+     */
+    Boolean isDecidedByFed();
 }

@@ -93,6 +93,12 @@ public class SportEventStatusDTO {
      * The penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
      */
     private final Integer awayPenaltyScore;
+
+    /**
+     * An indication if the status is decided by fed
+     */
+    private final Boolean decidedByFed;
+
     /**
      * Initializes a new instance of the {@link SportEventStatusDTO} from the provided
      * {@link SAPIStageSportEventStatus} which is fetched from the API
@@ -121,6 +127,8 @@ public class SportEventStatusDTO {
 
         homePenaltyScore = null;
         awayPenaltyScore = null;
+
+        decidedByFed = null;
 
         cleanupProperties();
     }
@@ -182,6 +190,8 @@ public class SportEventStatusDTO {
 
         homePenaltyScore = null;
         awayPenaltyScore = null;
+
+        decidedByFed = sportEventStatus.isDecidedByFed();
 
         cleanupProperties();
     }
@@ -261,6 +271,8 @@ public class SportEventStatusDTO {
         homePenaltyScore = seStatus.getHomePenaltyScore();
         awayPenaltyScore = seStatus.getAwayPenaltyScore();
 
+        decidedByFed = null;
+
         cleanupProperties();
     }
 
@@ -281,6 +293,7 @@ public class SportEventStatusDTO {
         this.winnerId = null;
         this.homePenaltyScore = null;
         this.awayPenaltyScore = null;
+        this.decidedByFed = null;
     }
 
     /**
@@ -391,6 +404,15 @@ public class SportEventStatusDTO {
      */
     public Map<String, Object> getProperties() {
         return ImmutableMap.copyOf(properties);
+    }
+
+    /**
+     * Returns an indication if the status is decided by fed
+     *
+     * @return an indication if the status is decided by fed if available; otherwise null
+     */
+    public Boolean isDecidedByFed() {
+        return decidedByFed;
     }
 
     /**

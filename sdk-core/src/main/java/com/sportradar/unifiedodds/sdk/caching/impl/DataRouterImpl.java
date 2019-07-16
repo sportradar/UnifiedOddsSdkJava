@@ -197,6 +197,17 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
 
+        SAPIRaceDriverProfile raceDriverProfile = data.getRaceDriverProfile();
+        if (raceDriverProfile != null) {
+            SAPITeam raceDriver = raceDriverProfile.getRaceDriver();
+            if (raceDriver != null)
+                dataListeners.forEach(l -> l.onTeamFetched(URN.parse(raceDriver.getId()), raceDriver, locale, requester));
+
+            SAPITeam raceTeam = raceDriverProfile.getRaceTeam();
+            if (raceTeam != null)
+                dataListeners.forEach(l -> l.onTeamFetched(URN.parse(raceTeam.getId()), raceTeam, locale, requester));
+        }
+
         Optional.ofNullable(data.getPlayers()).ifPresent(c ->
                 c.getPlayer().forEach(p ->
                     this.onPlayerFetched(URN.parse(p.getId()), p, locale, requester)

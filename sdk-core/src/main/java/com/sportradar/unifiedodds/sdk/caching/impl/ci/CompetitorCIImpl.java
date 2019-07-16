@@ -12,10 +12,7 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.ci.JerseyCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -108,6 +105,11 @@ class CompetitorCIImpl implements CompetitorCI {
      * The gender of the competitor
      */
     private String gender;
+
+    /**
+     * The race driver profile of the competitor
+     */
+    private RaceDriverProfileCI raceDriverProfile;
 
     /**
      * The locales which are merged into the CI
@@ -340,6 +342,16 @@ class CompetitorCIImpl implements CompetitorCI {
     }
 
     /**
+     * Returns race driver of the competitor
+     *
+     * @return the race driver of the competitor if available; otherwise null
+     */
+    @Override
+    public RaceDriverProfileCI getRaceDriver() {
+        return raceDriverProfile;
+    }
+
+    /**
      * Determines whether the current instance has translations for the specified languages
      *
      * @param localeList a {@link List} specifying the required languages
@@ -411,6 +423,17 @@ class CompetitorCIImpl implements CompetitorCI {
             else {
                 abbreviations.put(dataLocale, data.getCompetitor().getAbbreviation());
             }
+        }
+
+        if (data.getRaceDriverProfile() != null) {
+            SAPITeam raceDriver = data.getRaceDriverProfile().getRaceDriver();
+            SAPITeam raceTeam = data.getRaceDriverProfile().getRaceTeam();
+            SAPICar car = data.getRaceDriverProfile().getCar();
+
+            URN raceDriverId = raceDriver != null ? URN.parse(raceDriver.getId()) : null;
+            URN raceTeamId = raceTeam != null ? URN.parse(raceTeam.getId()) : null;
+            CarCI carCI = car != null ? new CarCI(car.getName(), car.getChassis(), car.getEngineName()) : null;
+            raceDriverProfile = new RaceDriverProfileCI(raceDriverId, raceTeamId, carCI);
         }
     }
 

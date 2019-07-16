@@ -209,4 +209,15 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
         }
         return null;
     }
+
+    @Override
+    public Boolean isDecidedByFed() {
+        if (feedDTO != null && feedDTO.isDecidedByFed() != null) {
+            return feedDTO.isDecidedByFed();
+        }
+        if (sapiDTO != null) {
+            return sapiDTO.isDecidedByFed();
+        }
+        return null;
+    }
 }

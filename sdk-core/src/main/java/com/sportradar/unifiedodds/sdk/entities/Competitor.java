@@ -100,4 +100,14 @@ public interface Competitor extends Player {
     default String getGender(){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
+
+
+    /**
+     * Returns race driver of the competitor
+     *
+     * @return the race driver of the competitor if available; otherwise null
+     */
+    default RaceDriverProfile getRaceDriver() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }
