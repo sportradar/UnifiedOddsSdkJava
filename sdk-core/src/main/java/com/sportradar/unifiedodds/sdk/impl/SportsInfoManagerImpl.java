@@ -156,7 +156,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     @Override
     public List<SportEvent> getActiveTournaments() {
         Stopwatch timer = Stopwatch.createStarted();
-        //TODO: check if here would need desiredLocales call
+
         List<SportEvent> tournaments = internalGetActiveTournaments(defaultLocale);
         clientInteractionLog.info("SportsInfoManager.getActiveTournaments() invoked. Execution time: {}", timer.stop());
         return tournaments;
@@ -193,7 +193,6 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(sportName), "Sport name can not be null/empty");
 
         Stopwatch timer = Stopwatch.createStarted();
-        //TODO: check if here would need desiredLocales call
         List<SportEvent> tournaments = internalGetActiveTournaments(sportName, defaultLocale);
         clientInteractionLog.info("SportsInfoManager.getActiveTournaments({}) invoked. Execution time: {}", sportName, timer.stop());
         return tournaments;
@@ -230,6 +229,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     public List<Competition> getCompetitionsFor(Date date) {
         Preconditions.checkNotNull(date);
 
+        // rest call
         Stopwatch timer = Stopwatch.createStarted();
         List<Competition> competitions = internalGetSportEventsFor(date, desiredLocales);
         clientInteractionLog.info("SportsInfoManager.getCompetitionsFor({}) invoked. Execution time: {}", date, timer.stop());
@@ -250,6 +250,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(date);
         Preconditions.checkNotNull(locale);
 
+        // rest call
         Stopwatch timer = Stopwatch.createStarted();
         List<Competition> competitions = internalGetSportEventsFor(date, Lists.newArrayList(locale));
         clientInteractionLog.info("SportsInfoManager.getCompetitionsFor({},{}) invoked. Execution time: {}", date, locale, timer.stop());
@@ -264,6 +265,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<Competition> getLiveCompetitions() {
+        // rest call
         Stopwatch timer = Stopwatch.createStarted();
         List<Competition> competitions = internalGetLiveSportEvents(desiredLocales);
         clientInteractionLog.info("SportsInfoManager.getLiveCompetitions() invoked. Execution time: {}", timer.stop());
@@ -282,6 +284,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     public List<Competition> getLiveCompetitions(Locale locale) {
         Preconditions.checkNotNull(locale);
 
+        // rest call
         Stopwatch timer = Stopwatch.createStarted();
         List<Competition> competitions = internalGetLiveSportEvents(Lists.newArrayList(locale));
         clientInteractionLog.info("SportsInfoManager.getLiveCompetitions({}) invoked. Execution time: {}", locale, timer.stop());
@@ -646,6 +649,46 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         return sportEvents;
     }
 
+    /**
+     * Returns all the available tournaments of a specific sport
+     * (the returned data is translated in the default locale configured with the {@link OddsFeedConfiguration})
+     * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})
+     *
+     * @param sportId - the specific sport id
+     * @return - all the available tournaments of a specific sport
+     */
+    @Override
+    public List<SportEvent> getAvailableTournaments(URN sportId) {
+        return getAvailableTournaments(sportId, defaultLocale);
+    }
+
+    /**
+     * Returns all the available tournaments for a specific sport
+     * (the returned data is translated in the specified {@link Locale})
+     * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})
+     *
+     * @param sportId - the specific sport id
+     * @param locale - the {@link Locale} in which to provide the data
+     * @return - all the available tournaments for a specific sport translated in the specified locale
+     */
+    @Override
+    public List<SportEvent> getAvailableTournaments(URN sportId, Locale locale) {
+        Preconditions.checkNotNull(sportId, "SportId can not be null/empty");
+        Preconditions.checkNotNull(locale);
+
+        Stopwatch timer = Stopwatch.createStarted();
+        List<SportEvent> tournaments = null;
+        try {
+            tournaments = internalGetAvailableTournaments(sportId, locale);
+        } catch (ObjectNotFoundException e) {
+            return handleException("getAvailableTournaments", e);
+        } catch (CommunicationException e) {
+            return handleException("getAvailableTournaments", e);
+        }
+        clientInteractionLog.info("SportsInfoManager.getAvailableTournaments({},{}) invoked. Execution time: {}", sportId, locale, timer.stop());
+        return tournaments;
+    }
+
     private List<Sport> internalGetSports(List<Locale> locales) {
         try {
             return this.sportEntityFactory.buildSports(locales);
@@ -677,6 +720,21 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         }
 
         return extractTournamentsFromSport(sport);
+    }
+
+    private List<SportEvent> internalGetAvailableTournaments(URN sportId, Locale locale) throws ObjectNotFoundException, CommunicationException {
+
+        List<Locale> locales =  Lists.newArrayList(locale);
+        List<URN> tournamentIds = dataRouterManager.requestAvailableTournamentsFor(locale, sportId);
+        if(tournamentIds != null){
+            List<SportEvent> tournaments = new LinkedList<>();
+            for (URN tId : tournamentIds) {
+                tournaments.add(sportEntityFactory.buildSportEvent(tId, sportId, locales, false));
+            }
+            return tournaments;
+        }
+
+        return null;
     }
 
     private List<Competition> internalGetLiveSportEvents(List<Locale> locales) {

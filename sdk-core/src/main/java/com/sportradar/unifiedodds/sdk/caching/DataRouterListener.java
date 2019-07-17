@@ -50,4 +50,6 @@ public interface DataRouterListener {
 
     default void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections) {}
     default void onCalculateProbabilityFetched(List<Selection> selections, CAPICalculationResponse calculation) {}
+
+    default void onSportTournamentsFetched(URN id, SAPISportTournamentsEndpoint data, Locale locale) {}
 }

@@ -58,4 +58,6 @@ public interface DataRouter {
     void onCalculateProbabilityFetched(List<Selection> selections, CAPICalculationResponse calculation);
 
     void onListSportEventsFetched(SAPIScheduleEndpoint endpoint, Locale locale);
+
+    void onSportTournamentsFetched(URN sportId, SAPISportTournamentsEndpoint data, Locale locale);
 }

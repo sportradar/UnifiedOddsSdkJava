@@ -259,4 +259,16 @@ public class DataProvidersModule extends AbstractModule {
                 deserializer
         );
     }
+
+    @Provides
+    private DataProvider<SAPISportTournamentsEndpoint> provideSportTournamentsEndpointDataProvider(SDKInternalConfiguration cfg,
+                                                                                            LogHttpDataFetcher httpDataFetcher,
+                                                                                            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider<>(
+                "/sports/%s/sports/%s/tournaments.xml",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
 }

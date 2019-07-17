@@ -59,4 +59,6 @@ public interface DataRouterManager {
     List<FixtureChange> requestFixtureChanges(Locale locale) throws CommunicationException;
 
     List<URN> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException;
+
+    List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId) throws CommunicationException;
 }

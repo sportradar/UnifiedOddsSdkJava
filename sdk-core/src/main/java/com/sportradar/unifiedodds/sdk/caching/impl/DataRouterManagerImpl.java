@@ -197,6 +197,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<SAPIScheduleEndpoint> listSportEventsProvider;
 
     /**
+     * A {@link DataProvider} instance which is used to get all available tournaments for specific sport
+     */
+    private final DataProvider<SAPISportTournamentsEndpoint> availableSportTournaments;
+
+    /**
      * The extended odds feed listener
      */
     private OddsFeedExtListener oddsFeedExtListener;
@@ -230,7 +235,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
                           DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider,
                           DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider,
-                          @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider) {
+                          @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider,
+                          DataProvider<SAPISportTournamentsEndpoint> availableSportTournaments) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkNotNull(scheduler);
@@ -256,6 +262,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(calculateProbabilityDataProvider);
         Preconditions.checkNotNull(fixtureChangesDataProvider);
         Preconditions.checkNotNull(listSportEventsProvider);
+        Preconditions.checkNotNull(availableSportTournaments);
 
         this.prefetchLocales = configuration.getDesiredLocales();
         this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7);
@@ -282,6 +289,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
         this.fixtureChangesDataProvider = fixtureChangesDataProvider;
         this.listSportEventsProvider = listSportEventsProvider;
+        this.availableSportTournaments = availableSportTournaments;
 
         this.tournamentListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.sportsListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
@@ -749,6 +757,31 @@ public class DataRouterManagerImpl implements DataRouterManager {
         dataRouter.onListSportEventsFetched(endpoint, locale);
 
         return extractEventIds(endpoint.getSportEvent());
+    }
+
+    @Override
+    public List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId) throws CommunicationException {
+        Preconditions.checkNotNull(locale);
+        Preconditions.checkNotNull(sportId);
+
+        SAPISportTournamentsEndpoint endpoint;
+        try {
+            endpoint = availableSportTournaments.getData(locale, sportId.toString());
+        } catch (DataProviderException e) {
+            throw new CommunicationException(String.format("Error executing getting available tournaments for id=%s, locale=%s", sportId, locale), e);
+        }
+
+        dispatchReceivedRawApiData(availableSportTournaments.getFinalUrl(locale, sportId.toString()), endpoint);
+
+        dataRouter.onSportTournamentsFetched(sportId, endpoint, locale);
+
+        if (endpoint.getTournaments() != null) {
+            return endpoint.getTournaments().getTournament().stream()
+                    .map(s -> URN.parse(s.getId()))
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {

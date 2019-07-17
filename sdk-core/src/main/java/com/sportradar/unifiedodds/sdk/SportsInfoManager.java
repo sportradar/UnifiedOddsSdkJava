@@ -267,4 +267,25 @@ public interface SportsInfoManager {
      * @return a list of sport events
      */
     default List<Competition> getListOfSportEvents(int startIndex, int limit, Locale locale) { return null; }
+
+    /**
+     * Returns all the available tournaments for a specific sport
+     * (the returned data is translated in the default locale configured with the {@link OddsFeedConfiguration})
+     * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})
+     *
+     * @param sportId - the specific sport id
+     * @return - all available tournaments for a sport we provide coverage for in default locale
+     */
+    default List<SportEvent> getAvailableTournaments(URN sportId) { return null; }
+
+    /**
+     * Returns all the available tournaments for a specific sport
+     * (the returned data is translated in the specified {@link Locale})
+     * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})
+     *
+     * @param sportId - the specific sport id
+     * @param locale - the {@link Locale} in which to provide the data
+     * @return - all available tournaments for a sport we provide coverage for in specified locale
+     */
+    default List<SportEvent> getAvailableTournaments(URN sportId, Locale locale) { return null; }
 }
