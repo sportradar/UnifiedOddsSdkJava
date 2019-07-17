@@ -215,6 +215,23 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the tournament is exhibition game
+     *
+     * @return if available, the {@link Boolean} specifying if the tournament is exhibition game
+     */
+    @Override
+    public Boolean isExhibitionGames() {
+        TournamentCI tournamentCi = loadBasicTournamentCI();
+
+        if (tournamentCi == null) {
+            handleException("tournamentCI missing", null);
+            return null;
+        }
+
+        return tournamentCi.isExhibitionGames();
+    }
+
+    /**
      * Returns a {@link SportSummary} instance representing the sport associated with the current instance
      *
      * @return a {@link SportSummary} instance representing the sport associated with the current instance

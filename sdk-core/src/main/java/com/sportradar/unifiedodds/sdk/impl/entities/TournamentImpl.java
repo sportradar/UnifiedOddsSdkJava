@@ -350,6 +350,23 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the tournament is exhibition game
+     *
+     * @return if available, the {@link Boolean} specifying if the tournament is exhibition game
+     */
+    @Override
+    public Boolean isExhibitionGames() {
+        TournamentCI tournamentCi = loadTournamentCI();
+
+        if (tournamentCi == null) {
+            handleException("TournamentCI missing", null);
+            return null;
+        }
+
+        return tournamentCi.isExhibitionGames();
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link Tournament} instance
      *
      * @return - a {@link String} describing the current {@link Tournament} instance

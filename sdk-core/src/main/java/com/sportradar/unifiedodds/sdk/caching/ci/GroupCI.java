@@ -13,17 +13,18 @@ import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A group representation used by caching components
  */
 public class GroupCI {
+    /**
+     * The id of the group
+     */
+    private final String id;
+
     /**
      * The name of the group
      */
@@ -50,6 +51,7 @@ public class GroupCI {
         Preconditions.checkNotNull(group);
         Preconditions.checkNotNull(locale);
 
+        id = group.getId();
         name = group.getName();
 
         competitorIds = new ArrayList<>();
@@ -80,6 +82,15 @@ public class GroupCI {
             });
             competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
+    }
+
+    /**
+     * Returns the id of the group
+     *
+     * @return - the id of the group
+     */
+    public String getId() {
+        return id;
     }
 
     /**

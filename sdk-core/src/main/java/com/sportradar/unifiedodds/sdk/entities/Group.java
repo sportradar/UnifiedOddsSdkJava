@@ -23,4 +23,13 @@ public interface Group {
      * @return - an unmodifiable {@link List} representing group competitors(if available); otherwise null
      */
     List<Competitor> getCompetitors();
+
+    /**
+     * Returns the id of the group
+     *
+     * @return - the id of the group
+     */
+    default String getId() {
+        return null;
+    }
 }

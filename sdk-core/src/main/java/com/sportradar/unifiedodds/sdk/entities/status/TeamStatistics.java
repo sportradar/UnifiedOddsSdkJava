@@ -51,4 +51,13 @@ public interface TeamStatistics {
      * @return the total amount of played corner kicks
      */
     Integer getCornerKicks();
+
+    /**
+     * Returns the name
+     *
+     * @return the name
+     */
+    default String getName() {
+        return null;
+    }
 }

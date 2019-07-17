@@ -25,4 +25,13 @@ public interface BasicTournament extends LongTermEvent {
      * associated with the current instance
      */
     List<Competitor> getCompetitors();
+
+    /**
+     * Returns the {@link Boolean} specifying if the tournament is exhibition game
+     *
+     * @return if available, the {@link Boolean} specifying if the tournament is exhibition game
+     */
+    default Boolean isExhibitionGames() {
+        return null;
+    }
 }

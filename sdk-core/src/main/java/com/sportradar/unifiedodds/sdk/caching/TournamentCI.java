@@ -91,4 +91,10 @@ public interface TournamentCI extends SportEventCI {
      * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
      */
     Map<URN, ReferenceIdCI> getCompetitorsReferences();
+
+    /**
+     * Returns the {@link Boolean} specifying if the tournament is exhibition game
+     * @return if available, the {@link Boolean} specifying if the tournament is exhibition game
+     */
+    Boolean isExhibitionGames();
 }

@@ -138,6 +138,10 @@ class TournamentCIImpl implements TournamentCI {
      */
     private final ReentrantLock dataRequestLock = new ReentrantLock();
 
+    /**
+     * A {@link Boolean} specifying if the tournament is exhibition game
+     */
+    private Boolean exhibitionGames;
 
     TournamentCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(id);
@@ -488,6 +492,22 @@ class TournamentCIImpl implements TournamentCI {
     }
 
     /**
+     * Returns the {@link Boolean} specifying if the tournament is exhibition game
+     *
+     * @return if available, the {@link Boolean} specifying if the tournament is exhibition game
+     */
+    @Override
+    public Boolean isExhibitionGames() {
+        if (!cachedLocales.isEmpty()) {
+            return exhibitionGames;
+        }
+
+        requestMissingTournamentData(Collections.singletonList(defaultLocale));
+
+        return exhibitionGames;
+    }
+
+    /**
      * Determines whether the current instance has translations for the specified languages
      *
      * @param localeList a {@link List} specifying the required languages
@@ -621,6 +641,8 @@ class TournamentCIImpl implements TournamentCI {
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
                     tournamentLength.getEndDate().toGregorianCalendar().getTime();
         }
+
+        this.exhibitionGames = endpointData.isExhibitionGames();
     }
 
     /**

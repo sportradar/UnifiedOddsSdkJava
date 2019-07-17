@@ -81,4 +81,14 @@ class TeamStatisticsImpl implements TeamStatistics {
     public Integer getCornerKicks() {
         return stats.getCornerKicks();
     }
+
+    /**
+     * Returns the name
+     *
+     * @return the name
+     */
+    @Override
+    public String getName() {
+        return stats.getName();
+    }
 }

@@ -26,6 +26,11 @@ import java.util.Locale;
 public class GroupImpl implements Group {
     private static final Logger logger = LoggerFactory.getLogger(GroupImpl.class);
     /**
+     * The id of the group
+     */
+    private final String id;
+
+    /**
      * The name of the group
      */
     private final String name;
@@ -63,6 +68,7 @@ public class GroupImpl implements Group {
         Preconditions.checkNotNull(sportEntityFactory);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
+        this.id = groupCI.getId();
         this.name = groupCI.getName();
         this.competitorIds = groupCI.getCompetitorIds();
         this.locales = locales;
@@ -109,6 +115,16 @@ public class GroupImpl implements Group {
     }
 
     /**
+     * Returns the id of the group
+     *
+     * @return - the id of the group
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link Group} instance
      *
      * @return - a {@link String} describing the current {@link Group} instance
@@ -116,6 +132,7 @@ public class GroupImpl implements Group {
     @Override
     public String toString() {
         return "GroupImpl{" +
+                "id='" + id + '\'' +
                 "name='" + name + '\'' +
                 ", competitorIds=" + competitorIds +
                 '}';

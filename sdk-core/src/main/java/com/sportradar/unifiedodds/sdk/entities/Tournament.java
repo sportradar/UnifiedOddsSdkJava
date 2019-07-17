@@ -32,4 +32,13 @@ public interface Tournament extends LongTermEvent {
      * @return a list of associated tournament seasons
      */
     List<Season> getSeasons();
+
+    /**
+     * Returns the {@link Boolean} specifying if the tournament is exhibition game
+     *
+     * @return if available, the {@link Boolean} specifying if the tournament is exhibition game
+     */
+    default Boolean isExhibitionGames() {
+        return null;
+    }
 }

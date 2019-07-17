@@ -16,6 +16,7 @@ import java.util.Map;
  * Team statistics data transfer object
  */
 public class TeamStatisticsDTO {
+    private final String name;
     private final URN teamId;
     private final HomeAway homeAway;
     private final Integer cards;
@@ -28,6 +29,7 @@ public class TeamStatisticsDTO {
     TeamStatisticsDTO(SAPITeamStatistics t, Map<HomeAway, String> homeAwayMap) {
         Preconditions.checkNotNull(t);
 
+        name = t.getName();
         teamId = t.getId() != null ? URN.parse(t.getId()) : null;
         homeAway = homeAwayMap != null ?
                 homeAwayMap.entrySet().stream()
@@ -48,6 +50,7 @@ public class TeamStatisticsDTO {
     TeamStatisticsDTO(HomeAway homeAway, int yellowCards, int redCards, int yellowRedCards, int cornerKicks) {
         Preconditions.checkNotNull(homeAway);
 
+        this.name = "";
         this.teamId = null; // not available on the AMQP message
         this.homeAway = homeAway;
         this.yellowCards = yellowCards;
@@ -57,6 +60,9 @@ public class TeamStatisticsDTO {
         this.cornerKicks = cornerKicks;
     }
 
+    public String getName() {
+        return name;
+    }
 
     public URN getTeamId() {
         return teamId;
