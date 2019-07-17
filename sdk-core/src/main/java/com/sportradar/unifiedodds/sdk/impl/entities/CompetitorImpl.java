@@ -293,6 +293,16 @@ public class CompetitorImpl implements Competitor {
     public String getGender() { return loadCacheItem().map(ci -> ci.getGender()).orElse(null);  }
 
     /**
+     * Returns race driver of the competitor
+     *
+     * @return the race driver of the competitor if available; otherwise null
+     */
+    @Override
+    public RaceDriverProfile getRaceDriver() {
+        return loadCacheItem().map(ci -> ci.getRaceDriver() != null ? new RaceDriverProfileImpl(ci.getRaceDriver()) : null).orElse(null);
+    }
+
+    /**
      * Loads the associated entity cache item from the sport event cache
      *
      * @return the associated cache item

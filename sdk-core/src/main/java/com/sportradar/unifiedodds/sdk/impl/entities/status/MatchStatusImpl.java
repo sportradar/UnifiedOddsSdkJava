@@ -134,4 +134,12 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public Integer getAwayPenaltyScore() { return statusCI.getAwayPenaltyScore(); }
+
+    /**
+     * Returns an indication if the status is decided by fed
+     */
+    @Override
+    public Boolean isDecidedByFed() {
+        return statusCI.isDecidedByFed();
+    }
 }

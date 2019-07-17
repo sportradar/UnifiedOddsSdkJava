@@ -67,16 +67,23 @@ public interface MatchStatus extends CompetitionStatus {
     BigDecimal getAwayScore();
 
     /**
-     * Get the penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
+     * Returns the penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
      */
     default Integer getHomePenaltyScore() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
     /**
-     * Get the penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
+     * Returns the penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
      */
     default Integer getAwayPenaltyScore() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns an indication if the status is decided by fed
+     */
+    default Boolean isDecidedByFed() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }
