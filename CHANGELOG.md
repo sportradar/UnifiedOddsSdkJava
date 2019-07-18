@@ -1,5 +1,14 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.27 (2019-07-18)**
+* added getListOfSportEvents and getAvailableTournaments to the SportInfoManager
+* added isDecidedByFed to the MatchStatus
+* added getRaceDriver to the Competitor
+* added isExhibitionGames to the BasicTournament and Tournament
+* added getId to the Group
+* added getName to the TeamStatistics
+* fix: not loading variant market data in multi-language scenario
+
 **2.0.26 (2019-06-21)**
 * added isStartTimeTbd and getReplacedBy to the SportEvent
 * added getStripesColor, getSplitColor, getShirtType and getSleeveDetail to the Jersey
