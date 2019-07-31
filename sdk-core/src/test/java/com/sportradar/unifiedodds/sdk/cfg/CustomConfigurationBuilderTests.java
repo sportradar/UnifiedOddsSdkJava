@@ -111,8 +111,8 @@ public class CustomConfigurationBuilderTests {
         Assert.assertEquals(cfg.getMessagingUsername(), "msg-uname");
         Assert.assertEquals(cfg.getMessagingPassword(), "msg-pass");
         Assert.assertEquals(cfg.getPort(), 999);
-        Assert.assertEquals(cfg.getUseMessagingSsl(), false);
-        Assert.assertEquals(cfg.getUseApiSsl(), false);
+        Assert.assertFalse(cfg.getUseMessagingSsl());
+        Assert.assertFalse(cfg.getUseApiSsl());
         Assert.assertEquals(cfg.getDefaultLocale(), Locale.CHINESE);
         Assert.assertEquals(cfg.getDesiredLocales().size(), 1);
         Assert.assertEquals(cfg.getDesiredLocales().iterator().next(), Locale.CHINESE);
@@ -138,7 +138,7 @@ public class CustomConfigurationBuilderTests {
         getSampleCustomBuilder().setMessagingHost("");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void customEnvironmentBuilderPreconditionsValidation_setMessagingVHost() {
         getSampleCustomBuilder().setMessagingVirtualHost(null);
     }

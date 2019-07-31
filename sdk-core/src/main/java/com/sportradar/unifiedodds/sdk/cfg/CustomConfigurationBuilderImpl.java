@@ -44,14 +44,12 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     @Override
     public CustomConfigurationBuilder loadConfigFromSdkProperties() {
         loadConfigFrom(sdkConfigurationPropertiesReader);
-
         return super.loadConfigFromSdkProperties();
     }
 
     @Override
     public CustomConfigurationBuilder loadConfigFromApplicationYml() {
         loadConfigFrom(sdkConfigurationYamlReader);
-
         return super.loadConfigFromApplicationYml();
     }
 
@@ -105,22 +103,9 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      */
     @Override
     public CustomConfigurationBuilder setMessagingUsername(String username) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(username));
+
         this.username = username;
-
-        return this;
-    }
-
-    /**
-     * Sets the virtual host used to connect to the messaging server
-     *
-     * @param vHost the virtual host used to connect to the messaging server
-     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
-     */
-    @Override
-    public CustomConfigurationBuilder setMessagingVirtualHost(String vHost) {
-        Preconditions.checkArgument(vHost == null || !vHost.isEmpty(), "messaging virtual host can be null or not empty");
-
-        this.messagingVirtualHost = vHost;
         return this;
     }
 
@@ -132,8 +117,23 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      */
     @Override
     public CustomConfigurationBuilder setMessagingPassword(String password) {
-        this.password = password;
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(password));
 
+        this.password = password;
+        return this;
+    }
+
+    /**
+     * Sets the virtual host used to connect to the messaging server
+     *
+     * @param vHost the virtual host used to connect to the messaging server
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    @Override
+    public CustomConfigurationBuilder setMessagingVirtualHost(String vHost) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(vHost), "messaging virtual host can be null or not empty");
+
+        this.messagingVirtualHost = vHost;
         return this;
     }
 
@@ -146,7 +146,6 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     @Override
     public CustomConfigurationBuilder useApiSsl(boolean useApiSsl) {
         this.useApiSsl = useApiSsl;
-
         return this;
     }
 
@@ -159,7 +158,6 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     @Override
     public CustomConfigurationBuilder useMessagingSsl(boolean useMessagingSsl) {
         this.useMessagingSsl = useMessagingSsl;
-
         return this;
     }
 

@@ -234,6 +234,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
      */
     @Override
     public OddsFeedConfigurationBuilder setMessagingPassword(String password) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(password));
         this.messagingPassword = password;
         return this;
     }
