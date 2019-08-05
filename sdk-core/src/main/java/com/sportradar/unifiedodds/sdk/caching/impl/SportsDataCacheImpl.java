@@ -10,6 +10,8 @@ import com.google.inject.Inject;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Implements methods used to access various sport events data
  */
-public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener {
+public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener, ExportableSdkCache {
     private static final Logger logger = LoggerFactory.getLogger(SportsDataCacheImpl.class);
 
     /**
@@ -379,5 +381,38 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener 
 
     private Map<Locale, String> ensureNamesNotEmpty(Map<Locale, String> names, List<Locale> locales) {
         return names.isEmpty() ? locales.stream().collect(Collectors.toMap(l -> l, l -> "")) : names;
+    }
+
+    /**
+     * Exports current items in the cache
+     *
+     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     */
+    @Override
+    public List<ExportableCI> exportItems() {
+        return null;
+    }
+
+    /**
+     * Imports provided items into the cache
+     *
+     * @param items List of {@link ExportableCI} to be inserted into the cache
+     */
+    @Override
+    public void importItems(List<ExportableCI> items) {
+
+    }
+
+    /**
+     * Returns current cache status
+     *
+     * @return A map containing all cache item types in the cache and their counts
+     */
+    @Override
+    public Map<String, Long> cacheStatus() {
+        Map<String, Long> status = new HashMap<>();
+        status.put("SportCI", sportsCache.size());
+        status.put("CategoryCI", categoriesCache.size());
+        return status;
     }
 }

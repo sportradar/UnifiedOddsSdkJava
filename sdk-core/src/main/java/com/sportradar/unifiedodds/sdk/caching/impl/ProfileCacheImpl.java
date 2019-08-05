@@ -9,6 +9,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -19,12 +21,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The main competitor/profile cache
  */
-public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
+public class ProfileCacheImpl implements ProfileCache, DataRouterListener, ExportableSdkCache {
     /**
      * The {@link Logger} instance used to log {@link ProfileCache} events
      */
@@ -325,5 +330,39 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener {
         }
 
         return competitorCache;
+    }
+
+    /**
+     * Exports current items in the cache
+     *
+     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     */
+    @Override
+    public List<ExportableCI> exportItems() {
+        return null;
+    }
+
+    /**
+     * Imports provided items into the cache
+     *
+     * @param items List of {@link ExportableCI} to be inserted into the cache
+     */
+    @Override
+    public void importItems(List<ExportableCI> items) {
+
+    }
+
+    /**
+     * Returns current cache status
+     *
+     * @return A map containing all cache item types in the cache and their counts
+     */
+    @Override
+    public Map<String, Long> cacheStatus() {
+        Stream<String> competitors = competitorCache.asMap().values().stream().map(c -> c.getClass().getSimpleName());
+        Stream<String> simpleTeams = simpleTeamCache.asMap().values().stream().map(c -> c.getClass().getSimpleName());
+        Stream<String> players = playerCache.asMap().values().stream().map(c -> c.getClass().getSimpleName());
+        Stream<String> all = Stream.concat(competitors, Stream.concat(simpleTeams, players));
+        return all.collect(Collectors.groupingBy(s -> s, Collectors.counting()));
     }
 }
