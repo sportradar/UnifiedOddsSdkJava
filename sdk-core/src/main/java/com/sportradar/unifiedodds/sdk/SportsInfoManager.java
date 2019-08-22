@@ -288,4 +288,11 @@ public interface SportsInfoManager {
      * @return - all available tournaments for a sport we provide coverage for in specified locale
      */
     default List<SportEvent> getAvailableTournaments(URN sportId, Locale locale) { return null; }
+
+    /**
+     * Deletes the sport events from cache which are scheduled before specified date
+     * @param before the scheduled Date used to delete sport events from cache
+     * @return number of deleted items
+     */
+    default Integer deleteSportEventsFromCache(Date before) { return null; }
 }

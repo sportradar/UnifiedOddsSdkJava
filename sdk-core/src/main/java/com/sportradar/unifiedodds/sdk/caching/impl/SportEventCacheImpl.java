@@ -474,6 +474,35 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
         cache.put(id, new Date());
     }
 
+    /**
+     * Deletes the sport events from cache which are scheduled before specified date
+     *
+     * @param before the scheduled Date used to delete sport events from cache
+     * @return number of deleted items
+     */
+    @Override
+    public Integer deleteSportEventsFromCache(Date before) {
+        Preconditions.checkNotNull(before);
+
+        long startCount = sportEventsCache.size();
+        for (SportEventCI ci : sportEventsCache.asMap().values()) {
+            if(ci.getScheduledRaw() != null){
+                if(ci.getScheduledRaw().before(before)){
+                    sportEventsCache.invalidate(ci.getId());
+                }
+            }
+            else if (ci.getScheduledEndRaw() != null){
+                if(ci.getScheduledEndRaw().before(before)){
+                    sportEventsCache.invalidate(ci.getId());
+                }
+            }
+        }
+        long endCount = sportEventsCache.size();
+        long diff = startCount - endCount;
+        logger.info("Deleted {} items from cache.", diff);
+        return (int)diff;
+    }
+
     private SportEventCI provideEventCI(URN id) throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 
