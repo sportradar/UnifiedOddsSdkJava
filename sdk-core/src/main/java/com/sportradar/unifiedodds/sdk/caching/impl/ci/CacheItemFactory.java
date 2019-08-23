@@ -7,6 +7,8 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -38,6 +40,8 @@ public interface CacheItemFactory {
 
     SportCI buildSportCI(URN id, SAPISport sport, List<URN> categories, Locale dataLocale);
     CategoryCI buildCategoryCI(URN id, SAPICategory category, List<URN> tournaments, URN associatedSportCiId, Locale dataLocale);
+    SportCI buildSportCI(ExportableSportCI exportable);
+    CategoryCI buildCategoryCI(ExportableCategoryCI exportable);
 
     PlayerProfileCI buildPlayerProfileCI(URN id);
     PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale);

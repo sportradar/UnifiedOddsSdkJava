@@ -11,6 +11,8 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -122,6 +124,16 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     @Override
     public CategoryCI buildCategoryCI(URN id, SAPICategory category, List<URN> tournamentIds, URN associatedSportCiId, Locale dataLocale) {
         return new CategoryCIImpl(id, category, tournamentIds, associatedSportCiId, dataLocale);
+    }
+
+    @Override
+    public SportCI buildSportCI(ExportableSportCI exportable) {
+        return new SportCIImpl(exportable);
+    }
+
+    @Override
+    public CategoryCI buildCategoryCI(ExportableCategoryCI exportable) {
+        return new CategoryCIImpl(exportable);
     }
 
     @Override

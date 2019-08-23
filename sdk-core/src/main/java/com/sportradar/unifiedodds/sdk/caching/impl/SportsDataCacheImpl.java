@@ -10,8 +10,7 @@ import com.google.inject.Inject;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
+import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -22,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Implements methods used to access various sport events data
@@ -390,7 +390,11 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
      */
     @Override
     public List<ExportableCI> exportItems() {
-        return null;
+        return Stream.concat(
+                sportsCache.asMap().values().stream().map(i1 -> (ExportableCacheItem) i1),
+                categoriesCache.asMap().values().stream().map(i1 -> (ExportableCacheItem) i1))
+                .map(ExportableCacheItem::export)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -400,7 +404,25 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
      */
     @Override
     public void importItems(List<ExportableCI> items) {
-
+        for (ExportableCI item : items) {
+            if (item instanceof ExportableSportCI) {
+                SportCI sportCI = cacheItemFactory.buildSportCI((ExportableSportCI) item);
+                SportCI ifPresentSport = sportsCache.getIfPresent(sportCI.getId());
+                if (ifPresentSport == null) {
+                    sportsCache.put(sportCI.getId(), sportCI);
+                } else {
+                    ifPresentSport.merge(sportCI, null);
+                }
+            } else if (item instanceof ExportableCategoryCI) {
+                CategoryCI categoryCI = cacheItemFactory.buildCategoryCI((ExportableCategoryCI) item);
+                CategoryCI ifPresentCategory = categoriesCache.getIfPresent(categoryCI.getId());
+                if (ifPresentCategory == null) {
+                    categoriesCache.put(categoryCI.getId(), categoryCI);
+                } else {
+                    ifPresentCategory.merge(categoryCI, null);
+                }
+            }
+        }
     }
 
     /**

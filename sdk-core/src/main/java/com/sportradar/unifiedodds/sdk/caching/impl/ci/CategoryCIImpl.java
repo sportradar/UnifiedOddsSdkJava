@@ -11,16 +11,20 @@ import com.sportradar.uf.sportsapi.datamodel.SAPICategory;
 import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
 import com.sportradar.unifiedodds.sdk.caching.CategoryCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
 import com.sportradar.utils.URN;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
-class CategoryCIImpl implements CategoryCI {
+class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
     private final URN id;
     private final URN associatedSportId;
     private final Map<Locale, String> names;
@@ -55,6 +59,18 @@ class CategoryCIImpl implements CategoryCI {
         this.cachedLocales.add(dataLocale);
     }
 
+    CategoryCIImpl(ExportableCategoryCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        this.id = URN.parse(exportable.getId());
+        this.associatedSportId = URN.parse(exportable.getAssociatedSportId());
+        this.names = new ConcurrentHashMap<>(exportable.getName());
+        this.associatedTournaments = Collections.synchronizedList(new ArrayList<>(
+                exportable.getAssociatedTournaments().stream().map(URN::parse).collect(Collectors.toList())
+        ));
+        this.countryCode = exportable.getCountryCode();
+        this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
+    }
 
     /**
      * Returns the {@link URN} representing id of the related entity
@@ -126,7 +142,15 @@ class CategoryCIImpl implements CategoryCI {
         } else if (endpointData instanceof SAPILottery) {
             SAPILottery lData = (SAPILottery) endpointData;
             mergeCategoryData(lData.getId(), lData.getCategory(), dataLocale);
+        } else if (endpointData instanceof ExportableCategoryCI) {
+            mergeCategoryData((ExportableCategoryCI) endpointData);
         }
+    }
+
+    private void mergeCategoryData(ExportableCategoryCI endpointData) {
+        names.putAll(endpointData.getName());
+        associatedTournaments.addAll(endpointData.getAssociatedTournaments().stream().map(URN::parse).collect(Collectors.toList()));
+        cachedLocales.addAll(endpointData.getCachedLocales());
     }
 
     private void mergeCategoryData(String associatedTournamentId, SAPICategory categoryData, Locale locale) {
@@ -147,5 +171,17 @@ class CategoryCIImpl implements CategoryCI {
         }
 
         cachedLocales.add(locale);
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableCategoryCI(
+                id.toString(),
+                new HashMap<>(names),
+                associatedSportId.toString(),
+                new ArrayList<>(associatedTournaments.stream().map(URN::toString).collect(Collectors.toList())),
+                countryCode,
+                new ArrayList<>(cachedLocales)
+        );
     }
 }
