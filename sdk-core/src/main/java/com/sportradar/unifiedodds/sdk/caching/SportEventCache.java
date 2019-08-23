@@ -63,4 +63,11 @@ public interface SportEventCache {
      * @param id the {@link URN} of the event
      */
     void addFixtureTimestamp(URN id);
+
+    /**
+     * Deletes the sport events from cache which are scheduled before specified date
+     * @param before the scheduled Date used to delete sport events from cache
+     * @return number of deleted items
+     */
+    Integer deleteSportEventsFromCache(Date before);
 }

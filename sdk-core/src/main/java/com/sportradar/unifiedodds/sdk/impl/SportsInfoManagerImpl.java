@@ -83,7 +83,6 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     private final DataRouterManager dataRouterManager;
 
-
     /**
      * Initializes a new instance of the {@link SportsInfoManagerImpl}
      *
@@ -687,6 +686,19 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         }
         clientInteractionLog.info("SportsInfoManager.getAvailableTournaments({},{}) invoked. Execution time: {}", sportId, locale, timer.stop());
         return tournaments;
+    }
+
+    /**
+     * Deletes the sport events from cache which are scheduled before specified date
+     * @param before the scheduled Date used to delete sport events from cache
+     * @return number of deleted items
+     */
+    @Override
+    public Integer deleteSportEventsFromCache(Date before) {
+        if(before == null){
+            throw new IllegalArgumentException("Parameter before is not defined");
+        }
+        return sportEventCache.deleteSportEventsFromCache(before);
     }
 
     private List<Sport> internalGetSports(List<Locale> locales) {

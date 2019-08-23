@@ -60,7 +60,7 @@ public interface Producer {
     /**
      * An indication if the producer is down/out of sync/invalid state
      *
-     * @return <code>true</code> if the producer is down, otherwise <code>false</code>
+     * @return <code>false</code> if the producer is up, otherwise <code>true</code>
      */
     boolean isFlaggedDown();
 

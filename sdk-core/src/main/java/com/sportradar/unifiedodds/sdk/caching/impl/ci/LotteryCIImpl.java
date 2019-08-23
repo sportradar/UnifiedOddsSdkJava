@@ -186,6 +186,25 @@ public class LotteryCIImpl implements LotteryCI {
     }
 
     /**
+     * Returns the {@link Date} specifying when the sport event associated with the current
+     * instance was scheduled (no api request is invoked)
+     *
+     * @return if available, the {@link Date} specifying when the sport event associated with the current
+     * instance was scheduled; otherwise null;
+     */
+    @Override
+    public Date getScheduledRaw() { return null; }
+
+    /**
+     * Returns the {@link Date} specifying when the sport event associated with the current
+     * instance was scheduled to end (no api request is invoked)
+     *
+     * @return if available, the {@link Date} specifying when the sport event associated with the current
+     * instance was scheduled to end; otherwise null;
+     */
+    @Override
+    public Date getScheduledEndRaw() { return null; }
+    /**
      * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
      *
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
