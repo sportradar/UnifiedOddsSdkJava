@@ -11,6 +11,7 @@ import com.sportradar.utils.URN;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created on 20/10/2017.
@@ -29,19 +30,21 @@ public interface SportEventCache {
      * Returns a {@link List} containing id's of sport events, which belong to a specific tournament
      *
      * @param tournamentId an {@link URN} specifying the id of the tournament to which the events should relate
+     * @param locale the locale to fetch the data
      * @return a {@link List} containing id's of sport events, which belong to the specified tournament
      */
-    List<URN> getEventIds(URN tournamentId) throws IllegalCacheStateException;
+    List<URN> getEventIds(URN tournamentId, Locale locale) throws IllegalCacheStateException;
 
     /**
      * Returns a {@link List} containing id's of sport events, which are scheduled for a specific date - if provided;
      * otherwise a {@link List} of currently live events is returned
      *
      * @param date an optional {@link Date} for which the data is provided
+     * @param locale the locale to fetch the data
      * @return a {@link List} of events that are happening on the specified {@link Date};
      *           or a {@link List} of currently live events
      */
-    List<URN> getEventIds(Date date) throws IllegalCacheStateException;
+    List<URN> getEventIds(Date date, Locale locale) throws IllegalCacheStateException;
 
     /**
      * Purges an item from the {@link SportEventCache}

@@ -108,13 +108,19 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
      * Returns a {@link List} containing id's of sport events, which belong to a specific tournament
      *
      * @param tournamentId an {@link URN} specifying the id of the tournament to which the events should relate
+     * @param locale the locale to fetch the data
      * @return a {@link List} containing id's of sport events, which belong to the specified tournament
      */
     @Override
-    public List<URN> getEventIds(URN tournamentId) throws IllegalCacheStateException {
+    public List<URN> getEventIds(URN tournamentId, Locale locale) throws IllegalCacheStateException {
         logger.debug("Providing tournament[{}] event IDs", tournamentId);
         try {
-            return dataRouterManager.requestEventsFor(defaultLocale, tournamentId);
+            if(locale == null) {
+                return dataRouterManager.requestEventsFor(defaultLocale, tournamentId);
+            }
+            else{
+                return dataRouterManager.requestEventsFor(locale, tournamentId);
+            }
         } catch (CommunicationException e) {
             throw new IllegalCacheStateException("Error occurred while fetching tournament schedule[" + tournamentId + "]", e);
         }
@@ -125,14 +131,20 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
      * otherwise a {@link List} of currently live events is returned
      *
      * @param date an optional {@link Date} for which the data is provided
+     * @param locale the locale to fetch the data
      * @return a {@link List} of events that are happening on the specified {@link Date};
      * or a {@link List} of currently live events
      */
     @Override
-    public List<URN> getEventIds(Date date) throws IllegalCacheStateException {
+    public List<URN> getEventIds(Date date, Locale locale) throws IllegalCacheStateException {
         logger.debug("Providing event IDs for {}", date == null ? "live" : date);
         try {
-            return dataRouterManager.requestEventsFor(defaultLocale, date);
+            if(locale == null) {
+                return dataRouterManager.requestEventsFor(defaultLocale, date);
+            }
+            else{
+                return dataRouterManager.requestEventsFor(locale, date);
+            }
         } catch (CommunicationException e) {
             throw new IllegalCacheStateException("Error occurred while fetching date schedule for " + (date == null ? "live" : date), e);
         }

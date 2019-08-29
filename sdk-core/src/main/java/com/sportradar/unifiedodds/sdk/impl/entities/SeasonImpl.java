@@ -191,7 +191,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
     public List<Competition> getSchedule() {
         List<URN> eventIds = null;
         try {
-            eventIds = sportEventCache.getEventIds(id);
+            for (Locale l : locales) {
+                eventIds = sportEventCache.getEventIds(id, l);
+            }
         } catch (IllegalCacheStateException e) {
             handleException("getSchedule failure", e);
         }

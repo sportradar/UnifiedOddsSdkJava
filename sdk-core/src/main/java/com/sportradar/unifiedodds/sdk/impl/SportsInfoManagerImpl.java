@@ -755,8 +755,10 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
 
     private List<Competition> internalGetSportEventsFor(Date date, List<Locale> locales) {
         try {
-            List<URN> eventIds = this.sportEventCache.getEventIds(date);
-
+            List<URN> eventIds = Lists.newArrayList();
+            for (Locale l : locales) {
+                eventIds = this.sportEventCache.getEventIds(date, l);
+            }
             return sportEntityFactory.buildSportEvents(eventIds, locales);
         } catch (IllegalCacheStateException | ObjectNotFoundException e) {
             return handleException(String.format("getSportEvents(%s)", date != null ? date : "LIVE"), e);
