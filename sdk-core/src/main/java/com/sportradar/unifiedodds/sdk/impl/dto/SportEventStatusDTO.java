@@ -87,12 +87,12 @@ public class SportEventStatusDTO {
     /**
      * The penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
      */
-    private final Integer homePenaltyScore;
+    private Integer homePenaltyScore;
 
     /**
      * The penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
      */
-    private final Integer awayPenaltyScore;
+    private Integer awayPenaltyScore;
 
     /**
      * An indication if the status is decided by fed
@@ -191,6 +191,21 @@ public class SportEventStatusDTO {
         homePenaltyScore = null;
         awayPenaltyScore = null;
 
+        // load home and away penalty score from the penalty period score
+        if(periodScores != null && !periodScores.isEmpty()){
+            try {
+                for (PeriodScoreDTO ps : periodScores) {
+                    if (ps.getPeriodType().equalsIgnoreCase("penalties")) {
+                        homePenaltyScore = ps.getHomeScore().intValue();
+                        awayPenaltyScore = ps.getAwayScore().intValue();
+                    }
+                }
+            }
+            catch (Exception e){
+                //ignored
+            }
+        }
+
         decidedByFed = sportEventStatus.isDecidedByFed();
 
         cleanupProperties();
@@ -270,6 +285,21 @@ public class SportEventStatusDTO {
 
         homePenaltyScore = seStatus.getHomePenaltyScore();
         awayPenaltyScore = seStatus.getAwayPenaltyScore();
+
+        // load home and away penalty score from the penalty period score
+        if(homePenaltyScore == null && awayPenaltyScore == null && periodScores != null && !periodScores.isEmpty()){
+            try {
+                for (PeriodScoreDTO ps : periodScores) {
+                    if (ps.getPeriodType().equalsIgnoreCase("penalties")) {
+                        homePenaltyScore = ps.getHomeScore().intValue();
+                        awayPenaltyScore = ps.getAwayScore().intValue();
+                    }
+                }
+            }
+            catch (Exception e){
+                //ignored
+            }
+        }
 
         decidedByFed = null;
 
