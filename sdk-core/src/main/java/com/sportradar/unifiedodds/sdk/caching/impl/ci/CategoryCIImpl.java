@@ -64,12 +64,11 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
 
         this.id = URN.parse(exportable.getId());
         this.associatedSportId = URN.parse(exportable.getAssociatedSportId());
-        this.names = new ConcurrentHashMap<>(exportable.getName());
-        this.associatedTournaments = Collections.synchronizedList(new ArrayList<>(
-                exportable.getAssociatedTournaments().stream().map(URN::parse).collect(Collectors.toList())
-        ));
+        this.names = new ConcurrentHashMap<>();
+        this.associatedTournaments = Collections.synchronizedList(new ArrayList<>());
         this.countryCode = exportable.getCountryCode();
-        this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
+        this.cachedLocales = Collections.synchronizedList(new ArrayList<>());
+        mergeCategoryData(exportable);
     }
 
     /**
@@ -148,7 +147,7 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
     }
 
     private void mergeCategoryData(ExportableCategoryCI endpointData) {
-        names.putAll(endpointData.getName());
+        names.putAll(endpointData.getNames());
         associatedTournaments.addAll(endpointData.getAssociatedTournaments().stream().map(URN::parse).collect(Collectors.toList()));
         cachedLocales.addAll(endpointData.getCachedLocales());
     }

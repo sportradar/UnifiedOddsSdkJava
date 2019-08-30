@@ -9,8 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
+import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -339,7 +338,12 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
      */
     @Override
     public List<ExportableCI> exportItems() {
-        return null;
+        return Stream.concat(Stream.concat(
+                playerCache.asMap().values().stream().map(i1 -> (ExportableCacheItem) i1),
+                competitorCache.asMap().values().stream().map(i1 -> (ExportableCacheItem) i1)),
+                simpleTeamCache.asMap().values().stream().map(i1 -> (ExportableCacheItem) i1))
+                .map(ExportableCacheItem::export)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -349,7 +353,26 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
      */
     @Override
     public void importItems(List<ExportableCI> items) {
-
+        for (ExportableCI item : items) {
+            if (item instanceof ExportablePlayerProfileCI) {
+                PlayerProfileCI playerProfileCI = cacheItemFactory.buildPlayerProfileCI((ExportablePlayerProfileCI) item);
+                PlayerProfileCI ifPresentPlayerProfile = playerCache.getIfPresent(playerProfileCI.getId());
+                if (ifPresentPlayerProfile == null) {
+                    playerCache.put(playerProfileCI.getId(), playerProfileCI);
+                } else {
+                    ifPresentPlayerProfile.merge(playerProfileCI, null);
+                }
+            } else if (item instanceof ExportableCompetitorCI) {
+                CompetitorCI competitorCI = cacheItemFactory.buildCompetitorProfileCI((ExportableCompetitorCI) item);
+                Cache<URN, CompetitorCI> cache = provideRightCompetitorCacheFor(competitorCI.getId());
+                CompetitorCI ifPresentCompetitor = cache.getIfPresent(competitorCI.getId());
+                if (ifPresentCompetitor == null) {
+                    cache.put(competitorCI.getId(), competitorCI);
+                } else {
+                    ifPresentCompetitor.merge(competitorCI, null);
+                }
+            }
+        }
     }
 
     /**

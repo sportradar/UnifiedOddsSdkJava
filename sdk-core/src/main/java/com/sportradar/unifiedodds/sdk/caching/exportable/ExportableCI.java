@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ExportableCI {
     protected String id;
-    protected Map<Locale, String> name;
+    protected Map<Locale, String> names;
 
     public String getId() {
         return id;
@@ -19,11 +19,11 @@ public class ExportableCI {
         this.id = id;
     }
 
-    public Map<Locale, String> getName() {
-        return name;
+    public Map<Locale, String> getNames() {
+        return names;
     }
 
-    public void setName(Map<Locale, String> name) {
-        this.name = name;
+    public void setNames(Map<Locale, String> names) {
+        this.names = names;
     }
 }

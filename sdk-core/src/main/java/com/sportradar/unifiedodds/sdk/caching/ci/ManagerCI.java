@@ -7,6 +7,9 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIManager;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableManagerCI;
 import com.sportradar.utils.URN;
 
 import java.util.*;
@@ -14,7 +17,7 @@ import java.util.*;
 /**
  * A cache representation of a competitor manager
  */
-public class ManagerCI {
+public class ManagerCI implements ExportableCacheItem {
 
     /**
      * The manager identifier
@@ -41,7 +44,6 @@ public class ManagerCI {
      */
     private List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
-
     /**
      * Initializes as new {@link ManagerCI} instance
      *
@@ -57,6 +59,15 @@ public class ManagerCI {
         merge(manager, locale);
     }
 
+    public ManagerCI(ExportableManagerCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        id = URN.parse(exportable.getId());
+        names.putAll(exportable.getNames());
+        nationalities.putAll(exportable.getNationalities());
+        countryCode = exportable.getCountryCode();
+        cachedLocales.addAll(exportable.getCachedLocales());
+    }
 
     /**
      * Returns the manager identifier
@@ -123,5 +134,16 @@ public class ManagerCI {
         Preconditions.checkNotNull(locales);
 
         return cachedLocales.containsAll(locales);
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableManagerCI(
+                id.toString(),
+                new HashMap<>(names),
+                new HashMap<>(nationalities),
+                countryCode,
+                new ArrayList<>(cachedLocales)
+        );
     }
 }

@@ -6,11 +6,14 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIJersey;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableJerseyCI;
 
 /**
  * A cache representation of a jersey
  */
-public class JerseyCI {
+public class JerseyCI implements ExportableCacheItem {
 
     /**
      * The jersey base color
@@ -71,6 +74,18 @@ public class JerseyCI {
         sleeveDetail = jersey.getSleeveDetail();
     }
 
+    public JerseyCI(ExportableJerseyCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        base = exportable.getBase();
+        number = exportable.getNumber();
+        sleeve = exportable.getSleeve();
+        type = exportable.getType();
+        stripesColor = exportable.getStripesColor();
+        splitColor = exportable.getSplitColor();
+        shirtType = exportable.getShirtType();
+        sleeveDetail = exportable.getSleeveDetail();
+    }
 
     /**
      * Returns the base color of the jersey
@@ -142,5 +157,19 @@ public class JerseyCI {
      */
     public String getSleeveDetail() {
         return sleeveDetail;
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableJerseyCI(
+                base,
+                number,
+                sleeve,
+                type,
+                stripesColor,
+                splitColor,
+                shirtType,
+                sleeveDetail
+        );
     }
 }

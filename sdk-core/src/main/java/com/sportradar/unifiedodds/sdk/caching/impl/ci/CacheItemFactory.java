@@ -8,6 +8,8 @@ import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePlayerProfileCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
 import com.sportradar.utils.URN;
 
@@ -46,12 +48,14 @@ public interface CacheItemFactory {
     PlayerProfileCI buildPlayerProfileCI(URN id);
     PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale);
     PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale);
+    PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable);
 
     CompetitorCI buildCompetitorProfileCI(URN id);
     CompetitorCI buildCompetitorProfileCI(URN id, SAPICompetitorProfileEndpoint data, Locale dataLocale);
     CompetitorCI buildCompetitorProfileCI(URN id, SAPITeam data, Locale dataLocale);
     CompetitorCI buildCompetitorProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale);
     CompetitorCI buildCompetitorProfileCI(URN id, SAPISimpleTeamProfileEndpoint data, Locale dataLocale);
+    CompetitorCI buildCompetitorProfileCI(ExportableCompetitorCI exportable);
 
     LotteryCI buildLotteryCI(URN id);
     LotteryCI buildLotteryCI(URN id, SAPILottery data, Locale dataLocale);

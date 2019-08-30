@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * An implementation of the {@link CompetitorCI}
  */
-class CompetitorCIImpl implements CompetitorCI {
+class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(CompetitorCIImpl.class);
     /**
      * An {@link URN} specifying the id of the associated sport event
@@ -152,6 +153,19 @@ class CompetitorCIImpl implements CompetitorCI {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
 
         merge(data, dataLocale);
+    }
+
+    CompetitorCIImpl(ExportableCompetitorCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+
+        this.id = URN.parse(exportable.getId());
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+
+        internalMerge(exportable);
     }
 
     /**
@@ -376,7 +390,29 @@ class CompetitorCIImpl implements CompetitorCI {
         } else if (endpointData instanceof SAPISimpleTeamProfileEndpoint) {
             internalMerge((SAPISimpleTeamProfileEndpoint) endpointData, dataLocale);
             cachedLocales.add(dataLocale);
+        } else if (endpointData instanceof ExportableCompetitorCI) {
+            internalMerge((ExportableCompetitorCI) endpointData);
         }
+    }
+
+    private void internalMerge(ExportableCompetitorCI exportable) {
+        names.putAll(exportable.getNames());
+        countryNames.putAll(exportable.getCountryNames());
+        abbreviations.putAll(exportable.getAbbreviations());
+        isVirtual = exportable.isVirtual();
+        countryCode = exportable.getCountryCode();
+            referenceId = new ReferenceIdCI(exportable.getReferenceId());
+        List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds().stream()
+                .map(URN::parse)
+                .filter(i -> !associatedPlayerIds.contains(i))
+                .collect(Collectors.toList());
+        associatedPlayerIds.addAll(missingAssociatedPlayerIds);
+        jerseys = exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList());
+        manager = new ManagerCI(exportable.getManager());
+        venue = new VenueCI(exportable.getVenue());
+        gender = exportable.getGender();
+        raceDriverProfile = new RaceDriverProfileCI(exportable.getRaceDriverProfile());
+        cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
     }
 
     private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
@@ -416,7 +452,7 @@ class CompetitorCIImpl implements CompetitorCI {
             }
         }
 
-        if (!abbreviations.keySet().contains(dataLocale)) {
+        if (!abbreviations.containsKey(dataLocale)) {
             if(data.getCompetitor().getAbbreviation() == null) {
                 abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(data.getCompetitor().getName(), 3));
             }
@@ -565,5 +601,26 @@ class CompetitorCIImpl implements CompetitorCI {
                 logger.warn("Error providing CompetitorCI[{}] request({}), ex:", id, request, e);
             }
         }
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableCompetitorCI(
+                id.toString(),
+                new HashMap<>(names),
+                defaultLocale,
+                new HashMap<>(countryNames),
+                new HashMap<>(abbreviations),
+                isVirtual,
+                countryCode,
+                new HashMap<>(referenceId.getReferenceIds()),
+                associatedPlayerIds.stream().map(URN::toString).collect(Collectors.toList()),
+                jerseys.stream().map(j -> (ExportableJerseyCI) j.export()).collect(Collectors.toList()),
+                (ExportableManagerCI) manager.export(),
+                (ExportableVenueCI) venue.export(),
+                gender,
+                (ExportableRaceDriverProfileCI) raceDriverProfile.export(),
+                new ArrayList<>(cachedLocales)
+        );
     }
 }

@@ -70,6 +70,7 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
     public String toString() {
         return "TeamCompetitorImpl{" +
                 "qualifier='" + TeamQualifier + '\'' +
+                "division='" + TeamDivision + '\'' +
                 "} " + super.toString();
     }
 }

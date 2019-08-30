@@ -12,6 +12,8 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePlayerProfileCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
 import com.sportradar.utils.URN;
 
@@ -152,6 +154,11 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
+    public PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable) {
+        return new PlayerProfileCIImpl(exportable, dataRouterManager, exceptionHandlingStrategy);
+    }
+
+    @Override
     public CompetitorCI buildCompetitorProfileCI(URN id) {
         return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
     }
@@ -174,6 +181,11 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     @Override
     public CompetitorCI buildCompetitorProfileCI(URN id, SAPISimpleTeamProfileEndpoint data, Locale dataLocale) {
         return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    }
+
+    @Override
+    public CompetitorCI buildCompetitorProfileCI(ExportableCompetitorCI exportable) {
+        return new CompetitorCIImpl(exportable, dataRouterManager, exceptionHandlingStrategy);
     }
 
     @Override

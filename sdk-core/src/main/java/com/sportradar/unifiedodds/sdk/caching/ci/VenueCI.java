@@ -6,6 +6,9 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCI;
 import com.sportradar.utils.URN;
 
 import java.util.*;
@@ -13,7 +16,7 @@ import java.util.*;
 /**
  * A venue representation used by caching components
  */
-public class VenueCI extends SportEntityCI {
+public class VenueCI extends SportEntityCI implements ExportableCacheItem {
     /**
      * A {@link HashMap} containing venue name in different languages
      */
@@ -64,6 +67,19 @@ public class VenueCI extends SportEntityCI {
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
         merge(venue, locale);
+    }
+
+    public VenueCI(ExportableVenueCI exportable) {
+        super(URN.parse(exportable.getId()));
+        Preconditions.checkNotNull(exportable);
+
+        names = new HashMap<>(exportable.getNames());
+        cityNames = new HashMap<>(exportable.getCityNames());
+        countryNames = new HashMap<>(exportable.getCountryNames());
+        capacity = exportable.getCapacity();
+        countryCode = exportable.getCountryCode();
+        coordinates = exportable.getCoordinates();
+        cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
     /**
@@ -149,5 +165,24 @@ public class VenueCI extends SportEntityCI {
         Preconditions.checkNotNull(locales);
 
         return cachedLocales.containsAll(locales);
+    }
+
+    /**
+     * Export item's properties
+     *
+     * @return An {@link ExportableCI} instance containing all relevant properties
+     */
+    @Override
+    public ExportableCI export() {
+        return new ExportableVenueCI(
+                getId().toString(),
+                new HashMap<>(names),
+                new HashMap<>(cityNames),
+                new HashMap<>(countryNames),
+                capacity,
+                countryCode,
+                coordinates,
+                new ArrayList<>(cachedLocales)
+        );
     }
 }

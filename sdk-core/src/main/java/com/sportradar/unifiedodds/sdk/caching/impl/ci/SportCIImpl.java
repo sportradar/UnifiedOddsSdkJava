@@ -56,14 +56,12 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
 
     SportCIImpl(ExportableSportCI exportable) {
         Preconditions.checkNotNull(exportable);
-        Preconditions.checkNotNull(exportable.getId());
 
         this.id = URN.parse(exportable.getId());
-        this.names = new ConcurrentHashMap<>(exportable.getName());
-        this.associatedCategories = Collections.synchronizedList(new ArrayList<>(
-                exportable.getAssociatedCategories().stream().map(URN::parse).collect(Collectors.toList())));
-        this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
-        this.shouldFetchCategories = exportable.isShouldFetchCategories();
+        this.names = new ConcurrentHashMap<>();
+        this.associatedCategories = Collections.synchronizedList(new ArrayList<>());
+        this.cachedLocales = Collections.synchronizedList(new ArrayList<>());
+        mergeData(exportable);
     }
 
     /**
@@ -147,7 +145,7 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
     private void mergeData(ExportableSportCI endpointData) {
         Preconditions.checkNotNull(endpointData);
 
-        names.putAll(endpointData.getName());
+        names.putAll(endpointData.getNames());
         associatedCategories.addAll(endpointData.getAssociatedCategories().stream()
                 .map(URN::parse).collect(Collectors.toList()));
         cachedLocales.addAll(endpointData.getCachedLocales());
