@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
@@ -238,9 +239,11 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public List<Competition> getSchedule() {
-        List<URN> eventIds;
+        List<URN> eventIds = Lists.newArrayList();
         try {
-            eventIds = sportEventCache.getEventIds(id);
+            for (Locale l : locales) {
+                eventIds = sportEventCache.getEventIds(id, l);
+            }
         } catch (IllegalCacheStateException e) {
             return handleException("getSchedule failure", e);
         }
