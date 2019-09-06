@@ -1,4 +1,10 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.27 (2019-09-05)**
+* exposed option to delete old matches from cache (SportInfoManager.deleteSportEventsFromCache)
+* loading home and away penalty score from penalty PeriodScore if present
+* fix: updated CustomConfigurationBuilder not to override pre-configured values
+* fix: interrupted recoveries are restarted on alive message
+* fix: SportInfoManager.getCompetitonsFor(Date, Locale) invokes for correct locale
 
 **2.0.27 (2019-07-18)**
 * added getListOfSportEvents and getAvailableTournaments to the SportInfoManager
