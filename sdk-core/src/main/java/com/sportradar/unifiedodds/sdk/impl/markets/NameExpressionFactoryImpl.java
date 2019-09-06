@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
+import com.sportradar.utils.URN;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -79,11 +80,14 @@ public class NameExpressionFactoryImpl implements NameExpressionFactory {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(operand));
 
         Operand operandDefinition = operandFactory.buildOperand(specifiers, operand);
-        switch (operand) {
-            case "server":
-                return new CompetitorProfileExpression(profileCache, operandDefinition);
-            default:
-                return new PlayerProfileExpression(profileCache, operandDefinition);
+        if ("server".equals(operand)) {
+            return new CompetitorProfileExpression(profileCache, operandDefinition);
+        }
+        URN id = URN.parse(operandDefinition.getStringValue());
+        if (id.getType().equals("player")) {
+            return new PlayerProfileExpression(profileCache, operandDefinition);
+        } else {
+            return new CompetitorProfileExpression(profileCache, operandDefinition);
         }
     }
 
