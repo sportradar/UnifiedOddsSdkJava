@@ -27,7 +27,7 @@ public interface CustomBetManager {
     /**
      * Returns an {@link Calculation} instance providing the probability for the specified selections
      *
-     * @param selections the {@link List<Selection>} containing selections for which the probability should be calculated
+     * @param selections the {@link List} containing selections for which the probability should be calculated
      * @return an {@link Calculation} providing the the probability for the specified selections
      */
     Calculation calculateProbability(List<Selection> selections);
