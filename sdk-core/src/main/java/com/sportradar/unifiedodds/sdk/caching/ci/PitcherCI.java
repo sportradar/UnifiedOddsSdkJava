@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPitcher;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePitcherCI;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.PitcherHand;
 import com.sportradar.utils.URN;
@@ -38,13 +39,21 @@ public class PitcherCI extends SportEntityCI {
      * @param pitcher - {@link SAPIPitcher} containing information about the pitcher
      * @param locale  - {@link Locale} specifying the language of the <i>pitcher</i>
      */
-    public PitcherCI(SAPIPitcher pitcher, Locale locale) {
+    PitcherCI(SAPIPitcher pitcher, Locale locale) {
         super(URN.parse(pitcher.getId()));
 
         Preconditions.checkNotNull(pitcher);
         Preconditions.checkNotNull(locale);
 
         merge(pitcher, locale);
+    }
+
+    PitcherCI(ExportablePitcherCI exportable) {
+        super(URN.parse(exportable.getId()));
+
+        name = exportable.getName();
+        competitor = exportable.getCompetitor();
+        hand = exportable.getHand();
     }
 
     /**
@@ -87,5 +96,14 @@ public class PitcherCI extends SportEntityCI {
      */
     public PitcherHand getHand() {
         return hand;
+    }
+
+    public ExportablePitcherCI export() {
+        return new ExportablePitcherCI(
+                getId().toString(),
+                name,
+                competitor,
+                hand
+        );
     }
 }

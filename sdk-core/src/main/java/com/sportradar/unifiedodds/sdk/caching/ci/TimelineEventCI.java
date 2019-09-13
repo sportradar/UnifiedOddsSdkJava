@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIBasicEvent;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTimelineEventCI;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 
 import java.util.Date;
@@ -62,8 +63,32 @@ public class TimelineEventCI {
 
         goalScorer = event.getGoalScorer() == null ? null : new EventPlayerCI(event.getGoalScorer());
         player = event.getPlayer() == null ? null : new EventPlayerCI(event.getPlayer());
-        matchStatusCode = event.getMatchStatusCode() == null ? null : event.getMatchStatusCode();
+        matchStatusCode = event.getMatchStatusCode();
         matchClock = event.getMatchClock();
+    }
+
+    TimelineEventCI(ExportableTimelineEventCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        id = exportable.getId();
+        awayScore = exportable.getAwayScore();
+        homeScore = exportable.getHomeScore();
+        matchTime = exportable.getMatchTime();
+        period = exportable.getPeriod();
+        periodName = exportable.getPeriodName();
+        points = exportable.getPoints();
+        stoppageTime = exportable.getStoppageTime();
+        team = exportable.getTeam();
+        type = exportable.getType();
+        value = exportable.getValue();
+        x = exportable.getX();
+        y = exportable.getY();
+        time = exportable.getTime();
+        assists = exportable.getAssists().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList());
+        goalScorer = new EventPlayerCI(exportable.getGoalScorer());
+        player = new EventPlayerCI(exportable.getPlayer());
+        matchStatusCode = exportable.getMatchStatusCode();
+        matchClock = exportable.getMatchClock();
     }
 
     public int getId() { return id; }
@@ -136,5 +161,29 @@ public class TimelineEventCI {
 
     public String getMatchClock() {
         return matchClock;
+    }
+
+    public ExportableTimelineEventCI export() {
+        return new ExportableTimelineEventCI(
+                id,
+                awayScore,
+                homeScore,
+                matchTime,
+                period,
+                periodName,
+                points,
+                stoppageTime,
+                team,
+                type,
+                value,
+                x,
+                y,
+                time,
+                assists.stream().map(EventPlayerAssistCI::export).collect(Collectors.toList()),
+                goalScorer.export(),
+                player.export(),
+                matchStatusCode,
+                matchClock
+        );
     }
 }

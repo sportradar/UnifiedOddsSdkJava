@@ -15,8 +15,7 @@ public class ExportableCategoryCI extends ExportableCI {
     private List<Locale> cachedLocales;
 
     public ExportableCategoryCI(String id, Map<Locale, String> names, String associatedSportId, List<String> associatedTournaments, String countryCode, List<Locale> cachedLocales) {
-        this.id = id;
-        this.names = names;
+        super(id, names);
         this.associatedSportId = associatedSportId;
         this.associatedTournaments = associatedTournaments;
         this.countryCode = countryCode;

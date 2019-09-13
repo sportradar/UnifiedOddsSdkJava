@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISeasonCoverageInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCoverageCI;
 import com.sportradar.utils.URN;
 
 /**
@@ -58,6 +59,17 @@ public class SeasonCoverageCI {
         maxCovered = season.getMaxCovered();
         played = season.getPlayed();
         scheduled = season.getScheduled();
+    }
+
+    public SeasonCoverageCI(ExportableSeasonCoverageCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        seasonId = URN.parse(exportable.getSeasonId());
+        maxCoverageLevel = exportable.getMaxCoverageLevel();
+        minCoverageLevel = exportable.getMinCoverageLevel();
+        maxCovered = exportable.getMaxCovered();
+        played = exportable.getPlayed();
+        scheduled = exportable.getScheduled();
     }
 
     /**
@@ -116,5 +128,16 @@ public class SeasonCoverageCI {
      */
     public int getScheduled() {
         return scheduled;
+    }
+
+    public ExportableSeasonCoverageCI export() {
+        return new ExportableSeasonCoverageCI(
+                seasonId.toString(),
+                maxCoverageLevel,
+                minCoverageLevel,
+                maxCovered,
+                played,
+                scheduled
+        );
     }
 }

@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTvChannelCI;
 import com.sportradar.unifiedodds.sdk.entities.TvChannel;
 
 import java.util.Date;
@@ -35,10 +37,18 @@ public class TvChannelImpl implements TvChannel {
      * @param time - a {@link Date} specifying when the coverage on the channel
      *               represented by the current {@link TvChannel} starts
      */
-    public TvChannelImpl(String name, Date time, String streamUrl) {
+    TvChannelImpl(String name, Date time, String streamUrl) {
         this.name = name;
         this.time = time;
         this.streamUrl = streamUrl;
+    }
+
+    TvChannelImpl(ExportableTvChannelCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        this.name = exportable.getName();
+        this.time = exportable.getTime();
+        this.streamUrl = exportable.getStreamUrl();
     }
 
     /**
@@ -84,5 +94,13 @@ public class TvChannelImpl implements TvChannel {
                 ", time=" + time + '\'' +
                 ", streamUrl=" + streamUrl +
                 '}';
+    }
+
+    public ExportableTvChannelCI export() {
+        return new ExportableTvChannelCI(
+                name,
+                time,
+                streamUrl
+        );
     }
 }

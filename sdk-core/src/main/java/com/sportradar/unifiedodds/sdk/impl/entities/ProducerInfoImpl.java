@@ -4,12 +4,15 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfo;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
 import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contains information about a specific producer
@@ -75,6 +78,15 @@ public class ProducerInfoImpl implements ProducerInfo {
         this.streamingChannels = streamingChannels == null ? null : ImmutableList.copyOf(streamingChannels);
     }
 
+    ProducerInfoImpl(ExportableProducerInfoCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        this.isAutoTraded = exportable.isAutoTraded();
+        this.isInHostedStatistics = exportable.isInHostedStatistics();
+        this.isInLiveCenterSoccer = exportable.isInLiveCenterSoccer();
+        this.isInLiveScore = exportable.isInLiveScore();
+        this.producerInfoLinks = exportable.getProducerInfoLinks().stream().map(ProducerInfoLinkImpl::new).collect(ImmutableList.toImmutableList());
+        this.streamingChannels = exportable.getStreamingChannels().stream().map(StreamingChannelImpl::new).collect(ImmutableList.toImmutableList());
+    }
 
     /**
      * Returns an indication if the current instance is being auto traded
@@ -158,5 +170,16 @@ public class ProducerInfoImpl implements ProducerInfo {
                 ", producerInfoLinks=" + producerInfoLinks +
                 ", streamingChannels=" + streamingChannels +
                 '}';
+    }
+
+    public ExportableProducerInfoCI export() {
+        return new ExportableProducerInfoCI(
+                isAutoTraded,
+                isInHostedStatistics,
+                isInLiveCenterSoccer,
+                isInLiveScore,
+                producerInfoLinks.stream().map(p -> ((ProducerInfoLinkImpl)p).export()).collect(Collectors.toList()),
+                streamingChannels.stream().map(s -> ((StreamingChannelImpl)s).export()).collect(Collectors.toList())
+        );
     }
 }

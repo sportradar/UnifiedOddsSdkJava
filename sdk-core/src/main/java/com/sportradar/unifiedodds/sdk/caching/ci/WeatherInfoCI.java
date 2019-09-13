@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIWeatherInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableWeatherInfoCI;
 
 /**
  * A weather info representation used by caching components
@@ -41,7 +42,7 @@ public class WeatherInfoCI {
      *
      * @param weatherInfo - {@link SAPIWeatherInfo} containing information about the weather
      */
-    public WeatherInfoCI(SAPIWeatherInfo weatherInfo) {
+    WeatherInfoCI(SAPIWeatherInfo weatherInfo) {
         Preconditions.checkNotNull(weatherInfo);
 
         temperatureCelsius = weatherInfo.getTemperatureCelsius();
@@ -49,6 +50,16 @@ public class WeatherInfoCI {
         windAdvantage = weatherInfo.getWindAdvantage();
         pitch = weatherInfo.getPitch();
         weatherConditions = weatherInfo.getWeatherConditions();
+    }
+
+    WeatherInfoCI(ExportableWeatherInfoCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        temperatureCelsius = exportable.getTemperatureCelsius();
+        wind = exportable.getWind();
+        windAdvantage = exportable.getWindAdvantage();
+        pitch = exportable.getPitch();
+        weatherConditions = exportable.getWeatherConditions();
     }
 
     /**
@@ -94,5 +105,15 @@ public class WeatherInfoCI {
      */
     public String getWeatherConditions() {
         return weatherConditions;
+    }
+
+    public ExportableWeatherInfoCI export() {
+        return new ExportableWeatherInfoCI(
+                temperatureCelsius,
+                wind,
+                windAdvantage,
+                pitch,
+                weatherConditions
+        );
     }
 }

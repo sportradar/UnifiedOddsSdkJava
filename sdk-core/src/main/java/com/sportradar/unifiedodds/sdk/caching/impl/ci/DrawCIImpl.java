@@ -12,6 +12,9 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.DrawCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawCI;
 import com.sportradar.unifiedodds.sdk.entities.DrawStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -28,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * A draw cache item implementation
  */
-public class DrawCIImpl implements DrawCI {
+public class DrawCIImpl implements DrawCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(DrawCIImpl.class);
 
     private final URN id;
@@ -45,7 +48,6 @@ public class DrawCIImpl implements DrawCI {
     private DrawStatus status;
     private List<DrawResultCI> results;
     private Integer displayId;
-
 
     DrawCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(id);
@@ -84,6 +86,23 @@ public class DrawCIImpl implements DrawCI {
         Preconditions.checkNotNull(dataLocale);
 
         merge(data, dataLocale);
+    }
+
+    DrawCIImpl(ExportableDrawCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.id = URN.parse(exportable.getId());
+        this.cachedLocales.addAll(exportable.getCachedLocales());
+        this.lotteryId = URN.parse(exportable.getLotteryId());
+        this.scheduled = exportable.getScheduled();
+        this.status = exportable.getStatus();
+        this.results = exportable.getResults().stream().map(DrawResultCI::new).collect(Collectors.toList());
+        this.displayId = exportable.getDisplayId();
     }
 
     /**
@@ -406,5 +425,23 @@ public class DrawCIImpl implements DrawCI {
             default:
                 return DrawStatus.Unknown;
         }
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableDrawCI(
+                id.toString(),
+                Collections.emptyMap(),
+                scheduled,
+                null,
+                null,
+                null,
+                defaultLocale,
+                lotteryId.toString(),
+                status,
+                results.stream().map(DrawResultCI::export).collect(Collectors.toList()),
+                displayId,
+                new HashSet<>(cachedLocales)
+        );
     }
 }

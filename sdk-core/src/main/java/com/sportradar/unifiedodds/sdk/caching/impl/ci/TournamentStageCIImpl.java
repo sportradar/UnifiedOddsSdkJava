@@ -19,6 +19,9 @@ import com.sportradar.unifiedodds.sdk.caching.StageCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentStageCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
@@ -40,7 +43,7 @@ import java.util.stream.Collectors;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
-class TournamentStageCIImpl implements StageCI {
+class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(TournamentStageCIImpl.class);
 
     /**
@@ -156,6 +159,24 @@ class TournamentStageCIImpl implements StageCI {
                         .map(c -> URN.parse(c.getId())).collect(Collectors.toList()));
 
         cachedLocales.add(dataLocale);
+    }
+
+    TournamentStageCIImpl(ExportableTournamentStageCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.id = URN.parse(exportable.getId());
+        this.scheduled = exportable.getScheduled();
+        this.scheduledEnd = exportable.getScheduledEnd();
+        this.competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+        this.sportEventNames.putAll(exportable.getNames());
+        this.categoryId = URN.parse(exportable.getCategoryId());
+        this.cachedLocales.addAll(exportable.getCachedLocales());
     }
 
     /**
@@ -545,5 +566,28 @@ class TournamentStageCIImpl implements StageCI {
                 logger.warn("Error providing TournamentStageCI[{}] request({}), ex:", id, request, e);
             }
         }
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableTournamentStageCI(
+                id.toString(),
+                new HashMap<>(sportEventNames),
+                scheduled,
+                scheduledEnd,
+                null,
+                null,
+                BookingStatus.Unavailable,
+                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+                null,
+                null,
+                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                null,
+                null,
+                StageType.Parent,
+                categoryId.toString(),
+                defaultLocale,
+                new ArrayList<>(cachedLocales)
+        );
     }
 }

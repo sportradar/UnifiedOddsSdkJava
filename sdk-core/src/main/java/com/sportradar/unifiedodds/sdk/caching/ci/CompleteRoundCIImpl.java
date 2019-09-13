@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompleteRoundCI;
 import com.sportradar.utils.URN;
 
 import java.util.*;
@@ -89,6 +90,25 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
         merge(round, locale);
+    }
+
+    public CompleteRoundCIImpl(ExportableCompleteRoundCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        this.names = Maps.newConcurrentMap();
+        this.names.putAll(exportable.getNames());
+        this.phaseOrGroupLongNames = Maps.newConcurrentMap();
+        this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
+        this.type = exportable.getType();
+        this.group = exportable.getGroup();
+        this.groupId = URN.parse(exportable.getGroupId());
+        this.otherMatchId = exportable.getOtherMatchId();
+        this.number = exportable.getNumber();
+        this.cupRoundMatches = exportable.getCupRoundMatches();
+        this.cupRoundMatchNumber = exportable.getCupRoundMatchNumber();
+        this.betradarId = exportable.getBetradarId();
+        this.phase = exportable.getPhase();
+        this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
     /**
@@ -265,5 +285,22 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
                 ", phase=" + phase +
                 ", cachedLocales=" + cachedLocales +
                 '}';
+    }
+
+    public ExportableCompleteRoundCI export() {
+        return new ExportableCompleteRoundCI(
+                new HashMap<>(names),
+                new HashMap<>(phaseOrGroupLongNames),
+                type,
+                group,
+                groupId.toString(),
+                otherMatchId,
+                number,
+                cupRoundMatches,
+                cupRoundMatchNumber,
+                betradarId,
+                phase,
+                new ArrayList<>(cachedLocales)
+        );
     }
 }

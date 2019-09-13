@@ -14,8 +14,7 @@ public class ExportableSportCI extends ExportableCI {
     private boolean shouldFetchCategories;
 
     public ExportableSportCI(String id, Map<Locale, String> names, List<String> associatedCategories, List<Locale> cachedLocales, boolean shouldFetchCategories) {
-        this.id = id;
-        this.names = names;
+        super(id, names);
         this.associatedCategories = associatedCategories;
         this.cachedLocales = cachedLocales;
         this.shouldFetchCategories = shouldFetchCategories;

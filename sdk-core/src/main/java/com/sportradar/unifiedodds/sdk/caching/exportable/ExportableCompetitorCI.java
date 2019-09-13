@@ -24,8 +24,7 @@ public class ExportableCompetitorCI extends ExportableCI {
     private List<Locale> cachedLocales;
 
     public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames, Map<Locale, String> abbreviations, boolean isVirtual, String countryCode, Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys, ExportableManagerCI manager, ExportableVenueCI venue, String gender, ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales) {
-        this.id = id;
-        this.names = names;
+        super(id, names);
         this.defaultLocale = defaultLocale;
         this.countryNames = countryNames;
         this.abbreviations = abbreviations;

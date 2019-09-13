@@ -5,16 +5,13 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCarCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceDriverProfileCI;
 import com.sportradar.utils.URN;
 
 /**
  * A cache representation of race driver profile
  */
-public class RaceDriverProfileCI implements ExportableCacheItem {
+public class RaceDriverProfileCI {
     private final URN raceDriverId;
     private final URN raceTeamId;
     private final CarCI car;
@@ -45,12 +42,11 @@ public class RaceDriverProfileCI implements ExportableCacheItem {
         return car;
     }
 
-    @Override
-    public ExportableCI export() {
+    public ExportableRaceDriverProfileCI export() {
         return new ExportableRaceDriverProfileCI(
                 raceDriverId.toString(),
                 raceTeamId.toString(),
-                (ExportableCarCI) car.export()
+                car.export()
         );
     }
 }

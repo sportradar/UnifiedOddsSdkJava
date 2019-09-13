@@ -7,21 +7,11 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
-import com.sportradar.uf.sportsapi.datamodel.SAPIFixture;
-import com.sportradar.uf.sportsapi.datamodel.SAPIInfo;
-import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfoLinks;
-import com.sportradar.uf.sportsapi.datamodel.SAPIReferenceIds;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStreamingChannels;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
-import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.unifiedodds.sdk.entities.ProducerInfo;
-import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
-import com.sportradar.unifiedodds.sdk.entities.Reference;
-import com.sportradar.unifiedodds.sdk.entities.ScheduledStartTimeChange;
-import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
-import com.sportradar.unifiedodds.sdk.entities.TvChannel;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableFixtureCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableScheduledStartTimeChangeCI;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -30,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,7 +32,8 @@ import java.util.stream.Collectors;
  *
  * @see Fixture
  */
-public class FixtureImpl implements Fixture {
+public class
+FixtureImpl implements Fixture {
     private static final Logger logger = LoggerFactory.getLogger(FixtureImpl.class);
     private static final String ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
@@ -173,6 +165,21 @@ public class FixtureImpl implements Fixture {
                                 ch.getNewTime() == null ? null : ch.getNewTime().toGregorianCalendar().getTime(),
                                 ch.getChangedAt() == null ? null : ch.getChangedAt().toGregorianCalendar().getTime()))
                         .collect(ImmutableList.toImmutableList());
+    }
+
+    public FixtureImpl(ExportableFixtureCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        this.startTime = exportable.getStartTime();
+        this.startTimeConfirmed = exportable.isStartTimeConfirmed();
+        this.nextLiveTime = exportable.getNextLiveTime();
+        this.extraInfo = ImmutableMap.copyOf(exportable.getExtraInfo());
+        this.tvChannels = exportable.getTvChannels().stream().map(TvChannelImpl::new).collect(ImmutableList.toImmutableList());
+        this.coverageInfo = new CoverageInfoImpl(exportable.getCoverageInfo());
+        this.producerInfo = new ProducerInfoImpl(exportable.getProducerInfo());
+        this.references = new ReferenceImpl(new ReferenceIdCI(exportable.getReferences()));
+        this.startTimeTbd = exportable.getStartTimeTbd();
+        this.replacedBy = URN.parse(exportable.getReplacedBy());
+        this.scheduledStartTimeChanges = exportable.getScheduledStartTimeChanges().stream().map(ScheduledStartTimeChangeImpl::new).collect(ImmutableList.toImmutableList());
     }
 
     /**
@@ -338,5 +345,21 @@ public class FixtureImpl implements Fixture {
     private static Date parseNextLiveTime(String date) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
         return sdf.parse(date);
+    }
+
+    public ExportableFixtureCI export() {
+        return new ExportableFixtureCI(
+                startTime,
+                startTimeConfirmed,
+                nextLiveTime,
+                new HashMap<>(extraInfo),
+                tvChannels.stream().map(t -> ((TvChannelImpl) t).export()).collect(Collectors.toList()),
+                ((CoverageInfoImpl) coverageInfo).export(),
+                ((ProducerInfoImpl) producerInfo).export(),
+                new HashMap<>(references.getReferences()),
+                startTimeTbd,
+                replacedBy.toString(),
+                scheduledStartTimeChanges.stream().map(s -> ((ExportableScheduledStartTimeChangeCI) s).export()).collect(Collectors.toList())
+        );
     }
 }

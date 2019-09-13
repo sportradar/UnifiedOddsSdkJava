@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoLinkCI;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
 
 /**
@@ -27,11 +29,16 @@ public class ProducerInfoLinkImpl implements ProducerInfoLink {
      * @param reference - the reference to the producer info represented by the current instance
      * @param name - the name of the producer link represented by the current instance
      */
-    public ProducerInfoLinkImpl(String reference, String name) {
+    ProducerInfoLinkImpl(String reference, String name) {
         this.reference = reference;
         this.name = name;
     }
 
+    ProducerInfoLinkImpl(ExportableProducerInfoLinkCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        this.reference = exportable.getReference();
+        this.name = exportable.getName();
+    }
 
     /**
      * Returns the reference to the producer info represented by the current instance
@@ -64,5 +71,12 @@ public class ProducerInfoLinkImpl implements ProducerInfoLink {
                 "reference='" + reference + '\'' +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public ExportableProducerInfoLinkCI export() {
+        return new ExportableProducerInfoLinkCI(
+                reference,
+                name
+        );
     }
 }

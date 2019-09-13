@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIEventPlayer;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventPlayerCI;
 import com.sportradar.utils.URN;
 
 /**
@@ -24,11 +25,25 @@ public class EventPlayerCI {
         name = playerData.getName();
     }
 
+    EventPlayerCI(ExportableEventPlayerCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        id = URN.parse(exportable.getId());
+        name = exportable.getName();
+    }
+
     public URN getId() {
         return id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public ExportableEventPlayerCI export() {
+        return new ExportableEventPlayerCI(
+                id.toString(),
+                name
+        );
     }
 }

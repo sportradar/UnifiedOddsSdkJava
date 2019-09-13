@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIBonusDrumType;
 import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableBonusInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.BonusDrumType;
 
 /**
@@ -24,6 +25,14 @@ public class BonusInfoCI {
         bonusBalls = bonusInfo.getBonusBalls();
         bonusDrumType = map(bonusInfo.getBonusDrum());
         bonusRange = bonusInfo.getBonusRange();
+    }
+
+    public BonusInfoCI(ExportableBonusInfoCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        bonusBalls = exportable.getBonusBalls();
+        bonusDrumType = exportable.getBonusDrumType();
+        bonusRange = exportable.getBonusRange();
     }
 
     public Integer getBonusBalls() {
@@ -51,5 +60,13 @@ public class BonusInfoCI {
             default:
                 return null;
         }
+    }
+
+    public ExportableBonusInfoCI export() {
+        return new ExportableBonusInfoCI(
+                bonusBalls,
+                bonusDrumType,
+                bonusRange
+        );
     }
 }

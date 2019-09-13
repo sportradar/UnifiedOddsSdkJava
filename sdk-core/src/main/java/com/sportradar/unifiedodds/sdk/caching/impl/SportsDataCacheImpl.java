@@ -433,8 +433,8 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     @Override
     public Map<String, Long> cacheStatus() {
         Map<String, Long> status = new HashMap<>();
-        status.put("SportCI", sportsCache.size());
-        status.put("CategoryCI", categoriesCache.size());
+        status.put("SportCIImpl", sportsCache.size());
+        status.put("CategoryCIImpl", categoriesCache.size());
         return status;
     }
 }

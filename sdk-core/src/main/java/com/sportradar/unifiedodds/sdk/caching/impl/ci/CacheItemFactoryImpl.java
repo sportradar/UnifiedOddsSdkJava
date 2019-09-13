@@ -11,10 +11,7 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePlayerProfileCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -206,6 +203,23 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     @Override
     public DrawCI buildDrawCI(URN id, SAPIDrawFixture data, Locale dataLocale) {
         return new DrawCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    }
+
+    @Override
+    public SportEventCI buildSportEventCI(ExportableCI exportable) {
+        if (exportable instanceof ExportableMatchCI)
+            return new MatchCIImpl((ExportableMatchCI) exportable, dataRouterManager, exceptionHandlingStrategy, fixtureTimestampCache);
+        if (exportable instanceof ExportableRaceStageCI)
+            return new RaceStageCIImpl((ExportableRaceStageCI) exportable, dataRouterManager, exceptionHandlingStrategy, fixtureTimestampCache);
+        if (exportable instanceof ExportableTournamentStageCI)
+            return new TournamentStageCIImpl((ExportableTournamentStageCI) exportable, dataRouterManager, exceptionHandlingStrategy);
+        if (exportable instanceof ExportableTournamentCI)
+            return new TournamentCIImpl((ExportableTournamentCI) exportable, dataRouterManager, exceptionHandlingStrategy);
+        if (exportable instanceof ExportableLotteryCI)
+            return new LotteryCIImpl((ExportableLotteryCI) exportable, dataRouterManager, exceptionHandlingStrategy);
+        if (exportable instanceof ExportableDrawCI)
+            return new DrawCIImpl((ExportableDrawCI) exportable, dataRouterManager, exceptionHandlingStrategy);
+        throw new IllegalArgumentException();
     }
 
     @Override

@@ -17,8 +17,7 @@ public class ExportableVenueCI extends ExportableCI {
     private List<Locale> cachedLocales;
 
     public ExportableVenueCI(String id, Map<Locale, String> names, Map<Locale, String> cityNames, Map<Locale, String> countryNames, Integer capacity, String countryCode, String coordinates, List<Locale> cachedLocales) {
-        this.id = id;
-        this.names = names;
+        super(id, names);
         this.cityNames = cityNames;
         this.countryNames = countryNames;
         this.capacity = capacity;

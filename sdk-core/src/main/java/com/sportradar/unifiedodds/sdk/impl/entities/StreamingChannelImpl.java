@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableStreamingChannelCI;
 import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
 
 /**
@@ -27,11 +29,16 @@ public class StreamingChannelImpl implements StreamingChannel {
      * @param id - a unique identifier representing the current streaming channel
      * @param name - the name of the streaming channel represented by the current instance
      */
-    public StreamingChannelImpl(int id, String name) {
+    StreamingChannelImpl(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    StreamingChannelImpl(ExportableStreamingChannelCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        this.id = exportable.getId();
+        this.name = exportable.getName();
+    }
 
     /**
      * Returns a value uniquely identifying the current streaming channel
@@ -64,5 +71,12 @@ public class StreamingChannelImpl implements StreamingChannel {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public ExportableStreamingChannelCI export() {
+        return new ExportableStreamingChannelCI(
+                id,
+                name
+        );
     }
 }

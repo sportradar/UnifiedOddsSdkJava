@@ -7,7 +7,9 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIDrawResult;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawResultCI;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +39,13 @@ public class DrawResultCI {
         }
     }
 
+    public DrawResultCI(ExportableDrawResultCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        names = Maps.newConcurrentMap();
+        names.putAll(exportable.getNames());
+        value = exportable.getValue();
+    }
+
     public Integer getValue() {
         return value;
     }
@@ -59,5 +68,12 @@ public class DrawResultCI {
         else{
             this.names.put(dataLocale, "");
         }
+    }
+
+    public ExportableDrawResultCI export() {
+        return new ExportableDrawResultCI(
+                value,
+                new HashMap<>(names)
+        );
     }
 }

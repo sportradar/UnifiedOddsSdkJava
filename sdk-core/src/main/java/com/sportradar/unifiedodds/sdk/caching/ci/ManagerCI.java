@@ -7,8 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIManager;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableManagerCI;
 import com.sportradar.utils.URN;
 
@@ -17,7 +15,7 @@ import java.util.*;
 /**
  * A cache representation of a competitor manager
  */
-public class ManagerCI implements ExportableCacheItem {
+public class ManagerCI {
 
     /**
      * The manager identifier
@@ -136,8 +134,7 @@ public class ManagerCI implements ExportableCacheItem {
         return cachedLocales.containsAll(locales);
     }
 
-    @Override
-    public ExportableCI export() {
+    public ExportableManagerCI export() {
         return new ExportableManagerCI(
                 id.toString(),
                 new HashMap<>(names),

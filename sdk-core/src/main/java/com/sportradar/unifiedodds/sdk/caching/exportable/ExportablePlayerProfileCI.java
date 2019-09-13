@@ -25,8 +25,7 @@ public class ExportablePlayerProfileCI extends ExportableCI {
     private List<Locale> cachedLocales;
 
     public ExportablePlayerProfileCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> fullNames, Map<Locale, String> nationalities, Map<Locale, String> abbreviations, String type, Date dateOfBirth, Integer height, Integer weight, String countryCode, Integer jerseyNumber, String nickname, String gender, List<Locale> cachedLocales) {
-        this.id = id;
-        this.names = names;
+        super(id, names);
         this.defaultLocale = defaultLocale;
         this.fullNames = fullNames;
         this.nationalities = nationalities;

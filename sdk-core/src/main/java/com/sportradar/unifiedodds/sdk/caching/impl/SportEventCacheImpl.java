@@ -12,6 +12,9 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
@@ -22,15 +25,14 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * Implements methods used to access sport event data
  */
-public class SportEventCacheImpl implements SportEventCache, DataRouterListener {
+public class SportEventCacheImpl implements SportEventCache, DataRouterListener, ExportableSdkCache {
     /**
      * The {@link Logger} instance used to log {@link SportEventCacheImpl} events
      */
@@ -595,5 +597,55 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener 
 
         return mappingTypeProvider.getMappingType(id)
                 .orElseThrow(() -> new IllegalCacheStateException(String.format("Error providing mapping type for [%s]", id)));
+    }
+
+    /**
+     * Exports current items in the cache
+     *
+     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     */
+    @Override
+    public List<ExportableCI> exportItems() {
+        return sportEventsCache.asMap().values().stream()
+                .map(i -> (ExportableCacheItem) i)
+                .map(ExportableCacheItem::export)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Imports provided items into the cache
+     *
+     * @param items List of {@link ExportableCI} to be inserted into the cache
+     */
+    @Override
+    public void importItems(List<ExportableCI> items) {
+        Preconditions.checkNotNull(items);
+        items.forEach(exportable -> {
+            URN id = URN.parse(exportable.getId());
+            SportEventCI sportEvent = cacheItemFactory.buildSportEventCI(exportable);
+            SportEventCI ifPresent = sportEventsCache.getIfPresent(id);
+            if (ifPresent == null)
+                sportEventsCache.put(id, sportEvent);
+            else
+                ifPresent.merge(exportable, null);
+        });
+    }
+
+    /**
+     * Returns current cache status
+     *
+     * @return A map containing all cache item types in the cache and their counts
+     */
+    @Override
+    public Map<String, Long> cacheStatus() {
+        Map<String, Long> status = new HashMap<>(sportEventsCache.asMap().values().stream()
+                .map(c -> c.getClass().getSimpleName())
+                .collect(Collectors.groupingBy(s -> s, Collectors.counting())));
+        String[] classes = {"MatchCIImpl", "RaceStageCIImpl", "TournamentStageCIImpl", "TournamentCIImpl", "LotteryCIImpl", "DrawCIImpl"};
+        for (String clazz : classes) {
+            if (!status.containsKey(clazz))
+                status.put(clazz, 0L);
+        }
+        return status;
     }
 }

@@ -6,8 +6,6 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCI;
 import com.sportradar.utils.URN;
 
@@ -16,7 +14,7 @@ import java.util.*;
 /**
  * A venue representation used by caching components
  */
-public class VenueCI extends SportEntityCI implements ExportableCacheItem {
+public class VenueCI extends SportEntityCI {
     /**
      * A {@link HashMap} containing venue name in different languages
      */
@@ -167,13 +165,7 @@ public class VenueCI extends SportEntityCI implements ExportableCacheItem {
         return cachedLocales.containsAll(locales);
     }
 
-    /**
-     * Export item's properties
-     *
-     * @return An {@link ExportableCI} instance containing all relevant properties
-     */
-    @Override
-    public ExportableCI export() {
+    public ExportableVenueCI export() {
         return new ExportableVenueCI(
                 getId().toString(),
                 new HashMap<>(names),

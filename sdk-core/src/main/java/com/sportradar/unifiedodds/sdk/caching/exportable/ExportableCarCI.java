@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableCarCI extends ExportableCI {
+public class ExportableCarCI {
     private String name;
     private String chassis;
     private String engineName;

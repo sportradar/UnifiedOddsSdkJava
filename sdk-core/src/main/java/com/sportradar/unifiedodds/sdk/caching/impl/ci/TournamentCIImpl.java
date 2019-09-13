@@ -13,6 +13,9 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCI;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
@@ -32,7 +35,7 @@ import java.util.stream.Collectors;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
-class TournamentCIImpl implements TournamentCI {
+class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     private final static Logger logger = LoggerFactory.getLogger(TournamentCIImpl.class);
 
     /**
@@ -227,6 +230,34 @@ class TournamentCIImpl implements TournamentCI {
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
                     tournamentLength.getEndDate().toGregorianCalendar().getTime();
         }
+    }
+
+    TournamentCIImpl(ExportableTournamentCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.id = URN.parse(exportable.getId());
+        this.names.putAll(exportable.getNames());
+        this.categoryId = URN.parse(exportable.getCategoryId());
+        this.scheduled = exportable.getScheduled();
+        this.scheduledEnd = exportable.getScheduledEnd();
+        this.currentSeason = new SeasonCI(exportable.getCurrentSeason());
+        this.season = new SeasonCI(exportable.getSeason());
+        this.seasonCoverage = new SeasonCoverageCI(exportable.getSeasonCoverage());
+        this.tournamentCoverage = new TournamentCoverageCI(exportable.getTournamentCoverage());
+        this.groups = Collections.synchronizedList(exportable.getGroups().stream().map(GroupCI::new).collect(Collectors.toList()));
+        this.round = new CompleteRoundCIImpl(exportable.getRound());
+        this.competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+        this.associatedSeasonIdsLoaded = exportable.isAssociatedSeasonIdsLoaded();
+        this.associatedSeasonIds = exportable.getAssociatedSeasonIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.cachedLocales.addAll(exportable.getCachedLocales());
+        this.exhibitionGames = exportable.getExhibitionGames();
     }
 
     /**
@@ -776,5 +807,31 @@ class TournamentCIImpl implements TournamentCI {
         }
 
         return null;
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableTournamentCI(
+                id.toString(),
+                new HashMap<>(names),
+                scheduled,
+                scheduledEnd,
+                null,
+                null,
+                defaultLocale,
+                categoryId.toString(),
+                currentSeason.export(),
+                season.export(),
+                seasonCoverage.export(),
+                tournamentCoverage.export(),
+                groups.stream().map(GroupCI::export).collect(Collectors.toList()),
+                ((CompleteRoundCIImpl) round).export(),
+                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                associatedSeasonIdsLoaded,
+                associatedSeasonIds.stream().map(URN::toString).collect(Collectors.toList()),
+                new ArrayList<>(cachedLocales),
+                exhibitionGames
+        );
     }
 }

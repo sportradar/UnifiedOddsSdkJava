@@ -11,6 +11,7 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableLoadableRoundCI;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -158,6 +159,24 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         Preconditions.checkNotNull(dataLocale);
 
         merge(roundData, dataLocale, isFixtureEndpoint);
+    }
+
+    public LoadableRoundCIImpl(CacheItem associatedEventCI, ExportableLoadableRoundCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        this(associatedEventCI, dataRouterManager, exportable.getDefaultLocale(), exceptionHandlingStrategy);
+
+        this.names.putAll(exportable.getNames());
+        this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
+        this.type = exportable.getType();
+        this.group = exportable.getGroup();
+        this.groupId = URN.parse(exportable.getGroupId());
+        this.otherMatchId = exportable.getOtherMatchId();
+        this.number = exportable.getNumber();
+        this.cupRoundMatches = exportable.getCupRoundMatches();
+        this.cupRoundMatchNumber = exportable.getCupRoundMatchNumber();
+        this.betradarId = exportable.getBetradarId();
+        this.phase = exportable.getPhase();
+        this.cachedSummaryLocales.addAll(exportable.getCachedSummaryLocales());
+        this.cachedFixtureLocales.addAll(exportable.getCachedFixtureLocales());
     }
 
 
@@ -488,5 +507,24 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
                 ", fixtureRequest=" + fixtureRequest +
                 ", phase=" + phase +
                 '}';
+    }
+
+    public ExportableLoadableRoundCI export() {
+        return new ExportableLoadableRoundCI(
+                new HashMap<>(names),
+                new HashMap<>(phaseOrGroupLongNames),
+                defaultLocale,
+                type,
+                group,
+                groupId.toString(),
+                otherMatchId,
+                number,
+                cupRoundMatches,
+                cupRoundMatchNumber,
+                betradarId,
+                phase,
+                new ArrayList<>(cachedSummaryLocales),
+                new ArrayList<>(cachedFixtureLocales)
+        );
     }
 }

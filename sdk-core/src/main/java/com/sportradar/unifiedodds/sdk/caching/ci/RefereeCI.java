@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIReferee;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRefereeCI;
 import com.sportradar.utils.URN;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class RefereeCI extends SportEntityCI {
      * @param referee - {@link SAPIReferee} containing information about the referee
      * @param locale - {@link Locale} specifying the language of the <i>referee</i>
      */
-    public RefereeCI(SAPIReferee referee, Locale locale) {
+    RefereeCI(SAPIReferee referee, Locale locale) {
         super(URN.parse(referee.getId()));
 
         Preconditions.checkNotNull(referee);
@@ -39,6 +40,13 @@ public class RefereeCI extends SportEntityCI {
 
         nationalities = new HashMap<>();
         merge(referee, locale);
+    }
+
+    RefereeCI(ExportableRefereeCI exportable) {
+        super(URN.parse(exportable.getId()));
+
+        nationalities = new HashMap<>(exportable.getNationalities());
+        name = exportable.getName();
     }
 
     /**
@@ -72,5 +80,13 @@ public class RefereeCI extends SportEntityCI {
      */
     public String getNationality(Locale locale) {
         return nationalities.getOrDefault(locale, null);
+    }
+
+    public ExportableRefereeCI export() {
+        return new ExportableRefereeCI(
+                getId().toString(),
+                new HashMap<>(nationalities),
+                name
+        );
     }
 }

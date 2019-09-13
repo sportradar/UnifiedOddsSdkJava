@@ -21,6 +21,9 @@ import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceStageCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
@@ -42,7 +45,7 @@ import java.util.stream.Collectors;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
-class RaceStageCIImpl implements StageCI {
+class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(RaceStageCIImpl.class);
 
     /**
@@ -292,6 +295,36 @@ class RaceStageCIImpl implements StageCI {
         this.fixtureTimestampCache = fixtureTimestampCache;
     }
 
+    RaceStageCIImpl(ExportableRaceStageCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy, Cache<URN, Date> fixtureTimestampCache) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+        Preconditions.checkNotNull(fixtureTimestampCache);
+
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.fixtureTimestampCache = fixtureTimestampCache;
+
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.id = URN.parse(exportable.getId());
+        this.bookingStatus = exportable.getBookingStatus();
+        this.scheduled = exportable.getScheduled();
+        this.scheduledEnd = exportable.getScheduledEnd();
+        this.competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+        this.parentStageId = URN.parse(exportable.getParentStageId());
+        this.categoryId = URN.parse(exportable.getCategoryId());
+        this.venue = new VenueCI(exportable.getVenue());
+        this.conditions = new SportEventConditionsCI(exportable.getConditions());
+        this.childStagesIds = exportable.getStagesIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.sportEventNames.putAll(exportable.getNames());
+        this.stageType = exportable.getStageType();
+        this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
+        this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
+        this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
+        this.startTimeTbd = exportable.getStartTimeTbd();
+        this.replacedBy = URN.parse(exportable.getReplacedBy());
+    }
 
     /**
      * Returns the {@link URN} representing id of the related entity
@@ -368,7 +401,7 @@ class RaceStageCIImpl implements StageCI {
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return childStagesIds == null ? null : ImmutableList.copyOf(childStagesIds);
+            return null;
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
@@ -892,5 +925,30 @@ class RaceStageCIImpl implements StageCI {
                 logger.warn("Error providing RaceStageCI[{}] request({}), ex:", id, request, e);
             }
         }
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableRaceStageCI(
+                id.toString(),
+                new HashMap<>(sportEventNames),
+                scheduled,
+                scheduledEnd,
+                startTimeTbd,
+                replacedBy.toString(),
+                bookingStatus,
+                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+                venue.export(),
+                conditions.export(),
+                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                parentStageId.toString(),
+                childStagesIds.stream().map(URN::toString).collect(Collectors.toList()),
+                stageType,
+                categoryId.toString(),
+                defaultLocale,
+                new ArrayList<>(loadedSummaryLocales),
+                new ArrayList<>(loadedFixtureLocales),
+                new ArrayList<>(loadedCompetitorLocales)
+        );
     }
 }

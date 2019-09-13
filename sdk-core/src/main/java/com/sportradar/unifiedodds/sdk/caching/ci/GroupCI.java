@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentGroup;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableGroupCI;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.SdkHelper;
@@ -61,6 +62,15 @@ public class GroupCI {
                     map(cmp -> URN.parse(cmp.getId())).collect(Collectors.toList()));
             competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
+    }
+
+    public GroupCI(ExportableGroupCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        id = exportable.getId();
+        name = exportable.getName();
+        competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
+        competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
     }
 
     /**
@@ -118,5 +128,14 @@ public class GroupCI {
      */
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
         return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
+    }
+
+    public ExportableGroupCI export() {
+        return new ExportableGroupCI(
+                id,
+                name,
+                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds()))
+        );
     }
 }

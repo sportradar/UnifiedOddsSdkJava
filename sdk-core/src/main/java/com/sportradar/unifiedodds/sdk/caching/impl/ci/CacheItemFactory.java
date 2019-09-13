@@ -7,10 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePlayerProfileCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -64,6 +61,8 @@ public interface CacheItemFactory {
     DrawCI buildDrawCI(URN id, SAPIDrawEvent data, Locale dataLocale);
     DrawCI buildDrawCI(URN id, SAPIDrawSummary data, Locale dataLocale);
     DrawCI buildDrawCI(URN id, SAPIDrawFixture data, Locale dataLocale);
+
+    SportEventCI buildSportEventCI(ExportableCI exportable);
 
     Cache<URN, Date> getFixtureTimestampCache();
 }

@@ -6,11 +6,13 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISportEventConditions;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.entities.Pitcher;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * A sport event conditions representation used by caching components
@@ -52,6 +54,16 @@ public class SportEventConditionsCI {
         Preconditions.checkNotNull(locale);
 
         merge(seConditions, locale);
+    }
+
+    public SportEventConditionsCI(ExportableSportEventConditionsCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        this.attendance = exportable.getAttendance();
+        this.eventMode = exportable.getEventMode();
+        this.referee = new RefereeCI(exportable.getReferee());
+        this.weatherInfo = new WeatherInfoCI(exportable.getWeatherInfo());
+        this.pitchers = exportable.getPitchers().stream().map(PitcherCI::new).collect(Collectors.toList());
     }
 
     /**
@@ -127,4 +139,14 @@ public class SportEventConditionsCI {
      * @return the list of assocaited {@link Pitcher}
      */
     public List<PitcherCI> getPitchers() { return pitchers; }
+
+    public ExportableSportEventConditionsCI export() {
+        return new ExportableSportEventConditionsCI(
+                attendance,
+                eventMode,
+                referee.export(),
+                weatherInfo.export(),
+                pitchers.stream().map(PitcherCI::export).collect(Collectors.toList())
+        );
+    }
 }

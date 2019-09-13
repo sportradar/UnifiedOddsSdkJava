@@ -4,10 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,6 +51,14 @@ public class CoverageInfoImpl implements CoverageInfo {
         this.isLive = isLive;
         this.includes = includes == null ?  null : ImmutableList.copyOf(includes);
         this.coveredFrom = mapCoveredFrom(coveredFrom);
+    }
+
+    CoverageInfoImpl(ExportableCoverageInfoCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        this.level = exportable.getLevel();
+        this.isLive = exportable.isLive();
+        this.includes = ImmutableList.copyOf(exportable.getIncludes());
+        this.coveredFrom = exportable.getCoveredFrom();
     }
 
     /**
@@ -117,5 +128,14 @@ public class CoverageInfoImpl implements CoverageInfo {
             default:
                 return null;
         }
+    }
+
+    public ExportableCoverageInfoCI export() {
+        return new ExportableCoverageInfoCI(
+                level,
+                isLive,
+                new ArrayList<>(includes),
+                coveredFrom
+        );
     }
 }

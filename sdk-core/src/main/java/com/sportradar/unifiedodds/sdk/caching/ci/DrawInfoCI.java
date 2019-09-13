@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIDrawType;
 import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
 import com.sportradar.uf.sportsapi.datamodel.SAPITimeType;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.DrawType;
 import com.sportradar.unifiedodds.sdk.entities.TimeType;
 
@@ -26,6 +27,14 @@ public class DrawInfoCI {
         drawType = map(drawInfo.getDrawType());
         timeType = map(drawInfo.getTimeType());
         gameType = drawInfo.getGameType();
+    }
+
+    public DrawInfoCI(ExportableDrawInfoCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        drawType = exportable.getDrawType();
+        timeType = exportable.getTimeType();
+        gameType = exportable.getGameType();
     }
 
     public DrawType getDrawType() {
@@ -68,5 +77,13 @@ public class DrawInfoCI {
             default:
                 return TimeType.Unknown;
         }
+    }
+
+    public ExportableDrawInfoCI export() {
+        return new ExportableDrawInfoCI(
+                drawType,
+                timeType,
+                gameType
+        );
     }
 }

@@ -5,14 +5,12 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCarCI;
 
 /**
  * A cache representation of race car
  */
-public class CarCI implements ExportableCacheItem {
+public class CarCI {
     private final String name;
     private final String chassis;
     private final String engineName;
@@ -23,7 +21,7 @@ public class CarCI implements ExportableCacheItem {
         this.engineName = engineName;
     }
 
-    public CarCI(ExportableCarCI exportable) {
+    CarCI(ExportableCarCI exportable) {
         Preconditions.checkNotNull(exportable);
         this.name = exportable.getName();
         this.chassis = exportable.getChassis();
@@ -42,8 +40,7 @@ public class CarCI implements ExportableCacheItem {
         return engineName;
     }
 
-    @Override
-    public ExportableCI export() {
+    public ExportableCarCI export() {
         return new ExportableCarCI(
                 name,
                 chassis,

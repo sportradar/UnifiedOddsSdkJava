@@ -17,6 +17,9 @@ import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.MatchCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableMatchCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
@@ -40,7 +43,7 @@ import static com.google.common.collect.ImmutableMap.copyOf;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
-class MatchCIImpl implements MatchCI {
+class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private final static Logger logger = LoggerFactory.getLogger(MatchCIImpl.class);
 
     /**
@@ -276,6 +279,45 @@ class MatchCIImpl implements MatchCI {
         }else{
             this.sportEventNames.put(dataLocale, "");
         }
+    }
+
+    MatchCIImpl(ExportableMatchCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy, Cache<URN, Date> fixtureTimestampCache) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+        Preconditions.checkNotNull(fixtureTimestampCache);
+
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.fixtureTimestampCache = fixtureTimestampCache;
+
+        this.id = URN.parse(exportable.getId());
+        this.sportEventNames.putAll(exportable.getNames());
+        this.scheduled = exportable.getScheduled();
+        this.scheduledEnd = exportable.getScheduledEnd();
+        this.startTimeTbd = exportable.getStartTimeTbd();
+        this.replacedBy = URN.parse(exportable.getReplacedBy());
+        this.bookingStatus = exportable.getBookingStatus();
+        this.competitorIds = ImmutableList.copyOf(exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()));
+        this.venue = new VenueCI(exportable.getVenue());
+        this.conditions = new SportEventConditionsCI(exportable.getConditions());
+        this.competitorsReferences = ImmutableMap.copyOf(exportable.getCompetitorsReferences().entrySet().stream()
+                .collect(Collectors.toMap(e -> URN.parse(e.getKey()), e -> new ReferenceIdCI(e.getValue()))));
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.fixture = new FixtureImpl(exportable.getFixture());
+        this.competitorQualifiers = exportable.getCompetitorQualifiers().entrySet().stream()
+                .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue));
+        this.competitorDivisions = exportable.getCompetitorDivisions().entrySet().stream()
+                .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue));
+        this.tournamentId = URN.parse(exportable.getTournamentId());
+        this.tournamentRound = new LoadableRoundCIImpl(this, exportable.getTournamentRound(), dataRouterManager, exceptionHandlingStrategy);
+        this.season = new SeasonCI(exportable.getSeason());
+        this.delayedInfo = new DelayedInfoCI(exportable.getDelayedInfo());
+        this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
+        this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
+        this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
+        this.eventTimelines.putAll(exportable.getEventTimelines().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> new EventTimelineCI(e.getValue()))));
     }
 
     /**
@@ -1113,5 +1155,34 @@ class MatchCIImpl implements MatchCI {
                 logger.warn("Error providing MatchCIImpl[{}] request({}), ex:", id, request, e);
             }
         }
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableMatchCI(
+                id.toString(),
+                new HashMap<>(sportEventNames),
+                scheduled,
+                scheduledEnd,
+                startTimeTbd,
+                replacedBy.toString(),
+                bookingStatus,
+                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+                venue.export(),
+                conditions.export(),
+                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                defaultLocale,
+                ((FixtureImpl) fixture).export(),
+                competitorQualifiers.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue)),
+                competitorDivisions.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue)),
+                tournamentId.toString(),
+                ((LoadableRoundCIImpl) tournamentRound).export(),
+                season.export(),
+                delayedInfo.export(),
+                new ArrayList<>(loadedFixtureLocales),
+                new ArrayList<>(loadedSummaryLocales),
+                new ArrayList<>(loadedCompetitorLocales),
+                eventTimelines.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().export()))
+        );
     }
 }

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISeasonExtended;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCI;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
@@ -57,6 +58,17 @@ public class SeasonCI extends SportEntityCI {
         name = new HashMap<>();
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
         merge(season, locale);
+    }
+
+    public SeasonCI(ExportableSeasonCI exportable) {
+        super(URN.parse(exportable.getId()));
+
+        this.name = new HashMap<>(exportable.getNames());
+        this.startDate = exportable.getStartDate();
+        this.endDate = exportable.getEndDate();
+        this.year = exportable.getYear();
+        this.tournamentId = URN.parse(exportable.getTournamentId());
+        this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
     /**
@@ -172,5 +184,17 @@ public class SeasonCI extends SportEntityCI {
         Preconditions.checkNotNull(locales);
 
         return cachedLocales.containsAll(locales);
+    }
+
+    public ExportableSeasonCI export() {
+        return new ExportableSeasonCI(
+                getId().toString(),
+                new HashMap<>(name),
+                startDate,
+                endDate,
+                year,
+                tournamentId.toString(),
+                new ArrayList<>(cachedLocales)
+        );
     }
 }

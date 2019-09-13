@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPITimeline;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventTimelineCI;
 
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +29,14 @@ public class EventTimelineCI {
                 .collect(Collectors.toList());
         this.cachedLocale = dataLocale;
         this.isFinalized = isFinalized;
+    }
+
+    public EventTimelineCI(ExportableEventTimelineCI exportable) {
+        Preconditions.checkNotNull(exportable);
+
+        this.cachedLocale = exportable.getCachedLocale();
+        this.timelineEvents = exportable.getTimelineEvents().stream().map(TimelineEventCI::new).collect(Collectors.toList());
+        this.isFinalized = exportable.isFinalized();
     }
 
     /**
@@ -55,5 +64,13 @@ public class EventTimelineCI {
      */
     public boolean isFinalized() {
         return isFinalized;
+    }
+
+    public ExportableEventTimelineCI export() {
+        return new ExportableEventTimelineCI(
+                cachedLocale,
+                timelineEvents.stream().map(TimelineEventCI::export).collect(Collectors.toList()),
+                isFinalized
+        );
     }
 }

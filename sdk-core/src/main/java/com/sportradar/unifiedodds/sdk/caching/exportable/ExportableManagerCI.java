@@ -14,8 +14,7 @@ public class ExportableManagerCI extends ExportableCI {
     private List<Locale> cachedLocales;
 
     public ExportableManagerCI(String id, Map<Locale, String> names, Map<Locale, String> nationalities, String countryCode, List<Locale> cachedLocales) {
-        this.id = id;
-        this.names = names;
+        super(id, names);
         this.nationalities = nationalities;
         this.countryCode = countryCode;
         this.cachedLocales = cachedLocales;

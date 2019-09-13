@@ -15,6 +15,7 @@ public class ExportableJerseyCI extends ExportableCI {
     private String sleeveDetail;
 
     public ExportableJerseyCI(String base, String number, String sleeve, String type, String stripesColor, String splitColor, String shirtType, String sleeveDetail) {
+        super(null, null);
         this.base = base;
         this.number = number;
         this.sleeve = sleeve;

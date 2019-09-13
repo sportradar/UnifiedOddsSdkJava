@@ -8,11 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sportradar.uf.sportsapi.datamodel.SAPIDelayedInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDelayedInfoCI;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Event delay info cache representation
@@ -51,6 +49,14 @@ public class DelayedInfoCI {
         cachedLocales = Sets.newConcurrentHashSet();
 
         merge(delayedInfo, locale);
+    }
+
+    public DelayedInfoCI(ExportableDelayedInfoCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        this.id = exportable.getId();
+        this.descriptions = Maps.newConcurrentMap();
+        this.descriptions.putAll(exportable.getDescriptions());
+        this.cachedLocales = Sets.newConcurrentHashSet(new HashSet<>(exportable.getCachedLocales()));
     }
 
 
@@ -100,5 +106,13 @@ public class DelayedInfoCI {
         }
 
         cachedLocales.add(locale);
+    }
+
+    public ExportableDelayedInfoCI export() {
+        return new ExportableDelayedInfoCI(
+                id,
+                new HashMap<>(descriptions),
+                new HashSet<>(cachedLocales)
+        );
     }
 }

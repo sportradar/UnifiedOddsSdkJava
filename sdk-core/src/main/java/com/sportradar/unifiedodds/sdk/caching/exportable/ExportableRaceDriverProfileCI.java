@@ -10,6 +10,7 @@ public class ExportableRaceDriverProfileCI extends ExportableCI {
     private ExportableCarCI car;
 
     public ExportableRaceDriverProfileCI(String raceDriverId, String raceTeamId, ExportableCarCI car) {
+        super(null, null);
         this.raceDriverId = raceDriverId;
         this.raceTeamId = raceTeamId;
         this.car = car;

@@ -15,6 +15,9 @@ import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.LotteryCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableLotteryCI;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -31,7 +34,7 @@ import java.util.stream.Collectors;
  * Created on 18/01/2018.
  * // TODO @eti: Javadoc
  */
-public class LotteryCIImpl implements LotteryCI {
+public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(LotteryCIImpl.class);
 
     private final URN id;
@@ -68,6 +71,24 @@ public class LotteryCIImpl implements LotteryCI {
         Preconditions.checkNotNull(dataLocale);
 
         merge(data, dataLocale);
+    }
+
+    LotteryCIImpl(ExportableLotteryCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        Preconditions.checkNotNull(exportable);
+        Preconditions.checkNotNull(dataRouterManager);
+        Preconditions.checkNotNull(exceptionHandlingStrategy);
+
+        this.dataRouterManager = dataRouterManager;
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+
+        this.defaultLocale = exportable.getDefaultLocale();
+        this.id = URN.parse(exportable.getId());
+        this.names.putAll(exportable.getNames());
+        this.cachedLocales.addAll(exportable.getCachedLocales());
+        this.categoryId = URN.parse(exportable.getCategoryId());
+        this.bonusInfo = new BonusInfoCI(exportable.getBonusInfo());
+        this.drawInfo = new DrawInfoCI(exportable.getDrawInfo());
+        this.scheduledDraws = exportable.getScheduledDraws().stream().map(URN::parse).collect(Collectors.toList());
     }
 
     /**
@@ -319,5 +340,23 @@ public class LotteryCIImpl implements LotteryCI {
                 logger.warn("Error providing LotteryCI[{}] request({}), ex:", id, request, e);
             }
         }
+    }
+
+    @Override
+    public ExportableCI export() {
+        return new ExportableLotteryCI(
+                id.toString(),
+                new HashMap<>(names),
+                null,
+                null,
+                null,
+                null,
+                defaultLocale,
+                categoryId.toString(),
+                bonusInfo.export(),
+                drawInfo.export(),
+                scheduledDraws.stream().map(URN::toString).collect(Collectors.toList()),
+                new HashSet<>(cachedLocales)
+        );
     }
 }

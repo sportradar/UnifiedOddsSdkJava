@@ -8,8 +8,13 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ExportableCI {
-    protected String id;
-    protected Map<Locale, String> names;
+    private String id;
+    private Map<Locale, String> names;
+
+    public ExportableCI(String id, Map<Locale, String> names) {
+        this.id = id;
+        this.names = names;
+    }
 
     public String getId() {
         return id;

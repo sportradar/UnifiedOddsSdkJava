@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentLiveCoverageInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCoverageCI;
 
 /**
  * Created on 25/10/2017.
@@ -20,7 +21,18 @@ public class TournamentCoverageCI {
         liveCoverage = coverageInfo.getLiveCoverage();
     }
 
+    TournamentCoverageCI(ExportableTournamentCoverageCI exportable) {
+        Preconditions.checkNotNull(exportable);
+        liveCoverage = exportable.getLiveCoverage();
+    }
+
     public String getLiveCoverage() {
         return liveCoverage;
+    }
+
+    public ExportableTournamentCoverageCI export() {
+        return new ExportableTournamentCoverageCI(
+                liveCoverage
+        );
     }
 }
