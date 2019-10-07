@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableFixtureCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableScheduledStartTimeChangeCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,7 @@ FixtureImpl implements Fixture {
         Preconditions.checkNotNull(fixture);
 
         this.startTime = fixture.getStartTime() == null ? null :
-                fixture.getStartTime().toGregorianCalendar().getTime();
+                SdkHelper.toDate(fixture.getStartTime());
         this.startTimeConfirmed = fixture.isStartTimeConfirmed() == null ? false : fixture.isStartTimeConfirmed();
 
         Date nextLiveTime1;
@@ -133,7 +134,7 @@ FixtureImpl implements Fixture {
                 fixture.getTvChannels().getTvChannel().stream()
                         .map(ch -> new TvChannelImpl(
                                 ch.getName(),
-                                ch.getStartTime() == null ? null : ch.getStartTime().toGregorianCalendar().getTime(),
+                                ch.getStartTime() == null ? null : SdkHelper.toDate(ch.getStartTime()),
                                 ch.getStreamUrl()))
                         .collect(ImmutableList.toImmutableList());
         this.coverageInfo = fixture.getCoverageInfo() == null ? null :
@@ -161,9 +162,9 @@ FixtureImpl implements Fixture {
         this.scheduledStartTimeChanges = fixture.getScheduledStartTimeChanges() == null ? null :
                 fixture.getScheduledStartTimeChanges().getScheduledStartTimeChange().stream()
                         .map(ch -> new ScheduledStartTimeChangeImpl(
-                                ch.getOldTime() == null ? null : ch.getOldTime().toGregorianCalendar().getTime(),
-                                ch.getNewTime() == null ? null : ch.getNewTime().toGregorianCalendar().getTime(),
-                                ch.getChangedAt() == null ? null : ch.getChangedAt().toGregorianCalendar().getTime()))
+                                ch.getOldTime() == null ? null : SdkHelper.toDate(ch.getOldTime()),
+                                ch.getNewTime() == null ? null : SdkHelper.toDate(ch.getNewTime()),
+                                ch.getChangedAt() == null ? null : SdkHelper.toDate(ch.getChangedAt())))
                         .collect(ImmutableList.toImmutableList());
     }
 

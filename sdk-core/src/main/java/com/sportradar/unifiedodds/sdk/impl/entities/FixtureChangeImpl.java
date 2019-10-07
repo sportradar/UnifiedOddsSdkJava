@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIFixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -31,7 +32,7 @@ public class FixtureChangeImpl implements FixtureChange {
         Preconditions.checkNotNull(fixtureChange.getUpdateTime());
 
         this.sportEventId = URN.parse(fixtureChange.getSportEventId());
-        this.updateTime = fixtureChange.getUpdateTime().toGregorianCalendar().getTime();
+        this.updateTime = SdkHelper.toDate(fixtureChange.getUpdateTime());
     }
 
     /**

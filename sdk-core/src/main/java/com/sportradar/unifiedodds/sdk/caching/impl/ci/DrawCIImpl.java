@@ -309,7 +309,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
 
         scheduled = endpointData.getDrawDate() == null
                 ? null
-                : endpointData.getDrawDate().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(endpointData.getDrawDate());
 
         lotteryId = endpointData.getLottery() == null
                 ? null
@@ -329,7 +329,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
 
         scheduled = endpointData.getScheduled() == null
                 ? null
-                : endpointData.getScheduled().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(endpointData.getScheduled());
 
         status = map(endpointData.getStatus());
 

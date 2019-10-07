@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIBasicEvent;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTimelineEventCI;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.Date;
 import java.util.List;
@@ -56,7 +57,7 @@ public class TimelineEventCI {
         x = event.getX();
         y = event.getY();
         time = event.getTime() == null ? null :
-                event.getTime().toGregorianCalendar().getTime();
+                SdkHelper.toDate(event.getTime());
 
         assists = event.getAssist() == null ? null :
                 event.getAssist().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList());

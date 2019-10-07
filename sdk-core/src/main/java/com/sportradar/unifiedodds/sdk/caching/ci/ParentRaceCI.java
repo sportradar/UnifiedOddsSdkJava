@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.sportradar.uf.sportsapi.datamodel.SAPIParentStage;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.Locale;
 
@@ -19,8 +20,8 @@ public class ParentRaceCI extends ChildRaceCI {
      */
      public ParentRaceCI(SAPIParentStage parentStage, Locale locale) {
         super(parentStage.getId(), parentStage.getType(), parentStage.getName(),
-                parentStage.getScheduled() == null ? null : parentStage.getScheduled().toGregorianCalendar().getTime(),
-                parentStage.getScheduledEnd() == null ? null : parentStage.getScheduledEnd().toGregorianCalendar().getTime(),
+                parentStage.getScheduled() == null ? null : SdkHelper.toDate(parentStage.getScheduled()),
+                parentStage.getScheduledEnd() == null ? null : SdkHelper.toDate(parentStage.getScheduledEnd()),
                 locale);
     }
 }

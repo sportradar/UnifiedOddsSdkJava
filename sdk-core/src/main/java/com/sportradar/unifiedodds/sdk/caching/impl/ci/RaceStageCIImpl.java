@@ -189,9 +189,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         this.bookingStatus = BookingStatus.getLiveBookingStatus(endpointData.getLiveodds());
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -282,9 +282,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -756,8 +756,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
         }
 
-        scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());
+        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.startTimeTbd = sportEvent.isStartTimeTbd();
         this.replacedBy = sportEvent.getReplacedBy() == null
                 ? null
@@ -815,8 +815,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null

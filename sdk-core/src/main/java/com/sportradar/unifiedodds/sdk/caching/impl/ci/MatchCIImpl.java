@@ -267,8 +267,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.bookingStatus = null;
         this.fixtureTimestampCache = fixtureTimestampCache;
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         startTimeTbd = endpointData.isStartTimeTbd();
         replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -788,10 +788,10 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
         this.scheduled = sportEvent.getScheduled() == null
                 ? null
-                : sportEvent.getScheduled().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(sportEvent.getScheduled());
         this.scheduledEnd = sportEvent.getScheduledEnd() == null
                 ? null
-                :sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.tournamentId = sportEvent.getTournament() == null
                 ? null
                 : URN.parse(sportEvent.getTournament().getId());
@@ -994,8 +994,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             String status = sportEvent.getStatus();
         }
 
-        scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());
+        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.startTimeTbd = sportEvent.isStartTimeTbd();
         this.replacedBy = sportEvent.getReplacedBy() == null
                 ? null
@@ -1048,8 +1048,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null

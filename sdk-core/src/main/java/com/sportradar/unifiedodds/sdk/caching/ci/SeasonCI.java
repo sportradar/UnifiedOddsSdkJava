@@ -82,11 +82,11 @@ public class SeasonCI extends SportEntityCI {
         Preconditions.checkNotNull(locale);
 
         if (season.getStartDate() != null) {
-            startDate = season.getStartDate().toGregorianCalendar().getTime();
+            startDate = SdkHelper.toDate(season.getStartDate());
         }
 
         if (season.getEndDate() != null) {
-            endDate = season.getEndDate().toGregorianCalendar().getTime();
+            endDate = SdkHelper.toDate(season.getEndDate());
         }
 
         if (season.getYear() != null) {
@@ -98,11 +98,11 @@ public class SeasonCI extends SportEntityCI {
         }
 
         if (season.getStartTime() != null) {
-            startDate = SdkHelper.combineDateAndTime(season .getStartDate().toGregorianCalendar().getTime(), season.getStartTime().toGregorianCalendar().getTime());
+            startDate = SdkHelper.combineDateAndTime(SdkHelper.toDate(season.getStartDate()), SdkHelper.toDate(season.getStartTime()));
         }
 
         if (season.getEndTime() != null) {
-            endDate = SdkHelper.combineDateAndTime(season .getEndDate().toGregorianCalendar().getTime(), season.getEndTime().toGregorianCalendar().getTime());
+            endDate = SdkHelper.combineDateAndTime(SdkHelper.toDate(season.getEndDate()), SdkHelper.toDate(season.getEndTime()));
         }
 
         name.put(locale, season.getName());

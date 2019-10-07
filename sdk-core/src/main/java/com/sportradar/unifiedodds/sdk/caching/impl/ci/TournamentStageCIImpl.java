@@ -132,16 +132,16 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
 
         this.categoryId = URN.parse(endpointData.getCategory().getId());
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled = tournamentLength.getStartDate() == null ? null :
-                    tournamentLength.getStartDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getStartDate());
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
-                    tournamentLength.getEndDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getEndDate());
         }
     }
 
@@ -500,16 +500,16 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled = tournamentLength.getStartDate() == null ? null :
-                    tournamentLength.getStartDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getStartDate());
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
-                    tournamentLength.getEndDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getEndDate());
         }
     }
 
