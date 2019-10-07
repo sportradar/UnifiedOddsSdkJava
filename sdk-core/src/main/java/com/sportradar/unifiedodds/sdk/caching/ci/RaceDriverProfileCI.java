@@ -25,9 +25,9 @@ public class RaceDriverProfileCI {
     public RaceDriverProfileCI(ExportableRaceDriverProfileCI exportable) {
         Preconditions.checkNotNull(exportable);
 
-        this.raceDriverId = URN.parse(exportable.getRaceDriverId());
-        this.raceTeamId = URN.parse(exportable.getRaceTeamId());
-        this.car = new CarCI(exportable.getCar());
+        this.raceDriverId = exportable.getRaceDriverId() != null ? URN.parse(exportable.getRaceDriverId()) : null;
+        this.raceTeamId = exportable.getRaceTeamId() != null ? URN.parse(exportable.getRaceTeamId()) : null;
+        this.car = exportable.getCar() != null ? new CarCI(exportable.getCar()) : null;
     }
 
     public URN getRaceDriverId() {
@@ -44,9 +44,9 @@ public class RaceDriverProfileCI {
 
     public ExportableRaceDriverProfileCI export() {
         return new ExportableRaceDriverProfileCI(
-                raceDriverId.toString(),
-                raceTeamId.toString(),
-                car.export()
+                raceDriverId != null ? raceDriverId.toString() : null,
+                raceTeamId != null ? raceTeamId.toString() : null,
+                car != null ? car.export() : null
         );
     }
 }

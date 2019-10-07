@@ -172,10 +172,10 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.id = URN.parse(exportable.getId());
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
-        this.competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
-        this.competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+        this.competitorIds = exportable.getCompetitorIds() != null ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
+        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))) : null;
         this.sportEventNames.putAll(exportable.getNames());
-        this.categoryId = URN.parse(exportable.getCategoryId());
+        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
         this.cachedLocales.addAll(exportable.getCachedLocales());
     }
 
@@ -578,14 +578,14 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                 null,
                 null,
                 BookingStatus.Unavailable,
-                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+                competitorIds != null ? competitorIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
                 null,
                 null,
-                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                competitorsReferences != null ? competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())) : null,
                 null,
                 null,
                 StageType.Parent,
-                categoryId.toString(),
+                categoryId != null ? categoryId.toString() : null,
                 defaultLocale,
                 new ArrayList<>(cachedLocales)
         );

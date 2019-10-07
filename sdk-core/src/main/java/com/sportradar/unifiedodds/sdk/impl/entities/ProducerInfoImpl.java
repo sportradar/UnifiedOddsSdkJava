@@ -84,8 +84,8 @@ public class ProducerInfoImpl implements ProducerInfo {
         this.isInHostedStatistics = exportable.isInHostedStatistics();
         this.isInLiveCenterSoccer = exportable.isInLiveCenterSoccer();
         this.isInLiveScore = exportable.isInLiveScore();
-        this.producerInfoLinks = exportable.getProducerInfoLinks().stream().map(ProducerInfoLinkImpl::new).collect(ImmutableList.toImmutableList());
-        this.streamingChannels = exportable.getStreamingChannels().stream().map(StreamingChannelImpl::new).collect(ImmutableList.toImmutableList());
+        this.producerInfoLinks = exportable.getProducerInfoLinks() != null ? exportable.getProducerInfoLinks().stream().map(ProducerInfoLinkImpl::new).collect(ImmutableList.toImmutableList()) : null;
+        this.streamingChannels = exportable.getStreamingChannels() != null ? exportable.getStreamingChannels().stream().map(StreamingChannelImpl::new).collect(ImmutableList.toImmutableList()) : null;
     }
 
     /**
@@ -178,8 +178,8 @@ public class ProducerInfoImpl implements ProducerInfo {
                 isInHostedStatistics,
                 isInLiveCenterSoccer,
                 isInLiveScore,
-                producerInfoLinks.stream().map(p -> ((ProducerInfoLinkImpl)p).export()).collect(Collectors.toList()),
-                streamingChannels.stream().map(s -> ((StreamingChannelImpl)s).export()).collect(Collectors.toList())
+                producerInfoLinks != null ? producerInfoLinks.stream().map(p -> ((ProducerInfoLinkImpl)p).export()).collect(Collectors.toList()) : null,
+                streamingChannels != null ? streamingChannels.stream().map(s -> ((StreamingChannelImpl)s).export()).collect(Collectors.toList()) : null
         );
     }
 }

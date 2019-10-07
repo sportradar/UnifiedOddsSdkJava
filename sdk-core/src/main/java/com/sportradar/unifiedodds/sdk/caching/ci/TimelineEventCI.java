@@ -84,9 +84,9 @@ public class TimelineEventCI {
         x = exportable.getX();
         y = exportable.getY();
         time = exportable.getTime();
-        assists = exportable.getAssists().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList());
-        goalScorer = new EventPlayerCI(exportable.getGoalScorer());
-        player = new EventPlayerCI(exportable.getPlayer());
+        assists = exportable.getAssists() != null ? exportable.getAssists().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList()) : null;
+        goalScorer = exportable.getGoalScorer() != null ? new EventPlayerCI(exportable.getGoalScorer()) : null;
+        player = exportable.getPlayer() != null ? new EventPlayerCI(exportable.getPlayer()) : null;
         matchStatusCode = exportable.getMatchStatusCode();
         matchClock = exportable.getMatchClock();
     }
@@ -179,9 +179,9 @@ public class TimelineEventCI {
                 x,
                 y,
                 time,
-                assists.stream().map(EventPlayerAssistCI::export).collect(Collectors.toList()),
-                goalScorer.export(),
-                player.export(),
+                assists != null ? assists.stream().map(EventPlayerAssistCI::export).collect(Collectors.toList()) : null,
+                goalScorer != null ? goalScorer.export() : null,
+                player != null ? player.export() : null,
                 matchStatusCode,
                 matchClock
         );

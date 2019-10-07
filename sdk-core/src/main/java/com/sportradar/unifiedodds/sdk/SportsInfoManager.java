@@ -4,11 +4,14 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import com.sportradar.unifiedodds.sdk.caching.exportable.CacheType;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,7 +71,7 @@ public interface SportsInfoManager {
      * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})
      *
      * @param sportName - the specific sport name
-     * @param locale - the {@link Locale} in which to provide the data
+     * @param locale    - the {@link Locale} in which to provide the data
      * @return - all the active tournaments of a specific sport translated in the specified locale
      */
     List<SportEvent> getActiveTournaments(String sportName, Locale locale);
@@ -86,10 +89,10 @@ public interface SportsInfoManager {
      * Returns a list of all competitions scheduled on the specified date
      * (the returned data is translated in the specified {@link Locale})
      *
-     * @param date - the date for which to list all active competitions
+     * @param date   - the date for which to list all active competitions
      * @param locale - the {@link Locale} in which to provide the data
      * @return - a list of all competitions scheduled on the specified date
-     *           (the data is translated in the provided locale)
+     * (the data is translated in the provided locale)
      */
     List<Competition> getCompetitionsFor(Date date, Locale locale);
 
@@ -107,7 +110,7 @@ public interface SportsInfoManager {
      *
      * @param locale - the {@link Locale} in which to provide the data
      * @return - all the competitions that are currently live
-     *           (the data is translated in the provided locale)
+     * (the data is translated in the provided locale)
      */
     List<Competition> getLiveCompetitions(Locale locale);
 
@@ -124,7 +127,7 @@ public interface SportsInfoManager {
      * Returns the specified sport event
      * (the returned data is translated in the specified {@link Locale})
      *
-     * @param id - an {@link URN} identifier specifying the requested long term event
+     * @param id     - an {@link URN} identifier specifying the requested long term event
      * @param locale - the {@link Locale} in which to provide the data
      * @return - the specified sport event translated in the provided locale
      */
@@ -143,7 +146,7 @@ public interface SportsInfoManager {
      * Returns the specified long term event
      * (the returned data is translated in the specified {@link Locale})
      *
-     * @param id - an {@link URN} identifier specifying the requested long term event
+     * @param id     - an {@link URN} identifier specifying the requested long term event
      * @param locale - the {@link Locale} in which to provide the data
      * @return - the specified tournament translated in the provided locale
      */
@@ -162,7 +165,7 @@ public interface SportsInfoManager {
      * Returns a {@link Competition} representing the specified competition
      * (the returned data is translated in the specified {@link Locale})
      *
-     * @param id - an {@link URN} identifier specifying the competition requested
+     * @param id     - an {@link URN} identifier specifying the competition requested
      * @param locale - the {@link Locale} in which to provide the data
      * @return - a {@link Competition} representing the specified competition translated in the provided locale
      */
@@ -181,7 +184,7 @@ public interface SportsInfoManager {
      * Returns a {@link Competitor} representing the specified competitor
      * (the returned data is translated in the specified {@link Locale})
      *
-     * @param id - a unique competitor {@link URN} identifier
+     * @param id     - a unique competitor {@link URN} identifier
      * @param locale - the {@link Locale} in which to provide the data
      * @return - a {@link Competitor} representing the competitor associated with the provided {@link URN}
      */
@@ -200,7 +203,7 @@ public interface SportsInfoManager {
      * Returns a {@link PlayerProfile} representing the specified competitor
      * (the returned data is translated in the specified {@link Locale})
      *
-     * @param id - a unique player {@link URN} identifier
+     * @param id     - a unique player {@link URN} identifier
      * @param locale - the {@link Locale} in which to provide the data
      * @return - a {@link PlayerProfile} representing the specified competitor
      */
@@ -216,7 +219,7 @@ public interface SportsInfoManager {
     /**
      * Purges the associated sport event cache item
      *
-     * @param eventId the identifier of the cache item to purge
+     * @param eventId            the identifier of the cache item to purge
      * @param includeStatusPurge an indication if the associated sport event status should be purged too
      */
     void purgeSportEventCacheData(URN eventId, boolean includeStatusPurge);
@@ -253,20 +256,26 @@ public interface SportsInfoManager {
 
     /**
      * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
+     *
      * @param startIndex starting index (zero based)
-     * @param limit how many records to return (max: 1000)
+     * @param limit      how many records to return (max: 1000)
      * @return a list of sport events
      */
-    default List<Competition> getListOfSportEvents(int startIndex, int limit) { return null; }
+    default List<Competition> getListOfSportEvents(int startIndex, int limit) {
+        return null;
+    }
 
     /**
      * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
+     *
      * @param startIndex starting index (zero based)
-     * @param limit how many records to return (max: 1000)
-     * @param locale the {@link Locale} in which to provide the data
+     * @param limit      how many records to return (max: 1000)
+     * @param locale     the {@link Locale} in which to provide the data
      * @return a list of sport events
      */
-    default List<Competition> getListOfSportEvents(int startIndex, int limit, Locale locale) { return null; }
+    default List<Competition> getListOfSportEvents(int startIndex, int limit, Locale locale) {
+        return null;
+    }
 
     /**
      * Returns all the available tournaments for a specific sport
@@ -276,7 +285,9 @@ public interface SportsInfoManager {
      * @param sportId - the specific sport id
      * @return - all available tournaments for a sport we provide coverage for in default locale
      */
-    default List<SportEvent> getAvailableTournaments(URN sportId) { return null; }
+    default List<SportEvent> getAvailableTournaments(URN sportId) {
+        return null;
+    }
 
     /**
      * Returns all the available tournaments for a specific sport
@@ -284,15 +295,39 @@ public interface SportsInfoManager {
      * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})
      *
      * @param sportId - the specific sport id
-     * @param locale - the {@link Locale} in which to provide the data
+     * @param locale  - the {@link Locale} in which to provide the data
      * @return - all available tournaments for a sport we provide coverage for in specified locale
      */
-    default List<SportEvent> getAvailableTournaments(URN sportId, Locale locale) { return null; }
+    default List<SportEvent> getAvailableTournaments(URN sportId, Locale locale) {
+        return null;
+    }
 
     /**
      * Deletes the sport events from cache which are scheduled before specified date
+     *
      * @param before the scheduled Date used to delete sport events from cache
      * @return number of deleted items
      */
-    default Integer deleteSportEventsFromCache(Date before) { return null; }
+    default Integer deleteSportEventsFromCache(Date before) {
+        return null;
+    }
+
+    /**
+     * Exports current items in the cache
+     *
+     * @param cacheType specifies what type of cache items will be exported
+     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     */
+    default List<ExportableCI> cacheExport(EnumSet<CacheType> cacheType) {
+        return null;
+    }
+
+    /**
+     * Imports provided items into caches
+     *
+     * @param items List of {@link ExportableCI} containing the items to be imported
+     */
+    default void cacheImport(List<ExportableCI> items) {
+
+    }
 }

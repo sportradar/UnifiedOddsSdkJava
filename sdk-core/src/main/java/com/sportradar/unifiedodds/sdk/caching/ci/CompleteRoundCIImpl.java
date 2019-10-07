@@ -101,7 +101,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
         this.type = exportable.getType();
         this.group = exportable.getGroup();
-        this.groupId = URN.parse(exportable.getGroupId());
+        this.groupId = exportable.getGroupId() != null ? URN.parse(exportable.getGroupId()) : null;
         this.otherMatchId = exportable.getOtherMatchId();
         this.number = exportable.getNumber();
         this.cupRoundMatches = exportable.getCupRoundMatches();
@@ -293,7 +293,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
                 new HashMap<>(phaseOrGroupLongNames),
                 type,
                 group,
-                groupId.toString(),
+                groupId != null ? groupId.toString() : null,
                 otherMatchId,
                 number,
                 cupRoundMatches,

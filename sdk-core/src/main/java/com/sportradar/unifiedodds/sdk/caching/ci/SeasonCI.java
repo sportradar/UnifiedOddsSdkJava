@@ -67,7 +67,7 @@ public class SeasonCI extends SportEntityCI {
         this.startDate = exportable.getStartDate();
         this.endDate = exportable.getEndDate();
         this.year = exportable.getYear();
-        this.tournamentId = URN.parse(exportable.getTournamentId());
+        this.tournamentId = exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
         this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
@@ -193,7 +193,7 @@ public class SeasonCI extends SportEntityCI {
                 startDate,
                 endDate,
                 year,
-                tournamentId.toString(),
+                tournamentId != null ? tournamentId.toString() : null,
                 new ArrayList<>(cachedLocales)
         );
     }

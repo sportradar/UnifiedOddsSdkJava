@@ -13,7 +13,9 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCI;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -401,17 +403,17 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         abbreviations.putAll(exportable.getAbbreviations());
         isVirtual = exportable.isVirtual();
         countryCode = exportable.getCountryCode();
-            referenceId = new ReferenceIdCI(exportable.getReferenceId());
-        List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds().stream()
+        referenceId = exportable.getReferenceId() != null ? new ReferenceIdCI(exportable.getReferenceId()) : null;
+        List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds() != null ? exportable.getAssociatedPlayerIds().stream()
                 .map(URN::parse)
                 .filter(i -> !associatedPlayerIds.contains(i))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : new ArrayList<>();
         associatedPlayerIds.addAll(missingAssociatedPlayerIds);
-        jerseys = exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList());
-        manager = new ManagerCI(exportable.getManager());
-        venue = new VenueCI(exportable.getVenue());
+        jerseys = exportable.getJerseys() != null ? exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList()) : null;
+        manager = exportable.getManager() != null ? new ManagerCI(exportable.getManager()) : null;
+        venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
         gender = exportable.getGender();
-        raceDriverProfile = new RaceDriverProfileCI(exportable.getRaceDriverProfile());
+        raceDriverProfile = exportable.getRaceDriverProfile() != null ? new RaceDriverProfileCI(exportable.getRaceDriverProfile()) : null;
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
     }
 
@@ -613,13 +615,13 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 new HashMap<>(abbreviations),
                 isVirtual,
                 countryCode,
-                new HashMap<>(referenceId.getReferenceIds()),
-                associatedPlayerIds.stream().map(URN::toString).collect(Collectors.toList()),
-                jerseys.stream().map(j -> (ExportableJerseyCI) j.export()).collect(Collectors.toList()),
-                (ExportableManagerCI) manager.export(),
-                (ExportableVenueCI) venue.export(),
+                referenceId != null ? new HashMap<>(referenceId.getReferenceIds()) : null,
+                associatedPlayerIds != null ? associatedPlayerIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
+                jerseys != null ? jerseys.stream().map(JerseyCI::export).collect(Collectors.toList()) : null,
+                manager != null ? manager.export() : null,
+                venue != null ? venue.export() : null,
                 gender,
-                (ExportableRaceDriverProfileCI) raceDriverProfile.export(),
+                raceDriverProfile != null ? raceDriverProfile.export() : null,
                 new ArrayList<>(cachedLocales)
         );
     }
