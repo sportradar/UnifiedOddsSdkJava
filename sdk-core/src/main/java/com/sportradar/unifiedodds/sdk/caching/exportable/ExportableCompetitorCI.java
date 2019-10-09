@@ -20,10 +20,11 @@ public class ExportableCompetitorCI extends ExportableCI {
     private ExportableManagerCI manager;
     private ExportableVenueCI venue;
     private String gender;
+    private String ageGroup;
     private ExportableRaceDriverProfileCI raceDriverProfile;
     private List<Locale> cachedLocales;
 
-    public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames, Map<Locale, String> abbreviations, boolean isVirtual, String countryCode, Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys, ExportableManagerCI manager, ExportableVenueCI venue, String gender, ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales) {
+    public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames, Map<Locale, String> abbreviations, boolean isVirtual, String countryCode, Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys, ExportableManagerCI manager, ExportableVenueCI venue, String gender, String ageGroup, ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.countryNames = countryNames;
@@ -36,6 +37,7 @@ public class ExportableCompetitorCI extends ExportableCI {
         this.manager = manager;
         this.venue = venue;
         this.gender = gender;
+        this.ageGroup = ageGroup;
         this.raceDriverProfile = raceDriverProfile;
         this.cachedLocales = cachedLocales;
     }
@@ -126,6 +128,14 @@ public class ExportableCompetitorCI extends ExportableCI {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
     }
 
     public ExportableRaceDriverProfileCI getRaceDriverProfile() {

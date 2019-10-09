@@ -110,6 +110,11 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     private String gender;
 
     /**
+     * The age group of the competitor
+     */
+    private String ageGroup;
+
+    /**
      * The race driver profile of the competitor
      */
     private RaceDriverProfileCI raceDriverProfile;
@@ -358,6 +363,17 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     }
 
     /**
+     * Get the age group of the player
+     *
+     * @return the age group
+     */
+    @Override
+    public String getAgeGroup() {
+        ensureDataLoaded(ageGroup);
+        return ageGroup;
+    }
+
+    /**
      * Returns race driver of the competitor
      *
      * @return the race driver of the competitor if available; otherwise null
@@ -413,6 +429,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         manager = exportable.getManager() != null ? new ManagerCI(exportable.getManager()) : null;
         venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
         gender = exportable.getGender();
+        ageGroup = exportable.getAgeGroup();
         raceDriverProfile = exportable.getRaceDriverProfile() != null ? new RaceDriverProfileCI(exportable.getRaceDriverProfile()) : null;
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
     }
@@ -503,6 +520,9 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
         if(competitor.getGender() != null) {
             gender = competitor.getGender();
+        }
+        if(competitor.getAgeGroup() != null) {
+            ageGroup = competitor.getAgeGroup();
         }
     }
 
@@ -621,6 +641,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 manager != null ? manager.export() : null,
                 venue != null ? venue.export() : null,
                 gender,
+                ageGroup,
                 raceDriverProfile != null ? raceDriverProfile.export() : null,
                 new ArrayList<>(cachedLocales)
         );
