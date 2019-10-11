@@ -52,12 +52,12 @@ public interface ProducerManager {
 
     /**
      * Sets the last message received timestamp. The value should be set to the timestamp of the last processed message,
-     * which was received while the producer was not not marked as down. The timestamp is later used to request the feed recovery.
-     * The last valid max timestamp is 3 days ago(recovery limitation).
+     * which was received while the producer was not marked as down. The timestamp is later used to request the feed recovery.
+     * The last valid max timestamp is 3 days ago (recovery limitation).
      * See: {@link Producer#getTimestampForRecovery()}
      *
      * @param producerId - the identifier of the producer to which the last known message timestamp belongs too
-     * @param lastMessageTimestamp - the timestamp from which the SDK will request the recovery
+     * @param lastMessageTimestamp - the timestamp from which the SDK will request the recovery (in milliseconds)
      */
     void setProducerRecoveryFromTimestamp(int producerId, long lastMessageTimestamp);
 

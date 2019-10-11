@@ -92,9 +92,7 @@ public class ManagerCI {
      * @param locale the locale in which the nationality should be provided
      * @return the translated nationality
      */
-    public String getNationality(Locale locale) {
-        return names.get(locale);
-    }
+    public String getNationality(Locale locale) { return nationalities.get(locale); }
 
     /**
      * Returns the country code
