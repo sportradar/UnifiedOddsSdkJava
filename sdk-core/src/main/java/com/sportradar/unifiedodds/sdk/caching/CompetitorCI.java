@@ -90,6 +90,12 @@ public interface CompetitorCI extends CacheItem {
     String getGender();
 
     /**
+     * Get the age group of the player
+     * @return the age group
+     */
+    String getAgeGroup();
+
+    /**
      * Returns race driver of the competitor
      *
      * @return the race driver of the competitor if available; otherwise null

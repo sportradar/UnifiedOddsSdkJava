@@ -57,7 +57,7 @@ public class CoverageInfoImpl implements CoverageInfo {
         Preconditions.checkNotNull(exportable);
         this.level = exportable.getLevel();
         this.isLive = exportable.isLive();
-        this.includes = ImmutableList.copyOf(exportable.getIncludes());
+        this.includes = exportable.getIncludes() != null ? ImmutableList.copyOf(exportable.getIncludes()) : null;
         this.coveredFrom = exportable.getCoveredFrom();
     }
 
@@ -134,7 +134,7 @@ public class CoverageInfoImpl implements CoverageInfo {
         return new ExportableCoverageInfoCI(
                 level,
                 isLive,
-                new ArrayList<>(includes),
+                includes != null ? new ArrayList<>(includes) : null,
                 coveredFrom
         );
     }

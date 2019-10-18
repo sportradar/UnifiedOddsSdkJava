@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
+import com.sportradar.utils.SdkHelper;
 import org.apache.http.HttpStatus;
 
 import java.time.Duration;
@@ -58,7 +59,7 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
 
         this.bookmakerId = bookmakerDetails.getBookmakerId() == null ? 0 : bookmakerDetails.getBookmakerId();
         this.virtualHost = bookmakerDetails.getVirtualHost();
-        this.expireAt = bookmakerDetails.getExpireAt() == null ? null : bookmakerDetails.getExpireAt().toGregorianCalendar().getTime();
+        this.expireAt = bookmakerDetails.getExpireAt() == null ? null : SdkHelper.toDate(bookmakerDetails.getExpireAt());
         this.responseCode = bookmakerDetails.getResponseCode();
         this.message = bookmakerDetails.getMessage();
         this.serverTimeDifference = period;

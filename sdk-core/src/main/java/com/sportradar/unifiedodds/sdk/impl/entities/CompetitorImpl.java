@@ -290,7 +290,7 @@ public class CompetitorImpl implements Competitor {
      * @return the gender of the competitor if available; otherwise null
      */
     @Override
-    public String getGender() { return loadCacheItem().map(ci -> ci.getGender()).orElse(null);  }
+    public String getGender() { return loadCacheItem().map(CompetitorCI::getGender).orElse(null);  }
 
     /**
      * Returns race driver of the competitor
@@ -300,6 +300,16 @@ public class CompetitorImpl implements Competitor {
     @Override
     public RaceDriverProfile getRaceDriver() {
         return loadCacheItem().map(ci -> ci.getRaceDriver() != null ? new RaceDriverProfileImpl(ci.getRaceDriver()) : null).orElse(null);
+    }
+
+    /**
+     * Returns age group of the competitor
+     *
+     * @return the age group of the competitor if available; otherwise null
+     */
+    @Override
+    public String getAgeGroup() {
+        return loadCacheItem().map(CompetitorCI::getAgeGroup).orElse(null);
     }
 
     /**

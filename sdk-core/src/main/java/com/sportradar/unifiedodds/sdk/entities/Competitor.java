@@ -101,13 +101,21 @@ public interface Competitor extends Player {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
-
     /**
      * Returns race driver of the competitor
      *
      * @return the race driver of the competitor if available; otherwise null
      */
     default RaceDriverProfile getRaceDriver() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns age group of the competitor
+     *
+     * @return the age group of the competitor if available; otherwise null
+     */
+    default String getAgeGroup(){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

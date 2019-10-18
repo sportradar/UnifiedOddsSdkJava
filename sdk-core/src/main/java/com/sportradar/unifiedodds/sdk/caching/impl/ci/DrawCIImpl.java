@@ -98,10 +98,10 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         this.defaultLocale = exportable.getDefaultLocale();
         this.id = URN.parse(exportable.getId());
         this.cachedLocales.addAll(exportable.getCachedLocales());
-        this.lotteryId = URN.parse(exportable.getLotteryId());
+        this.lotteryId = exportable.getLotteryId() != null ? URN.parse(exportable.getLotteryId()) : null;
         this.scheduled = exportable.getScheduled();
         this.status = exportable.getStatus();
-        this.results = exportable.getResults().stream().map(DrawResultCI::new).collect(Collectors.toList());
+        this.results = exportable.getResults() != null ? exportable.getResults().stream().map(DrawResultCI::new).collect(Collectors.toList()) : null;
         this.displayId = exportable.getDisplayId();
     }
 
@@ -309,7 +309,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
 
         scheduled = endpointData.getDrawDate() == null
                 ? null
-                : endpointData.getDrawDate().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(endpointData.getDrawDate());
 
         lotteryId = endpointData.getLottery() == null
                 ? null
@@ -329,7 +329,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
 
         scheduled = endpointData.getScheduled() == null
                 ? null
-                : endpointData.getScheduled().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(endpointData.getScheduled());
 
         status = map(endpointData.getStatus());
 
@@ -437,9 +437,9 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
                 null,
                 null,
                 defaultLocale,
-                lotteryId.toString(),
+                lotteryId != null ? lotteryId.toString() : null,
                 status,
-                results.stream().map(DrawResultCI::export).collect(Collectors.toList()),
+                results != null ? results.stream().map(DrawResultCI::export).collect(Collectors.toList()) : null,
                 displayId,
                 new HashSet<>(cachedLocales)
         );

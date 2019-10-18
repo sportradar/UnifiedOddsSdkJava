@@ -219,16 +219,16 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
 
         this.categoryId = URN.parse(endpointData.getCategory().getId());
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled = tournamentLength.getStartDate() == null ? null :
-                    tournamentLength.getStartDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getStartDate());
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
-                    tournamentLength.getEndDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getEndDate());
         }
     }
 
@@ -243,19 +243,19 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         this.defaultLocale = exportable.getDefaultLocale();
         this.id = URN.parse(exportable.getId());
         this.names.putAll(exportable.getNames());
-        this.categoryId = URN.parse(exportable.getCategoryId());
+        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
-        this.currentSeason = new SeasonCI(exportable.getCurrentSeason());
-        this.season = new SeasonCI(exportable.getSeason());
-        this.seasonCoverage = new SeasonCoverageCI(exportable.getSeasonCoverage());
-        this.tournamentCoverage = new TournamentCoverageCI(exportable.getTournamentCoverage());
-        this.groups = Collections.synchronizedList(exportable.getGroups().stream().map(GroupCI::new).collect(Collectors.toList()));
-        this.round = new CompleteRoundCIImpl(exportable.getRound());
-        this.competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
-        this.competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+        this.currentSeason = exportable.getCurrentSeason() != null ? new SeasonCI(exportable.getCurrentSeason()) : null;
+        this.season = exportable.getSeason() != null ? new SeasonCI(exportable.getSeason()) : null;
+        this.seasonCoverage = exportable.getSeasonCoverage() != null ? new SeasonCoverageCI(exportable.getSeasonCoverage()) : null;
+        this.tournamentCoverage = exportable.getTournamentCoverage() != null ? new TournamentCoverageCI(exportable.getTournamentCoverage()) : null;
+        this.groups = exportable.getGroups() != null ? Collections.synchronizedList(exportable.getGroups().stream().map(GroupCI::new).collect(Collectors.toList())) : null;
+        this.round = exportable.getRound() != null ? new CompleteRoundCIImpl(exportable.getRound()) : null;
+        this.competitorIds = exportable.getCompetitorIds() != null ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
+        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))) : null;
         this.associatedSeasonIdsLoaded = exportable.isAssociatedSeasonIdsLoaded();
-        this.associatedSeasonIds = exportable.getAssociatedSeasonIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.associatedSeasonIds = exportable.getAssociatedSeasonIds() != null ? exportable.getAssociatedSeasonIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
         this.cachedLocales.addAll(exportable.getCachedLocales());
         this.exhibitionGames = exportable.getExhibitionGames();
     }
@@ -685,16 +685,16 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         }
 
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled = tournamentLength.getStartDate() == null ? null :
-                    tournamentLength.getStartDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getStartDate());
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
-                    tournamentLength.getEndDate().toGregorianCalendar().getTime();
+                    SdkHelper.toDate(tournamentLength.getEndDate());
         }
 
         this.exhibitionGames = endpointData.isExhibitionGames();
@@ -819,17 +819,17 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                 null,
                 null,
                 defaultLocale,
-                categoryId.toString(),
-                currentSeason.export(),
-                season.export(),
-                seasonCoverage.export(),
-                tournamentCoverage.export(),
-                groups.stream().map(GroupCI::export).collect(Collectors.toList()),
-                ((CompleteRoundCIImpl) round).export(),
-                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
-                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                categoryId != null ? categoryId.toString() : null,
+                currentSeason != null ? currentSeason.export() : null,
+                season != null ? season.export() : null,
+                seasonCoverage != null ? seasonCoverage.export() : null,
+                tournamentCoverage != null ? tournamentCoverage.export() : null,
+                groups != null ? groups.stream().map(GroupCI::export).collect(Collectors.toList()) : null,
+                round != null ? ((CompleteRoundCIImpl) round).export() : null,
+                competitorIds != null ? competitorIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
+                competitorsReferences != null ? competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())) : null,
                 associatedSeasonIdsLoaded,
-                associatedSeasonIds.stream().map(URN::toString).collect(Collectors.toList()),
+                associatedSeasonIds != null ? associatedSeasonIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
                 new ArrayList<>(cachedLocales),
                 exhibitionGames
         );

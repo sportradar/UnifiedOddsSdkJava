@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISportEventChildren.SAPISportEvent;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
@@ -50,8 +51,8 @@ public class ChildRaceCI extends SportEntityCI {
 
         type = tryGetSportEventType(sportEvent.getType());
         name = sportEvent.getName();
-        schedule = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
-        scheduleEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        schedule = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());
+        scheduleEnd = sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
     }
 
     /**

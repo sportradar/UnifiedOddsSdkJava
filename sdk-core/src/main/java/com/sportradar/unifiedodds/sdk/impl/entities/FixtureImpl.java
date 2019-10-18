@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableFixtureCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableScheduledStartTimeChangeCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,7 @@ FixtureImpl implements Fixture {
         Preconditions.checkNotNull(fixture);
 
         this.startTime = fixture.getStartTime() == null ? null :
-                fixture.getStartTime().toGregorianCalendar().getTime();
+                SdkHelper.toDate(fixture.getStartTime());
         this.startTimeConfirmed = fixture.isStartTimeConfirmed() == null ? false : fixture.isStartTimeConfirmed();
 
         Date nextLiveTime1;
@@ -133,7 +134,7 @@ FixtureImpl implements Fixture {
                 fixture.getTvChannels().getTvChannel().stream()
                         .map(ch -> new TvChannelImpl(
                                 ch.getName(),
-                                ch.getStartTime() == null ? null : ch.getStartTime().toGregorianCalendar().getTime(),
+                                ch.getStartTime() == null ? null : SdkHelper.toDate(ch.getStartTime()),
                                 ch.getStreamUrl()))
                         .collect(ImmutableList.toImmutableList());
         this.coverageInfo = fixture.getCoverageInfo() == null ? null :
@@ -161,9 +162,9 @@ FixtureImpl implements Fixture {
         this.scheduledStartTimeChanges = fixture.getScheduledStartTimeChanges() == null ? null :
                 fixture.getScheduledStartTimeChanges().getScheduledStartTimeChange().stream()
                         .map(ch -> new ScheduledStartTimeChangeImpl(
-                                ch.getOldTime() == null ? null : ch.getOldTime().toGregorianCalendar().getTime(),
-                                ch.getNewTime() == null ? null : ch.getNewTime().toGregorianCalendar().getTime(),
-                                ch.getChangedAt() == null ? null : ch.getChangedAt().toGregorianCalendar().getTime()))
+                                ch.getOldTime() == null ? null : SdkHelper.toDate(ch.getOldTime()),
+                                ch.getNewTime() == null ? null : SdkHelper.toDate(ch.getNewTime()),
+                                ch.getChangedAt() == null ? null : SdkHelper.toDate(ch.getChangedAt())))
                         .collect(ImmutableList.toImmutableList());
     }
 
@@ -172,14 +173,14 @@ FixtureImpl implements Fixture {
         this.startTime = exportable.getStartTime();
         this.startTimeConfirmed = exportable.isStartTimeConfirmed();
         this.nextLiveTime = exportable.getNextLiveTime();
-        this.extraInfo = ImmutableMap.copyOf(exportable.getExtraInfo());
-        this.tvChannels = exportable.getTvChannels().stream().map(TvChannelImpl::new).collect(ImmutableList.toImmutableList());
-        this.coverageInfo = new CoverageInfoImpl(exportable.getCoverageInfo());
-        this.producerInfo = new ProducerInfoImpl(exportable.getProducerInfo());
-        this.references = new ReferenceImpl(new ReferenceIdCI(exportable.getReferences()));
+        this.extraInfo = exportable.getExtraInfo() != null ? ImmutableMap.copyOf(exportable.getExtraInfo()) : null;
+        this.tvChannels = exportable.getTvChannels() != null ? exportable.getTvChannels().stream().map(TvChannelImpl::new).collect(ImmutableList.toImmutableList()) : null;
+        this.coverageInfo = exportable.getCoverageInfo() != null ? new CoverageInfoImpl(exportable.getCoverageInfo()) : null;
+        this.producerInfo = exportable.getProducerInfo() != null ? new ProducerInfoImpl(exportable.getProducerInfo()) : null;
+        this.references = exportable.getReferences() != null ? new ReferenceImpl(new ReferenceIdCI(exportable.getReferences())) : null;
         this.startTimeTbd = exportable.getStartTimeTbd();
-        this.replacedBy = URN.parse(exportable.getReplacedBy());
-        this.scheduledStartTimeChanges = exportable.getScheduledStartTimeChanges().stream().map(ScheduledStartTimeChangeImpl::new).collect(ImmutableList.toImmutableList());
+        this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
+        this.scheduledStartTimeChanges = exportable.getScheduledStartTimeChanges() != null ? exportable.getScheduledStartTimeChanges().stream().map(ScheduledStartTimeChangeImpl::new).collect(ImmutableList.toImmutableList()) : null;
     }
 
     /**
@@ -352,14 +353,14 @@ FixtureImpl implements Fixture {
                 startTime,
                 startTimeConfirmed,
                 nextLiveTime,
-                new HashMap<>(extraInfo),
-                tvChannels.stream().map(t -> ((TvChannelImpl) t).export()).collect(Collectors.toList()),
-                ((CoverageInfoImpl) coverageInfo).export(),
-                ((ProducerInfoImpl) producerInfo).export(),
-                new HashMap<>(references.getReferences()),
+                extraInfo != null ? new HashMap<>(extraInfo) : null,
+                tvChannels != null ? tvChannels.stream().map(t -> ((TvChannelImpl) t).export()).collect(Collectors.toList()) : null,
+                coverageInfo != null ? ((CoverageInfoImpl) coverageInfo).export() : null,
+                producerInfo != null ? ((ProducerInfoImpl) producerInfo).export() : null,
+                references != null ? new HashMap<>(references.getReferences()) : null,
                 startTimeTbd,
-                replacedBy.toString(),
-                scheduledStartTimeChanges.stream().map(s -> ((ExportableScheduledStartTimeChangeCI) s).export()).collect(Collectors.toList())
+                replacedBy != null ? replacedBy.toString() : null,
+                scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ExportableScheduledStartTimeChangeCI) s).export()).collect(Collectors.toList()) : null
         );
     }
 }

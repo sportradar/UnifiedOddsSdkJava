@@ -9,10 +9,10 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.*;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
+import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.exportable.CacheType;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -23,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 
 /**
@@ -49,7 +46,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     private final SportEntityFactory sportEntityFactory;
 
     /**
-     * A {@link SportEventCache} instance used to retrieve and purge sport event cache items
+     * A {@link SportEventCache} instance used to retrieve, purge, import and export sport event cache items
      */
     private final SportEventCache sportEventCache;
 
@@ -59,9 +56,14 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     private final SportEventStatusCache sportEventStatusCache;
 
     /**
-     * A {@link ProfileCache} instance used to purge competitor/player profile cache items
+     * A {@link ProfileCache} instance used to purge, import and export competitor/player profile cache items
      */
     private final ProfileCache profileCache;
+
+    /**
+     * A {@link SportsDataCache} instance used to import and export sports data items
+     */
+    private final SportsDataCache sportsDataCache;
 
     /**
      * A {@link Locale} which is the desired default locale
@@ -94,7 +96,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      * @param dataRouterManager a {@link DataRouterManager} instance used to get sports info
      */
     @Inject
-    SportsInfoManagerImpl(SDKInternalConfiguration config, SportEntityFactory entityFactory, SportEventCache eventCache, ProfileCache profileCache, SportEventStatusCache sportEventStatusCache, DataRouterManager dataRouterManager) {
+    SportsInfoManagerImpl(SDKInternalConfiguration config, SportEntityFactory entityFactory, SportEventCache eventCache, ProfileCache profileCache, SportEventStatusCache sportEventStatusCache, SportsDataCache sportsDataCache, DataRouterManager dataRouterManager) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(config.getDesiredLocales());
         Preconditions.checkArgument(!config.getDesiredLocales().isEmpty());
@@ -102,6 +104,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(eventCache);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(sportEventStatusCache);
+        Preconditions.checkNotNull(sportsDataCache);
         Preconditions.checkNotNull(dataRouterManager);
 
         this.sportEntityFactory = entityFactory;
@@ -111,6 +114,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         this.desiredLocales = config.getDesiredLocales();
         this.exceptionHandlingStrategy = config.getExceptionHandlingStrategy();
         this.sportEventStatusCache = sportEventStatusCache;
+        this.sportsDataCache = sportsDataCache;
         this.dataRouterManager = dataRouterManager;
     }
 
@@ -601,9 +605,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
                 sportEvents = sportEntityFactory.buildSportEvents(eventIds, desiredLocales);
             }
             clientInteractionLog.info("sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}", startIndex, limit, desiredLocales, timer.stop());
-        } catch (ObjectNotFoundException e) {
-            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, desiredLocales), e);
-        } catch (CommunicationException e) {
+        } catch (ObjectNotFoundException | CommunicationException e) {
             return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, desiredLocales), e);
         }
         return sportEvents;
@@ -640,9 +642,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
                 sportEvents = sportEntityFactory.buildSportEvents(eventIds, builtLocales);
             }
             clientInteractionLog.info("sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}", startIndex, limit, builtLocales, timer.stop());
-        } catch (ObjectNotFoundException e) {
-            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, locale), e);
-        } catch (CommunicationException e) {
+        } catch (ObjectNotFoundException | CommunicationException e) {
             return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, locale), e);
         }
         return sportEvents;
@@ -676,12 +676,10 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        List<SportEvent> tournaments = null;
+        List<SportEvent> tournaments;
         try {
             tournaments = internalGetAvailableTournaments(sportId, locale);
-        } catch (ObjectNotFoundException e) {
-            return handleException("getAvailableTournaments", e);
-        } catch (CommunicationException e) {
+        } catch (ObjectNotFoundException | CommunicationException e) {
             return handleException("getAvailableTournaments", e);
         }
         clientInteractionLog.info("SportsInfoManager.getAvailableTournaments({},{}) invoked. Execution time: {}", sportId, locale, timer.stop());
@@ -699,6 +697,39 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
             throw new IllegalArgumentException("Parameter before is not defined");
         }
         return sportEventCache.deleteSportEventsFromCache(before);
+    }
+
+    /**
+     * Exports current items in the cache
+     *
+     * @param cacheType specifies what type of cache items will be exported
+     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     */
+    @Override
+    public List<ExportableCI> cacheExport(EnumSet<CacheType> cacheType) {
+        Preconditions.checkNotNull(cacheType);
+        List<ExportableCI> exportables = new ArrayList<>();
+
+        if (cacheType.contains(CacheType.SportData))
+            exportables.addAll(((ExportableSdkCache) sportsDataCache).exportItems());
+        if (cacheType.contains(CacheType.Profile))
+            exportables.addAll(((ExportableSdkCache) profileCache).exportItems());
+        if (cacheType.contains(CacheType.SportEvent))
+            exportables.addAll(((ExportableSdkCache) sportEventCache).exportItems());
+
+        return exportables;
+    }
+
+    /**
+     * Imports provided items into caches
+     *
+     * @param items List of {@link ExportableCI} containing the items to be imported
+     */
+    @Override
+    public void cacheImport(List<ExportableCI> items) {
+        ((ExportableSdkCache) sportsDataCache).importItems(items);
+        ((ExportableSdkCache) profileCache).importItems(items);
+        ((ExportableSdkCache) sportEventCache).importItems(items);
     }
 
     private List<Sport> internalGetSports(List<Locale> locales) {

@@ -9,6 +9,8 @@ import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -189,5 +191,11 @@ public final class SdkHelper {
     public static long getTimeDifferenceInSeconds(Date d1, Date d2)
     {
         return Math.abs(d1.getTime()-d2.getTime())/1000;
+    }
+
+    public static Date toDate(XMLGregorianCalendar gregorianCalendar) {
+        if (gregorianCalendar.getTimezone() == DatatypeConstants.FIELD_UNDEFINED)
+            gregorianCalendar.setTimezone(0);
+        return gregorianCalendar.toGregorianCalendar().getTime();
     }
 }

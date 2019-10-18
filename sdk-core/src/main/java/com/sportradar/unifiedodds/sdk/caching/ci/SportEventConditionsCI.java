@@ -61,9 +61,9 @@ public class SportEventConditionsCI {
 
         this.attendance = exportable.getAttendance();
         this.eventMode = exportable.getEventMode();
-        this.referee = new RefereeCI(exportable.getReferee());
-        this.weatherInfo = new WeatherInfoCI(exportable.getWeatherInfo());
-        this.pitchers = exportable.getPitchers().stream().map(PitcherCI::new).collect(Collectors.toList());
+        this.referee = exportable.getReferee() != null ? new RefereeCI(exportable.getReferee()) : null;
+        this.weatherInfo = exportable.getWeatherInfo() != null ? new WeatherInfoCI(exportable.getWeatherInfo()) : null;
+        this.pitchers = exportable.getPitchers() != null ? exportable.getPitchers().stream().map(PitcherCI::new).collect(Collectors.toList()) : null;
     }
 
     /**
@@ -144,9 +144,9 @@ public class SportEventConditionsCI {
         return new ExportableSportEventConditionsCI(
                 attendance,
                 eventMode,
-                referee.export(),
-                weatherInfo.export(),
-                pitchers.stream().map(PitcherCI::export).collect(Collectors.toList())
+                referee != null ? referee.export() : null,
+                weatherInfo != null ? weatherInfo.export() : null,
+                pitchers != null ? pitchers.stream().map(PitcherCI::export).collect(Collectors.toList()) : null
         );
     }
 }

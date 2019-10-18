@@ -85,10 +85,10 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
         this.id = URN.parse(exportable.getId());
         this.names.putAll(exportable.getNames());
         this.cachedLocales.addAll(exportable.getCachedLocales());
-        this.categoryId = URN.parse(exportable.getCategoryId());
-        this.bonusInfo = new BonusInfoCI(exportable.getBonusInfo());
-        this.drawInfo = new DrawInfoCI(exportable.getDrawInfo());
-        this.scheduledDraws = exportable.getScheduledDraws().stream().map(URN::parse).collect(Collectors.toList());
+        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
+        this.bonusInfo = exportable.getBonusInfo() != null ? new BonusInfoCI(exportable.getBonusInfo()) : null;
+        this.drawInfo = exportable.getDrawInfo() != null ? new DrawInfoCI(exportable.getDrawInfo()) : null;
+        this.scheduledDraws = exportable.getScheduledDraws() != null ? exportable.getScheduledDraws().stream().map(URN::parse).collect(Collectors.toList()) : null;
     }
 
     /**
@@ -352,10 +352,10 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
                 null,
                 null,
                 defaultLocale,
-                categoryId.toString(),
-                bonusInfo.export(),
-                drawInfo.export(),
-                scheduledDraws.stream().map(URN::toString).collect(Collectors.toList()),
+                categoryId != null ? categoryId.toString() : null,
+                bonusInfo != null ? bonusInfo.export() : null,
+                drawInfo != null ? drawInfo.export() : null,
+                scheduledDraws != null ? scheduledDraws.stream().map(URN::toString).collect(Collectors.toList()) : null,
                 new HashSet<>(cachedLocales)
         );
     }

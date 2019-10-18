@@ -189,9 +189,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         this.bookingStatus = BookingStatus.getLiveBookingStatus(endpointData.getLiveodds());
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -282,9 +282,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         this.scheduled = endpointData.getScheduled() == null ? null :
-                endpointData.getScheduled().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+                SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -310,20 +310,20 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.bookingStatus = exportable.getBookingStatus();
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
-        this.competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
-        this.competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
-        this.parentStageId = URN.parse(exportable.getParentStageId());
-        this.categoryId = URN.parse(exportable.getCategoryId());
-        this.venue = new VenueCI(exportable.getVenue());
-        this.conditions = new SportEventConditionsCI(exportable.getConditions());
-        this.childStagesIds = exportable.getStagesIds().stream().map(URN::parse).collect(Collectors.toList());
+        this.competitorIds = exportable.getCompetitorIds() != null ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
+        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))) : null;
+        this.parentStageId = exportable.getParentStageId() != null ? URN.parse(exportable.getParentStageId()) : null;
+        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
+        this.venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
+        this.conditions = exportable.getConditions() != null ? new SportEventConditionsCI(exportable.getConditions()) : null;
+        this.childStagesIds = exportable.getStagesIds() != null ? exportable.getStagesIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
         this.sportEventNames.putAll(exportable.getNames());
         this.stageType = exportable.getStageType();
         this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
         this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
         this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
         this.startTimeTbd = exportable.getStartTimeTbd();
-        this.replacedBy = URN.parse(exportable.getReplacedBy());
+        this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
     }
 
     /**
@@ -756,8 +756,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
         }
 
-        scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());
+        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.startTimeTbd = sportEvent.isStartTimeTbd();
         this.replacedBy = sportEvent.getReplacedBy() == null
                 ? null
@@ -815,8 +815,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -937,14 +937,14 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 startTimeTbd,
                 replacedBy.toString(),
                 bookingStatus,
-                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
-                venue.export(),
-                conditions.export(),
-                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
-                parentStageId.toString(),
-                childStagesIds.stream().map(URN::toString).collect(Collectors.toList()),
+                competitorIds != null ? competitorIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
+                venue != null ? venue.export() : null,
+                conditions != null ? conditions.export() : null,
+                competitorsReferences != null ? competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())) : null,
+                parentStageId != null ? parentStageId.toString() : null,
+                childStagesIds != null ? childStagesIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
                 stageType,
-                categoryId.toString(),
+                categoryId != null ? categoryId.toString() : null,
                 defaultLocale,
                 new ArrayList<>(loadedSummaryLocales),
                 new ArrayList<>(loadedFixtureLocales),

@@ -273,8 +273,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.bookingStatus = null;
         this.fixtureTimestampCache = fixtureTimestampCache;
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         startTimeTbd = endpointData.isStartTimeTbd();
         replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -302,23 +302,23 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
         this.startTimeTbd = exportable.getStartTimeTbd();
-        this.replacedBy = URN.parse(exportable.getReplacedBy());
+        this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
         this.bookingStatus = exportable.getBookingStatus();
-        this.competitorIds = ImmutableList.copyOf(exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()));
-        this.venue = new VenueCI(exportable.getVenue());
-        this.conditions = new SportEventConditionsCI(exportable.getConditions());
-        this.competitorsReferences = ImmutableMap.copyOf(exportable.getCompetitorsReferences().entrySet().stream()
-                .collect(Collectors.toMap(e -> URN.parse(e.getKey()), e -> new ReferenceIdCI(e.getValue()))));
+        this.competitorIds = exportable.getCompetitorIds() != null ? ImmutableList.copyOf(exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())) : null;
+        this.venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
+        this.conditions = exportable.getConditions() != null ? new SportEventConditionsCI(exportable.getConditions()) : null;
+        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? ImmutableMap.copyOf(exportable.getCompetitorsReferences().entrySet().stream()
+                .collect(Collectors.toMap(e -> URN.parse(e.getKey()), e -> new ReferenceIdCI(e.getValue())))) : null;
         this.defaultLocale = exportable.getDefaultLocale();
-        this.fixture = new FixtureImpl(exportable.getFixture());
-        this.competitorQualifiers = exportable.getCompetitorQualifiers().entrySet().stream()
-                .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue));
-        this.competitorDivisions = exportable.getCompetitorDivisions().entrySet().stream()
-                .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue));
-        this.tournamentId = URN.parse(exportable.getTournamentId());
-        this.tournamentRound = new LoadableRoundCIImpl(this, exportable.getTournamentRound(), dataRouterManager, exceptionHandlingStrategy);
-        this.season = new SeasonCI(exportable.getSeason());
-        this.delayedInfo = new DelayedInfoCI(exportable.getDelayedInfo());
+        this.fixture = exportable.getFixture() != null ? new FixtureImpl(exportable.getFixture()) : null;
+        this.competitorQualifiers = exportable.getCompetitorQualifiers() != null ? exportable.getCompetitorQualifiers().entrySet().stream()
+                .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue)) : null;
+        this.competitorDivisions = exportable.getCompetitorDivisions() != null ? exportable.getCompetitorDivisions().entrySet().stream()
+                .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue)) : null;
+        this.tournamentId = exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
+        this.tournamentRound = exportable.getTournamentRound() != null ? new LoadableRoundCIImpl(this, exportable.getTournamentRound(), dataRouterManager, exceptionHandlingStrategy) : null;
+        this.season = exportable.getSeason() != null ? new SeasonCI(exportable.getSeason()) : null;
+        this.delayedInfo = exportable.getDelayedInfo() != null ? new DelayedInfoCI(exportable.getDelayedInfo()) : null;
         this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
         this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
         this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
@@ -794,10 +794,10 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
         this.scheduled = sportEvent.getScheduled() == null
                 ? null
-                : sportEvent.getScheduled().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(sportEvent.getScheduled());
         this.scheduledEnd = sportEvent.getScheduledEnd() == null
                 ? null
-                :sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+                : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.tournamentId = sportEvent.getTournament() == null
                 ? null
                 : URN.parse(sportEvent.getTournament().getId());
@@ -1000,8 +1000,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             String status = sportEvent.getStatus();
         }
 
-        scheduled = sportEvent.getScheduled() == null ? null : sportEvent.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : sportEvent.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());
+        scheduledEnd = sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.startTimeTbd = sportEvent.isStartTimeTbd();
         this.replacedBy = sportEvent.getReplacedBy() == null
                 ? null
@@ -1054,8 +1054,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getScheduled() == null ? null : endpointData.getScheduled().toGregorianCalendar().getTime();
-        scheduledEnd = endpointData.getScheduledEnd() == null ? null : endpointData.getScheduledEnd().toGregorianCalendar().getTime();
+        scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy = endpointData.getReplacedBy() == null
                 ? null
@@ -1180,20 +1180,20 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 scheduled,
                 scheduledEnd,
                 startTimeTbd,
-                replacedBy.toString(),
+                replacedBy != null ? replacedBy.toString() : null,
                 bookingStatus,
-                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
-                venue.export(),
-                conditions.export(),
-                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())),
+                competitorIds != null ? competitorIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
+                venue != null ? venue.export() : null,
+                conditions != null ? conditions.export() : null,
+                competitorsReferences != null ? competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())) : null,
                 defaultLocale,
-                ((FixtureImpl) fixture).export(),
-                competitorQualifiers.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue)),
-                competitorDivisions.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue)),
-                tournamentId.toString(),
-                ((LoadableRoundCIImpl) tournamentRound).export(),
-                season.export(),
-                delayedInfo.export(),
+                fixture != null ? ((FixtureImpl) fixture).export() : null,
+                competitorQualifiers != null ? competitorQualifiers.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue)) : null,
+                competitorDivisions != null ? competitorDivisions.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue)) : null,
+                tournamentId != null ? tournamentId.toString() : null,
+                tournamentRound != null ? ((LoadableRoundCIImpl) tournamentRound).export() : null,
+                season != null ? season.export() : null,
+                delayedInfo != null ? delayedInfo.export() : null,
                 new ArrayList<>(loadedFixtureLocales),
                 new ArrayList<>(loadedSummaryLocales),
                 new ArrayList<>(loadedCompetitorLocales),
