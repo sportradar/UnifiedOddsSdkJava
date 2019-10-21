@@ -1078,25 +1078,27 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             return;
         }
 
-        competitorIds = new ArrayList<>(competitors.size());
-        competitorQualifiers = new HashMap<>(competitors.size());
-        competitorDivisions = new HashMap<>(competitors.size());
+        List<URN> competitorIdsLocal = new ArrayList<>(competitors.size());
+        Map<URN, String> competitorQualifiersLocal = new HashMap<>(competitors.size());
+        Map<URN, Integer> competitorDivisionsLocal = new HashMap<>(competitors.size());
 
         competitors.forEach(inputC -> {
             URN parsedId = URN.parse(inputC.getId());
-                competitorIds.add(parsedId);
+                competitorIdsLocal.add(parsedId);
 
             if (inputC.getQualifier() != null) {
-                competitorQualifiers.put(parsedId, inputC.getQualifier());
+                competitorQualifiersLocal.put(parsedId, inputC.getQualifier());
             }
             if (inputC.getDivision() != null) {
-                competitorDivisions.put(parsedId, inputC.getDivision());
+                competitorDivisionsLocal.put(parsedId, inputC.getDivision());
             }
         });
 
-        competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
-
-        loadedCompetitorLocales.add(locale);
+        this.competitorIds = competitorIdsLocal;
+        this.competitorQualifiers = competitorQualifiersLocal;
+        this.competitorDivisions = competitorDivisionsLocal;
+        this.competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
+        this.loadedCompetitorLocales.add(locale);
     }
 
     /**
