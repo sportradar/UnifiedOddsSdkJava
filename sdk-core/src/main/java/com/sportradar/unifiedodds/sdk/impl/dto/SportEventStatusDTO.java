@@ -498,7 +498,7 @@ public class SportEventStatusDTO {
     public Map<String,Object> toKeyValueStore() {
         Map<String, Object>  result = new HashMap<>();
         result.put("MatchStatusId", this.getMatchStatusId());
-        result.put("ReportingStatus", this.getReportingStatus().getIntValue());
+        result.put("ReportingStatus", this.getReportingStatus() == null ? null : this.getReportingStatus().getIntValue());
         result.put("HomeScore", this.getHomeScore());
         result.put("AwayScore", this.getAwayScore());
         result.put("Status", this.getStatus().getApiName());
@@ -549,6 +549,43 @@ public class SportEventStatusDTO {
                         r.values().removeIf(Objects::isNull);
                         return r;
                     }).collect(Collectors.toList()));
+        }
+
+        if (this.getSportEventStatisticsDTO() != null) {
+            if(this.getSportEventStatisticsDTO().getTotalStatisticsDTOs() != null) {
+                result.put("Statistics_Total", this.getSportEventStatisticsDTO().getTotalStatisticsDTOs().stream()
+                        .map(ps -> {
+                            Map<String, Object> r = new HashMap<>();
+                            r.put("TeamId", ps.getTeamId());
+                            r.put("Name", ps.getName());
+                            r.put("HomeAway", ps.getHomeAway());
+                            r.put("CornerKicks", ps.getCornerKicks());
+                            r.put("Cards", ps.getCards());
+                            r.put("YellowCards", ps.getYellowCards());
+                            r.put("YellowRedCards", ps.getYellowRedCards());
+                            r.values().removeIf(Objects::isNull);
+                            return r;
+                        }).collect(Collectors.toList()));
+            }
+            if(this.getSportEventStatisticsDTO().getPeriodStatisticDTOs() != null) {
+                for (PeriodStatisticsDTO ps : this.getSportEventStatisticsDTO().getPeriodStatisticDTOs()) {
+                    String periodName = ps.getPeriodName();
+                    result.put("Statistics_Period_" + periodName, ps.getTeamStatisticDTOs().stream()
+                            .map(ts -> {
+                                Map<String, Object> r = new HashMap<>();
+                                r.put("TeamId", ts.getTeamId());
+                                r.put("Name", ts.getName());
+                                r.put("HomeAway", ts.getHomeAway());
+                                r.put("CornerKicks", ts.getCornerKicks());
+                                r.put("Cards", ts.getCards());
+                                r.put("YellowCards", ts.getYellowCards());
+                                r.put("YellowRedCards", ts.getYellowRedCards());
+                                r.values().removeIf(Objects::isNull);
+                                return r;
+                            }).collect(Collectors.toList()));
+                }
+
+            }
         }
 
         if (this.getProperties() != null) {
