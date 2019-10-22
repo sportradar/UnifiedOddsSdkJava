@@ -18,13 +18,11 @@ import java.util.stream.Collectors;
 class PeriodStatisticsImpl implements PeriodStatistics {
     private final PeriodStatisticsDTO stats;
 
-
     PeriodStatisticsImpl(PeriodStatisticsDTO stats) {
         Preconditions.checkNotNull(stats);
 
         this.stats = stats;
     }
-
 
     /**
      * Returns the name of the round to which the statistics belong to
@@ -54,7 +52,8 @@ class PeriodStatisticsImpl implements PeriodStatistics {
      */
     @Override
     public List<TeamStatistics> getTeamStatistics() {
-        return stats.getTeamStatisticDTOs() == null ? null :
-                stats.getTeamStatisticDTOs().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
+        return stats.getTeamStatisticDTOs() == null
+                ? null
+                : stats.getTeamStatisticDTOs().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
     }
 }

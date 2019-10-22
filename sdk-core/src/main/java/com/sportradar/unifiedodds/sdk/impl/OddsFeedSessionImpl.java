@@ -9,6 +9,7 @@ import com.google.common.cache.Cache;
 import com.google.inject.name.Named;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
@@ -348,6 +349,10 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
      */
     private boolean isMessageDiscardable(UnmarshalledMessage o) {
         int producerId = provideProducerIdFromMessage(o);
+
+        if(config.getEnvironment() == Environment.Replay){
+            return false;
+        }
 
         if (!producerManager.isProducerEnabled(producerId)) {
             return true;

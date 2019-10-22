@@ -24,9 +24,9 @@ public class PeriodStatisticsDTO {
 
         periodName = p.getName();
 
-        teamStatisticDTOS = (p.getTeams() != null && p.getTeams().size() == 1) ?
-                p.getTeams().get(0).getTeam().stream().map(t -> new TeamStatisticsDTO(t, homeAwayMap)).collect(Collectors.toList()) :
-                null;
+        teamStatisticDTOS = (p.getTeams() != null)
+                ? p.getTeams().get(0).getTeam().stream().map(t -> new TeamStatisticsDTO(t, homeAwayMap)).collect(Collectors.toList())
+                : null;
     }
 
     public String getPeriodName() {
