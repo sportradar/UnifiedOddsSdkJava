@@ -1,9 +1,10 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
-public class ExportableEventTimelineCI {
+public class ExportableEventTimelineCI implements Serializable {
     private Locale cachedLocale;
     private List<ExportableTimelineEventCI> timelineEvents;
     private boolean isFinalized;

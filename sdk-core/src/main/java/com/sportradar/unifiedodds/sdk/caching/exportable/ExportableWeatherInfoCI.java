@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableWeatherInfoCI {
+import java.io.Serializable;
+
+public class ExportableWeatherInfoCI implements Serializable {
     private Integer temperatureCelsius;
     private String wind;
     private String windAdvantage;

@@ -4,10 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
-public class ExportableCI {
+public class ExportableCI implements Serializable {
     private String id;
     private Map<Locale, String> names;
 

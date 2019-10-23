@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
@@ -621,6 +622,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     public void importItems(List<ExportableCI> items) {
         Preconditions.checkNotNull(items);
         items.forEach(exportable -> {
+            if (!(exportable instanceof ExportableSportEventCI)) {
+                return;
+            }
+
             URN id = URN.parse(exportable.getId());
             SportEventCI sportEvent = cacheItemFactory.buildSportEventCI(exportable);
             SportEventCI ifPresent = sportEventsCache.getIfPresent(id);

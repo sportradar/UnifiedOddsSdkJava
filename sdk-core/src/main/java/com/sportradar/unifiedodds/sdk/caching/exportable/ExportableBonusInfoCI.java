@@ -2,7 +2,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.BonusDrumType;
 
-public class ExportableBonusInfoCI {
+import java.io.Serializable;
+
+public class ExportableBonusInfoCI implements Serializable {
     private Integer bonusBalls;
     private BonusDrumType bonusDrumType;
     private String bonusRange;
