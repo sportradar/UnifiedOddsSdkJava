@@ -1,9 +1,10 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class ExportableGroupCI {
+public class ExportableGroupCI implements Serializable {
     private String id;
     private String name;
     private List<String> competitorIds;

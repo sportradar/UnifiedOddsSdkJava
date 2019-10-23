@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableStreamingChannelCI {
+import java.io.Serializable;
+
+public class ExportableStreamingChannelCI implements Serializable {
     private int id;
     private String name;
 

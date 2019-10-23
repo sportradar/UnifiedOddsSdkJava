@@ -1,10 +1,11 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ExportableFixtureCI {
+public class ExportableFixtureCI implements Serializable {
     private Date startTime;
     private boolean startTimeConfirmed;
     private Date nextLiveTime;

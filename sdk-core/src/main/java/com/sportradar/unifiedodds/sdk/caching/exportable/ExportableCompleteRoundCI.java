@@ -1,10 +1,11 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class ExportableCompleteRoundCI {
+public class ExportableCompleteRoundCI implements Serializable {
     private Map<Locale, String> names;
     private Map<Locale, String> phaseOrGroupLongNames;
     private String type;

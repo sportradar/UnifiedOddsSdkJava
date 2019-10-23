@@ -21,7 +21,6 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableMatchCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
@@ -173,11 +172,6 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * A {@link ReentrantLock} used to synchronize event timeline request operations
      */
     private final ReentrantLock timelineRequest = new ReentrantLock();
-
-    /**
-     * A {@link ReentrantLock} used to synchronize event competitors request operations
-     */
-    private final ReentrantLock competitorRequest = new ReentrantLock();
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -1080,38 +1074,31 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private void cacheCompetitors(List<SAPITeamCompetitor> competitors, Locale locale) {
         Preconditions.checkNotNull(locale);
 
-        if (competitors == null || competitors.isEmpty()) {
+        if (competitors == null) {
             return;
         }
 
-        competitorRequest.lock();
-        try {
-            competitorIds = new ArrayList<>(competitors.size());
-            competitorQualifiers = new HashMap<>(competitors.size());
-            competitorDivisions = new HashMap<>(competitors.size());
+        List<URN> competitorIdsLocal = new ArrayList<>(competitors.size());
+        Map<URN, String> competitorQualifiersLocal = new HashMap<>(competitors.size());
+        Map<URN, Integer> competitorDivisionsLocal = new HashMap<>(competitors.size());
 
-            competitors.forEach(inputC -> {
-                URN parsedId = URN.parse(inputC.getId());
-                competitorIds.add(parsedId);
+        competitors.forEach(inputC -> {
+            URN parsedId = URN.parse(inputC.getId());
+                competitorIdsLocal.add(parsedId);
 
-                if (inputC.getQualifier() != null) {
-                    competitorQualifiers.put(parsedId, inputC.getQualifier());
-                }
-                if (inputC.getDivision() != null) {
-                    competitorDivisions.put(parsedId, inputC.getDivision());
-                }
-            });
+            if (inputC.getQualifier() != null) {
+                competitorQualifiersLocal.put(parsedId, inputC.getQualifier());
+            }
+            if (inputC.getDivision() != null) {
+                competitorDivisionsLocal.put(parsedId, inputC.getDivision());
+            }
+        });
 
-            competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
-
-            loadedCompetitorLocales.add(locale);
-        } catch (Exception e) {
-            String[] cs1 = competitors.stream().map(SAPITeamCompetitor::getId).toArray(String[]::new);
-            String cs = String.join(",", cs1);
-            handleException(String.format("cacheCompetitors(%s, %s)", cs, locale), e);
-        } finally {
-            competitorRequest.unlock();
-        }
+        this.competitorIds = competitorIdsLocal;
+        this.competitorQualifiers = competitorQualifiersLocal;
+        this.competitorDivisions = competitorDivisionsLocal;
+        this.competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
+        this.loadedCompetitorLocales.add(locale);
     }
 
     /**

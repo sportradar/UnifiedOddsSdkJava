@@ -1,8 +1,9 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ExportableSportEventConditionsCI {
+public class ExportableSportEventConditionsCI implements Serializable {
     private String attendance;
     private String eventMode;
     private ExportableRefereeCI referee;

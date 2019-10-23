@@ -424,7 +424,10 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 .map(URN::parse)
                 .filter(i -> !associatedPlayerIds.contains(i))
                 .collect(Collectors.toList()) : new ArrayList<>();
-        associatedPlayerIds.addAll(missingAssociatedPlayerIds);
+        if (associatedPlayerIds == null)
+            associatedPlayerIds = new ArrayList<>(missingAssociatedPlayerIds);
+        else
+            associatedPlayerIds.addAll(missingAssociatedPlayerIds);
         jerseys = exportable.getJerseys() != null ? exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList()) : null;
         manager = exportable.getManager() != null ? new ManagerCI(exportable.getManager()) : null;
         venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;

@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableProducerInfoLinkCI {
+import java.io.Serializable;
+
+public class ExportableProducerInfoLinkCI implements Serializable {
     private String reference;
     private String name;
 

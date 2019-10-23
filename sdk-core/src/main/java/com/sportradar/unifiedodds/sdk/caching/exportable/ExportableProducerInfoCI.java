@@ -1,8 +1,9 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ExportableProducerInfoCI {
+public class ExportableProducerInfoCI implements Serializable {
     private boolean isAutoTraded;
     private boolean isInHostedStatistics;
     private boolean isInLiveCenterSoccer;

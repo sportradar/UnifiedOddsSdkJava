@@ -4,7 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableCarCI {
+import java.io.Serializable;
+
+public class ExportableCarCI implements Serializable {
     private String name;
     private String chassis;
     private String engineName;

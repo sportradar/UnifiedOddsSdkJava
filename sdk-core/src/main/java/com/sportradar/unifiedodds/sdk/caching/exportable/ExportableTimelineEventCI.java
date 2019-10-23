@@ -2,10 +2,11 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ExportableTimelineEventCI {
+public class ExportableTimelineEventCI implements Serializable {
     private int id;
     private Double awayScore;
     private Double homeScore;

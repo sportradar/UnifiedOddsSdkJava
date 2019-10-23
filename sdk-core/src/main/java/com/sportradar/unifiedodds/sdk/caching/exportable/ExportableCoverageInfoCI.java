@@ -3,10 +3,11 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExportableCoverageInfoCI {
+public class ExportableCoverageInfoCI implements Serializable {
     private String level;
     private boolean isLive;
     private List<String> includes;

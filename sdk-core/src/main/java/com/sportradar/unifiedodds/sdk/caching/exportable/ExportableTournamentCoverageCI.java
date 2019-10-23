@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableTournamentCoverageCI {
+import java.io.Serializable;
+
+public class ExportableTournamentCoverageCI implements Serializable {
     private String liveCoverage;
 
     public ExportableTournamentCoverageCI(String liveCoverage) {

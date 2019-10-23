@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-public class ExportableSeasonCoverageCI {
+import java.io.Serializable;
+
+public class ExportableSeasonCoverageCI implements Serializable {
     private String seasonId;
     private String maxCoverageLevel;
     private String minCoverageLevel;

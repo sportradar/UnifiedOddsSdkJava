@@ -3,7 +3,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.PitcherHand;
 
-public class ExportablePitcherCI {
+import java.io.Serializable;
+
+public class ExportablePitcherCI implements Serializable {
     private String id;
     private String name;
     private HomeAway competitor;
