@@ -240,6 +240,18 @@ public class MarketFactoryImpl implements MarketFactory {
         List<OutcomeOdds> builtOutcomes = new ArrayList<>();
         for (UFOddsChangeMarket.UFOutcome o : outcomes) {
             OutcomeOdds outcomeOdds;
+
+            AdditionalProbabilities additionalProbabilities = o.getWinProbabilities() != null
+                                                            || o.getLoseProbabilities() != null
+                                                            || o.getHalfWinProbabilities() != null
+                                                            || o.getHalfLoseProbabilities() != null
+                                                            || o.getRefundProbabilities() != null
+                    ? new AdditionalProbabilitiesImpl(o.getWinProbabilities(),
+                                                    o.getLoseProbabilities(),
+                                                    o.getHalfWinProbabilities(),
+                                                    o.getHalfLoseProbabilities(),
+                                                    o.getRefundProbabilities())
+                    : null;
             if (isValidPlayerOutcome(sportEvent, md.getId(), o.getId(), o.getTeam())) {
                 outcomeOdds = new PlayerOutcomeOddsImpl(
                         o.getId(),
@@ -250,7 +262,8 @@ public class MarketFactoryImpl implements MarketFactory {
                         o.getOdds(),
                         o.getProbabilities(),
                         (Match) sportEvent, // casting gets validated in the #isValidPlayerOutcome(...)
-                        o.getTeam()
+                        o.getTeam(),
+                        additionalProbabilities
                 );
             } else {
                 outcomeOdds = new OutcomeOddsImpl(
@@ -260,7 +273,8 @@ public class MarketFactoryImpl implements MarketFactory {
                         defaultLocale,
                         o.getActive(),
                         o.getOdds(),
-                        o.getProbabilities()
+                        o.getProbabilities(),
+                        additionalProbabilities
                 );
             }
 

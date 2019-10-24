@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.Match;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
+import com.sportradar.unifiedodds.sdk.oddsentities.AdditionalProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.PlayerOutcomeOdds;
 
@@ -29,8 +30,17 @@ public class PlayerOutcomeOddsImpl extends OutcomeOddsImpl implements PlayerOutc
      */
     private final Integer teamIndication;
 
-    PlayerOutcomeOddsImpl(String id, NameProvider nameProvider, OutcomeDefinition outcomeDefinition, Locale defaultLocale, UFOutcomeActive active, Double odds, Double probability, Match match, Integer teamIndication) {
-        super(id, nameProvider, outcomeDefinition, defaultLocale, active, odds, probability);
+    PlayerOutcomeOddsImpl(String id,
+                          NameProvider nameProvider,
+                          OutcomeDefinition outcomeDefinition,
+                          Locale defaultLocale,
+                          UFOutcomeActive active,
+                          Double odds,
+                          Double probability,
+                          Match match,
+                          Integer teamIndication,
+                          AdditionalProbabilities additionalProbabilities) {
+        super(id, nameProvider, outcomeDefinition, defaultLocale, active, odds, probability, additionalProbabilities);
 
         Preconditions.checkNotNull(match);
         Preconditions.checkNotNull(teamIndication);

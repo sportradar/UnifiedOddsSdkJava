@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.sportradar.uf.datamodel.UFOutcomeActive;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
+import com.sportradar.unifiedodds.sdk.oddsentities.AdditionalProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsDisplayType;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeOdds;
@@ -20,12 +21,14 @@ import java.util.Locale;
  */
 class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
     private final double odds;
+    private final AdditionalProbabilities additionalProbabilities;
 
     OutcomeOddsImpl(String id, NameProvider nameProvider, OutcomeDefinition outcomeDefinition, Locale defaultLocale,
-                    UFOutcomeActive active, Double odds, Double probability) {
+                    UFOutcomeActive active, Double odds, Double probability, AdditionalProbabilities additionalProbabilities) {
         super(id, nameProvider, outcomeDefinition, defaultLocale, active, probability);
 
         this.odds = odds == null ? Double.NaN : odds;
+        this.additionalProbabilities = additionalProbabilities;
     }
 
     /**
@@ -57,6 +60,12 @@ class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
         }
 
         return convertEuOddsToUs(this.odds);
+    }
+
+    @Override
+    public AdditionalProbabilities getAdditionalProbabilities()
+    {
+        return additionalProbabilities;
     }
 
     /**
