@@ -83,6 +83,14 @@ class TeamStatisticsImpl implements TeamStatistics {
     }
 
     /**
+     * Returns the received green cards number
+     *
+     * @return the received green cards number, could be null
+     */
+    @Override
+    public Integer getGreenCards(){ return stats.getGreenCards(); }
+
+    /**
      * Returns the name
      *
      * @return the name

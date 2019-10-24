@@ -53,6 +53,13 @@ public interface TeamStatistics {
     Integer getCornerKicks();
 
     /**
+     * Returns the received green cards number
+     *
+     * @return the received green cards number, could be null
+     */
+    default Integer getGreenCards(){ return null; }
+
+    /**
      * Returns the name
      *
      * @return the name

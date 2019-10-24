@@ -24,6 +24,7 @@ public class TeamStatisticsDTO {
     private final Integer redCards;
     private final Integer yellowRedCards;
     private final Integer cornerKicks;
+    private final Integer greenCards;
 
 
     TeamStatisticsDTO(SAPITeamStatistics t, Map<HomeAway, String> homeAwayMap) {
@@ -45,9 +46,10 @@ public class TeamStatisticsDTO {
         redCards = tryParseInt(statistics.getRedCards());
         cards = tryParseInt(statistics.getCards());
         cornerKicks = tryParseInt(statistics.getCornerKicks());
+        greenCards = null;
     }
 
-    TeamStatisticsDTO(HomeAway homeAway, int yellowCards, int redCards, int yellowRedCards, int cornerKicks) {
+    TeamStatisticsDTO(HomeAway homeAway, int yellowCards, int redCards, int yellowRedCards, int cornerKicks, int greenCards) {
         Preconditions.checkNotNull(homeAway);
 
         this.name = "";
@@ -56,8 +58,9 @@ public class TeamStatisticsDTO {
         this.yellowCards = yellowCards;
         this.redCards = redCards;
         this.yellowRedCards = yellowRedCards;
-        this.cards = yellowCards + redCards + yellowRedCards;
+        this.cards = yellowCards + redCards + yellowRedCards + greenCards;
         this.cornerKicks = cornerKicks;
+        this.greenCards = greenCards;
     }
 
     public String getName() {
@@ -91,6 +94,8 @@ public class TeamStatisticsDTO {
     public Integer getCornerKicks() {
         return cornerKicks;
     }
+
+    public Integer getGreenCards() { return greenCards; }
 
     private static Integer tryParseInt(String val) {
         if (Strings.isNullOrEmpty(val)) {

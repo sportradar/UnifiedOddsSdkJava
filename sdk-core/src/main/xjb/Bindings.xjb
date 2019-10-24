@@ -49,6 +49,11 @@
         <jaxb:typesafeEnumMember name="SUSPENDED" value="2"/>
         <jaxb:typesafeEnumMember name="ENDED" value="3"/>
         <jaxb:typesafeEnumMember name="FINALIZED" value="4"/>
+        <jaxb:typesafeEnumMember name="CANCELLED" value="5"/>
+        <jaxb:typesafeEnumMember name="DELAYED" value="6"/>
+        <jaxb:typesafeEnumMember name="INTERRUPTED" value="7"/>
+        <jaxb:typesafeEnumMember name="POSTPONED" value="8"/>
+        <jaxb:typesafeEnumMember name="ABANDONED" value="9"/>
       </jaxb:typesafeEnumClass>
     </jaxb:bindings>
     <jaxb:bindings node="//xs:simpleType[@name='outcomeActive']">

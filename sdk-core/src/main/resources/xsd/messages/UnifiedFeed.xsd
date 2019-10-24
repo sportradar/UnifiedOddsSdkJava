@@ -1,152 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (C) Sportradar AG. See LICENSE for full license governing this code
-  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="odds_change">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="sport_event_status" type="sportEventStatus" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="odds_generation_properties" type="oddsGenerationProperties" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="odds" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="market" type="oddsChangeMarket" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="betting_status" type="xs:int" use="optional"/>
+            <xs:attribute name="betstop_reason" type="xs:int" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
 
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   elementFormDefault="qualified">
-	<xs:element name="odds_change">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="sport_event_status" type="sportEventStatus"
-							minOccurs="0" maxOccurs="1"/>
-				<xs:element name="odds_generation_properties" type="oddsGenerationProperties" minOccurs="0"
-							maxOccurs="1"/>
-				<xs:element name="odds" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="market" type="oddsChangeMarket"
-										minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-						<xs:attribute name="betting_status" type="xs:int" use="optional"/>
-						<xs:attribute name="betstop_reason" type="xs:int" use="optional"/>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
+      <xs:attributeGroup ref="messageAttributes"/>
+      <xs:attribute name="odds_change_reason" type="oddsChangeReason"/>
+    </xs:complexType>
+  </xs:element>
 
-			<xs:attributeGroup ref="messageAttributes"/>
-			<xs:attribute name="odds_change_reason" type="oddsChangeReason"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="bet_settlement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="outcomes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="market" type="betSettlementMarket" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
 
-	<xs:element name="bet_settlement">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="outcomes">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="market" type="betSettlementMarket"
-										minOccurs="1" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
+      <xs:attributeGroup ref="messageAttributes"/>
+      <xs:attribute name="certainty" type="certaintyLevel" use="required"/>
+    </xs:complexType>
+  </xs:element>
 
-			<xs:attributeGroup ref="messageAttributes"/>
-			<xs:attribute name="certainty" type="certaintyLevel" use="required"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="rollback_bet_settlement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="market" type="market" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
 
-	<xs:element name="rollback_bet_settlement">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="market" type="market" minOccurs="1"
-							maxOccurs="unbounded"/>
-			</xs:sequence>
+      <xs:attributeGroup ref="messageAttributes"/>
+    </xs:complexType>
+  </xs:element>
 
-			<xs:attributeGroup ref="messageAttributes"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="bet_cancel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="market" type="market" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
 
-	<xs:element name="bet_cancel">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="market" type="market" minOccurs="1"
-							maxOccurs="unbounded"/>
-			</xs:sequence>
+      <xs:attributeGroup ref="messageAttributes"/>
+      <xs:attribute name="start_time" type="xs:long"/>
+      <xs:attribute name="end_time" type="xs:long"/>
+      <xs:attribute name="superceded_by" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
 
-			<xs:attributeGroup ref="messageAttributes"/>
-			<xs:attribute name="start_time" type="xs:long"/>
-			<xs:attribute name="end_time" type="xs:long"/>
-			<xs:attribute name="superceded_by" type="xs:string" use="optional"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="rollback_bet_cancel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="market" type="market" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
 
-	<xs:element name="rollback_bet_cancel">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="market" type="market" minOccurs="1"
-							maxOccurs="unbounded"/>
-			</xs:sequence>
+      <xs:attributeGroup ref="messageAttributes"/>
+      <xs:attribute name="start_time" type="xs:long"/>
+      <xs:attribute name="end_time" type="xs:long"/>
+    </xs:complexType>
+  </xs:element>
 
-			<xs:attributeGroup ref="messageAttributes"/>
-			<xs:attribute name="start_time" type="xs:long"/>
-			<xs:attribute name="end_time" type="xs:long"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="alive">
+    <xs:complexType>
+      <xs:attribute name="product" type="xs:int" use="required"/>
+      <xs:attribute name="timestamp" type="xs:long" use="required"/>
+      <xs:attribute name="subscribed" type="xs:int" use="required"/>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="alive">
-		<xs:complexType>
-			<xs:attribute name="product" type="xs:int" use="required"/>
-			<xs:attribute name="timestamp" type="xs:long" use="required"/>
-			<xs:attribute name="subscribed" type="xs:int" use="required"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="snapshot_complete">
+    <xs:complexType>
+      <xs:attribute name="request_id" type="xs:long" use="required"/>
+      <xs:attribute name="product" type="xs:int" use="required"/>
+      <xs:attribute name="timestamp" type="xs:long" use="required"/>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="snapshot_complete">
-		<xs:complexType>
-			<xs:attribute name="request_id" type="xs:long" use="required"/>
-			<xs:attribute name="product" type="xs:int" use="required"/>
-			<xs:attribute name="timestamp" type="xs:long" use="required"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="fixture_change">
+    <xs:complexType>
+      <xs:attributeGroup ref="messageAttributes"/>
+      <xs:attribute name="change_type" type="changeType" use="optional"/>
+      <xs:attribute name="start_time" type="xs:long" use="required"/>
+      <xs:attribute name="next_live_time" type="xs:long" use="optional"/>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="fixture_change">
-		<xs:complexType>
-			<xs:attributeGroup ref="messageAttributes"/>
-			<xs:attribute name="change_type" type="changeType" use="optional"/>
-			<xs:attribute name="start_time" type="xs:long" use="required"/>
-			<xs:attribute name="next_live_time" type="xs:long" use="optional"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:simpleType name="changeType">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>NEW</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>DATETIME</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>CANCELLED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="4">
+        <xs:annotation>
+          <xs:documentation>FORMAT</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="5">
+        <xs:annotation>
+          <xs:documentation>COVERAGE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="changeType">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>NEW</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>DATETIME</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>CANCELLED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="4">
-				<xs:annotation>
-					<xs:documentation>FORMAT</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="5">
-				<xs:annotation>
-					<xs:documentation>COVERAGE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-
-	<xs:element name="bet_stop">
-		<xs:complexType>
-			<xs:attributeGroup ref="messageAttributes"/>
-			<xs:attribute name="groups" type="xs:string" use="required"/>
-			<xs:attribute name="market_status" type="marketStatus"/>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="bet_stop">
+    <xs:complexType>
+      <xs:attributeGroup ref="messageAttributes"/>
+      <xs:attribute name="groups" type="xs:string" use="required"/>
+      <xs:attribute name="market_status" type="marketStatus"/>
+    </xs:complexType>
+  </xs:element>
 
 	<xs:element name="cashout">
 		<xs:complexType>
@@ -166,411 +154,429 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:complexType name="sportEventStatus">
-		<xs:sequence>
-			<xs:element name="clock" type="clockType" maxOccurs="1"
-						minOccurs="0"/>
-			<xs:element name="period_scores" type="periodscoresType"
-						maxOccurs="1" minOccurs="0"/>
-			<xs:element name="results" type="resultsType"
-						maxOccurs="1" minOccurs="0"/>
-			<xs:element name="statistics" type="statisticsType"
-						maxOccurs="1" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attribute name="status" type="eventStatusStatus" use="required"/>
-		<xs:attribute name="reporting" type="reportingStatus"/>
-		<xs:attribute name="match_status" type="xs:int" use="required"/>
+  <xs:complexType name="sportEventStatus">
+    <xs:sequence>
+      <xs:element name="clock" type="clockType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="period_scores" type="periodscoresType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="results" type="resultsType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="statistics" type="statisticsType" maxOccurs="1" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="status" type="eventStatusStatus" use="required"/>
+    <xs:attribute name="reporting" type="reportingStatus"/>
+    <xs:attribute name="match_status" type="xs:int" use="required"/>
 
-		<xs:attribute name="home_score" type="xs:decimal" use="optional"/>
-		<xs:attribute name="away_score" type="xs:decimal" use="optional"/>
+    <xs:attribute name="home_score" type="xs:decimal" use="optional"/>
+    <xs:attribute name="away_score" type="xs:decimal" use="optional"/>
 
-		<xs:attribute name="home_penalty_score" type="xs:int" use="optional"/>
-		<xs:attribute name="away_penalty_score" type="xs:int" use="optional"/>
+    <xs:attribute name="home_penalty_score" type="xs:int" use="optional"/>
+    <xs:attribute name="away_penalty_score" type="xs:int" use="optional"/>
 
-		<xs:attribute name="home_gamescore" type="xs:int" use="optional"/>
-		<xs:attribute name="away_gamescore" type="xs:int" use="optional"/>
+    <xs:attribute name="home_gamescore" type="xs:int" use="optional"/>
+    <xs:attribute name="away_gamescore" type="xs:int" use="optional"/>
 
-		<xs:attribute name="home_legscore" type="xs:int" use="optional"/>
-		<xs:attribute name="away_legscore" type="xs:int" use="optional"/>
+    <xs:attribute name="home_legscore" type="xs:int" use="optional"/>
+    <xs:attribute name="away_legscore" type="xs:int" use="optional"/>
 
-		<xs:attribute name="current_server" type="teamType" use="optional"/>
-		<xs:attribute name="expedite_mode" type="xs:boolean" use="optional"/>
-		<xs:attribute name="tiebreak" type="xs:boolean" use="optional"/>
-		<xs:attribute name="home_suspend" type="xs:int" use="optional"/>
-		<xs:attribute name="away_suspend" type="xs:int" use="optional"/>
-		<xs:attribute name="balls" type="xs:int" use="optional"/>
-		<xs:attribute name="strikes" type="xs:int" use="optional"/>
-		<xs:attribute name="outs" type="xs:int" use="optional"/>
-		<xs:attribute name="bases" type="xs:string" use="optional"/>
-		<xs:attribute name="home_batter" type="xs:int" use="optional"/>
-		<xs:attribute name="away_batter" type="xs:int" use="optional"/>
-		<xs:attribute name="possession" type="xs:int" use="optional"/>
-		<xs:attribute name="position" type="xs:int" use="optional"/>
-		<xs:attribute name="try" type="xs:int" use="optional"/>
-		<xs:attribute name="yards" type="xs:int" use="optional"/>
-		<xs:attribute name="throw" type="xs:int" use="optional"/>
-		<xs:attribute name="visit" type="xs:int" use="optional"/>
-		<xs:attribute name="remaining_reds" type="xs:int" use="optional"/>
-		<xs:attribute name="delivery" type="xs:int" use="optional"/>
-		<xs:attribute name="home_remaining_bowls" type="xs:int"
-					  use="optional"/>
-		<xs:attribute name="away_remaining_bowls" type="xs:int"
-					  use="optional"/>
-		<xs:attribute name="current_end" type="xs:int" use="optional"/>
-		<xs:attribute name="innings" type="xs:int" use="optional"/>
-		<xs:attribute name="over" type="xs:int" use="optional"/>
-		<xs:attribute name="home_penalty_runs" type="xs:int" use="optional"/>
-		<xs:attribute name="away_penalty_runs" type="xs:int" use="optional"/>
-		<xs:attribute name="home_dismissals" type="xs:int" use="optional"/>
-		<xs:attribute name="away_dismissals" type="xs:int" use="optional"/>
-		<xs:attribute name="current_ct_team" type="teamType" use="optional"/>
-	</xs:complexType>
+    <xs:attribute name="current_server" type="teamType" use="optional"/>
+    <xs:attribute name="expedite_mode" type="xs:boolean" use="optional"/>
+    <xs:attribute name="tiebreak" type="xs:boolean" use="optional"/>
+    <xs:attribute name="home_suspend" type="xs:int" use="optional"/>
+    <xs:attribute name="away_suspend" type="xs:int" use="optional"/>
+    <xs:attribute name="balls" type="xs:int" use="optional"/>
+    <xs:attribute name="strikes" type="xs:int" use="optional"/>
+    <xs:attribute name="outs" type="xs:int" use="optional"/>
+    <xs:attribute name="bases" type="xs:string" use="optional"/>
+    <xs:attribute name="home_batter" type="xs:int" use="optional"/>
+    <xs:attribute name="away_batter" type="xs:int" use="optional"/>
+    <xs:attribute name="possession" type="xs:int" use="optional"/>
+    <xs:attribute name="position" type="xs:int" use="optional"/>
+    <xs:attribute name="try" type="xs:int" use="optional"/>
+    <xs:attribute name="yards" type="xs:int" use="optional"/>
+    <xs:attribute name="throw" type="xs:int" use="optional"/>
+    <xs:attribute name="visit" type="xs:int" use="optional"/>
+    <xs:attribute name="remaining_reds" type="xs:int" use="optional"/>
+    <xs:attribute name="delivery" type="xs:int" use="optional"/>
+    <xs:attribute name="home_remaining_bowls" type="xs:int" use="optional"/>
+    <xs:attribute name="away_remaining_bowls" type="xs:int" use="optional"/>
+    <xs:attribute name="current_end" type="xs:int" use="optional"/>
+    <xs:attribute name="innings" type="xs:int" use="optional"/>
+    <xs:attribute name="over" type="xs:int" use="optional"/>
+    <xs:attribute name="home_penalty_runs" type="xs:int" use="optional"/>
+    <xs:attribute name="away_penalty_runs" type="xs:int" use="optional"/>
+    <xs:attribute name="home_dismissals" type="xs:int" use="optional"/>
+    <xs:attribute name="away_dismissals" type="xs:int" use="optional"/>
+    <xs:attribute name="current_ct_team" type="teamType" use="optional"/>
+  </xs:complexType>
 
-	<xs:complexType name="oddsGenerationProperties">
-		<xs:attribute name="expected_totals" type="xs:double"/>
-		<xs:attribute name="expected_supremacy" type="xs:double"/>
-	</xs:complexType>
+  <xs:complexType name="oddsGenerationProperties">
+    <xs:attribute name="expected_totals" type="xs:double"/>
+    <xs:attribute name="expected_supremacy" type="xs:double"/>
+  </xs:complexType>
 
-	<xs:complexType name="clockType">
-		<xs:attribute name="match_time" type="timeType" use="optional"/>
-		<xs:attribute name="stoppage_time" type="timeType" use="optional"/>
-		<xs:attribute name="stoppage_time_announced" type="timeType" use="optional"/>
-		<xs:attribute name="remaining_time" type="timeType" use="optional"/>
-		<xs:attribute name="remaining_time_in_period" type="timeType"
-					  use="optional"/>
-		<xs:attribute name="stopped" type="xs:boolean" use="optional"/>
-	</xs:complexType>
+  <xs:complexType name="clockType">
+    <xs:attribute name="match_time" type="timeType" use="optional"/>
+    <xs:attribute name="stoppage_time" type="timeType" use="optional"/>
+    <xs:attribute name="stoppage_time_announced" type="timeType" use="optional"/>
+    <xs:attribute name="remaining_time" type="timeType" use="optional"/>
+    <xs:attribute name="remaining_time_in_period" type="timeType" use="optional"/>
+    <xs:attribute name="stopped" type="xs:boolean" use="optional"/>
+  </xs:complexType>
 
-	<xs:simpleType name="timeType">
-		<xs:restriction base="xs:string">
-			<xs:pattern value="[0-9]+:[0-9]+|[0-9]+"/>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="timeType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+:[0-9]+|[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:complexType name="periodscoresType">
-		<xs:sequence>
-			<xs:element name="period_score" type="periodScoreType"
-						maxOccurs="unbounded" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
+  <xs:complexType name="periodscoresType">
+    <xs:sequence>
+      <xs:element name="period_score" type="periodScoreType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
 
-	<xs:complexType name="periodScoreType">
-		<xs:attribute name="match_status_code" type="xs:int" use="required"/>
-		<xs:attribute name="number" type="xs:int" use="required"/>
-		<xs:attribute name="home_score" type="xs:decimal" use="required"/>
-		<xs:attribute name="away_score" type="xs:decimal" use="required"/>
-	</xs:complexType>
+  <xs:complexType name="periodScoreType">
+    <xs:attribute name="match_status_code" type="xs:int" use="required"/>
+    <xs:attribute name="number" type="xs:int" use="required"/>
+    <xs:attribute name="home_score" type="xs:decimal" use="required"/>
+    <xs:attribute name="away_score" type="xs:decimal" use="required"/>
+  </xs:complexType>
 
-	<xs:complexType name="resultsType">
-		<xs:sequence>
-			<xs:element name="result" type="resultType"
-						maxOccurs="unbounded" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
+  <xs:complexType name="resultsType">
+    <xs:sequence>
+      <xs:element name="result" type="resultType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
 
-	<xs:complexType name="resultType">
-		<xs:attribute name="match_status_code" type="xs:int" use="required"/>
-		<xs:attribute name="home_score" type="xs:decimal" use="required"/>
-		<xs:attribute name="away_score" type="xs:decimal" use="required"/>
-	</xs:complexType>
+  <xs:complexType name="resultType">
+    <xs:attribute name="match_status_code" type="xs:int" use="required"/>
+    <xs:attribute name="home_score" type="xs:decimal" use="required"/>
+    <xs:attribute name="away_score" type="xs:decimal" use="required"/>
+  </xs:complexType>
 
-	<xs:complexType name="statisticsType">
-		<xs:sequence>
-			<xs:element name="yellow_cards" type="statisticsScoreType"
-						maxOccurs="1" minOccurs="0"/>
-			<xs:element name="red_cards" type="statisticsScoreType"
-						maxOccurs="1" minOccurs="0"/>
-			<xs:element name="yellow_red_cards" type="statisticsScoreType"
-						maxOccurs="1" minOccurs="0"/>
-			<xs:element name="corners" type="statisticsScoreType"
-						maxOccurs="1" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
+  <xs:complexType name="statisticsType">
+    <xs:sequence>
+      <xs:element name="yellow_cards" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="red_cards" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="yellow_red_cards" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="corners" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="green_cards" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
 
-	<xs:complexType name="statisticsScoreType">
-		<xs:attribute name="home" type="xs:int" use="required"/>
-		<xs:attribute name="away" type="xs:int" use="required"/>
-	</xs:complexType>
+  <xs:complexType name="statisticsScoreType">
+    <xs:attribute name="home" type="xs:int" use="required"/>
+    <xs:attribute name="away" type="xs:int" use="required"/>
+  </xs:complexType>
 
-	<xs:simpleType name="teamType">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1"/>
-			<xs:enumeration value="2"/>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="teamType">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="reportingStatus">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>NOT_AVAILABLE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>LIVE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-1">
-				<xs:annotation>
-					<xs:documentation>SUSPENDED_OR_TEMPORARY_LOST_CONTACT
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="reportingStatus">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>NOT_AVAILABLE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>LIVE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-1">
+        <xs:annotation>
+          <xs:documentation>SUSPENDED_OR_TEMPORARY_LOST_CONTACT
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="oddsChangeReason">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>RISKADJUSTMENT_UPDATE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="oddsChangeReason">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>RISKADJUSTMENT_UPDATE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:attributeGroup name="messageAttributes">
-		<xs:attribute name="product" type="xs:int" use="required"/>
-		<xs:attribute name="event_id" type="xs:string" use="required"/>
-		<xs:attribute name="timestamp" type="xs:long" use="required"/>
-		<xs:attribute name="request_id" type="xs:long" use="optional"/>
-	</xs:attributeGroup>
+  <xs:attributeGroup name="messageAttributes">
+    <xs:attribute name="product" type="xs:int" use="required"/>
+    <xs:attribute name="event_id" type="xs:string" use="required"/>
+    <xs:attribute name="timestamp" type="xs:long" use="required"/>
+    <xs:attribute name="request_id" type="xs:long" use="optional"/>
+  </xs:attributeGroup>
 
-	<xs:simpleType name="eventStatusStatus">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>NOT_STARTED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>LIVE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>SUSPENDED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>ENDED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="4">
-				<xs:annotation>
-					<xs:documentation>CLOSED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="eventStatusStatus">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>NOT_STARTED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>LIVE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>SUSPENDED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>ENDED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="4">
+        <xs:annotation>
+          <xs:documentation>CLOSED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="5">
+        <xs:annotation>
+          <xs:documentation>CANCELLED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="6">
+        <xs:annotation>
+          <xs:documentation>DELAYED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="7">
+        <xs:annotation>
+          <xs:documentation>INTERRUPTED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="8">
+        <xs:annotation>
+          <xs:documentation>POSTPONED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="9">
+        <xs:annotation>
+          <xs:documentation>ABANDONED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:attributeGroup name="marketAttributes">
-		<xs:attribute name="id" type="xs:int" use="required"/>
-		<xs:attribute name="specifiers" type="xs:string"/>
-		<xs:attribute name="extended_specifiers" type="xs:string"/>
-	</xs:attributeGroup>
+  <xs:attributeGroup name="marketAttributes">
+    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="specifiers" type="xs:string"/>
+    <xs:attribute name="extended_specifiers" type="xs:string"/>
+  </xs:attributeGroup>
 
-	<xs:complexType name="market">
-		<xs:attributeGroup ref="marketAttributes"/>
-		<xs:attribute name="void_reason" type="xs:int"/>
-	</xs:complexType>
+  <xs:complexType name="market">
+    <xs:attributeGroup ref="marketAttributes"/>
+    <xs:attribute name="void_reason" type="xs:int"/>
+  </xs:complexType>
 
-	<xs:complexType name="eventReference">
-		<xs:attribute name="id" type="xs:string" use="required"/>
-	</xs:complexType>
+  <xs:complexType name="eventReference">
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
 
-	<xs:complexType name="oddsChangeMarket">
-		<xs:sequence>
-			<xs:element name="market_metadata" type="marketMetadata" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="outcome" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:attribute name="id" type="outcomeId" use="required"/>
-					<xs:attribute name="odds" type="xs:double"/>
-					<xs:attribute name="probabilities" type="xs:double"/>
-					<xs:attribute name="active" type="outcomeActive"/>
-					<xs:attribute name="team" type="teamType"/>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
+  <xs:complexType name="oddsChangeMarket">
+    <xs:sequence>
+      <xs:element name="market_metadata" type="marketMetadata" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="outcome" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="id" type="outcomeId" use="required"/>
+          <xs:attribute name="odds" type="xs:double"/>
+          <xs:attribute name="probabilities" type="xs:double"/>
+          <xs:attribute name="win_probabilities" type="xs:double"/>
+          <xs:attribute name="lose_probabilities" type="xs:double"/>
+          <xs:attribute name="refund_probabilities" type="xs:double"/>
+          <xs:attribute name="half_win_probabilities" type="xs:double"/>
+          <xs:attribute name="half_lose_probabilities" type="xs:double"/>
+          <xs:attribute name="active" type="outcomeActive"/>
+          <xs:attribute name="team" type="teamType"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
 
-		<xs:attributeGroup ref="marketAttributes"/>
-		<xs:attribute name="favourite" type="favouriteType"/>
-		<xs:attribute name="status" type="marketStatus"/>
-		<xs:attribute name="cashout_status" type="cashoutStatus" use="optional"/>
-	</xs:complexType>
+    <xs:attributeGroup ref="marketAttributes"/>
+    <xs:attribute name="favourite" type="favouriteType"/>
+    <xs:attribute name="status" type="marketStatus"/>
+    <xs:attribute name="cashout_status" type="cashoutStatus" use="optional"/>
+  </xs:complexType>
 
-	<xs:complexType name="marketMetadata">
-		<xs:attribute name="next_betstop" type="xs:long"/>
-	</xs:complexType>
+  <xs:complexType name="marketMetadata">
+    <xs:attribute name="next_betstop" type="xs:long"/>
+  </xs:complexType>
 
-	<xs:simpleType name="outcomeActive">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>ACTIVE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>INACTIVE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="outcomeActive">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>ACTIVE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>INACTIVE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="favouriteType">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>YES</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="favouriteType">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>YES</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="marketStatus">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>ACTIVE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>INACTIVE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-1">
-				<xs:annotation>
-					<xs:documentation>SUSPENDED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-2">
-				<xs:annotation>
-					<xs:documentation>HANDED_OVER</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-3">
-				<xs:annotation>
-					<xs:documentation>SETTLED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-4">
-				<xs:annotation>
-					<xs:documentation>CANCELLED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="marketStatus">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>ACTIVE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>INACTIVE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-1">
+        <xs:annotation>
+          <xs:documentation>SUSPENDED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-2">
+        <xs:annotation>
+          <xs:documentation>HANDED_OVER</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-3">
+        <xs:annotation>
+          <xs:documentation>SETTLED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-4">
+        <xs:annotation>
+          <xs:documentation>CANCELLED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="cashoutStatus">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>AVAILABLE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-1">
-				<xs:annotation>
-					<xs:documentation>UNAVAILABLE</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-2">
-				<xs:annotation>
-					<xs:documentation>CLOSED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="cashoutStatus">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>AVAILABLE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-1">
+        <xs:annotation>
+          <xs:documentation>UNAVAILABLE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-2">
+        <xs:annotation>
+          <xs:documentation>CLOSED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:complexType name="betSettlementMarket">
-		<xs:choice>
-			<xs:element name="outcome" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:attribute name="id" type="outcomeId" use="required"/>
-					<xs:attribute name="result" type="result" use="required"/>
-					<xs:attribute name="void_factor" type="voidFactor"/>
-					<xs:attribute name="dead_heat_factor" type="xs:double"/>
-				</xs:complexType>
-			</xs:element>
-		</xs:choice>
+  <xs:complexType name="betSettlementMarket">
+    <xs:choice>
+      <xs:element name="outcome" minOccurs="1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="id" type="outcomeId" use="required"/>
+          <xs:attribute name="result" type="result" use="required"/>
+          <xs:attribute name="void_factor" type="voidFactor"/>
+          <xs:attribute name="dead_heat_factor" type="xs:double"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
 
-		<xs:attributeGroup ref="marketAttributes"/>
-		<xs:attribute name="void_reason" type="xs:int"/>
-		<xs:attribute name="result" type="xs:string"/>
-	</xs:complexType>
+    <xs:attributeGroup ref="marketAttributes"/>
+    <xs:attribute name="void_reason" type="xs:int"/>
+    <xs:attribute name="result" type="xs:string"/>
+  </xs:complexType>
 
-	<xs:simpleType name="voidFactor">
-		<xs:restriction base="xs:double">
-			<xs:enumeration value="0.5">
-				<xs:annotation>
-					<xs:documentation>REFUND_HALF</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>REFUND_FULL</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="voidFactor">
+    <xs:restriction base="xs:double">
+      <xs:enumeration value="0.5">
+        <xs:annotation>
+          <xs:documentation>REFUND_HALF</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>REFUND_FULL</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="result">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>LOST</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>WON</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="-1">
-				<xs:annotation>
-					<xs:documentation>UNDECIDED_YET</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="result">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>LOST</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>WON</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="-1">
+        <xs:annotation>
+          <xs:documentation>UNDECIDED_YET</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="certaintyLevel">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>LIVE_SCOUTED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>CONFIRMED</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="certaintyLevel">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>LIVE_SCOUTED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>CONFIRMED</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="outcomeId">
-		<xs:union memberTypes="xs:anyURI xs:long"/>
-	</xs:simpleType>
+  <xs:simpleType name="outcomeId">
+    <xs:union memberTypes="xs:anyURI xs:long"/>
+  </xs:simpleType>
 
-	<!-- <xs:simpleType name="eventId"> <xs:restriction base="xs:string"> <xs:pattern
-      value="sr:match:([0-9])+" /> <xs:pattern value="sr:outright:([0-9])+" />
-      <xs:pattern value="vs:match:([0-9])+" /> <xs:pattern value="vs:outright:([0-9])+"
-      /> <xs:pattern value="uuid:[A-Fa-f0-9]{32}|(\{|\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(\}|\))?"
-      /> </xs:restriction> </xs:simpleType> -->
+  <!-- <xs:simpleType name="eventId"> <xs:restriction base="xs:string"> <xs:pattern
+    value="sr:match:([0-9])+" /> <xs:pattern value="sr:outright:([0-9])+" />
+    <xs:pattern value="vs:match:([0-9])+" /> <xs:pattern value="vs:outright:([0-9])+"
+    /> <xs:pattern value="uuid:[A-Fa-f0-9]{32}|(\{|\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(\}|\))?"
+    /> </xs:restriction> </xs:simpleType> -->
 
-	<!-- <xs:simpleType name="uuid"> <xs:annotation> <xs:documentation>Base
-      type: restriction of xs:string Pattern: [A-Fa-f0-9]{32}|(\{|\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(\}|\))?
-      This type is used by other XML schema attributes or elements that will hold
-      a universal unique identifier (UUID), commonly known as either a globally
-      unique identifier (GUID) or UUID. The regular expression defined limits the
-      contents of an attribute to either a single 32-digit hexadecimal string or
-      a 32-digit hex string patterned as [8]-[4]-[4]-[4]-[12] digits. </xs:documentation>
-      </xs:annotation> <xs:restriction base="xs:string"> <xs:pattern value="[A-Fa-f0-9]{32}|(\{|\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(\}|\))?"
-      /> </xs:restriction> </xs:simpleType> -->
+  <!-- <xs:simpleType name="uuid"> <xs:annotation> <xs:documentation>Base
+    type: restriction of xs:string Pattern: [A-Fa-f0-9]{32}|(\{|\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(\}|\))?
+    This type is used by other XML schema attributes or elements that will hold
+    a universal unique identifier (UUID), commonly known as either a globally
+    unique identifier (GUID) or UUID. The regular expression defined limits the
+    contents of an attribute to either a single 32-digit hexadecimal string or
+    a 32-digit hex string patterned as [8]-[4]-[4]-[4]-[12] digits. </xs:documentation>
+    </xs:annotation> <xs:restriction base="xs:string"> <xs:pattern value="[A-Fa-f0-9]{32}|(\{|\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(\}|\))?"
+    /> </xs:restriction> </xs:simpleType> -->
 
 </xs:schema>
