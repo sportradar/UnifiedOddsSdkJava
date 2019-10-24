@@ -1,5 +1,18 @@
 ### Unified Feed SDK 2.x changelog
-**2.0.27 (2019-09-05)**
+**2.0.29 (2019-10-24)**
+* added cache state export/import
+* added getAdditionalProbabilities() to the OutcomesOdds
+* added getAgeGroup to the Competitor
+* added getGreenCards() to the TeamStatistics
+* added Statistics to the SportEventStatus.toKeyValueStore()
+* improved parsing dates without timezone
+* fix: possible multi-thread issues caching competitors
+* fix: Manager.getNationality returned name
+* fix: replay ignores messages from inactive producers
+* fix: odds format is now consistent with the documentation
+* fix: green card can be null in sport event statistics
+
+**2.0.28 (2019-09-05)**
 * exposed option to delete old matches from cache (SportInfoManager.deleteSportEventsFromCache)
 * loading home and away penalty score from penalty PeriodScore if present
 * fix: updated CustomConfigurationBuilder not to override pre-configured values
