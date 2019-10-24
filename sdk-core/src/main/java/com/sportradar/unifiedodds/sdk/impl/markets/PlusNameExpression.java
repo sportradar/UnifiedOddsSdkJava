@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.Locale;
 
@@ -24,6 +25,6 @@ public class PlusNameExpression implements NameExpression {
     @Override
     public String buildName(Locale locale) {
         double decimalValue = operand.getDecimalValue();
-        return String.valueOf(decimalValue);
+        return SdkHelper.doubleToStringWithSign(decimalValue);
     }
 }

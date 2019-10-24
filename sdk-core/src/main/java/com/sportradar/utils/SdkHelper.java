@@ -198,4 +198,13 @@ public final class SdkHelper {
             gregorianCalendar.setTimezone(0);
         return gregorianCalendar.toGregorianCalendar().getTime();
     }
+
+    public static String doubleToStringWithSign(double value) {
+        if (value > 0)
+            return "+" + value;
+        else if (value < 0)
+            return String.valueOf(value);
+        else
+            return "0";
+    }
 }
