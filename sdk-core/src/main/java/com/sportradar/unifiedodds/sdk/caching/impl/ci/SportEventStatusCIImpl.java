@@ -10,9 +10,7 @@ import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
-import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDTO;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatisticsDTO;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.*;
 import com.sportradar.utils.URN;
 
 import java.math.BigDecimal;
@@ -163,6 +161,26 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
         if (sapiDTO != null) {
             return sapiDTO.getSportEventStatisticsDTO();
         }
+
+//        List<TeamStatisticsDTO> totalStatisticsDTOs = null;
+//        List<PeriodStatisticsDTO> periodStatisticDTOs = null;
+//
+//        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
+//            totalStatisticsDTOs = feedDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
+//        }
+//        if (sapiDTO != null && sapiDTO.getSportEventStatisticsDTO() != null) {
+//            if(totalStatisticsDTOs == null)
+//            {
+//                totalStatisticsDTOs = sapiDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
+//            }
+//            periodStatisticDTOs = sapiDTO.getSportEventStatisticsDTO().getPeriodStatisticDTOs();
+//        }
+//
+//        if(totalStatisticsDTOs != null)
+//        {
+//            return new SportEventStatisticsDTO(totalStatisticsDTOs, periodStatisticDTOs);
+//        }
+        
         return null;
     }
 
