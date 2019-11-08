@@ -23,8 +23,7 @@ public interface MarketDescriptionProvider {
      * Reloads market description (single or list)
      * @param marketId the market identifier
      * @param specifiers a list of specifiers or a null reference if market is invariant
-     * @param sourceCache the source cache cache item belongs to
      * @return true if succeeded, false otherwise
      */
-    boolean reloadMarketDescription(int marketId, List<Specifier> specifiers, String sourceCache);
+    boolean reloadMarketDescription(int marketId, List<Specifier> specifiers);
 }

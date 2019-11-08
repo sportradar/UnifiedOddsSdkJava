@@ -335,8 +335,8 @@ public class NameProviderImpl implements NameProvider {
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
                     descriptorProvider.reloadMarketDescription(marketDescription.getId(),
-                                                               marketDescription.getSpecifiers(),
-                                                               ((MarketDescriptionImpl) marketDescription).getSourceCache());
+                                                               marketDescription.getSpecifiers());
+                    marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
                 }
             }
@@ -351,8 +351,8 @@ public class NameProviderImpl implements NameProvider {
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
                     descriptorProvider.reloadMarketDescription(marketDescription.getId(),
-                                                               marketDescription.getSpecifiers(),
-                                                               ((MarketDescriptionImpl) marketDescription).getSourceCache());
+                                                               marketDescription.getSpecifiers());
+                    marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
                 }
             }

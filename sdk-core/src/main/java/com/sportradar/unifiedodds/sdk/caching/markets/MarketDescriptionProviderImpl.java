@@ -16,8 +16,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CachingException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
-import com.sportradar.utils.SdkHelper;
-import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,47 +129,26 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
      * Reloads market description (one or list)
      * @param marketId the market identifier
      * @param specifiers a list of specifiers or a null reference if market is invariant
-     * @param sourceCache the source cache cache item belongs to
      * @return true if succeeded, false otherwise
      */
-    public boolean reloadMarketDescription(int marketId, List<Specifier> specifiers, String sourceCache){
-        if (sourceCache == null || sourceCache.isEmpty())
-        {
-            logger.warn("Calling reloadMarketDescriptionAsync without sourceCache. (marketId={})", sourceCache);
-            return false;
-        }
+    public boolean reloadMarketDescription(int marketId, List<Specifier> specifiers){
         try
         {
-            if (sourceCache.equals(SdkHelper.InVariantMarketListCache))
-            {
-                logger.debug("Reloading invariant market description list");
-                return invariantMarketCache.loadMarketDescriptions();
-            }
-            if (sourceCache.equals(SdkHelper.VariantMarketListCache))
-            {
+            Specifier variantSpecifier = specifiers != null ? specifiers.stream().filter(s -> s.getName().equals(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME)).findFirst().orElse(null) : null;
+            if(variantSpecifier != null) {
+                logger.debug("Deleting variant market description for market={} and variant={}", marketId, variantSpecifier.getType());
+                variantMarketCache.deleteCacheItem(marketId, variantSpecifier.getType());
                 logger.debug("Reloading variant market description list");
                 return variantDescriptionCache.loadMarketDescriptions();
-            }
-            if (sourceCache.equals(SdkHelper.VariantMarketSingleCache))
-            {
-                Specifier variantSpecifier = specifiers == null || !specifiers.contains(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME)
-                        ? null
-                        : specifiers.stream().filter(s -> s.getName().equals(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME)).findFirst().orElse(null);
-                if(variantSpecifier != null) {
-                    logger.debug("Deleting variant market description for market={} and variant={}", marketId, variantSpecifier.getType());
-                    variantMarketCache.deleteCacheItem(marketId, variantSpecifier.getType());
-                    return true;
-                }
-                else{
-                    return false;
-                }
+            } else {
+                logger.debug("Reloading invariant market description list");
+                return invariantMarketCache.loadMarketDescriptions();
             }
         }
         catch (Exception e)
         {
             logger.warn("Error reloading market description(s).", e);
+            return false;
         }
-        logger.warn("Calling ReloadMarketDescriptionAsync with unknown sourceCache={}. (marketId={})", sourceCache, marketId);
-        return false;
     }
 }
