@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk-parent</artifactId>
-    <version>2.0.30-SNAPSHOT</version>
+    <version>2.0.30</version>
     <packaging>pom</packaging>
     <name>Unified Odds Feed SDK - parent</name>
     <description>UnifiedFeed SDK is a client library that enables easier integration with the Betradar XML feeds. SDK exposes XML feed service interface in a more user-friendly way and isolates the client from having to do XML feed parsing, proper connection handling, error recovery, event queuing, data caching and dispatching. It also makes a client solution more stable and robust when it comes to feed handling, especially with the release of new and updated XML feed versions.</description>

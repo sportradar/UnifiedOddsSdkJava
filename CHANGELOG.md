@@ -1,4 +1,7 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.30 (2019-11-08)**
+* fix: better market description cache handling
+
 **2.0.29 (2019-10-24)**
 * added cache state export/import
 * added getAdditionalProbabilities() to the OutcomesOdds
