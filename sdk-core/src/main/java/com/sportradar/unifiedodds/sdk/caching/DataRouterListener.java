@@ -35,7 +35,7 @@ public interface DataRouterListener {
     default void onSportCategoriesFetched(URN sportId, SAPISportCategoriesEndpoint data, Locale dataLocale, CacheItem requester) {}
 
     default void onTeamFetched(URN id, SAPITeam data, Locale dataLocale, CacheItem requester) {}
-    default void onPlayerFetched(URN id, SAPIPlayerExtended data, Locale dataLocale, CacheItem requester) {}
+    default void onPlayerFetched(URN id, SAPIPlayerExtended data, Locale dataLocale, CacheItem requester, URN competitorId) {}
     default void onCompetitorFetched(URN id, SAPICompetitorProfileEndpoint data, Locale dataLocale, CacheItem requester) {}
     default void onSimpleTeamFetched(URN id, SAPISimpleTeamProfileEndpoint data, Locale dataLocale, CacheItem requester) {}
 

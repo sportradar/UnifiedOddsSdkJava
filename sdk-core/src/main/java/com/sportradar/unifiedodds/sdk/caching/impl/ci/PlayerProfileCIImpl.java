@@ -10,11 +10,13 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerExtended;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePlayerProfileCI;
+import com.sportradar.unifiedodds.sdk.entities.Competition;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -116,13 +118,18 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
     private String gender;
 
     /**
+     * The associated competitor id
+     */
+    private URN competitorId;
+
+    /**
      * The locales which are merged into the CI
      */
     private final List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
     private final ReentrantLock fetchLock = new ReentrantLock();
 
-    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, URN competitorId) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -132,21 +139,22 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
         this.defaultLocale = defaultLocale;
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.competitorId = competitorId;
     }
 
-    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerExtended data, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerExtended data, Locale dataLocale, URN competitorId) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, competitorId);
 
-        merge(data, dataLocale);
+        merge(data, dataLocale, competitorId);
     }
 
-    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerCompetitor data, Locale dataLocale) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    PlayerProfileCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerCompetitor data, Locale dataLocale, URN competitorId) {
+        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, competitorId);
 
-        merge(data, dataLocale);
+        merge(data, dataLocale, competitorId);
     }
 
-    PlayerProfileCIImpl(ExportablePlayerProfileCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    PlayerProfileCIImpl(ExportablePlayerProfileCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy, URN competitorId) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -156,6 +164,7 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
 
         this.id = URN.parse(exportable.getId());
         this.defaultLocale = exportable.getDefaultLocale();
+        this.competitorId = competitorId;
         mergePlayerProfile(exportable);
     }
 
@@ -348,6 +357,11 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
         return gender;
     }
 
+    @Override
+    public URN getCompetitorId() {
+        return competitorId;
+    }
+
     /**
      * Determines whether the current instance has translations for the specified languages
      *
@@ -360,15 +374,18 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
     }
 
     @Override
-    public <T> void merge(T endpointData, Locale dataLocale) {
+    public <T> void merge(T endpointData, Locale dataLocale, URN competitorId) {
         if (endpointData instanceof SAPIPlayerExtended) {
-            mergePlayerExtended((SAPIPlayerExtended) endpointData, dataLocale);
+            mergePlayerExtended((SAPIPlayerExtended) endpointData, dataLocale, competitorId);
         } else if(endpointData instanceof SAPIPlayerCompetitor){
-            mergePlayerCompetitor((SAPIPlayerCompetitor) endpointData, dataLocale);
+            mergePlayerCompetitor((SAPIPlayerCompetitor) endpointData, dataLocale, competitorId);
         } else if (endpointData instanceof ExportablePlayerProfileCI) {
             mergePlayerProfile((ExportablePlayerProfileCI) endpointData);
         }
     }
+
+    @Override
+    public List<Locale> getCachedLocales() { return cachedLocales; }
 
     private void mergePlayerProfile(ExportablePlayerProfileCI exportable) {
         names.putAll(exportable.getNames());
@@ -383,10 +400,11 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
         jerseyNumber = exportable.getJerseyNumber();
         nickname = exportable.getNickname();
         gender = exportable.getGender();
+        competitorId = exportable.getCompetitorId();
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
     }
 
-    public void mergePlayerExtended(SAPIPlayerExtended player, Locale dataLocale)
+    public void mergePlayerExtended(SAPIPlayerExtended player, Locale dataLocale, URN competitorId)
     {
         type = player.getType();
 
@@ -414,11 +432,14 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
         if(player.getGender() != null) {
             gender = player.getGender();
         }
+        if(competitorId != null){
+            this.competitorId = competitorId;
+        }
 
         cachedLocales.add(dataLocale);
     }
 
-    public void mergePlayerCompetitor(SAPIPlayerCompetitor player, Locale dataLocale)
+    public void mergePlayerCompetitor(SAPIPlayerCompetitor player, Locale dataLocale, URN competitorId)
     {
         Optional.ofNullable(player.getNationality()).ifPresent(nationality -> nationalities.put(dataLocale, nationality));
         Optional.ofNullable(player.getName()).ifPresent(name -> names.put(dataLocale, name));
@@ -427,6 +448,9 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
         if (!abbreviations.containsKey(dataLocale))
         {
             abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(player.getName(), 3));
+        }
+        if(competitorId != null){
+            this.competitorId = competitorId;
         }
     }
 
@@ -446,10 +470,8 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching player profile for id='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
-
+            String missingLocalesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            logger.debug("Fetching player profile for id='{}' for languages '{}'", id, missingLocalesStr);
             missingLocales.forEach(l -> {
                 try {
                     dataRouterManager.requestPlayerProfileEndpoint(l, id, this);
@@ -505,7 +527,8 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
                 jerseyNumber,
                 nickname,
                 gender,
-                new ArrayList<>(cachedLocales)
+                new ArrayList<>(cachedLocales),
+                competitorId
         );
     }
 }

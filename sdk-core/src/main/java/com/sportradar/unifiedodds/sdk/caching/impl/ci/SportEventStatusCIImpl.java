@@ -180,7 +180,7 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
 //        {
 //            return new SportEventStatisticsDTO(totalStatisticsDTOs, periodStatisticDTOs);
 //        }
-        
+
         return null;
     }
 

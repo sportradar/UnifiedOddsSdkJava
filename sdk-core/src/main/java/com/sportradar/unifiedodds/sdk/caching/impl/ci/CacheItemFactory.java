@@ -42,9 +42,9 @@ public interface CacheItemFactory {
     SportCI buildSportCI(ExportableSportCI exportable);
     CategoryCI buildCategoryCI(ExportableCategoryCI exportable);
 
-    PlayerProfileCI buildPlayerProfileCI(URN id);
-    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale);
-    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale);
+    PlayerProfileCI buildPlayerProfileCI(URN id, URN competitorId);
+    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale, URN competitorId);
+    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale, URN competitorId);
     PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable);
 
     CompetitorCI buildCompetitorProfileCI(URN id);

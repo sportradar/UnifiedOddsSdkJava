@@ -136,23 +136,23 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(URN id) {
-        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    public PlayerProfileCI buildPlayerProfileCI(URN id, URN competitorId) {
+        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy,  competitorId);
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale) {
-        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    public PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale, URN competitorId) {
+        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale, competitorId);
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale) {
-        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale);
+    public PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale, URN competitorId) {
+        return new PlayerProfileCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, data, dataLocale, competitorId);
     }
 
     @Override
     public PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable) {
-        return new PlayerProfileCIImpl(exportable, dataRouterManager, exceptionHandlingStrategy);
+        return new PlayerProfileCIImpl(exportable, dataRouterManager, exceptionHandlingStrategy, exportable.getCompetitorId());
     }
 
     @Override

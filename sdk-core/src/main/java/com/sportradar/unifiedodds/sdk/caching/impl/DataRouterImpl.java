@@ -183,12 +183,12 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onPlayerFetched(URN playerId, SAPIPlayerExtended data, Locale locale, CacheItem requester) {
+    public void onPlayerFetched(URN playerId, SAPIPlayerExtended data, Locale locale, CacheItem requester, URN competitorId) {
         Preconditions.checkNotNull(playerId);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
 
-        dataListeners.forEach(l -> l.onPlayerFetched(playerId, data, locale, requester));
+        dataListeners.forEach(l -> l.onPlayerFetched(playerId, data, locale, requester, competitorId));
     }
 
     @Override
@@ -200,17 +200,19 @@ public class DataRouterImpl implements DataRouter {
         SAPIRaceDriverProfile raceDriverProfile = data.getRaceDriverProfile();
         if (raceDriverProfile != null) {
             SAPITeam raceDriver = raceDriverProfile.getRaceDriver();
-            if (raceDriver != null)
+            if (raceDriver != null) {
                 dataListeners.forEach(l -> l.onTeamFetched(URN.parse(raceDriver.getId()), raceDriver, locale, requester));
+            }
 
             SAPITeam raceTeam = raceDriverProfile.getRaceTeam();
-            if (raceTeam != null)
+            if (raceTeam != null) {
                 dataListeners.forEach(l -> l.onTeamFetched(URN.parse(raceTeam.getId()), raceTeam, locale, requester));
+            }
         }
 
         Optional.ofNullable(data.getPlayers()).ifPresent(c ->
                 c.getPlayer().forEach(p ->
-                    this.onPlayerFetched(URN.parse(p.getId()), p, locale, requester)
+                    this.onPlayerFetched(URN.parse(p.getId()), p, locale, requester, URN.parse(data.getCompetitor().getId()))
                 ));
 
         dataListeners.forEach(l -> l.onCompetitorFetched(competitorId, data, locale, requester));

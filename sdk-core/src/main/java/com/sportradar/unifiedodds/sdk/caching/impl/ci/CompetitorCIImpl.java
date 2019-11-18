@@ -126,6 +126,9 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
     private final ReentrantLock fetchLock = new ReentrantLock();
 
+    private Date lastTimeCompetitorProfileIsFetched;
+    private List<Locale> cultureCompetitorProfileFetched;
+
     CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -136,16 +139,36 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         this.defaultLocale = defaultLocale;
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
+        this.lastTimeCompetitorProfileIsFetched = new Date(Long.MIN_VALUE); // Calendar.getInstance().getTime();
+        this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
     }
 
     CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPICompetitorProfileEndpoint data, Locale dataLocale) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+
+        if(data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
+            this.lastTimeCompetitorProfileIsFetched = Calendar.getInstance().getTime();
+            if (cultureCompetitorProfileFetched == null) {
+                this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
+            }
+            this.cultureCompetitorProfileFetched.add(dataLocale);
+            this.cultureCompetitorProfileFetched.add(dataLocale);
+            this.cultureCompetitorProfileFetched.add(dataLocale);
+        }
 
         merge(data, dataLocale);
     }
 
     CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPITeam data, Locale dataLocale) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+
+        if(data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
+            this.lastTimeCompetitorProfileIsFetched = Calendar.getInstance().getTime();
+            if (cultureCompetitorProfileFetched == null) {
+                this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
+            }
+            this.cultureCompetitorProfileFetched.add(dataLocale);
+        }
 
         merge(data, dataLocale);
     }
@@ -382,6 +405,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     public RaceDriverProfileCI getRaceDriver() {
         return raceDriverProfile;
     }
+
+    @Override
+    public Date getLastTimeCompetitorProfileIsFetched() { return lastTimeCompetitorProfileIsFetched; }
+
+    @Override
+    public List<Locale> getCultureCompetitorProfileFetched() { return cultureCompetitorProfileFetched; }
 
     /**
      * Determines whether the current instance has translations for the specified languages

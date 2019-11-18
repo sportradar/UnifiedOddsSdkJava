@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.utils.URN;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -101,4 +102,16 @@ public interface CompetitorCI extends CacheItem {
      * @return the race driver of the competitor if available; otherwise null
      */
     RaceDriverProfileCI getRaceDriver();
+
+    /**
+     * Last time (if any) competitor profile was fetched
+     * @return Last time (if any) competitor profile was fetched
+     */
+    Date getLastTimeCompetitorProfileIsFetched ();
+
+    /**
+     * The list of locales used to fetch competitor profiles
+     * @return the list of locales used to fetch competitor profiles
+     */
+    List<Locale> getCultureCompetitorProfileFetched();
 }

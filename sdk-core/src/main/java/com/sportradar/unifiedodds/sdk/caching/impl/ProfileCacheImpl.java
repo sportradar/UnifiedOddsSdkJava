@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Equivalence;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
@@ -14,10 +15,15 @@ import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,7 +65,6 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
      */
     private final CacheItemFactory cacheItemFactory;
 
-
     public ProfileCacheImpl(CacheItemFactory cacheItemFactory,
                      DataRouterManager dataRouterManager,
                      Cache<URN, PlayerProfileCI> playerCache,
@@ -92,9 +97,39 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        PlayerProfileCI ifPresent = playerCache.getIfPresent(id);
-        if (ifPresent != null) {
-            return ifPresent;
+        PlayerProfileCI playerProfileCI = playerCache.getIfPresent(id);
+        if (playerProfileCI != null) {
+
+            List<Locale> missingLocales = SdkHelper.findMissingLocales(playerProfileCI.getCachedLocales(), locales);
+            if (missingLocales.isEmpty()) {
+                return playerProfileCI;
+            }
+
+            // try to fetch for competitor, to avoid requests by each player
+            if (playerProfileCI.getCompetitorId() != null)            {
+                CompetitorCI competitorCI = competitorCache.getIfPresent(playerProfileCI.getCompetitorId());
+                if (competitorCI != null)
+                {
+                    boolean period = Period.between(competitorCI.getLastTimeCompetitorProfileIsFetched().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDateTime.now().minusSeconds(30).toLocalDate()).isNegative();
+                    List<Locale> missingCompetitorLocales = SdkHelper.findMissingLocales(competitorCI.getCultureCompetitorProfileFetched(), missingLocales);
+                     if(period || !missingCompetitorLocales.isEmpty()) {
+                         logger.debug("Fetching competitor profile for competitor {} instead of player {} for languages=[{}].", competitorCI.getId(), playerProfileCI.getId(), missingLocales);
+
+                        try {
+                            List<URN> compId = Arrays.asList(competitorCI.getId());
+                            prefetchCompetitors(compId, locales);
+                         }
+                         catch (CommunicationException ce) {
+                             // ignored
+                         }
+                     }
+                }
+            }
+
+            playerProfileCI = playerCache.getIfPresent(id);
+            if (playerProfileCI != null) {
+                return playerProfileCI;
+            }
         }
 
         if (possibleAssociatedCompetitorIds != null && !possibleAssociatedCompetitorIds.isEmpty()) {
@@ -108,9 +143,9 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
 
         try {
             return playerCache.get(id, () -> {
-                logger.info("Player Cache miss for[{}], providing CI", id);
-                return cacheItemFactory.buildPlayerProfileCI(id);
-            });
+                                        logger.info("Player Cache miss for[{}], providing CI", id);
+                                        return cacheItemFactory.buildPlayerProfileCI(id, null);
+                                    });
         } catch (ExecutionException e) {
             throw new CacheItemNotFoundException("Error providing PlayerCI[" + id + "]", e);
         }
@@ -174,8 +209,8 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         Preconditions.checkNotNull(locales);
 
         for (URN competitorId : possibleAssociatedCompetitorIds) {
-            boolean isSimpleTeam = (competitorId.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE) ||
-                    competitorId.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE));
+            boolean isSimpleTeam = (competitorId.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE)
+                    || competitorId.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE));
             for (Locale locale : locales) {
                 if (isSimpleTeam) {
                     dataRouterManager.requestSimpleTeamEndpoint(locale, competitorId, null);
@@ -187,7 +222,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     }
 
     @Override
-    public void onPlayerFetched(URN id, SAPIPlayerExtended data, Locale dataLocale, CacheItem requester) {
+    public void onPlayerFetched(URN id, SAPIPlayerExtended data, Locale dataLocale, CacheItem requester, URN competitorId) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -199,13 +234,13 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         }
 
         if (profileCI == null) {
-            playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale));
+            playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale, competitorId));
         } else {
             profileCI.merge(data, dataLocale);
         }
     }
 
-    public void onPlayerCompetitorFetched(URN id, SAPIPlayerCompetitor data, Locale dataLocale, CacheItem requester) {
+    public void onPlayerCompetitorFetched(URN id, SAPIPlayerCompetitor data, Locale dataLocale, CacheItem requester, URN competitorId) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -221,7 +256,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
             }
 
             if (profileCI == null) {
-                playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale));
+                playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale, competitorId));
             } else {
                 profileCI.merge(data, dataLocale);
             }
@@ -240,7 +275,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         {
             for (SAPIPlayerExtended player : data.getPlayers().getPlayer())
             {
-                onPlayerFetched(URN.parse(player.getId()), player, dataLocale, requester);
+                onPlayerFetched(URN.parse(player.getId()), player, dataLocale, requester, URN.parse(data.getCompetitor().getId()));
             }
         }
     }
@@ -273,7 +308,8 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         {
             for (SAPIPlayerCompetitor player : team.getPlayers().getPlayer())
             {
-                onPlayerCompetitorFetched(URN.parse(player.getId()), player, dataLocale, requester);
+                URN competitorId = Strings.isNullOrEmpty(team.getId()) ? null : URN.parse(team.getId());
+                onPlayerCompetitorFetched(URN.parse(player.getId()), player, dataLocale, requester, competitorId);
             }
         }
     }

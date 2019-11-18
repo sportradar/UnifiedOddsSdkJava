@@ -4,10 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.google.inject.internal.cglib.core.$Local;
+import com.sportradar.utils.URN;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
+
+import java.util.*;
 
 public class ExportablePlayerProfileCI extends ExportableCI {
     private Locale defaultLocale;
@@ -23,8 +24,9 @@ public class ExportablePlayerProfileCI extends ExportableCI {
     private String nickname;
     private String gender;
     private List<Locale> cachedLocales;
+    private URN competitorId;
 
-    public ExportablePlayerProfileCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> fullNames, Map<Locale, String> nationalities, Map<Locale, String> abbreviations, String type, Date dateOfBirth, Integer height, Integer weight, String countryCode, Integer jerseyNumber, String nickname, String gender, List<Locale> cachedLocales) {
+    public ExportablePlayerProfileCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> fullNames, Map<Locale, String> nationalities, Map<Locale, String> abbreviations, String type, Date dateOfBirth, Integer height, Integer weight, String countryCode, Integer jerseyNumber, String nickname, String gender, List<Locale> cachedLocales, URN competitorId) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.fullNames = fullNames;
@@ -39,6 +41,7 @@ public class ExportablePlayerProfileCI extends ExportableCI {
         this.nickname = nickname;
         this.gender = gender;
         this.cachedLocales = cachedLocales;
+        this.competitorId = competitorId;
     }
 
     public Locale getDefaultLocale() {
@@ -144,4 +147,8 @@ public class ExportablePlayerProfileCI extends ExportableCI {
     public void setCachedLocales(List<Locale> cachedLocales) {
         this.cachedLocales = cachedLocales;
     }
+
+    public void setCompetitorId(URN competitorId) { this.competitorId = competitorId; }
+
+    public URN getCompetitorId(){ return competitorId; }
 }

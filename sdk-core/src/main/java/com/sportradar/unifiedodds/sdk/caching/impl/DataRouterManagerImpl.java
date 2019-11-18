@@ -582,7 +582,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         SAPIPlayerExtended player = endpoint.getPlayer();
         URN playerId = URN.parse(player.getId());
-        dataRouter.onPlayerFetched(playerId, player, locale, requester);
+        dataRouter.onPlayerFetched(playerId, player, locale, requester, null);
     }
 
     @Override

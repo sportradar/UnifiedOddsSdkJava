@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
+import com.sportradar.utils.URN;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -91,4 +93,18 @@ public interface PlayerProfileCI extends CacheItem  {
      * @return the gender
      */
     String getGender();
+
+    /**
+     * Get the competitor id this player belongs to
+     * @return the competitor id this player belongs to
+     */
+    URN getCompetitorId();
+
+    <T> void merge(T endpointData, Locale dataLocale, URN competitorId);
+
+    /**
+     * Get the list of cached locales
+     * @return the list of cached locales
+     */
+    List<Locale> getCachedLocales();
 }
