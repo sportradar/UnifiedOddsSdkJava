@@ -334,8 +334,7 @@ public class NameProviderImpl implements NameProvider {
                 handleErrorCondition("Retrieved market descriptor is lacking outcomes", outcomeId, null, locale, null);
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
-                    descriptorProvider.reloadMarketDescription(marketDescription.getId(),
-                                                               marketDescription.getSpecifiers());
+                    descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
                 }
@@ -350,8 +349,7 @@ public class NameProviderImpl implements NameProvider {
                 handleErrorCondition("Retrieved market descriptor is missing outcome", outcomeId, null, locale, null);
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
-                    descriptorProvider.reloadMarketDescription(marketDescription.getId(),
-                                                               marketDescription.getSpecifiers());
+                    descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
                 }

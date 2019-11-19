@@ -35,6 +35,7 @@ public class OddsFeedExamples {
         System.out.println("  8 - Extra: Print sport event data \t\t\tPrints out static sport event data");
         System.out.println("  9 - Extra: Advanced configuration setup \t\tA basic demonstration on how to do an advanced configuration setup");
         System.out.println(" 10 - Extra: Cache export/import \t\t\t\tA basic demonstration on how to export/import current cache state");
+        System.out.println(" 11 - Extra: Advanced setup \t\t\t\t\tSingle session with multithreaded message parsing");
 
         String selection = getConsoleInput();
 
@@ -81,6 +82,10 @@ public class OddsFeedExamples {
             case "10":
                 ExportImportSetup exportImportSetup = new ExportImportSetup(token);
                 exportImportSetup.run();
+                break;
+            case "11":
+                MultithreadedSessionSetup multithreadedSessionSetup = new MultithreadedSessionSetup(token);
+                multithreadedSessionSetup.run(false);
                 break;
             default:
                 System.out.println();

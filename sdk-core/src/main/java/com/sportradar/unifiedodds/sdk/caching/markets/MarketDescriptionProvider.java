@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 
 import java.util.List;
@@ -22,8 +21,8 @@ public interface MarketDescriptionProvider {
     /**
      * Reloads market description (single or list)
      * @param marketId the market identifier
-     * @param specifiers a list of specifiers or a null reference if market is invariant
+     * @param marketSpecifiers a list of specifiers or a null reference if market is invariant
      * @return true if succeeded, false otherwise
      */
-    boolean reloadMarketDescription(int marketId, List<Specifier> specifiers);
+    boolean reloadMarketDescription(int marketId, Map<String, String> marketSpecifiers);
 }
