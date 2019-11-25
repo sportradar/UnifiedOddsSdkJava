@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CachingException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
@@ -128,16 +127,16 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
     /**
      * Reloads market description (one or list)
      * @param marketId the market identifier
-     * @param specifiers a list of specifiers or a null reference if market is invariant
+     * @param marketSpecifiers a list of specifiers or a null reference if market is invariant
      * @return true if succeeded, false otherwise
      */
-    public boolean reloadMarketDescription(int marketId, List<Specifier> specifiers){
+    public boolean reloadMarketDescription(int marketId, Map<String, String> marketSpecifiers){
         try
         {
-            Specifier variantSpecifier = specifiers != null ? specifiers.stream().filter(s -> s.getName().equals(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME)).findFirst().orElse(null) : null;
-            if(variantSpecifier != null) {
-                logger.debug("Deleting variant market description for market={} and variant={}", marketId, variantSpecifier.getType());
-                variantMarketCache.deleteCacheItem(marketId, variantSpecifier.getType());
+            String variant = marketSpecifiers != null ? marketSpecifiers.getOrDefault(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME, null) : null;
+            if(variant != null) {
+                logger.debug("Deleting variant market description for market={} and variant={}", marketId, variant);
+                variantMarketCache.deleteCacheItem(marketId, variant);
                 logger.debug("Reloading variant market description list");
                 return variantDescriptionCache.loadMarketDescriptions();
             } else {
