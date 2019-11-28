@@ -75,7 +75,7 @@ class HttpDataFetcher {
      * @param request a valid HTTP request
      * @return the content of the request
      */
-    private HttpData send(HttpRequestBase request) throws CommunicationException {
+    protected HttpData send(HttpRequestBase request) throws CommunicationException {
         String path = request.getURI().toString();
         try {
             if (statsBean != null) {
@@ -86,7 +86,7 @@ class HttpDataFetcher {
             CloseableHttpResponse resp = null;
             String respString = null;
             String errorMessage = null;
-            Integer statusCode;
+            int statusCode;
             try {
                 resp = httpClient.execute(request);
                 statusCode = resp.getStatusLine().getStatusCode();

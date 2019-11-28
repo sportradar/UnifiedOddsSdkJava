@@ -10,6 +10,7 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +28,14 @@ public class LogHttpDataFetcher extends HttpDataFetcher {
     }
 
     @Override
-    public HttpData get(String path) throws CommunicationException {
+    protected HttpData send(HttpRequestBase request) throws CommunicationException {
+        String path = request.getURI().getPath();
         logger.info("Fetching data from: " + path);
 
         Stopwatch timer = Stopwatch.createStarted();
         HttpData result;
         try {
-            result = super.get(path);
+            result = super.send(request);
         } catch (CommunicationException e) {
             trafficLogger.info("Request[DataFetcher]: {}, response - FAILED({}), ex:", path, timer.stop(), e);
             throw new CommunicationException("HTTP request failed(" + path + ")", e);

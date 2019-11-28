@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.SportsInfoManager;
+import com.sportradar.unifiedodds.sdk.entities.ReplaySportEvent;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
@@ -21,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.impl.entities.ReplaySportEventImpl;
 import com.sportradar.utils.URN;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -79,7 +81,18 @@ public class ReplayManager {
      * @return the list of SportEvents whose recorded messages are scheduled for replay
      */
     public List<SportEvent> getReplayList() {
-        final List<SportEvent> events = new LinkedList<>();
+        List<ReplaySportEvent> replaySportEventsList = getReplaySportEventsList();
+        if (replaySportEventsList == null)
+            return null;
+
+        return replaySportEventsList.stream().map(r -> sportsInfoManager.getSportEvent(r.getId())).collect(Collectors.toList());
+    }
+
+    /**
+     * @return the list of ReplaySportEvents whose recorded messages are scheduled for replay
+     */
+    public List<ReplaySportEvent> getReplaySportEventsList() {
+        final List<ReplaySportEvent> events = new LinkedList<>();
 
         DataProvider<ReplaySetContent> dataProvider = getDataProvider("/replay/" + buildNodeIdQuery("?"));
 
@@ -94,7 +107,7 @@ public class ReplayManager {
 
         if (replaySetContent != null && replaySetContent.getEvent() != null) {
             for (ReplayEvent replayEvent : replaySetContent.getEvent()) {
-                SportEvent event = sportsInfoManager.getSportEvent(URN.parse(replayEvent.getId()));
+                ReplaySportEvent event = new ReplaySportEventImpl(URN.parse(replayEvent.getId()), replayEvent.getPosition(), replayEvent.getStartTime());
                 events.add(event);
             }
         }
@@ -325,7 +338,8 @@ public class ReplayManager {
      * @return an indication of the request success
      */
     public boolean clear() {
-        boolean responseStatus = internalClear();
+        boolean responseStatus =
+                internalClear();
         clientInteractionLog.info("ReplayManager.clear() -> response status: {}", responseStatusString(responseStatus));
 
         return responseStatus;
