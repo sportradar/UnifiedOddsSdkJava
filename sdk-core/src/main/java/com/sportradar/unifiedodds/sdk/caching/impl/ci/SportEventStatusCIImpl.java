@@ -155,31 +155,31 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
 
     @Override
     public SportEventStatisticsDTO getSportEventStatisticsDTO() {
+//        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
+//            return feedDTO.getSportEventStatisticsDTO();
+//        }
+//        if (sapiDTO != null) {
+//            return sapiDTO.getSportEventStatisticsDTO();
+//        }
+
+        List<TeamStatisticsDTO> totalStatisticsDTOs = null;
+        List<PeriodStatisticsDTO> periodStatisticDTOs = null;
+
         if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
-            return feedDTO.getSportEventStatisticsDTO();
+            totalStatisticsDTOs = feedDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
         }
-        if (sapiDTO != null) {
-            return sapiDTO.getSportEventStatisticsDTO();
+        if (sapiDTO != null && sapiDTO.getSportEventStatisticsDTO() != null) {
+            if(totalStatisticsDTOs == null)
+            {
+                totalStatisticsDTOs = sapiDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
+            }
+            periodStatisticDTOs = sapiDTO.getSportEventStatisticsDTO().getPeriodStatisticDTOs();
         }
 
-//        List<TeamStatisticsDTO> totalStatisticsDTOs = null;
-//        List<PeriodStatisticsDTO> periodStatisticDTOs = null;
-//
-//        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
-//            totalStatisticsDTOs = feedDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
-//        }
-//        if (sapiDTO != null && sapiDTO.getSportEventStatisticsDTO() != null) {
-//            if(totalStatisticsDTOs == null)
-//            {
-//                totalStatisticsDTOs = sapiDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
-//            }
-//            periodStatisticDTOs = sapiDTO.getSportEventStatisticsDTO().getPeriodStatisticDTOs();
-//        }
-//
-//        if(totalStatisticsDTOs != null)
-//        {
-//            return new SportEventStatisticsDTO(totalStatisticsDTOs, periodStatisticDTOs);
-//        }
+        if(totalStatisticsDTOs != null)
+        {
+            return new SportEventStatisticsDTO(totalStatisticsDTOs, periodStatisticDTOs);
+        }
 
         return null;
     }
