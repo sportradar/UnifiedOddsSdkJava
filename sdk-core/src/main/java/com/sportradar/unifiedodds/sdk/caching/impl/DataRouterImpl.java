@@ -43,6 +43,7 @@ public class DataRouterImpl implements DataRouter {
             URN trnId = URN.parse(endpoint.getTournament().getId());
             URN seasonId = endpoint.getSeason() == null ? null : URN.parse(endpoint.getSeason().getId());
             dataListeners.forEach(l -> l.onTournamentInfoEndpointFetched(requestedId, trnId, seasonId, endpoint, locale, requester));
+            Optional.ofNullable(endpoint.getTournament().getCompetitors()).ifPresent(c -> dispatchTournamentCompetitors(c.getCompetitor(), locale, requester));
             Optional.ofNullable(endpoint.getCompetitors()).ifPresent(c -> dispatchTournamentCompetitors(c.getCompetitor(), locale, requester));
             Optional.ofNullable(endpoint.getGroups())
                     .ifPresent(g -> g.getGroup().forEach(gr ->
