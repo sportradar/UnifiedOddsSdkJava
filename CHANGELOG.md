@@ -1,4 +1,13 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.31 (2019-12-09)**
+* added getReplaySportEventsList to the ReplayManager
+* added missing summary endpoint competitors caching
+* added example for parsing messages in separate thread
+* improved logic for getting player profiles
+* improved fetching and loading PeriodStatistics
+* fix: loading playerprops variant market descriptions
+* fix: logging for HTTP POST requests
+
 **2.0.30 (2019-11-08)**
 * fix: better market description cache handling
 
