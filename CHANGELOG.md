@@ -1,4 +1,7 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.31.1 (2019-12-10)**
+* fix: fetching and merging player profile data
+
 **2.0.31 (2019-12-09)**
 * added getReplaySportEventsList to the ReplayManager
 * added missing summary endpoint competitors caching
