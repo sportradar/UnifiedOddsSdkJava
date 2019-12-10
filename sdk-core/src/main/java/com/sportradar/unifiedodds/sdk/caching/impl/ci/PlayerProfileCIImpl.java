@@ -10,13 +10,11 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPlayerExtended;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePlayerProfileCI;
-import com.sportradar.unifiedodds.sdk.entities.Competition;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -371,6 +369,11 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
     @Override
     public boolean hasTranslationsLoadedFor(List<Locale> localeList) {
         return cachedLocales.containsAll(localeList);
+    }
+
+    @Override
+    public <T> void merge(T endpointData, Locale dataLocale) {
+        merge(endpointData, dataLocale, null);
     }
 
     @Override

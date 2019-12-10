@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -116,7 +116,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
                          logger.debug("Fetching competitor profile for competitor {} instead of player {} for languages=[{}].", competitorCI.getId(), playerProfileCI.getId(), missingLocales);
 
                         try {
-                            List<URN> compId = Arrays.asList(competitorCI.getId());
+                            List<URN> compId = Collections.singletonList(competitorCI.getId());
                             prefetchCompetitors(compId, locales);
                          }
                          catch (CommunicationException ce) {
@@ -230,13 +230,17 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         PlayerProfileCI profileCI = playerCache.getIfPresent(id);
 
         if (requester != null && !Equivalence.identity().equivalent(profileCI, requester)) {
-            requester.merge(data, dataLocale);
+            if (requester instanceof PlayerProfileCI) {
+                ((PlayerProfileCI) requester).merge(data, dataLocale, competitorId);
+            } else {
+                requester.merge(data, dataLocale);
+            }
         }
 
         if (profileCI == null) {
             playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale, competitorId));
         } else {
-            profileCI.merge(data, dataLocale);
+            profileCI.merge(data, dataLocale, competitorId);
         }
     }
 
