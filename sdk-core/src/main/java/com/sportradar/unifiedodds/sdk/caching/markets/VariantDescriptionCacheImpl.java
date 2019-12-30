@@ -165,7 +165,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
     private void merge(Locale dataLocale, VariantDescriptions endpointData) {
         Preconditions.checkNotNull(dataLocale);
         Preconditions.checkNotNull(endpointData);
-        boolean createNew = !fetchedLocales.contains(dataLocale);
+        boolean createNew = fetchedLocales.isEmpty();
 
         List<DescVariant> variant = endpointData.getVariant();
         variant.forEach(market -> {

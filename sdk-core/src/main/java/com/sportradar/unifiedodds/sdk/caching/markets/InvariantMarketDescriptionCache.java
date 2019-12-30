@@ -201,7 +201,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     private void merge(Locale locale, MarketDescriptions data) {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(data);
-        boolean createNew = !fetchedLocales.contains(locale);
+        boolean createNew = fetchedLocales.isEmpty();
 
         data.getMarket().forEach(market -> {
             String processingCacheItemId = String.valueOf(market.getId());
