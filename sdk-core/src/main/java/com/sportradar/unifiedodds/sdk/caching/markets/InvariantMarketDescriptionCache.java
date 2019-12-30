@@ -131,7 +131,6 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         try {
             if (hasTimerElapsedOnce) {
                 fetchedLocales.clear();
-                cache.invalidateAll();
             }
             if (!locales2fetch.isEmpty()) {
                 fetchMissingData(locales2fetch);
@@ -202,11 +201,12 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     private void merge(Locale locale, MarketDescriptions data) {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(data);
+        boolean createNew = !fetchedLocales.contains(locale);
 
         data.getMarket().forEach(market -> {
             String processingCacheItemId = String.valueOf(market.getId());
             MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
-            if (cachedItem == null) {
+            if (createNew || cachedItem == null) {
                 cachedItem = new MarketDescriptionCI(market, mappingValidatorFactory, locale, SdkHelper.InVariantMarketListCache);
                 cache.put(processingCacheItemId, cachedItem);
             } else {

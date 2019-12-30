@@ -86,7 +86,6 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         try {
             if (hasTimerElapsedOnce) {
                 fetchedLocales.clear();
-                cache.invalidateAll();
             }
             if (!locales2fetch.isEmpty()) {
                 fetchMissingData(locales2fetch);
@@ -166,17 +165,18 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
     private void merge(Locale dataLocale, VariantDescriptions endpointData) {
         Preconditions.checkNotNull(dataLocale);
         Preconditions.checkNotNull(endpointData);
+        boolean createNew = !fetchedLocales.contains(dataLocale);
 
         List<DescVariant> variant = endpointData.getVariant();
         variant.forEach(market -> {
             String id = market.getId();
 
             VariantDescriptionCI ifPresent = cache.getIfPresent(id);
-            if (ifPresent != null) {
-                ifPresent.merge(market, dataLocale);
-            } else {
+            if (createNew || ifPresent == null) {
                 ifPresent = new VariantDescriptionCI(market, mappingValidatorFactory, dataLocale, SdkHelper.VariantMarketListCache);
                 cache.put(id, ifPresent);
+            } else {
+                ifPresent.merge(market, dataLocale);
             }
         });
 
