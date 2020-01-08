@@ -48,8 +48,17 @@ public class DataProvidersModule extends AbstractModule {
     private DataProvider<SAPIFixturesEndpoint> provideFixtureEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                                   LogHttpDataFetcher httpDataFetcher,
                                                                                   @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
+                ? "?node_id=" + cfg.getSdkNodeId()
+                : "";
+
+        String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
+        String replayFixture = httpHttps + "://" + UnifiedFeedConstants.PRODUCTION_API_HOST + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
+
         return new DataProvider<>(
-                "/sports/%s/sport_events/%s/fixture.xml",
+                cfg.isReplaySession()
+                        ? replayFixture
+                        : "/sports/%s/sport_events/%s/fixture.xml",
                 cfg,
                 httpDataFetcher,
                 deserializer
@@ -180,8 +189,17 @@ public class DataProvidersModule extends AbstractModule {
     private DataProvider<SAPIMatchTimelineEndpoint> provideMatchTimelineEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                                              LogHttpDataFetcher httpDataFetcher,
                                                                                              @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
+                ? "?node_id=" + cfg.getSdkNodeId()
+                : "";
+
+        String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
+        String replayTimeline = httpHttps + "://" + UnifiedFeedConstants.PRODUCTION_API_HOST + "/v1/replay/sports/%s/sport_events/%s/timeline.xml" + nodeIdStr;
+
         return new DataProvider<>(
-                "/sports/%s/sport_events/%s/timeline.xml",
+                cfg.isReplaySession()
+                        ? replayTimeline
+                        : "/sports/%s/sport_events/%s/timeline.xml",
                 cfg,
                 httpDataFetcher,
                 deserializer

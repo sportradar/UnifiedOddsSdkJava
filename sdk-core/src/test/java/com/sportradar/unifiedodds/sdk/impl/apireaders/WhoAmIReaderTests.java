@@ -184,7 +184,7 @@ public class WhoAmIReaderTests {
     @SuppressWarnings("unchecked")
     private static DataProvider<BookmakerDetails> getValidIntegrationDataProvider() throws DataProviderException {
         XMLGregorianCalendar expirationDate = XMLGregorianCalendarImpl.LEAP_YEAR_DEFAULT;
-        expirationDate.setYear(2020);
+        expirationDate.setYear(2040);
 
         BookmakerDetails sampleIntegrationWhoAmIResponse = new BookmakerDetails();
         sampleIntegrationWhoAmIResponse.setBookmakerId(3311);
@@ -205,7 +205,7 @@ public class WhoAmIReaderTests {
     @SuppressWarnings("unchecked")
     private static DataProvider<BookmakerDetails> getValidProductionDataProvider() throws DataProviderException {
         XMLGregorianCalendar expirationDate = XMLGregorianCalendarImpl.LEAP_YEAR_DEFAULT;
-        expirationDate.setYear(2020);
+        expirationDate.setYear(2040);
 
         BookmakerDetails sampleProductionWhoAmIResponse = new BookmakerDetails();
         sampleProductionWhoAmIResponse.setBookmakerId(33);
