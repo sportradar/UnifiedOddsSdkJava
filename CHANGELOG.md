@@ -1,4 +1,9 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.32 (2020-01-14)**
+* added new Replay API endpoints
+* improved market and variant caching
+* fix: fetching outcome mappings for special markets that exists only on dynamic variant endpoint
+
 **2.0.31.1 (2019-12-10)**
 * fix: fetching and merging player profile data
 
