@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<competitor_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-05-17T08:37:10+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/competitor_profile.xsd">
+  <competitor id="sr:competitor:1" name="Queens Park Rangers" country="Anglia" country_code="ENG" abbreviation="QPR">
+    <sport id="sr:sport:1" name="Labdarúgás"/>
+    <category id="sr:category:1" name="Anglia" country_code="ENG"/>
+  </competitor>
+  <venue id="sr:venue:1693" name="Loftus Road Stadium" capacity="18000" city_name="London" country_name="Anglia" map_coordinates="51.509766,-0.231085" country_code="ENG"/>
+  <jerseys>
+    <jersey type="home" base="0000ff" sleeve="0000ff" number="ffffff"/>
+    <jersey type="away" base="71d0ff" sleeve="71d0ff" number="ffffff"/>
+    <jersey type="goalkeeper" base="ffff00" sleeve="ffff00" number="ff0000"/>
+    <jersey type="third" base="b90000" sleeve="b90000" number="000000"/>
+  </jerseys>
+  <manager id="sr:player:53166" name="Holloway, Ian" nationality="Anglia" country_code="ENG"/>
+  <players>
+    <player id="sr:player:298226" name="Dieng, Seny Timothy" type="goalkeeper" date_of_birth="1994-11-23" nationality="Svájc" country_code="CHE" height="191" weight="84"/>
+    <player id="sr:player:30401" name="Smithies, Alex" type="goalkeeper" date_of_birth="1990-03-05" nationality="Anglia" country_code="ENG" height="186" weight="84" jersey_number="1"/>
+    <player id="sr:player:31703" name="Freeman, Luke" type="midfielder" date_of_birth="1992-03-22" nationality="Anglia" country_code="ENG" height="183" weight="64" jersey_number="2"/>
+    <player id="sr:player:103115" name="Bidwell, Jake" type="defender" date_of_birth="1993-03-21" nationality="Anglia" country_code="ENG" height="183" weight="70" jersey_number="3"/>
+    <player id="sr:player:214734" name="Hall, Grant" type="defender" date_of_birth="1991-10-29" nationality="Anglia" country_code="ENG" height="192" weight="71" jersey_number="4"/>
+    <player id="sr:player:1082" name="Onuoha, Nedum" type="defender" date_of_birth="1986-11-12" nationality="Anglia" country_code="ENG" height="183" weight="78" jersey_number="5"/>
+    <player id="sr:player:14243" name="Lynch, Joel" type="defender" date_of_birth="1987-10-03" nationality="Wales" country_code="WAL" height="185" weight="81" jersey_number="6"/>
+    <player id="sr:player:138531" name="Cousins, Jordan" type="defender" date_of_birth="1994-03-06" nationality="Anglia" country_code="ENG" height="177" weight="72" jersey_number="8"/>
+    <player id="sr:player:291027" name="Washington, Conor" type="forward" date_of_birth="1992-05-18" nationality="Észak-Írország" country_code="NIR" height="178" weight="74" jersey_number="9"/>
+    <player id="sr:player:353216" name="Goss, Sean Richard" type="midfielder" date_of_birth="1995-10-01" nationality="Anglia" country_code="ENG" jersey_number="10"/>
+    <player id="sr:player:32942" name="Mackie, Jamie" type="forward" date_of_birth="1985-09-28" nationality="Skócia" country_code="SCO" height="173" weight="71" jersey_number="12"/>
+    <player id="sr:player:136108" name="Ingram, Matt" type="goalkeeper" date_of_birth="1993-12-18" nationality="Anglia" country_code="ENG" height="191" weight="82" jersey_number="13"/>
+    <player id="sr:player:51505" name="Emmanuel-Thomas, Jay" type="midfielder" date_of_birth="1990-12-27" nationality="Anglia" country_code="ENG" height="175" weight="72" jersey_number="14"/>
+    <player id="sr:player:139152" name="Wszolek, Pawel" type="midfielder" date_of_birth="1992-04-30" nationality="Lengyelország" country_code="POL" height="186" weight="77" jersey_number="15"/>
+    <player id="sr:player:144670" name="Doughty, Michael" type="midfielder" date_of_birth="1992-11-20" nationality="Wales" country_code="WAL" height="185" weight="81" jersey_number="16"/>
+    <player id="sr:player:156344" name="Smith, Matt" type="forward" date_of_birth="1989-06-07" nationality="Anglia" country_code="ENG" height="198" weight="75" jersey_number="17"/>
+    <player id="sr:player:98454" name="Robinson, Jack" type="defender" date_of_birth="1993-09-01" nationality="Anglia" country_code="ENG" height="180" weight="67" jersey_number="18"/>
+    <player id="sr:player:10570" name="Henry, Karl" type="midfielder" date_of_birth="1982-11-26" nationality="Anglia" country_code="ENG" height="183" weight="76" jersey_number="20"/>
+    <player id="sr:player:204300" name="Luongo, Massimo" type="midfielder" date_of_birth="1992-09-25" nationality="Ausztrália" country_code="AUS" height="174" weight="75" jersey_number="21"/>
+    <player id="sr:player:73685" name="Caulker, Steven" type="defender" date_of_birth="1991-12-29" nationality="Anglia" country_code="ENG" height="190" weight="76" jersey_number="22"/>
+    <player id="sr:player:74068" name="N'Gbakoto, Yeni" type="forward" date_of_birth="1992-01-23" nationality="Franciaország" country_code="FRA" height="173" weight="71" jersey_number="23"/>
+    <player id="sr:player:20385" name="Perch, James" type="defender" date_of_birth="1985-09-28" nationality="Anglia" country_code="ENG" height="180" weight="72" jersey_number="24"/>
+    <player id="sr:player:155869" name="Petrasso, Michael" type="midfielder" date_of_birth="1995-07-09" nationality="Kanada" country_code="CAN" height="168" weight="64" jersey_number="25"/>
+    <player id="sr:player:21302" name="LuaLua, Kazenga" type="midfielder" date_of_birth="1990-12-10" nationality="Kongói Demokratikus Köztársaság" country_code="COD" height="180" weight="76" jersey_number="28"/>
+    <player id="sr:player:790671" name="Furlong, Darnell" type="defender" date_of_birth="1995-10-31" nationality="Anglia" country_code="ENG" height="180" weight="76" jersey_number="29"/>
+    <player id="sr:player:1132695" name="Bowler, Josh" type="midfielder" date_of_birth="1999-03-05" nationality="Anglia" country_code="ENG" jersey_number="30"/>
+    <player id="sr:player:319173" name="Grego Cox, Reece" type="midfielder" date_of_birth="1996-11-12" nationality="Írország" country_code="IRL" height="170" weight="65" jersey_number="35"/>
+    <player id="sr:player:1025841" name="Paul, Chris" type="midfielder" date_of_birth="1997-09-25" nationality="Anglia" country_code="ENG" jersey_number="37"/>
+    <player id="sr:player:869072" name="Hamalainen, Niko" type="defender" date_of_birth="1997-03-05" nationality="Finnország" country_code="FIN" jersey_number="38"/>
+    <player id="sr:player:1088470" name="Eze, Eberechi" type="midfielder" date_of_birth="1996-06-14" nationality="Skócia" country_code="SCO" jersey_number="39"/>
+    <player id="sr:player:72981" name="Sylla, Idrissa" type="forward" date_of_birth="1990-12-03" nationality="Guinea" country_code="GIN" height="187" weight="75" jersey_number="40"/>
+    <player id="sr:player:328701" name="Manning, Ryan" type="midfielder" date_of_birth="1996-06-14" nationality="Írország" country_code="IRL" jersey_number="41"/>
+    <player id="sr:player:98452" name="Morrison, Ravel" type="midfielder" date_of_birth="1993-02-02" nationality="Anglia" country_code="ENG" height="175" weight="71" jersey_number="49"/>
+    <player id="sr:player:1" name="van Persie, Robin" type="forward" date_of_birth="1983-08-06" nationality="Hollandia" country_code="NLD" height="183" weight="71"/>
+  </players>
+</competitor_profile>

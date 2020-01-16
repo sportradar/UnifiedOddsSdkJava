@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<tournament_info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-05-09T09:28:46+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/tournament_info.xsd">
+  <tournament id="sr:tournament:17" name="Premier League">
+    <sport id="sr:sport:1" name="Soccer"/>
+    <category id="sr:category:1" name="England" country_code="ENG"/>
+    <current_season id="sr:season:40942" name="Premier League 17/18" start_date="2017-08-11" end_date="2018-05-14" year="17/18"/>
+  </tournament>
+  <season id="sr:season:1" name="Premier League 03/04" start_date="2003-08-16" end_date="2004-05-17" year="03/04" tournament_id="sr:tournament:17"/>
+  <round type="group" number="40"/>
+  <coverage_info live_coverage="true"/>
+  <groups>
+    <group>
+      <competitor id="sr:competitor:34" name="Leeds United" country="England" country_code="ENG" abbreviation="LU">
+        <reference_ids>
+          <reference_id name="betradar" value="4860"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:17" name="Manchester City" country="England" country_code="ENG" abbreviation="MCI">
+        <reference_ids>
+          <reference_id name="betradar" value="4861"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:35" name="Manchester United" country="England" country_code="ENG" abbreviation="MUN">
+        <reference_ids>
+          <reference_id name="betradar" value="4862"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:48" name="Everton FC" country="England" country_code="ENG" abbreviation="EVE">
+        <reference_ids>
+          <reference_id name="betradar" value="4867"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:47" name="Charlton Athletic" country="England" country_code="ENG" abbreviation="CHA">
+        <reference_ids>
+          <reference_id name="betradar" value="4868"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:45" name="Southampton FC" country="England" country_code="ENG" abbreviation="SOU">
+        <reference_ids>
+          <reference_id name="betradar" value="4869"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:38" name="Chelsea FC" country="England" country_code="ENG" abbreviation="CHE">
+        <reference_ids>
+          <reference_id name="betradar" value="4870"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:42" name="Arsenal" country="England" country_code="ENG" abbreviation="ARS">
+        <reference_ids>
+          <reference_id name="betradar" value="4871"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:39" name="Newcastle United" country="England" country_code="ENG" abbreviation="NEW">
+        <reference_ids>
+          <reference_id name="betradar" value="4873"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:31" name="Leicester City" country="England" country_code="ENG" abbreviation="LEI">
+        <reference_ids>
+          <reference_id name="betradar" value="4876"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:44" name="Liverpool FC" country="England" country_code="ENG" abbreviation="LIV">
+        <reference_ids>
+          <reference_id name="betradar" value="4878"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:40" name="Aston Villa" country="England" country_code="ENG" abbreviation="AV">
+        <reference_ids>
+          <reference_id name="betradar" value="4879"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:33" name="Tottenham Hotspur" country="England" country_code="ENG" abbreviation="TOT">
+        <reference_ids>
+          <reference_id name="betradar" value="5187"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:36" name="Middlesbrough FC" country="England" country_code="ENG" abbreviation="MID">
+        <reference_ids>
+          <reference_id name="betradar" value="5409"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:46" name="Blackburn Rovers" country="England" country_code="ENG" abbreviation="BLA">
+        <reference_ids>
+          <reference_id name="betradar" value="23959"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:9" name="Birmingham City" country="England" country_code="ENG" abbreviation="BC">
+        <reference_ids>
+          <reference_id name="betradar" value="23960"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:5" name="Bolton Wanderers" country="England" country_code="ENG" abbreviation="BOL">
+        <reference_ids>
+          <reference_id name="betradar" value="25150"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:43" name="Fulham FC" country="England" country_code="ENG" abbreviation="FUL">
+        <reference_ids>
+          <reference_id name="betradar" value="26511"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:3" name="Wolverhampton Wanderers" country="England" country_code="ENG" abbreviation="WOL">
+        <reference_ids>
+          <reference_id name="betradar" value="176942"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:2" name="Portsmouth FC" country="England" country_code="ENG" abbreviation="POR">
+        <reference_ids>
+          <reference_id name="betradar" value="178034"/>
+        </reference_ids>
+      </competitor>
+    </group>
+  </groups>
+</tournament_info>

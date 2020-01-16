@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<producers response_code="OK">
+    <producer active="true" api_url="https://api.betradar.com/v1/liveodds/" description="Live Odds" name="LO" id="1"/>
+    <producer active="true" api_url="https://api.betradar.com/v1/pre/" description="Betradar Ctrl" name="Ctrl" id="3"/>
+    <producer active="true" api_url="https://api.betradar.com/v1/betpal/" description="BetPal" name="BetPal" id="4"/>
+    <producer active="true" api_url="https://api.betradar.com/v1/premium_cricket/" description="Premium Cricket" name="PremiumCricket" id="5"/>
+</producers>

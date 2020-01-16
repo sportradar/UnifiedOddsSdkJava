@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<match_summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2016-09-23T11:52:45+00:00"
+               xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="">
+  <sport_event id="sr:match:9210275" scheduled="2016-08-10T00:00:00+00:00">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12823" name="Mexican League 2016"/>
+    <tournament id="sr:tournament:1030" name="Mexican League">
+      <sport id="sr:sport:3" name="Honkbal"/>
+      <category id="sr:category:426" name="Mexico"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:66390" name="Pericos de Puebla" country="Mexico" abbreviation="PDP" qualifier="home"/>
+      <competitor id="sr:competitor:66410" name="Rojos Del Aguila de Veracruz" country="Mexico" abbreviation="RDA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event_conditions>
+    <venue id="sr:venue:4988" name="Estadio de Beisbol Hermanos Serdan" capacity="12112" city_name="Puebla" country_name="Mexico" map_coordinates="19.075358,-98.164900"/>
+  </sport_event_conditions>
+  <sport_event_status status="cancelled"/>
+</match_summary>

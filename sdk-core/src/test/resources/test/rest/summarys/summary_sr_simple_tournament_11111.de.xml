@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<tournament_info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-04-25T12:11:21+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/tournament_info.xsd">
+  <tournament id="sr:simple_tournament:11111" name="U21 Algerian Ligue 1 - DE">
+    <tournament_length start_date="2005-01-01" end_date="2040-01-01"/>
+    <sport id="sr:sport:999" name="Soccer"/>
+    <category id="sr:category:3049" name="Algeria" country_code="DZA"/>
+  </tournament>
+  <coverage_info live_coverage="true"/>
+  <competitors>
+    <competitor id="sr:competitor:342676" name="MC Alger" country="Algeria" country_code="DZA" abbreviation="MCA">
+      <reference_ids>
+        <reference_id name="betradar" value="5337435"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342652" name="USM El Harrach" country="Algeria" country_code="DZA" abbreviation="USMH">
+      <reference_ids>
+        <reference_id name="betradar" value="5341352"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342642" name="ES Setif" country="Algeria" country_code="DZA" abbreviation="ESS">
+      <reference_ids>
+        <reference_id name="betradar" value="5346410"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342634" name="ASO Chlef" country="Algeria" country_code="DZA" abbreviation="ASO">
+      <reference_ids>
+        <reference_id name="betradar" value="5346753"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342638" name="CR Belouizdad" country="Algeria" country_code="DZA" abbreviation="BEL">
+      <reference_ids>
+        <reference_id name="betradar" value="5359422"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342674" name="MC El Eulma" country="Algeria" country_code="DZA" abbreviation="MCE">
+      <reference_ids>
+        <reference_id name="betradar" value="5359423"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342644" name="JS Kabylie" country="Algeria" country_code="DZA" abbreviation="JSK">
+      <reference_ids>
+        <reference_id name="betradar" value="5363543"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342672" name="MC Oran" country="Algeria" country_code="DZA" abbreviation="MCO">
+      <reference_ids>
+        <reference_id name="betradar" value="5365048"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342636" name="CA Batna" country="Algeria" country_code="DZA" abbreviation="BAT">
+      <reference_ids>
+        <reference_id name="betradar" value="5383238"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:374920" name="Wa Tlemcen" country="Algeria" country_code="DZA" abbreviation="WTL">
+      <reference_ids>
+        <reference_id name="betradar" value="5390154"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342666" name="Na Hussein Dey" country="Algeria" country_code="DZA" abbreviation="NAHD">
+      <reference_ids>
+        <reference_id name="betradar" value="5396279"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342654" name="USM Blida" country="Algeria" country_code="DZA" abbreviation="USMB">
+      <reference_ids>
+        <reference_id name="betradar" value="5396901"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342670" name="MC Saida" country="Algeria" country_code="DZA" abbreviation="MCS">
+      <reference_ids>
+        <reference_id name="betradar" value="5602229"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342658" name="USM Alger" country="Algeria" country_code="DZA" abbreviation="USMA">
+      <reference_ids>
+        <reference_id name="betradar" value="5908008"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342656" name="USM Bel Abbes" country="Algeria" country_code="DZA" abbreviation="UBA">
+      <reference_ids>
+        <reference_id name="betradar" value="6505367"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342648" name="CS Constantine" country="Algeria" country_code="DZA" abbreviation="CSC">
+      <reference_ids>
+        <reference_id name="betradar" value="6513882"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342646" name="JS Saoura" country="Algeria" country_code="DZA" abbreviation="JSS">
+      <reference_ids>
+        <reference_id name="betradar" value="6518812"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342662" name="RC Arba" country="Algeria" country_code="DZA" abbreviation="RCA">
+      <reference_ids>
+        <reference_id name="betradar" value="6787948"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342668" name="MO Bejaia" country="Algeria" country_code="DZA" abbreviation="MOB">
+      <reference_ids>
+        <reference_id name="betradar" value="6787963"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342650" name="USMM Hadjout" country="Algeria" country_code="DZA" abbreviation="USMM">
+      <reference_ids>
+        <reference_id name="betradar" value="6971295"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342640" name="DRB Tadjenant" country="Algeria" country_code="DZA" abbreviation="DRBT">
+      <reference_ids>
+        <reference_id name="betradar" value="7578983"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342664" name="Olympique Medea" country="Algeria" country_code="DZA" abbreviation="OLM">
+      <reference_ids>
+        <reference_id name="betradar" value="7592375"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:342660" name="RC Relizane" country="Algeria" country_code="DZA" abbreviation="RCR">
+      <reference_ids>
+        <reference_id name="betradar" value="7592376"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:371364" name="AC Paradou" country="Algeria" country_code="DZA" abbreviation="ACP">
+      <reference_ids>
+        <reference_id name="betradar" value="8109134"/>
+      </reference_ids>
+    </competitor>
+    <competitor id="sr:competitor:321789" name="US Biskra" country="Algeria" country_code="DZA" abbreviation="USB">
+      <reference_ids>
+        <reference_id name="betradar" value="9559592"/>
+      </reference_ids>
+    </competitor>
+  </competitors>
+</tournament_info>

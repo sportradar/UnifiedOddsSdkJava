@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<sports xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-08-10T12:43:17+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/sports.xsd">
+  <sport id="sr:sport:69" name="Moto3"/>
+  <sport id="sr:sport:43" name="Alpesi sielés"/>
+  <sport id="sr:sport:74" name="Vízi sportok"/>
+  <sport id="sr:sport:75" name="Íjászat"/>
+  <sport id="sr:sport:36" name="Atlétika"/>
+  <sport id="sr:sport:13" name="Ausztrál futball"/>
+  <sport id="sr:sport:31" name="Tollaslabda"/>
+  <sport id="sr:sport:15" name="Bandy"/>
+  <sport id="sr:sport:3" name="Baseball"/>
+  <sport id="sr:sport:2" name="Kosárlabda"/>
+  <sport id="sr:sport:130" name="Basque Pelota"/>
+  <sport id="sr:sport:60" name="Strandlabdarúgás"/>
+  <sport id="sr:sport:98" name="Strandtenisz"/>
+  <sport id="sr:sport:34" name="Stranröplabda"/>
+  <sport id="sr:sport:44" name="Biatlon"/>
+  <sport id="sr:sport:41" name="Motorkerékpár"/>
+  <sport id="sr:sport:45" name="Bob"/>
+  <sport id="sr:sport:32" name="Golyósport"/>
+  <sport id="sr:sport:10" name="Boksz"/>
+  <sport id="sr:sport:92" name="Szlalom Kajak-Kenu"/>
+  <sport id="sr:sport:72" name="Kenu"/>
+  <sport id="sr:sport:33" name="Sakk"/>
+  <sport id="sr:sport:21" name="Krikett"/>
+  <sport id="sr:sport:46" name="Sífutás"/>
+  <sport id="sr:sport:28" name="Curling"/>
+  <sport id="sr:sport:17" name="Kerékpár"/>
+  <sport id="sr:sport:91" name="BMX"/>
+  <sport id="sr:sport:88" name="Hegyikerékpár"/>
+  <sport id="sr:sport:97" name="Pályakerékpár"/>
+  <sport id="sr:sport:22" name="Darts"/>
+  <sport id="sr:sport:96" name="Műugrás"/>
+  <sport id="sr:sport:42" name="Német Túraautó-bajnokság"/>
+  <sport id="sr:sport:107" name="eSport"/>
+  <sport id="sr:sport:76" name="Lovaglás"/>
+  <sport id="sr:sport:118" name="Call of Duty"/>
+  <sport id="sr:sport:133" name="ESport Clash Royale"/>
+  <sport id="sr:sport:109" name="Counter-Strike"/>
+  <sport id="sr:sport:123" name="Crossfire"/>
+  <sport id="sr:sport:111" name="Dota"/>
+  <sport id="sr:sport:132" name="ESport Gears of War"/>
+  <sport id="sr:sport:124" name="Halo"/>
+  <sport id="sr:sport:113" name="Hearthstone"/>
+  <sport id="sr:sport:114" name="Heroes of the Storm"/>
+  <sport id="sr:sport:134" name="ESport King of Glory"/>
+  <sport id="sr:sport:110" name="League of Legends"/>
+  <sport id="sr:sport:121" name="Overwatch"/>
+  <sport id="sr:sport:125" name="Rainbow Six"/>
+  <sport id="sr:sport:128" name="Rocket League"/>
+  <sport id="sr:sport:119" name="Smite"/>
+  <sport id="sr:sport:112" name="StarCraft"/>
+  <sport id="sr:sport:127" name="Street Fighter V"/>
+  <sport id="sr:sport:120" name="Vainglory"/>
+  <sport id="sr:sport:122" name="WarCraft III"/>
+  <sport id="sr:sport:115" name="World of Tanks"/>
+  <sport id="sr:sport:77" name="Vívás"/>
+  <sport id="sr:sport:24" name="gyeplabda"/>
+  <sport id="sr:sport:102" name="Műkorcsolya"/>
+  <sport id="sr:sport:53" name="Finn baseball"/>
+  <sport id="sr:sport:7" name="Floorball"/>
+  <sport id="sr:sport:16" name="Amerikai futball"/>
+  <sport id="sr:sport:40" name="Forma 1"/>
+  <sport id="sr:sport:103" name="Síakrobatika"/>
+  <sport id="sr:sport:29" name="Futsal"/>
+  <sport id="sr:sport:135" name="Gaelic Football"/>
+  <sport id="sr:sport:136" name="Gaelic Hurling"/>
+  <sport id="sr:sport:27" name="Kelta sportok"/>
+  <sport id="sr:sport:9" name="Golf"/>
+  <sport id="sr:sport:58" name="Agárfutás"/>
+  <sport id="sr:sport:78" name="Torna"/>
+  <sport id="sr:sport:6" name="Kézilabda"/>
+  <sport id="sr:sport:55" name="Lóverseny"/>
+  <sport id="sr:sport:73" name="Lovaspóló"/>
+  <sport id="sr:sport:4" name="Jégkorong"/>
+  <sport id="sr:sport:129" name="Indycar"/>
+  <sport id="sr:sport:57" name="Inline Jégkorong"/>
+  <sport id="sr:sport:79" name="Cselgáncs"/>
+  <sport id="sr:sport:39" name="lakross"/>
+  <sport id="sr:sport:51" name="Szánkó"/>
+  <sport id="sr:sport:117" name="MMA"/>
+  <sport id="sr:sport:80" name="Öttusa"/>
+  <sport id="sr:sport:68" name="Moto2"/>
+  <sport id="sr:sport:67" name="MotoGP"/>
+  <sport id="sr:sport:11" name="Motorsport"/>
+  <sport id="sr:sport:70" name="Nascar"/>
+  <sport id="sr:sport:35" name="Netball"/>
+  <sport id="sr:sport:47" name="Északi összetett"/>
+  <sport id="sr:sport:30" name="Olimpia"/>
+  <sport id="sr:sport:87" name="Ifjúsági olimpia"/>
+  <sport id="sr:sport:71" name="Padel Tennis"/>
+  <sport id="sr:sport:61" name="Pesapallo"/>
+  <sport id="sr:sport:116" name="Polo"/>
+  <sport id="sr:sport:25" name="Pool"/>
+  <sport id="sr:sport:101" name="Rally"/>
+  <sport id="sr:sport:93" name="Ritmikus sportgimnasztika"/>
+  <sport id="sr:sport:89" name="Kerékpározás"/>
+  <sport id="sr:sport:38" name="Görkorcsolyás hoki"/>
+  <sport id="sr:sport:64" name="Evezés"/>
+  <sport id="sr:sport:12" name="Rögbi"/>
+  <sport id="sr:sport:59" name="Rögbi Liga"/>
+  <sport id="sr:sport:81" name="Vitorlázás"/>
+  <sport id="sr:sport:56" name="Svájci Népi Birkózás"/>
+  <sport id="sr:sport:126" name="Sepak Takraw"/>
+  <sport id="sr:sport:82" name="Lövészet"/>
+  <sport id="sr:sport:105" name="Rövidpályás gyorskorcsolya"/>
+  <sport id="sr:sport:104" name="Szkeleton"/>
+  <sport id="sr:sport:48" name="Síugrás"/>
+  <sport id="sr:sport:19" name="Snooker"/>
+  <sport id="sr:sport:49" name="Snowboard"/>
+  <sport id="sr:sport:65" name="Freestyle"/>
+  <sport id="sr:sport:66" name="Snowboardcross/Parallel"/>
+  <sport id="sr:sport:1" name="Labdarúgás"/>
+  <sport id="sr:sport:106" name="Soccer Mythical"/>
+  <sport id="sr:sport:54" name="Softball"/>
+  <sport id="sr:sport:18" name="Speciálisak"/>
+  <sport id="sr:sport:50" name="Gyorskorcsolya"/>
+  <sport id="sr:sport:131" name="Speedway"/>
+  <sport id="sr:sport:37" name="Squash"/>
+  <sport id="sr:sport:62" name="Utcai jégkorong"/>
+  <sport id="sr:sport:99" name="Szumó"/>
+  <sport id="sr:sport:100" name="Superbike"/>
+  <sport id="sr:sport:90" name="Szörf"/>
+  <sport id="sr:sport:52" name="úszás"/>
+  <sport id="sr:sport:95" name="Szinkronúszás"/>
+  <sport id="sr:sport:20" name="asztalitenisz"/>
+  <sport id="sr:sport:83" name="Taekwondo"/>
+  <sport id="sr:sport:5" name="Tenisz"/>
+  <sport id="sr:sport:94" name="Trambulin"/>
+  <sport id="sr:sport:84" name="Triatlon"/>
+  <sport id="sr:sport:8" name="Ügető"/>
+  <sport id="sr:sport:23" name="Röplabda"/>
+  <sport id="sr:sport:26" name="Vízilabda"/>
+  <sport id="sr:sport:85" name="Súlyemelés"/>
+  <sport id="sr:sport:14" name="Téli sportok"/>
+  <sport id="sr:sport:63" name="Világbajnokság"/>
+  <sport id="sr:sport:108" name="Világ Lottó"/>
+  <sport id="sr:sport:86" name="Birkózás"/>
+</sports>

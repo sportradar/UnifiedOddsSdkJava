@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<player_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-05-17T08:39:56+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/player_profile.xsd">
+  <player id="sr:player:1" name="van Persie, Robin" type="forward" date_of_birth="1983-08-06" nationality="Hollandia" country_code="NLD" height="183" weight="71"/>
+</player_profile>

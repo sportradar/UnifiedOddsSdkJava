@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<competitor_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-06-06T11:45:16+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/competitor_profile.xsd">
+  <competitor id="sr:competitor:66410" name="Tecolotes de Los Dos Laredos" country="Mexikó" country_code="MEX" abbreviation="TEL" gender="male">
+    <sport id="sr:sport:3" name="Baseball"/>
+    <category id="sr:category:426" name="Mexikó" country_code="MEX"/>
+  </competitor>
+  <venue id="sr:venue:5002" name="Estadio Universitario Beto Ávila" capacity="7782" city_name="Veracruz" country_name="Mexikó" map_coordinates="19.165097,-96.122736" country_code="MEX"/>
+  <jerseys>
+    <jersey type="home" base="ffffff" sleeve="ff4848" number="000000" squares="false" stripes="true" stripes_color="ff4242" horizontal_stripes="false" split="false" shirt_type="short_sleeves" sleeve_detail="ffffff"/>
+    <jersey type="away" base="00366c" sleeve="ff2828" number="ffffff" squares="false" stripes="false" horizontal_stripes="false" split="false" shirt_type="short_sleeves"/>
+  </jerseys>
+</competitor_profile>

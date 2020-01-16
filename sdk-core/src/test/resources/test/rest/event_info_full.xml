@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+<match_summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2016-10-30T10:48:53+00:00"
+               xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="">
+  <sport_event id="sr:match:8629792" scheduled="2016-04-02T11:00:00+00:00">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12250" name="Allsvenskan 2016"/>
+    <tournament id="sr:tournament:40" name="Allsvenskan">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:9" name="Sweden"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:1892" name="Malmo FF" country="Sweden" abbreviation="MAL" qualifier="home"/>
+      <competitor id="sr:competitor:1769" name="IFK Norrkoping" country="Sweden" abbreviation="NKP" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event_conditions attendance="21085">
+    <referee id="sr:referee:52276" name="Johannesson, Stefan" nationality="Sweden"/>
+    <venue id="sr:venue:1211" name="Swedbank Stadion" capacity="24000" city_name="Malmo" country_name="Sweden" map_coordinates="55.583611,12.987778"/>
+    <weather_info pitch="good" weather_conditions="good"/>
+  </sport_event_conditions>
+  <sport_event_status status="closed" home_score="3" away_score="1" winner_id="sr:competitor:1892">
+    <period_scores>
+      <period_score home_score="1" away_score="1" type="regular_period" number="1"/>
+      <period_score home_score="2" away_score="0" type="regular_period" number="2"/>
+    </period_scores>
+  </sport_event_status>
+</match_summary>

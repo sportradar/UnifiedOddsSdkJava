@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<race_summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2016-10-30T10:44:21+00:00"
+              xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="">
+  <sport_event id="sr:race_event:265244" scheduled="2016-10-30T08:00:00+01:00" scheduled_end="2016-10-30T09:00:00+01:00" name="Race" type="child">
+    <parent id="sr:race_event:265228" name="Malaysian Motorcycle Grand Prix 2016" type="parent"/>
+    <tournament id="sr:race_tournament:254822" scheduled="2016-03-17T17:55:00+01:00" scheduled_end="2016-11-13T14:00:00+01:00" name="MotoGP 2016">
+      <sport id="sr:sport:11" name="Auto-moto"/>
+      <category id="sr:category:50" name="Motos"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:4540" name="Rossi, Valentino" abbreviation="ROS"/>
+      <competitor id="sr:competitor:4594" name="Barbera, Hector" abbreviation="BAR"/>
+      <competitor id="sr:competitor:4603" name="Lorenzo, Jorge" abbreviation="LOR"/>
+      <competitor id="sr:competitor:4596" name="Dovizioso, Andrea" abbreviation="DOV"/>
+      <competitor id="sr:competitor:4582" name="Aoyama, Hiroshi" abbreviation="AOY"/>
+      <competitor id="sr:competitor:4599" name="Bautista, Alvaro" abbreviation="BAU"/>
+      <competitor id="sr:competitor:4935" name="Laverty, Eugene" abbreviation="LAV"/>
+      <competitor id="sr:competitor:4976" name="Espargaro, Aleix" abbreviation="ESP"/>
+      <competitor id="sr:competitor:4986" name="Iannone, Andrea" abbreviation="IAN"/>
+      <competitor id="sr:competitor:5019" name="Bradl, Stefan" abbreviation="BRA"/>
+      <competitor id="sr:competitor:5557" name="Rabat, Esteve" abbreviation="RAB"/>
+      <competitor id="sr:competitor:5854" name="Smith, Bradley" abbreviation="SMI"/>
+      <competitor id="sr:competitor:5953" name="Espargaro, Pol" abbreviation="ESP"/>
+      <competitor id="sr:competitor:49401" name="CRUTCHLOW, CAL" abbreviation="CRU"/>
+      <competitor id="sr:competitor:22000" name="Redding, Scott" abbreviation="RED"/>
+      <competitor id="sr:competitor:21999" name="Marquez, Marc" abbreviation="MAR"/>
+      <competitor id="sr:competitor:41243" name="Hernandez, Yonny" abbreviation="HER"/>
+      <competitor id="sr:competitor:91656" name="BAZ, LORIS" abbreviation="BAZ"/>
+      <competitor id="sr:competitor:49896" name="VINALES, MAVERICK" abbreviation="VIN"/>
+      <competitor id="sr:competitor:53145" name="MILLER, JACK" abbreviation="MIL"/>
+      <competitor id="sr:competitor:63668" name="PETRUCCI, DANILO" abbreviation="PET"/>
+    </competitors>
+  </sport_event>
+  <sport_event_conditions/>
+  <sport_event_status status="ended" winner_id="sr:competitor:4596">
+    <results>
+      <competitor id="sr:competitor:4596" position="1" points="25" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4540" position="2" points="20" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4603" position="3" points="16" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4594" position="4" points="13" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:91656" position="5" points="11" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:49896" position="6" points="10" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4599" position="7" points="9" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:53145" position="8" points="8" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:5953" position="9" points="7" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:63668" position="10" points="6" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:21999" position="11" points="5" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4935" position="12" points="4" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4976" position="13" points="3" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:5854" position="14" points="2" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:22000" position="15" points="1" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:5019" position="16" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4582" position="17" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:5557" position="18" status="finished" status_comment="Fini"/>
+      <competitor id="sr:competitor:4986" position="19" status="out" status_comment="Abandon"/>
+      <competitor id="sr:competitor:49401" position="20" status="out" status_comment="Abandon"/>
+      <competitor id="sr:competitor:41243" position="21" status="out" status_comment="Abandon"/>
+    </results>
+  </sport_event_status>
+</race_summary>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<match_summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-05-23T12:29:10+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/match_summary.xsd">
+  <sport_event id="sr:match:1" scheduled="2018-05-15T07:30:00+00:00" start_time_tbd="false">
+    <tournament_round type="cup" name="round_of_32"/>
+    <season id="sr:season:53254" name="2018 ITF Spain 07A, Women Singles" start_date="2018-05-12" end_date="2018-05-20" year="2018" tournament_id="sr:tournament:13703"/>
+    <tournament id="sr:tournament:13703" name="ITF Spain 07A, Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Frauen"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:1" name="Cavalle-Reimers, Yvonne" country="Spanien" country_code="ESP" abbreviation="CAV" qualifier="home">
+        <reference_ids>
+          <reference_id name="betradar" value="5616081"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:2" name="Zacarias, Marcela" country="Mexiko" country_code="MEX" abbreviation="ZAC" qualifier="away">
+        <reference_ids>
+          <reference_id name="betradar" value="6106403"/>
+        </reference_ids>
+      </competitor>
+    </competitors>
+    <venue id="sr:venue:29358" name="Court 3" city_name="La Bisbal" country_name="Spanien" country_code="ESP"/>
+  </sport_event>
+  <sport_event_conditions match_mode="bo3">
+    <venue id="sr:venue:29358" name="Court 3" city_name="La Bisbal" country_name="Spanien" country_code="ESP"/>
+  </sport_event_conditions>
+  <sport_event_status status="closed" match_status="ended" home_score="1" away_score="2" winner_id="sr:competitor:2" status_code="4" match_status_code="100">
+    <period_scores>
+      <period_score home_score="1" away_score="6" type="regular_period" number="1"/>
+      <period_score home_score="6" away_score="3" type="regular_period" number="2"/>
+      <period_score home_score="3" away_score="6" type="regular_period" number="3"/>
+    </period_scores>
+  </sport_event_status>
+</match_summary>

@@ -1,0 +1,1109 @@
+﻿<?xml version="1.0"?>
+<schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2016-09-23T11:59:23+00:00"
+          xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="">
+  <sport_event id="sr:match:10217963" scheduled="2016-09-23T04:55:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="semifinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:12679" name="NRL Holden Cup 2016"/>
+    <tournament id="sr:tournament:2146" name="NRL Holden Cup">
+      <sport id="sr:sport:12" name="Rugby"/>
+      <category id="sr:category:83" name="Rugby League"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:195386" name="Penrith Panthers" abbreviation="PPA" qualifier="home"/>
+      <competitor id="sr:competitor:195382" name="North Queensland Cowboys" abbreviation="NQC" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10237871" scheduled="2016-09-23T08:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:simpleteam:9053023" name="LSB BLACK SHARKS" abbreviation="LSB" qualifier="home"/>
+      <competitor id="sr:simpleteam:9053024" name="EARIST RED FOX" abbreviation="EAR" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:38482" name="NAASCU">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:539" name="Philippines"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10260823" scheduled="2016-09-23T08:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35165" name="2016 ITF Women Saint Malo, France Men Singles"/>
+    <tournament id="sr:tournament:14341" name="ITF Women Saint Malo, France Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:286693" name="CADANTU A / CRISTIAN  J A" country="Romania" abbreviation="C/C" qualifier="home"/>
+      <competitor id="sr:competitor:115083" name="MATTEUCCI A / ROSATELLO C" country="Italy" abbreviation="M/R" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260633" scheduled="2016-09-23T08:30:00+00:00" liveodds="not_available">
+    <tournament_round type="qualification"/>
+    <tournament id="sr:tournament:11117" name="WTA Wuhan, China Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:6" name="WTA"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:19655" name="NICULESCU, MONICA" country="Romania" abbreviation="NIC" qualifier="home"/>
+      <competitor id="sr:competitor:51599" name="CRAWFORD, SAMANTHA" country="USA" abbreviation="CRA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9113025" scheduled="2016-09-23T09:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12741" name="Professional Baseball 2016"/>
+    <tournament id="sr:tournament:1036" name="Professional Baseball">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:211" name="Japan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:34374" name="Yomiuri Giants" country="USA" abbreviation="YOG" qualifier="home"/>
+      <competitor id="sr:competitor:67110" name="Yokohama Dena Baystars" country="Japan" abbreviation="YDB" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9114401" scheduled="2016-09-23T09:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12741" name="Professional Baseball 2016"/>
+    <tournament id="sr:tournament:1036" name="Professional Baseball">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:211" name="Japan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:67114" name="Hokkaido Nippon-Ham Fighters" country="Japan" abbreviation="HNF" qualifier="home"/>
+      <competitor id="sr:competitor:67118" name="Tohoku Rakuten Golden Eagles" country="Japan" abbreviation="TRG" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9114403" scheduled="2016-09-23T09:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12741" name="Professional Baseball 2016"/>
+    <tournament id="sr:tournament:1036" name="Professional Baseball">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:211" name="Japan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:67120" name="Saitama Seibu Lions" country="Japan" abbreviation="SSL" qualifier="home"/>
+      <competitor id="sr:competitor:67122" name="Fukuoka Softbank Hawks" country="Japan" abbreviation="FSH" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9995655" scheduled="2016-09-23T09:00:00+00:00" liveodds="not_available">
+    <tournament id="sr:tournament:1974" name="Liga Bet South A">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:9008349" name="SHIMSHON TEL AVIV" abbreviation="SHI" qualifier="home"/>
+      <competitor id="sr:simpleteam:7424447" name="SC CPA TEL AVIV" abbreviation="SCC" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10250375" scheduled="2016-09-23T09:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:simpleteam:6625000" name="AZAL PFC BAKU" abbreviation="AZA" qualifier="home"/>
+      <competitor id="sr:simpleteam:6611686" name="INTER BAKU" abbreviation="INT" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:22247" name="Reserve League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:297" name="Azerbaijan"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10260635" scheduled="2016-09-23T09:10:00+00:00" liveodds="not_available">
+    <tournament_round type="qualification"/>
+    <tournament id="sr:tournament:11117" name="WTA Wuhan, China Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:6" name="WTA"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:43845" name="LIU, CHANG" country="China" abbreviation="LIU" qualifier="home"/>
+      <competitor id="sr:competitor:41404" name="WATSON, HEATHER" country="Great Britain" abbreviation="WAT" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259805" scheduled="2016-09-23T09:15:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35183" name="2016 ITF Men Kiriyat Gat, Israel Men Double"/>
+    <tournament id="sr:tournament:13007" name="ITF Men Kiriyat Gat, Israel Men Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:286671" name="BAR D / CLAYTON S" abbreviation="B/C" qualifier="home"/>
+      <competitor id="sr:competitor:285401" name="CANTER A / PAUFFLEY N" abbreviation="C/P" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259821" scheduled="2016-09-23T09:20:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35183" name="2016 ITF Men Kiriyat Gat, Israel Men Double"/>
+    <tournament id="sr:tournament:13007" name="ITF Men Kiriyat Gat, Israel Men Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:286687" name="ANANDAN B / SMITH A" abbreviation="A/S" qualifier="home"/>
+      <competitor id="sr:competitor:266271" name="LAMMONS N / WEBB D" abbreviation="L/W" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10231743" scheduled="2016-09-23T09:30:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <tournament id="sr:tournament:2541" name="KBO League ">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:384" name="South Korea"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:249977" name="Samsung Lions" country="South Korea" abbreviation="LIO" qualifier="home"/>
+      <competitor id="sr:competitor:249961" name="Doosan Bears" country="South Korea" abbreviation="BEA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10231745" scheduled="2016-09-23T09:30:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <tournament id="sr:tournament:2541" name="KBO League ">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:384" name="South Korea"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:249973" name="NC Dinos" country="South Korea" abbreviation="DIN" qualifier="home"/>
+      <competitor id="sr:competitor:249965" name="Kia Tigers" country="South Korea" abbreviation="TIG" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10231747" scheduled="2016-09-23T09:30:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <tournament id="sr:tournament:2541" name="KBO League ">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:384" name="South Korea"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:249967" name="KT Wiz" country="South Korea" abbreviation="WIZ" qualifier="home"/>
+      <competitor id="sr:competitor:249979" name="SK Wyverns" country="South Korea" abbreviation="WYV" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260645" scheduled="2016-09-23T09:45:00+00:00" liveodds="not_available">
+    <tournament_round type="qualification"/>
+    <tournament id="sr:tournament:11117" name="WTA Wuhan, China Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:6" name="WTA"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:19686" name="GOERGES, JULIA" country="Germany" abbreviation="GOE" qualifier="home"/>
+      <competitor id="sr:competitor:41524" name="KRUNIC, ALEXANDRA" country="Serbia" abbreviation="KRU" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10218337" scheduled="2016-09-23T09:50:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="semifinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:12036" name="AFL 2016"/>
+    <tournament id="sr:tournament:656" name="AFL">
+      <sport id="sr:sport:13" name="Aussie Rules"/>
+      <category id="sr:category:87" name="Australia"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:4443" name="Geelong Cats" country="Australia" abbreviation="GEE" qualifier="home"/>
+      <competitor id="sr:competitor:4447" name="Sydney Swans" country="Australia" abbreviation="SYD" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259831" scheduled="2016-09-23T09:55:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35229" name="2016 ITF Women Kiriyat Gat, Israel Women Double"/>
+    <tournament id="sr:tournament:13001" name="ITF Women Kiriyat Gat, Israel Women Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:287311" name="EKSHIBAROVA V / SEZER M" abbreviation="E/S" qualifier="home"/>
+      <competitor id="sr:competitor:285395" name="AROL WIEGAND S / WALTERS A" abbreviation="A/W" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260629" scheduled="2016-09-23T09:55:00+00:00" liveodds="not_available">
+    <tournament_round type="qualification"/>
+    <tournament id="sr:tournament:11117" name="WTA Wuhan, China Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:6" name="WTA"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:74443" name="KONJUH, ANA" country="Croatia" abbreviation="KON" qualifier="home"/>
+      <competitor id="sr:competitor:47775" name="MIN, GRACE" country="USA" abbreviation="MIN" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9995761" scheduled="2016-09-23T10:00:00+00:00" liveodds="not_available">
+    <tournament id="sr:tournament:1972" name="Liga Bet South B">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:5988684" name="MOADON TZEIREY RAHAT" abbreviation="MOA" qualifier="home"/>
+      <competitor id="sr:simpleteam:6428580" name="IRONI BEIT SHEMESH" abbreviation="IRO" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10153429" scheduled="2016-09-23T10:00:00+00:00" liveodds="not_available">
+    <tournament_round type="qualification" number="3" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:12364" name="V-League 2016"/>
+    <tournament id="sr:tournament:626" name="V-League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:366" name="Vietnam"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:33122" name="Dong Tam Long An" country="Vietnam" abbreviation="LAN" qualifier="home"/>
+      <competitor id="sr:competitor:240632" name="Viettel FC" country="Vietnam" abbreviation="VIE" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10205523" scheduled="2016-09-23T10:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1" group="Gr. 13"/>
+    <season id="sr:season:12136" name="U17 European Ch.ship QF 2017"/>
+    <tournament id="sr:tournament:755" name="U17 European Ch.ship QF">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:392" name="International Youth"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:22481" name="Turkey" country="Turkey" abbreviation="TUR" qualifier="home"/>
+      <competitor id="sr:competitor:22638" name="Norway" country="Norway" abbreviation="NOR" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10251205" scheduled="2016-09-23T10:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:35405" name="B.League 16/17"/>
+    <tournament id="sr:tournament:1502" name="B.League ">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:483" name="Japan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:123560" name="Toyota Alvark Tokyo" country="Japan" abbreviation="TOY" qualifier="home"/>
+      <competitor id="sr:competitor:124608" name="Ryukyu Golden Kings Okinawa" country="Japan" abbreviation="GOL" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259781" scheduled="2016-09-23T10:00:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34089" name="2016 ATP Challenger Sibiu, Romania Men Singles"/>
+    <tournament id="sr:tournament:8291" name="ATP Challenger Sibiu, Romania Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:52293" name="PUETZ, TIM" country="Germany" abbreviation="PUE" qualifier="home"/>
+      <competitor id="sr:competitor:15148" name="UNGUR, ADRIAN" country="Romania" abbreviation="UNG" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260597" scheduled="2016-09-23T10:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35195" name="2016 ITF Women Podgorica, Montenegro Women Singles"/>
+    <tournament id="sr:tournament:5767" name="ITF Women Podgorica, Montenegro Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:52303" name="LEMOINE, QUIRINE" country="Netherlands" abbreviation="LEM" qualifier="home"/>
+      <competitor id="sr:competitor:96237" name="PIERI, JESSICA" country="Italy" abbreviation="PIE" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260601" scheduled="2016-09-23T10:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35195" name="2016 ITF Women Podgorica, Montenegro Women Singles"/>
+    <tournament id="sr:tournament:5767" name="ITF Women Podgorica, Montenegro Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:77993" name="JOROVIC, IVANA" country="Serbia" abbreviation="JOR" qualifier="home"/>
+      <competitor id="sr:competitor:40142" name="ORMAECHEA, PAULA" country="Argentina" abbreviation="ORM" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259835" scheduled="2016-09-23T10:05:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35231" name="2016 ITF Women Brno, Czech Republic Women Singles"/>
+    <tournament id="sr:tournament:13053" name="ITF Women Brno, Czech Republic Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:182054" name="KOLODZIEJOVA, MIRIAM" country="Czech Republic" abbreviation="KOL" qualifier="home"/>
+      <competitor id="sr:competitor:93687" name="TOMANOVA, NIKOLA" country="Czech Republic" abbreviation="TOM" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260057" scheduled="2016-09-23T10:05:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35177" name="2016 ITF Men Sokobanja, Serbia Men Singles"/>
+    <tournament id="sr:tournament:10685" name="ITF Men Sokobanja, Serbia Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:211284" name="LAZAROV, ALEXANDAR" country="Bulgaria" abbreviation="LAZ" qualifier="home"/>
+      <competitor id="sr:competitor:79521" name="GALOPPINI, DAVIDE" country="Italy" abbreviation="GAL" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260723" scheduled="2016-09-23T10:15:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:31773" name="2016 ITF Men Hammamet, Tunisia Men Singles"/>
+    <tournament id="sr:tournament:13401" name="ITF Men Hammamet, Tunisia Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:158912" name="VACHEROT, VALENTIN" country="France" abbreviation="VAC" qualifier="home"/>
+      <competitor id="sr:competitor:97471" name="UBIERGO, JORDAN" country="France" abbreviation="UBI" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10264885" scheduled="2016-09-23T10:15:00+00:00" liveodds="not_available">
+    <tournament_round type="qualification"/>
+    <tournament id="sr:tournament:11117" name="WTA Wuhan, China Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:6" name="WTA"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:19934" name="RISKE, ALISON" country="USA" abbreviation="RIS" qualifier="home"/>
+      <competitor id="sr:competitor:18370" name="RODIONOVA, ANASTASSIA" country="Australia" abbreviation="ROD" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260665" scheduled="2016-09-23T10:30:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:27479" name="2016 ITF Men Santa Margherita Di Pula, Italy Men Double"/>
+    <tournament id="sr:tournament:9721" name="ITF Men Santa Margherita Di Pula, Italy Men Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:233834" name="COTRONE D / RYBAKOV A" abbreviation="C/R" qualifier="home"/>
+      <competitor id="sr:competitor:119910" name="FALLERT F / RAAB D" abbreviation="F/R" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259919" scheduled="2016-09-23T10:35:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35185" name="2016 ITF Men Dunakeszi, Hungary Men Singles"/>
+    <tournament id="sr:tournament:14345" name="ITF Men Dunakeszi, Hungary Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:49206" name="MESAROS, KRISTIJAN" country="Croatia" abbreviation="MES" qualifier="home"/>
+      <competitor id="sr:competitor:60260" name="FABIAN, PATRIK" country="Slovakia" abbreviation="FAB" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260693" scheduled="2016-09-23T10:40:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35167" name="2016 ITF Women Saint Malo, France Women Double"/>
+    <tournament id="sr:tournament:8761" name="ITF Women Saint Malo, France Women Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:41189" name="KAMENSKAYA, VIKTORIA" country="Russia" abbreviation="KAM" qualifier="home"/>
+      <competitor id="sr:competitor:41278" name="ZANEVSKA, MARYNA" country="Ukraine" abbreviation="ZAN" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260741" scheduled="2016-09-23T10:45:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35169" name="2016 ITF Men Seville, Spain Men Singles"/>
+    <tournament id="sr:tournament:8789" name="ITF Men Seville, Spain Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:108565" name="ZAPATA MIRALLES, BERNABE" country="Spain" abbreviation="ZAP" qualifier="home"/>
+      <competitor id="sr:competitor:57327" name="DOMINGUES, JOAO" country="Portugal" abbreviation="DOM" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259577" scheduled="2016-09-23T10:50:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="semifinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <competitors>
+      <competitor id="sr:competitor:220614" name="Team Envyus" country="USA" abbreviation="ENV" qualifier="home"/>
+      <competitor id="sr:competitor:257547" name="Epsilon eSports" country="Belgium" abbreviation="EPS" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:55474" name="Gfinity CS:GO Invitational">
+      <sport id="sr:sport:109" name="Counter-Strike"/>
+      <category id="sr:category:1415" name="GFinity CS:GO"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:9901317" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="7"/>
+    <season id="sr:season:34289" name="U19 1st Division 16/17"/>
+    <tournament id="sr:tournament:822" name="U19 1st Division">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:18" name="Czech Republic"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:105943" name="Karvina" country="Czech Republic" abbreviation="MFK" qualifier="home"/>
+      <competitor id="sr:competitor:44160" name="FC Hradec Kralove" country="Czech Republic" abbreviation="HKR" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9989969" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:1970" name="Liga Alef">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:238982" name="SC Kfar Qasem" country="Israel" abbreviation="KQA" qualifier="home"/>
+      <competitor id="sr:simpleteam:9005294" name="SPORT CLUB DIMONA" abbreviation="SPO" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9989979" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <tournament id="sr:tournament:1970" name="Liga Alef">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:7384" name="Hapoel Marmorek" country="Israel" abbreviation="HMA" qualifier="home"/>
+      <competitor id="sr:competitor:5376" name="Hakoah Ramat Gan" country="Israel" abbreviation="HAR" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9990111" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:1970" name="Liga Alef">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:39518" name="Beitar Kfar Saba Shlomi" country="Israel" abbreviation="KSS" qualifier="home"/>
+      <competitor id="sr:competitor:61708" name="Maccabi Y." country="Israel" abbreviation="MYA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9990117" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <competitors>
+      <competitor id="sr:competitor:65198" name="Maccabi Ironi Kiryat Ata" country="Israel" abbreviation="MIK" qualifier="home"/>
+      <competitor id="sr:competitor:39525" name="Hapoel Hadera" country="Israel" abbreviation="HHA" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:54910" name="Liga Alef North">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10163509" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:simpleteam:5913503" name="LUCH-UOR N1 MOSCOW " abbreviation="LUC" qualifier="home"/>
+      <competitor id="sr:simpleteam:5913501" name="SDYUSSHOR N5 -UNIVERSITET-2 IZHEVSK" abbreviation="SDY" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:17725" name="Super League Reserve, Women">
+      <sport id="sr:sport:6" name="Handball"/>
+      <category id="sr:category:302" name="Russia"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10214003" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="8"/>
+    <season id="sr:season:33791" name="Youth League 16/17"/>
+    <tournament id="sr:tournament:879" name="Youth League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:21" name="Russia"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:49725" name="Rostov Youth" country="Russia" abbreviation="ROS" qualifier="home"/>
+      <competitor id="sr:competitor:49728" name="Lokomotiv Youth" country="Russia" abbreviation="LOK" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10238293" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:33407" name="PBA, Governors Cup 2016"/>
+    <tournament id="sr:tournament:1712" name="PBA, Governors Cup">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:539" name="Philippines"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:96577" name="Barangay Ginebra" country="Philippines" abbreviation="BAR" qualifier="home"/>
+      <competitor id="sr:competitor:96573" name="Alaska Aces" country="Philippines" abbreviation="ACE" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10253095" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:simpleteam:9125034" name="AVANGARD KIEV" abbreviation="AVA" qualifier="home"/>
+      <competitor id="sr:competitor:80839" name="Good Angels Kosice" country="Slovakia" abbreviation="GAK" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:48078" name="Eastern European Womens Basketball league">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:103" name="International"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10253615" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34065" name="2016 ATP Challenger Izmir, Turkey Men Singles"/>
+    <tournament id="sr:tournament:5791" name="ATP Challenger Izmir, Turkey Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:16327" name="COPIL, MARIUS" country="Romania" abbreviation="COP" qualifier="home"/>
+      <competitor id="sr:competitor:16615" name="ILHAN, MARSEL" country="Turkey" abbreviation="ILH" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10254927" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="25"/>
+    <season id="sr:season:12472" name="Premier League 2016"/>
+    <tournament id="sr:tournament:1644" name="Premier League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:805" name="Kenya"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:138496" name="Tusker Football Club" country="Kenya" abbreviation="TUS" qualifier="home"/>
+      <competitor id="sr:competitor:138484" name="Muhoroni Youth FC" country="Kenya" abbreviation="MUY" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259741" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34065" name="2016 ATP Challenger Izmir, Turkey Men Singles"/>
+    <tournament id="sr:tournament:5791" name="ATP Challenger Izmir, Turkey Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:89320" name="IVASHKA, ILYA" country="Belarus" abbreviation="IVA" qualifier="home"/>
+      <competitor id="sr:competitor:18066" name="BASIC, MIRZA" country="Bosnia &amp; Herzegovina" abbreviation="BAS" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259745" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:34965" name="2016 ITF Men Cairo, Egypt Men Singles"/>
+    <tournament id="sr:tournament:9617" name="ITF Men Cairo, Egypt Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:244917" name="GRACE, SAMY" country="Egypt" abbreviation="GRA" qualifier="home"/>
+      <competitor id="sr:competitor:116616" name="CLARKE, JAY" country="Great Britain" abbreviation="CLA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259837" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35231" name="2016 ITF Women Brno, Czech Republic Women Singles"/>
+    <tournament id="sr:tournament:13053" name="ITF Women Brno, Czech Republic Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:47969" name="WERNER, CAROLINE" country="Germany" abbreviation="WER" qualifier="home"/>
+      <competitor id="sr:competitor:71828" name="MIKLOVA, BARBORA" country="Czech Republic" abbreviation="MIK" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259987" scheduled="2016-09-23T11:00:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="semifinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34093" name="2016 ATP Challenger Kenitra, Morocco Men Singles"/>
+    <tournament id="sr:tournament:10643" name="ATP Challenger Kenitra, Morocco Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:71660" name="MARTERER, MAXIMILIAN" country="Germany" abbreviation="MAR" qualifier="home"/>
+      <competitor id="sr:competitor:15432" name="ANDUJAR, PABLO" country="Spain" abbreviation="AND" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260021" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:32461" name="2016 ITF Women Madrid, Spain Women Singles"/>
+    <tournament id="sr:tournament:4607" name="ITF Women Madrid, Spain Women Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:44449" name="DE LA TORRE-SANCHEZ, ROCIO" country="Spain" abbreviation="DEL" qualifier="home"/>
+      <competitor id="sr:competitor:48413" name="FERNANDEZ-RABENER, ARABELA" country="Spain" abbreviation="FER" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260507" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:34967" name="2016 ITF Men Cairo, Egypt Men Double"/>
+    <tournament id="sr:tournament:9619" name="ITF Men Cairo, Egypt Men Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:287005" name="BORELLA F / KIVATTSEV K" abbreviation="B/K" qualifier="home"/>
+      <competitor id="sr:competitor:267417" name="KOPRIVA V / POSPISIL J" abbreviation="K/P" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260713" scheduled="2016-09-23T11:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:31779" name="2016 ITF Women Hammamet, Tunisia Women Double"/>
+    <tournament id="sr:tournament:13409" name="ITF Women Hammamet, Tunisia Women Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:287449" name="HOBGARSKI K / OSTLUND F" abbreviation="H/O" qualifier="home"/>
+      <competitor id="sr:competitor:287071" name="CHANTRAINE C / PIRAZHENKA S" abbreviation="C/P" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10257691" scheduled="2016-09-23T11:05:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34089" name="2016 ATP Challenger Sibiu, Romania Men Singles"/>
+    <tournament id="sr:tournament:8291" name="ATP Challenger Sibiu, Romania Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:60688" name="SAFRANEK, VACLAV" country="Czech Republic" abbreviation="SAF" qualifier="home"/>
+      <competitor id="sr:competitor:58221" name="O'CONNELL, CHRISTOPHER " country="Australia" abbreviation="OCO" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259723" scheduled="2016-09-23T11:05:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34083" name="2016 ATP Challenger Kaohsiung, Chinese Taipei Men Double"/>
+    <tournament id="sr:tournament:7057" name="ATP Challenger Kaohsiung, Chinese Taipei Men Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:266015" name="CERRETANI J / OSWALD P" abbreviation="C/O" qualifier="home"/>
+      <competitor id="sr:competitor:286487" name="WU T-L / ZHANG Z" abbreviation="W/Z" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260747" scheduled="2016-09-23T11:10:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35169" name="2016 ITF Men Seville, Spain Men Singles"/>
+    <tournament id="sr:tournament:8789" name="ITF Men Seville, Spain Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:97379" name="SEMMLER, MIGUEL" country="Spain" abbreviation="SEM" qualifier="home"/>
+      <competitor id="sr:competitor:110837" name="LOPEZ SAN MARTIN, ALVARO" country="Spain" abbreviation="LOP" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9990047" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:competitor:7383" name="Hapoel Herzelia" country="Israel" abbreviation="HHE" qualifier="home"/>
+      <competitor id="sr:simpleteam:9008348" name="SC YOUTH KFAR KANA" abbreviation="SCY" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:54910" name="Liga Alef North">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:9995657" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:1974" name="Liga Bet South A">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:61698" name="Hapoel Kfar Qasem Shuaa" country="Israel" abbreviation="QAS" qualifier="home"/>
+      <competitor id="sr:simpleteam:5372869" name="FC IRONI OR YEHUDA" abbreviation="FCI" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9998995" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:competitor:80841" name="Nadezhda Orenburg" country="Russia" abbreviation="ORE" qualifier="home"/>
+      <competitor id="sr:simpleteam:7446597" name="SPARTA &amp; K" abbreviation="SPA" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:12388" name="Club Friendly Games, Women">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:103" name="International"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10164991" scheduled="2016-09-23T11:30:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="3"/>
+    <season id="sr:season:34665" name="First Division 16/17"/>
+    <tournament id="sr:tournament:736" name="First Division">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:297" name="Azerbaijan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:36583" name="FK Goyazan Qazax" country="Azerbaijan" abbreviation="GQA" qualifier="home"/>
+      <competitor id="sr:competitor:36582" name="Energetik Mingechevir" country="Azerbaijan" abbreviation="EMI" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10164993" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="3"/>
+    <season id="sr:season:34665" name="First Division 16/17"/>
+    <tournament id="sr:tournament:736" name="First Division">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:297" name="Azerbaijan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:37754" name="FK Garadag Lokbatan" country="Azerbaijan" abbreviation="LOK" qualifier="home"/>
+      <competitor id="sr:competitor:281393" name="SABAYIL" country="Azerbaijan" abbreviation="SAB" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10164995" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="3"/>
+    <season id="sr:season:34665" name="First Division 16/17"/>
+    <tournament id="sr:tournament:736" name="First Division">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:297" name="Azerbaijan"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:37753" name="Bakili Baku" country="Azerbaijan" abbreviation="BBA" qualifier="home"/>
+      <competitor id="sr:competitor:36579" name="Shahdagh-Samur Gusar" country="Azerbaijan" abbreviation="GUS" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10237677" scheduled="2016-09-23T11:30:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:simpleteam:5765320" name="FK KASANSAY" abbreviation="FKK" qualifier="home"/>
+      <competitor id="sr:simpleteam:6157584" name="PAKHTAKOR TASHKENT II" abbreviation="PAK" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:16281" name="1st Division">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:385" name="Uzbekistan"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10259939" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34443" name="Shanghai Masters 2016"/>
+    <tournament id="sr:tournament:908" name="Shanghai Masters">
+      <sport id="sr:sport:19" name="Snooker"/>
+      <category id="sr:category:55" name="International"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:72574" name="WHITE, MICHAEL" abbreviation="WHI" qualifier="home"/>
+      <competitor id="sr:competitor:22454" name="Maguire, Stephen" abbreviation="MAG" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259953" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34443" name="Shanghai Masters 2016"/>
+    <tournament id="sr:tournament:908" name="Shanghai Masters">
+      <sport id="sr:sport:19" name="Snooker"/>
+      <category id="sr:category:55" name="International"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:25055" name="Holt, Michael" abbreviation="HOL" qualifier="home"/>
+      <competitor id="sr:competitor:22451" name="Junhui, Ding" abbreviation="JUN" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260505" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:34967" name="2016 ITF Men Cairo, Egypt Men Double"/>
+    <tournament id="sr:tournament:9619" name="ITF Men Cairo, Egypt Men Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:275761" name="ARIAS B / ZEBALLOS F" abbreviation="A/Z" qualifier="home"/>
+      <competitor id="sr:competitor:285417" name="GRIMOLIZZI G-A / MARTINEZ M N" abbreviation="G/M" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260735" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35161" name="2016 ITF Men Plaisir, France Men Singles"/>
+    <tournament id="sr:tournament:8729" name="ITF Men Plaisir, France Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:18064" name="JOUAN, ROMAIN" country="France" abbreviation="JOU" qualifier="home"/>
+      <competitor id="sr:competitor:74811" name="KOBELT, PETER" country="USA" abbreviation="KOB" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260737" scheduled="2016-09-23T11:30:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35161" name="2016 ITF Men Plaisir, France Men Singles"/>
+    <tournament id="sr:tournament:8729" name="ITF Men Plaisir, France Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:52919" name="KERN, ROBIN" country="Germany" abbreviation="KER" qualifier="home"/>
+      <competitor id="sr:competitor:89302" name="BOUTILLIER, REMI" country="France" abbreviation="BOU" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:8979513" scheduled="2016-09-23T11:35:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="26"/>
+    <season id="sr:season:12635" name="Chinese Super League 2016"/>
+    <tournament id="sr:tournament:649" name="Chinese Super League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:99" name="China"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:71564" name="Hebei China Fortune FC" country="China" abbreviation="HZF" qualifier="home"/>
+      <competitor id="sr:competitor:3362" name="Chongqing Lifan" country="China" abbreviation="LIF" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260053" scheduled="2016-09-23T11:35:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35177" name="2016 ITF Men Sokobanja, Serbia Men Singles"/>
+    <tournament id="sr:tournament:10685" name="ITF Men Sokobanja, Serbia Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:214308" name="SRBLJAK, GORAZD" country="Macedonia" abbreviation="SRB" qualifier="home"/>
+      <competitor id="sr:competitor:56927" name="URBANIJA, MIKE" country="Slovenia" abbreviation="URB" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259683" scheduled="2016-09-23T11:40:00+00:00" liveodds="booked">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:15453" name="2016 ATP St. Petersburg, Russia Men Singles"/>
+    <tournament id="sr:tournament:3109" name="ATP St. Petersburg, Russia Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:3" name="ATP"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:16720" name="BAUTISTA AGUT, ROBERTO" country="Spain" abbreviation="BAU" qualifier="home"/>
+      <competitor id="sr:competitor:37785" name="SOUSA, JOAO (POR)" country="Portugal" abbreviation="SOU" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260661" scheduled="2016-09-23T11:40:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:27529" name="2016 ITF Women Santa Margherita Di Pula, Italy Women Double"/>
+    <tournament id="sr:tournament:9751" name="ITF Women Santa Margherita Di Pula, Italy Women Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:232984" name="PIERI T / STEFANINI L" abbreviation="P/S" qualifier="home"/>
+      <competitor id="sr:competitor:281021" name="BALDUCCI A / CUCCA M" abbreviation="B/C" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:8738654" scheduled="2016-09-23T11:45:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12414" name="S.League 2016"/>
+    <tournament id="sr:tournament:634" name="S.League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:45" name="Singapore"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:34082" name="Young Lions" country="Singapore" abbreviation="YLI" qualifier="home"/>
+      <competitor id="sr:competitor:34083" name="Hougang United FC" country="Singapore" abbreviation="HOU" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259889" scheduled="2016-09-23T11:45:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:35225" name="2016 ITF Women Saint Petersburg, Russia Women Double"/>
+    <tournament id="sr:tournament:12971" name="ITF Women Saint Petersburg, Russia Women Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:286709" name="OLARU I-R / TARASOVA A" abbreviation="O/T" qualifier="home"/>
+      <competitor id="sr:competitor:286721" name="MARFUTINA M / MORGINA A" abbreviation="M/M" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260725" scheduled="2016-09-23T11:45:00+00:00" liveodds="booked">
+    <tournament_round type="cup"/>
+    <season id="sr:season:31779" name="2016 ITF Women Hammamet, Tunisia Women Double"/>
+    <tournament id="sr:tournament:13409" name="ITF Women Hammamet, Tunisia Women Double">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:213" name="ITF Women"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:261757" name="DAVESNE K / KOTELESOVA B" abbreviation="D/K" qualifier="home"/>
+      <competitor id="sr:competitor:287077" name="ADAMESCU C / KENNEL K" abbreviation="A/K" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9640209" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="4" group="B"/>
+    <season id="sr:season:32317" name="European Ch.ship QF 15/16"/>
+    <tournament id="sr:tournament:286" name="European Ch.ship QF">
+      <sport id="sr:sport:23" name="Volleyball"/>
+      <category id="sr:category:136" name="International"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:7570" name="Portugal" country="Portugal" abbreviation="POR" qualifier="home"/>
+      <competitor id="sr:competitor:35832" name="Denmark" country="Denmark" abbreviation="DEN" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9713647" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="9"/>
+    <season id="sr:season:33219" name="U21 16/17"/>
+    <tournament id="sr:tournament:892" name="U21">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:86" name="Ukraine"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:163606" name="Olimpik-D Donetsk" country="Ukraine" abbreviation="ODD" qualifier="home"/>
+      <competitor id="sr:competitor:52680" name="Dinamo-D Kiev" country="Ukraine" abbreviation="DDK" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9713651" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="9"/>
+    <season id="sr:season:33219" name="U21 16/17"/>
+    <tournament id="sr:tournament:892" name="U21">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:86" name="Ukraine"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:52667" name="Zorya-D Lugansk" country="Ukraine" abbreviation="ZDL" qualifier="home"/>
+      <competitor id="sr:competitor:52669" name="Vorskla-D Poltava" country="Ukraine" abbreviation="VDP" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9732305" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:simpleteam:7947642" name="PANTERY UMAN" abbreviation="PAN" qualifier="home"/>
+      <competitor id="sr:simpleteam:5515919" name="ZHILSTROY KHARKOV" abbreviation="ZHI" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:13421" name="Cup, Women">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:86" name="Ukraine"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:9953703" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="3"/>
+    <season id="sr:season:34461" name="Premier League 16/17"/>
+    <tournament id="sr:tournament:947" name="Premier League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:339" name="Hong Kong"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:180864" name="Hong Kong FC" country="Hong Kong" abbreviation="HKO" qualifier="home"/>
+      <competitor id="sr:competitor:42199" name="Kitchee SC" country="Singapore" abbreviation="KSC" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9989973" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:1970" name="Liga Alef">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:9007979" name="S.C  BNEI YAFFO ORTHODOXIM" abbreviation="SCB" qualifier="home"/>
+      <competitor id="sr:competitor:39526" name="Maccabi Jaffa" country="Israel" abbreviation="JAF" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9995661" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:1974" name="Liga Bet South A">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:5372867" name="BEITAR RAMAT GAN" abbreviation="BEI" qualifier="home"/>
+      <competitor id="sr:simpleteam:7431642" name="AS HOLON MOR" abbreviation="ASH" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:9995717" scheduled="2016-09-23T12:00:00+00:00" liveodds="not_available">
+    <competitors>
+      <competitor id="sr:competitor:249449" name="Beitar Kfar Kanna Raduan" country="Israel" abbreviation="RAD" qualifier="home"/>
+      <competitor id="sr:competitor:239124" name="Maccabi Ironi Acre" country="Israel" abbreviation="MIA" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:12580" name="Liga Bet North A">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10149525" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:competitor:177998" name="Taiwan" country="Taiwan" abbreviation="TPE" qualifier="home"/>
+      <competitor id="sr:competitor:6826" name="Kazakhstan" country="Kazakhstan" abbreviation="KAZ" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:22497" name="AVC Cup">
+      <sport id="sr:sport:23" name="Volleyball"/>
+      <category id="sr:category:136" name="International"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10159253" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:competitor:276159" name="BADERAN TEHRAN" country="Iran" abbreviation="BAD" qualifier="home"/>
+      <competitor id="sr:competitor:53719" name="Naft Masjed Soleyman FC" country="Iran" abbreviation="NMS" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:11611" name="Azadegan League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:301" name="Iran"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10163511" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:1195" name="Club Friendly Games">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:103" name="International"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:8163855" name="NEFTEKHIMIK TOBOLSK" abbreviation="NEF" qualifier="home"/>
+      <competitor id="sr:competitor:75259" name="Ural Ekaterinburg" country="Russia" abbreviation="EKA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10166673" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:simpleteam:5897289" name="KRASNOYARSKIE RYSI" abbreviation="KRA" qualifier="home"/>
+      <competitor id="sr:simpleteam:6811349" name="GORNIAK UCHALY" abbreviation="GOR" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:17655" name="NMHL (MHL - B)">
+      <sport id="sr:sport:4" name="Ice Hockey"/>
+      <category id="sr:category:101" name="Russia"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10185985" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:simpleteam:9098583" name="LEGION MAKHACHKALA" abbreviation="LEG" qualifier="home"/>
+      <competitor id="sr:simpleteam:7934070" name="SHAVLA" abbreviation="SHA" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:45009" name="Republic of Dagestan Championship">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:21" name="Russia"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10190499" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:competitor:286099" name="MYSURU WARRIORS" country="India" abbreviation="MYS" qualifier="home"/>
+      <competitor id="sr:competitor:286105" name="BIJAPUR BULLS" country="India" abbreviation="BIJ" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:46537" name="Karnataka Premier League">
+      <sport id="sr:sport:21" name="Cricket"/>
+      <category id="sr:category:497" name="India"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10193993" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <competitors>
+      <competitor id="sr:simpleteam:9090730" name="ECODIM VYNNYTSIA" abbreviation="ECO" qualifier="home"/>
+      <competitor id="sr:simpleteam:9090731" name="ZAVAIR ODESSA" abbreviation="ZAV" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:6845" name="Cup">
+      <sport id="sr:sport:23" name="Volleyball"/>
+      <category id="sr:category:406" name="Ukraine"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10216043" scheduled="2016-09-23T12:00:00+00:00" liveodds="not_available">
+    <competitors>
+      <competitor id="sr:competitor:122302" name="Tyumen-Tyumgu" country="Russia" abbreviation="TYU" qualifier="home"/>
+      <competitor id="sr:competitor:229956" name="Yenisey Krasnoyarsk" country="Russia" abbreviation="YEK" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:5509" name="Cup, Women">
+      <sport id="sr:sport:23" name="Volleyball"/>
+      <category id="sr:category:262" name="Russia"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10227437" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament id="sr:tournament:370" name="Israel Cup">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:66" name="Israel"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:8117508" name="MACCABI DIMONA TIBI" abbreviation="MAC" qualifier="home"/>
+      <competitor id="sr:simpleteam:5237619" name="HAPOEL RAHAT" abbreviation="HAP" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10243201" scheduled="2016-09-23T12:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <tournament id="sr:tournament:1195" name="Club Friendly Games">
+      <sport id="sr:sport:2" name="Basketball"/>
+      <category id="sr:category:103" name="International"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:simpleteam:9075059" name="VASAS BUDAPEST" abbreviation="VAS" qualifier="home"/>
+      <competitor id="sr:competitor:187089" name="MAFC Budapest" country="Hungary" abbreviation="BUD" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10253177" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="group" number="1"/>
+    <competitors>
+      <competitor id="sr:simpleteam:8170501" name="LOKOMOTIV-KHGVUFC-1 KHARKIV" abbreviation="LOK" qualifier="home"/>
+      <competitor id="sr:simpleteam:8170500" name="VC YURAKADEMIYA-2 KHARKIV" abbreviation="VCY" qualifier="away"/>
+    </competitors>
+    <tournament id="sr:simple_tournament:6845" name="Cup">
+      <sport id="sr:sport:23" name="Volleyball"/>
+      <category id="sr:category:406" name="Ukraine"/>
+    </tournament>
+  </sport_event>
+  <sport_event id="sr:match:10260041" scheduled="2016-09-23T12:00:00+00:00" liveodds="booked">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:14947" name="2016 ATP Metz, France Men Singles"/>
+    <tournament id="sr:tournament:3001" name="ATP Metz, France Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:3" name="ATP"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:14736" name="SIMON, GILES" country="France" abbreviation="SIM" qualifier="home"/>
+      <competitor id="sr:competitor:15853" name="JAZIRI, MALEK" country="Tunisia" abbreviation="JAZ" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10260669" scheduled="2016-09-23T12:00:00+00:00" liveodds="not_available">
+    <tournament_round type="group" number="1" group="A"/>
+    <season id="sr:season:35419" name="Kategoria e Pare 16/17"/>
+    <tournament id="sr:tournament:722" name="Kategoria e Pare">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:257" name="Albania"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:205483" name="KF Erzeni" country="Albania" abbreviation="ERZ" qualifier="home"/>
+      <competitor id="sr:competitor:258289" name="Partizan Tirana B" country="Albania" abbreviation="PTB" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event id="sr:match:10259671" scheduled="2016-09-23T12:05:00+00:00" liveodds="not_available">
+    <tournament_round type="cup" name="quarterfinal" cup_round_match_number="1" cup_round_matches="1"/>
+    <season id="sr:season:34089" name="2016 ATP Challenger Sibiu, Romania Men Singles"/>
+    <tournament id="sr:tournament:8291" name="ATP Challenger Sibiu, Romania Men Singles">
+      <sport id="sr:sport:5" name="Tennis"/>
+      <category id="sr:category:72" name="Challenger"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:51300" name="SATRAL, JAN" country="Czech Republic" abbreviation="SAT" qualifier="home"/>
+      <competitor id="sr:competitor:48626" name="GIUSTINO, LORENZO" country="Italy" abbreviation="GIU" qualifier="away"/>
+    </competitors>
+  </sport_event>
+</schedule>

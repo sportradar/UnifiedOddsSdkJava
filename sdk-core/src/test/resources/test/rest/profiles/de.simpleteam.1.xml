@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<simpleteam_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-03-08T13:51:00+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa-staging/unified/v1/xml/endpoints/unified/simpleteam_profile.xsd">
+  <competitor id="sr:simpleteam:1" name="SV Sierning">
+    <reference_ids>
+    </reference_ids>
+  </competitor>
+</simpleteam_profile>

@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rollback_bet_cancel product="1" event_id="sr:match:10237855" timestamp="1475958052704" request_id="1">
+  <market id="312" specifiers="setnr=4|pointnr=45"/>
+  <market id="313" specifiers="pointnr=1|setnr=2"/>
+</rollback_bet_cancel>

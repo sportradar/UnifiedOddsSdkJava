@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<player_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-05-17T08:40:17+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/player_profile.xsd">
+  <player id="sr:player:2" name="Cole, Ashley" type="defender" date_of_birth="1980-12-20" nationality="England" country_code="ENG" height="176" weight="67"/>
+</player_profile>

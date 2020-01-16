@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sport_categories xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-02-13T14:15:38+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/sport_categories.xsd">
+<sport id="sr:sport:3" name="Baseball"/>
+<categories>
+    <category id="sr:category:775" name="Ausztrália" country_code="AUS"/>
+    <category id="sr:category:209" name="Ausztria" country_code="AUT"/>
+    <category id="sr:category:853" name="Csehország" country_code="CZE"/>
+    <category id="sr:category:770" name="Dominikai Köztársaság" country_code="DOM"/>
+    <category id="sr:category:90" name="Finnország" country_code="FIN"/>
+    <category id="sr:category:1370" name="Franciaország" country_code="FRA"/>
+    <category id="sr:category:916" name="Hollandia" country_code="NLD"/>
+    <category id="sr:category:211" name="Japán" country_code="JPN"/>
+    <category id="sr:category:1086" name="Kolumbia" country_code="COL"/>
+    <category id="sr:category:384" name="Koreai Köztársaság" country_code="KOR"/>
+    <category id="sr:category:880" name="Kuba" country_code="CUB"/>
+    <category id="sr:category:426" name="Mexikó" country_code="MEX"/>
+    <category id="sr:category:210" name="Németország" country_code="DEU"/>
+    <category id="sr:category:225" name="Nemzetközi"/>
+    <category id="sr:category:758" name="Nikaragua" country_code="NIC"/>
+    <category id="sr:category:1737" name="Norway"/>
+    <category id="sr:category:510" name="Olaszország" country_code="ITA"/>
+    <category id="sr:category:1036" name="Oroszország" country_code="RUS"/>
+    <category id="sr:category:551" name="Panama" country_code="PAN"/>
+    <category id="sr:category:940" name="Puerto Rico" country_code="PRI"/>
+    <category id="sr:category:1387" name="Spanyolország" country_code="ESP"/>
+    <category id="sr:category:1736" name="Switzerland"/>
+    <category id="sr:category:397" name="Tajvan" country_code="TWN"/>
+    <category id="sr:category:16" name="USA" country_code="USA"/>
+    <category id="sr:category:430" name="Venezuela" country_code="VEN"/>
+</categories>
+</sport_categories>

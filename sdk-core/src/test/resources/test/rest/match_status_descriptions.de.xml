@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<match_status_descriptions response_code="OK">
+  <match_status id="0" description="Nicht gestartet"/>
+  <match_status id="1" description="1. Drittel"/>
+  <match_status id="2" description="2. Drittel"/>
+  <match_status id="3" description="3. Drittel"/>
+  <match_status id="4" description="4. Periode"/>
+  <match_status id="5" description="5. Periode"/>
+  <match_status id="6" description="1. HZ"/>
+  <match_status id="7" description="2. HZ"/>
+  <match_status id="8" description="1. Satz"/>
+  <match_status id="9" description="2. Satz"/>
+  <match_status id="10" description="3. Satz"/>
+  <match_status id="11" description="4. Satz"/>
+  <match_status id="12" description="5. Satz"/>
+  <match_status id="13" description="1. Viertel"/>
+  <match_status id="14" description="2. Viertel"/>
+  <match_status id="15" description="3. Viertel"/>
+  <match_status id="16" description="4. Viertel"/>
+  <match_status id="17" description="Golden Set"/>
+  <match_status id="20" description="Läuft"/>
+  <match_status id="21" description="im Gange"/>
+  <match_status id="30" description="Pause"/>
+  <match_status id="31" description="Halbzeit"/>
+  <match_status id="32" description="Verl."/>
+  <match_status id="33" description="Halbzeit Verl."/>
+  <match_status id="34" description="Elfmeterschießen"/>
+  <match_status id="35" description="SO folgt"/>
+  <match_status id="36" description="7m folgt"/>
+  <match_status id="40" description="Verlängerung"/>
+  <match_status id="41" description="1. HZ Verlängerung"/>
+  <match_status id="42" description="2. HZ Verlängerung"/>
+  <match_status id="50" description="Elfmeterschießen"/>
+  <match_status id="51" description="Penaltyschießen"/>
+  <match_status id="52" description="Penalty"/>
+  <match_status id="60" description="Verschoben"/>
+  <match_status id="61" description="Start verzögert"/>
+  <match_status id="70" description="abgesagt"/>
+  <match_status id="71" description="Spiel 1"/>
+  <match_status id="72" description="Spiel 2"/>
+  <match_status id="73" description="Spiel 3"/>
+  <match_status id="74" description="Spiel 4"/>
+  <match_status id="75" description="Spiel 5"/>
+  <match_status id="76" description="Spiel 6"/>
+  <match_status id="77" description="Spiel 7"/>
+  <match_status id="80" description="unterbrochen"/>
+  <match_status id="81" description="abgebrochen"/>
+  <match_status id="90" description="abgebrochen"/>
+  <match_status id="91" description="Walkover"/>
+  <match_status id="92" description="Aufgegeben"/>
+  <match_status id="93" description="Walkover, player 1 won"/>
+  <match_status id="94" description="Walkover, player 2 won"/>
+  <match_status id="95" description="Player 1 retired, player 2 won"/>
+  <match_status id="96" description="Player 2 retired, player 1 won"/>
+  <match_status id="97" description="Ausgeschlossen"/>
+  <match_status id="98" description="Ausgeschlossen"/>
+  <match_status id="99" description="Nur Ergebnis"/>
+  <match_status id="100" description="Beendet"/>
+  <match_status id="110" description="n.V."/>
+  <match_status id="120" description="n.E."/>
+  <match_status id="130" description="n.G.S."/>
+  <match_status id="141" description="1. Map"/>
+  <match_status id="142" description="2. Map"/>
+  <match_status id="143" description="3. Map"/>
+  <match_status id="144" description="4. Map"/>
+  <match_status id="145" description="5. Map"/>
+  <match_status id="146" description="6th map"/>
+  <match_status id="147" description="7th map"/>
+  <match_status id="151" description="1st Game"/>
+  <match_status id="152" description="2nd Game"/>
+  <match_status id="153" description="3rd Game"/>
+  <match_status id="154" description="4th Game"/>
+  <match_status id="155" description="5th Game"/>
+  <match_status id="301" description="First break"/>
+  <match_status id="302" description="Second break"/>
+  <match_status id="303" description="Third break"/>
+  <match_status id="304" description="Fourth break"/>
+  <match_status id="305" description="Fifth break"/>
+  <match_status id="306" description="Sixth break"/>
+  <match_status id="401" description="1st inning top"/>
+  <match_status id="402" description="1st inning bottom"/>
+  <match_status id="403" description="2nd inning top"/>
+  <match_status id="404" description="2nd inning bottom"/>
+  <match_status id="405" description="3rd inning top"/>
+  <match_status id="406" description="3rd inning bottom"/>
+  <match_status id="407" description="4th inning top"/>
+  <match_status id="408" description="4th inning bottom"/>
+  <match_status id="409" description="5th inning top"/>
+  <match_status id="410" description="5th inning bottom"/>
+  <match_status id="411" description="6th inning top"/>
+  <match_status id="412" description="6th inning bottom"/>
+  <match_status id="413" description="7th inning top"/>
+  <match_status id="414" description="7th inning bottom"/>
+  <match_status id="415" description="8th inning top"/>
+  <match_status id="416" description="8th inning bottom"/>
+  <match_status id="417" description="9th inning top"/>
+  <match_status id="418" description="9th inning bottom"/>
+  <match_status id="419" description="Extra inning top"/>
+  <match_status id="420" description="Extra inning bottom"/>
+  <match_status id="421" description="Break top1-bottom1"/>
+  <match_status id="422" description="Break top2-bottom1"/>
+  <match_status id="423" description="Break top2-bottom2"/>
+  <match_status id="424" description="Break top3-bottom2"/>
+  <match_status id="425" description="Break top3-bottom3"/>
+  <match_status id="426" description="Break top4-bottom3"/>
+  <match_status id="427" description="Break top4-bottom4"/>
+  <match_status id="428" description="Break top5-bottom4"/>
+  <match_status id="429" description="Break top5-bottom5"/>
+  <match_status id="430" description="Break top6-bottom5"/>
+  <match_status id="431" description="Break top6-bottom6"/>
+  <match_status id="432" description="Break top7-bottom6"/>
+  <match_status id="433" description="Break top7-bottom7"/>
+  <match_status id="434" description="Break top8-bottom7"/>
+  <match_status id="435" description="Break top8-bottom8"/>
+  <match_status id="436" description="Break top9-bottom8"/>
+  <match_status id="437" description="Break top9-bottom9"/>
+  <match_status id="438" description="Break topEI-bottom9"/>
+  <match_status id="439" description="Break topEI-bottomEI"/>
+  <match_status id="440" description="Sudden Death"/>
+  <match_status id="441" description="6. Satz"/>
+  <match_status id="442" description="7. Satz"/>
+  <match_status id="443" description="Sudden Death"/>
+  <match_status id="444" description="Nach Sudden Deatch"/>
+  <match_status id="445" description="Pause"/>
+  <match_status id="501" description="Erste Innings, Heimmannschaft"/>
+  <match_status id="502" description="Erste Innings, Auswärtsmannschaft"/>
+  <match_status id="503" description="Zweite Innings, Heimmannschaft"/>
+  <match_status id="504" description="Zweite Innings, Auswärtsmannschaft"/>
+  <match_status id="505" description="Super Over"/>
+  <match_status id="506" description="Super Over, Heimmannschaft"/>
+  <match_status id="507" description="Super Over, Auswärtsmannschaft"/>
+  <match_status id="508" description="nach Super Over"/>
+  <match_status id="509" description="Innings-Pause"/>
+  <match_status id="510" description="Super Over-Pause"/>
+  <match_status id="511" description="Essenspause"/>
+  <match_status id="512" description="Teepause"/>
+  <match_status id="513" description="Stumps"/>
+  <match_status id="514" description="8. Satz"/>
+  <match_status id="515" description="9. Satz"/>
+  <match_status id="516" description="10. Satz"/>
+  <match_status id="517" description="11. Satz"/>
+  <match_status id="518" description="12. Satz"/>
+  <match_status id="519" description="13. Satz"/>
+</match_status_descriptions>

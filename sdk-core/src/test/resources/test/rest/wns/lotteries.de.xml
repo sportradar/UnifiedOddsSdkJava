@@ -1,0 +1,957 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lotteries generated_at="2018-03-30T11:29:32.503Z" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/wns/v1/endpoints/unified/lotteries.xsd" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <lottery id="wns:lottery:46573" name="Lunchtime 49s 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:46574" name="Teatime 49s 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:46575" name="Lotto 6/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/47"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-47"/>
+    </lottery>
+    <lottery id="wns:lottery:46576" name="Lotto HotPicks 6/59">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/59"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:46577" name="Thunderball 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-14"/>
+    </lottery>
+    <lottery id="wns:lottery:46578" name="Health Lottery 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/50"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-50"/>
+    </lottery>
+    <lottery id="wns:lottery:46582" name="Lotto Plus 1 6/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/47"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-47"/>
+    </lottery>
+    <lottery id="wns:lottery:46583" name="Lotto Plus 2 6/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/47"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-47"/>
+    </lottery>
+    <lottery id="wns:lottery:47038" name="Fantasy 5 California 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47039" name="All or Nothing Midday Arizona 10/20">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="10/20"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47040" name="Cash 5 Colorado 5/32">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/32"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47041" name="Show Me Cash 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47042" name="Keno Michigan 22/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="22/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47043" name="Gimme 5 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47044" name="All or Nothing Day Georgia 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47045" name="Lotto Colorado 6/42">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/42"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47047" name="All or Nothing Evening Arizona 10/20">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="10/20"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47049" name="Badger 5 5/31">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/31"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47050" name="Northstar Cash 5/31">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/31"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47051" name="Cash 25 6/25">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/25"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47052" name="Quick Draw Midday 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47053" name="MultiMatch 6/43">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/43"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47054" name="Megabucks Oregon 6/48">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/48"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47055" name="Easy 5 5/37">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/37"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47056" name="Classic Lotto 47 6/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/47"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47059" name="All or Nothing Morning Texas 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47060" name="All or Nothing Night Georgia 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47061" name="Bonus Match 5 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-39"/>
+    </lottery>
+    <lottery id="wns:lottery:47062" name="Cash 5 Day 5/34">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/34"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47063" name="Cash 5 Night 5/34">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/34"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47064" name="Cash Ball 4/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="4/35"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-35"/>
+    </lottery>
+    <lottery id="wns:lottery:47065" name="Cash4Life 5/60">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/60"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-4"/>
+    </lottery>
+    <lottery id="wns:lottery:47066" name="Classic Lotto 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47067" name="Dakota Cash 5/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47068" name="Gopher 5 5/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/47"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47069" name="Hit 5 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47070" name="Hoosier Lotto 6/48">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/48"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47073" name="Lucky Money 4/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="4/47"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-17"/>
+    </lottery>
+    <lottery id="wns:lottery:47074" name="LuckyDay Lotto Evening 5/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/45"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47075" name="LuckyDay Lotto Midday 5/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/45"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47076" name="MassCash 5/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47077" name="Match 4 4/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="4/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47078" name="Match 6 Lotto 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47079" name="Megabucks Doubler 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47080" name="Megabucks Plus 5/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/41"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-6"/>
+    </lottery>
+    <lottery id="wns:lottery:47081" name="Montana Cash 5/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/45"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47082" name="Multi Win Lotto 6/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47083" name="Natural State Jackpot 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47084" name="Palmetto Cash 5 5/38">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/38"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47085" name="Pick 10 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47086" name="Pick 5 Nebraska 5/38">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/38"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47087" name="Pick 6 Lotto 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47089" name="Quick Draw Evening 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47091" name="Roadrunner Cash 5/37">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/37"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47092" name="Rolling Cash 5 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47093" name="Super Cash 5/32">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/32"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-25"/>
+    </lottery>
+    <lottery id="wns:lottery:47094" name="SuperLotto Plus 5/47">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/47"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-27"/>
+    </lottery>
+    <lottery id="wns:lottery:47095" name="Take 5 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47096" name="Tennessee Cash 5/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/35"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-5"/>
+    </lottery>
+    <lottery id="wns:lottery:47097" name="The Pick 6/44">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/44"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47098" name="Treasure Hunt 5/30">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/30"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47100" name="Two Step 4/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="4/35"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-35"/>
+    </lottery>
+    <lottery id="wns:lottery:47101" name="Weekly Grand 5/32">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/32"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47102" name="Wild Money 5/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/35"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-35"/>
+    </lottery>
+    <lottery id="wns:lottery:47104" name="Lotto 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1059" name="Austria"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:47105" name="Mega Sena 6/60">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1060" name="Brazil"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/60"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47106" name="Atlantic 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:47107" name="Banco 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47109" name="Bucko 5/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/41"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47110" name="Evening Keno 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47111" name="Keno Atlantic 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47112" name="Lottario 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:47113" name="Lotto Canada 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:47114" name="Lotto Max 7/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:47115" name="Midday Keno 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47116" name="Ontario 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:47119" name="SprintO 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/50"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47120" name="Triplex 5/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/41"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47122" name="Western Max 7/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:47125" name="Lotto 6/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1062" name="Chile"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/41"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-41"/>
+    </lottery>
+    <lottery id="wns:lottery:47126" name="Pola 4 4/23">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1062" name="Chile"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="4/23"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47127" name="Ravancha 6/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1062" name="Chile"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/41"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47128" name="Keno Midi 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1063" name="France"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:47129" name="Euro Jackpot 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1064" name="Italy"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/50"/>
+        <bonus_info bonus_balls="2" bonus_drum="additional" bonus_range="1-10"/>
+    </lottery>
+    <lottery id="wns:lottery:47130" name="EuroMillions 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/50"/>
+        <bonus_info bonus_balls="2" bonus_drum="additional" bonus_range="1-12"/>
+    </lottery>
+    <lottery id="wns:lottery:47135" name="South Africa Powerball 5/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1067" name="South Africa"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/45"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-20"/>
+    </lottery>
+    <lottery id="wns:lottery:47652" name="Baloto 5/43">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1073" name="Colombia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/43"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-16"/>
+    </lottery>
+    <lottery id="wns:lottery:49009" name="Monday Lotto 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1098" name="Australia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="2" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:49010" name="Saturday Lotto 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1098" name="Australia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="2" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:49011" name="Wednesday Lotto 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1098" name="Australia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="2" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:49012" name="OZ Lotto 7/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1098" name="Australia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/45"/>
+        <bonus_info bonus_balls="2" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:49013" name="Powerball 6/40">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1098" name="Australia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/40"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-20"/>
+    </lottery>
+    <lottery id="wns:lottery:49014" name="Dupla Sena 1 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1060" name="Brazil"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/50"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49015" name="Dupla Sena 2 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1060" name="Brazil"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/50"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49016" name="Lotto British Columbia 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1061" name="Canada"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:49018" name="Lotto 7/36">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1099" name="Denmark"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/36"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-36"/>
+    </lottery>
+    <lottery id="wns:lottery:49019" name="Lotto 7/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1100" name="Finland"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/40"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49020" name="Keno Soir 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1063" name="France"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49021" name="Lotto France 5/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1063" name="France"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-10"/>
+    </lottery>
+    <lottery id="wns:lottery:49022" name="6aus49 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1109" name="Germany"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="0-9"/>
+    </lottery>
+    <lottery id="wns:lottery:49023" name="Keno Germany 20/70">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1109" name="Germany"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="20/70"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49024" name="Greece KENO 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1101" name="Greece"/>
+        <draw_info draw_type="rng" time_type="interval" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49025" name="Daily Million Day 6/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1102" name="Ireland"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/39"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-39"/>
+    </lottery>
+    <lottery id="wns:lottery:49026" name="Quick KENO 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1103" name="Malta"/>
+        <draw_info draw_type="rng" time_type="interval" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49027" name="Lotto 7/34">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1104" name="Norway"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="7/34"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49028" name="Lotto Poland 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1105" name="Poland"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49031" name="South Africa Powerball Plus 5/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1067" name="South Africa"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/45"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-20"/>
+    </lottery>
+    <lottery id="wns:lottery:49033" name="Bonoloto 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1107" name="Spain"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:49034" name="Primitiva 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1107" name="Spain"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:49035" name="Lotto1 Lordag 7/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1108" name="Sweden"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49036" name="Lotto1 Onsdag 7/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1108" name="Sweden"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49037" name="SwissLotto 6/42">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1065" name="Switzerland"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/42"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-6"/>
+    </lottery>
+    <lottery id="wns:lottery:49038" name="EuroMillion Plus 5/50">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1040" name="UK"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/50"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49039" name="5 De Oro 5/48">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1066" name="Uruguay"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/48"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-48"/>
+    </lottery>
+    <lottery id="wns:lottery:49047" name="Fantasy 5 Arizona 5/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/41"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49048" name="Lotto Connecticut 6/44">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/44"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49049" name="Cash 5 Connecticut 5/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49050" name="Lotto Florida 6/53">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/53"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49051" name="Fantasy 5 Florida 5/36">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/36"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49052" name="Fantasy 5 Georgia 5/42">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/42"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49053" name="All or Nothing Evening Georgia 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49056" name="Lotto Illinois 6/52">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/52"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-25"/>
+    </lottery>
+    <lottery id="wns:lottery:49057" name="Cash 5 New Jersey 5/43">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/43"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49058" name="Lotto Louisiana 6/40">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/40"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49059" name="Fantasy 5 Michigan 5/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49062" name="Lotto Missouri 6/44">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/44"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49063" name="All or Nothing Day Texas 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49065" name="Lotto New York 6/59">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/59"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-59"/>
+    </lottery>
+    <lottery id="wns:lottery:49066" name="Lotto Texas 6/54">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/54"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49067" name="Cash 5 Texas 5/37">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/37"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49068" name="All or Nothing Morning Georgia 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49070" name="All or Nothing Evening Texas 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49071" name="All or Nothing Night Texas 12/24">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="12/24"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49073" name="Keno Washington 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49088" name="Super Cash 6/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="6/39"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49089" name="Carolina Cash 5 5/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/41"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49090" name="Cash 5 5/43">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/43"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:49477" name="Cash 5 5/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1039" name="USA"/>
+        <draw_info draw_type="rng" time_type="fixed" game_type="5/45"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51735" name="Japan Loto 6 6/43">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1216" name="Japan"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/43"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-43"/>
+    </lottery>
+    <lottery id="wns:lottery:51789" name="Belgium Lotto 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1145" name="Belgium"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-45"/>
+    </lottery>
+    <lottery id="wns:lottery:51793" name="India Jaldi 5 5/36">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1209" name="India"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/36"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51794" name="India super 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1209" name="India"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51796" name="Lithuania Jega 6/30">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1232" name="Lithuania"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/30"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-30"/>
+    </lottery>
+    <lottery id="wns:lottery:51797" name="Mauritius Loterie 6/40">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1243" name="Mauritius"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/40"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51798" name="NZL Lotto  6/40">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1259" name="New Zealand"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/40"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-10"/>
+    </lottery>
+    <lottery id="wns:lottery:51799" name="Poland  Mini Lotto 5/42">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1105" name="Poland"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="5/42"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51800" name="Poland Lotto Plus 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1105" name="Poland"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51801" name="Gosloto Evening 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1280" name="Russia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51802" name="Gosloto Morning 6/45">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1280" name="Russia"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/45"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:51803" name="Singapore Toto 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1289" name="Singapore"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-49"/>
+    </lottery>
+    <lottery id="wns:lottery:51804" name="Turkey Lotto 6/49">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1311" name="Turkey"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/49"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:53248" name="Daily Million Night 6/39">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1102" name="Ireland"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/39"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-39"/>
+    </lottery>
+    <lottery id="wns:lottery:53583" name="Lotto2 Lordag 7/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1108" name="Sweden"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:53584" name="Lotto2 Onsdag 7/35">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1108" name="Sweden"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="7/35"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:56525" name="Keno Russia 20/80">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1280" name="Russia"/>
+        <draw_info draw_type="rng" time_type="interval" game_type="20/80"/>
+        <bonus_info bonus_balls="0"/>
+    </lottery>
+    <lottery id="wns:lottery:56526" name="Rapido Russia 8/20">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1280" name="Russia"/>
+        <draw_info draw_type="rng" time_type="interval" game_type="8/20"/>
+        <bonus_info bonus_balls="1" bonus_drum="additional" bonus_range="1-4"/>
+    </lottery>
+    <lottery id="wns:lottery:62419" name="South African Lotto 6/52">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1067" name="South Africa"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/52"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-52"/>
+    </lottery>
+    <lottery id="wns:lottery:62420" name="South African Lotto Plus 1 6/52">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1067" name="South Africa"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/52"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-52"/>
+    </lottery>
+    <lottery id="wns:lottery:62421" name="South African Lotto Plus 2 6/52">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1067" name="South Africa"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/52"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-52"/>
+    </lottery>
+</lotteries>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<match_timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-03-30T11:21:31+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/match_timeline.xsd">
+    <sport_event id="sr:match:13820881" scheduled="2018-03-08T08:30:00+00:00" start_time_tbd="false">
+        <season id="sr:season:51053" name="U19 Friendly Games 2018" start_date="2018-01-01" end_date="2018-12-31" year="2018" tournament_id="sr:tournament:856"/>
+        <tournament id="sr:tournament:856" name="U19 Friendly Games">
+            <sport id="sr:sport:1" name="Voetbal"/>
+            <category id="sr:category:392" name="Internationaal Jeugd"/>
+        </tournament>
+        <competitors>
+            <competitor id="sr:competitor:22493" name="Bulgarije" country="Bulgarije" country_code="BGR" abbreviation="BUL" qualifier="home">
+                <reference_ids>
+                    <reference_id name="betradar" value="1019535"/>
+                </reference_ids>
+            </competitor>
+            <competitor id="sr:competitor:22556" name="Servië" country="Servië" country_code="SRB" abbreviation="SRB" qualifier="away">
+                <reference_ids>
+                    <reference_id name="betradar" value="1004160"/>
+                </reference_ids>
+            </competitor>
+        </competitors>
+    </sport_event>
+    <sport_event_conditions>
+        <weather_info pitch="good" weather_conditions="bad"/>
+    </sport_event_conditions>
+    <sport_event_status status="ended" match_status="ended" home_score="4" away_score="1" winner_id="sr:competitor:22493" status_code="3" match_status_code="100"/>
+    <timeline>
+        <event id="397322419" type="match_started" time="2018-03-08T08:33:11+00:00"/>
+        <event id="397322423" type="period_start" time="2018-03-08T08:33:11+00:00" period="1" period_name="1st half" match_status_code="6"/>
+        <event id="397323083" type="corner_kick" time="2018-03-08T08:36:36+00:00" match_time="4" team="away"/>
+        <event id="397325641" type="corner_kick" time="2018-03-08T08:48:21+00:00" match_time="16" team="home"/>
+        <event id="397326111" type="score_change" time="2018-03-08T08:50:25+00:00" match_time="18" team="home" x="93" y="60" home_score="1" away_score="0"/>
+        <event id="397326695" type="corner_kick" time="2018-03-08T08:53:29+00:00" match_time="21" team="home"/>
+        <event id="397327669" type="yellow_card" time="2018-03-08T08:58:31+00:00" match_time="26" team="away"/>
+        <event id="397328317" type="yellow_card" time="2018-03-08T09:00:34+00:00" match_time="28" team="away"/>
+        <event id="397328601" type="corner_kick" time="2018-03-08T09:01:40+00:00" match_time="29" team="home"/>
+        <event id="397329219" type="score_change" time="2018-03-08T09:03:57+00:00" match_time="31" team="home" x="71" y="66" home_score="2" away_score="0"/>
+        <event id="397329605" type="score_change" time="2018-03-08T09:05:48+00:00" match_time="33" team="home" x="82" y="60" home_score="3" away_score="0"/>
+        <event id="397330577" type="yellow_card" time="2018-03-08T09:08:38+00:00" match_time="36" team="away"/>
+        <event id="397331463" type="corner_kick" time="2018-03-08T09:10:59+00:00" match_time="38" team="away"/>
+        <event id="397332313" type="corner_kick" time="2018-03-08T09:13:47+00:00" match_time="41" team="home"/>
+        <event id="397333453" type="period_score" time="2018-03-08T09:18:11+00:00" period="1" home_score="3" away_score="0"/>
+        <event id="397333455" type="break_start" time="2018-03-08T09:18:11+00:00" period_name="Pause" match_status_code="31"/>
+        <event id="397337599" type="period_start" time="2018-03-08T09:32:15+00:00" period="2" period_name="2nd half" match_status_code="7"/>
+        <event id="397342245" type="corner_kick" time="2018-03-08T09:41:10+00:00" match_time="54" team="away"/>
+        <event id="397342919" type="yellow_card" time="2018-03-08T09:43:06+00:00" match_time="56" team="away"/>
+        <event id="397344355" type="corner_kick" time="2018-03-08T09:47:28+00:00" match_time="61" team="away"/>
+        <event id="397344539" type="corner_kick" time="2018-03-08T09:48:02+00:00" match_time="61" team="away"/>
+        <event id="397344891" type="score_change" time="2018-03-08T09:49:13+00:00" match_time="62" team="away" x="20" y="49" home_score="3" away_score="1"/>
+        <event id="397350521" type="red_card" time="2018-03-08T10:05:46+00:00" match_time="79" team="away"/>
+        <event id="397352041" type="yellow_card" time="2018-03-08T10:09:00+00:00" match_time="82" team="away"/>
+        <event id="397354317" type="yellow_red_card" time="2018-03-08T10:13:42+00:00" match_time="87" team="away"/>
+        <event id="397355395" type="score_change" time="2018-03-08T10:15:54+00:00" match_time="89" team="home" x="90" y="64" home_score="4" away_score="1"/>
+        <event id="397355999" type="match_ended" time="2018-03-08T10:17:26+00:00"/>
+    </timeline>
+</match_timeline>

@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cashout timestamp="1495704498675" event_id="sr:match:11501813" product="1">
+  <sport_event_status match_status="7" status="1"/>
+  <odds>
+    <market id="60" status="-3"/>
+    <market id="85" status="0"/>
+    <market id="52" status="0"/>
+    <market specifiers="score=2:0" id="41" status="0">
+      <outcome active="0" probabilities="NaN" id="110"/>
+      <outcome active="0" probabilities="NaN" id="114"/>
+      <outcome active="0" probabilities="0.22815375415933764" id="116"/>
+      <outcome active="0" probabilities="0.31897128089430427" id="118"/>
+      <outcome active="0" probabilities="0.22296954615153572" id="120"/>
+      <outcome active="0" probabilities="0.10390782595773515" id="122"/>
+      <outcome active="0" probabilities="0.03631718932568431" id="124"/>
+      <outcome active="0" probabilities="NaN" id="126"/>
+      <outcome active="0" probabilities="NaN" id="128"/>
+      <outcome active="0" probabilities="0.018179624954364978" id="130"/>
+      <outcome active="0" probabilities="0.025416098364185204" id="132"/>
+      <outcome active="0" probabilities="0.01776653967503429" id="134"/>
+      <outcome active="0" probabilities="0.008279527604949311" id="136"/>
+      <outcome active="0" probabilities="NaN" id="138"/>
+      <outcome active="0" probabilities="NaN" id="140"/>
+      <outcome active="0" probabilities="7.242895579324031E-4" id="142"/>
+      <outcome active="0" probabilities="0.0010125959525992432" id="144"/>
+      <outcome active="0" probabilities="7.078319382012013E-4" id="146"/>
+      <outcome active="0" probabilities="NaN" id="148"/>
+      <outcome active="0" probabilities="NaN" id="150"/>
+      <outcome active="0" probabilities="1.9237483906544493E-5" id="152"/>
+      <outcome active="0" probabilities="2.689504236063838E-5" id="154"/>
+      <outcome active="0" probabilities="NaN" id="156"/>
+      <outcome active="0" probabilities="NaN" id="158"/>
+      <outcome active="0" probabilities="NaN" id="160"/>
+      <outcome active="0" probabilities="NaN" id="162"/>
+      <outcome active="0" probabilities="NaN" id="164"/>
+      <outcome active="0" probabilities="NaN" id="166"/>
+    </market>
+    <market specifiers="total=2.5" id="37" status="0"/>
+    <market specifiers="total=1.5" id="68" status="-3"/>
+    <market specifiers="total=1.5" id="547" status="0"/>
+    <market specifiers="hcp=0:2" id="87" status="0"/>
+    <market specifiers="hcp=0:3" id="87" status="0"/>
+    <market id="11" status="0">
+      <outcome active="0" probabilities="0.9999999936637594" id="4"/>
+      <outcome active="0" probabilities="6.304714088973512E-9" id="5"/>
+    </market>
+    <market specifiers="hcp=0:1" id="87" status="0"/>
+    <market specifiers="score=1:0" id="80" status="-3"/>
+    <market specifiers="total=6.25" id="18" status="0">
+      <outcome active="0" probabilities="0.7880102131710346" id="13"/>
+      <outcome active="0" probabilities="0.21198978682896538" id="12"/>
+    </market>
+    <market specifiers="total=5.5" id="18" status="1">
+      <outcome active="1" probabilities="0.43469533999199306" id="12"/>
+      <outcome active="1" probabilities="0.5653046600080069" id="13"/>
+    </market>
+    <market specifiers="hcp=-1.5" id="66" status="-3"/>
+    <market specifiers="goalnr=3" id="62" status="-3"/>
+    <market id="86" status="0"/>
+    <market specifiers="score=1:0" id="7" status="0"/>
+    <market specifiers="total=3.25" id="18" status="-3"/>
+    <market id="78" status="-3"/>
+    <market id="45" status="1">
+      <outcome active="1" probabilities="NaN" id="274"/>
+      <outcome active="1" probabilities="NaN" id="276"/>
+      <outcome active="1" probabilities="NaN" id="278"/>
+      <outcome active="1" probabilities="NaN" id="280"/>
+      <outcome active="1" probabilities="0.22815375415933764" id="282"/>
+      <outcome active="1" probabilities="NaN" id="284"/>
+      <outcome active="1" probabilities="NaN" id="286"/>
+      <outcome active="1" probabilities="NaN" id="288"/>
+      <outcome active="1" probabilities="NaN" id="290"/>
+      <outcome active="1" probabilities="0.018179624954364978" id="292"/>
+      <outcome active="1" probabilities="NaN" id="294"/>
+      <outcome active="1" probabilities="NaN" id="296"/>
+      <outcome active="1" probabilities="NaN" id="298"/>
+      <outcome active="1" probabilities="NaN" id="300"/>
+      <outcome active="1" probabilities="7.242895579324031E-4" id="302"/>
+      <outcome active="1" probabilities="NaN" id="304"/>
+      <outcome active="1" probabilities="NaN" id="306"/>
+      <outcome active="1" probabilities="NaN" id="308"/>
+      <outcome active="1" probabilities="NaN" id="310"/>
+      <outcome active="1" probabilities="1.9237483906544493E-5" id="312"/>
+      <outcome active="1" probabilities="NaN" id="314"/>
+      <outcome active="1" probabilities="NaN" id="316"/>
+      <outcome active="1" probabilities="NaN" id="318"/>
+      <outcome active="1" probabilities="NaN" id="320"/>
+      <outcome active="1" probabilities="3.832177162449486E-7" id="322"/>
+      <outcome active="1" probabilities="0.7529227106267422" id="324"/>
+    </market>
+    <market specifiers="hcp=-2.75" id="16" status="0">
+      <outcome active="0" probabilities="0.9992207757920486" id="1714"/>
+      <outcome active="0" probabilities="7.79224207951413E-4" id="1715"/>
+    </market>
+    <market specifiers="goalnr=1" id="62" status="-3"/>
+    <market specifiers="goalnr=2" id="62" status="-3"/>
+    <market specifiers="total=4.75" id="18" status="0">
+      <outcome active="0" probabilities="0.27441306004473076" id="13"/>
+      <outcome active="0" probabilities="0.7255869399552692" id="12"/>
+    </market>
+    <market specifiers="hcp=-2.75" id="66" status="-3"/>
+    <market specifiers="hcp=-5.5" id="16" status="1">
+      <outcome active="1" probabilities="0.38865979457131694" id="1714"/>
+      <outcome active="1" probabilities="0.6113402054286831" id="1715"/>
+    </market>
+    <market specifiers="total=5.5" id="19" status="1">
+      <outcome active="1" probabilities="0.5925047102591252" id="13"/>
+      <outcome active="1" probabilities="0.40749528974087484" id="12"/>
+    </market>
+    <market specifiers="hcp=0:1" id="65" status="-3"/>
+    <market specifiers="hcp=-3" id="16" status="0">
+      <outcome active="0" probabilities="0.9992131442665154" id="1714"/>
+      <outcome active="0" probabilities="7.868557334845868E-4" id="1715"/>
+    </market>
+    <market id="95" status="0"/>
+    <market specifiers="total=3.5" id="90" status="0"/>
+    <market id="29" status="1">
+      <outcome active="1" probabilities="0.07658956019960457" id="74"/>
+      <outcome active="1" probabilities="0.923410439768869" id="76"/>
+    </market>
+    <market specifiers="total=1.75" id="68" status="-3"/>
+    <market specifiers="score=3:0" id="41" status="0">
+      <outcome active="0" probabilities="NaN" id="110"/>
+      <outcome active="0" probabilities="0.22815375415933764" id="114"/>
+      <outcome active="0" probabilities="0.31897128089430427" id="116"/>
+      <outcome active="0" probabilities="0.22296954615153572" id="118"/>
+      <outcome active="0" probabilities="0.10390782595773515" id="120"/>
+      <outcome active="0" probabilities="0.03631718932568431" id="122"/>
+      <outcome active="0" probabilities="0.010154678751947574" id="124"/>
+      <outcome active="0" probabilities="NaN" id="126"/>
+      <outcome active="0" probabilities="0.018179624954364978" id="128"/>
+      <outcome active="0" probabilities="0.025416098364185204" id="130"/>
+      <outcome active="0" probabilities="0.01776653967503429" id="132"/>
+      <outcome active="0" probabilities="0.008279527604949311" id="134"/>
+      <outcome active="0" probabilities="0.0028938067829316345" id="136"/>
+      <outcome active="0" probabilities="NaN" id="138"/>
+      <outcome active="0" probabilities="7.242895579324031E-4" id="140"/>
+      <outcome active="0" probabilities="0.0010125959525992432" id="142"/>
+      <outcome active="0" probabilities="7.078319382012013E-4" id="144"/>
+      <outcome active="0" probabilities="3.2986243687266076E-4" id="146"/>
+      <outcome active="0" probabilities="NaN" id="148"/>
+      <outcome active="0" probabilities="1.9237483906544493E-5" id="150"/>
+      <outcome active="0" probabilities="2.689504236063838E-5" id="152"/>
+      <outcome active="0" probabilities="1.8800361499833536E-5" id="154"/>
+      <outcome active="0" probabilities="NaN" id="156"/>
+      <outcome active="0" probabilities="NaN" id="158"/>
+      <outcome active="0" probabilities="NaN" id="160"/>
+      <outcome active="0" probabilities="NaN" id="162"/>
+      <outcome active="0" probabilities="NaN" id="164"/>
+      <outcome active="0" probabilities="NaN" id="166"/>
+    </market>
+    <market specifiers="score=2:0" id="80" status="-3"/>
+    <market specifiers="total=0.5" id="68" status="-3"/>
+    <market specifiers="score=1:0" id="61" status="-3"/>
+    <market specifiers="hcp=-1.75" id="66" status="-3"/>
+    <market specifiers="total=4.5" id="18" status="1">
+      <outcome active="1" probabilities="0.7718462458406623" id="12"/>
+      <outcome active="1" probabilities="0.2281537541593377" id="13"/>
+    </market>
+    <market id="63" status="-3"/>
+    <market specifiers="score=0:0" id="61" status="-3"/>
+    <market specifiers="hcp=0:7" id="14" status="1">
+      <outcome active="1" probabilities="0.05046049946540975" id="1711"/>
+      <outcome active="1" probabilities="0.1068340697603104" id="1712"/>
+      <outcome active="1" probabilities="0.8427054307742798" id="1713"/>
+    </market>
+    <market specifiers="hcp=0:5" id="14" status="1">
+      <outcome active="1" probabilities="0.38865979457131694" id="1711"/>
+      <outcome active="1" probabilities="0.33707076232125077" id="1712"/>
+      <outcome active="1" probabilities="0.2742694431074323" id="1713"/>
+    </market>
+    <market specifiers="hcp=0:6" id="14" status="1">
+      <outcome active="1" probabilities="0.15729456922572016" id="1711"/>
+      <outcome active="1" probabilities="0.23136522534559675" id="1712"/>
+      <outcome active="1" probabilities="0.6113402054286831" id="1713"/>
+    </market>
+    <market specifiers="hcp=0:3" id="14" status="0"/>
+    <market specifiers="hcp=0:4" id="14" status="0"/>
+    <market specifiers="hcp=-4.75" id="16" status="0">
+      <outcome active="0" probabilities="0.6701369644684585" id="1714"/>
+      <outcome active="0" probabilities="0.3298630355315415" id="1715"/>
+    </market>
+    <market specifiers="total=4.5" id="547" status="1">
+      <outcome active="1" probabilities="0.22815375415933764" id="1724"/>
+      <outcome active="1" probabilities="0.7718462395044244" id="1727"/>
+      <outcome active="1" probabilities="0.22815375415933764" id="1725"/>
+      <outcome active="1" probabilities="0.7718458540052501" id="1728"/>
+      <outcome active="1" probabilities="NaN" id="1726"/>
+      <outcome active="1" probabilities="NaN" id="1729"/>
+    </market>
+    <market specifiers="hcp=0:2" id="14" status="0"/>
+    <market specifiers="score=2:0" id="7" status="0"/>
+    <market specifiers="hcp=-3.25" id="16" status="0">
+      <outcome active="0" probabilities="0.9895220150047598" id="1714"/>
+      <outcome active="0" probabilities="0.01047798499524022" id="1715"/>
+    </market>
+    <market specifiers="hcp=-2" id="66" status="-3"/>
+    <market specifiers="hcp=-3" id="66" status="-3"/>
+    <market specifiers="total=5.25" id="18" status="1">
+      <outcome active="1" probabilities="0.47716802261741154" id="13"/>
+      <outcome active="1" probabilities="0.5228319773825885" id="12"/>
+    </market>
+    <market specifiers="hcp=-1" id="66" status="-3"/>
+    <market specifiers="hcp=-4.5" id="16" status="0">
+      <outcome active="0" probabilities="0.7257305568925677" id="1714"/>
+      <outcome active="0" probabilities="0.2742694431074323" id="1715"/>
+    </market>
+    <market id="6" status="-3"/>
+    <market specifiers="hcp=-6" id="16" status="0">
+      <outcome active="0" probabilities="0.20464149478072158" id="1714"/>
+      <outcome active="0" probabilities="0.7953585052192784" id="1715"/>
+    </market>
+    <market specifiers="total=4.5" id="19" status="0">
+      <outcome active="0" probabilities="0.24707729556236332" id="13"/>
+      <outcome active="0" probabilities="0.7529227044376366" id="12"/>
+    </market>
+    <market specifiers="total=1.5" id="79" status="-3"/>
+    <market specifiers="hcp=-4" id="16" status="0">
+      <outcome active="0" probabilities="0.9732029308112373" id="1714"/>
+      <outcome active="0" probabilities="0.02679706918876265" id="1715"/>
+    </market>
+    <market specifiers="hcp=-5" id="16" status="1">
+      <outcome active="1" probabilities="0.5862764417092412" id="1714"/>
+      <outcome active="1" probabilities="0.4137235582907588" id="1715"/>
+    </market>
+    <market id="64" status="-3"/>
+    <market specifiers="total=6" id="18" status="0">
+      <outcome active="0" probabilities="0.7528461031251099" id="13"/>
+      <outcome active="0" probabilities="0.2471538968748901" id="12"/>
+    </market>
+    <market id="543" status="0"/>
+    <market specifiers="total=2.25" id="68" status="-3"/>
+    <market specifiers="variant=sr:exact_goals:4+" id="71" status="-3"/>
+    <market specifiers="variant=sr:exact_goals:3+" id="72" status="-3"/>
+    <market specifiers="hcp=-0.75" id="66" status="-3"/>
+    <market specifiers="total=5" id="18" status="1">
+      <outcome active="1" probabilities="0.34420165339661657" id="13"/>
+      <outcome active="1" probabilities="0.6557983466033834" id="12"/>
+    </market>
+    <market specifiers="total=0.5" id="20" status="1">
+      <outcome active="1" probabilities="0.9234104398003955" id="13"/>
+      <outcome active="1" probabilities="0.07658956019960457" id="12"/>
+    </market>
+    <market specifiers="total=4" id="18" status="0"/>
+    <market specifiers="score=0:0" id="41" status="0">
+      <outcome active="0" probabilities="NaN" id="110"/>
+      <outcome active="0" probabilities="NaN" id="114"/>
+      <outcome active="0" probabilities="NaN" id="116"/>
+      <outcome active="0" probabilities="NaN" id="118"/>
+      <outcome active="0" probabilities="0.22815375415933764" id="120"/>
+      <outcome active="0" probabilities="0.31897128089430427" id="122"/>
+      <outcome active="0" probabilities="0.22296954615153572" id="124"/>
+      <outcome active="0" probabilities="NaN" id="126"/>
+      <outcome active="0" probabilities="NaN" id="128"/>
+      <outcome active="0" probabilities="NaN" id="130"/>
+      <outcome active="0" probabilities="NaN" id="132"/>
+      <outcome active="0" probabilities="0.018179624954364978" id="134"/>
+      <outcome active="0" probabilities="0.025416098364185204" id="136"/>
+      <outcome active="0" probabilities="NaN" id="138"/>
+      <outcome active="0" probabilities="NaN" id="140"/>
+      <outcome active="0" probabilities="NaN" id="142"/>
+      <outcome active="0" probabilities="NaN" id="144"/>
+      <outcome active="0" probabilities="7.242895579324031E-4" id="146"/>
+      <outcome active="0" probabilities="NaN" id="148"/>
+      <outcome active="0" probabilities="NaN" id="150"/>
+      <outcome active="0" probabilities="NaN" id="152"/>
+      <outcome active="0" probabilities="NaN" id="154"/>
+      <outcome active="0" probabilities="NaN" id="156"/>
+      <outcome active="0" probabilities="NaN" id="158"/>
+      <outcome active="0" probabilities="NaN" id="160"/>
+      <outcome active="0" probabilities="NaN" id="162"/>
+      <outcome active="0" probabilities="NaN" id="164"/>
+      <outcome active="0" probabilities="NaN" id="166"/>
+    </market>
+    <market specifiers="hcp=-3.75" id="16" status="0">
+      <outcome active="0" probabilities="0.9771062821632487" id="1714"/>
+      <outcome active="0" probabilities="0.02289371783675134" id="1715"/>
+    </market>
+    <market specifiers="total=2.5" id="90" status="0"/>
+    <market specifiers="score=4:0" id="41" status="1">
+      <outcome active="1" probabilities="0.22815375415933764" id="110"/>
+      <outcome active="1" probabilities="0.31897128089430427" id="114"/>
+      <outcome active="1" probabilities="0.22296954615153572" id="116"/>
+      <outcome active="1" probabilities="0.10390782595773516" id="118"/>
+      <outcome active="1" probabilities="0.03631718932568431" id="120"/>
+      <outcome active="1" probabilities="0.010154678751947574" id="122"/>
+      <outcome active="1" probabilities="0.002366131632382152" id="124"/>
+      <outcome active="1" probabilities="0.018179624954364978" id="126"/>
+      <outcome active="1" probabilities="0.025416098364185204" id="128"/>
+      <outcome active="1" probabilities="0.01776653967503429" id="130"/>
+      <outcome active="1" probabilities="0.008279527604949311" id="132"/>
+      <outcome active="1" probabilities="0.0028938067829316345" id="134"/>
+      <outcome active="1" probabilities="8.091396607637652E-4" id="136"/>
+      <outcome active="1" probabilities="7.242895579324031E-4" id="138"/>
+      <outcome active="1" probabilities="0.0010125959525992432" id="140"/>
+      <outcome active="1" probabilities="7.078319382012013E-4" id="142"/>
+      <outcome active="1" probabilities="3.2986243687266076E-4" id="144"/>
+      <outcome active="1" probabilities="1.1529137926732084E-4" id="146"/>
+      <outcome active="1" probabilities="1.9237483906544493E-5" id="148"/>
+      <outcome active="1" probabilities="2.6895042360638383E-5" id="150"/>
+      <outcome active="1" probabilities="1.8800361499833536E-5" id="152"/>
+      <outcome active="1" probabilities="8.76130720264173E-6" id="154"/>
+      <outcome active="1" probabilities="3.832177162449486E-7" id="156"/>
+      <outcome active="1" probabilities="5.357590816878459E-7" id="158"/>
+      <outcome active="1" probabilities="3.7451007800945776E-7" id="160"/>
+      <outcome active="1" probabilities="6.107069667007092E-9" id="162"/>
+      <outcome active="1" probabilities="8.538013504855928E-9" id="164"/>
+      <outcome active="1" probabilities="8.110337443671895E-11" id="166"/>
+    </market>
+    <market specifiers="variant=sr:exact_goals:3+" id="23" status="-3"/>
+    <market specifiers="total=3.5" id="68" status="-3"/>
+    <market specifiers="total=3.5" id="547" status="0"/>
+    <market specifiers="total=3.75" id="18" status="0"/>
+    <market specifiers="total=1" id="68" status="-3"/>
+    <market specifiers="total=7.5" id="18" status="0">
+      <outcome active="0" probabilities="0.06287920684906445" id="12"/>
+      <outcome active="0" probabilities="0.9371207931509355" id="13"/>
+    </market>
+    <market specifiers="total=3" id="68" status="-3"/>
+    <market specifiers="score=2:0" id="61" status="-3"/>
+    <market specifiers="total=2" id="68" status="-3"/>
+    <market specifiers="total=3.5" id="18" status="-3"/>
+    <market specifiers="variant=sr:exact_goals:3+" id="71" status="-3"/>
+    <market specifiers="total=3.5" id="19" status="-3"/>
+    <market specifiers="hcp=-2.25" id="66" status="-3"/>
+    <market specifiers="goalnr=5" id="8" status="1">
+      <outcome active="1" probabilities="0.7302272703833749" id="6"/>
+      <outcome active="1" probabilities="0.22815375415933764" id="7"/>
+      <outcome active="1" probabilities="0.041618975457287495" id="8"/>
+    </market>
+    <market specifiers="hcp=-3.5" id="16" status="0">
+      <outcome active="0" probabilities="0.9800170639342007" id="1714"/>
+      <outcome active="0" probabilities="0.019982936065799227" id="1715"/>
+    </market>
+    <market specifiers="hcp=-5.25" id="16" status="1">
+      <outcome active="1" probabilities="0.46743996769680907" id="1714"/>
+      <outcome active="1" probabilities="0.5325600323031909" id="1715"/>
+    </market>
+    <market specifiers="goalnr=1" id="8" status="-3"/>
+    <market specifiers="hcp=0:4" id="65" status="-3"/>
+    <market specifiers="goalnr=2" id="8" status="-3"/>
+    <market specifiers="hcp=0:2" id="65" status="-3"/>
+    <market specifiers="goalnr=3" id="8" status="-3"/>
+    <market specifiers="hcp=0:3" id="65" status="-3"/>
+    <market specifiers="goalnr=4" id="8" status="-3"/>
+    <market specifiers="hcp=-1.25" id="66" status="-3"/>
+    <market specifiers="total=2.5" id="18" status="-3"/>
+    <market specifiers="hcp=-5.75" id="16" status="0">
+      <outcome active="0" probabilities="0.3086868875478931" id="1714"/>
+      <outcome active="0" probabilities="0.6913131124521069" id="1715"/>
+    </market>
+    <market specifiers="total=1.5" id="90" status="0"/>
+    <market specifiers="total=1.5" id="544" status="0"/>
+    <market id="83" status="0"/>
+    <market specifiers="score=1:0" id="41" status="0">
+      <outcome active="0" probabilities="NaN" id="110"/>
+      <outcome active="0" probabilities="NaN" id="114"/>
+      <outcome active="0" probabilities="NaN" id="116"/>
+      <outcome active="0" probabilities="0.22815375415933764" id="118"/>
+      <outcome active="0" probabilities="0.31897128089430427" id="120"/>
+      <outcome active="0" probabilities="0.22296954615153572" id="122"/>
+      <outcome active="0" probabilities="0.10390782595773515" id="124"/>
+      <outcome active="0" probabilities="NaN" id="126"/>
+      <outcome active="0" probabilities="NaN" id="128"/>
+      <outcome active="0" probabilities="NaN" id="130"/>
+      <outcome active="0" probabilities="0.018179624954364978" id="132"/>
+      <outcome active="0" probabilities="0.025416098364185204" id="134"/>
+      <outcome active="0" probabilities="0.01776653967503429" id="136"/>
+      <outcome active="0" probabilities="NaN" id="138"/>
+      <outcome active="0" probabilities="NaN" id="140"/>
+      <outcome active="0" probabilities="NaN" id="142"/>
+      <outcome active="0" probabilities="7.242895579324031E-4" id="144"/>
+      <outcome active="0" probabilities="0.0010125959525992432" id="146"/>
+      <outcome active="0" probabilities="NaN" id="148"/>
+      <outcome active="0" probabilities="NaN" id="150"/>
+      <outcome active="0" probabilities="NaN" id="152"/>
+      <outcome active="0" probabilities="1.9237483906544493E-5" id="154"/>
+      <outcome active="0" probabilities="NaN" id="156"/>
+      <outcome active="0" probabilities="NaN" id="158"/>
+      <outcome active="0" probabilities="NaN" id="160"/>
+      <outcome active="0" probabilities="NaN" id="162"/>
+      <outcome active="0" probabilities="NaN" id="164"/>
+      <outcome active="0" probabilities="NaN" id="166"/>
+    </market>
+    <market specifiers="total=2.5" id="68" status="-3"/>
+    <market specifiers="total=4.25" id="18" status="0"/>
+    <market specifiers="total=2.5" id="547" status="0"/>
+    <market specifiers="score=0:0" id="80" status="-3"/>
+    <market id="75" status="-3"/>
+    <market specifiers="hcp=-4.25" id="16" status="0">
+      <outcome active="0" probabilities="0.8314429141092461" id="1714"/>
+      <outcome active="0" probabilities="0.1685570858907539" id="1715"/>
+    </market>
+    <market specifiers="total=6.5" id="18" status="1">
+      <outcome active="1" probabilities="0.18558540591833972" id="12"/>
+      <outcome active="1" probabilities="0.8144145940816603" id="13"/>
+    </market>
+    <market id="546" status="1">
+      <outcome active="1" probabilities="0.07658955389489294" id="1718"/>
+      <outcome active="1" probabilities="0.923410439768869" id="1719"/>
+      <outcome active="1" probabilities="0.07658916836419237" id="1720"/>
+      <outcome active="1" probabilities="0.923410439768869" id="1721"/>
+      <outcome active="1" probabilities="NaN" id="1722"/>
+      <outcome active="1" probabilities="NaN" id="1723"/>
+    </market>
+    <market specifiers="variant=sr:exact_goals:3+" id="73" status="-3"/>
+    <market id="1" status="0"/>
+    <market specifiers="total=1.25" id="68" status="-3"/>
+    <market specifiers="hcp=-2.5" id="66" status="-3"/>
+    <market specifiers="total=2.75" id="68" status="-3"/>
+    <market id="26" status="1">
+      <outcome active="1" probabilities="0.4739729322044544" id="70"/>
+      <outcome active="1" probabilities="0.5260270677955456" id="72"/>
+    </market>
+    <market specifiers="total=5.75" id="18" status="1">
+      <outcome active="1" probabilities="0.6457340423699534" id="13"/>
+      <outcome active="1" probabilities="0.35426595763004665" id="12"/>
+    </market>
+    <market specifiers="score=0:0" id="7" status="0"/>
+    <market specifiers="variant=sr:exact_goals:3+" id="24" status="1">
+      <outcome active="1" probabilities="0.923410439768869" id="sr:exact_goals:3+:88"/>
+      <outcome active="1" probabilities="0.07357869492789243" id="sr:exact_goals:3+:89"/>
+      <outcome active="1" probabilities="0.0029314290342260735" id="sr:exact_goals:3+:90"/>
+      <outcome active="1" probabilities="7.943623748601637E-5" id="sr:exact_goals:3+:91"/>
+    </market>
+    <market specifiers="variant=sr:exact_goals:6+" id="21" status="1">
+      <outcome active="1" probabilities="NaN" id="sr:exact_goals:6+:68"/>
+      <outcome active="1" probabilities="NaN" id="sr:exact_goals:6+:69"/>
+      <outcome active="1" probabilities="NaN" id="sr:exact_goals:6+:70"/>
+      <outcome active="1" probabilities="NaN" id="sr:exact_goals:6+:71"/>
+      <outcome active="1" probabilities="0.22815375415933764" id="sr:exact_goals:6+:72"/>
+      <outcome active="1" probabilities="0.33715090584866925" id="sr:exact_goals:6+:73"/>
+      <outcome active="1" probabilities="0.4346953399919931" id="sr:exact_goals:6+:74"/>
+    </market>
+    <market specifiers="hcp=-2.5" id="16" status="0">
+      <outcome active="0" probabilities="0.9992282607068431" id="1714"/>
+      <outcome active="0" probabilities="7.717392931569327E-4" id="1715"/>
+    </market>
+    <market id="10" status="0">
+      <outcome active="0" probabilities="0.9999999936637618" id="9"/>
+      <outcome active="0" probabilities="0.9999996081330612" id="10"/>
+      <outcome active="0" probabilities="3.9814012379859713E-7" id="11"/>
+    </market>
+    <market id="35" status="1">
+      <outcome active="1" probabilities="0.07658916205948076" id="78"/>
+      <outcome active="1" probabilities="0.923410439768869" id="80"/>
+      <outcome active="1" probabilities="3.9183541218003386E-7" id="82"/>
+      <outcome active="1" probabilities="NaN" id="84"/>
+      <outcome active="1" probabilities="6.30471161856327E-9" id="86"/>
+      <outcome active="1" probabilities="NaN" id="88"/>
+    </market>
+    <market specifiers="total=6.5" id="19" status="0">
+      <outcome active="0" probabilities="0.8339678089124215" id="13"/>
+      <outcome active="0" probabilities="0.1660321910875785" id="12"/>
+    </market>
+  </odds>
+</cashout>

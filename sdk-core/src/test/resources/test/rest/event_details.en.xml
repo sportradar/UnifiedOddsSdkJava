@@ -1,0 +1,27 @@
+﻿<match_summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-03-29T12:38:24+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/match_summary.xsd">
+  <sport_event id="sr:match:9210275" scheduled="2016-08-10T00:00:00+00:00" start_time_tbd="false">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12823" name="Mexican League 2016" start_date="2016-04-02" end_date="2016-09-24" year="2016" tournament_id="sr:tournament:1030"/>
+    <tournament id="sr:tournament:1030" name="Mexican League">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:426" name="Mexico" country_code="MEX"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:66390" name="Pericos de Puebla" country="Mexico" country_code="MEX" abbreviation="PDP" qualifier="home">
+        <reference_ids>
+          <reference_id name="betradar" value="998247"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66410" name="Tecolotes de Los Dos Laredos" country="Mexico" country_code="MEX" abbreviation="TEL" qualifier="away">
+        <reference_ids>
+          <reference_id name="betradar" value="998253"/>
+        </reference_ids>
+      </competitor>
+    </competitors>
+    <venue id="sr:venue:4988" name="Estadio de Beisbol Hermanos Serdan" capacity="12112" city_name="Puebla" country_name="Mexico" map_coordinates="19.075358,-98.164900" country_code="MEX"/>
+  </sport_event>
+  <sport_event_conditions>
+    <venue id="sr:venue:4988" name="Estadio de Beisbol Hermanos Serdan" capacity="12112" city_name="Puebla" country_name="Mexico" map_coordinates="19.075358,-98.164900" country_code="MEX"/>
+  </sport_event_conditions>
+  <sport_event_status status="closed" status_code="4"/>
+</match_summary>

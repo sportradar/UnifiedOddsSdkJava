@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<market_descriptions response_code="OK">
+  <market id="10030" name="League Cup 2016/17 - Winner" variant="lcoo:markettext:33421">
+    <outcomes>
+      <outcome id="lcoo:outcometext:4792" name="BARNSLEY FC"/>
+      <outcome id="lcoo:outcometext:4793" name="ROTHERHAM UNITED"/>
+      <outcome id="lcoo:outcometext:4794" name="BIRMINGHAM CITY"/>
+      <outcome id="lcoo:outcometext:4796" name="BLACKPOOL FC"/>
+      <outcome id="lcoo:outcometext:4798" name="AFC BOURNEMOUTH"/>
+      <outcome id="lcoo:outcometext:4800" name="BRISTOL ROVERS"/>
+      <outcome id="lcoo:outcometext:4801" name="PLYMOUTH ARGYLE"/>
+      <outcome id="lcoo:outcometext:4803" name="BRISTOL CITY"/>
+      <outcome id="lcoo:outcometext:4804" name="BURY FC"/>
+      <outcome id="lcoo:outcometext:4805" name="CREWE ALEXANDRA"/>
+      <outcome id="lcoo:outcometext:4806" name="CARDIFF CITY"/>
+      <outcome id="lcoo:outcometext:4807" name="CRYSTAL PALACE"/>
+      <outcome id="lcoo:outcometext:4808" name="CARLISLE UNITED"/>
+      <outcome id="lcoo:outcometext:4809" name="GRIMSBY TOWN"/>
+      <outcome id="lcoo:outcometext:4810" name="CHELTENHAM TOWN"/>
+      <outcome id="lcoo:outcometext:4811" name="WATFORD FC"/>
+      <outcome id="lcoo:outcometext:4812" name="CHESTERFIELD FC"/>
+      <outcome id="lcoo:outcometext:4814" name="EXETER CITY"/>
+      <outcome id="lcoo:outcometext:4816" name="FULHAM FC"/>
+      <outcome id="lcoo:outcometext:4817" name="NORTHAMPTON TOWN"/>
+      <outcome id="lcoo:outcometext:4818" name="HARTLEPOOL UNITED"/>
+      <outcome id="lcoo:outcometext:4819" name="BURNLEY FC"/>
+      <outcome id="lcoo:outcometext:4820" name="HUDDERSFIELD TOWN"/>
+      <outcome id="lcoo:outcometext:4823" name="SHEFFIELD UNITED"/>
+      <outcome id="lcoo:outcometext:4825" name="WALSALL FC"/>
+      <outcome id="lcoo:outcometext:4828" name="MILLWALL FC"/>
+      <outcome id="lcoo:outcometext:4829" name="BRIGHTON &amp; HOVE ALBION"/>
+      <outcome id="lcoo:outcometext:4830" name="NOTTS COUNTY"/>
+      <outcome id="lcoo:outcometext:4831" name="HULL CITY"/>
+      <outcome id="lcoo:outcometext:4834" name="PETERBOROUGH UNITED"/>
+      <outcome id="lcoo:outcometext:4835" name="LUTON TOWN"/>
+      <outcome id="lcoo:outcometext:4836" name="PORTSMOUTH FC"/>
+      <outcome id="lcoo:outcometext:4837" name="CAMBRIDGE UNITED"/>
+      <outcome id="lcoo:outcometext:4838" name="PRESTON NORTH END"/>
+      <outcome id="lcoo:outcometext:4840" name="READING FC"/>
+      <outcome id="lcoo:outcometext:4841" name="LEYTON ORIENT"/>
+      <outcome id="lcoo:outcometext:4843" name="GILLINGHAM FC"/>
+      <outcome id="lcoo:outcometext:4845" name="MANSFIELD TOWN"/>
+      <outcome id="lcoo:outcometext:4846" name="WYCOMBE WANDERERS"/>
+      <outcome id="lcoo:outcometext:4848" name="BLACKBURN ROVERS"/>
+      <outcome id="lcoo:outcometext:4849" name="ROCHDALE AFC"/>
+      <outcome id="lcoo:outcometext:4852" name="NOTTINGHAM FOREST"/>
+      <outcome id="lcoo:outcometext:4854" name="QUEENS PARK RANGERS"/>
+      <outcome id="lcoo:outcometext:4855" name="COLCHESTER UNITED"/>
+      <outcome id="lcoo:outcometext:4858" name="WEST BROMWICH ALBION"/>
+      <outcome id="lcoo:outcometext:4859" name="SWANSEA CITY"/>
+      <outcome id="lcoo:outcometext:5143" name="NORWICH CITY"/>
+      <outcome id="lcoo:outcometext:5146" name="SWINDON TOWN"/>
+      <outcome id="lcoo:outcometext:5148" name="OLDHAM ATHLETIC"/>
+      <outcome id="lcoo:outcometext:5151" name="OXFORD UNITED"/>
+      <outcome id="lcoo:outcometext:5152" name="WOLVERHAMPTON WANDERERS"/>
+      <outcome id="lcoo:outcometext:5154" name="SHREWSBURY TOWN"/>
+      <outcome id="lcoo:outcometext:5155" name="SCUNTHORPE UNITED"/>
+      <outcome id="lcoo:outcometext:5156" name="WIGAN ATHLETIC"/>
+      <outcome id="lcoo:outcometext:5159" name="STOKE CITY"/>
+      <outcome id="lcoo:outcometext:7214" name="BOLTON WANDERERS"/>
+      <outcome id="lcoo:outcometext:8201" name="MANCHESTER CITY"/>
+      <outcome id="lcoo:outcometext:8205" name="SHEFFIELD WEDNESDAY"/>
+      <outcome id="lcoo:outcometext:8207" name="SOUTHAMPTON FC"/>
+      <outcome id="lcoo:outcometext:8208" name="SUNDERLAND AFC"/>
+      <outcome id="lcoo:outcometext:8210" name="MILTON KEYNES DONS"/>
+      <outcome id="lcoo:outcometext:8224" name="MIDDLESBROUGH FC"/>
+      <outcome id="lcoo:outcometext:8225" name="IPSWICH TOWN"/>
+      <outcome id="lcoo:outcometext:8226" name="NEWCASTLE UNITED"/>
+      <outcome id="lcoo:outcometext:8227" name="COVENTRY CITY"/>
+      <outcome id="lcoo:outcometext:8228" name="WEST HAM UNITED"/>
+      <outcome id="lcoo:outcometext:8262" name="TOTTENHAM HOTSPUR"/>
+      <outcome id="lcoo:outcometext:8263" name="BRADFORD CITY"/>
+      <outcome id="lcoo:outcometext:8264" name="DERBY COUNTY"/>
+      <outcome id="lcoo:outcometext:8273" name="CHARLTON ATHLETIC"/>
+      <outcome id="lcoo:outcometext:11043" name="ARSENAL FC"/>
+      <outcome id="lcoo:outcometext:11044" name="ASTON VILLA"/>
+      <outcome id="lcoo:outcometext:11046" name="LIVERPOOL FC"/>
+      <outcome id="lcoo:outcometext:11047" name="CHELSEA FC"/>
+      <outcome id="lcoo:outcometext:11061" name="LEEDS UNITED"/>
+      <outcome id="lcoo:outcometext:11062" name="MANCHESTER UNITED"/>
+      <outcome id="lcoo:outcometext:11063" name="LEICESTER CITY"/>
+      <outcome id="lcoo:outcometext:58744" name="SOUTHEND UNITED"/>
+      <outcome id="lcoo:outcometext:66574" name="PORT VALE"/>
+      <outcome id="lcoo:outcometext:66575" name="EVERTON FC"/>
+      <outcome id="lcoo:outcometext:66576" name="BRENTFORD FC"/>
+      <outcome id="lcoo:outcometext:70891" name="DONCASTER ROVERS"/>
+      <outcome id="lcoo:outcometext:70934" name="YEOVIL TOWN"/>
+      <outcome id="lcoo:outcometext:645926" name="BURTON ALBION"/>
+      <outcome id="lcoo:outcometext:816478" name="ACCRINGTON STANLEY"/>
+      <outcome id="lcoo:outcometext:849955" name="CRAWLEY TOWN"/>
+      <outcome id="lcoo:outcometext:849961" name="STEVENAGE FC"/>
+      <outcome id="lcoo:outcometext:849965" name="MORECAMBE FC"/>
+      <outcome id="lcoo:outcometext:5572523" name="AFC WIMBLEDON"/>
+      <outcome id="lcoo:outcometext:6232251" name="FLEETWOOD TOWN"/>
+      <outcome id="lcoo:outcometext:6654462" name="NEWPORT COUNTY"/>
+    </outcomes>
+  </market>
+</market_descriptions>

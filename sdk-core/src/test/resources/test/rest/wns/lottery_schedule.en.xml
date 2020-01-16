@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lottery_schedule generated_at="2018-03-30T11:30:38.988Z" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/wns/v1/endpoints/unified/lottery_schedule.xsd" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <lottery id="wns:lottery:47125" name="Lotto 6/41">
+        <sport id="sr:sport:108" name="World Lottery"/>
+        <category id="sr:category:1062" name="Chile"/>
+        <draw_info draw_type="drum" time_type="fixed" game_type="6/41"/>
+        <bonus_info bonus_balls="1" bonus_drum="same" bonus_range="1-41"/>
+    </lottery>
+    <draw_events>
+        <draw_event id="wns:draw:328994447" scheduled="2018-03-30T00:00:00.000Z" status="finished"/>
+    </draw_events>
+</lottery_schedule>

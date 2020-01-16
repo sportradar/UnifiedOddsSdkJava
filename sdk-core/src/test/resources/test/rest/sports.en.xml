@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<sports xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-08-10T12:26:20+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/sports.xsd">
+  <sport id="sr:sport:69" name="Moto3"/>
+  <sport id="sr:sport:43" name="Alpine Skiing"/>
+  <sport id="sr:sport:74" name="Aquatics"/>
+  <sport id="sr:sport:75" name="Archery"/>
+  <sport id="sr:sport:36" name="Athletics"/>
+  <sport id="sr:sport:13" name="Aussie Rules"/>
+  <sport id="sr:sport:31" name="Badminton"/>
+  <sport id="sr:sport:15" name="Bandy"/>
+  <sport id="sr:sport:3" name="Baseball"/>
+  <sport id="sr:sport:2" name="Basketball"/>
+  <sport id="sr:sport:130" name="Basque Pelota"/>
+  <sport id="sr:sport:60" name="Beach Soccer"/>
+  <sport id="sr:sport:98" name="Beach Tennis"/>
+  <sport id="sr:sport:34" name="Beach Volley"/>
+  <sport id="sr:sport:44" name="Biathlon"/>
+  <sport id="sr:sport:41" name="Bikes"/>
+  <sport id="sr:sport:45" name="Bobsleigh"/>
+  <sport id="sr:sport:32" name="Bowls"/>
+  <sport id="sr:sport:10" name="Boxing"/>
+  <sport id="sr:sport:92" name="Canoe slalom"/>
+  <sport id="sr:sport:72" name="Canoeing"/>
+  <sport id="sr:sport:33" name="Chess"/>
+  <sport id="sr:sport:21" name="Cricket"/>
+  <sport id="sr:sport:46" name="Cross-Country"/>
+  <sport id="sr:sport:28" name="Curling"/>
+  <sport id="sr:sport:17" name="Cycling"/>
+  <sport id="sr:sport:91" name="BMX racing"/>
+  <sport id="sr:sport:88" name="Mountain Bike"/>
+  <sport id="sr:sport:97" name="Track cycling"/>
+  <sport id="sr:sport:22" name="Darts"/>
+  <sport id="sr:sport:96" name="Diving"/>
+  <sport id="sr:sport:42" name="DTM"/>
+  <sport id="sr:sport:107" name="eSport"/>
+  <sport id="sr:sport:76" name="Equestrian"/>
+  <sport id="sr:sport:118" name="Call of Duty"/>
+  <sport id="sr:sport:133" name="ESport Clash Royale"/>
+  <sport id="sr:sport:109" name="Counter-Strike"/>
+  <sport id="sr:sport:123" name="Crossfire"/>
+  <sport id="sr:sport:111" name="Dota 2"/>
+  <sport id="sr:sport:132" name="ESport Gears of War"/>
+  <sport id="sr:sport:124" name="Halo"/>
+  <sport id="sr:sport:113" name="Hearthstone"/>
+  <sport id="sr:sport:114" name="Heroes of the Storm"/>
+  <sport id="sr:sport:134" name="ESport King of Glory"/>
+  <sport id="sr:sport:110" name="League of Legends"/>
+  <sport id="sr:sport:121" name="Overwatch"/>
+  <sport id="sr:sport:125" name="Rainbow Six"/>
+  <sport id="sr:sport:128" name="Rocket League"/>
+  <sport id="sr:sport:119" name="Smite"/>
+  <sport id="sr:sport:112" name="StarCraft"/>
+  <sport id="sr:sport:127" name="Street Fighter V"/>
+  <sport id="sr:sport:120" name="Vainglory"/>
+  <sport id="sr:sport:122" name="WarCraft III"/>
+  <sport id="sr:sport:115" name="World of Tanks"/>
+  <sport id="sr:sport:77" name="Fencing"/>
+  <sport id="sr:sport:24" name="Field hockey"/>
+  <sport id="sr:sport:102" name="Figure Skating"/>
+  <sport id="sr:sport:53" name="Finnish Baseball"/>
+  <sport id="sr:sport:7" name="Floorball"/>
+  <sport id="sr:sport:16" name="American Football"/>
+  <sport id="sr:sport:40" name="Formula 1"/>
+  <sport id="sr:sport:103" name="Freestyle Skiing"/>
+  <sport id="sr:sport:29" name="Futsal"/>
+  <sport id="sr:sport:135" name="Gaelic Football"/>
+  <sport id="sr:sport:136" name="Gaelic Hurling"/>
+  <sport id="sr:sport:27" name="Gaelic sports"/>
+  <sport id="sr:sport:9" name="Golf"/>
+  <sport id="sr:sport:58" name="Greyhound"/>
+  <sport id="sr:sport:78" name="Gymnastics"/>
+  <sport id="sr:sport:6" name="Handball"/>
+  <sport id="sr:sport:55" name="Horse racing"/>
+  <sport id="sr:sport:73" name="Horseball"/>
+  <sport id="sr:sport:4" name="Ice Hockey"/>
+  <sport id="sr:sport:129" name="Indycar"/>
+  <sport id="sr:sport:57" name="Inline Hockey"/>
+  <sport id="sr:sport:79" name="Judo"/>
+  <sport id="sr:sport:39" name="Lacrosse"/>
+  <sport id="sr:sport:51" name="Luge"/>
+  <sport id="sr:sport:117" name="MMA"/>
+  <sport id="sr:sport:80" name="Modern Pentathlon"/>
+  <sport id="sr:sport:68" name="Moto2"/>
+  <sport id="sr:sport:67" name="MotoGP"/>
+  <sport id="sr:sport:11" name="Motorsport"/>
+  <sport id="sr:sport:70" name="Nascar"/>
+  <sport id="sr:sport:35" name="Netball"/>
+  <sport id="sr:sport:47" name="Nordic Combined"/>
+  <sport id="sr:sport:30" name="Olympics"/>
+  <sport id="sr:sport:87" name="Olympics Youth"/>
+  <sport id="sr:sport:71" name="Padel Tennis"/>
+  <sport id="sr:sport:61" name="Pesapallo"/>
+  <sport id="sr:sport:116" name="Polo"/>
+  <sport id="sr:sport:25" name="Pool"/>
+  <sport id="sr:sport:101" name="Rally"/>
+  <sport id="sr:sport:93" name="Rhythmic gymnastics"/>
+  <sport id="sr:sport:89" name="Riding"/>
+  <sport id="sr:sport:38" name="Rink Hockey"/>
+  <sport id="sr:sport:64" name="Rowing"/>
+  <sport id="sr:sport:12" name="Rugby"/>
+  <sport id="sr:sport:59" name="Rugby League"/>
+  <sport id="sr:sport:81" name="Sailing"/>
+  <sport id="sr:sport:56" name="Schwingen"/>
+  <sport id="sr:sport:126" name="Sepak Takraw"/>
+  <sport id="sr:sport:82" name="Shooting"/>
+  <sport id="sr:sport:105" name="Short Track"/>
+  <sport id="sr:sport:104" name="Skeleton"/>
+  <sport id="sr:sport:48" name="Ski Jumping"/>
+  <sport id="sr:sport:19" name="Snooker"/>
+  <sport id="sr:sport:49" name="Snowboard"/>
+  <sport id="sr:sport:65" name="Freestyle"/>
+  <sport id="sr:sport:66" name="Snowboardcross/Parallel"/>
+  <sport id="sr:sport:1" name="Soccer"/>
+  <sport id="sr:sport:106" name="Soccer Mythical"/>
+  <sport id="sr:sport:54" name="Softball"/>
+  <sport id="sr:sport:18" name="Specials"/>
+  <sport id="sr:sport:50" name="Speed Skating"/>
+  <sport id="sr:sport:131" name="Speedway"/>
+  <sport id="sr:sport:37" name="Squash"/>
+  <sport id="sr:sport:62" name="Streethockey"/>
+  <sport id="sr:sport:99" name="Sumo"/>
+  <sport id="sr:sport:100" name="Superbike"/>
+  <sport id="sr:sport:90" name="Surfing"/>
+  <sport id="sr:sport:52" name="Swimming"/>
+  <sport id="sr:sport:95" name="Synchronized swimming"/>
+  <sport id="sr:sport:20" name="Table Tennis"/>
+  <sport id="sr:sport:83" name="Taekwondo"/>
+  <sport id="sr:sport:5" name="Tennis"/>
+  <sport id="sr:sport:94" name="Trampolining"/>
+  <sport id="sr:sport:84" name="Triathlon"/>
+  <sport id="sr:sport:8" name="Trotting"/>
+  <sport id="sr:sport:23" name="Volleyball"/>
+  <sport id="sr:sport:26" name="Waterpolo"/>
+  <sport id="sr:sport:85" name="Weightlifting"/>
+  <sport id="sr:sport:14" name="Winter Sports"/>
+  <sport id="sr:sport:63" name="World Championship"/>
+  <sport id="sr:sport:108" name="World Lottery"/>
+  <sport id="sr:sport:86" name="Wrestling"/>
+</sports>

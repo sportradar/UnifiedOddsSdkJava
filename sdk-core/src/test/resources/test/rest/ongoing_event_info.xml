@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<match_timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2016-09-23T12:04:48+00:00"
+                xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="">
+  <sport_event id="sr:match:8696826" scheduled="2016-10-31T18:00:00+00:00">
+    <tournament_round type="group" number="25"/>
+    <season id="sr:season:12346" name="Div 1, Sodra 2016"/>
+    <tournament id="sr:tournament:68" name="Div 1 Sodra">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:9" name="Sweden"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:1860" name="IK Oddevold" country="Sweden" abbreviation="ODD" qualifier="home"/>
+      <competitor id="sr:competitor:22356" name="Tvaakers IF" country="Sweden" abbreviation="TVA" qualifier="away"/>
+    </competitors>
+  </sport_event>
+  <sport_event_status status="not_started"/>
+  <coverage_info level="bronze" live_coverage="false">
+    <coverage includes="basic_score"/>
+  </coverage_info>
+</match_timeline>

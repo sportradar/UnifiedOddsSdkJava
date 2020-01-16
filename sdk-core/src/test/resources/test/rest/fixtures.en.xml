@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<fixtures_fixture xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2016-09-23T11:40:48+00:00"
+                  xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="">
+  <fixture id="sr:match:9210275" scheduled="2016-08-10T00:00:00+00:00" start_time="2016-08-10T00:00:00+00:00" start_time_confirmed="true" liveodds="not_available">
+    <tournament_round type="group" number="1"/>
+    <season id="sr:season:12823" name="Mexican League 2016"/>
+    <tournament id="sr:tournament:1030" name="Mexican League">
+      <sport id="sr:sport:3" name="Baseball"/>
+      <category id="sr:category:426" name="Mexico"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:66390" name="Pericos de Puebla" country="Mexico" abbreviation="PDP" qualifier="home"/>
+      <competitor id="sr:competitor:66410" name="Rojos Del Aguila de Veracruz" country="Mexico" abbreviation="RDA" qualifier="away"/>
+    </competitors>
+    <venue id="sr:venue:4988" name="Estadio de Beisbol Hermanos Serdan" capacity="12112" city_name="Puebla" country_name="Mexico" map_coordinates="19.075358,-98.164900"/>
+    <extra_info>
+      <info key="neutral_ground" value="false"/>
+    </extra_info>
+    <product_info>
+      <is_in_live_score/>
+      <is_in_hosted_statistics/>
+      <is_auto_traded/>
+    </product_info>
+    <reference_ids>
+      <reference_id name="BetradarCtrl" value="11259634"/>
+    </reference_ids>
+  </fixture>
+</fixtures_fixture>

@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<race_summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-06-01T08:06:03+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/race_summary.xsd">
+    <sport_event id="sr:race_event:271400" name="Giro d'Italia" type="parent">
+        <tournament id="sr:race_tournament:270956" scheduled="2017-01-17T00:00:00+01:00" scheduled_end="2017-10-24T00:00:00+02:00" name="UCI World Tour">
+            <sport id="sr:sport:17" name="Cycling"/>
+            <category id="sr:category:96" name="International"/>
+        </tournament>
+        <races>
+            <sport_event id="sr:race_event:271404" scheduled="2017-05-05T00:00:00+02:00" scheduled_end="2017-05-05T00:00:00+02:00" name="Stage 1" type="child"/>
+            <sport_event id="sr:race_event:271406" scheduled="2017-05-06T00:00:00+02:00" scheduled_end="2017-05-06T00:00:00+02:00" name="Stage 2" type="child"/>
+            <sport_event id="sr:race_event:271408" scheduled="2017-05-07T00:00:00+02:00" scheduled_end="2017-05-07T00:00:00+02:00" name="Stage 3" type="child"/>
+            <sport_event id="sr:race_event:271410" scheduled="2017-05-09T00:00:00+02:00" scheduled_end="2017-05-09T00:00:00+02:00" name="Stage 4" type="child"/>
+            <sport_event id="sr:race_event:271412" scheduled="2017-05-10T00:00:00+02:00" scheduled_end="2017-05-10T00:00:00+02:00" name="Stage 5" type="child"/>
+            <sport_event id="sr:race_event:271414" scheduled="2017-05-11T00:00:00+02:00" scheduled_end="2017-05-11T00:00:00+02:00" name="Stage 6" type="child"/>
+            <sport_event id="sr:race_event:271416" scheduled="2017-05-12T00:00:00+02:00" scheduled_end="2017-05-12T00:00:00+02:00" name="Stage 7" type="child"/>
+            <sport_event id="sr:race_event:271418" scheduled="2017-05-13T00:00:00+02:00" scheduled_end="2017-05-13T00:00:00+02:00" name="Stage 8" type="child"/>
+            <sport_event id="sr:race_event:271420" scheduled="2017-05-14T00:00:00+02:00" scheduled_end="2017-05-14T00:00:00+02:00" name="Stage 9" type="child"/>
+            <sport_event id="sr:race_event:271422" scheduled="2017-05-16T00:00:00+02:00" scheduled_end="2017-05-16T00:00:00+02:00" name="Stage 10" type="child"/>
+            <sport_event id="sr:race_event:271424" scheduled="2017-05-17T00:00:00+02:00" scheduled_end="2017-05-17T00:00:00+02:00" name="Stage 11" type="child"/>
+            <sport_event id="sr:race_event:271426" scheduled="2017-05-18T00:00:00+02:00" scheduled_end="2017-05-18T00:00:00+02:00" name="Stage 12" type="child"/>
+            <sport_event id="sr:race_event:271428" scheduled="2017-05-19T00:00:00+02:00" scheduled_end="2017-05-19T00:00:00+02:00" name="Stage 13" type="child"/>
+            <sport_event id="sr:race_event:271430" scheduled="2017-05-20T00:00:00+02:00" scheduled_end="2017-05-20T00:00:00+02:00" name="Stage 14" type="child"/>
+            <sport_event id="sr:race_event:271432" scheduled="2017-05-21T00:00:00+02:00" scheduled_end="2017-05-21T00:00:00+02:00" name="Stage 15" type="child"/>
+            <sport_event id="sr:race_event:271434" scheduled="2017-05-23T00:00:00+02:00" scheduled_end="2017-05-23T00:00:00+02:00" name="Stage 16" type="child"/>
+            <sport_event id="sr:race_event:271436" scheduled="2017-05-24T00:00:00+02:00" scheduled_end="2017-05-24T00:00:00+02:00" name="Stage 17" type="child"/>
+            <sport_event id="sr:race_event:271438" scheduled="2017-05-25T00:00:00+02:00" scheduled_end="2017-05-25T00:00:00+02:00" name="Stage 18" type="child"/>
+            <sport_event id="sr:race_event:271440" scheduled="2017-05-26T00:00:00+02:00" scheduled_end="2017-05-26T00:00:00+02:00" name="Stage 19" type="child"/>
+            <sport_event id="sr:race_event:271442" scheduled="2017-05-27T00:00:00+02:00" scheduled_end="2017-05-27T00:00:00+02:00" name="Stage 20" type="child"/>
+            <sport_event id="sr:race_event:271444" scheduled="2017-05-28T00:00:00+02:00" scheduled_end="2017-05-28T00:00:00+02:00" name="Stage 21" type="child"/>
+        </races>
+    </sport_event>
+    <sport_event_status status="ended" winner_id="sr:competitor:50279">
+        <results>
+            <competitor id="sr:competitor:50279" time="90:34.54" time_ranking="1" sprint="80" sprint_ranking="6" climber="55" climber_ranking="8"/>
+            <competitor id="sr:competitor:50044" time="+00:00.31" time_ranking="2" sprint="62" sprint_ranking="15" climber="70" climber_ranking="4"/>
+            <competitor id="sr:competitor:26792" time="+00:00.40" time_ranking="3" sprint="61" sprint_ranking="16" climber="33" climber_ranking="15"/>
+            <competitor id="sr:competitor:39816" time="+00:01.17" time_ranking="4" sprint="67" sprint_ranking="12" climber="53" climber_ranking="10"/>
+            <competitor id="sr:competitor:123378" time="+00:01.56" time_ranking="5" sprint="58" sprint_ranking="17" climber="66" climber_ranking="6"/>
+            <competitor id="sr:competitor:26878" time="+00:03.11" time_ranking="6" sprint="32" sprint_ranking="31" climber="54" climber_ranking="9"/>
+            <competitor id="sr:competitor:27895" time="+00:03.41" time_ranking="7" sprint="27" sprint_ranking="34" climber="10" climber_ranking="38"/>
+            <competitor id="sr:competitor:88956" time="+00:07.04" time_ranking="8" sprint="64" sprint_ranking="13" climber="5" climber_ranking="48"/>
+            <competitor id="sr:competitor:123892" time="+00:08.10" time_ranking="9" sprint="41" sprint_ranking="23" climber="5" climber_ranking="49"/>
+            <competitor id="sr:competitor:158480" time="+00:15.17" time_ranking="10" sprint="6" sprint_ranking="74"/>
+            <competitor id="sr:competitor:120916" time="+00:18.06" time_ranking="11" sprint="10" sprint_ranking="58" climber="46" climber_ranking="12"/>
+            <competitor id="sr:competitor:196752" time="+00:20.49" time_ranking="12" sprint="6" sprint_ranking="75" climber="30" climber_ranking="17"/>
+            <competitor id="sr:competitor:26862" time="+00:21.59" time_ranking="13" sprint="6" sprint_ranking="76"/>
+            <competitor id="sr:competitor:27870" time="+00:24.40" time_ranking="14" sprint="10" sprint_ranking="59" climber="15" climber_ranking="34"/>
+            <competitor id="sr:competitor:95635" time="+00:28.11" time_ranking="15" sprint="5" sprint_ranking="83"/>
+            <competitor id="sr:competitor:194902" time="+00:35.50" time_ranking="16" sprint="6" sprint_ranking="77"/>
+            <competitor id="sr:competitor:50287" time="+00:37.09" time_ranking="17" sprint="63" sprint_ranking="14" climber="224" climber_ranking="1"/>
+            <competitor id="sr:competitor:34405" time="+00:37.49" time_ranking="18" sprint="4" sprint_ranking="86" climber="4" climber_ranking="50"/>
+            <competitor id="sr:competitor:27089" time="+00:38.45" time_ranking="19" sprint="1" sprint_ranking="102" climber="1" climber_ranking="64"/>
+            <competitor id="sr:competitor:35498" time="+00:57.13" time_ranking="20" sprint="15" sprint_ranking="47" climber="24" climber_ranking="20"/>
+            <competitor id="sr:competitor:26425" time="+00:59.43" time_ranking="21" sprint="3" sprint_ranking="93" climber="1" climber_ranking="65"/>
+            <competitor id="sr:competitor:27645" time="+01:12.55" time_ranking="22" sprint="47" sprint_ranking="21" climber="70" climber_ranking="5"/>
+            <competitor id="sr:competitor:27293" time="+01:14.00" time_ranking="23"/>
+            <competitor id="sr:competitor:248853" time="+01:20.00" time_ranking="24" sprint="1" sprint_ranking="103" climber="27" climber_ranking="18"/>
+            <competitor id="sr:competitor:57411" time="+01:26.41" time_ranking="25" sprint="-1" sprint_ranking="110" climber="16" climber_ranking="29"/>
+            <competitor id="sr:competitor:248847" time="+01:29.34" time_ranking="26" sprint="6" sprint_ranking="78"/>
+            <competitor id="sr:competitor:34530" time="+01:33.17" time_ranking="27" sprint="48" sprint_ranking="20" climber="31" climber_ranking="16"/>
+            <competitor id="sr:competitor:35470" time="+01:34.21" time_ranking="28" sprint="34" sprint_ranking="28" climber="1" climber_ranking="66"/>
+            <competitor id="sr:competitor:41441" time="+01:35.49" time_ranking="29"/>
+            <competitor id="sr:competitor:27070" time="+01:36.26" time_ranking="30" climber="4" climber_ranking="51"/>
+            <competitor id="sr:competitor:27853" time="+01:36.28" time_ranking="31" climber="4" climber_ranking="52"/>
+            <competitor id="sr:competitor:123882" time="+01:36.32" time_ranking="32"/>
+            <competitor id="sr:competitor:203397" time="+01:44.04" time_ranking="33" sprint="6" sprint_ranking="79" climber="21" climber_ranking="25"/>
+            <competitor id="sr:competitor:26945" time="+01:47.24" time_ranking="34" sprint="-5" sprint_ranking="115"/>
+            <competitor id="sr:competitor:27115" time="+01:52.02" time_ranking="35" sprint="12" sprint_ranking="52" climber="1" climber_ranking="67"/>
+            <competitor id="sr:competitor:81533" time="+01:58.49" time_ranking="36" sprint="5" sprint_ranking="84" climber="34" climber_ranking="14"/>
+            <competitor id="sr:competitor:27235" time="+02:00.45" time_ranking="37" sprint="9" sprint_ranking="63" climber="18" climber_ranking="28"/>
+            <competitor id="sr:competitor:174908" time="+02:02.20" time_ranking="38" sprint="22" sprint_ranking="37"/>
+            <competitor id="sr:competitor:248861" time="+02:09.03" time_ranking="39"/>
+            <competitor id="sr:competitor:255845" time="+02:09.30" time_ranking="40" climber="1" climber_ranking="68"/>
+            <competitor id="sr:competitor:247361" time="+02:12.34" time_ranking="41" sprint="7" sprint_ranking="70"/>
+            <competitor id="sr:competitor:248863" time="+02:14.18" time_ranking="42" sprint="1" sprint_ranking="104"/>
+            <competitor id="sr:competitor:26697" time="+02:16.12" time_ranking="43" sprint="38" sprint_ranking="27" climber="118" climber_ranking="2"/>
+            <competitor id="sr:competitor:78671" time="+02:17.12" time_ranking="44" sprint="2" sprint_ranking="96" climber="9" climber_ranking="41"/>
+            <competitor id="sr:competitor:318389" time="+02:18.19" time_ranking="45"/>
+            <competitor id="sr:competitor:27807" time="+02:19.20" time_ranking="46"/>
+            <competitor id="sr:competitor:27510" time="+02:20.09" time_ranking="47" sprint="-4" sprint_ranking="113"/>
+            <competitor id="sr:competitor:28044" time="+02:23.54" time_ranking="48" sprint="3" sprint_ranking="94"/>
+            <competitor id="sr:competitor:26823" time="+02:24.32" time_ranking="49"/>
+            <competitor id="sr:competitor:27252" time="+02:25.08" time_ranking="50" sprint="-1" sprint_ranking="111" climber="2" climber_ranking="59"/>
+            <competitor id="sr:competitor:35744" time="+02:25.28" time_ranking="51" sprint="6" sprint_ranking="80" climber="2" climber_ranking="60"/>
+            <competitor id="sr:competitor:256281" time="+02:27.56" time_ranking="52" sprint="-5" sprint_ranking="116"/>
+            <competitor id="sr:competitor:27369" time="+02:28.42" time_ranking="53" sprint="-5" sprint_ranking="117"/>
+            <competitor id="sr:competitor:35557" time="+02:30.05" time_ranking="54"/>
+            <competitor id="sr:competitor:92833" time="+02:33.01" time_ranking="55" sprint="8" sprint_ranking="66" climber="49" climber_ranking="11"/>
+            <competitor id="sr:competitor:247349" time="+02:33.47" time_ranking="56"/>
+            <competitor id="sr:competitor:92871" time="+02:34.13" time_ranking="57"/>
+            <competitor id="sr:competitor:27445" time="+02:35.30" time_ranking="58" sprint="12" sprint_ranking="51"/>
+            <competitor id="sr:competitor:101459" time="+02:36.41" time_ranking="59" sprint="16" sprint_ranking="45" climber="22" climber_ranking="24"/>
+            <competitor id="sr:competitor:221492" time="+02:38.06" time_ranking="60"/>
+            <competitor id="sr:competitor:35469" time="+02:41.01" time_ranking="61"/>
+            <competitor id="sr:competitor:27114" time="+02:50.11" time_ranking="62" sprint="11" sprint_ranking="55" climber="56" climber_ranking="7"/>
+            <competitor id="sr:competitor:27896" time="+02:56.15" time_ranking="63"/>
+            <competitor id="sr:competitor:50282" time="+02:56.17" time_ranking="64" sprint="40" sprint_ranking="26"/>
+            <competitor id="sr:competitor:93811" time="+03:00.21" time_ranking="65" sprint="30" sprint_ranking="33" climber="104" climber_ranking="3"/>
+            <competitor id="sr:competitor:51780" time="+03:01.22" time_ranking="66" sprint="7" sprint_ranking="71" climber="20" climber_ranking="26"/>
+            <competitor id="sr:competitor:147008" time="+03:02.38" time_ranking="67" sprint="68" sprint_ranking="11" climber="6" climber_ranking="45"/>
+            <competitor id="sr:competitor:157830" time="+03:05.10" time_ranking="68" sprint="11" sprint_ranking="56" climber="3" climber_ranking="58"/>
+            <competitor id="sr:competitor:91760" time="+03:07.39" time_ranking="69" climber="16" climber_ranking="30"/>
+            <competitor id="sr:competitor:198720" time="+03:07.54" time_ranking="70" sprint="7" sprint_ranking="72" climber="12" climber_ranking="36"/>
+            <competitor id="sr:competitor:66852" time="+03:09.18" time_ranking="71" sprint="4" sprint_ranking="87"/>
+            <competitor id="sr:competitor:144196" time="+03:10.39" time_ranking="72" sprint="4" sprint_ranking="88" climber="16" climber_ranking="31"/>
+            <competitor id="sr:competitor:27080" time="+03:12.11" time_ranking="73" sprint="6" sprint_ranking="81"/>
+            <competitor id="sr:competitor:50495" time="+03:13.22" time_ranking="74" sprint="8" sprint_ranking="67" climber="1" climber_ranking="69"/>
+            <competitor id="sr:competitor:196712" time="+03:15.44" time_ranking="75" sprint="8" sprint_ranking="68" climber="19" climber_ranking="27"/>
+            <competitor id="sr:competitor:26817" time="+03:16.27" time_ranking="76" sprint="-5" sprint_ranking="118"/>
+            <competitor id="sr:competitor:50027" time="+03:17.51" time_ranking="77" sprint="1" sprint_ranking="105" climber="14" climber_ranking="35"/>
+            <competitor id="sr:competitor:248561" time="+03:19.04" time_ranking="78" sprint="7" sprint_ranking="73"/>
+            <competitor id="sr:competitor:197202" time="+03:23.35" time_ranking="79"/>
+            <competitor id="sr:competitor:318371" time="+03:26.47" time_ranking="80"/>
+            <competitor id="sr:competitor:197198" time="+03:27.08" time_ranking="81"/>
+            <competitor id="sr:competitor:146340" time="+03:28.41" time_ranking="82" sprint="-1" sprint_ranking="112"/>
+            <competitor id="sr:competitor:26877" time="+03:28.53" time_ranking="83"/>
+            <competitor id="sr:competitor:203693" time="+03:28.55" time_ranking="84" sprint="5" sprint_ranking="85" climber="1" climber_ranking="70"/>
+            <competitor id="sr:competitor:68828" time="+03:30.09" time_ranking="85"/>
+            <competitor id="sr:competitor:67713" time="+03:30.11" time_ranking="86" sprint="6" sprint_ranking="82"/>
+            <competitor id="sr:competitor:248855" time="+03:33.28" time_ranking="87" sprint="-5" sprint_ranking="119"/>
+            <competitor id="sr:competitor:146354" time="+03:37.32" time_ranking="88" sprint="10" sprint_ranking="60"/>
+            <competitor id="sr:competitor:27620" time="+03:37.43" time_ranking="89" sprint="20" sprint_ranking="40" climber="35" climber_ranking="13"/>
+            <competitor id="sr:competitor:199424" time="+03:41.19" time_ranking="90"/>
+            <competitor id="sr:competitor:26748" time="+03:44.13" time_ranking="91"/>
+            <competitor id="sr:competitor:198724" time="+03:46.09" time_ranking="92"/>
+            <competitor id="sr:competitor:27618" time="+03:46.52" time_ranking="93"/>
+            <competitor id="sr:competitor:26704" time="+03:46.55" time_ranking="94" sprint="1" sprint_ranking="106"/>
+            <competitor id="sr:competitor:252831" time="+03:49.24" time_ranking="95"/>
+            <competitor id="sr:competitor:50259" time="+03:52.44" time_ranking="96" sprint="16" sprint_ranking="46" climber="23" climber_ranking="21"/>
+            <competitor id="sr:competitor:27603" time="+03:54.19" time_ranking="97" sprint="9" sprint_ranking="64" climber="9" climber_ranking="42"/>
+            <competitor id="sr:competitor:146106" time="+03:54.52" time_ranking="98" sprint="192" sprint_ranking="2" climber="2" climber_ranking="61"/>
+            <competitor id="sr:competitor:248565" time="+03:56.48" time_ranking="99" climber="6" climber_ranking="46"/>
+            <competitor id="sr:competitor:195358" time="+03:58.19" time_ranking="100"/>
+            <competitor id="sr:competitor:92104" time="+04:02.55" time_ranking="101" sprint="76" sprint_ranking="8"/>
+            <competitor id="sr:competitor:27162" time="+04:05.01" time_ranking="102" sprint="13" sprint_ranking="50"/>
+            <competitor id="sr:competitor:26730" time="+04:10.25" time_ranking="103" sprint="2" sprint_ranking="97"/>
+            <competitor id="sr:competitor:26608" time="+04:10.33" time_ranking="104" sprint="4" sprint_ranking="89" climber="3" climber_ranking="55"/>
+            <competitor id="sr:competitor:50711" time="+04:11.00" time_ranking="105" sprint="10" sprint_ranking="61"/>
+            <competitor id="sr:competitor:50048" time="+04:11.13" time_ranking="106" sprint="18" sprint_ranking="44" climber="3" climber_ranking="56"/>
+            <competitor id="sr:competitor:81527" time="+04:11.59" time_ranking="107" sprint="1" sprint_ranking="107"/>
+            <competitor id="sr:competitor:26834" time="+04:12.42" time_ranking="108" sprint="8" sprint_ranking="69" climber="2" climber_ranking="62"/>
+            <competitor id="sr:competitor:55679" time="+04:13.51" time_ranking="109" sprint="4" sprint_ranking="90"/>
+            <competitor id="sr:competitor:27268" time="+04:13.59" time_ranking="110" sprint="4" sprint_ranking="91"/>
+            <competitor id="sr:competitor:57633" time="+04:14.04" time_ranking="111" sprint="100" sprint_ranking="4" climber="26" climber_ranking="19"/>
+            <competitor id="sr:competitor:27740" time="+04:15.18" time_ranking="112" climber="1" climber_ranking="71"/>
+            <competitor id="sr:competitor:27688" time="+04:15.19" time_ranking="113" sprint="33" sprint_ranking="29" climber="10" climber_ranking="39"/>
+            <competitor id="sr:competitor:226826" time="+04:17.05" time_ranking="114" sprint="98" sprint_ranking="5" climber="8" climber_ranking="43"/>
+            <competitor id="sr:competitor:51906" time="+04:17.22" time_ranking="115" sprint="11" sprint_ranking="57" climber="9" climber_ranking="40"/>
+            <competitor id="sr:competitor:50907" time="+04:18.36" time_ranking="116"/>
+            <competitor id="sr:competitor:28016" time="+04:18.47" time_ranking="117" sprint="18" sprint_ranking="43"/>
+            <competitor id="sr:competitor:26766" time="+04:20.06" time_ranking="118" sprint="-4" sprint_ranking="114"/>
+            <competitor id="sr:competitor:27738" time="+04:20.36" time_ranking="119" sprint="20" sprint_ranking="42" climber="4" climber_ranking="53"/>
+            <competitor id="sr:competitor:248859" time="+04:22.58" time_ranking="120"/>
+            <competitor id="sr:competitor:78713" time="+04:23.31" time_ranking="121" sprint="22" sprint_ranking="38"/>
+            <competitor id="sr:competitor:47989" time="+04:23.34" time_ranking="122" sprint="-5" sprint_ranking="120"/>
+            <competitor id="sr:competitor:333503" time="+04:23.42" time_ranking="123" sprint="41" sprint_ranking="24" climber="11" climber_ranking="37"/>
+            <competitor id="sr:competitor:123852" time="+04:25.05" time_ranking="124" sprint="12" sprint_ranking="53" climber="1" climber_ranking="72"/>
+            <competitor id="sr:competitor:34686" time="+04:26.36" time_ranking="125" sprint="1" sprint_ranking="108"/>
+            <competitor id="sr:competitor:34412" time="+04:26.46" time_ranking="126" sprint="2" sprint_ranking="98"/>
+            <competitor id="sr:competitor:38188" time="+04:27.24" time_ranking="127" sprint="14" sprint_ranking="49"/>
+            <competitor id="sr:competitor:39822" time="+04:29.57" time_ranking="128" sprint="-5" sprint_ranking="121"/>
+            <competitor id="sr:competitor:247359" time="+04:30.27" time_ranking="129" sprint="325" sprint_ranking="1"/>
+            <competitor id="sr:competitor:249459" time="+04:30.36" time_ranking="130"/>
+            <competitor id="sr:competitor:41440" time="+04:31.11" time_ranking="131"/>
+            <competitor id="sr:competitor:93167" time="+04:31.58" time_ranking="132" sprint="24" sprint_ranking="35"/>
+            <competitor id="sr:competitor:26843" time="+04:32.10" time_ranking="133" sprint="9" sprint_ranking="65"/>
+            <competitor id="sr:competitor:27677" time="+04:33.02" time_ranking="134" sprint="76" sprint_ranking="7" climber="23" climber_ranking="23"/>
+            <competitor id="sr:competitor:135938" time="+04:34.06" time_ranking="135" sprint="32" sprint_ranking="32" climber="23" climber_ranking="22"/>
+            <competitor id="sr:competitor:67018" time="+04:36.21" time_ranking="136"/>
+            <competitor id="sr:competitor:36857" time="+04:36.56" time_ranking="137" sprint="42" sprint_ranking="22" climber="7" climber_ranking="44"/>
+            <competitor id="sr:competitor:254337" time="+04:37.52" time_ranking="138" sprint="10" sprint_ranking="62"/>
+            <competitor id="sr:competitor:92867" time="+04:39.29" time_ranking="139" sprint="3" sprint_ranking="95"/>
+            <competitor id="sr:competitor:123376" time="+04:40.05" time_ranking="140" sprint="70" sprint_ranking="9" climber="6" climber_ranking="47"/>
+            <competitor id="sr:competitor:27628" time="+04:40.34" time_ranking="141"/>
+            <competitor id="sr:competitor:27542" time="+04:44.25" time_ranking="142" sprint="2" sprint_ranking="99"/>
+            <competitor id="sr:competitor:248563" time="+04:44.35" time_ranking="143" sprint="32" sprint_ranking="30" climber="15" climber_ranking="33"/>
+            <competitor id="sr:competitor:27001" time="+04:51.25" time_ranking="144" sprint="20" sprint_ranking="41"/>
+            <competitor id="sr:competitor:27657" time="+04:57.48" time_ranking="145" sprint="40" sprint_ranking="25" climber="2" climber_ranking="63"/>
+            <competitor id="sr:competitor:146104" time="+04:58.43" time_ranking="146" climber="4" climber_ranking="54"/>
+            <competitor id="sr:competitor:27739" time="+05:02.25" time_ranking="147" climber="1" climber_ranking="73"/>
+            <competitor id="sr:competitor:27309" time="+05:03.27" time_ranking="148" sprint="50" sprint_ranking="19"/>
+            <competitor id="sr:competitor:116668" time="+05:04.06" time_ranking="149" sprint="4" sprint_ranking="92"/>
+            <competitor id="sr:competitor:27692" time="+05:04.10" time_ranking="150" sprint="70" sprint_ranking="10"/>
+            <competitor id="sr:competitor:247365" time="+05:04.57" time_ranking="151" sprint="2" sprint_ranking="100"/>
+            <competitor id="sr:competitor:92827" time="+05:05.32" time_ranking="152" sprint="1" sprint_ranking="109"/>
+            <competitor id="sr:competitor:241182" time="+05:06.02" time_ranking="153" sprint="2" sprint_ranking="101"/>
+            <competitor id="sr:competitor:27650" time="+05:06.10" time_ranking="154"/>
+            <competitor id="sr:competitor:196758" time="+05:11.02" time_ranking="155" sprint="22" sprint_ranking="39" climber="1" climber_ranking="74"/>
+            <competitor id="sr:competitor:194942" time="+05:14.16" time_ranking="156" sprint="52" sprint_ranking="18" climber="15" climber_ranking="32"/>
+            <competitor id="sr:competitor:26983" time="+05:14.55" time_ranking="157" sprint="15" sprint_ranking="48"/>
+            <competitor id="sr:competitor:50293" time="+05:18.56" time_ranking="158" sprint="117" sprint_ranking="3"/>
+            <competitor id="sr:competitor:123894" time="+05:26.00" time_ranking="159" sprint="12" sprint_ranking="54" climber="1" climber_ranking="75"/>
+            <competitor id="sr:competitor:292204" time="+05:26.28" time_ranking="160"/>
+            <competitor id="sr:competitor:249493" time="+05:48.40" time_ranking="161" sprint="24" sprint_ranking="36" climber="3" climber_ranking="57"/>
+        </results>
+    </sport_event_status>
+</race_summary>

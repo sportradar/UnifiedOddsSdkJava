@@ -1,0 +1,156 @@
+﻿<odds_change product="4" event_id="sr:match:10927088" timestamp="1487254396715">
+  <sport_event_status status="1" reporting="1" match_status="6" home_score="0" away_score="2">
+    <clock match_time="27:33"/>
+    <period_scores>
+      <period_score match_status_code="6" number="1" home_score="0" away_score="2"/>
+    </period_scores>
+  </sport_event_status>
+  <odds>
+    <market favourite="1" status="1" id="26">
+      <outcome id="70" odds="1.85" probabilities="0.48935" active="1"/>
+      <outcome id="72" odds="1.75" probabilities="0.51065" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="10">
+      <outcome id="9" odds="3.9" probabilities="0.22396" active="1"/>
+      <outcome id="10" odds="1.08" probabilities="0.85498" active="1"/>
+      <outcome id="11" probabilities="0.92105" active="0"/>
+    </market>
+    <market favourite="1" status="1" id="68" specifiers="total=2.5" extended_specifiers="extended_total=2.5">
+      <outcome id="13" odds="1.5" probabilities="0.62734" active="1"/>
+      <outcome id="12" odds="2.35" probabilities="0.37266" active="1"/>
+    </market>
+    <market status="1" id="68" specifiers="total=3.5">
+      <outcome id="13" probabilities="0.91985" active="0"/>
+      <outcome id="12" odds="6.5" probabilities="0.08015" active="1"/>
+    </market>
+    <market status="-3" id="68" specifiers="total=1.5"/>
+    <market favourite="1" status="1" id="61" specifiers="score=0:2">
+      <outcome id="1" odds="3.6" probabilities="0.23615" active="1"/>
+      <outcome id="2" odds="1.4" probabilities="0.65776" active="1"/>
+      <outcome id="3" odds="7.75" probabilities="0.10609" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="71" specifiers="variant=sr:exact_goals:4+">
+      <outcome id="sr:exact_goals:4+:92" active="0"/>
+      <outcome id="sr:exact_goals:4+:93" active="0"/>
+      <outcome id="sr:exact_goals:4+:94" odds="1.5" probabilities="0.62734" active="1"/>
+      <outcome id="sr:exact_goals:4+:95" odds="3.0" probabilities="0.29251" active="1"/>
+      <outcome id="sr:exact_goals:4+:96" odds="10.5" probabilities="0.08015" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="19" specifiers="total=1.5">
+      <outcome id="13" odds="1.4" probabilities="0.66902" active="1"/>
+      <outcome id="12" odds="2.6" probabilities="0.33098" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="73" specifiers="variant=sr:exact_goals:3+">
+      <outcome id="sr:exact_goals:3+:88" active="0"/>
+      <outcome id="sr:exact_goals:3+:89" active="0"/>
+      <outcome id="sr:exact_goals:3+:90" odds="1.1" probabilities="0.8582" active="1"/>
+      <outcome id="sr:exact_goals:3+:91" odds="5.0" probabilities="0.1418" active="1"/>
+    </market>
+    <market status="0" id="61" specifiers="score=0:0"/>
+    <market status="1" id="18" specifiers="total=4.5">
+      <outcome id="12" odds="3.1" probabilities="0.26434" active="1"/>
+      <outcome id="13" odds="1.25" probabilities="0.73566" active="1"/>
+    </market>
+    <market status="0" id="61" specifiers="score=0:1"/>
+    <market favourite="1" status="1" id="18" specifiers="total=3.5">
+      <outcome id="12" odds="1.7" probabilities="0.52756" active="1"/>
+      <outcome id="13" odds="1.9" probabilities="0.47244" active="1"/>
+    </market>
+    <market status="1" id="18" specifiers="total=2.5">
+      <outcome id="12" odds="1.14" probabilities="0.83002" active="1"/>
+      <outcome id="13" odds="5.25" probabilities="0.16998" active="1"/>
+    </market>
+    <market status="-3" id="18" specifiers="total=1.5"/>
+    <market status="-3" id="20" specifiers="total=0.5"/>
+    <market status="0" id="7" specifiers="score=0:1"/>
+    <market status="0" id="7" specifiers="score=0:0"/>
+    <market favourite="1" status="1" id="20" specifiers="total=2.5">
+      <outcome id="13" odds="1.65" probabilities="0.55613" active="1"/>
+      <outcome id="12" odds="2.0" probabilities="0.44387" active="1"/>
+    </market>
+    <market status="-3" id="20" specifiers="total=1.5"/>
+    <market favourite="1" status="1" id="7" specifiers="score=0:2">
+      <outcome id="1" odds="1.8" probabilities="0.50691" active="1"/>
+      <outcome id="2" odds="2.85" probabilities="0.31097" active="1"/>
+      <outcome id="3" odds="4.75" probabilities="0.18212" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="24" specifiers="variant=sr:exact_goals:3+">
+      <outcome id="sr:exact_goals:3+:88" active="0"/>
+      <outcome id="sr:exact_goals:3+:89" active="0"/>
+      <outcome id="sr:exact_goals:3+:90" odds="1.65" probabilities="0.55613" active="1"/>
+      <outcome id="sr:exact_goals:3+:91" odds="2.0" probabilities="0.44387" active="1"/>
+    </market>
+    <market status="-3" id="8" specifiers="goalnr=1"/>
+    <market status="-3" id="8" specifiers="goalnr=2"/>
+    <market favourite="1" status="1" id="29">
+      <outcome id="74" odds="1.35" probabilities="0.69533" active="1"/>
+      <outcome id="76" odds="2.95" probabilities="0.30467" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="8" specifiers="goalnr=3">
+      <outcome id="6" odds="1.65" probabilities="0.55581" active="1"/>
+      <outcome id="7" odds="5.25" probabilities="0.16998" active="1"/>
+      <outcome id="8" odds="3.2" probabilities="0.27421" active="1"/>
+    </market>
+    <market status="0" id="14" specifiers="hcp=0:2"/>
+    <market favourite="1" status="1" id="23" specifiers="variant=sr:exact_goals:3+">
+      <outcome id="sr:exact_goals:3+:88" odds="2.95" probabilities="0.30467" active="1"/>
+      <outcome id="sr:exact_goals:3+:89" odds="2.5" probabilities="0.36435" active="1"/>
+      <outcome id="sr:exact_goals:3+:90" odds="4.2" probabilities="0.21197" active="1"/>
+      <outcome id="sr:exact_goals:3+:91" odds="7.5" probabilities="0.11901" active="1"/>
+    </market>
+    <market status="0" id="14" specifiers="hcp=2:0"/>
+    <market status="1" id="14" specifiers="hcp=3:0">
+      <outcome id="1711" odds="1.16" probabilities="0.81788" active="1"/>
+      <outcome id="1712" odds="5.5" probabilities="0.13808" active="1"/>
+      <outcome id="1713" odds="16.25" probabilities="0.04404" active="1"/>
+    </market>
+    <market status="1" id="14" specifiers="hcp=0:1">
+      <outcome id="1711" odds="24.0" probabilities="0.02143" active="1"/>
+      <outcome id="1712" odds="9.25" probabilities="0.05752" active="1"/>
+      <outcome id="1713" probabilities="0.92105" active="0"/>
+    </market>
+    <market favourite="1" status="1" id="14" specifiers="hcp=1:0" extended_specifiers="hcp=1:0|total=4">
+      <outcome id="1711" odds="3.9" probabilities="0.22396" active="1"/>
+      <outcome id="1712" odds="3.15" probabilities="0.28295" active="1"/>
+      <outcome id="1713" odds="1.85" probabilities="0.49309" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="11">
+      <outcome id="4" odds="6.25" probabilities="0.09234" active="1"/>
+      <outcome id="5" odds="1.05" probabilities="0.90766" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="62" specifiers="goalnr=3">
+      <outcome id="6" odds="3.45" probabilities="0.25045" active="1"/>
+      <outcome id="7" odds="1.5" probabilities="0.62734" active="1"/>
+      <outcome id="8" odds="6.75" probabilities="0.12222" active="1"/>
+    </market>
+    <market status="-3" id="62" specifiers="goalnr=2"/>
+    <market status="0" id="37" specifiers="total=2.5"/>
+    <market favourite="1" status="1" id="21" specifiers="variant=sr:exact_goals:6+">
+      <outcome id="sr:exact_goals:6+:68" active="0"/>
+      <outcome id="sr:exact_goals:6+:69" active="0"/>
+      <outcome id="sr:exact_goals:6+:70" odds="5.25" probabilities="0.16998" active="1"/>
+      <outcome id="sr:exact_goals:6+:71" odds="3.0" probabilities="0.30246" active="1"/>
+      <outcome id="sr:exact_goals:6+:72" odds="3.45" probabilities="0.26322" active="1"/>
+      <outcome id="sr:exact_goals:6+:73" odds="5.5" probabilities="0.15962" active="1"/>
+      <outcome id="sr:exact_goals:6+:74" odds="8.5" probabilities="0.10471" active="1"/>
+    </market>
+    <market status="-3" id="62" specifiers="goalnr=1"/>
+    <market favourite="1" status="1" id="72" specifiers="variant=sr:exact_goals:3+">
+      <outcome id="sr:exact_goals:3+:88" odds="1.3" probabilities="0.73099" active="1"/>
+      <outcome id="sr:exact_goals:3+:89" odds="3.6" probabilities="0.22906" active="1"/>
+      <outcome id="sr:exact_goals:3+:90" odds="22.0" probabilities="0.03589" active="1"/>
+      <outcome id="sr:exact_goals:3+:91" odds="50.0" probabilities="0.00406" active="1"/>
+    </market>
+    <market favourite="1" status="1" id="1">
+      <outcome id="1" odds="9.75" probabilities="0.07895" active="1"/>
+      <outcome id="2" odds="5.5" probabilities="0.14502" active="1"/>
+      <outcome id="3" odds="1.22" probabilities="0.77604" active="1"/>
+    </market>
+    <market status="-3" id="68" specifiers="total=0.5"/>
+    <market favourite="1" status="1" id="60">
+      <outcome id="1" odds="50.0" probabilities="0.00353" active="1"/>
+      <outcome id="2" odds="9.25" probabilities="0.03129" active="1"/>
+      <outcome id="3" probabilities="0.96518" active="0"/>
+    </market>
+  </odds>
+</odds_change>

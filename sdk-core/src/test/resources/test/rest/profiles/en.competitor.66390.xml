@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<competitor_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-06-06T11:42:10+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/competitor_profile.xsd">
+  <competitor id="sr:competitor:66390" name="Pericos de Puebla" country="Mexico" country_code="MEX" abbreviation="PDP" gender="male">
+    <sport id="sr:sport:3" name="Baseball"/>
+    <category id="sr:category:426" name="Mexico" country_code="MEX"/>
+  </competitor>
+  <venue id="sr:venue:4988" name="Estadio de Beisbol Hermanos Serdan" capacity="12112" city_name="Puebla" country_name="Mexico" map_coordinates="19.075358,-98.164900" country_code="MEX"/>
+  <jerseys>
+    <jersey type="home" base="c0c0c0" sleeve="ffffff" number="005329" squares="false" stripes="false" horizontal_stripes="false" split="false" shirt_type="short_sleeves"/>
+    <jersey type="away" base="ffffff" sleeve="ffffff" number="00773c" squares="false" stripes="false" horizontal_stripes="false" split="false" shirt_type="short_sleeves"/>
+  </jerseys>
+</competitor_profile>

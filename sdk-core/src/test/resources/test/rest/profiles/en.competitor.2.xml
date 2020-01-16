@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<competitor_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2017-05-17T08:37:34+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/v1/endpoints/unified/competitor_profile.xsd">
+  <competitor id="sr:competitor:2" name="Portsmouth FC" country="England" country_code="ENG" abbreviation="POR">
+    <sport id="sr:sport:1" name="Soccer"/>
+    <category id="sr:category:1" name="England" country_code="ENG"/>
+  </competitor>
+  <venue id="sr:venue:638" name="Fratton Park" capacity="21100" city_name="Portsmouth" country_name="England" map_coordinates="50.796389,-1.063889" country_code="ENG"/>
+  <jerseys>
+    <jersey type="goalkeeper" base="ffff00" sleeve="ffff33" number="000000"/>
+    <jersey type="third" base="0000ff" sleeve="0000ff" number="ffffff"/>
+  </jerseys>
+  <manager id="sr:player:65795" name="Cook, Paul" nationality="England" country_code="ENG"/>
+  <players>
+    <player id="sr:player:19466" name="Forde, David" type="goalkeeper" date_of_birth="1979-12-20" nationality="Republic of Ireland" country_code="IRL" height="191" weight="87" jersey_number="1"/>
+    <player id="sr:player:582210" name="Davies, Tom" type="defender" date_of_birth="1992-04-18" nationality="England" country_code="ENG" height="180" weight="70" jersey_number="2"/>
+    <player id="sr:player:68501" name="Stevens, Enda" type="defender" date_of_birth="1990-07-09" nationality="Republic of Ireland" country_code="IRL" height="183" weight="78" jersey_number="3"/>
+    <player id="sr:player:126436" name="Rose, Danny" type="midfielder" date_of_birth="1988-02-21" nationality="England" country_code="ENG" height="170" weight="64" jersey_number="4"/>
+    <player id="sr:player:376394" name="Clarke, Matt" type="defender" date_of_birth="1996-09-22" nationality="England" country_code="ENG" height="180" weight="70" jersey_number="5"/>
+    <player id="sr:player:303634" name="Burgess, Christian" type="defender" date_of_birth="1991-10-07" nationality="England" country_code="ENG" height="196" weight="84" jersey_number="6"/>
+    <player id="sr:player:27271" name="Baker, Carl" type="midfielder" date_of_birth="1982-12-26" nationality="England" country_code="ENG" height="188" weight="79" jersey_number="7"/>
+    <player id="sr:player:9941" name="Doyle, Michael" type="midfielder" date_of_birth="1981-08-08" nationality="Republic of Ireland" country_code="IRL" height="178" weight="71" jersey_number="8"/>
+    <player id="sr:player:19467" name="Roberts, Gary" type="midfielder" date_of_birth="1984-03-18" nationality="England" country_code="ENG" height="178" weight="74" jersey_number="11"/>
+    <player id="sr:player:110577" name="O'Brien, Liam" type="goalkeeper" date_of_birth="1991-11-30" nationality="England" country_code="ENG" height="188" weight="73" jersey_number="13"/>
+    <player id="sr:player:36759" name="Main, Curtis" type="forward" date_of_birth="1992-06-20" nationality="England" country_code="ENG" height="178" weight="67" jersey_number="14"/>
+    <player id="sr:player:1095734" name="Kabamba, Nicke" type="forward" date_of_birth="1993-02-01" nationality="England" country_code="ENG" height="191" jersey_number="15"/>
+    <player id="sr:player:255073" name="Whatmough, Jack" type="defender" date_of_birth="1996-06-24" nationality="England" country_code="ENG" height="184" weight="66" jersey_number="16"/>
+    <player id="sr:player:56201" name="Doyle, Eoin" type="forward" date_of_birth="1988-03-12" nationality="Republic of Ireland" country_code="IRL" height="178" weight="73" jersey_number="17"/>
+    <player id="sr:player:257433" name="Lowe, Jamal" type="forward" date_of_birth="1994-01-27" nationality="England" country_code="ENG" jersey_number="18"/>
+    <player id="sr:player:784625" name="Chaplin, Conor" type="forward" date_of_birth="1997-02-16" nationality="England" country_code="ENG" height="178" weight="69" jersey_number="19"/>
+    <player id="sr:player:6578" name="Hunt, Noel" type="forward" date_of_birth="1982-12-26" nationality="Republic of Ireland" country_code="IRL" height="173" weight="72" jersey_number="20"/>
+    <player id="sr:player:215032" name="Naismith, Kal" type="midfielder" date_of_birth="1992-02-18" nationality="Scotland" country_code="SCO" height="185" weight="78" jersey_number="22"/>
+    <player id="sr:player:123691" name="Bennett, Kyle" type="midfielder" date_of_birth="1990-09-09" nationality="England" country_code="ENG" height="165" weight="62" jersey_number="23"/>
+    <player id="sr:player:42801" name="Linganzi, Amine" type="midfielder" date_of_birth="1989-11-16" nationality="Algeria" country_code="DZA" height="186" weight="81" jersey_number="24"/>
+    <player id="sr:player:10548" name="Talbot, Drew" type="midfielder" date_of_birth="1986-07-19" nationality="England" country_code="ENG" height="178" weight="72" jersey_number="25"/>
+    <player id="sr:player:27418" name="Evans, Gareth" type="midfielder" date_of_birth="1988-04-26" nationality="England" country_code="ENG" height="183" weight="80" jersey_number="26"/>
+    <player id="sr:player:1871" name="Aborah, Stanley" type="midfielder" date_of_birth="1987-06-23" nationality="Belgium" country_code="BEL" height="170" weight="72" jersey_number="29"/>
+    <player id="sr:player:1031233" name="Davies, Calvin" type="defender" date_of_birth="1997-09-07" nationality="England" country_code="ENG" height="168" jersey_number="31"/>
+    <player id="sr:player:986551" name="Oxlade Chamberlain, Christian" type="midfielder" date_of_birth="1998-06-24" nationality="England" country_code="ENG" jersey_number="32"/>
+    <player id="sr:player:587086" name="Bass, Alex" type="goalkeeper" date_of_birth="1998-04-01" nationality="England" country_code="ENG" jersey_number="35"/>
+    <player id="sr:player:867584" name="Haunstrup, Brandon" type="defender" date_of_birth="1996-10-26" nationality="England" country_code="ENG" jersey_number="38"/>
+  </players>
+</competitor_profile>

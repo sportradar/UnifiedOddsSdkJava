@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bet_settlement product="1" event_id="sr:match:9583135" timestamp="1465855727378">
+  <outcomes>
+    <market id="213" specifiers="setnr=3|gamenr=3" extended_specifiers="setnr=3|gamenr=3">
+      <outcome id="70" result="0"/>
+      <outcome id="72" result="1"/>
+    </market>
+    <market id="213" specifiers="setnr=3|gamenr=2">
+      <outcome id="70" result="0"/>
+      <outcome id="72" result="1"/>
+    </market>
+    <market id="209" specifiers="setnr=3|gamenrX=2|gamenrY=3">
+      <outcome id="879" result="1"/>
+      <outcome id="880" result="0"/>
+      <outcome id="881" result="0"/>
+    </market>
+    <market id="190" specifiers="total=11.5">
+      <outcome id="13" result="0"/>
+      <outcome id="12" result="1"/>
+    </market>
+    <market id="217" specifiers="setnr=3|gamenr=4|pointnr=2">
+      <outcome id="879" result="1"/>
+      <outcome id="880" result="0"/>
+      <outcome id="881" result="0"/>
+    </market>
+    <market id="212" specifiers="setnr=3-3|gamenr=3-3">
+      <outcome id="74" result="0"/>
+      <outcome id="76" result="1"/>
+    </market>
+    <market id="212" specifiers="setnr=3-2|gamenr=3-2">
+      <outcome id="74" result="0"/>
+      <outcome id="76" result="1"/>
+    </market>
+    <market id="209" specifiers="setnr=3|gamenrX=3|gamenrY=4">
+      <outcome id="879" result="1"/>
+      <outcome id="880" result="0"/>
+      <outcome id="881" result="0"/>
+    </market>
+    <market id="212" specifiers="setnr=3-4|gamenr=3-4">
+      <outcome id="74" result="0"/>
+      <outcome id="76" result="1"/>
+    </market>
+    <market id="214" specifiers="setnr=3|gamenr=3">
+      <outcome id="886" result="0"/>
+      <outcome id="887" result="0"/>
+      <outcome id="888" result="1"/>
+      <outcome id="889" result="0"/>
+      <outcome id="890" result="0"/>
+      <outcome id="891" result="0"/>
+      <outcome id="892" result="0"/>
+      <outcome id="893" result="0"/>
+    </market>
+    <market id="214" specifiers="setnr=3|gamenr=4">
+      <outcome id="886" result="0"/>
+      <outcome id="887" result="1"/>
+      <outcome id="888" result="0"/>
+      <outcome id="889" result="0"/>
+      <outcome id="890" result="0"/>
+      <outcome id="891" result="0"/>
+      <outcome id="892" result="0"/>
+      <outcome id="893" result="0"/>
+    </market>
+    <market id="214" specifiers="setnr=3|gamenr=2">
+      <outcome id="886" result="1"/>
+      <outcome id="887" result="0"/>
+      <outcome id="888" result="0"/>
+      <outcome id="889" result="0"/>
+      <outcome id="890" result="0"/>
+      <outcome id="891" result="0"/>
+      <outcome id="892" result="0"/>
+      <outcome id="893" result="0"/>
+    </market>
+    <market id="213" specifiers="setnr=3|gamenr=4">
+      <outcome id="70" result="1"/>
+      <outcome id="72" result="0"/>
+    </market>
+    <market id="210" specifiers="setnr=3|gamenr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="210" specifiers="setnr=3|gamenr=4">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="210" specifiers="setnr=3|gamenr=3">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="215" specifiers="setnr=3|gamenr=3">
+      <outcome id="894" result="0"/>
+      <outcome id="895" result="0"/>
+      <outcome id="896" result="0"/>
+      <outcome id="897" result="0"/>
+      <outcome id="898" result="1"/>
+    </market>
+    <market id="215" specifiers="setnr=3|gamenr=2">
+      <outcome id="894" result="1"/>
+      <outcome id="895" result="0"/>
+      <outcome id="896" result="0"/>
+      <outcome id="897" result="0"/>
+      <outcome id="898" result="0"/>
+    </market>
+    <market id="189" specifiers="total=19.5">
+      <outcome id="13" result="0"/>
+      <outcome id="12" result="1"/>
+    </market>
+    <market id="215" specifiers="setnr=3|gamenr=4">
+      <outcome id="894" result="0"/>
+      <outcome id="895" result="1"/>
+      <outcome id="896" result="0"/>
+      <outcome id="897" result="0"/>
+      <outcome id="898" result="0"/>
+    </market>
+    <market id="208" specifiers="setnr=3|games=4">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="208" specifiers="setnr=3|games=3">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=2|pointnr=1">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=2|pointnr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=3|pointnr=1">
+      <outcome id="844" result="0"/>
+      <outcome id="845" result="1"/>
+    </market>
+    <market id="208" specifiers="setnr=3|games=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=2|pointnr=3">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=3|pointnr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=4|pointnr=1">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=2|pointnr=4">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=3|pointnr=3">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=4|pointnr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=3|pointnr=4">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=4|pointnr=3">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=3|pointnr=5">
+      <outcome id="844" result="0"/>
+      <outcome id="845" result="1"/>
+    </market>
+    <market id="218" specifiers="setnr=3|gamenr=4|pointnr=4">
+      <outcome id="844" result="0"/>
+      <outcome id="845" result="1"/>
+    </market>
+    <market id="216" specifiers="setnr=3|gamenr=3|pointnr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="189" specifiers="total=21.5">
+      <outcome id="13" result="0"/>
+      <outcome id="12" result="1"/>
+    </market>
+    <market id="216" specifiers="setnr=3|gamenr=4|pointnr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="189" specifiers="total=20.5">
+      <outcome id="13" result="0"/>
+      <outcome id="12" result="1"/>
+    </market>
+    <market id="216" specifiers="setnr=3|gamenr=2|pointnr=2">
+      <outcome id="844" result="1"/>
+      <outcome id="845" result="0"/>
+    </market>
+    <market id="217" specifiers="setnr=3|gamenr=3|pointnr=2">
+      <outcome id="879" result="0"/>
+      <outcome id="880" result="1"/>
+      <outcome id="881" result="0"/>
+    </market>
+    <market id="217" specifiers="setnr=3|gamenr=2|pointnr=2">
+      <outcome id="879" result="1"/>
+      <outcome id="880" result="0"/>
+      <outcome id="881" result="0"/>
+    </market>
+    <market id="211" specifiers="setnr=3|gamenr=4">
+      <outcome id="882" result="0"/>
+      <outcome id="883" result="1"/>
+      <outcome id="884" result="0"/>
+      <outcome id="885" result="0"/>
+    </market>
+    <market id="211" specifiers="setnr=3|gamenr=3">
+      <outcome id="882" result="0"/>
+      <outcome id="883" result="0"/>
+      <outcome id="884" result="1"/>
+      <outcome id="885" result="0"/>
+    </market>
+    <market id="211" specifiers="setnr=3|gamenr=2">
+      <outcome id="882" result="1"/>
+      <outcome id="883" result="0"/>
+      <outcome id="884" result="0"/>
+      <outcome id="885" result="0"/>
+    </market>
+  </outcomes>
+</bet_settlement>

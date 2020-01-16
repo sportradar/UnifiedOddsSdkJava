@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<tournament_info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-05-09T10:18:50+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/tournament_info.xsd">
+  <tournament id="sr:tournament:1030" name="Mexikói Bajnokság">
+    <sport id="sr:sport:3" name="Baseball"/>
+    <category id="sr:category:426" name="Mexikó" country_code="MEX"/>
+    <current_season id="sr:season:52141" name="Mexikói Bajnokság 2018" start_date="2018-03-22" end_date="2018-10-14" year="2018"/>
+  </tournament>
+  <season id="sr:season:52141" name="Mexikói Bajnokság 2018" start_date="2018-03-22" end_date="2018-10-14" year="2018" tournament_id="sr:tournament:1030"/>
+  <round type="group" number="1"/>
+  <coverage_info live_coverage="false"/>
+  <groups>
+    <group>
+      <competitor id="sr:competitor:66402" name="Leones de Yucatan" country="Mexikó" country_code="MEX" abbreviation="LDY">
+        <reference_ids>
+          <reference_id name="betradar" value="998245"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66412" name="Tigres de Quintana Roo" country="Mexikó" country_code="MEX" abbreviation="TDQ">
+        <reference_ids>
+          <reference_id name="betradar" value="998246"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66390" name="Pericos de Puebla" country="Mexikó" country_code="MEX" abbreviation="PDP">
+        <reference_ids>
+          <reference_id name="betradar" value="998247"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66392" name="Rieleros de Aguascalientes" country="Mexikó" country_code="MEX" abbreviation="RDA">
+        <reference_ids>
+          <reference_id name="betradar" value="998248"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66388" name="Diablos Rojos Del Mexico" country="Mexikó" country_code="MEX" abbreviation="DIA">
+        <reference_ids>
+          <reference_id name="betradar" value="998249"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66400" name="Guerreros de Oaxaca" country="Mexikó" country_code="MEX" abbreviation="GUE">
+        <reference_ids>
+          <reference_id name="betradar" value="998250"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66394" name="Saraperos de Saltillo" country="Mexikó" country_code="MEX" abbreviation="SDS">
+        <reference_ids>
+          <reference_id name="betradar" value="998251"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66396" name="Sultanes de Monterrey" country="Mexikó" country_code="MEX" abbreviation="SDM">
+        <reference_ids>
+          <reference_id name="betradar" value="998252"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66410" name="Tecolotes de Los Dos Laredos" country="Mexikó" country_code="MEX" abbreviation="TEL">
+        <reference_ids>
+          <reference_id name="betradar" value="998253"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66398" name="Algodoneros de Union Laguna" country="Mexikó" country_code="MEX" abbreviation="ALG">
+        <reference_ids>
+          <reference_id name="betradar" value="998255"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66384" name="Acereros de Monclova" country="Mexikó" country_code="MEX" abbreviation="ADM">
+        <reference_ids>
+          <reference_id name="betradar" value="998256"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66408" name="Piratas de Campeche" country="Mexikó" country_code="MEX" abbreviation="PDC">
+        <reference_ids>
+          <reference_id name="betradar" value="998257"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66404" name="Olmecas de Tabasco" country="Mexikó" country_code="MEX" abbreviation="ODT">
+        <reference_ids>
+          <reference_id name="betradar" value="998258"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:66386" name="Bravos de Leon" country="Mexikó" country_code="MEX" abbreviation="BLE">
+        <reference_ids>
+          <reference_id name="betradar" value="1521188"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:146942" name="Toros de Tijuana" country="Mexikó" country_code="MEX" abbreviation="TDT">
+        <reference_ids>
+          <reference_id name="betradar" value="7128988"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:325133" name="Generales de Durango" country="Mexikó" country_code="MEX" abbreviation="GDU">
+        <reference_ids>
+          <reference_id name="betradar" value="9596845"/>
+        </reference_ids>
+      </competitor>
+    </group>
+  </groups>
+</tournament_info>
