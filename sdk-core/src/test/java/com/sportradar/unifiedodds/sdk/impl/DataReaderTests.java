@@ -10,13 +10,19 @@ import org.junit.Test;
 public class DataReaderTests {
     @Test
     public void mockFeedMessageReader() throws DeserializationException {
-        UFAlive alive = XmlFeedMessageReader.readMessageFromResource("test/feed_xml/alive.xml");
+        UFAlive alive = XmlMessageReader.readMessageFromResource("test/feed_xml/alive.xml", UFAlive.class);
         Assert.assertNotNull(alive);
     }
 
     @Test
+    public void mockSportsApiMessageReader() throws DeserializationException {
+        SAPIFixturesEndpoint fixturesEndpoint = XmlMessageReader.readMessageFromResource("test/rest/fixtures.de.xml", SAPIFixturesEndpoint.class);
+        Assert.assertNotNull(fixturesEndpoint);
+    }
+
+    @Test
     public void mockDataProvider() throws DataProviderException {
-        TestingDataProvider<SAPIFixturesEndpoint> dataProvider = new TestingDataProvider<>("test/rest/fixtures.de.xml");
+        TestingDataProvider<SAPIFixturesEndpoint> dataProvider = new TestingDataProvider<>("test/rest/fixtures.de.xml", SAPIFixturesEndpoint.class);
         SAPIFixturesEndpoint data = dataProvider.getData();
         Assert.assertNotNull(data);
     }

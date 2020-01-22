@@ -4,8 +4,6 @@ import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import org.mockito.Mockito;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,34 +12,28 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 public class TestingDataProvider<T> extends DataProvider<T> {
-    private static Deserializer deserializer;
     private final Supplier<InputStream> streamFactory;
+    private final Class<T> clazz;
 
-    static {
-        try {
-            deserializer = new DeserializerImpl(JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel").createUnmarshaller(), null);
-        } catch (JAXBException e) {
-            throw new RuntimeException("Failed to create JAXBContext for com.sportradar.uf.sportsapi.datamodel", e);
-        }
-    }
-
-    public TestingDataProvider(File file) {
+    public TestingDataProvider(File file, Class<T> clazz) {
         this(() -> {
             try {
                 return new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to create stream", e);
             }
-        });
+        }, clazz);
     }
 
-    public TestingDataProvider(String resourceName) {
-        this(() -> TestingDataProvider.class.getClassLoader().getResourceAsStream(resourceName));
+    public TestingDataProvider(String resourceName, Class<T> clazz) {
+        this(() -> TestingDataProvider.class.getClassLoader().getResourceAsStream(resourceName), clazz);
     }
 
-    public TestingDataProvider(Supplier<InputStream> streamFactory) {
-        super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class), deserializer);
+    public TestingDataProvider(Supplier<InputStream> streamFactory, Class<T> clazz) {
+        super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class),
+                Mockito.mock(Deserializer.class));
         this.streamFactory = streamFactory;
+        this.clazz = clazz;
     }
 
     @Override
@@ -61,7 +53,7 @@ public class TestingDataProvider<T> extends DataProvider<T> {
 
     private T readFromStream() throws DataProviderException {
         try (InputStream stream = streamFactory.get()) {
-            return (T) deserializer.deserialize(stream);
+            return XmlMessageReader.readMessageFromStream(stream, clazz);
         } catch (Exception e) {
             throw new DataProviderException("Data serialization failed", e);
         }
