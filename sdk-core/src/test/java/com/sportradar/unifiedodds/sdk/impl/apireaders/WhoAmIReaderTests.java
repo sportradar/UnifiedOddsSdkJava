@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
+import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.junit.Assert;
@@ -179,6 +180,26 @@ public class WhoAmIReaderTests {
         }
 
         Assert.fail("Should not be reached");
+    }
+
+    @Test
+    public void validXmlDataProvider() {
+        SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
+        Mockito.when(config.isReplaySession()).thenReturn(false);
+        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>("test/rest/bookmaker_details.xml", BookmakerDetails.class);
+
+        WhoAmIReader whoAmIReader = new WhoAmIReader(config, dataProvider, dataProvider, dataProvider);
+        try {
+            whoAmIReader.validateBookmakerDetails();
+        } catch (Exception e) {
+            Assert.assertEquals(IllegalStateException.class, e.getClass());
+            Assert.assertEquals("Access token has expired (Tue Jul 26 19:44:24 CEST 2016)", e.getMessage());
+        }
+
+        Assert.assertEquals(whoAmIReader.getBookmakerId(), 1);
+        Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
+        Assert.assertEquals(whoAmIReader.getVirtualHost(),  "/virtualhost/1");
     }
 
     @SuppressWarnings("unchecked")
