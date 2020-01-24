@@ -1,0 +1,14 @@
+﻿<odds_change product="4" event_id="sr:match:10927088" timestamp="1487254396715">
+  <sport_event_status status="1" reporting="1" match_status="6" home_score="0" away_score="2">
+    <clock match_time="27:33"/>
+    <period_scores>
+      <period_score match_status_code="6" number="1" home_score="0" away_score="2"/>
+    </period_scores>
+  </sport_event_status>
+  <odds>
+    <market status="1" id="68" specifiers="total=3.5">
+      <outcome id="13" probabilities="0.91985" active="0"/>
+      <outcome id="12" odds="6.5" probabilities="0.08015" active="1"/>
+    </market>
+  </odds>
+</odds_change>

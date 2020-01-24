@@ -18,32 +18,30 @@ import com.sportradar.unifiedodds.sdk.impl.OddsFeedSessionImpl;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.ProcessedFixtureChangesTracker;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class InjectionModuleTests {
-    private static SDKGlobalEventsListener stubEventListener;
-    private static SDKInternalConfiguration stubConfiguration;
-
-    @BeforeClass
-    public static void init() {
-        stubEventListener = Mockito.mock(SDKGlobalEventsListener.class);
-        stubConfiguration = Mockito.mock(SDKInternalConfiguration.class);
-    }
-
     @Test
     public void configurationIsResolved() {
-        Injector injector = Guice.createInjector(new MasterInjectionModule(stubEventListener, stubConfiguration, null));
+        SDKGlobalEventsListener listener = Mockito.mock(SDKGlobalEventsListener.class);
+        SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
+        Injector injector = Guice.createInjector(
+                new MasterInjectionModule(listener, config, null)
+        );
+
         SDKInternalConfiguration instance = injector.getInstance(SDKInternalConfiguration.class);
-        Assert.assertEquals(stubConfiguration, instance);
+
+        Assert.assertEquals(config, instance);
     }
 
     @Test
     public void provideDifferentMessageProcessorForEachSession() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
+
         CompositeMessageProcessor instance1 = injector.getInstance(CompositeMessageProcessor.class);
         CompositeMessageProcessor instance2 = injector.getInstance(CompositeMessageProcessor.class);
         Assert.assertNotNull(instance1);
@@ -54,8 +52,9 @@ public class InjectionModuleTests {
     @Test
     public void provideSameProcessedFixtureChangesTrackerForEachSession() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         ProcessedFixtureChangesTracker instance1 = injector.getInstance(ProcessedFixtureChangesTracker.class);
         ProcessedFixtureChangesTracker instance2 = injector.getInstance(ProcessedFixtureChangesTracker.class);
         Assert.assertNotNull(instance1);
@@ -65,8 +64,9 @@ public class InjectionModuleTests {
     @Test
     public void provideSameSportEntityFactoryForEachSession() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         SportEntityFactory instance1 = injector.getInstance(SportEntityFactory.class);
         SportEntityFactory instance2 = injector.getInstance(SportEntityFactory.class);
         Assert.assertNotNull(instance1);
@@ -76,8 +76,9 @@ public class InjectionModuleTests {
     @Test
     public void provideDifferentFeedMessageFactoryForEachSession() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         FeedMessageFactory instance1 = injector.getInstance(FeedMessageFactory.class);
         FeedMessageFactory instance2 = injector.getInstance(FeedMessageFactory.class);
         Assert.assertNotNull(instance1);
@@ -88,8 +89,9 @@ public class InjectionModuleTests {
     @Test
     public void provideSessions() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         OddsFeedSessionImpl instance1 = injector.getInstance(OddsFeedSessionImpl.class);
         OddsFeedSessionImpl instance2 = injector.getInstance(OddsFeedSessionImpl.class);
         Assert.assertNotNull(instance1);
@@ -100,8 +102,9 @@ public class InjectionModuleTests {
     @Test
     public void provideBookmakerDetailsProvider() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         DataProvider<BookmakerDetails> configDataProviderInstance = injector.getInstance(Key.get(new TypeLiteral<DataProvider<BookmakerDetails>>() {}, Names.named("ConfigDataProvider")));
         DataProvider<BookmakerDetails> productionDataProviderInstance = injector.getInstance(Key.get(new TypeLiteral<DataProvider<BookmakerDetails>>() {}, Names.named("ProductionDataProvider")));
         DataProvider<BookmakerDetails> integrationDataProviderInstance = injector.getInstance(Key.get(new TypeLiteral<DataProvider<BookmakerDetails>>() {}, Names.named("IntegrationDataProvider")));
@@ -113,8 +116,9 @@ public class InjectionModuleTests {
     @Test
     public void provideRecoveryManager() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         RecoveryManager instance = injector.getInstance(RecoveryManager.class);
         Assert.assertNotNull(instance);
     }
@@ -122,8 +126,9 @@ public class InjectionModuleTests {
     @Test
     public void provideDataRouterManager() {
         Injector injector = Guice.createInjector(
-                Modules.override(new MasterInjectionModule(stubEventListener, stubConfiguration, null))
-                        .with(new TestingModule()));
+                Modules.override(new MockedMasterModule())
+                        .with(new TestingModule())
+        );
         DataRouterManager instance = injector.getInstance(DataRouterManager.class);
         Assert.assertNotNull(instance);
     }

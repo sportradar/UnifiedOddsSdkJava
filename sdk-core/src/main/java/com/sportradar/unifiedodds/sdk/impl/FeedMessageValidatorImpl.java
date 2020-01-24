@@ -287,6 +287,10 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     private ValidationResult validateAlive(UFAlive message) {
         Preconditions.checkNotNull(message);
 
+        if (message.getSubscribed() < 0) {
+            return ValidationResult.ProblemsDetected;
+        }
+
         return ValidationResult.Success;
     }
 
