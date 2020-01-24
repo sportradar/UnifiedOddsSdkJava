@@ -187,7 +187,7 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
-        TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>("test/rest/bookmaker_details.xml", BookmakerDetails.class);
+        TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>("test/rest/bookmaker_details.xml");
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, dataProvider, dataProvider, dataProvider);
         try {

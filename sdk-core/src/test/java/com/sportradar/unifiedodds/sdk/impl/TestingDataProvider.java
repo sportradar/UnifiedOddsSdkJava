@@ -13,27 +13,25 @@ import java.util.function.Supplier;
 
 public class TestingDataProvider<T> extends DataProvider<T> {
     private final Supplier<InputStream> streamFactory;
-    private final Class<T> clazz;
 
-    public TestingDataProvider(File file, Class<T> clazz) {
+    public TestingDataProvider(File file) {
         this(() -> {
             try {
                 return new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to create stream", e);
             }
-        }, clazz);
+        });
     }
 
-    public TestingDataProvider(String resourceName, Class<T> clazz) {
-        this(() -> TestingDataProvider.class.getClassLoader().getResourceAsStream(resourceName), clazz);
+    public TestingDataProvider(String resourceName) {
+        this(() -> TestingDataProvider.class.getClassLoader().getResourceAsStream(resourceName));
     }
 
-    public TestingDataProvider(Supplier<InputStream> streamFactory, Class<T> clazz) {
+    public TestingDataProvider(Supplier<InputStream> streamFactory) {
         super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class),
                 Mockito.mock(Deserializer.class));
         this.streamFactory = streamFactory;
-        this.clazz = clazz;
     }
 
     @Override
@@ -53,7 +51,7 @@ public class TestingDataProvider<T> extends DataProvider<T> {
 
     private T readFromStream() throws DataProviderException {
         try (InputStream stream = streamFactory.get()) {
-            return XmlMessageReader.readMessageFromStream(stream, clazz);
+            return XmlMessageReader.readMessageFromStream(stream);
         } catch (Exception e) {
             throw new DataProviderException("Data serialization failed", e);
         }
