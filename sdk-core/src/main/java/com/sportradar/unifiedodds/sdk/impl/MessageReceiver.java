@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Defines methods implemented by classes capable of delivering messages from the feed
+ * Defines methods implemented by classes capable of receiving messages from the feed
  */
 public interface MessageReceiver {
     /**
