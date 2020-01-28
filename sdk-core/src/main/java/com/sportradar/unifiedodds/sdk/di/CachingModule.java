@@ -149,43 +149,64 @@ public class CachingModule extends AbstractModule {
     }
 
     @Provides @Singleton @Named("BetStopReasonCache")
-    protected NamedValueCache provideBetStopReasonCache(SDKInternalConfiguration cfg,
-                                                   LogHttpDataFetcher httpDataFetcher,
-                                                   @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                      SDKTaskScheduler sdkTaskScheduler) {
-        return new NamedValueCacheImpl(
-                new DataProvider("/descriptions/betstop_reasons.xml", cfg, httpDataFetcher, deserializer),
-                sdkTaskScheduler
-        );
+    protected NamedValueCache provideBetStopReasonCache(
+            @Named("BetStopReasonDataProvider") DataProvider dataProvider,
+            SDKTaskScheduler sdkTaskScheduler) {
+        return new NamedValueCacheImpl(dataProvider, sdkTaskScheduler);
     }
 
     @Provides @Singleton @Named("BettingStatusCache")
-    protected NamedValueCache provideBettingStatusCache(SDKInternalConfiguration cfg,
-                                                      LogHttpDataFetcher httpDataFetcher,
-                                                      @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                      SDKTaskScheduler sdkTaskScheduler) {
-        return new NamedValueCacheImpl(
-                new DataProvider("/descriptions/betting_status.xml", cfg, httpDataFetcher, deserializer),
-                sdkTaskScheduler
-        );
+    protected NamedValueCache provideBettingStatusCache(
+            @Named("BettingStatusDataProvider") DataProvider dataProvider,
+            SDKTaskScheduler sdkTaskScheduler) {
+        return new NamedValueCacheImpl(dataProvider, sdkTaskScheduler);
     }
 
     @Provides @Singleton @Named("InvariantMarketCache")
-    protected InvariantMarketDescriptionCache provideInvariantMarketDescriptionCache(SDKInternalConfiguration cfg,
-                                                                          LogHttpDataFetcher httpDataFetcher,
-                                                                          @Named("AdditionalMarketMappingsProvider") ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
-                                                                          @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                                          MappingValidatorFactory mappingFactory,
-                                                                          SDKTaskScheduler sdkTaskScheduler) {
+    protected InvariantMarketDescriptionCache provideInvariantMarketDescriptionCache(
+            SDKInternalConfiguration cfg,
+            @Named("AdditionalMarketMappingsProvider") ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
+            MappingValidatorFactory mappingFactory,
+            SDKTaskScheduler sdkTaskScheduler,
+            DataProvider<MarketDescriptions> dataProvider
+    ) {
         return new InvariantMarketDescriptionCache(
                 internalCachesProvider.getInvariantMarketCache(),
-                new DataProvider<>("/descriptions/%s/markets.xml?include_mappings=true", cfg, httpDataFetcher, deserializer),
+                dataProvider,
                 additionalMappingsProvider,
                 mappingFactory,
                 sdkTaskScheduler,
                 cfg.getDesiredLocales()
         );
     }
+
+    //Data Providers:
+
+    @Provides @Singleton @Named("BettingStatusDataProvider")
+    protected DataProvider providesBettingStatusDataProvider(
+            SDKInternalConfiguration cfg,
+            LogHttpDataFetcher httpDataFetcher,
+            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider("/descriptions/betting_status.xml", cfg, httpDataFetcher, deserializer);
+    }
+
+    @Provides @Singleton @Named("BetStopReasonDataProvider")
+    protected DataProvider providesBetStopReasonDataProvider(
+            SDKInternalConfiguration cfg,
+            LogHttpDataFetcher httpDataFetcher,
+            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider("/descriptions/betstop_reasons.xml", cfg, httpDataFetcher, deserializer);
+    }
+
+    @Provides @Singleton
+    protected DataProvider<MarketDescriptions> providesMarketDescriptionsProvider(
+            SDKInternalConfiguration cfg,
+            LogHttpDataFetcher httpDataFetcher,
+            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        return new DataProvider<>("/descriptions/%s/markets.xml?include_mappings=true", cfg, httpDataFetcher, deserializer);
+    }
+
+
 
     @Provides @Singleton @Named("VariantMarketCache")
     protected MarketDescriptionCache provideVariantMarketDescriptionCache(SDKInternalConfiguration cfg,
