@@ -114,4 +114,11 @@ public interface CompetitorCI extends CacheItem {
      * @return the list of locales used to fetch competitor profiles
      */
     List<Locale> getCultureCompetitorProfileFetched();
+
+    /**
+     * Returns state/province of the country
+     *
+     * @return state
+     */
+    String getState();
 }

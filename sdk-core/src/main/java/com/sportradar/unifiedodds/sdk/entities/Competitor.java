@@ -118,4 +118,15 @@ public interface Competitor extends Player {
     default String getAgeGroup(){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
+
+    /**
+     * Returns the state (default method)
+     *
+     * @return state
+     *
+     * @throws UnsupportedOperationException if underlying implementation doesn't provide the state
+     */
+    default String getState() {
+        throw new UnsupportedOperationException("This interface method is missing the implementation.");
+    }
 }

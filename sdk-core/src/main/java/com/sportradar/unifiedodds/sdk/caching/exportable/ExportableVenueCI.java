@@ -14,9 +14,13 @@ public class ExportableVenueCI extends ExportableCI {
     private Integer capacity;
     private String countryCode;
     private String coordinates;
+    private String state;
+
     private List<Locale> cachedLocales;
 
-    public ExportableVenueCI(String id, Map<Locale, String> names, Map<Locale, String> cityNames, Map<Locale, String> countryNames, Integer capacity, String countryCode, String coordinates, List<Locale> cachedLocales) {
+    public ExportableVenueCI(String id, Map<Locale, String> names, Map<Locale, String> cityNames,
+                             Map<Locale, String> countryNames, Integer capacity, String countryCode, String coordinates,
+                             List<Locale> cachedLocales, String state) {
         super(id, names);
         this.cityNames = cityNames;
         this.countryNames = countryNames;
@@ -24,6 +28,7 @@ public class ExportableVenueCI extends ExportableCI {
         this.countryCode = countryCode;
         this.coordinates = coordinates;
         this.cachedLocales = cachedLocales;
+        this.state = state;
     }
 
     public Map<Locale, String> getCityNames() {
@@ -72,5 +77,13 @@ public class ExportableVenueCI extends ExportableCI {
 
     public void setCachedLocales(List<Locale> cachedLocales) {
         this.cachedLocales = cachedLocales;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

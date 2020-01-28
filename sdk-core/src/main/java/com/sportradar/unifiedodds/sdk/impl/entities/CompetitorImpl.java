@@ -312,6 +312,11 @@ public class CompetitorImpl implements Competitor {
         return loadCacheItem().map(CompetitorCI::getAgeGroup).orElse(null);
     }
 
+    @Override
+    public String getState() {
+        return loadCacheItem().map(CompetitorCI::getState).orElse(null);
+    }
+
     /**
      * Loads the associated entity cache item from the sport event cache
      *
