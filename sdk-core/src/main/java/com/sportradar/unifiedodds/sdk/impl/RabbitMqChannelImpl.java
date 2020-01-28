@@ -106,7 +106,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
 
         this.channelMessageConsumer = channelMessageConsumer;
         try {
-            initChannelQue(routingKeys);
+            initChannelQueue(routingKeys);
             isOpened = true;
         } catch (IOException e) {
             throw new IOException("Channel queue declaration failed, ex: ", e);
@@ -119,7 +119,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
      * @param routingKeys - a {@link List} of routing keys which should be binded
      * @throws IOException - thrown if any queue operation fails to complete
      */
-    private void initChannelQue(List<String> routingKeys) throws IOException {
+    private void initChannelQueue(List<String> routingKeys) throws IOException {
         Preconditions.checkNotNull(channel);
 
         String qName = channel.queueDeclare().getQueue();
