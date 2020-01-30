@@ -2,7 +2,7 @@
 sportradar:
   sdk:
     uf:
-      accessToken: test-token
+      accessToken: test-token-yaml
       nodeId: 46
       maxInactivitySeconds: 25
       maxRecoveryTime: 60

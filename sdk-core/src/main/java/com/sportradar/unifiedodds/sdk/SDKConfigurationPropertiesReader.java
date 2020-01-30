@@ -21,15 +21,23 @@ public class SDKConfigurationPropertiesReader extends SDKConfigurationReader {
     private static final Logger logger = LoggerFactory.getLogger(SDKConfigurationPropertiesReader.class);
     private static final String SDK_PROPERTIES_FILENAME = "UFSdkConfiguration.properties";
 
+    private final String filename;
+
     SDKConfigurationPropertiesReader() {
         super();
+
+        filename = SDK_PROPERTIES_FILENAME;
+    }
+
+    SDKConfigurationPropertiesReader(String filename) {
+        this.filename = filename;
     }
 
     @Override
     Map<String, String> readConfiguration() {
         Properties prop = new Properties();
 
-        InputStream in = getClass().getClassLoader().getResourceAsStream(SDK_PROPERTIES_FILENAME);
+        InputStream in = getClass().getClassLoader().getResourceAsStream(filename);
         try {
             if (in != null) {
                 prop.load(in);

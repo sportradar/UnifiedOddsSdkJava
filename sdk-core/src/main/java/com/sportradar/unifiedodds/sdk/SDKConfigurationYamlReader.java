@@ -22,15 +22,23 @@ public class SDKConfigurationYamlReader extends SDKConfigurationReader {
     private static final String SECOND_LEVEL_TAG = "sdk";
     private static final String THIRD_LEVEL_TAG = "uf";
 
+    private final String filename;
+
     SDKConfigurationYamlReader() {
         super();
+
+        this.filename = SDK_YAML_FILENAME;
+    }
+
+    SDKConfigurationYamlReader(String filename) {
+        this.filename = filename;
     }
 
     @Override
     Map<String, String> readConfiguration() {
         isYamlReaderDependencyPresent();
 
-        InputStream in = getClass().getClassLoader().getResourceAsStream(SDK_YAML_FILENAME);
+        InputStream in = getClass().getClassLoader().getResourceAsStream(filename);
         if (in != null) {
             Yaml yaml = new Yaml();
             Iterable<Object> objects = yaml.loadAll(in);
@@ -41,7 +49,7 @@ public class SDKConfigurationYamlReader extends SDKConfigurationReader {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, String> tryFindSrYamlProperties(Iterable<Object> objects) {
+    private Map<String, String> tryFindSrYamlProperties(Iterable<Object> objects) {
         for (Object object : objects) {
             if (object instanceof Map) {
                 Map<String, Object> castedMap = (Map<String, Object>) object;
@@ -51,7 +59,7 @@ public class SDKConfigurationYamlReader extends SDKConfigurationReader {
             }
         }
 
-        logger.warn("Could not find valid UF SDK YAML root property({}) in the provided '{}'", ROOT_SPORTRADAR_TAG, SDK_YAML_FILENAME);
+        logger.warn("Could not find valid UF SDK YAML root property({}) in the provided '{}'", ROOT_SPORTRADAR_TAG, filename);
 
         return Collections.emptyMap();
     }

@@ -250,6 +250,13 @@ public class OddsFeed {
         return new TokenSetterImpl(new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
     }
 
+    public static TokenSetter getOddsFeedConfigurationBuilder(String propertiesUri, String yamlUri) {
+        return new TokenSetterImpl(
+                new SDKConfigurationPropertiesReader(propertiesUri),
+                new SDKConfigurationYamlReader(yamlUri)
+        );
+    }
+
     /**
      * Builder used to create the required sessions
      *
