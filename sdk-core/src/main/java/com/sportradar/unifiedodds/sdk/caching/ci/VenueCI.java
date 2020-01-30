@@ -45,6 +45,8 @@ public class VenueCI extends SportEntityCI {
      */
     private String coordinates;
 
+    private String state;
+
     private final List<Locale> cachedLocales;
 
     /**
@@ -77,6 +79,8 @@ public class VenueCI extends SportEntityCI {
         capacity = exportable.getCapacity();
         countryCode = exportable.getCountryCode();
         coordinates = exportable.getCoordinates();
+        state = exportable.getState();
+
         cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
@@ -96,6 +100,7 @@ public class VenueCI extends SportEntityCI {
         cityNames.put(locale, venue.getCityName());
         countryNames.put(locale, venue.getCountryName());
         countryCode = venue.getCountryCode();
+        state = venue.getState();
 
         cachedLocales.add(locale);
     }
@@ -159,6 +164,15 @@ public class VenueCI extends SportEntityCI {
         return countryCode;
     }
 
+    /**
+     * Returns state/province of the country
+     *
+     * @return state
+     */
+    public String getState() {
+        return state;
+    }
+
     public boolean hasTranslationsFor(List<Locale> locales) {
         Preconditions.checkNotNull(locales);
 
@@ -174,7 +188,8 @@ public class VenueCI extends SportEntityCI {
                 capacity,
                 countryCode,
                 coordinates,
-                new ArrayList<>(cachedLocales)
+                new ArrayList<>(cachedLocales),
+                state
         );
     }
 }

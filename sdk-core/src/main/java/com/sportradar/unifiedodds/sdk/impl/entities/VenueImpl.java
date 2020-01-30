@@ -56,6 +56,7 @@ public class VenueImpl implements Venue {
      */
     private final String countryCode;
 
+    private final String state;
 
     /**
      * Initializes a new intance of {@link VenueImpl}
@@ -72,6 +73,7 @@ public class VenueImpl implements Venue {
         this.capacity = venueCI.getCapacity();
         this.coordinates = venueCI.getCoordinates();
         this.countryCode = venueCI.getCountryCode();
+        this.state = venueCI.getState();
 
         this.names = locales.stream()
                 .filter(l -> venueCI.getName(l) != null)
@@ -83,7 +85,6 @@ public class VenueImpl implements Venue {
                 .filter(l -> venueCI.getCountryName(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getCountryName));
     }
-
 
     /**
      * Returns a unique {@link URN} identifier representing the current {@link Venue} instance
@@ -187,6 +188,11 @@ public class VenueImpl implements Venue {
     @Override
     public String getCountryCode() {
         return countryCode;
+    }
+
+    @Override
+    public String getState() {
+        return state;
     }
 
     /**

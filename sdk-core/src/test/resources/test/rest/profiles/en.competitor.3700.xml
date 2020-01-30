@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<competitor_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2020-01-29T13:07:59+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa-staging/unified/v1/xml/endpoints/unified/competitor_profile.xsd">
+  <competitor id="sr:competitor:3700" name="Ottawa Senators" state="ON" country="Canada" country_code="CAN" abbreviation="OTT" gender="male">
+    <sport id="sr:sport:4" name="Ice Hockey"/>
+    <category id="sr:category:176" name="Canada" country_code="CAN"/>
+  </competitor>
+  <venue id="sr:venue:6066" name="Canadian Tire Centre" capacity="18572" city_name="Ottawa" state="ON" country_name="Canada" map_coordinates="45.296924,-75.926992" country_code="CAN"/>
+  <jerseys>
+    <jersey type="home" base="c80a33" sleeve="000000" number="ffffff" squares="false" stripes="false" horizontal_stripes="false" split="false" shirt_type="long_sleeves"/>
+    <jersey type="away" base="ffffff" sleeve="000000" number="c80a33" squares="false" stripes="false" horizontal_stripes="false" split="false" shirt_type="long_sleeves"/>
+    <jersey type="third" base="c80a33" sleeve="c80a33" number="ffffff" squares="false" stripes="false" horizontal_stripes="false" split="false" shirt_type="long_sleeves"/>
+  </jerseys>
+  <players>
+    <player id="sr:player:1296300" name="Tkachuk, Brady" full_name="Brady Tkachuk" type="F" date_of_birth="1999-09-16" nationality="USA" country_code="USA" height="191" weight="89" jersey_number="7" gender="male"/>
+    <player id="sr:player:350810" name="Hogberg, Marcus" full_name="Marcus Hogberg" type="G" date_of_birth="1994-11-25" nationality="Sweden" country_code="SWE" height="196" weight="95" gender="male"/>
+    <player id="sr:player:1144858" name="Batherson, Drake" full_name="Drake Batherson" type="F" date_of_birth="1998-04-27" nationality="Canada" country_code="CAN" height="185" weight="85" gender="male"/>
+    <player id="sr:player:1099102" name="Reilly, Mike" full_name="Mike Reilly" type="D" date_of_birth="1993-07-13" nationality="USA" country_code="USA" height="185" weight="88" jersey_number="5" gender="male"/>
+    <player id="sr:player:852984" name="Chlapik, Filip" full_name="Filip Chlapik" type="F" date_of_birth="1997-06-03" nationality="Czech Republic" country_code="CZE" height="185" weight="89" gender="male"/>
+    <player id="sr:player:794662" name="DeMelo, Dylan" full_name="Dylan DeMelo" type="D" date_of_birth="1993-05-01" nationality="Canada" country_code="CAN" height="185" weight="88" jersey_number="2" gender="male"/>
+    <player id="sr:player:609252" name="Duclair, Anthony" full_name="Anthony Duclair" type="F" date_of_birth="1995-08-26" nationality="Canada" country_code="CAN" height="180" weight="87" jersey_number="10" gender="male"/>
+    <player id="sr:player:87562" name="Zaitsev, Nikita" full_name="Nikita Zaitsev" type="D" date_of_birth="1991-10-29" nationality="Russia" country_code="RUS" height="188" weight="88" jersey_number="22" gender="male"/>
+    <player id="sr:player:772361" name="Brown, Connor" full_name="Connor Brown" type="F" date_of_birth="1994-01-14" nationality="Canada" country_code="CAN" height="183" weight="83" jersey_number="28" gender="male"/>
+    <player id="sr:player:182293" name="Goloubef, Cody" full_name="Cody Goloubef" type="D" date_of_birth="1989-11-30" nationality="Canada" country_code="CAN" height="185" weight="91" jersey_number="29" gender="male"/>
+    <player id="sr:player:852964" name="White, Colin" full_name="Colin White" type="F" date_of_birth="1997-01-30" nationality="USA" country_code="USA" height="183" weight="83" jersey_number="36" gender="male"/>
+    <player id="sr:player:30872" name="Anderson, Craig" full_name="Craig Anderson" type="G" date_of_birth="1981-05-21" nationality="USA" country_code="USA" height="188" weight="84" jersey_number="41" gender="male"/>
+    <player id="sr:player:323191" name="Pageau, Jean-Gabriel" full_name="Jean-Gabriel Pageau" type="F" date_of_birth="1992-11-11" nationality="Canada" country_code="CAN" height="178" weight="83" jersey_number="44" gender="male"/>
+    <player id="sr:player:916976" name="Sabourin, Scott" full_name="Scott Sabourin" type="F" date_of_birth="1992-07-30" nationality="Canada" country_code="CAN" height="191" weight="92" jersey_number="49" gender="male"/>
+    <player id="sr:player:755472" name="Anisimov, Artem" full_name="Artem Anisimov" type="F" date_of_birth="1988-05-24" nationality="Russia" country_code="RUS" height="193" weight="90" jersey_number="51" gender="male"/>
+    <player id="sr:player:100720" name="Ennis, Tyler" full_name="Tyler Ennis" type="F" date_of_birth="1989-10-06" nationality="Canada" country_code="CAN" height="175" weight="73" jersey_number="63" gender="male"/>
+    <player id="sr:player:606984" name="Tierney, Chris" full_name="Chris Tierney" type="F" date_of_birth="1994-07-01" nationality="Canada" country_code="CAN" height="185" weight="88" jersey_number="71" gender="male"/>
+    <player id="sr:player:852952" name="Chabot, Thomas" full_name="Thomas Chabot" type="D" date_of_birth="1997-01-30" nationality="Canada" country_code="CAN" height="188" weight="89" jersey_number="72" gender="male"/>
+    <player id="sr:player:352074" name="Borowiecki, Mark" full_name="Mark Borowiecki" type="D" date_of_birth="1989-07-12" nationality="Canada" country_code="CAN" height="185" weight="94" jersey_number="74" gender="male"/>
+    <player id="sr:player:29589" name="Hainsey, Ron" full_name="Ron Hainsey" type="D" date_of_birth="1981-03-24" nationality="USA" country_code="USA" height="191" weight="93" jersey_number="81" gender="male"/>
+    <player id="sr:player:42403" name="Boedker, Mikkel" full_name="Mikkel Boedker" type="F" date_of_birth="1989-12-16" nationality="Denmark" country_code="DNK" height="183" weight="95" jersey_number="89" gender="male"/>
+    <player id="sr:player:606958" name="Namestnikov, Vladislav" full_name="Vladislav Namestnikov" type="F" date_of_birth="1992-11-22" nationality="Russia" country_code="RUS" height="183" weight="83" jersey_number="90" gender="male"/>
+  </players>
+</competitor_profile>

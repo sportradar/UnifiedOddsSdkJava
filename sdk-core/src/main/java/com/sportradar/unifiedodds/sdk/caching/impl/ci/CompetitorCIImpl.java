@@ -114,6 +114,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      */
     private String ageGroup;
 
+    private String state;
+
     /**
      * The race driver profile of the competitor
      */
@@ -396,6 +398,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         return ageGroup;
     }
 
+    @Override
+    public String getState() {
+        ensureDataLoaded(state);
+        return state;
+    }
+
     /**
      * Returns race driver of the competitor
      *
@@ -464,6 +472,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         ageGroup = exportable.getAgeGroup();
         raceDriverProfile = exportable.getRaceDriverProfile() != null ? new RaceDriverProfileCI(exportable.getRaceDriverProfile()) : null;
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
+        state = exportable.getState();
     }
 
     private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
@@ -555,6 +564,10 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
         if(competitor.getAgeGroup() != null) {
             ageGroup = competitor.getAgeGroup();
+        }
+
+        if (competitor.getState() != null) {
+            state = competitor.getState();
         }
     }
 
@@ -675,7 +688,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 gender,
                 ageGroup,
                 raceDriverProfile != null ? raceDriverProfile.export() : null,
-                new ArrayList<>(cachedLocales)
+                new ArrayList<>(cachedLocales),
+                state
         );
     }
 }

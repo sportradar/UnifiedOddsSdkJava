@@ -85,4 +85,14 @@ public interface Venue {
      * @return the associated country code
      */
     String getCountryCode();
+
+    /**
+     * Returns state/province of the country
+     *
+     * @return state
+     * @throws UnsupportedOperationException when method isn't implemented
+     */
+    default String getState() {
+        throw new UnsupportedOperationException("This method MUST be implemented.");
+    }
 }

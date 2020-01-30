@@ -23,8 +23,13 @@ public class ExportableCompetitorCI extends ExportableCI {
     private String ageGroup;
     private ExportableRaceDriverProfileCI raceDriverProfile;
     private List<Locale> cachedLocales;
+    private String state;
 
-    public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames, Map<Locale, String> abbreviations, boolean isVirtual, String countryCode, Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys, ExportableManagerCI manager, ExportableVenueCI venue, String gender, String ageGroup, ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales) {
+    public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames,
+                                  Map<Locale, String> abbreviations, boolean isVirtual, String countryCode,
+                                  Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys,
+                                  ExportableManagerCI manager, ExportableVenueCI venue, String gender, String ageGroup,
+                                  ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales, String state) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.countryNames = countryNames;
@@ -40,6 +45,7 @@ public class ExportableCompetitorCI extends ExportableCI {
         this.ageGroup = ageGroup;
         this.raceDriverProfile = raceDriverProfile;
         this.cachedLocales = cachedLocales;
+        this.state = state;
     }
 
     public Locale getDefaultLocale() {
@@ -152,5 +158,13 @@ public class ExportableCompetitorCI extends ExportableCI {
 
     public void setCachedLocales(List<Locale> cachedLocales) {
         this.cachedLocales = cachedLocales;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

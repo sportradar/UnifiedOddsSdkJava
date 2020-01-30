@@ -17,4 +17,6 @@ public class Constants {
     public static final String FIXTURE_CHANGE_MSG_URI = "test/feed_xml/fixture_change.xml";
     public static final String ROLLBACK_BET_SETTLEMENT_MSG_URI = "test/feed_xml/rollback_bet_settlement.xml";
     public static final String ROLLBACK_BET_CANCEL_MSG_URI = "test/feed_xml/rollback_bet_cancel.xml";
+
+    public static final String SCHEDULE_MSG_URI = "test/rest/schedule.en.xml";
 }
