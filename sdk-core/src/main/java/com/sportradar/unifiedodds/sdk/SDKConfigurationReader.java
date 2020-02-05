@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,10 +14,10 @@ import java.util.stream.Stream;
  * // TODO @eti: Javadoc
  */
 public abstract class SDKConfigurationReader {
-    private final Map<String, String> sdkProperties;
+    private final SdkProperties sdkProperties;
 
     SDKConfigurationReader() {
-        this.sdkProperties = readConfiguration();
+        sdkProperties = new SdkProperties(this::readConfiguration);
     }
 
     public Optional<String> readAccessToken() {
@@ -162,4 +163,22 @@ public abstract class SDKConfigurationReader {
     }
 
     abstract Map<String,String> readConfiguration();
+
+    //NOTE: Access to SDKConfigurationReader must be single-threaded
+    static class SdkProperties {
+        private Map<String, String> sdkProperties;
+        private final Supplier<Map<String, String>> configSuplier;
+
+        SdkProperties(Supplier<Map<String, String>> configSuplier) {
+            this.configSuplier = configSuplier;
+        }
+
+        public String get(String key) {
+            if (sdkProperties == null) {
+                sdkProperties = configSuplier.get();
+            }
+
+            return sdkProperties.get(key);
+        }
+    }
 }

@@ -37,6 +37,7 @@ class SDKPropertiesReaderUtil {
     static final boolean USE_MESSAGING_SSL = false;
     static final List<Integer> DISABLED_PRODUCERS = Arrays.asList(7,8,9);
     static final int MAX_RECOVERY_TIME = 77;
+    static final int MAX_RECOVERY_TIME_YAML = 78;
     static final int SDK_NODE_ID = -99;
     static final ExceptionHandlingStrategy EXCEPTION_HANDLING = ExceptionHandlingStrategy.Throw;
 
@@ -79,7 +80,7 @@ class SDKPropertiesReaderUtil {
         Mockito.when(mock.readUseApiSsl()).thenReturn(Optional.of(USE_API_SSL));
         Mockito.when(mock.readUseMessagingSsl()).thenReturn(Optional.of(USE_MESSAGING_SSL));
         Mockito.when(mock.readDisabledProducers()).thenReturn(DISABLED_PRODUCERS);
-        Mockito.when(mock.readMaxRecoveryTime()).thenReturn(Optional.of(MAX_RECOVERY_TIME));
+        Mockito.when(mock.readMaxRecoveryTime()).thenReturn(Optional.of(MAX_RECOVERY_TIME_YAML));
         Mockito.when(mock.readSdkNodeId()).thenReturn(Optional.of(SDK_NODE_ID));
         Mockito.when(mock.readExceptionHandlingStrategy()).thenReturn(Optional.of(EXCEPTION_HANDLING));
 

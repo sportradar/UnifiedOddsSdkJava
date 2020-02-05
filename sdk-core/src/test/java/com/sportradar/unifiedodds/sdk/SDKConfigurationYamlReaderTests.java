@@ -31,7 +31,7 @@ public class SDKConfigurationYamlReaderTests {
     public void properParametersLoadedTest(){
         SDKConfigurationYamlReader reader = new SDKConfigurationYamlReader();
 
-        assertEquals("test-token", reader.readAccessToken().get());
+        assertEquals("test-token-yaml", reader.readAccessToken().get());
         assertEquals(46, (long) reader.readSdkNodeId().get());
         assertEquals(25, (int) reader.readMaxInactivitySeconds().get());
         assertEquals(60, (int) reader.readMaxRecoveryTime().get());

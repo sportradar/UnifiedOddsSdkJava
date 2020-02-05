@@ -104,7 +104,7 @@ public class ConfigurationBuilderTests {
         Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS));
         Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES));
 
-        Assert.assertEquals(cfg.getMaxRecoveryExecutionMinutes(), SDKPropertiesReaderUtil.MAX_RECOVERY_TIME);
+        Assert.assertEquals(cfg.getMaxRecoveryExecutionMinutes(), SDKPropertiesReaderUtil.MAX_RECOVERY_TIME_YAML);
         Assert.assertEquals(cfg.getLongestInactivityInterval(), SDKPropertiesReaderUtil.INACTIVITY_SECONDS);
     }
 

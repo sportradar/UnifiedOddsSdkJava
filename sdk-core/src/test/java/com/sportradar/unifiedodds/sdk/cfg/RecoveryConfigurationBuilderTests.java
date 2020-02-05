@@ -70,12 +70,12 @@ public class RecoveryConfigurationBuilderTests {
         TestableRecoveryConfigurationBuilder builderWithFullProperties = getBuilderWithFullProperties();
 
         Assert.assertNotEquals(builderWithFullProperties.maxInactivitySeconds, SDKPropertiesReaderUtil.INACTIVITY_SECONDS);
-        Assert.assertNotEquals(builderWithFullProperties.maxRecoveryExecutionTimeMinutes, SDKPropertiesReaderUtil.MAX_RECOVERY_TIME);
+        Assert.assertNotEquals(builderWithFullProperties.maxRecoveryExecutionTimeMinutes, SDKPropertiesReaderUtil.MAX_RECOVERY_TIME_YAML);
 
         builderWithFullProperties.loadConfigFromApplicationYml();
 
         Assert.assertEquals(builderWithFullProperties.maxInactivitySeconds, SDKPropertiesReaderUtil.INACTIVITY_SECONDS);
-        Assert.assertEquals(builderWithFullProperties.maxRecoveryExecutionTimeMinutes, SDKPropertiesReaderUtil.MAX_RECOVERY_TIME);
+        Assert.assertEquals(builderWithFullProperties.maxRecoveryExecutionTimeMinutes, SDKPropertiesReaderUtil.MAX_RECOVERY_TIME_YAML);
     }
 
     private static TestableRecoveryConfigurationBuilder getBuilderWithFullProperties() {

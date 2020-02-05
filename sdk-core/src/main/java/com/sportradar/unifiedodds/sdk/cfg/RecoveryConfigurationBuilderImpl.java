@@ -86,7 +86,7 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     private void loadConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
         Preconditions.checkNotNull(sdkConfigurationReader);
 
-        sdkConfigurationPropertiesReader.readMaxRecoveryTime().ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));
-        sdkConfigurationPropertiesReader.readMaxInactivitySeconds().ifPresent(this::setMaxInactivitySeconds);
+        sdkConfigurationReader.readMaxRecoveryTime().ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));
+        sdkConfigurationReader.readMaxInactivitySeconds().ifPresent(this::setMaxInactivitySeconds);
     }
 }
