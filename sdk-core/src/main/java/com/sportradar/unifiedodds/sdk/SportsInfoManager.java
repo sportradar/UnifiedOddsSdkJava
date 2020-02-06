@@ -261,9 +261,7 @@ public interface SportsInfoManager {
      * @param limit      how many records to return (max: 1000)
      * @return a list of sport events
      */
-    default List<Competition> getListOfSportEvents(int startIndex, int limit) {
-        return null;
-    }
+    default List<Competition> getListOfSportEvents(int startIndex, int limit) { return null; }
 
     /**
      * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.

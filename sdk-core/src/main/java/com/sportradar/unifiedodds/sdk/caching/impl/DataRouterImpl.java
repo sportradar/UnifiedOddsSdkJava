@@ -293,6 +293,14 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
+        if(endpoint == null
+            || endpoint.getTournaments() == null
+            || endpoint.getTournaments().getTournament() == null
+            || endpoint.getTournaments().getTournament().isEmpty())
+        {
+            return;
+        }
+
         endpoint.getTournaments().getTournament().forEach(tournament ->
                 dataListeners.forEach(l -> l.onTournamentFetched(URN.parse(tournament.getId()), tournament, locale))
         );
