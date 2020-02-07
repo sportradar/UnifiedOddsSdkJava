@@ -1,5 +1,6 @@
 package com.sportradar.unifiedodds.sdk.di;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -7,11 +8,14 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.uf.sportsapi.datamodel.SAPICompetitorProfileEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SAPILotterySchedule;
+import com.sportradar.uf.sportsapi.datamodel.SAPIScheduleEndpoint;
 import com.sportradar.unifiedodds.sdk.SportsInfoManager;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.TestingSummaryDataProvider;
 import org.mockito.Mockito;
 
 import java.util.Optional;
@@ -58,5 +62,34 @@ public class TestingModule implements Module {
     @Provides @Singleton
     protected DataProvider<SAPICompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {
         return new TestingDataProvider<>("test/rest/profiles/en.competitor.3700.xml");
+    }
+
+    @Provides @Singleton @Named("ListSportEventsDataProvider")
+    protected DataProvider<SAPIScheduleEndpoint> providesScheduleEndpointProvider() {
+        return new TestingDataProvider<>("test/rest/events.xml");
+    }
+
+    @Provides @Singleton @Named("TournamentScheduleProvider")
+    protected DataProvider<Object> providesTournamentScheduleProvider() {
+        return new TestingDataProvider<>("test/rest/tournament_schedule.en.xml");
+    }
+
+    @Provides @Singleton @Named("DateScheduleEndpointDataProvider")
+    protected DataProvider<SAPIScheduleEndpoint> providesDateScheduleProvider() {
+        return new TestingDataProvider<>("test/rest/schedule.en.xml");
+    }
+
+    @Provides @Singleton @Named("SummaryEndpointDataProvider")
+    protected DataProvider<Object> providesSummaryEndpointProvider() {
+        return new TestingSummaryDataProvider<>(ImmutableMap.of(
+                "match", "test/rest/match_summary.xml",
+                "stage", "test/rest/race_summary.xml",
+                "tournament", "test/rest/summaries/summary_sr_tournament_1030.en.xml"
+        ));
+    }
+
+    @Provides @Singleton
+    protected DataProvider<SAPILotterySchedule> providesLotteryScheduleProvider() {
+        return new TestingDataProvider<>("test/rest/wns/lottery_schedule.en.xml");
     }
 }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <tournament_info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2018-05-09T09:50:44+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa/unified/v1/xml/endpoints/unified/tournament_info.xsd">
-  <tournament id="sr:tournament:1030" name="Mexican League">
+  <tournament id="sr:tournament:1030" name="Mexican League" scheduled="2018-05-15T07:30:00+00:00">
     <sport id="sr:sport:3" name="Baseball"/>
     <category id="sr:category:426" name="Mexico" country_code="MEX"/>
     <current_season id="sr:season:52141" name="Mexican League 2018" start_date="2018-03-22" end_date="2018-10-14" year="2018"/>
