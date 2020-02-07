@@ -53,7 +53,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <rabbitMQ.version>3.6.0</rabbitMQ.version>
+        <rabbitMQ.version>4.8.0</rabbitMQ.version>
         <apache.httpComponents.version>4.5.1</apache.httpComponents.version>
         <slf4j.version>1.7.13</slf4j.version>
         <logback.version>1.2.3</logback.version>
