@@ -48,33 +48,14 @@ public class DataProvidersModule extends AbstractModule {
     private DataProvider<SAPIFixturesEndpoint> provideFixtureEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                                   LogHttpDataFetcher httpDataFetcher,
                                                                                   @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
-        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
-                ? "?node_id=" + cfg.getSdkNodeId()
-                : "";
-
-        String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replayFixture = httpHttps + "://" + UnifiedFeedConstants.PRODUCTION_API_HOST + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
-
-        return new DataProvider<>(
-                cfg.isReplaySession()
-                        ? replayFixture
-                        : "/sports/%s/sport_events/%s/fixture.xml",
-                cfg,
-                httpDataFetcher,
-                deserializer
-        );
+        return fixturesEndpointProvider(cfg, httpDataFetcher, deserializer, "fixture.xml");
     }
 
     @Provides @Named("FixtureChangeFixtureEndpointDataProvider")
     private DataProvider<SAPIFixturesEndpoint> provideFixtureChangeFixtureEndpointDataProvider(SDKInternalConfiguration cfg,
                                                                                                LogHttpDataFetcher httpDataFetcher,
                                                                                                @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
-        return new DataProvider<>(
-                "/sports/%s/sport_events/%s/fixture_change_fixture.xml",
-                cfg,
-                httpDataFetcher,
-                deserializer
-        );
+        return fixturesEndpointProvider(cfg, httpDataFetcher, deserializer, "fixture_change_fixture.xml");
     }
 
     @Provides
@@ -284,6 +265,25 @@ public class DataProvidersModule extends AbstractModule {
                                                                                             @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/sports/%s/sports/%s/tournaments.xml",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
+
+    //Helpers:
+
+    private static DataProvider<SAPIFixturesEndpoint> fixturesEndpointProvider(
+            SDKInternalConfiguration cfg, LogHttpDataFetcher httpDataFetcher, Deserializer deserializer, String filename) {
+        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
+                ? "?node_id=" + cfg.getSdkNodeId()
+                : "";
+
+        String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
+        String replayFixture = httpHttps + "://" + UnifiedFeedConstants.PRODUCTION_API_HOST + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
+
+        return new DataProvider<>(
+                cfg.isReplaySession() ? replayFixture : "/sports/%s/sport_events/%s/" + filename,
                 cfg,
                 httpDataFetcher,
                 deserializer
