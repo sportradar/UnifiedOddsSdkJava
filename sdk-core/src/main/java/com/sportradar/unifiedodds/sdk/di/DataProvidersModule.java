@@ -2,6 +2,7 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
@@ -269,6 +270,15 @@ public class DataProvidersModule extends AbstractModule {
                 httpDataFetcher,
                 deserializer
         );
+    }
+
+    @Provides @Singleton
+    private DataProvider<Producers> providesProducersDataProvider(
+            SDKInternalConfiguration configuration,
+            LogHttpDataFetcher logHttpDataFetcher,
+            @Named("SportsApiJaxbDeserializer")  Deserializer deserializer
+    ) {
+        return new DataProvider<>("/descriptions/producers.xml", configuration, logHttpDataFetcher, deserializer);
     }
 
     //Helpers:

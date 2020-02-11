@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class ProducerManagerImpl implements SDKProducerManager {
     private static final Logger logger = LoggerFactory.getLogger(ProducerManagerImpl.class);
     private final SDKInternalConfiguration configuration;
-    private final ProducerDataProvider producerDataProvider;
     private final Map<Integer, ProducerData> producers;
     private Set<Integer> unknownProducersWarning = new HashSet<>();
     private boolean feedOpened;
@@ -38,7 +37,6 @@ public class ProducerManagerImpl implements SDKProducerManager {
         Preconditions.checkNotNull(producerDataProvider);
 
         this.configuration = configuration;
-        this.producerDataProvider = producerDataProvider;
 
         logger.info("Fetching producer list");
         List<ProducerData> availableProducers = producerDataProvider.getAvailableProducers();

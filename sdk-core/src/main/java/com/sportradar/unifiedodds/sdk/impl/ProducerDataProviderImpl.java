@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.Producer;
 import com.sportradar.uf.sportsapi.datamodel.Producers;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
@@ -28,14 +27,13 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
 
     @Inject
     public ProducerDataProviderImpl(SDKInternalConfiguration configuration,
-                                    LogHttpDataFetcher logHttpDataFetcher,
-                                    @Named("SportsApiJaxbDeserializer")  Deserializer deserializer) {
+
+
+                                    DataProvider<Producers> dataProvider) {
         Preconditions.checkNotNull(configuration);
-        Preconditions.checkNotNull(logHttpDataFetcher);
-        Preconditions.checkNotNull(deserializer);
 
         this.config = configuration;
-        this.dataProvider = new DataProvider<>("/descriptions/producers.xml", configuration, logHttpDataFetcher, deserializer);
+        this.dataProvider = dataProvider;
     }
 
     @Override
