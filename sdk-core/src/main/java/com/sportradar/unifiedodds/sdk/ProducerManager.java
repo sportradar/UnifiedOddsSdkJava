@@ -30,7 +30,7 @@ public interface ProducerManager {
      * Returns the requested {@link Producer}
      *
      * @param id - the unique identifier of a {@link Producer}
-     * @return - if the requested producer exists, a valid {@link Producer} instance; otherwise null
+     * @return - if the requested producer exists, a valid {@link Producer} instance; otherwise unknown-producer is generated
      */
     Producer getProducer(int id);
 
