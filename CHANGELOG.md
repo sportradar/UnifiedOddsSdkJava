@@ -1,4 +1,11 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.33 (2020-02-18)**
+* added getState() to the Competitor
+* added getState() to the Venue
+* improved fetching fixtures for Replay environment
+* improved loading configuration from files
+* fix: handling sports without tournaments
+
 **2.0.32 (2020-01-14)**
 * added new Replay API endpoints
 * improved market and variant caching
