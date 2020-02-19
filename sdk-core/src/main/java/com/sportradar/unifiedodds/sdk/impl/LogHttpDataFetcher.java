@@ -29,7 +29,7 @@ public class LogHttpDataFetcher extends HttpDataFetcher {
 
     @Override
     protected HttpData send(HttpRequestBase request) throws CommunicationException {
-        String path = request.getURI().getPath();
+        String path = request.getURI().toString();
         logger.info("Fetching data from: " + path);
 
         Stopwatch timer = Stopwatch.createStarted();
