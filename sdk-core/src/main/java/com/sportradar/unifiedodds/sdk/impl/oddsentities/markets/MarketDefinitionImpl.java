@@ -119,7 +119,7 @@ class MarketDefinitionImpl implements MarketDefinition {
 
         MarketDescription completeDescriptor = null;
         try {
-            completeDescriptor = descriptorProvider.getMarketDescription(this.marketDescriptor.getId(), specifiersMap, Collections.singletonList(locale), true);
+            completeDescriptor = descriptorProvider.getMarketDescription(this.marketDescriptor.getId(), specifiersMap, Collections.singletonList(locale), false);
         } catch (CacheItemNotFoundException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw new ObjectNotFoundException("The mappings in the provided locale could not be provided", e);
