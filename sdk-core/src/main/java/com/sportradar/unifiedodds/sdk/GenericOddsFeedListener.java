@@ -117,4 +117,15 @@ interface GenericOddsFeedListener<T extends SportEvent> {
     default void onUnparsableMessage(OddsFeedSession sender, UnparsableMessage unparsableMessage) {
         // Default NO-OP implementation
     }
+
+    /**
+     * This handler is called when the SDK detects problems while {@link OddsFeedListener} process a message.
+     * The handler can choose to handle exception or just ignore it.
+     * The SDK itself will always log exception.
+     *
+     * @param sender the session
+     * @param exception A {@link Exception} instance containing unhandled exception
+     */
+    default void onUserUnhandledException(OddsFeedSession sender, Exception exception) {
+    }
 }

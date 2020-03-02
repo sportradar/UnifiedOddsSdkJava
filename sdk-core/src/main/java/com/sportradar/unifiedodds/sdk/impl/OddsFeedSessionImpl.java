@@ -204,47 +204,47 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 OddsChange<SportEvent> oc = messageFactory.buildOddsChange(se, message, body, timestamp);
-                oddsFeedListener.onOddsChange(this, oc);
+                checkUserException(() -> oddsFeedListener.onOddsChange(this, oc));
             } else if (o instanceof UFBetStop) {
                 UFBetStop message = (UFBetStop) o;
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 BetStop<SportEvent> sdkBetStop = messageFactory.buildBetStop(se, message, body, timestamp);
-                oddsFeedListener.onBetStop(this, sdkBetStop);
+                checkUserException(() -> oddsFeedListener.onBetStop(this, sdkBetStop));
             } else if (o instanceof UFBetSettlement) {
                 UFBetSettlement message = (UFBetSettlement) o;
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 BetSettlement<SportEvent> bs = messageFactory.buildBetSettlement(se, message, body, timestamp);
                 logger.trace("Bet Settlement");
-                oddsFeedListener.onBetSettlement(this, bs);
+                checkUserException(() -> oddsFeedListener.onBetSettlement(this, bs));
             } else if (o instanceof UFRollbackBetSettlement) {
                 UFRollbackBetSettlement message = (UFRollbackBetSettlement) o;
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 RollbackBetSettlement<SportEvent> rbs = messageFactory.buildRollbackBetSettlement(se, message, body, timestamp);
-                oddsFeedListener.onRollbackBetSettlement(this, rbs);
+                checkUserException(() -> oddsFeedListener.onRollbackBetSettlement(this, rbs));
             } else if (o instanceof UFBetCancel) {
                 UFBetCancel message = (UFBetCancel) o;
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 BetCancel<SportEvent> cb = messageFactory.buildBetCancel(se, message, body, timestamp);
                 logger.trace("Bet Cancel");
-                oddsFeedListener.onBetCancel(this, cb);
+                checkUserException(() -> oddsFeedListener.onBetCancel(this, cb));
             } else if (o instanceof UFFixtureChange) {
                 UFFixtureChange message = (UFFixtureChange) o;
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 FixtureChange<SportEvent> fc = messageFactory.buildFixtureChange(se, message, body, timestamp);
                 logger.trace("Fixture Change");
-                oddsFeedListener.onFixtureChange(this, fc);
+                checkUserException(() -> oddsFeedListener.onFixtureChange(this, fc));
             } else if (o instanceof UFRollbackBetCancel) {
                 UFRollbackBetCancel message = (UFRollbackBetCancel) o;
                 timestamp = new MessageTimestampImpl(message.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
                 RollbackBetCancel<SportEvent> rbc = messageFactory.buildRollbackBetCancel(se, message, body, timestamp);
                 logger.trace("Rollback Bet Cancel");
-                oddsFeedListener.onRollbackBetCancel(this, rbc);
+                checkUserException(() -> oddsFeedListener.onRollbackBetCancel(this, rbc));
             } else if (o instanceof UFSnapshotComplete) {
                 UFSnapshotComplete sc = (UFSnapshotComplete) o;
                 timestamp = new MessageTimestampImpl(sc.getTimestamp(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
@@ -324,6 +324,15 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
             oddsFeedListener.onUnparsableMessage(this, messageFactory.buildUnparsableMessage(event, producerId, body, timestamp));
         } catch (Exception re) {
             logger.warn("Problems dispatching onUnparseableMessage(), message body: \n" + new String(body), re);
+        }
+    }
+
+    private void dispatchUserUnhandledException(Exception exception) {
+        try {
+            logger.warn("User unhandled exception detected", exception);
+            oddsFeedListener.onUserUnhandledException(this, exception);
+        } catch (Exception ex) {
+            logger.warn("Problems dispatching onUserUnhandledException()", ex);
         }
     }
 
@@ -499,6 +508,14 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         }
 
         return timestamp;
+    }
+
+    private void checkUserException(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Exception ex) {
+            dispatchUserUnhandledException(ex);
+        }
     }
 
     @Override
