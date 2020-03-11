@@ -301,7 +301,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.competitorIds = exportable.getCompetitorIds() != null ? ImmutableList.copyOf(exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())) : null;
         this.venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
         this.conditions = exportable.getConditions() != null ? new SportEventConditionsCI(exportable.getConditions()) : null;
-        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? ImmutableMap.copyOf(exportable.getCompetitorsReferences().entrySet().stream()
+        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? new HashMap<>(exportable.getCompetitorsReferences().entrySet().stream()
                 .collect(Collectors.toMap(e -> URN.parse(e.getKey()), e -> new ReferenceIdCI(e.getValue())))) : null;
         this.defaultLocale = exportable.getDefaultLocale();
         this.fixture = exportable.getFixture() != null ? new FixtureImpl(exportable.getFixture()) : null;
