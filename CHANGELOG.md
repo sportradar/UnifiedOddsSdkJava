@@ -1,4 +1,10 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.34 (2020-03-16)**
+* fix: fetching outcome mappings
+* fix: loading sport events after cache import
+* improved HTTP request logging
+* improved handling user exceptions inside listener callbacks
+
 **2.0.33 (2020-02-18)**
 * added getState() to the Competitor
 * added getState() to the Venue
