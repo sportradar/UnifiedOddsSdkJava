@@ -15,53 +15,8 @@ import com.google.inject.name.Names;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.BookingManager;
-import com.sportradar.unifiedodds.sdk.BookingManagerImpl;
-import com.sportradar.unifiedodds.sdk.CashOutProbabilitiesManager;
-import com.sportradar.unifiedodds.sdk.CustomBetManager;
-import com.sportradar.unifiedodds.sdk.CustomBetManagerImpl;
-import com.sportradar.unifiedodds.sdk.EventRecoveryRequestIssuer;
-import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
-import com.sportradar.unifiedodds.sdk.RecoveryManager;
-import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKEventRecoveryStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.SDKProducerStatusListener;
-import com.sportradar.unifiedodds.sdk.SportsInfoManager;
-import com.sportradar.unifiedodds.sdk.impl.AMQPConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.CashOutProbabilitiesManagerImpl;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.impl.DeserializerImpl;
-import com.sportradar.unifiedodds.sdk.impl.FeedMessageFactory;
-import com.sportradar.unifiedodds.sdk.impl.FeedMessageValidator;
-import com.sportradar.unifiedodds.sdk.impl.FeedMessageValidatorImpl;
-import com.sportradar.unifiedodds.sdk.impl.IncrementalSequenceGenerator;
-import com.sportradar.unifiedodds.sdk.impl.MappingTypeProvider;
-import com.sportradar.unifiedodds.sdk.impl.MappingTypeProviderImpl;
-import com.sportradar.unifiedodds.sdk.impl.MessageReceiver;
-import com.sportradar.unifiedodds.sdk.impl.OddsFeedSessionImpl;
-import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderImpl;
-import com.sportradar.unifiedodds.sdk.impl.ProducerManagerImpl;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqChannel;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqChannelImpl;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqMessageReceiver;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
-import com.sportradar.unifiedodds.sdk.impl.RecoveryManagerImpl;
-import com.sportradar.unifiedodds.sdk.impl.RegexRoutingKeyParser;
-import com.sportradar.unifiedodds.sdk.impl.RoutingKeyParser;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskSchedulerImpl;
-import com.sportradar.unifiedodds.sdk.impl.SequenceGenerator;
-import com.sportradar.unifiedodds.sdk.impl.SingleInstanceAMQPConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
-import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactoryImpl;
-import com.sportradar.unifiedodds.sdk.impl.SportsInfoManagerImpl;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedOddsStatistics;
+import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
@@ -75,12 +30,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
+import javax.management.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -92,12 +42,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -332,6 +277,7 @@ public class GeneralModule implements Module {
                 .setSocketTimeout(maxTimeout);
 
         return HttpClientBuilder.create()
+                .useSystemProperties()
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .setDefaultRequestConfig(requestBuilder.build())
                 .setMaxConnPerRoute(15)

@@ -6,11 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Strings;
 import com.google.inject.name.Named;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
+import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
@@ -27,11 +23,7 @@ import org.slf4j.MDC;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -220,8 +212,10 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
             boolean fwProblem = e.getMessage().toLowerCase().contains("permission denied");
             if (!fwProblem)
                 return;
-            CloseableHttpClient httpClient =
-                        HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
+            CloseableHttpClient httpClient = HttpClientBuilder.create()
+                    .useSystemProperties()
+                    .setRedirectStrategy(new LaxRedirectStrategy())
+                    .build();
             try {
                 HttpGet httpGet = new HttpGet("http://ipecho.net/plain");
                 ResponseHandler<String> handler = resp -> {
