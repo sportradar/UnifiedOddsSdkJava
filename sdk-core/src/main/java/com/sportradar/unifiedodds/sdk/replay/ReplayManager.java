@@ -172,7 +172,7 @@ public class ReplayManager {
         boolean status = false;
         try {
             HttpHelper.ResponseData responseData = httpHelper.put(String.format("https://%s/v1/replay/events/%s?%s%s",
-                    UnifiedFeedConstants.PRODUCTION_API_HOST,
+                    UnifiedFeedConstants.REPLAY_API_HOST,
                     id,
                     startTime == null ? "" : "start_time=" + startTime,
                     buildNodeIdQuery("&")));
@@ -204,7 +204,7 @@ public class ReplayManager {
         boolean status = false;
         try {
             HttpHelper.ResponseData responseData = httpHelper.delete(String.format("https://%s/v1/replay/events/%s%s",
-                    UnifiedFeedConstants.PRODUCTION_API_HOST,
+                    UnifiedFeedConstants.REPLAY_API_HOST,
                     id,
                     buildNodeIdQuery("?")));
             status = responseData.isSuccessful();
@@ -231,7 +231,7 @@ public class ReplayManager {
      */
     public boolean play() {
         boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play%s",
-                UnifiedFeedConstants.PRODUCTION_API_HOST,
+                UnifiedFeedConstants.REPLAY_API_HOST,
                 buildNodeIdQuery("?")));
 
         clientInteractionLog.info("ReplayManager.play() -> response status: {}", responseStatusString(responseStatus));
@@ -310,7 +310,7 @@ public class ReplayManager {
                 .collect(Collectors.toList());
 
         boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play?%s",
-                UnifiedFeedConstants.PRODUCTION_API_HOST,
+                UnifiedFeedConstants.REPLAY_API_HOST,
                 URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
 
         clientInteractionLog.info("ReplayManager.play({},{},{},{}) -> response status: {}", speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, responseStatusString(responseStatus));
@@ -324,7 +324,7 @@ public class ReplayManager {
      */
     public boolean stop() {
         boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/stop%s",
-                UnifiedFeedConstants.PRODUCTION_API_HOST,
+                UnifiedFeedConstants.REPLAY_API_HOST,
                 buildNodeIdQuery("?")));
 
         clientInteractionLog.info("ReplayManager.stop() -> response status: {}", responseStatusString(responseStatus));
@@ -405,7 +405,7 @@ public class ReplayManager {
      */
     public boolean playScenario(int id) {
         boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d%s",
-                UnifiedFeedConstants.PRODUCTION_API_HOST,
+                UnifiedFeedConstants.REPLAY_API_HOST,
                 id,
                 buildNodeIdQuery("?")));
 
@@ -452,7 +452,7 @@ public class ReplayManager {
                 .collect(Collectors.toList());
 
         boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d?%s",
-                UnifiedFeedConstants.PRODUCTION_API_HOST,
+                UnifiedFeedConstants.REPLAY_API_HOST,
                 id,
                 URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
 
@@ -461,7 +461,7 @@ public class ReplayManager {
     }
 
     private boolean internalClear() {
-        return tryPerformRequest(String.format("https://%s/v1/replay/reset%s", UnifiedFeedConstants.PRODUCTION_API_HOST, buildNodeIdQuery("?")));
+        return tryPerformRequest(String.format("https://%s/v1/replay/reset%s", UnifiedFeedConstants.REPLAY_API_HOST, buildNodeIdQuery("?")));
     }
 
     private boolean tryPerformRequest(String path) {
