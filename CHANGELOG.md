@@ -1,4 +1,7 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.35.1 (2020-03-25)**
+* changed Replay API URL
+
 **2.0.35 (2020-03-23)**
 * added support for HTTP(S) proxies
 
