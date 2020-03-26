@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableFixtureCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableScheduledStartTimeChangeCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.utils.SdkHelper;
@@ -360,7 +359,7 @@ FixtureImpl implements Fixture {
                 references != null ? new HashMap<>(references.getReferences()) : null,
                 startTimeTbd,
                 replacedBy != null ? replacedBy.toString() : null,
-                scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ExportableScheduledStartTimeChangeCI) s).export()).collect(Collectors.toList()) : null
+                scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ScheduledStartTimeChangeImpl) s).export()).collect(Collectors.toList()) : null
         );
     }
 }

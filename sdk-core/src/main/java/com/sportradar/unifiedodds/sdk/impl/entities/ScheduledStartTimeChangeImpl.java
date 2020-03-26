@@ -78,4 +78,13 @@ public class ScheduledStartTimeChangeImpl implements ScheduledStartTimeChange {
     public Date getChangedAt() {
         return changedAt;
     }
+
+    public ExportableScheduledStartTimeChangeCI export() {
+        return new ExportableScheduledStartTimeChangeCI(
+                oldTime,
+                newTime,
+                changedAt
+        );
+    }
+
 }
