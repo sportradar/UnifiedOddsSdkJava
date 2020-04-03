@@ -80,7 +80,8 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
     @Override
     public ReplayConfigurationBuilder selectReplay() {
         String messagingHost = UnifiedFeedConstants.REPLAY_MESSAGING_HOST;
-        String apiHost = UnifiedFeedConstants.REPLAY_API_HOST;
+        // It will be overwritten by the WhoAmIReader to INTEGRATION if needed (depending on the token)
+        String apiHost = UnifiedFeedConstants.PRODUCTION_API_HOST;
         int messagingPort = 5671;
 
         return new ReplayConfigurationBuilderImpl(accessToken,

@@ -131,7 +131,7 @@ public class EnvironmentSelectorTests {
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
         Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.REPLAY_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.REPLAY_API_HOST);
+        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.PRODUCTION_API_HOST);
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
