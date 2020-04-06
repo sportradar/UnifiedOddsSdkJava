@@ -27,6 +27,8 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
@@ -153,8 +155,11 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         }
 
         Map<String, Object> props = rabbitConnectionFactory.getClientProperties();
-        props.put("SrSdkType", "java");
-        props.put("SrSdkVersion", version2);
+        props.put("SrUfSdkType", "java");
+        props.put("SrUfSdkVersion", version2);
+        props.put("SrUfSdkInit", new SimpleDateFormat("yyyyMMddHHmm").format(new Date()));
+        props.put("SrUfSdkConnName", "RabbitMQ / Java");
+        props.put("SrUfSdkBId", String.valueOf(whoAmIReader.getBookmakerId()));
         rabbitConnectionFactory.setClientProperties(props);
 
         if (config.getMessagingUsername() != null) {

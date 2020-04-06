@@ -161,8 +161,7 @@ public class GeneralModule implements Module {
 
     private String loadVersion() {
         try {
-            InputStream is =
-                        SingleInstanceAMQPConnectionFactory.class.getResourceAsStream("/sr-sdk-version.properties");
+            InputStream is = SingleInstanceAMQPConnectionFactory.class.getResourceAsStream("/sr-sdk-version.properties");
             Properties props = new Properties();
             props.load(is);
             is.close();
