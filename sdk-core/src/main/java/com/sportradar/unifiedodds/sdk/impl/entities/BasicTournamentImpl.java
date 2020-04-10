@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
@@ -13,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -295,6 +297,35 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
         }
 
         return null;
+    }
+
+    /**
+     * Returns a {@link List} of events that belong to the associated tournament
+     *
+     * @return - a {@link List} of events that belong to the associated tournament
+     */
+    @Override
+    public List<Competition> getSchedule() {
+        List<URN> eventIds = Lists.newArrayList();
+        try {
+            for (Locale l : locales) {
+                eventIds = sportEventCache.getEventIds(id, l);
+            }
+        } catch (IllegalCacheStateException e) {
+            handleException("getSchedule failure", e);
+            return null;
+        }
+
+        if (eventIds == null || eventIds.size() == 0) {
+            return null;
+        }
+
+        try {
+            return sportEntityFactory.buildSportEvents(eventIds, locales);
+        } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
+            handleException(e.getMessage(), e);
+            return null;
+        }
     }
 
     /**
