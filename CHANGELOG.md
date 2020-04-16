@@ -1,4 +1,10 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.36 (2020-04-16)**
+* added getSchedule method to BasicTournament interface
+* added bookmakerId to the ClientProperties
+* fix: new Replay API endpoint supports both production and integration tokens
+* fix: exporting Fixture cache items
+
 **2.0.35.1 (2020-03-25)**
 * changed Replay API URL
 
