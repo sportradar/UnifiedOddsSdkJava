@@ -101,7 +101,7 @@ public class HttpHelper {
 
             // return response object
             responseData = new ResponseData(statusCode,
-                    responseContent == null ? null : new ByteArrayInputStream(responseContent.getBytes()),
+                    responseContent == null ? null : new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8)),
                     apiDeserializer);
         } catch (IOException e) {
             trafficLogger.info("Request[{}]: {}, FAILED({}), ex:", type, path, timer.stop(), e);

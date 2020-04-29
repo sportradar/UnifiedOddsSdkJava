@@ -39,7 +39,7 @@ public class DeserializerImpl implements Deserializer {
         try {
             StringWriter writer = new StringWriter();
             marshaller.marshal(inObj, writer);
-            return  writer.toString();
+            return writer.toString();
         } catch (JAXBException e) {
             throw new DeserializationException("There was a problem marshaling the provided data", e);
         }

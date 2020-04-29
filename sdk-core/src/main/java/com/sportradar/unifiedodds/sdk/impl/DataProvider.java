@@ -17,6 +17,7 @@ import org.apache.http.entity.StringEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /**
@@ -134,9 +135,8 @@ public class DataProvider<TOut> {
 
     @SuppressWarnings("unchecked")
     private TOut deserializeData(HttpData fetchedContent) throws DataProviderException {
-        InputStream inputStream = new ByteArrayInputStream(fetchedContent.getResponse().getBytes());
-
         try {
+            InputStream inputStream = new ByteArrayInputStream(fetchedContent.getResponse().getBytes(StandardCharsets.UTF_8));
             return (TOut) deserializer.deserialize(inputStream);
         } catch (DeserializationException e) {
             throw new DataProviderException("Data deserialization failed", e);
