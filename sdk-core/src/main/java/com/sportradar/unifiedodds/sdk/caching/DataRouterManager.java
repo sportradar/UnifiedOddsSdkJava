@@ -8,6 +8,7 @@ import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
+import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.utils.URN;
 
@@ -57,6 +58,8 @@ public interface DataRouterManager {
     Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException;
 
     List<FixtureChange> requestFixtureChanges(Locale locale) throws CommunicationException;
+
+    List<ResultChange> requestResultChanges(Locale locale) throws CommunicationException;
 
     List<URN> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException;
 

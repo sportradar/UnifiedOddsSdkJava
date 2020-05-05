@@ -575,6 +575,30 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     }
 
     /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     */
+    @Override
+    public List<ResultChange> getResultChanges() {
+        return getResultChanges(defaultLocale);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param locale - the {@link Locale} in which to provide the data
+     */
+    @Override
+    public List<ResultChange> getResultChanges(Locale locale) {
+        Preconditions.checkNotNull(locale);
+
+        try {
+            return dataRouterManager.requestResultChanges(locale);
+        } catch (CommunicationException e) {
+            return handleException("getResultChanges", e);
+        }
+    }
+
+    /**
      * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
      * @param startIndex starting index (zero based)
      * @param limit how many records to return (max: 1000)

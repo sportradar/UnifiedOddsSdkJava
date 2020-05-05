@@ -255,6 +255,22 @@ public interface SportsInfoManager {
     }
 
     /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     */
+    default List<ResultChange> getResultChanges() {
+        return null;
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param locale - the {@link Locale} in which to provide the data
+     */
+    default List<ResultChange> getResultChanges(Locale locale) {
+        return null;
+    }
+
+    /**
      * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
      *
      * @param startIndex starting index (zero based)

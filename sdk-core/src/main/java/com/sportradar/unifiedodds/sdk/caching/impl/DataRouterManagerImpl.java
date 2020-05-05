@@ -20,6 +20,7 @@ import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
+import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -30,6 +31,7 @@ import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
+import com.sportradar.unifiedodds.sdk.impl.entities.ResultChangeImpl;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +194,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider;
 
     /**
+     * A {@link DataProvider} used to fetch result changes
+     */
+    private final DataProvider<SAPIResultChangesEndpoint> resultChangesDataProvider;
+
+    /**
      * A {@link DataProvider} instance which is used to get list of sport events
      */
     private final DataProvider<SAPIScheduleEndpoint> listSportEventsProvider;
@@ -235,6 +242,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
                           DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider,
                           DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider,
+                          DataProvider<SAPIResultChangesEndpoint> resultChangesDataProvider,
                           @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider,
                           DataProvider<SAPISportTournamentsEndpoint> availableSportTournaments) {
         Preconditions.checkNotNull(configuration);
@@ -261,6 +269,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
         Preconditions.checkNotNull(calculateProbabilityDataProvider);
         Preconditions.checkNotNull(fixtureChangesDataProvider);
+        Preconditions.checkNotNull(resultChangesDataProvider);
         Preconditions.checkNotNull(listSportEventsProvider);
         Preconditions.checkNotNull(availableSportTournaments);
 
@@ -288,6 +297,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
         this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
         this.fixtureChangesDataProvider = fixtureChangesDataProvider;
+        this.resultChangesDataProvider = resultChangesDataProvider;
         this.listSportEventsProvider = listSportEventsProvider;
         this.availableSportTournaments = availableSportTournaments;
 
@@ -738,6 +748,20 @@ public class DataRouterManagerImpl implements DataRouterManager {
                     .collect(Collectors.toList());
         } catch (DataProviderException e) {
             throw new CommunicationException("Error executing fixture changes request", e);
+        }
+    }
+
+    @Override
+    public List<ResultChange> requestResultChanges(Locale locale) throws CommunicationException {
+        Preconditions.checkNotNull(locale);
+        try {
+            return resultChangesDataProvider.getData(locale)
+                    .getResultChange()
+                    .stream()
+                    .map(ResultChangeImpl::new)
+                    .collect(Collectors.toList());
+        } catch (DataProviderException e) {
+            throw new CommunicationException("Error executing result changes request", e);
         }
     }
 
