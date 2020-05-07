@@ -274,7 +274,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(availableSportTournaments);
 
         this.prefetchLocales = configuration.getDesiredLocales();
-        this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7);
+        this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7 && p.isEnabled());
 
         this.dataRouter = dataRouter;
         this.summaryEndpointProvider = summaryEndpointProvider;
