@@ -1,4 +1,9 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.37 (2020-05-11)**
+* added support for result changes endpoint
+* fix: responses are encoded/decoded using UTF-8
+* fix: lotteries endpoint isn't invoked if WNS is disabled
+
 **2.0.36 (2020-04-16)**
 * added getSchedule method to BasicTournament interface
 * added bookmakerId to the ClientProperties
