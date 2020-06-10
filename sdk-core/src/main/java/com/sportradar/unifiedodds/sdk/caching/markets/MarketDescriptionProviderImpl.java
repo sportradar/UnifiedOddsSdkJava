@@ -68,7 +68,10 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
             return marketDescriptor;
         }
 
-        if (fetchVariantDescriptions || (!marketDescriptor.getMappings().isEmpty() && marketDescriptor.getMappings().get(0).getOutcomeMappings() == null)) {
+        boolean outcomeMappingsMissing = Optional.of(marketDescriptor.getMappings())
+                .map(m -> !m.isEmpty() && m.get(0).getOutcomeMappings() == null)
+                .orElse(false);
+        if (fetchVariantDescriptions || outcomeMappingsMissing) {
             // case 2: defined/known dynamic market => (pre:outcometext market) || (market is player props)
             if (isMarketOutcomeText(marketDescriptor) || isMarketPlayerProps(marketDescriptor)) {
                 return provideDynamicVariantEndpointMarket(marketId, locales, marketDescriptor, variantValue);
