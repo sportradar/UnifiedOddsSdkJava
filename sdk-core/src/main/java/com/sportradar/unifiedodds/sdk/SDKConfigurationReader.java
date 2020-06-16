@@ -151,6 +151,19 @@ public abstract class SDKConfigurationReader {
                 });
     }
 
+    public Optional<Integer> readRecoveryHttpClientTimeout() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.recoveryHttpClientTimeout"))
+                .map(value -> {
+                    int timeout = Integer.parseInt(value);
+
+                    if (timeout < 0) {
+                        throw new IllegalArgumentException("The provided uf.sdk.recoveryHttpClientTimeout is not a valid timeout value, value: " + value);
+                    }
+
+                    return timeout;
+                });
+    }
+
     public Optional<Boolean> readSimpleVariantCaching() {
         return Optional.ofNullable(sdkProperties.get("uf.sdk.simpleVariantCaching"))
                 .map(value -> value.equals("true"));

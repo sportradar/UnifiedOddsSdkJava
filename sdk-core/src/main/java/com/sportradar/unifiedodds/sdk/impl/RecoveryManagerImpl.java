@@ -62,7 +62,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                         SnapshotRequestManager snapshotRequestManager,
                         SDKTaskScheduler taskScheduler,
                         @Named("DedicatedRecoveryManagerExecutor") ScheduledExecutorService executorServices,
-                        HttpHelper httpHelper,
+                        @Named("RecoveryHttpHelper") HttpHelper httpHelper,
                         FeedMessageFactory messageFactory,
                         WhoAmIReader whoAmIReader,
                         SequenceGenerator sequenceGenerator,

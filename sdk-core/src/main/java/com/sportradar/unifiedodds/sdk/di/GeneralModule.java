@@ -17,6 +17,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.impl.*;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
@@ -281,6 +282,33 @@ public class GeneralModule implements Module {
                 .setDefaultRequestConfig(requestBuilder.build())
                 .setMaxConnPerRoute(15)
                 .build();
+    }
+
+    /**
+     * Provides the http client used to fetch data from the API
+     */
+    @Provides @Singleton @Named("RecoveryHttpClient")
+    private CloseableHttpClient provideRecoveryHttpClient(){
+        int maxTimeout = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getRecoveryHttpClientTimeout(), TimeUnit.SECONDS));
+        RequestConfig.Builder requestBuilder = RequestConfig.custom()
+                .setConnectTimeout(maxTimeout)
+                .setConnectionRequestTimeout(maxTimeout)
+                .setSocketTimeout(maxTimeout);
+
+        return HttpClientBuilder.create()
+                .useSystemProperties()
+                .setRedirectStrategy(new LaxRedirectStrategy())
+                .setDefaultRequestConfig(requestBuilder.build())
+                .setMaxConnPerRoute(15)
+                .build();
+    }
+
+    /**
+     * Provides the http client used to fetch data from the API
+     */
+    @Provides @Named("RecoveryHttpHelper")
+    private HttpHelper provideRecoveryHttpHelper(SDKInternalConfiguration config, @Named("RecoveryHttpClient") CloseableHttpClient httpClient, @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
+        return new HttpHelper(config, httpClient, apiDeserializer);
     }
 
     /**

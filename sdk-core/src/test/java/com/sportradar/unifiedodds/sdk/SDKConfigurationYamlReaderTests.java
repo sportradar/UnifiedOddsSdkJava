@@ -49,6 +49,7 @@ public class SDKConfigurationYamlReaderTests {
         assertEquals(ExceptionHandlingStrategy.Throw, reader.readExceptionHandlingStrategy().get());
         assertTrue(reader.readCleanTrafficLogEntries().get());
         assertEquals(10, (int) reader.readHttpClientTimeout().get());
+        assertEquals(20, (int) reader.readRecoveryHttpClientTimeout().get());
         assertTrue(reader.readSimpleVariantCaching().get());
         assertTrue(reader.readSchedulerTasksToSkip().containsAll(getExpectedTasksToSkip()));
     }

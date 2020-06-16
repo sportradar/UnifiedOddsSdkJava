@@ -31,6 +31,7 @@ public class SDKInternalConfiguration {
     private final Integer sdkNodeId;
     private final boolean cleanTrafficLogEntries;
     private final int httpClientTimeout;
+    private final int recoveryHttpClientTimeout;
     private final List<Integer> disabledProducers;
     private final boolean simpleVariantCaching;
     private final Set<String> schedulerTasksToSkip;
@@ -78,6 +79,9 @@ public class SDKInternalConfiguration {
         httpClientTimeout = sdkConfigurationPropertiesReader.readHttpClientTimeout()
                 .orElse(sdkConfigurationYamlReader.readHttpClientTimeout()
                         .orElse(30));
+        recoveryHttpClientTimeout = sdkConfigurationPropertiesReader.readRecoveryHttpClientTimeout()
+                .orElse(sdkConfigurationYamlReader.readRecoveryHttpClientTimeout()
+                        .orElse(httpClientTimeout));
         simpleVariantCaching = sdkConfigurationPropertiesReader.readSimpleVariantCaching()
                 .orElse(sdkConfigurationYamlReader.readSimpleVariantCaching()
                         .orElse(false));
@@ -251,6 +255,15 @@ public class SDKInternalConfiguration {
     }
 
     /**
+     * Indicates the timeout which should be used on HTTP requests for recovery endpoints(seconds)
+     *
+     * @return the timeout which should be used when performing HTTP requests for recovery endpoints(seconds)
+     */
+    public int getRecoveryHttpClientTimeout() {
+        return recoveryHttpClientTimeout;
+    }
+
+    /**
      * Returns a list of producer identifiers which should be disabled automatically when the SDK starts up
      *
      * @return a list of producer identifiers which should be disabled automatically when the sdk starts up
@@ -311,6 +324,7 @@ public class SDKInternalConfiguration {
                 .add("sdkNodeId=" + sdkNodeId)
                 .add("cleanTrafficLogEntries=" + cleanTrafficLogEntries)
                 .add("httpClientTimeout=" + httpClientTimeout)
+                .add("recoveryHttpClientTimeout=" + recoveryHttpClientTimeout)
                 .add("disabledProducers=" + disabledProducers)
                 .add("simpleVariantCaching=" + simpleVariantCaching)
                 .add("schedulerTasksToSkip=" + schedulerTasksToSkip)

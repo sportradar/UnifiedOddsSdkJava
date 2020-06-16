@@ -28,6 +28,7 @@ sportradar:
       exceptionHandlingStrategy: throw
       cleanTrafficLogEntries: true
       httpClientTimeout: 10
+      recoveryHttpClientTimeout: 20
       simpleVariantCaching: true
       schedulerTasksToSkip:
         - task1
