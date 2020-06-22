@@ -24,7 +24,7 @@ public class SDKConfigurationYamlReaderTests {
         SDKConfigurationYamlReader sdkConfigurationYamlReader = new SDKConfigurationYamlReader();
         Map<String, String> stringStringMap = sdkConfigurationYamlReader.readConfiguration();
 
-        assertEquals(20, stringStringMap.size());
+        assertEquals(21, stringStringMap.size());
     }
 
     @Test
