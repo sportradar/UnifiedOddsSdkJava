@@ -68,7 +68,7 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
             return marketDescriptor;
         }
 
-        boolean outcomeMappingsMissing = Optional.of(marketDescriptor.getMappings())
+        boolean outcomeMappingsMissing = Optional.ofNullable(marketDescriptor.getMappings())
                 .map(m -> !m.isEmpty() && m.get(0).getOutcomeMappings() == null)
                 .orElse(false);
         if (fetchVariantDescriptions || outcomeMappingsMissing) {
