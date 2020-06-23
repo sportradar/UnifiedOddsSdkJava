@@ -555,7 +555,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<FixtureChange> getFixtureChanges() {
-        return getFixtureChanges(defaultLocale);
+        return getFixtureChanges(null, null, defaultLocale);
     }
 
     /**
@@ -565,10 +565,33 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<FixtureChange> getFixtureChanges(Locale locale) {
+        return getFixtureChanges(null, null, locale);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after   specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     */
+    @Override
+    public List<FixtureChange> getFixtureChanges(Date after, URN sportId) {
+        return getFixtureChanges(after, sportId, defaultLocale);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after   specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     * @param locale  - the {@link Locale} in which to provide the data
+     */
+    @Override
+    public List<FixtureChange> getFixtureChanges(Date after, URN sportId, Locale locale) {
         Preconditions.checkNotNull(locale);
 
         try {
-            return dataRouterManager.requestFixtureChanges(locale);
+            return dataRouterManager.requestFixtureChanges(after, sportId, locale);
         } catch (CommunicationException e) {
             return handleException("getFixtureChanges", e);
         }
@@ -579,7 +602,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<ResultChange> getResultChanges() {
-        return getResultChanges(defaultLocale);
+        return getResultChanges(null, null, defaultLocale);
     }
 
     /**
@@ -589,10 +612,33 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<ResultChange> getResultChanges(Locale locale) {
+        return getResultChanges(null, null, locale);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after   specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     */
+    @Override
+    public List<ResultChange> getResultChanges(Date after, URN sportId) {
+        return getResultChanges(after, sportId, defaultLocale);
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after   specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     * @param locale  - the {@link Locale} in which to provide the data
+     */
+    @Override
+    public List<ResultChange> getResultChanges(Date after, URN sportId, Locale locale) {
         Preconditions.checkNotNull(locale);
 
         try {
-            return dataRouterManager.requestResultChanges(locale);
+            return dataRouterManager.requestResultChanges(after, sportId, locale);
         } catch (CommunicationException e) {
             return handleException("getResultChanges", e);
         }

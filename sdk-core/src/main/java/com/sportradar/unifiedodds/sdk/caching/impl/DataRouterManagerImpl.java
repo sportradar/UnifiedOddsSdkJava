@@ -33,11 +33,18 @@ import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.ResultChangeImpl;
 import com.sportradar.utils.URN;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -738,10 +745,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<FixtureChange> requestFixtureChanges(Locale locale) throws CommunicationException {
+    public List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         try {
-            return fixtureChangesDataProvider.getData(locale)
+            String query = getChangesQueryString(after, sportId);
+            return fixtureChangesDataProvider.getData(locale, query)
                     .getFixtureChange()
                     .stream()
                     .map(FixtureChangeImpl::new)
@@ -752,10 +760,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<ResultChange> requestResultChanges(Locale locale) throws CommunicationException {
+    public List<ResultChange> requestResultChanges(Date after, URN sportId, Locale locale) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         try {
-            return resultChangesDataProvider.getData(locale)
+            String query = getChangesQueryString(after, sportId);
+            return resultChangesDataProvider.getData(locale, query)
                     .getResultChange()
                     .stream()
                     .map(ResultChangeImpl::new)
@@ -806,6 +815,21 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    private String getChangesQueryString(Date after, URN sportId) {
+        ArrayList<NameValuePair> params = new ArrayList<>();
+        if (after != null) {
+            params.add(new BasicNameValuePair("afterDateTime", DateTimeFormatter.ISO_ZONED_DATE_TIME.format(ZonedDateTime.ofInstant(after.toInstant(), ZoneId.systemDefault()))));
+        }
+        if (sportId != null) {
+            params.add(new BasicNameValuePair("sportId", sportId.toString()));
+        }
+        String query = URLEncodedUtils.format(params, StandardCharsets.UTF_8);
+        if (!query.isEmpty()) {
+            query = "?" + query;
+        }
+        return query;
     }
 
     private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {

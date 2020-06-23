@@ -64,7 +64,7 @@ public class DataProvidersModule extends AbstractModule {
                                                                                                      LogHttpDataFetcher httpDataFetcher,
                                                                                                      @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
-                "/sports/%s/fixtures/changes.xml",
+                "/sports/%s/fixtures/changes.xml%s",
                 cfg,
                 httpDataFetcher,
                 deserializer
@@ -76,7 +76,7 @@ public class DataProvidersModule extends AbstractModule {
                                                                                                      LogHttpDataFetcher httpDataFetcher,
                                                                                                      @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
-                "/sports/%s/results/changes.xml",
+                "/sports/%s/results/changes.xml%s",
                 cfg,
                 httpDataFetcher,
                 deserializer

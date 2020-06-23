@@ -256,6 +256,27 @@ public interface SportsInfoManager {
 
     /**
      * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     */
+    default List<FixtureChange> getFixtureChanges(Date after, URN sportId) {
+        return null;
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     * @param locale - the {@link Locale} in which to provide the data
+     */
+    default List<FixtureChange> getFixtureChanges(Date after, URN sportId, Locale locale) {
+        return null;
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
      */
     default List<ResultChange> getResultChanges() {
         return null;
@@ -267,6 +288,27 @@ public interface SportsInfoManager {
      * @param locale - the {@link Locale} in which to provide the data
      */
     default List<ResultChange> getResultChanges(Locale locale) {
+        return null;
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     */
+    default List<ResultChange> getResultChanges(Date after, URN sportId) {
+        return null;
+    }
+
+    /**
+     * Returns the list of all fixtures that have changed in the last 24 hours
+     *
+     * @param after specifies the starting date and time for filtering
+     * @param sportId specifies the sport for which the fixtures should be returned
+     * @param locale - the {@link Locale} in which to provide the data
+     */
+    default List<ResultChange> getResultChanges(Date after, URN sportId, Locale locale) {
         return null;
     }
 
