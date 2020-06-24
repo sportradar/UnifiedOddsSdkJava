@@ -10,19 +10,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.DataRouter;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
-import com.sportradar.unifiedodds.sdk.caching.SportsDataCache;
+import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.cfg.ConfigurationAccessTokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfigurationBuilderImpl;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
-import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
+import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
@@ -42,13 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -369,6 +353,13 @@ public class OddsFeed {
                         producerManager.disableProducer(id);
                     }
                 });
+
+                if (producerManager.getActiveProducers().isEmpty()) {
+                    String interests = createdSessionData.stream()
+                            .map(sessionData -> sessionData.messageInterest.toString())
+                            .collect(Collectors.joining(", "));
+                    throw new IllegalStateException(String.format("Message interests [%s] cannot be used. There are no suitable active producers.", interests));
+                }
 
                 Map<Integer, List<String>> sessionRoutingKeys =
                         OddsFeedRoutingKeyBuilder.generateKeys(createdSessionData.stream()
