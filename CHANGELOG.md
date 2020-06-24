@@ -1,4 +1,11 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.38 (2020-06-24)**
+* added overloaded methods for fixture and result changes with filters
+* added separate HTTP request timeout value for recovery endpoints
+* updated supported languages
+* improved reporting of invalid message interest combinations
+* fix: NPE when obtaining market descriptions
+
 **2.0.37 (2020-05-11)**
 * added support for result changes endpoint
 * fix: responses are encoded/decoded using UTF-8
