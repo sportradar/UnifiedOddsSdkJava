@@ -402,11 +402,19 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                     flagProducerUp(pi, ProducerUpReason.ProcessingQueDelayStabilized);
                 }
             } else if (pi.getRecoveryState() == RecoveryState.NotStarted || pi.getRecoveryState() == RecoveryState.Error || pi.getRecoveryState() == RecoveryState.Interrupted) {
-                logger.info("Recovery needed for {} because of state[{}] == NotStarted || Error || Interrupted", pi, pi.getRecoveryState());
-                performProducerRecovery(pi);
+                if (shouldPerformProducerRecovery(pi)) {
+                    logger.info("Recovery needed for {} because of state[{}] == NotStarted || Error || Interrupted", pi, pi.getRecoveryState());
+                    performProducerRecovery(pi);
+                } else {
+                    logger.info("Recovery for {} skipped", pi);
+                }
             } else if (pi.isFlaggedDown() && !pi.isPerformingRecovery() && pi.getProducerDownReason() != ProducerDownReason.ProcessingQueueDelayViolation) {
-                logger.info("Recovery needed for {} because of state[{}] == Down && NotInRecovery && !NotInDelayViolation", pi, pi.getRecoveryState());
-                performProducerRecovery(pi);
+                if (shouldPerformProducerRecovery(pi)) {
+                    logger.info("Recovery needed for {} because of state[{}] == Down && NotInRecovery && !NotInDelayViolation", pi, pi.getRecoveryState());
+                    performProducerRecovery(pi);
+                } else {
+                    logger.info("Recovery for {} skipped", pi);
+                }
             } else if (pi.isPerformingRecovery() && (now - pi.getLastRecoveryStartedAt()) > maxRecoveryExecutionTime) {
                 // reset the recovery and restart it
                 logger.warn("Recovery[{}] did not complete in the max RecoveryExecution time frame({}) - restarting recovery", pi, maxRecoveryExecutionTime);
@@ -425,6 +433,14 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             performProducerRecovery(pi);
         }
+    }
+
+    private boolean shouldPerformProducerRecovery(ProducerInfo pi) {
+        Instant start = Instant.ofEpochMilli(pi.getLastRecoveryStartedAt());
+        Instant end = Instant.ofEpochMilli(timeUtils.now());
+        Duration between = Duration.between(start, end);
+
+        return between.getSeconds() > config.getMinIntervalBetweenRecoveryRequests();
     }
 
     private boolean queDelayStatusCalc(ProducerInfo pi, long now) {

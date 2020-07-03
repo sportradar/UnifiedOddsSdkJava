@@ -89,6 +89,16 @@ public interface OddsFeedConfigurationBuilder {
     OddsFeedConfigurationBuilder setMaxRecoveryExecutionMinutes(int executionMinutes);
 
     /**
+     * Sets the minimal time between two successive recovery requests initiated by alive messages (minimum 20 seconds)
+     *
+     * @param intervalSeconds the minimal time between two successive recovery requests initiated by alive messages (default 30)
+     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
+     */
+    default OddsFeedConfigurationBuilder setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
+        return null;
+    }
+
+    /**
      * Set the password of the broker to which you are connecting - this is not required for the connection to the
      * default Sportradar AMQP servers
      *

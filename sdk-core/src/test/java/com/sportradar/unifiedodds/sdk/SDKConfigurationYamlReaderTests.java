@@ -24,7 +24,7 @@ public class SDKConfigurationYamlReaderTests {
         SDKConfigurationYamlReader sdkConfigurationYamlReader = new SDKConfigurationYamlReader();
         Map<String, String> stringStringMap = sdkConfigurationYamlReader.readConfiguration();
 
-        assertEquals(21, stringStringMap.size());
+        assertEquals(22, stringStringMap.size());
     }
 
     @Test
@@ -35,6 +35,7 @@ public class SDKConfigurationYamlReaderTests {
         assertEquals(46, (long) reader.readSdkNodeId().get());
         assertEquals(25, (int) reader.readMaxInactivitySeconds().get());
         assertEquals(60, (int) reader.readMaxRecoveryTime().get());
+        assertEquals(35, (int) reader.readMinIntervalBetweenRecoveryRequests().get());
         assertEquals(Locale.ITALIAN, reader.readDefaultLocale().get());
         assertTrue(reader.readDesiredLocales().containsAll(getExpectedDesiredLocales()));
         assertEquals("test-msg-host", reader.readMessagingHost().get());

@@ -175,6 +175,16 @@ public abstract class SDKConfigurationReader {
                 .orElse(Collections.emptySet());
     }
 
+    public Optional<Integer> readMinIntervalBetweenRecoveryRequests() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.minIntervalBetweenRecoveryRequests")).map(value -> {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("The provided uf.sdk.minIntervalBetweenRecoveryRequests is not a valid number, value: " + value);
+            }
+        });
+    }
+
     abstract Map<String,String> readConfiguration();
 
     //NOTE: Access to SDKConfigurationReader must be single-threaded

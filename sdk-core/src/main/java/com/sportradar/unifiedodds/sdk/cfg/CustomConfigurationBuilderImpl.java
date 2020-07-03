@@ -179,6 +179,7 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
                 apiHost,
                 maxInactivitySeconds,
                 maxRecoveryExecutionTimeMinutes,
+                minIntervalBetweenRecoveryRequests,
                 useMessagingSsl,
                 useApiSsl,
                 messagingPort,

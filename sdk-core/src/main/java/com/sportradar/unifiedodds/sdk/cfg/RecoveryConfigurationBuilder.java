@@ -26,4 +26,14 @@ public interface RecoveryConfigurationBuilder<T> extends ConfigurationBuilderBas
      * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
      */
     T setMaxRecoveryExecutionTime(int value, TimeUnit timeUnit);
+
+    /**
+     * Sets the minimal time between two successive recovery requests initiated by alive messages (minimum 20 seconds)
+     *
+     * @param intervalSeconds the minimal time between two successive recovery requests initiated by alive messages (default 30)
+     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
+     */
+    default T setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
+        return null;
+    }
 }

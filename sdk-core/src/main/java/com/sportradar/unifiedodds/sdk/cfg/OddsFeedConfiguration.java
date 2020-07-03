@@ -23,6 +23,7 @@ public class OddsFeedConfiguration {
     private final String apiHost;
     private final int inactivitySeconds;
     private final int maxRecoveryExecutionMinutes;
+    private final int minIntervalBetweenRecoveryRequests;
     private final boolean useMessagingSsl;
     private final boolean useApiSsl;
     private final int port;
@@ -36,7 +37,7 @@ public class OddsFeedConfiguration {
     private final String messagingVirtualHost;
 
     OddsFeedConfiguration(String accessToken, Locale defaultLocale, List<Locale> desiredLocales,
-                          String host, String apiHost, int inactivitySeconds, int maxRecoveryExecutionMinutes,
+                          String host, String apiHost, int inactivitySeconds, int maxRecoveryExecutionMinutes, int minIntervalBetweenRecoveryRequests,
                           boolean useMessagingSsl, boolean useApiSsl, int port, String messagingUsername, String messagingPassword, Integer sdkNodeId,
                           boolean useIntegrationEnvironment, List<Integer> disabledProducers, ExceptionHandlingStrategy exceptionHandlingStrategy, Environment selectedEnvironment,
                           String messagingVirtualHost) {
@@ -48,6 +49,7 @@ public class OddsFeedConfiguration {
         this.apiHost = apiHost;
         this.inactivitySeconds = inactivitySeconds;
         this.maxRecoveryExecutionMinutes = maxRecoveryExecutionMinutes;
+        this.minIntervalBetweenRecoveryRequests = minIntervalBetweenRecoveryRequests;
         this.useMessagingSsl = useMessagingSsl;
         this.useApiSsl = useApiSsl;
         this.port = port;
@@ -96,6 +98,13 @@ public class OddsFeedConfiguration {
      */
     public int getMaxRecoveryExecutionMinutes() {
         return maxRecoveryExecutionMinutes;
+    }
+
+    /**
+     * @return The minimal interval between recovery requests initiated by alive messages(seconds)
+     */
+    public int getMinIntervalBetweenRecoveryRequests() {
+        return minIntervalBetweenRecoveryRequests;
     }
 
     /**
@@ -243,6 +252,7 @@ public class OddsFeedConfiguration {
                 ",\n\tapiHost='" + apiHost + '\'' +
                 ",\n\tinactivitySeconds=" + inactivitySeconds +
                 ",\n\tmaxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes +
+                ",\n\tminIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests +
                 ",\n\tuseMessagingSsl=" + useMessagingSsl +
                 ",\n\tuseApiSsl=" + useApiSsl +
                 ",\n\tport=" + port +

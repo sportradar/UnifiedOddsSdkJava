@@ -19,9 +19,13 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     private final static int MAX_INACTIVITY_SECONDS = 180;
     private final static int MIN_RECOVERY_EXECUTION_MINUTES = 15;
     private final static int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
+    private final static int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
+    private final static int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
+    private final static int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
 
     int maxInactivitySeconds = MIN_INACTIVITY_SECONDS;
     int maxRecoveryExecutionTimeMinutes = MAX_RECOVERY_EXECUTION_MINUTES;
+    int minIntervalBetweenRecoveryRequests = DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS;
 
     RecoveryConfigurationBuilderImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
         super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
@@ -79,6 +83,22 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     }
 
     /**
+     * Sets the minimal time between two successive recovery requests initiated by alive messages (minimum 20 seconds)
+     *
+     * @param intervalSeconds the minimal time between two successive recovery requests initiated by alive messages (default 30)
+     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
+        Preconditions.checkArgument(intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be greater than " + MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
+        Preconditions.checkArgument(intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be leaser than " + MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
+
+        minIntervalBetweenRecoveryRequests = intervalSeconds;
+        return (T) this;
+    }
+
+    /**
      * Loads the properties that are relevant to the builder from the provided {@link SDKConfigurationReader}
      *
      * @param sdkConfigurationReader the reader from which the properties should be red
@@ -88,5 +108,6 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
 
         sdkConfigurationReader.readMaxRecoveryTime().ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));
         sdkConfigurationReader.readMaxInactivitySeconds().ifPresent(this::setMaxInactivitySeconds);
+        sdkConfigurationReader.readMinIntervalBetweenRecoveryRequests().ifPresent(this::setMinIntervalBetweenRecoveryRequests);
     }
 }

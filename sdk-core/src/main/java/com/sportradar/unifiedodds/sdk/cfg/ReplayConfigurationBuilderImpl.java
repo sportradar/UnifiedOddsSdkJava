@@ -52,6 +52,7 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
                 apiHost,
                 20, // its not used by the SDK ifs its in replay mode
                 30, // its not used by the SDK ifs its in replay mode
+                30, // its not used by the SDK ifs its in replay mode
                 useMessagingSsl,
                 useApiSsl,
                 messagingPort,

@@ -52,6 +52,7 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
                 apiHost,
                 maxInactivitySeconds,
                 maxRecoveryExecutionTimeMinutes,
+                minIntervalBetweenRecoveryRequests,
                 useMessagingSsl,
                 useApiSsl,
                 messagingPort,

@@ -6,6 +6,7 @@ sportradar:
       nodeId: 46
       maxInactivitySeconds: 25
       maxRecoveryTime: 60
+      minIntervalBetweenRecoveryRequests: 35
       defaultLocale: it
       desiredLocales:
         - fr

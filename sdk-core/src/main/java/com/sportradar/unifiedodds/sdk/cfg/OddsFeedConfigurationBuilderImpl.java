@@ -23,6 +23,9 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private final static int MAX_INACTIVITY_SECONDS = 180;
     private final static int MIN_RECOVERY_EXECUTION_MINUTES = 15;
     private final static int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
+    private final static int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
+    private final static int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
+    private final static int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
 
     private final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
 
@@ -36,6 +39,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private int port;
     private int inactivitySeconds;
     private int maxRecoveryExecutionMinutes;
+    private int minIntervalBetweenRecoveryRequests;
     private String messagingPassword;
     private Integer sdkNodeId;
     private boolean useIntegrationEnvironment;
@@ -226,6 +230,21 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     }
 
     /**
+     * Sets the minimal time between two successive recovery requests initiated by alive messages (minimum 20 seconds)
+     *
+     * @param intervalSeconds the minimal time between two successive recovery requests initiated by alive messages (default 30)
+     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
+     */
+    @Override
+    public OddsFeedConfigurationBuilder setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
+        Preconditions.checkArgument(intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be greater than " + MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
+        Preconditions.checkArgument(intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be leaser than " + MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
+
+        this.minIntervalBetweenRecoveryRequests = intervalSeconds;
+        return this;
+    }
+
+    /**
      * Set the password of the broker to which you are connecting - this is not required for the connection to the
      * default Sportradar Rabbit servers
      *
@@ -292,6 +311,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         sdkConfigurationPropertiesReader.readUseApiSsl().ifPresent(val -> useApiSsl = val);
         sdkConfigurationPropertiesReader.readUseMessagingSsl().ifPresent(val -> useMessagingSsl = val);
         sdkConfigurationPropertiesReader.readMaxRecoveryTime().ifPresent(val -> maxRecoveryExecutionMinutes = val);
+        sdkConfigurationPropertiesReader.readMinIntervalBetweenRecoveryRequests().ifPresent(val -> minIntervalBetweenRecoveryRequests = val);
         sdkConfigurationPropertiesReader.readUseIntegration().ifPresent(val -> useIntegrationEnvironment = val);
         sdkConfigurationPropertiesReader.readSdkNodeId().ifPresent(val -> sdkNodeId = val);
         sdkConfigurationPropertiesReader.readDefaultLocale().ifPresent(val -> defaultLocale = val);
@@ -328,6 +348,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
                 apiHost,
                 inactivitySeconds,
                 maxRecoveryExecutionMinutes,
+                minIntervalBetweenRecoveryRequests,
                 useMessagingSsl,
                 useApiSsl,
                 port,
@@ -355,6 +376,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         port = 5671;
         inactivitySeconds = 20;
         maxRecoveryExecutionMinutes = MAX_RECOVERY_EXECUTION_MINUTES;
+        minIntervalBetweenRecoveryRequests = DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS;
         messagingPassword = null;
         sdkNodeId = null;
         useIntegrationEnvironment = false;

@@ -21,6 +21,7 @@ public class SDKInternalConfiguration {
     private final String host;
     private final int inactivitySeconds;
     private final int maxRecoveryExecutionMinutes;
+    private final int minIntervalBetweenRecoveryRequests;
     private final boolean useMessagingSsl;
     private final boolean useApiSsl;
     private final int port;
@@ -64,6 +65,7 @@ public class SDKInternalConfiguration {
         desiredLocales = cfg.getDesiredLocales();
         inactivitySeconds = cfg.getLongestInactivityInterval();
         maxRecoveryExecutionMinutes = cfg.getMaxRecoveryExecutionMinutes();
+        minIntervalBetweenRecoveryRequests = cfg.getMinIntervalBetweenRecoveryRequests();
         messagingUsername = cfg.getMessagingUsername();
         messagingPassword = cfg.getMessagingPassword();
         messagingVirtualHost = cfg.getMessagingVirtualHost();
@@ -122,6 +124,13 @@ public class SDKInternalConfiguration {
      */
     public int getMaxRecoveryExecutionMinutes() {
         return maxRecoveryExecutionMinutes;
+    }
+
+    /**
+     * @return The minimal interval between recovery requests initiated by alive messages(seconds)
+     */
+    public int getMinIntervalBetweenRecoveryRequests() {
+        return minIntervalBetweenRecoveryRequests;
     }
 
     /**
@@ -314,6 +323,7 @@ public class SDKInternalConfiguration {
                 .add("host='" + host + "'")
                 .add("inactivitySeconds=" + inactivitySeconds)
                 .add("maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes)
+                .add("minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests)
                 .add("useMessagingSsl=" + useMessagingSsl)
                 .add("useApiSsl=" + useApiSsl)
                 .add("port=" + port)
