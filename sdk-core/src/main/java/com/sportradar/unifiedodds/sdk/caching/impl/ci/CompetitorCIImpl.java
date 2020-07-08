@@ -122,6 +122,16 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     private RaceDriverProfileCI raceDriverProfile;
 
     /**
+     * The associated sport id
+     */
+    private URN sportId;
+
+    /**
+     * The associated category id
+     */
+    private URN categoryId;
+
+    /**
      * The locales which are merged into the CI
      */
     private final List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
@@ -405,6 +415,28 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     }
 
     /**
+     * Returns id of the associated sport
+     *
+     * @return sport id
+     */
+    @Override
+    public URN getSportId() {
+        ensureDataLoaded(sportId);
+        return sportId;
+    }
+
+    /**
+     * Returns id of the associated category
+     *
+     * @return category id
+     */
+    @Override
+    public URN getCategoryId() {
+        ensureDataLoaded(categoryId);
+        return categoryId;
+    }
+
+    /**
      * Returns race driver of the competitor
      *
      * @return the race driver of the competitor if available; otherwise null
@@ -473,6 +505,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         raceDriverProfile = exportable.getRaceDriverProfile() != null ? new RaceDriverProfileCI(exportable.getRaceDriverProfile()) : null;
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
         state = exportable.getState();
+        sportId = Optional.ofNullable(exportable.getSportId()).map(URN::parse).orElse(null);
+        categoryId = Optional.ofNullable(exportable.getCategoryId()).map(URN::parse).orElse(null);
     }
 
     private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
@@ -531,6 +565,16 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
             CarCI carCI = car != null ? new CarCI(car.getName(), car.getChassis(), car.getEngineName()) : null;
             raceDriverProfile = new RaceDriverProfileCI(raceDriverId, raceTeamId, carCI);
         }
+    }
+
+    private void internalMerge(SAPITeamExtended competitor, Locale dataLocale) {
+        Preconditions.checkNotNull(competitor);
+        Preconditions.checkNotNull(dataLocale);
+
+        Optional.ofNullable(competitor.getSport()).ifPresent(s -> sportId = URN.parse(s.getId()));
+        Optional.ofNullable(competitor.getCategory()).ifPresent(c -> categoryId = URN.parse(c.getId()));
+
+        internalMerge((SAPITeam) competitor, dataLocale);
     }
 
     private void internalMerge(SAPITeam competitor, Locale dataLocale) {
@@ -689,7 +733,9 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 ageGroup,
                 raceDriverProfile != null ? raceDriverProfile.export() : null,
                 new ArrayList<>(cachedLocales),
-                state
+                state,
+                Optional.ofNullable(sportId).map(URN::toString).orElse(null),
+                Optional.ofNullable(categoryId).map(URN::toString).orElse(null)
         );
     }
 }

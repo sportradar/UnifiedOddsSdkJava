@@ -24,12 +24,15 @@ public class ExportableCompetitorCI extends ExportableCI {
     private ExportableRaceDriverProfileCI raceDriverProfile;
     private List<Locale> cachedLocales;
     private String state;
+    private String sportId;
+    private String categoryId;
 
     public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames,
                                   Map<Locale, String> abbreviations, boolean isVirtual, String countryCode,
                                   Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys,
                                   ExportableManagerCI manager, ExportableVenueCI venue, String gender, String ageGroup,
-                                  ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales, String state) {
+                                  ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales, String state,
+                                  String sportId, String categoryId) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.countryNames = countryNames;
@@ -46,6 +49,8 @@ public class ExportableCompetitorCI extends ExportableCI {
         this.raceDriverProfile = raceDriverProfile;
         this.cachedLocales = cachedLocales;
         this.state = state;
+        this.sportId = sportId;
+        this.categoryId = categoryId;
     }
 
     public Locale getDefaultLocale() {
@@ -166,5 +171,21 @@ public class ExportableCompetitorCI extends ExportableCI {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getSportId() {
+        return sportId;
+    }
+
+    public void setSportId(String sportId) {
+        this.sportId = sportId;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 }

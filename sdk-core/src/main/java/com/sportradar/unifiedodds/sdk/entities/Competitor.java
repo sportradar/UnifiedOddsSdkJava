@@ -129,4 +129,20 @@ public interface Competitor extends Player {
     default String getState() {
         throw new UnsupportedOperationException("This interface method is missing the implementation.");
     }
+
+    /**
+     * Returns associated sport
+     * @return sport if available; otherwise null
+     */
+    default Sport getSport(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns associated category
+     * @return category if available; otherwise null
+     */
+    default CategorySummary getCategory(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

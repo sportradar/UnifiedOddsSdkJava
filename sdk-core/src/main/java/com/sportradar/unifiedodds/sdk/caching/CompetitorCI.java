@@ -121,4 +121,16 @@ public interface CompetitorCI extends CacheItem {
      * @return state
      */
     String getState();
+
+    /**
+     * Returns id of the associated sport
+     * @return sport id
+     */
+    URN getSportId();
+
+    /**
+     * Returns id of the associated category
+     * @return category id
+     */
+    URN getCategoryId();
 }

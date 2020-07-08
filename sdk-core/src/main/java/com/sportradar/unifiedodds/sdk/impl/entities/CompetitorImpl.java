@@ -318,6 +318,44 @@ public class CompetitorImpl implements Competitor {
     }
 
     /**
+     * Returns associated sport
+     *
+     * @return sport if available; otherwise null
+     */
+    @Override
+    public Sport getSport() {
+        return loadCacheItem()
+                .map(CompetitorCI::getSportId)
+                .map(s -> {
+                    try {
+                        return sportEntityFactory.buildSport(s, locales);
+                    } catch (ObjectNotFoundException e) {
+                        throw new StreamWrapperException(e.getMessage(), e);
+                    }
+                })
+                .orElse(null);
+    }
+
+    /**
+     * Returns associated category
+     *
+     * @return category if available; otherwise null
+     */
+    @Override
+    public CategorySummary getCategory() {
+        return loadCacheItem()
+                .map(CompetitorCI::getCategoryId)
+                .map(c -> {
+                    try {
+                        return sportEntityFactory.buildCategory(c, locales);
+                    } catch (ObjectNotFoundException e) {
+                        throw new StreamWrapperException(e.getMessage(), e);
+                    }
+                })
+                .orElse(null);
+    }
+
+    /**
      * Loads the associated entity cache item from the sport event cache
      *
      * @return the associated cache item
