@@ -1,4 +1,9 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.39 (2020-07-09)**
+* added getSport() and getCategory() to Competitor interface
+* throttling recovery requests
+* fix: closing recovery HTTP client on OddsFeed.close()
+
 **2.0.38 (2020-06-24)**
 * added overloaded methods for fixture and result changes with filters
 * added separate HTTP request timeout value for recovery endpoints
