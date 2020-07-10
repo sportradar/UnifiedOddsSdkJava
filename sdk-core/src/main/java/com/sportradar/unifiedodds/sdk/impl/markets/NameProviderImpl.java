@@ -337,6 +337,8 @@ public class NameProviderImpl implements NameProvider {
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
+                } else {
+                    logger.debug("Throttling down market reloading");
                 }
             }
             handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locale, null);
@@ -352,6 +354,8 @@ public class NameProviderImpl implements NameProvider {
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
+                } else {
+                    logger.debug("Throttling down market reloading");
                 }
             }
             handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locale, null);

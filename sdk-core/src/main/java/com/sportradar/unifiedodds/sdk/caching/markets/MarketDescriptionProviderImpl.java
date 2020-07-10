@@ -141,6 +141,7 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
                 logger.debug("Deleting variant market description for market={} and variant={}", marketId, variant);
                 variantMarketCache.deleteCacheItem(marketId, variant);
                 logger.debug("Reloading variant market description list");
+                invariantMarketCache.updateCacheItem(marketId, variant);
                 return variantDescriptionCache.loadMarketDescriptions();
             } else {
                 logger.debug("Reloading invariant market description list");

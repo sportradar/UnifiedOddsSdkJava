@@ -227,6 +227,10 @@ public class MarketDescriptionCI {
 
     public Date getLastDataReceived() { return lastDataReceived; }
 
+    public void setLastDataReceived(Date lastDataReceived) {
+        this.lastDataReceived = lastDataReceived;
+    }
+
     public boolean canBeFetched()
     {
         return Math.abs(new Date().getTime() - lastDataReceived.getTime())/1000 > SdkHelper.MarketDescriptionMinFetchInterval;

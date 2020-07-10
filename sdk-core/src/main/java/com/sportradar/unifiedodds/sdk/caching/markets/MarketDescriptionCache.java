@@ -21,4 +21,6 @@ public interface MarketDescriptionCache {
     boolean loadMarketDescriptions();
 
     void deleteCacheItem(int marketId, String variant);
+
+    void updateCacheItem(int marketId, String variant);
 }

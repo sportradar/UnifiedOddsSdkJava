@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +101,14 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     public void deleteCacheItem(int marketId, String variant) {
         String processingCacheItemId = String.valueOf(marketId);
         cache.invalidate(processingCacheItemId);
+    }
+
+    @Override
+    public void updateCacheItem(int marketId, String variant) {
+        MarketDescriptionCI description = cache.getIfPresent(String.valueOf(marketId));
+        if (description != null) {
+            description.setLastDataReceived(new Date());
+        }
     }
 
     public List<MarketDescription> getAllInvariantMarketDescriptions(List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {

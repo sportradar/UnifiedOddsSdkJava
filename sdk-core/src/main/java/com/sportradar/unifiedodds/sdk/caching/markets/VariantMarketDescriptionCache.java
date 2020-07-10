@@ -109,6 +109,15 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         cache.invalidate(cacheId);
     }
 
+    @Override
+    public void updateCacheItem(int marketId, String variant) {
+        String cacheId  = getCacheKey(marketId, variant);
+        MarketDescriptionCI description = cache.getIfPresent(cacheId);
+        if (description != null) {
+            description.setLastDataReceived(new Date());
+        }
+    }
+
     private MarketDescriptionCI loadMarketDescriptorData(MarketDescriptionCI existingMarketDescriptor, int marketId, String variant, List<Locale> locales) throws IllegalCacheStateException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(variant));
