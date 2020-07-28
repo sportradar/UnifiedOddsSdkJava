@@ -820,7 +820,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private String getChangesQueryString(Date after, URN sportId) {
         ArrayList<NameValuePair> params = new ArrayList<>();
         if (after != null) {
-            params.add(new BasicNameValuePair("afterDateTime", DateTimeFormatter.ISO_ZONED_DATE_TIME.format(ZonedDateTime.ofInstant(after.toInstant(), ZoneId.systemDefault()))));
+            ZonedDateTime zonedAfter = ZonedDateTime.ofInstant(after.toInstant(), ZoneId.of("UTC"));
+            params.add(new BasicNameValuePair("afterDateTime", zonedAfter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
         }
         if (sportId != null) {
             params.add(new BasicNameValuePair("sportId", sportId.toString()));
