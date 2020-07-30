@@ -97,7 +97,7 @@ public class SDKInternalConfiguration {
      * @return Host / IP for connection as provided by Sportradar
      */
     public String getMessagingHost() {
-        if (isReplaySession && host.equals("mq.betradar.com"))
+        if (isReplaySession) // && host.equals("mq.betradar.com"))
             return "replaymq.betradar.com";
         return host;
     }
