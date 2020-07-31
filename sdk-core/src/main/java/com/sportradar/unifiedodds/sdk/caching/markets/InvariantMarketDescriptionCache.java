@@ -144,6 +144,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             if (!locales2fetch.isEmpty()) {
                 fetchMissingData(locales2fetch);
             }
+            hasTimerElapsedOnce = true;
         } catch (Exception e) { // so the timer does not die
             logger.warn("An error occurred while periodically fetching market description for languages [{}]",
                     locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
@@ -151,8 +152,6 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         } finally {
             fetchLock.unlock();
         }
-
-        hasTimerElapsedOnce = true;
     }
 
     private MarketDescriptionCI getMarketInternal(String id, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
@@ -222,7 +221,10 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
                 cachedItem.merge(market, locale);
             }
         });
-        fetchedLocales.add(locale);
+        if(!fetchedLocales.contains(locale))
+        {
+            fetchedLocales.add(locale);
+        }
     }
 
     private void initStaticMappingsEnrichment() {

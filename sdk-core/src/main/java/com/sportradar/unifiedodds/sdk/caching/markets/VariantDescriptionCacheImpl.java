@@ -90,6 +90,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
             if (!locales2fetch.isEmpty()) {
                 fetchMissingData(locales2fetch);
             }
+            hasTimerElapsedOnce = true;
         } catch (Exception e) { // so the timer does not die
             logger.warn("An error occurred while periodically fetching variant descriptions for languages [{}]",
                     locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
@@ -97,8 +98,6 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         } finally {
             fetchLock.unlock();
         }
-
-        hasTimerElapsedOnce = true;
     }
 
     @Override
@@ -180,7 +179,10 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
             }
         });
 
-        fetchedLocales.add(dataLocale);
+        if(!fetchedLocales.contains(dataLocale))
+        {
+            fetchedLocales.add(dataLocale);
+        }
     }
 
     private List<Locale> getMissingLocales(VariantDescriptionCI item, List<Locale> requiredLocales) {
