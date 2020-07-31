@@ -94,7 +94,7 @@ public final class SdkHelper {
 
         Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
                 ? new HashMap<>()
-                : currentCompetitorsReferences;
+                : new HashMap<>(currentCompetitorsReferences);
         for (SAPITeam competitor : competitors) {
             if(competitor.getReferenceIds() != null) {
                 ReferenceIdCI newReferenceId = new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
