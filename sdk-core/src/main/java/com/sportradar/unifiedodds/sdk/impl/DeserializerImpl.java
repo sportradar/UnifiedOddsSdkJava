@@ -35,7 +35,7 @@ public class DeserializerImpl implements Deserializer {
     }
 
     @Override
-    public String serialize(Object inObj) throws DeserializationException {
+    public synchronized String serialize(Object inObj) throws DeserializationException {
         try {
             StringWriter writer = new StringWriter();
             marshaller.marshal(inObj, writer);
