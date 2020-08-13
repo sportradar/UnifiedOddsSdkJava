@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
 
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,4 +35,40 @@ public interface SeasonInfo {
      * @return - an unmodifiable {@link Map} containing translated names
      */
     Map<Locale, String> getNames();
+
+    /**
+     * Returns the {@link Date} specifying the start date of the season
+     *
+     * @return - the {@link Date} specifying the start date of the season
+     */
+    default Date getStartDate() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link Date} specifying the end date of the season
+     *
+     * @return - the {@link Date} specifying the end date of the season
+     */
+    default Date getEndDate() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link String} representation the year of the season
+     *
+     * @return - the {@link String} representation the year of the season
+     */
+    default String getYear() {
+        return null;
+    }
+
+    /**
+     * Returns the associated tournament identifier
+     *
+     * @return the associated tournament identifier
+     */
+    default URN getTournamentId() {
+        return null;
+    }
 }

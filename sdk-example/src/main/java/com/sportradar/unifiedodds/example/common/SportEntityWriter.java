@@ -266,7 +266,7 @@ public class SportEntityWriter {
             return "null";
         }
 
-        return String.format("%s[%s]", season.getName(locale), season.getId());
+        return String.format("%s[%s]  %s - s%", season.getName(locale), season.getId(), season.getStartDate(), season.getEndDate());
     }
 
     /**
