@@ -14,8 +14,8 @@ import com.sportradar.utils.URN;
 public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder {
     private URN eventId;
     private int marketId;
-    private String specifiers;
     private String outcomeId;
+    private String specifiers;
 
     @Override
     public CustomBetSelectionBuilder setEventId(URN eventId) {
@@ -30,24 +30,24 @@ public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder 
     }
 
     @Override
-    public CustomBetSelectionBuilder setSpecifiers(String specifiers) {
-        this.specifiers = specifiers;
-        return this;
-    }
-
-    @Override
     public CustomBetSelectionBuilder setOutcomeId(String outcomeId) {
         this.outcomeId = outcomeId;
         return this;
     }
 
     @Override
+    public CustomBetSelectionBuilder setSpecifiers(String specifiers) {
+        this.specifiers = specifiers;
+        return this;
+    }
+
+    @Override
     public Selection build() {
-        Selection selection = new SelectionImpl(eventId, marketId, specifiers, outcomeId);
+        Selection selection = new SelectionImpl(eventId, marketId, outcomeId, specifiers);
         eventId = null;
         marketId = 0;
-        specifiers = null;
         outcomeId = null;
+        specifiers = null;
         return selection;
     }
 
@@ -55,8 +55,8 @@ public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder 
     public Selection build(URN eventId, int marketId, String specifiers, String outcomeId) {
         this.eventId = eventId;
         this.marketId = marketId;
-        this.specifiers = specifiers;
         this.outcomeId = outcomeId;
+        this.specifiers = specifiers;
         return build();
     }
 }

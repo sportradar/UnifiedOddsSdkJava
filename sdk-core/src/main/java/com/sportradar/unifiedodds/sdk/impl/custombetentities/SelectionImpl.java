@@ -15,17 +15,18 @@ public class SelectionImpl implements Selection {
 
     private final URN eventId;
     private final int marketId;
-    private final String specifiers;
     private final String outcomeId;
+    private final String specifiers;
 
-    public SelectionImpl(URN eventId, int marketId, String specifiers, String outcomeId) {
+    public SelectionImpl(URN eventId, int marketId, String outcomeId, String specifiers) {
         Preconditions.checkNotNull(eventId);
+        Preconditions.checkArgument(marketId > 0);
         Preconditions.checkNotNull(outcomeId);
 
         this.eventId = eventId;
         this.marketId = marketId;
-        this.specifiers = specifiers;
         this.outcomeId = outcomeId;
+        this.specifiers = specifiers;
     }
 
     /**
@@ -49,16 +50,6 @@ public class SelectionImpl implements Selection {
     }
 
     /**
-     * Gets the specifiers
-     *
-     * @return the specifiers
-     */
-    @Override
-    public String getSpecifiers() {
-        return specifiers;
-    }
-
-    /**
      * Gets the outcome id
      *
      * @return the outcome id
@@ -66,5 +57,15 @@ public class SelectionImpl implements Selection {
     @Override
     public String getOutcomeId() {
         return outcomeId;
+    }
+
+    /**
+     * Gets the specifiers
+     *
+     * @return the specifiers
+     */
+    @Override
+    public String getSpecifiers() {
+        return specifiers;
     }
 }
