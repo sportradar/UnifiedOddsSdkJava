@@ -16,6 +16,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundExceptio
 import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
+import com.sportradar.unifiedodds.sdk.impl.util.FeedMessageHelper;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -119,41 +120,41 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         ValidationResult validationResult = feedMessageValidator.validate(unmarshalledMessage, routingKeyInfo);
         switch (validationResult) {
             case Success:
-                logger.debug("Message {} successfully validated. ProducerId:{}, EventId:'{}'. Message processing continues", unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
+                logger.debug("Message {} successfully validated. ProducerId:{}, EventId:'{}'. Message processing continues", unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
                 break;
             case ProblemsDetected:
                 logger.warn("Problems were detected while validating message {}, but the message is still eligible for further processing. ProducerId:{}, EventId:'{}'",
-                        unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
+                        unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
                 break;
             case Failure:
                 logger.warn("Validation of message {} failed. Raising onUnparseableMessage event. ProducerId:{}, EventId:'{}'",
-                        unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
+                        unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
 
                 SportEvent event = routingKeyInfo.getEventId() == null ?
                         null :
                         getSportEventFor(routingKeyInfo.getEventId().toString(), routingKeyInfo.getSportId());
 
-                dispatchUnparsableMessage(body, event, provideProducerIdFromMessage(unmarshalledMessage), timestamp);
+                dispatchUnparsableMessage(body, event, FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), timestamp);
                 return;
             default:
                 logger.error("Validation result '{}' is not supported. Aborting message processing. Type:{} ProducerId:{}, EventId:'{}'",
-                        validationResult, unmarshalledMessage.getClass().getName(), provideProducerIdFromMessage(unmarshalledMessage), provideEventIdFromMessage(unmarshalledMessage));
+                        validationResult, unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
                 return;
         }
 
         Stopwatch timer = Stopwatch.createStarted();
 
-        int producerId = provideProducerIdFromMessage(unmarshalledMessage);
+        int producerId = FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage);
 
         recoveryManager.onMessageProcessingStarted(this.hashCode(), producerId, now);
         messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp);
-        recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, provideMessageGenTimestampFromMessage(unmarshalledMessage));
+        recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, FeedMessageHelper.provideMessageGenTimestampFromMessage(unmarshalledMessage));
 
         clientInteractionLog.info("Message -> ({}|{}|{}|{}) processing finished on {}, duration: {}",
                 producerId,
-                provideEventIdFromMessage(unmarshalledMessage),
+                FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage),
                 unmarshalledMessage.getClass().getSimpleName(),
-                provideGenTimestampFromMessage(unmarshalledMessage),
+                FeedMessageHelper.provideGenTimestampFromMessage(unmarshalledMessage),
                 getConsumerDescription(),
                 timer.stop());
 
@@ -263,7 +264,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
             dispatchUnparsableMessage(
                     body,
                     routingKeyInfo.getEventId() == null ? null : getSportEventFor(routingKeyInfo.getEventId(), routingKeyInfo.getSportId()),
-                    provideProducerIdFromMessage(o),
+                    FeedMessageHelper.provideProducerIdFromMessage(o),
                     timestamp);
         }
     }
@@ -352,12 +353,12 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
 
     /**
      * Check if the provided message can/should be discarded (ex: message from a disabled producer)
-     * 
+     *
      * @param o - the message object that should be checked
      * @return - <code>true</code> if the message can be discarded, else <code>false</code>
      */
     private boolean isMessageDiscardable(UnmarshalledMessage o) {
-        int producerId = provideProducerIdFromMessage(o);
+        int producerId = FeedMessageHelper.provideProducerIdFromMessage(o);
 
         if(config.getEnvironment() == Environment.Replay){
             return false;
@@ -372,7 +373,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         }
 
         if (o instanceof UFFixtureChange) {
-            String fixtureChangeCacheKey = generateFixtureChangeCacheKey((UFFixtureChange) o);
+            String fixtureChangeCacheKey = FeedMessageHelper.generateFixtureChangeCacheKey((UFFixtureChange) o);
             if (dispatchedFixtureChangesCache.getIfPresent(fixtureChangeCacheKey) == null) {
                 dispatchedFixtureChangesCache.put(fixtureChangeCacheKey, fixtureChangeCacheKey);
             } else {
@@ -381,133 +382,6 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         }
 
         return false;
-    }
-
-    /**
-     * Returns a built cache key for the provided {@link UFFixtureChange}
-     *
-     * @param fixtureChange the object for which the key is needed
-     * @return a built cache key for the provided {@link UFFixtureChange}
-     */
-    private String generateFixtureChangeCacheKey(UFFixtureChange fixtureChange) {
-        return fixtureChange.getProduct() + "_" + fixtureChange.getEventId() + "_" + fixtureChange.getTimestamp();
-    }
-
-    /**
-     * Provides the id of the message producer
-     *
-     * @param o - the message from which the producerId should be provided
-     * @return - the id of the message producer
-     */
-    private int provideProducerIdFromMessage(UnmarshalledMessage o) {
-        int producerId;
-        if (o instanceof UFOddsChange) {
-            producerId = ((UFOddsChange) o).getProduct();
-        } else if (o instanceof UFBetStop) {
-            producerId = ((UFBetStop) o).getProduct();
-        } else if (o instanceof UFBetSettlement) {
-            producerId = ((UFBetSettlement) o).getProduct();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            producerId = ((UFRollbackBetSettlement) o).getProduct();
-        } else if (o instanceof UFBetCancel) {
-            producerId = ((UFBetCancel) o).getProduct();
-        } else if (o instanceof UFFixtureChange) {
-            producerId = ((UFFixtureChange) o).getProduct();
-        } else if (o instanceof UFRollbackBetCancel) {
-            producerId = ((UFRollbackBetCancel) o).getProduct();
-        } else if (o instanceof UFSnapshotComplete) {
-            producerId = ((UFSnapshotComplete) o).getProduct();
-        } else if (o instanceof UFAlive) {
-            producerId = ((UFAlive) o).getProduct();
-        } else {
-            producerId = UnifiedFeedConstants.UNKNOWN_PRODUCER_ID;
-        }
-
-        return producerId;
-    }
-
-    /**
-     * Provides the id of the associated event if available, otherwise an explanation why
-     * the eventId is not available get(ex: for a snapshot complete -> system message)
-     *
-     * @param o - the message from which the eventIdd should be provided
-     * @return - the associated eventId or an explanation why the eventId is not available
-     * (ex: for a snapshot complete -> system message)
-     */
-    private String provideEventIdFromMessage(UnmarshalledMessage o) {
-        String eventId;
-        if (o instanceof UFOddsChange) {
-            eventId = ((UFOddsChange) o).getEventId();
-        } else if (o instanceof UFBetStop) {
-            eventId = ((UFBetStop) o).getEventId();
-        } else if (o instanceof UFBetSettlement) {
-            eventId = ((UFBetSettlement) o).getEventId();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            eventId = ((UFRollbackBetSettlement) o).getEventId();
-        } else if (o instanceof UFBetCancel) {
-            eventId = ((UFBetCancel) o).getEventId();
-        } else if (o instanceof UFFixtureChange) {
-            eventId = ((UFFixtureChange) o).getEventId();
-        } else if (o instanceof UFRollbackBetCancel) {
-            eventId = ((UFRollbackBetCancel) o).getEventId();
-        } else {
-            return "System message";
-        }
-
-        return eventId;
-    }
-
-    /**
-     * Provides the message generation timestamp,
-     * the generation timestamp is extracted only from the betstop and oddschange message
-     *
-     * @param o the message from which the timestamp should be provided
-     * @return the message generation timestamp if available; otherwise null
-     */
-    private Long provideMessageGenTimestampFromMessage(UnmarshalledMessage o) {
-        Long timestamp = null;
-        if (o instanceof UFOddsChange) {
-            timestamp = ((UFOddsChange) o).getTimestamp();
-        } else if (o instanceof UFBetStop) {
-            timestamp = ((UFBetStop) o).getTimestamp();
-        } else if (o instanceof UFAlive) {
-            timestamp = ((UFAlive) o).getTimestamp();
-        }
-
-        return timestamp;
-    }
-
-    /**
-     * Provides the message timestamp
-     *
-     * @param o the message from which the timestamp should be provided
-     * @return the message timestamp
-     */
-    private long provideGenTimestampFromMessage(UnmarshalledMessage o) {
-        long timestamp;
-        if (o instanceof UFOddsChange) {
-            timestamp = ((UFOddsChange) o).getTimestamp();
-        } else if (o instanceof UFBetStop) {
-            timestamp = ((UFBetStop) o).getTimestamp();
-        } else if (o instanceof UFBetSettlement) {
-            timestamp = ((UFBetSettlement) o).getTimestamp();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            timestamp = ((UFRollbackBetSettlement) o).getTimestamp();
-        } else if (o instanceof UFBetCancel) {
-            timestamp = ((UFBetCancel) o).getTimestamp();
-        } else if (o instanceof UFFixtureChange) {
-            timestamp = ((UFFixtureChange) o).getTimestamp();
-        } else if (o instanceof UFRollbackBetCancel) {
-            timestamp = ((UFRollbackBetCancel) o).getTimestamp();
-        } else if (o instanceof UFSnapshotComplete) {
-            timestamp = ((UFSnapshotComplete) o).getTimestamp();
-        } else if (o instanceof UFAlive) {
-            timestamp = ((UFAlive) o).getTimestamp();
-        } else {
-            timestamp = 0;
-        }
-
-        return timestamp;
     }
 
     private void checkUserException(Runnable runnable) {

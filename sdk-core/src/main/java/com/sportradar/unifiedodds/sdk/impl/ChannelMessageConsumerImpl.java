@@ -8,10 +8,15 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.AMQP;
+import com.sportradar.uf.datamodel.UFFixtureChange;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
+import com.sportradar.unifiedodds.sdk.ProducerManager;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
+import com.sportradar.unifiedodds.sdk.impl.util.FeedMessageHelper;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
+import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
@@ -71,18 +76,31 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     private MessageConsumer messageConsumer;
 
     /**
-     *
+     * The producer manager
+     */
+    private ProducerManager producerManager;
+
+    /**
      * @param unmarshaller an {@link Unmarshaller} instance used to deserialize the payloads
      * @param routingKeyParser a {@link RoutingKeyParser} used to parse the rabbit's routing key
      * @param configuration the associated feed configuration
+     * @param producerManager the producer manager
      */
     @Inject
     public ChannelMessageConsumerImpl(@Named("MessageUnmarshaller") Unmarshaller unmarshaller,
                                       RoutingKeyParser routingKeyParser,
-                                      SDKInternalConfiguration configuration) {
+                                      SDKInternalConfiguration configuration,
+                                      SDKProducerManager producerManager) {
+
+        Preconditions.checkNotNull(unmarshaller);
+        Preconditions.checkNotNull(routingKeyParser);
+        Preconditions.checkNotNull(configuration);
+        Preconditions.checkNotNull(producerManager);
+
         this.unmarshaller = unmarshaller;
         this.routingKeyParser = routingKeyParser;
         this.configuration = configuration;
+        this.producerManager = producerManager;
     }
 
     /**
@@ -137,9 +155,22 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         }
 
         UnmarshalledMessage unmarshalledMessage;
+        int producerId;
         try {
             unmarshalledMessage = (UnmarshalledMessage) unmarshaller.unmarshal(new ByteArrayInputStream(body));
-            loggerTraffic.info("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
+            producerId = FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage);
+
+            if(producerManager.isProducerEnabled(producerId))
+            {
+                loggerTraffic.info("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
+            }
+            else
+            {
+                if(loggerTraffic.isDebugEnabled())
+                {
+                    loggerTraffic.debug("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, producerId);
+                }
+            }
         } catch (JAXBException e) {
             loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
             dispatchUnparsableMessage(
@@ -156,11 +187,10 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         // send RawFeedMessage if needed
         try
         {
-//            logger.debug("Raw msg [{}]: {} for event {}.",
-//                    messageConsumer.getMessageInterest(),
-//                    unmarshalledMessage.getClass().getSimpleName(),
-//                    routingKeyInfo.getEventId());
-            messageConsumer.onRawFeedMessageReceived(routingKeyInfo, unmarshalledMessage, timestamp, messageConsumer.getMessageInterest());
+            if(producerManager.isProducerEnabled(producerId))
+            {
+                messageConsumer.onRawFeedMessageReceived(routingKeyInfo, unmarshalledMessage, timestamp, messageConsumer.getMessageInterest());
+            }
         }
         catch (Exception e)
         {
@@ -168,7 +198,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         }
         // continue normal processing
 
-        // TODO add other checks as in .NET
+        // there are other checks on
         messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo, timestamp);
     }
 
