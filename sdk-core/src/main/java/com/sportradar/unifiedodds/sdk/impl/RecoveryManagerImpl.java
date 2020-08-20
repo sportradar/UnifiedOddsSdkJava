@@ -97,7 +97,6 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         this.timeUtils = timeUtils;
     }
 
-
     @Override
     public void init() {
         if (initialized) {
@@ -727,8 +726,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         }
 
         try {
-            snapshotRequestManager.requestFailed(
-                    new SnapshotFailedImpl(bookmakerId, pi.getProducerId(), recoveryId)
+            snapshotRequestManager.requestFailed(new SnapshotFailedImpl(bookmakerId, pi.getProducerId(), recoveryId)
             );
         } catch (Exception e) {
             logger.warn("An exception occurred while notifying the SnapshotRequestManager for a failed request, exc:", e);

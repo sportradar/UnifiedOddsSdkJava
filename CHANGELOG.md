@@ -1,4 +1,16 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.40 (2020-08-19)**
+* Extended SeasonInfo with startDate, endDate, year and tournamentId
+* Fix: CustomBetManager return new CustomBetSelectionBuilder
+* Fix: make serialize synchronised
+* Fix: fetching market description are marked done only after successful obtaining data
+* Fix: Immutable map exception parsing competitor references
+* Fix: un-needed URN parse exception logging
+* Fix: using ReplayOddsFeed with integration token
+* Fix: how after parameter is sent in getFixtureChanges 
+* Fix: reloading market description in case variant descriptions are not available
+* Improved logging of initial message processing
+
 **2.0.39 (2020-07-09)**
 * added getSport() and getCategory() to Competitor interface
 * throttling recovery requests

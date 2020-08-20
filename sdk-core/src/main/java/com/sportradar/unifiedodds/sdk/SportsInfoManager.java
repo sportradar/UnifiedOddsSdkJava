@@ -240,6 +240,7 @@ public interface SportsInfoManager {
 
     /**
      * Returns the list of all fixtures that have changed in the last 24 hours
+     * @retun list of {@FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges() {
         return null;
@@ -249,6 +250,7 @@ public interface SportsInfoManager {
      * Returns the list of all fixtures that have changed in the last 24 hours
      *
      * @param locale - the {@link Locale} in which to provide the data
+     * @retun list of {@FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges(Locale locale) {
         return null;
@@ -259,6 +261,7 @@ public interface SportsInfoManager {
      *
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
+     * @retun list of {@FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges(Date after, URN sportId) {
         return null;
@@ -270,6 +273,7 @@ public interface SportsInfoManager {
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
      * @param locale - the {@link Locale} in which to provide the data
+     * @retun list of {@FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges(Date after, URN sportId, Locale locale) {
         return null;
@@ -277,6 +281,7 @@ public interface SportsInfoManager {
 
     /**
      * Returns the list of all fixtures that have changed in the last 24 hours
+     * @retun list of {@ResultChange}
      */
     default List<ResultChange> getResultChanges() {
         return null;
@@ -286,6 +291,7 @@ public interface SportsInfoManager {
      * Returns the list of all fixtures that have changed in the last 24 hours
      *
      * @param locale - the {@link Locale} in which to provide the data
+     * @retun list of {@ResultChange}
      */
     default List<ResultChange> getResultChanges(Locale locale) {
         return null;
@@ -296,6 +302,7 @@ public interface SportsInfoManager {
      *
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
+     * @retun list of {@ResultChange}
      */
     default List<ResultChange> getResultChanges(Date after, URN sportId) {
         return null;
@@ -307,6 +314,7 @@ public interface SportsInfoManager {
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
      * @param locale - the {@link Locale} in which to provide the data
+     * @retun list of {@ResultChange}
      */
     default List<ResultChange> getResultChanges(Date after, URN sportId, Locale locale) {
         return null;

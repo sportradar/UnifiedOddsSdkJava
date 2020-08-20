@@ -118,7 +118,6 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
 
     /**
      * Consumes the provided message payload
-     *
      * @param routingKey - the source routing key of the payload
      * @param body       - the message payload
      * @param properties - the BasicProperties associated to the message

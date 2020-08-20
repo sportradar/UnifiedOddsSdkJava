@@ -83,10 +83,10 @@ public final class SdkHelper {
      * Get competitor reference from a list of competitors
      * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
      * @param competitors competitor id with which is associated reference
+     * @param currentCompetitorsReferences competitor references
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> parseCompetitorsReferences(List<SAPITeam> competitors,
-                                                                     Map<URN, ReferenceIdCI> currentCompetitorsReferences)
+    public static Map<URN, ReferenceIdCI> parseCompetitorsReferences(List<SAPITeam> competitors, Map<URN, ReferenceIdCI> currentCompetitorsReferences)
     {
         if(competitors == null){
             return currentCompetitorsReferences;
@@ -120,10 +120,10 @@ public final class SdkHelper {
      * Get competitor reference from a list of competitors
      * Note: reference must be checked and updated, since it is not sure that references on summary are the same as on fixture
      * @param competitors competitor id with which is associated reference
+     * @param currentCompetitorsReferences competitor references
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> parseTeamCompetitorsReferences(List<SAPITeamCompetitor> competitors,
-                                                                         Map<URN, ReferenceIdCI> currentCompetitorsReferences)
+    public static Map<URN, ReferenceIdCI> parseTeamCompetitorsReferences(List<SAPITeamCompetitor> competitors, Map<URN, ReferenceIdCI> currentCompetitorsReferences)
     {
         if(competitors == null){
             return currentCompetitorsReferences;
