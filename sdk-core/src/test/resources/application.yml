@@ -29,7 +29,11 @@ sportradar:
       exceptionHandlingStrategy: throw
       cleanTrafficLogEntries: true
       httpClientTimeout: 10
+      httpClientMaxConnTotal: 11
+      httpClientMaxConnPerRoute: 12
       recoveryHttpClientTimeout: 20
+      recoveryHttpClientMaxConnTotal: 21
+      recoveryHttpClientMaxConnPerRoute: 22
       simpleVariantCaching: true
       schedulerTasksToSkip:
         - task1

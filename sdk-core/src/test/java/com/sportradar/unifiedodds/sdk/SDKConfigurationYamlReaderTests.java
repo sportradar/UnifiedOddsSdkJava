@@ -24,7 +24,7 @@ public class SDKConfigurationYamlReaderTests {
         SDKConfigurationYamlReader sdkConfigurationYamlReader = new SDKConfigurationYamlReader();
         Map<String, String> stringStringMap = sdkConfigurationYamlReader.readConfiguration();
 
-        assertEquals(22, stringStringMap.size());
+        assertEquals(26, stringStringMap.size());
     }
 
     @Test
@@ -50,7 +50,11 @@ public class SDKConfigurationYamlReaderTests {
         assertEquals(ExceptionHandlingStrategy.Throw, reader.readExceptionHandlingStrategy().get());
         assertTrue(reader.readCleanTrafficLogEntries().get());
         assertEquals(10, (int) reader.readHttpClientTimeout().get());
+        assertEquals(11, (int) reader.readHttpClientMaxConnTotal().get());
+        assertEquals(12, (int) reader.readHttpClientMaxConnPerRoute().get());
         assertEquals(20, (int) reader.readRecoveryHttpClientTimeout().get());
+        assertEquals(21, (int) reader.readRecoveryHttpClientMaxConnTotal().get());
+        assertEquals(22, (int) reader.readRecoveryHttpClientMaxConnPerRoute().get());
         assertTrue(reader.readSimpleVariantCaching().get());
         assertTrue(reader.readSchedulerTasksToSkip().containsAll(getExpectedTasksToSkip()));
     }

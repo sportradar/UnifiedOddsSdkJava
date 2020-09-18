@@ -26,6 +26,12 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private final static int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
     private final static int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
     private final static int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
+    private static final int HTTP_CLIENT_TIMEOUT = 30;
+    private static final int HTTP_CLIENT_MAX_CONN_TOTAL = 20;
+    private static final int HTTP_CLIENT_MAX_CONN_PER_ROUTE = 15;
+    private static final int RECOVERY_HTTP_CLIENT_TIMEOUT = 30;
+    private static final int RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL = 20;
+    private static final int RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE = 15;
 
     private final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
 
@@ -359,7 +365,13 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
                 disabledProducers,
                 exceptionHandlingStrategy,
                 null,
-                null);
+                null,
+                HTTP_CLIENT_TIMEOUT,
+                HTTP_CLIENT_MAX_CONN_TOTAL,
+                HTTP_CLIENT_MAX_CONN_PER_ROUTE,
+                RECOVERY_HTTP_CLIENT_TIMEOUT,
+                RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL,
+                RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE);
 
         setDefaultValues();
         return oddsFeedConfiguration;

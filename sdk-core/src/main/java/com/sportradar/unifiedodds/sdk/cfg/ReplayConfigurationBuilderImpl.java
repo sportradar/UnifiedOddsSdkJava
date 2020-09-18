@@ -63,6 +63,6 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,
-                null);
+                null, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute);
     }
 }

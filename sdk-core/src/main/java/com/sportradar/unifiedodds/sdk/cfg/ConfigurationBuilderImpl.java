@@ -63,6 +63,6 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,
-                null);
+                null, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute);
     }
 }

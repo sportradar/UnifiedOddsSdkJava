@@ -280,7 +280,8 @@ public class GeneralModule implements Module {
                 .useSystemProperties()
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .setDefaultRequestConfig(requestBuilder.build())
-                .setMaxConnPerRoute(15)
+                .setMaxConnTotal(configuration.getHttpClientMaxConnTotal())
+                .setMaxConnPerRoute(configuration.getHttpClientMaxConnPerRoute())
                 .build();
     }
 
@@ -299,7 +300,8 @@ public class GeneralModule implements Module {
                 .useSystemProperties()
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .setDefaultRequestConfig(requestBuilder.build())
-                .setMaxConnPerRoute(15)
+                .setMaxConnTotal(configuration.getRecoveryHttpClientMaxConnTotal())
+                .setMaxConnPerRoute(configuration.getRecoveryHttpClientMaxConnPerRoute())
                 .build();
     }
 

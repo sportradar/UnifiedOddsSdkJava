@@ -39,6 +39,10 @@ public class SDKInternalConfiguration {
     private final String messagingVirtualHost;
     private String apiHost;
     private final Environment selectedEnvironment;
+    private final int httpClientMaxConnTotal;
+    private final int httpClientMaxConnPerRoute;
+    private final int recoveryHttpClientMaxConnTotal;
+    private final int recoveryHttpClientMaxConnPerRoute;
 
     SDKInternalConfiguration(OddsFeedConfiguration cfg,
                              SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
@@ -74,16 +78,16 @@ public class SDKInternalConfiguration {
         disabledProducers = cfg.getDisabledProducers();
         exceptionHandlingStrategy = cfg.getExceptionHandlingStrategy();
         selectedEnvironment = cfg.getEnvironment();
+        httpClientTimeout = cfg.getHttpClientTimeout();
+        httpClientMaxConnTotal = cfg.getHttpClientMaxConnTotal();
+        httpClientMaxConnPerRoute = cfg.getHttpClientMaxConnPerRoute();
+        recoveryHttpClientTimeout = cfg.getRecoveryHttpClientTimeout();
+        recoveryHttpClientMaxConnTotal = cfg.getRecoveryHttpClientMaxConnTotal();
+        recoveryHttpClientMaxConnPerRoute = cfg.getRecoveryHttpClientMaxConnPerRoute();
 
         cleanTrafficLogEntries = sdkConfigurationPropertiesReader.readCleanTrafficLogEntries()
                 .orElse(sdkConfigurationYamlReader.readCleanTrafficLogEntries()
                         .orElse(false));
-        httpClientTimeout = sdkConfigurationPropertiesReader.readHttpClientTimeout()
-                .orElse(sdkConfigurationYamlReader.readHttpClientTimeout()
-                        .orElse(30));
-        recoveryHttpClientTimeout = sdkConfigurationPropertiesReader.readRecoveryHttpClientTimeout()
-                .orElse(sdkConfigurationYamlReader.readRecoveryHttpClientTimeout()
-                        .orElse(httpClientTimeout));
         simpleVariantCaching = sdkConfigurationPropertiesReader.readSimpleVariantCaching()
                 .orElse(sdkConfigurationYamlReader.readSimpleVariantCaching()
                         .orElse(false));
@@ -300,6 +304,42 @@ public class SDKInternalConfiguration {
     }
 
     /**
+     * Returns connection pool size for http client
+     *
+     * @return connection pool size for http client
+     */
+    public int getHttpClientMaxConnTotal() {
+        return httpClientMaxConnTotal;
+    }
+
+    /**
+     * Returns maximum number of concurrent connections per route for http client
+     *
+     * @return maximum number of concurrent connections per route for http client
+     */
+    public int getHttpClientMaxConnPerRoute() {
+        return httpClientMaxConnPerRoute;
+    }
+
+    /**
+     * Returns connection pool size for recovery http client
+     *
+     * @return connection pool size for recovery http client
+     */
+    public int getRecoveryHttpClientMaxConnTotal() {
+        return recoveryHttpClientMaxConnTotal;
+    }
+
+    /**
+     * Returns maximum number of concurrent connections per route for recovery http client
+     *
+     * @return maximum number of concurrent connections per route for recovery http client
+     */
+    public int getRecoveryHttpClientMaxConnPerRoute() {
+        return recoveryHttpClientMaxConnPerRoute;
+    }
+
+    /**
      * Updates the API host - this method can be used only while in replay mode, no other SDK modes support this
      *
      * @param newApiHost the new API host
@@ -334,7 +374,11 @@ public class SDKInternalConfiguration {
                 .add("sdkNodeId=" + sdkNodeId)
                 .add("cleanTrafficLogEntries=" + cleanTrafficLogEntries)
                 .add("httpClientTimeout=" + httpClientTimeout)
+                .add("httpClientMaxConnTotal=" + httpClientMaxConnTotal)
+                .add("httpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute)
                 .add("recoveryHttpClientTimeout=" + recoveryHttpClientTimeout)
+                .add("recoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal)
+                .add("recoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute)
                 .add("disabledProducers=" + disabledProducers)
                 .add("simpleVariantCaching=" + simpleVariantCaching)
                 .add("schedulerTasksToSkip=" + schedulerTasksToSkip)
@@ -343,4 +387,5 @@ public class SDKInternalConfiguration {
                 .add("selectedEnvironment=" + selectedEnvironment)
                 .toString();
     }
+
 }

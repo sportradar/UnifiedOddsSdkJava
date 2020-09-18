@@ -24,6 +24,12 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     Locale defaultLocale = null;
     ExceptionHandlingStrategy exceptionHandlingStrategy = ExceptionHandlingStrategy.Catch;
     Integer nodeId = null;
+    Integer httpClientTimeout = null;
+    Integer httpClientMaxConnTotal = null;
+    Integer httpClientMaxConnPerRoute = null;
+    Integer recoveryHttpClientTimeout = null;
+    Integer recoveryHttpClientMaxConnTotal = null;
+    Integer recoveryHttpClientMaxConnPerRoute = null;
 
     ConfigurationBuilderBaseImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
         this.sdkConfigurationYamlReader = sdkConfigurationYamlReader;
@@ -151,6 +157,98 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     }
 
     /**
+     * Sets the timeout which should be used on HTTP requests(seconds)
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientTimeout(Integer httpClientTimeout) {
+        Preconditions.checkNotNull(httpClientTimeout);
+
+        this.httpClientTimeout = httpClientTimeout;
+        return (T) this;
+    }
+
+    /**
+     * Sets connection pool size for http client.
+     * Should be set to low value to avoid resource overuse.
+     * Default: 20
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientMaxConnTotal(Integer httpClientMaxConnTotal) {
+        Preconditions.checkNotNull(httpClientMaxConnTotal);
+
+        this.httpClientMaxConnTotal = httpClientMaxConnTotal;
+        return (T) this;
+    }
+
+    /**
+     * Sets maximum number of concurrent connections per route for http client.
+     * Should be set to low value to avoid resource overuse.
+     * Default: 15
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientMaxConnPerRoute(Integer httpClientMaxConnPerRoute) {
+        Preconditions.checkNotNull(httpClientMaxConnPerRoute);
+
+        this.httpClientMaxConnPerRoute = httpClientMaxConnPerRoute;
+        return (T) this;
+    }
+
+    /**
+     * Sets the timeout which should be used on HTTP requests for recovery endpoints(seconds)
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setRecoveryHttpClientTimeout(Integer recoveryHttpClientTimeout) {
+        Preconditions.checkNotNull(recoveryHttpClientTimeout);
+
+        this.recoveryHttpClientTimeout = recoveryHttpClientTimeout;
+        return (T) this;
+    }
+
+    /**
+     * Sets connection pool size for recovery http client.
+     * Should be set to low value to avoid resource overuse.
+     * Default: 20
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setRecoveryHttpClientMaxConnTotal(Integer recoveryHttpClientMaxConnTotal) {
+        Preconditions.checkNotNull(recoveryHttpClientMaxConnTotal);
+
+        this.recoveryHttpClientMaxConnTotal = recoveryHttpClientMaxConnTotal;
+        return (T) this;
+    }
+
+    /**
+     * Sets maximum number of concurrent connections per route for recovery http client
+     * Should be set to low value to avoid resource overuse.
+     * Default: 15
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setRecoveryHttpClientMaxConnPerRoute(Integer recoveryHttpClientMaxConnPerRoute) {
+        Preconditions.checkNotNull(recoveryHttpClientMaxConnPerRoute);
+
+        this.recoveryHttpClientMaxConnPerRoute = recoveryHttpClientMaxConnPerRoute;
+        return (T) this;
+    }
+
+    /**
      * Loads the properties that are relevant to the builder from the provided {@link SDKConfigurationReader}
      *
      * @param sdkConfigurationReader the reader from which the properties should be red
@@ -163,5 +261,11 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         sdkConfigurationReader.readSdkNodeId().ifPresent(this::setSdkNodeId);
         setDesiredLocales(sdkConfigurationReader.readDesiredLocales());
         setDisabledProducers(sdkConfigurationReader.readDisabledProducers());
+        sdkConfigurationReader.readHttpClientTimeout().ifPresent(this::setHttpClientTimeout);
+        sdkConfigurationReader.readHttpClientMaxConnTotal().ifPresent(this::setHttpClientMaxConnTotal);
+        sdkConfigurationReader.readHttpClientMaxConnPerRoute().ifPresent(this::setHttpClientMaxConnPerRoute);
+        sdkConfigurationReader.readHttpClientTimeout().ifPresent(this::setRecoveryHttpClientTimeout);
+        sdkConfigurationReader.readRecoveryHttpClientMaxConnTotal().ifPresent(this::setRecoveryHttpClientMaxConnTotal);
+        sdkConfigurationReader.readRecoveryHttpClientMaxConnPerRoute().ifPresent(this::setRecoveryHttpClientMaxConnPerRoute);
     }
 }

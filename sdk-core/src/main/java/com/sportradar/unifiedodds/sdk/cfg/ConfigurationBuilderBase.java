@@ -82,4 +82,54 @@ public interface ConfigurationBuilderBase<T> {
      * @return the constructed {@link OddsFeedConfiguration} instance
      */
     OddsFeedConfiguration build();
+
+    /**
+     * Sets the timeout which should be used on HTTP requests(seconds)
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setHttpClientTimeout(Integer httpClientTimeout);
+
+    /**
+     * Sets connection pool size for http client.
+     * Should be set to low value to avoid resource overuse.
+     * Default: 20
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setHttpClientMaxConnTotal(Integer httpClientMaxConnTotal);
+
+    /**
+     * Sets maximum number of concurrent connections per route for http client.
+     * Should be set to low value to avoid resource overuse.
+     * Default: 15
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setHttpClientMaxConnPerRoute(Integer httpClientMaxConnPerRoute);
+
+    /**
+     * Sets the timeout which should be used on HTTP requests for recovery endpoints(seconds)
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setRecoveryHttpClientTimeout(Integer recoveryHttpClientTimeout);
+
+    /**
+     * Sets connection pool size for recovery http client.
+     * Should be set to low value to avoid resource overuse.
+     * Default: 20
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setRecoveryHttpClientMaxConnTotal(Integer recoveryHttpClientMaxConnTotal);
+
+    /**
+     * Sets maximum number of concurrent connections per route for recovery http client
+     * Should be set to low value to avoid resource overuse.
+     * Default: 15
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setRecoveryHttpClientMaxConnPerRoute(Integer recoveryHttpClientMaxConnPerRoute);
 }

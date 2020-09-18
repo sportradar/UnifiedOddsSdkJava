@@ -16,6 +16,13 @@ import java.util.Locale;
  *
  */
 public class OddsFeedConfiguration {
+    private static final int HTTP_CLIENT_TIMEOUT = 30;
+    private static final int HTTP_CLIENT_MAX_CONN_TOTAL = 20;
+    private static final int HTTP_CLIENT_MAX_CONN_PER_ROUTE = 15;
+    private static final int RECOVERY_HTTP_CLIENT_TIMEOUT = 30;
+    private static final int RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL = 20;
+    private static final int RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE = 15;
+
     private final String accessToken;
     private final Locale defaultLocale;
     private final List<Locale> desiredLocales;
@@ -35,12 +42,20 @@ public class OddsFeedConfiguration {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Environment selectedEnvironment;
     private final String messagingVirtualHost;
+    private final int httpClientTimeout;
+    private final int httpClientMaxConnTotal;
+    private final int httpClientMaxConnPerRoute;
+    private final int recoveryHttpClientTimeout;
+    private final int recoveryHttpClientMaxConnTotal;
+    private final int recoveryHttpClientMaxConnPerRoute;
 
     OddsFeedConfiguration(String accessToken, Locale defaultLocale, List<Locale> desiredLocales,
                           String host, String apiHost, int inactivitySeconds, int maxRecoveryExecutionMinutes, int minIntervalBetweenRecoveryRequests,
                           boolean useMessagingSsl, boolean useApiSsl, int port, String messagingUsername, String messagingPassword, Integer sdkNodeId,
                           boolean useIntegrationEnvironment, List<Integer> disabledProducers, ExceptionHandlingStrategy exceptionHandlingStrategy, Environment selectedEnvironment,
-                          String messagingVirtualHost) {
+                          String messagingVirtualHost,
+                          Integer httpClientTimeout, Integer httpClientMaxConnTotal, Integer httpClientMaxConnPerRoute,
+                          Integer recoveryHttpClientTimeout, Integer recoveryHttpClientMaxConnTotal, Integer recoveryHttpClientMaxConnPerRoute) {
         // ctor parameters are validated in the cfg builder instance
         this.accessToken = accessToken;
         this.defaultLocale = defaultLocale;
@@ -56,6 +71,12 @@ public class OddsFeedConfiguration {
         this.messagingUsername = messagingUsername;
         this.messagingPassword = messagingPassword;
         this.sdkNodeId = sdkNodeId;
+        this.httpClientTimeout = httpClientTimeout != null ? httpClientTimeout : HTTP_CLIENT_TIMEOUT;
+        this.httpClientMaxConnTotal = httpClientMaxConnTotal != null ? httpClientMaxConnTotal : HTTP_CLIENT_MAX_CONN_TOTAL;
+        this.httpClientMaxConnPerRoute = httpClientMaxConnPerRoute != null ? httpClientMaxConnPerRoute : HTTP_CLIENT_MAX_CONN_PER_ROUTE;
+        this.recoveryHttpClientTimeout = recoveryHttpClientTimeout != null ? recoveryHttpClientTimeout : RECOVERY_HTTP_CLIENT_TIMEOUT;
+        this.recoveryHttpClientMaxConnTotal = recoveryHttpClientMaxConnTotal != null ? recoveryHttpClientMaxConnTotal : RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL;
+        this.recoveryHttpClientMaxConnPerRoute = recoveryHttpClientMaxConnPerRoute != null ? recoveryHttpClientMaxConnPerRoute : RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE;
         if (sdkNodeId != null && sdkNodeId < 0)
         {
             LoggerFactory.getLogger(OddsFeedConfiguration.class).warn(String.format("Setting nodeId to %s. Use only positive numbers; negative are reserved for internal use.", sdkNodeId));
@@ -239,6 +260,60 @@ public class OddsFeedConfiguration {
         return exceptionHandlingStrategy;
     }
 
+    /**
+     * Indicates the timeout which should be used on HTTP requests(seconds)
+     *
+     * @return the timeout which should be used when performing HTTP requests(seconds)
+     */
+    public int getHttpClientTimeout() {
+        return httpClientTimeout;
+    }
+
+    /**
+     * Returns connection pool size for http client
+     *
+     * @return connection pool size for http client
+     */
+    public int getHttpClientMaxConnTotal() {
+        return httpClientMaxConnTotal;
+    }
+
+    /**
+     * Returns maximum number of concurrent connections per route for http client
+     *
+     * @return maximum number of concurrent connections per route for http client
+     */
+    public int getHttpClientMaxConnPerRoute() {
+        return httpClientMaxConnPerRoute;
+    }
+
+    /**
+     * Indicates the timeout which should be used on HTTP requests for recovery endpoints(seconds)
+     *
+     * @return the timeout which should be used when performing HTTP requests for recovery endpoints(seconds)
+     */
+    public int getRecoveryHttpClientTimeout() {
+        return recoveryHttpClientTimeout;
+    }
+
+    /**
+     * Returns connection pool size for recovery http client
+     *
+     * @return connection pool size for recovery http client
+     */
+    public int getRecoveryHttpClientMaxConnTotal() {
+        return recoveryHttpClientMaxConnTotal;
+    }
+
+    /**
+     * Returns maximum number of concurrent connections per route for recovery http client
+     *
+     * @return maximum number of concurrent connections per route for recovery http client
+     */
+    public int getRecoveryHttpClientMaxConnPerRoute() {
+        return recoveryHttpClientMaxConnPerRoute;
+    }
+
     @Override
     public String toString() {
 
@@ -264,6 +339,13 @@ public class OddsFeedConfiguration {
                 ",\n\texceptionHandlingStrategy=" + exceptionHandlingStrategy +
                 ",\n\tselectedEnvironment=" + selectedEnvironment +
                 ",\n\tmessagingVirtualHost=" + messagingVirtualHost +
+                ",\n\thttpClientTimeout=" + httpClientTimeout +
+                ",\n\thttpClientMaxConnTotal=" + httpClientMaxConnTotal +
+                ",\n\thttpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute +
+                ",\n\trecoveryHttpClientTimeout=" + recoveryHttpClientTimeout +
+                ",\n\trecoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal +
+                ",\n\trecoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute +
                 "\n}";
     }
+
 }

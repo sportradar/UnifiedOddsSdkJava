@@ -190,7 +190,7 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,
-                messagingVirtualHost);
+                messagingVirtualHost, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute);
     }
 
     /**

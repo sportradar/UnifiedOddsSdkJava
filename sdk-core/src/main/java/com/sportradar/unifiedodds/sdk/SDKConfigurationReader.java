@@ -151,6 +151,28 @@ public abstract class SDKConfigurationReader {
                 });
     }
 
+    public Optional<Integer> readHttpClientMaxConnTotal() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.httpClientMaxConnTotal"))
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("The provided uf.sdk.httpClientMaxConnTotal is not a valid number, value: " + value);
+                    }
+                });
+    }
+
+    public Optional<Integer> readHttpClientMaxConnPerRoute() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.httpClientMaxConnPerRoute"))
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("The provided uf.sdk.httpClientMaxConnPerRoute is not a valid number, value: " + value);
+                    }
+                });
+    }
+
     public Optional<Integer> readRecoveryHttpClientTimeout() {
         return Optional.ofNullable(sdkProperties.get("uf.sdk.recoveryHttpClientTimeout"))
                 .map(value -> {
@@ -161,6 +183,28 @@ public abstract class SDKConfigurationReader {
                     }
 
                     return timeout;
+                });
+    }
+
+    public Optional<Integer> readRecoveryHttpClientMaxConnTotal() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.recoveryHttpClientMaxConnTotal"))
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("The provided uf.sdk.recoveryHttpClientMaxConnTotal is not a valid number, value: " + value);
+                    }
+                });
+    }
+
+    public Optional<Integer> readRecoveryHttpClientMaxConnPerRoute() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.recoveryHttpClientMaxConnPerRoute"))
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("The provided uf.sdk.recoveryHttpClientMaxConnPerRoute is not a valid number, value: " + value);
+                    }
                 });
     }
 
