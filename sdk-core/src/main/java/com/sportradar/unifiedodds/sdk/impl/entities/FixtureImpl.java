@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 public class
 FixtureImpl implements Fixture {
     private static final Logger logger = LoggerFactory.getLogger(FixtureImpl.class);
-    private static final String ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
     /**
      * A {@link Date} instance specifying when the fixture is scheduled to start
@@ -107,9 +106,9 @@ FixtureImpl implements Fixture {
 
         Date nextLiveTime1;
         try {
-            nextLiveTime1 = fixture.getNextLiveTime() == null ? null : parseNextLiveTime(fixture.getNextLiveTime());
+            nextLiveTime1 = fixture.getNextLiveTime() == null ? null : SdkHelper.toDate(fixture.getNextLiveTime());
         } catch (ParseException e) {
-            logger.warn("Fixture[{}] date of next live time is malformed -> {} ::: expected format -> '{}'", fixture.getId(), fixture.getNextLiveTime(), ISO_8601_24H_FULL_FORMAT,e);
+            logger.warn("Fixture[{}] date of next live time is malformed -> {} ::: expected format -> '{}'", fixture.getId(), fixture.getNextLiveTime(), SdkHelper.ISO_8601_24H_FULL_FORMAT,e);
             nextLiveTime1 = null;
         }
         nextLiveTime = nextLiveTime1;
@@ -340,11 +339,6 @@ FixtureImpl implements Fixture {
                 ", references=" + references +
                 ", scheduledStartTimeChange=" + scheduledStartTimeChanges +
                 '}';
-    }
-
-    private static Date parseNextLiveTime(String date) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
-        return sdf.parse(date);
     }
 
     public ExportableFixtureCI export() {
