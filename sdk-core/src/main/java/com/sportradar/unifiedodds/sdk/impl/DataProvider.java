@@ -178,7 +178,7 @@ public class DataProvider<TOut> {
 
         int destPos = 0;
         if (locale != null) {
-            forwardArgs[0] = locale.getLanguage();
+            forwardArgs[0] = locale.getLanguage().equals("in") ? "id" : locale.getLanguage();
             destPos++;
         }
 
