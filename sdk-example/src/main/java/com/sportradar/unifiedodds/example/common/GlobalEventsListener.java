@@ -82,4 +82,14 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
     public void onEventRecoveryCompleted(URN eventId, long requestId) {
         logger.info("Received onEventRecoveryCompleted for event[{}], requestId: {}", eventId, requestId);
     }
+
+    /**
+     * Invoked when an exception is thrown inside connection loop
+     *
+     * @param throwable that caused connection loop to fail
+     */
+    @Override
+    public void onConnectionException(Throwable throwable) {
+        logger.warn("Received onConnectionException", throwable);
+    }
 }
