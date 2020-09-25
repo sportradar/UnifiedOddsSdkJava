@@ -8,10 +8,14 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import org.apache.http.client.utils.DateUtils;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.InvalidParameterException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +28,9 @@ public final class SdkHelper {
     public static String InVariantMarketListCache = "InVariantMarketListCache";
     public static String VariantMarketSingleCache = "VariantMarketSingleCache";
     public static String VariantMarketListCache = "VariantMarketListCache";
+
+    public static final String ISO_8601_24H_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
     /**
      * Calculates and returns the missing locales within the provided {@link List}
@@ -197,6 +204,34 @@ public final class SdkHelper {
         if (gregorianCalendar.getTimezone() == DatatypeConstants.FIELD_UNDEFINED)
             gregorianCalendar.setTimezone(0);
         return gregorianCalendar.toGregorianCalendar().getTime();
+    }
+
+    public static Date toDate(String dateString) throws ParseException {
+
+        if(dateString.isEmpty())
+        {
+            return null;
+        }
+
+        try{
+            Date date = DateUtils.parseDate(dateString);
+            if(date != null)
+            {
+                return date;
+            }
+        }
+        catch (Exception e) {
+        }
+
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
+            return sdf.parse(dateString);
+        }
+        catch (Exception e) {
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FORMAT);
+        return sdf.parse(dateString);
     }
 
     public static String doubleToStringWithSign(double value) {
