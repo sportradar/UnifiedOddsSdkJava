@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities.markets;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -90,6 +91,15 @@ public interface MarketDescription {
      * @return the market attribute "outcome_type"
      */
     default String getOutcomeType() {
+        return null;
+    }
+
+    /**
+     * Returns a list of {@link Locale} cached in this instance
+     *
+     * @return a list of {@link Locale}
+     */
+    default Collection<Locale> getLocales() {
         return null;
     }
 }

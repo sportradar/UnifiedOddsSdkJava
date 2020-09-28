@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
 import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
@@ -24,6 +23,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class NameProviderImpl implements NameProvider {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Supplier<List<URN>> competitorList;
 
-    private final Map<Locale, MarketDescription> marketDescriptionCache;
+    private MarketDescription marketDescription;
 
     NameProviderImpl(MarketDescriptionProvider descriptorProvider,
                             ProfileCache profileCache,
@@ -81,25 +81,34 @@ public class NameProviderImpl implements NameProvider {
         this.producerId = producerId;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.competitorList = () -> provideSportEventCompetitorIds(sportEvent);
-
-        this.marketDescriptionCache = Maps.newConcurrentMap();
     }
 
     @Override
     public String getMarketName(Locale locale) {
+        return getMarketNames(Collections.singletonList(locale)).get(locale);
+    }
+
+    @Override
+    public Map<Locale, String> getMarketNames(List<Locale> locales) {
         MarketDescription marketDescriptor;
         try {
-            marketDescriptor = getMarketDescriptor(locale);
+            marketDescriptor = getMarketDescriptor(locales);
         } catch (ObjectNotFoundException e) {
-            return handleErrorCondition("Failed to retrieve market name descriptor", null, null, locale, e);
+            return handleErrorCondition("Failed to retrieve market name descriptor", null, null, locales, e);
         }
 
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(marketDescriptor.getLocales(), locales);
+        if (!missingLocales.isEmpty()) {
+            return handleErrorCondition("Retrieved market descriptor does not contain name descriptor in the specified languages",
+                    null, null, missingLocales, null);
+        }
+
+        return locales.stream()
+                .collect(Collectors.toMap(locale -> locale, locale -> mapMarketNames(marketDescriptor, locale)));
+    }
+
+    private String mapMarketNames(MarketDescription marketDescriptor, Locale locale) {
         String nameDescriptor = marketDescriptor.getName(locale);
-        if (nameDescriptor == null) {
-            return handleErrorCondition("Retrieved market descriptor does not contain name descriptor in the specified language",
-                    null, null, locale, null);
-        }
-
         String nameDescriptorFormat = null;
         List<NameExpression> expressions = null;
         try {
@@ -217,16 +226,23 @@ public class NameProviderImpl implements NameProvider {
 
     private MarketDescription getMarketDescriptor(Locale locale) throws ObjectNotFoundException {
         Preconditions.checkNotNull(locale);
+        return getMarketDescriptor(Collections.singletonList(locale));
+    }
 
-        if (marketDescriptionCache.containsKey(locale)) {
-            return marketDescriptionCache.get(locale);
+    private MarketDescription getMarketDescriptor(List<Locale> locales) throws ObjectNotFoundException {
+        Preconditions.checkNotNull(locales);
+
+        Collection<Locale> cachedLocales = marketDescription != null
+                ? marketDescription.getLocales()
+                : Collections.emptyList();
+
+        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, locales);
+        if (missingLocales.isEmpty()) {
+            return marketDescription;
         }
 
         try {
-            MarketDescription marketDescription = descriptorProvider.getMarketDescription(marketId, marketSpecifiers, Lists.newArrayList(locale), true);
-
-            marketDescriptionCache.put(locale, marketDescription);
-
+            marketDescription = descriptorProvider.getMarketDescription(marketId, marketSpecifiers, locales, true);
             return marketDescription;
         } catch (CacheItemNotFoundException e) {
             throw new ObjectNotFoundException("The requested market[" + marketId + "] was not found", e);
@@ -258,8 +274,12 @@ public class NameProviderImpl implements NameProvider {
     }
 
     private String handleErrorCondition(String message, String outcomeId, String nameDescriptor, Locale locale, Exception ex) {
+        return handleErrorCondition(message, outcomeId, nameDescriptor, Collections.singletonList(locale), ex).get(locale);
+    }
+
+    private Map<Locale, String> handleErrorCondition(String message, String outcomeId, String nameDescriptor, List<Locale> locales, Exception ex) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(message));
-        Preconditions.checkNotNull(locale);
+        Preconditions.checkNotNull(locales);
 
         StringBuilder sb = new StringBuilder("An error occurred while generating the name for event=[")
                 .append(sportEvent)
@@ -277,7 +297,7 @@ public class NameProviderImpl implements NameProvider {
 
         sb.append("]");
 
-        sb.append(" Locale=").append(locale);
+        sb.append(" Locale=").append(locales.toString());
 
         if (nameDescriptor != null) {
             sb.append(" Retrieved nameDescriptor=[").append(nameDescriptor).append("]");
@@ -297,7 +317,7 @@ public class NameProviderImpl implements NameProvider {
             } else {
                 logger.warn(sb.toString());
             }
-            return null;
+            return Collections.emptyMap();
         }
     }
 
@@ -335,7 +355,6 @@ public class NameProviderImpl implements NameProvider {
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
-                    marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
                 } else {
                     logger.debug("Throttling down market reloading");
@@ -352,7 +371,6 @@ public class NameProviderImpl implements NameProvider {
                 if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locale, null);
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
-                    marketDescriptionCache.clear();
                     return getMarketDescriptionForOutcome(outcomeId, locale, false);
                 } else {
                     logger.debug("Throttling down market reloading");
