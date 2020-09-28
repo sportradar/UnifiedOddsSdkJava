@@ -10,11 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
-import com.sportradar.unifiedodds.sdk.entities.markets.MarketAttribute;
-import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
-import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
-import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
+import com.sportradar.unifiedodds.sdk.entities.markets.*;
 import com.sportradar.utils.SdkHelper;
 
 import java.util.*;
@@ -41,6 +37,7 @@ public class MarketDescriptionImpl implements MarketDescription {
     private Date lastDataReceived;
     private String sourceCache;
 
+    @SuppressWarnings("UnstableApiUsage")
     public MarketDescriptionImpl(MarketDescriptionCI cachedItem, List<Locale> locales) {
         Preconditions.checkNotNull(cachedItem);
         Preconditions.checkNotNull(locales);
@@ -101,6 +98,7 @@ public class MarketDescriptionImpl implements MarketDescription {
         return specifiers;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public List<MarketMappingData> getMappings() {
         if (!mappingsBuilt) {
@@ -139,6 +137,11 @@ public class MarketDescriptionImpl implements MarketDescription {
         return outcomeType;
     }
 
+    @Override
+    public Collection<Locale> getLocales() {
+        return names.keySet();
+    }
+
     // outcomes get only merged because some of them might be static
     public void mergeOutcomes(List<MarketOutcomeCI> outcomeCIs, List<Locale> locales) {
         if (this.outcomes == null) {
@@ -161,6 +164,7 @@ public class MarketDescriptionImpl implements MarketDescription {
         this.staticMappingsData = staticMappingsData;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private static List<OutcomeDescription> buildOutcomes(List<MarketOutcomeCI> outcomeCis, List<Locale> locales) {
         return outcomeCis == null ? Collections.emptyList() :
                 outcomeCis.stream()

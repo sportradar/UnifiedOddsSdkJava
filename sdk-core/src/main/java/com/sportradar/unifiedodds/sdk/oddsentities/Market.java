@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -48,4 +49,6 @@ public interface Market {
      * @return additional market information(extended market specifiers)
      */
     Map<String, String> getAdditionalMarketInfo();
+
+    Map<Locale, String> getNames(List<Locale> locales);
 }

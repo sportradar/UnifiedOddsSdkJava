@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -91,5 +92,15 @@ class MarketImpl implements Market {
     @Override
     public Map<String, String> getAdditionalMarketInfo(){
         return extendedSpecifiers;
+    }
+
+    /**
+     * @param locales the list of {@link Locale} in which the name should be returned
+     * @return - the names of the market translated in the specified {@link Locale} (specifier placeholders are replaced with actual
+     * values)
+     */
+    @Override
+    public Map<Locale, String> getNames(List<Locale> locales) {
+        return nameProvider.getMarketNames(locales);
     }
 }

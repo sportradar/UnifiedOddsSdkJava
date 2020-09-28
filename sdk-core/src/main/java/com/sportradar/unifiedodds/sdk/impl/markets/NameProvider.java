@@ -4,7 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created on 15/06/2017.
@@ -12,5 +14,6 @@ import java.util.Locale;
  */
 public interface NameProvider {
     String getMarketName(Locale locale);
+    Map<Locale, String> getMarketNames(List<Locale> locales);
     String getOutcomeName(String outcomeId, Locale locale);
 }
