@@ -180,6 +180,8 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
         rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
 
+        rabbitConnectionFactory.setExceptionHandler(new SDKExceptionHandler(connectionStatusListener));
+
         Connection con = rabbitConnectionFactory.newConnection(dedicatedRabbitMqExecutor);
         logger.info("Connection created successfully");
         return con;

@@ -13,4 +13,12 @@ public interface SDKConnectionStatusListener {
      * Invoked when a connection to the feed is closed
      */
     void onConnectionDown();
+
+    /**
+     * Invoked when an exception is thrown inside connection loop
+     *
+     * @param throwable that caused connection loop to fail
+     */
+    default void onConnectionException(Throwable throwable) {
+    }
 }
