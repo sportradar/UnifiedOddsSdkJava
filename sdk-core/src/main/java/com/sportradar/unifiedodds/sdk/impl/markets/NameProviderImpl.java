@@ -103,8 +103,11 @@ public class NameProviderImpl implements NameProvider {
                     null, null, missingLocales, null);
         }
 
-        return locales.stream()
-                .collect(Collectors.toMap(locale -> locale, locale -> mapMarketNames(marketDescriptor, locale)));
+        Map<Locale, String> names = new HashMap<>();
+        for (Locale locale : locales) {
+            names.put(locale, mapMarketNames(marketDescriptor, locale));
+        }
+        return names;
     }
 
     private String mapMarketNames(MarketDescription marketDescriptor, Locale locale) {
