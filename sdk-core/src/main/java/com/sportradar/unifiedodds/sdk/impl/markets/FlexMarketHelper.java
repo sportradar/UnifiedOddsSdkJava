@@ -6,7 +6,11 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -15,6 +19,15 @@ import java.util.Map;
  */
 public class FlexMarketHelper {
     private static final String specifierName = "score";
+
+    public static Map<Locale, String> getNames(OutcomeDescription outcomeDescription, Map<String, String> marketSpecifiers) {
+        Map<Locale, String> names = new HashMap<>();
+        Collection<Locale> locales = outcomeDescription.getLocales();
+        for (Locale locale : locales) {
+            names.put(locale, getName(outcomeDescription.getName(locale), marketSpecifiers));
+        }
+        return names;
+    }
 
     public static String getName(String nameDescription, Map<String, String> marketSpecifiers) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(nameDescription));

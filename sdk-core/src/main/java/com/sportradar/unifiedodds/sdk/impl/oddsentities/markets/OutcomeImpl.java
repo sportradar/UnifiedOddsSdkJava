@@ -10,7 +10,9 @@ import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created on 24/06/2017.
@@ -65,5 +67,15 @@ abstract class OutcomeImpl implements Outcome {
     @Override
     public OutcomeDefinition getOutcomeDefinition() {
         return outcomeDefinition;
+    }
+
+    /**
+     * @param locales the list of {@link Locale} in which the name should be returned
+     * @return - the names of the market translated in the specified {@link Locale} (specifier placeholders are replaced with actual
+     * values)
+     */
+    @Override
+    public Map<Locale, String> getNames(List<Locale> locales) {
+        return nameProvider.getOutcomeNames(id, locales);
     }
 }

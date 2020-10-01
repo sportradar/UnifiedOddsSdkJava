@@ -50,5 +50,12 @@ public interface Market {
      */
     Map<String, String> getAdditionalMarketInfo();
 
-    Map<Locale, String> getNames(List<Locale> locales);
+    /**
+     * @param locales the list of {@link Locale} in which the name should be returned
+     * @return - the names of the market translated in the specified {@link Locale} (specifier placeholders are replaced with actual
+     * values)
+     */
+    default Map<Locale, String> getNames(List<Locale> locales) {
+        return null;
+    }
 }

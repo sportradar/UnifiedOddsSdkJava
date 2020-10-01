@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities.markets;
 
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -32,4 +33,13 @@ public interface OutcomeDescription {
      * @return the outcome name translated in the provided {@link Locale}
      */
     String getDescription(Locale locale);
+
+    /**
+     * Returns a list of {@link Locale} cached in this instance
+     *
+     * @return a list of {@link Locale}
+     */
+    default Collection<Locale> getLocales() {
+        return null;
+    }
 }

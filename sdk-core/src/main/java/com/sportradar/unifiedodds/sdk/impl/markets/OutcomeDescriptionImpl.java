@@ -10,10 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,5 +62,15 @@ public class OutcomeDescriptionImpl implements OutcomeDescription {
         Preconditions.checkNotNull(locale);
 
         return descriptions.get(locale);
+    }
+
+    /**
+     * Returns a list of {@link Locale} cached in this instance
+     *
+     * @return a list of {@link Locale}
+     */
+    @Override
+    public Collection<Locale> getLocales() {
+        return names.keySet();
     }
 }

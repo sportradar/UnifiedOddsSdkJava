@@ -16,4 +16,5 @@ public interface NameProvider {
     String getMarketName(Locale locale);
     Map<Locale, String> getMarketNames(List<Locale> locales);
     String getOutcomeName(String outcomeId, Locale locale);
+    Map<Locale, String> getOutcomeNames(String outcomeId, List<Locale> locales);
 }
