@@ -193,11 +193,7 @@ public class GeneralModule implements Module {
      */
     @Provides @Named("SportsApiJaxbDeserializer")
     private Deserializer provideSportsApiJaxbDeserializer() {
-        try {
-            return new DeserializerImpl(sportsApiJaxbContext.createUnmarshaller(), null);
-        } catch (JAXBException e) {
-            throw new IllegalStateException("Failed to create unmarshaller for 'api', ex: ", e);
-        }
+        return new DeserializerImpl(sportsApiJaxbContext);
     }
 
     /**
@@ -207,11 +203,7 @@ public class GeneralModule implements Module {
      */
     @Provides @Named("CustomBetApiJaxbDeserializer")
     private Deserializer provideCustomBetApiJaxbDeserializer() {
-        try {
-            return new DeserializerImpl(customBetApiJaxbContext.createUnmarshaller(), customBetApiJaxbContext.createMarshaller());
-        } catch (JAXBException e) {
-            throw new IllegalStateException("Failed to create unmarshaller for 'api', ex: ", e);
-        }
+        return new DeserializerImpl(customBetApiJaxbContext);
     }
 
     /**
@@ -220,8 +212,8 @@ public class GeneralModule implements Module {
      * @return The {@link Deserializer} instance to be registered with the DI container
      */
     @Provides @Named("MessageDeserializer")
-    private Deserializer provideMessageDeserializer(@Named("MessageUnmarshaller") Unmarshaller unmarshaller) {
-            return new DeserializerImpl(unmarshaller, null);
+    private Deserializer provideMessageDeserializer() {
+        return new DeserializerImpl(messagesJaxbContext);
     }
 
     /**

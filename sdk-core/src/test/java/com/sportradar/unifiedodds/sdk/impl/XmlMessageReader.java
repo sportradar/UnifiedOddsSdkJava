@@ -15,7 +15,7 @@ public class XmlMessageReader {
     static {
         try {
             JAXBContext context = JAXBContext.newInstance("com.sportradar.uf.datamodel:com.sportradar.uf.sportsapi.datamodel:com.sportradar.uf.custombet.datamodel");
-            deserializer = new DeserializerImpl(context.createUnmarshaller(), context.createMarshaller());
+            deserializer = new DeserializerImpl(context);
         } catch (JAXBException e) {
             throw new RuntimeException("Failed to create JAXBContext", e);
         }

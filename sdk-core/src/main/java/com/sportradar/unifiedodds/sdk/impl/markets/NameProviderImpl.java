@@ -52,7 +52,8 @@ public class NameProviderImpl implements NameProvider {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Supplier<List<URN>> competitorList;
 
-    private MarketDescription marketDescription;
+    private volatile MarketDescription marketDescription;
+    private volatile Date lastReload = new Date(0);
 
     NameProviderImpl(MarketDescriptionProvider descriptorProvider,
                             ProfileCache profileCache,
@@ -371,7 +372,7 @@ public class NameProviderImpl implements NameProvider {
         if (marketDescription.getOutcomes() == null || marketDescription.getOutcomes().isEmpty()) {
             if(firstTime){
                 handleErrorCondition("Retrieved market descriptor is lacking outcomes", outcomeId, null, locales, null);
-                if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
+                if (canReload()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locales, null);
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     return getMarketDescriptionForOutcome(outcomeId, locales, false);
@@ -387,7 +388,7 @@ public class NameProviderImpl implements NameProvider {
         if (!optDesc.isPresent() || !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()) {
             if(firstTime){
                 handleErrorCondition("Retrieved market descriptor is missing outcome", outcomeId, null, locales, null);
-                if (((MarketDescriptionImpl) marketDescription).canBeFetched()) {
+                if (canReload()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locales, null);
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     return getMarketDescriptionForOutcome(outcomeId, locales, false);
@@ -400,5 +401,14 @@ public class NameProviderImpl implements NameProvider {
         }
 
         return marketDescription;
+    }
+
+    private boolean canReload() {
+        Date date = new Date();
+        boolean allow = Math.abs(date.getTime() - lastReload.getTime()) / 1000 > SdkHelper.MarketDescriptionMinFetchInterval;
+        if (allow) {
+            lastReload = date;
+        }
+        return allow;
     }
 }
