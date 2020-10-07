@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class ExportableLoadableRoundCI implements Serializable {
     private Map<Locale, String> names;
+    private Map<Locale, String> groupNames;
     private Map<Locale, String> phaseOrGroupLongNames;
     private Locale defaultLocale;
     private String type;
@@ -21,8 +22,9 @@ public class ExportableLoadableRoundCI implements Serializable {
     private List<Locale> cachedSummaryLocales;
     private List<Locale> cachedFixtureLocales;
 
-    public ExportableLoadableRoundCI(Map<Locale, String> names, Map<Locale, String> phaseOrGroupLongNames, Locale defaultLocale, String type, String group, String groupId, String otherMatchId, Integer number, Integer cupRoundMatches, Integer cupRoundMatchNumber, Integer betradarId, String phase, List<Locale> cachedSummaryLocales, List<Locale> cachedFixtureLocales) {
+    public ExportableLoadableRoundCI(Map<Locale, String> names, Map<Locale, String> groupNames, Map<Locale, String> phaseOrGroupLongNames, Locale defaultLocale, String type, String group, String groupId, String otherMatchId, Integer number, Integer cupRoundMatches, Integer cupRoundMatchNumber, Integer betradarId, String phase, List<Locale> cachedSummaryLocales, List<Locale> cachedFixtureLocales) {
         this.names = names;
+        this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
         this.defaultLocale = defaultLocale;
         this.type = type;
@@ -44,6 +46,14 @@ public class ExportableLoadableRoundCI implements Serializable {
 
     public void setNames(Map<Locale, String> names) {
         this.names = names;
+    }
+
+    public Map<Locale, String> getGroupNames() {
+        return groupNames;
+    }
+
+    public void setGroupNames(Map<Locale, String> groupNames) {
+        this.groupNames = groupNames;
     }
 
     public Map<Locale, String> getPhaseOrGroupLongNames() {

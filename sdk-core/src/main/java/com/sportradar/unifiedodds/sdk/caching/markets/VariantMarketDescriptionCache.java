@@ -25,8 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created on 15/06/2017.
- * // TODO @eti: Javadoc
+ * Single variant market description cache
  */
 public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     private final Cache<String, MarketDescriptionCI> cache;

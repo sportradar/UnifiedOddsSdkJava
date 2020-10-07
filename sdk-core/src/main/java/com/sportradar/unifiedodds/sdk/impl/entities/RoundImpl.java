@@ -66,7 +66,6 @@ public class RoundImpl implements Round {
         if (!locales.contains(locale)) {
             return null;
         }
-
         return roundCI.getName(locale);
     }
 
@@ -78,7 +77,8 @@ public class RoundImpl implements Round {
      */
     @Override
     public Map<Locale, String> getNames() {
-        return locales.stream().filter(l -> roundCI.getName(l) != null)
+        return locales.stream()
+                .filter(l -> roundCI.getName(l) != null)
                 .collect(Collectors.toMap(k -> k, roundCI::getName));
     }
 
@@ -89,7 +89,37 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getGroupName() {
-        return roundCI.getGroup();
+        if (locales.isEmpty()) {
+            return null;
+        }
+        return roundCI.getGroupName(locales.stream().findFirst().get());
+    }
+
+    /**
+     * Returns the name of the group associated with the current round
+     *
+     * @return - the name of the group associated with the current round
+     */
+    @Override
+    public String getGroupName(Locale locale) {
+        if (!locales.contains(locale)) {
+            return null;
+        }
+        return roundCI.getGroupName(locale);
+    }
+
+    /**
+     * Returns the name or group long name for the specified locale
+     *
+     * @param locale {@link Locale} specifying the language of the value
+     * @return the name or group long name if exists, or null
+     */
+    @Override
+    public String getPhaseOrGroupLongName(Locale locale) {
+        if (!locales.contains(locale)) {
+            return null;
+        }
+        return roundCI.getPhaseOrGroupLongName(locale);
     }
 
     /**
@@ -137,21 +167,6 @@ public class RoundImpl implements Round {
     }
 
     /**
-     * Returns the name or group long name for the specified locale
-     *
-     * @param locale {@link Locale} specifying the language of the value
-     * @return the name or group long name if exists, or null
-     */
-    @Override
-    public String getPhaseOrGroupLongName(Locale locale) {
-        if (!locales.contains(locale)) {
-            return null;
-        }
-
-        return roundCI.getPhaseOrGroupLongName(locale);
-    }
-
-    /**
      * Returns the id of the group associated with the current round
      *
      * @return - the id of the group associated with the current round
@@ -165,6 +180,16 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getPhase() { return roundCI.getPhase(); }
+
+    /**
+     * Returns the group of the group associated with the current round
+     *
+     * @return - the group of the group associated with the current round
+     */
+    @Override
+    public String getGroup() {
+        return roundCI.getGroup();
+    }
 
     /**
      * Returns a {@link String} describing the current {@link Round} instance

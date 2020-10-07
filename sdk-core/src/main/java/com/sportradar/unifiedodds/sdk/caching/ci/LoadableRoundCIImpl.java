@@ -36,6 +36,11 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     private final Map<Locale, String> names = Maps.newConcurrentMap();
 
     /**
+     * A {@link Map} containing round group names in different languages
+     */
+    private final Map<Locale, String> groupNames = Maps.newConcurrentMap();
+
+    /**
      * A {@link Map} containing phase or group name in different languages
      */
     private final Map<Locale, String> phaseOrGroupLongNames = Maps.newConcurrentMap();
@@ -165,6 +170,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         this(associatedEventCI, dataRouterManager, exportable.getDefaultLocale(), exceptionHandlingStrategy);
 
         this.names.putAll(exportable.getNames());
+        this.groupNames.putAll(exportable.getGroupNames());
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
         this.type = exportable.getType();
         this.group = exportable.getGroup();
@@ -330,6 +336,23 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     }
 
     /**
+     * Returns the group name for specific locale
+     *
+     * @param locale {@link Locale} specifying the language of the returned group name
+     * @return the group name if exists, or null
+     */
+    @Override
+    public String getGroupName(Locale locale) {
+        if (summaryLoadedCheck(groupNames.get(locale), locale)) {
+            return groupNames.get(locale);
+        }
+
+        initiateSummaryRequest(locale);
+
+        return groupNames.get(locale);
+    }
+
+    /**
      * Returns the name or group long name for the specified locale
      *
      * @param locale {@link Locale} specifying the language of the value
@@ -406,19 +429,47 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             betradarId = round.getBetradarId();
         }
 
+        if (round.getPhase() != null) {
+            phase = round.getPhase();
+        }
+
         if (round.getName() != null) {
             names.put(locale, round.getName());
         }
-        else{
+        else if (round.getGroupName() != null) {
+            names.put(locale, round.getGroupName());
+        }
+        else if(round.getGroupLongName() != null) {
+            names.put(locale, round.getGroupLongName());
+        }
+        else {
             names.put(locale, "");
+        }
+
+        if (round.getGroupName() != null) {
+            groupNames.put(locale, round.getGroupName());
+        }
+        else if (round.getName() != null) {
+            groupNames.put(locale, round.getName());
+        }
+        else if (round.getGroupLongName() != null) {
+            groupNames.put(locale, round.getGroupLongName());
+        }
+        else{
+            groupNames.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
         }
-
-        if (round.getPhase() != null) {
-            phase = round.getPhase();
+        else if (round.getName() != null) {
+            phaseOrGroupLongNames.put(locale, round.getName());
+        }
+        else if (round.getGroupName() != null) {
+            phaseOrGroupLongNames.put(locale, round.getGroupName());
+        }
+        else{
+            phaseOrGroupLongNames.put(locale, "");
         }
 
         cachedSummaryLocales.add(locale);
@@ -487,6 +538,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     public String toString() {
         return "LoadableRoundCIImpl{" +
                 "names=" + names +
+                ", groupNames=" + groupNames +
                 ", phaseOrGroupLongNames=" + phaseOrGroupLongNames +
                 ", defaultLocale=" + defaultLocale +
                 ", associatedEventCI=" + associatedEventCI +
@@ -512,6 +564,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     public ExportableLoadableRoundCI export() {
         return new ExportableLoadableRoundCI(
                 new HashMap<>(names),
+                new HashMap<>(groupNames),
                 new HashMap<>(phaseOrGroupLongNames),
                 defaultLocale,
                 type,

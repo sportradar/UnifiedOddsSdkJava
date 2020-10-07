@@ -38,6 +38,7 @@ public class MappingTypeProviderImpl implements MappingTypeProvider {
             case "stage":
             case "race_tournament":
             case "race_event":
+            case "competition_group":
                 return Optional.of(Stage.class);
             case "match":
                 return Optional.of(Match.class);

@@ -24,6 +24,11 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     private final Map<Locale, String> names;
 
     /**
+     * A {@link Map} containing round group names in different languages
+     */
+    private final Map<Locale, String> groupNames;
+
+    /**
      * A {@link Map} containing phase or group name in different languages
      */
     private final Map<Locale, String> phaseOrGroupLongNames;
@@ -86,6 +91,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         Preconditions.checkNotNull(locale);
 
         names = Maps.newConcurrentMap();
+        groupNames = Maps.newConcurrentMap();
         phaseOrGroupLongNames = Maps.newConcurrentMap();
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
@@ -97,6 +103,8 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
 
         this.names = Maps.newConcurrentMap();
         this.names.putAll(exportable.getNames());
+        this.groupNames = Maps.newConcurrentMap();
+        this.groupNames.putAll(exportable.getGroupNames());
         this.phaseOrGroupLongNames = Maps.newConcurrentMap();
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
         this.type = exportable.getType();
@@ -130,18 +138,46 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         cupRoundMatches = round.getCupRoundMatches();
         cupRoundMatchNumber = round.getCupRoundMatchNumber();
         betradarId = round.getBetradarId();
+        phase = round.getPhase();
 
         if (round.getName() != null) {
             names.put(locale, round.getName());
         }
+        else if (round.getGroupName() != null) {
+            names.put(locale, round.getGroupName());
+        }
+        else if(round.getGroupLongName() != null) {
+            names.put(locale, round.getGroupLongName());
+        }
+        else {
+            names.put(locale, "");
+        }
+
+        if (round.getGroupName() != null) {
+            groupNames.put(locale, round.getGroupName());
+        }
+        else if (round.getName() != null) {
+            groupNames.put(locale, round.getName());
+        }
+        else if (round.getGroupLongName() != null) {
+            groupNames.put(locale, round.getGroupLongName());
+        }
         else{
-            this.names.put(locale, "");
+            groupNames.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
         }
-        phase = round.getPhase();
+        else if (round.getName() != null) {
+            phaseOrGroupLongNames.put(locale, round.getName());
+        }
+        else if (round.getGroupName() != null) {
+            phaseOrGroupLongNames.put(locale, round.getGroupName());
+        }
+        else{
+            phaseOrGroupLongNames.put(locale, "");
+        }
     }
 
     /**
@@ -235,9 +271,16 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      * @return - Return the name if exists, or null
      */
     @Override
-    public String getName(Locale locale) {
-        return names.getOrDefault(locale, null);
-    }
+    public String getName(Locale locale) { return names.getOrDefault(locale, null); }
+
+    /**
+     * Returns the group name for specific locale
+     *
+     * @param locale - {@link Locale} specifying the language of the returned nationality
+     * @return - Return the group name if exists, or null
+     */
+    @Override
+    public String getGroupName(Locale locale) { return groupNames.getOrDefault(locale, null); }
 
     /**
      * Returns the name or group long name for the specified locale
@@ -273,6 +316,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     public String toString() {
         return "CompleteRoundCIImpl{" +
                 "names=" + names +
+                ", groupNames=" + groupNames +
                 ", phaseOrGroupLongNames=" + phaseOrGroupLongNames +
                 ", type='" + type + '\'' +
                 ", group='" + group + '\'' +
@@ -290,6 +334,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     public ExportableCompleteRoundCI export() {
         return new ExportableCompleteRoundCI(
                 new HashMap<>(names),
+                new HashMap<>(groupNames),
                 new HashMap<>(phaseOrGroupLongNames),
                 type,
                 group,

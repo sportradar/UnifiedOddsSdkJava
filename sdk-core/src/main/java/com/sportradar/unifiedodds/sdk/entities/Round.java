@@ -103,4 +103,19 @@ public interface Round {
      * @return the phase of the round
      */
      default String getPhase(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+
+
+    /**
+     * Returns the group name of the group associated with the current round
+     *
+     * @return - the group name of the group associated with the current round
+     */
+    default String getGroupName(Locale locale){ return getGroupName(); }
+
+    /**
+     * Returns the group name of the group associated with the current round
+     *
+     * @return - the group name of the group associated with the current round
+     */
+    default String getGroup(){ return null; }
 }
