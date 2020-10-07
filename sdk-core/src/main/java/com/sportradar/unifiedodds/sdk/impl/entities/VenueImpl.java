@@ -5,11 +5,14 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.entities.Hole;
 import com.sportradar.unifiedodds.sdk.entities.Venue;
 import com.sportradar.utils.URN;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -58,6 +61,8 @@ public class VenueImpl implements Venue {
 
     private final String state;
 
+    private final List<Hole> course;
+
     /**
      * Initializes a new intance of {@link VenueImpl}
      *
@@ -84,6 +89,14 @@ public class VenueImpl implements Venue {
         this.countries = locales.stream()
                 .filter(l -> venueCI.getCountryName(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getCountryName));
+
+        if(venueCI.getCourse()!= null){
+            this.course = new ArrayList<>();
+            venueCI.getCourse().forEach(f->this.course.add(new HoleImpl(f)));
+        }
+        else{
+            this.course = null;
+        }
     }
 
     /**
@@ -92,10 +105,7 @@ public class VenueImpl implements Venue {
      * @return - a unique {@link URN} identifier representing the current {@link Venue} instance
      */
     @Override
-    public URN getId() {
-        return id;
-    }
-
+    public URN getId() { return id; }
 
     /**
      * Returns the name of the venue in the specified language
@@ -104,9 +114,7 @@ public class VenueImpl implements Venue {
      * @return - the name of the venue in the specified language
      */
     @Override
-    public String getName(Locale locale) {
-        return names.get(locale);
-    }
+    public String getName(Locale locale) { return names.get(locale); }
 
     /**
      * Returns the city name in the specified language
@@ -115,9 +123,7 @@ public class VenueImpl implements Venue {
      * @return - the city name in the specified language
      */
     @Override
-    public String getCity(Locale locale) {
-        return cities.get(locale);
-    }
+    public String getCity(Locale locale) { return cities.get(locale); }
 
     /**
      * Returns the country name in the specified language
@@ -126,9 +132,7 @@ public class VenueImpl implements Venue {
      * @return - the country name in the specified language
      */
     @Override
-    public String getCountry(Locale locale) {
-        return countries.get(locale);
-    }
+    public String getCountry(Locale locale) { return countries.get(locale); }
 
     /**
      * Returns an unmodifiable {@link Map} containing venue's names in different languages
@@ -136,9 +140,7 @@ public class VenueImpl implements Venue {
      * @return - an unmodifiable {@link Map} containing venue's names in different languages
      */
     @Override
-    public Map<Locale, String> getNames() {
-        return names;
-    }
+    public Map<Locale, String> getNames() { return names; }
 
     /**
      * Returns an unmodifiable {@link Map} containing venue's city names in different languages
@@ -146,9 +148,7 @@ public class VenueImpl implements Venue {
      * @return - an unmodifiable {@link Map} containing venue's city names in different languages
      */
     @Override
-    public Map<Locale, String> getCities() {
-        return cities;
-    }
+    public Map<Locale, String> getCities() { return cities; }
 
     /**
      * Returns an unmodifiable {@link Map} containing venue's country names in different languages
@@ -156,9 +156,7 @@ public class VenueImpl implements Venue {
      * @return - an unmodifiable {@link Map} containing venue's country names in different languages
      */
     @Override
-    public Map<Locale, String> getCountries() {
-        return countries;
-    }
+    public Map<Locale, String> getCountries() { return countries; }
 
     /**
      * Returns the capacity of the venue associated with current {@link Venue} instance
@@ -166,9 +164,7 @@ public class VenueImpl implements Venue {
      * @return - the capacity of the venue, or a null if the capacity is not specified
      */
     @Override
-    public Integer getCapacity() {
-        return capacity;
-    }
+    public Integer getCapacity() { return capacity; }
 
     /**
      * Returns the map coordinates specifying the exact location of the venue represented by current {@link Venue}
@@ -176,9 +172,7 @@ public class VenueImpl implements Venue {
      * @return - the map coordinates specifying the exact location of the venue
      */
     @Override
-    public String getCoordinates() {
-        return coordinates;
-    }
+    public String getCoordinates() { return coordinates; }
 
     /**
      * Returns the associated country code
@@ -186,14 +180,13 @@ public class VenueImpl implements Venue {
      * @return the associated country code
      */
     @Override
-    public String getCountryCode() {
-        return countryCode;
-    }
+    public String getCountryCode() { return countryCode; }
 
     @Override
-    public String getState() {
-        return state;
-    }
+    public String getState() { return state; }
+
+    @Override
+    public List<Hole> getCourse() { return course; }
 
     /**
      * Returns a {@link String} describing the current {@link Venue} instance

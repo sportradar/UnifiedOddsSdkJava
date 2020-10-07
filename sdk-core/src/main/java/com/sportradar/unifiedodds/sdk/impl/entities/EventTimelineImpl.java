@@ -19,13 +19,11 @@ import java.util.stream.Collectors;
 class EventTimelineImpl implements EventTimeline {
     private final EventTimelineCI eventTimeline;
 
-
     EventTimelineImpl(EventTimelineCI eventTimeline) {
         Preconditions.checkNotNull(eventTimeline);
 
         this.eventTimeline = eventTimeline;
     }
-
 
     /**
      * Returns a chronological list of events

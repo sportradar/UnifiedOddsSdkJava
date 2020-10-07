@@ -40,7 +40,6 @@ public class EventClockImpl implements EventClock {
      */
     private final Boolean stopped;
 
-
     /**
      * Initializes a new instance of {@link EventClockImpl}
      *
@@ -59,7 +58,6 @@ public class EventClockImpl implements EventClock {
         this.remainingTimeInPeriod = remainingTimeInPeriod;
         this.stopped = stopped;
     }
-
 
     /**
      * Returns the current event time

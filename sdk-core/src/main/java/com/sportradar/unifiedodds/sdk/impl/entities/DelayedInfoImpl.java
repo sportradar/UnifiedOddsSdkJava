@@ -20,7 +20,6 @@ class DelayedInfoImpl implements DelayedInfo {
     private final int id;
     private final Map<Locale, String> descriptions;
 
-
     /**
      * Initializes a new {@link DelayedInfoImpl} instance
      *
@@ -37,7 +36,6 @@ class DelayedInfoImpl implements DelayedInfo {
                 .filter(l -> delayedInfo.getDescription(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, delayedInfo::getDescription));
     }
-
 
     /**
      * Returns the delay info identifier

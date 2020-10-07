@@ -32,7 +32,6 @@ public class CategorySummaryImpl implements CategorySummary {
      */
     private final String countryCode;
 
-
     /**
      * Initializes a new instance of the {@link CategorySummaryImpl}
      *

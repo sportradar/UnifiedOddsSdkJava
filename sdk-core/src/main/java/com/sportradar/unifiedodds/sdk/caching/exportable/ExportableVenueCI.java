@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import com.sportradar.unifiedodds.sdk.caching.ci.HoleCI;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,12 +17,13 @@ public class ExportableVenueCI extends ExportableCI {
     private String countryCode;
     private String coordinates;
     private String state;
+    private List<ExportableHoleCI> course;
 
     private List<Locale> cachedLocales;
 
     public ExportableVenueCI(String id, Map<Locale, String> names, Map<Locale, String> cityNames,
                              Map<Locale, String> countryNames, Integer capacity, String countryCode, String coordinates,
-                             List<Locale> cachedLocales, String state) {
+                             List<Locale> cachedLocales, String state, List<HoleCI> course) {
         super(id, names);
         this.cityNames = cityNames;
         this.countryNames = countryNames;
@@ -29,6 +32,12 @@ public class ExportableVenueCI extends ExportableCI {
         this.coordinates = coordinates;
         this.cachedLocales = cachedLocales;
         this.state = state;
+        if(course != null && !course.isEmpty()){
+            course.forEach(ci -> this.course.add(new ExportableHoleCI(ci.getNumber(), ci.getPar())));
+        }
+        else{
+            this.course = null;
+        }
     }
 
     public Map<Locale, String> getCityNames() {
@@ -86,4 +95,8 @@ public class ExportableVenueCI extends ExportableCI {
     public void setState(String state) {
         this.state = state;
     }
+
+    public List<ExportableHoleCI> getCourse() { return course; }
+
+    public void setCourse(List<ExportableHoleCI> course) { this.course = course; }
 }

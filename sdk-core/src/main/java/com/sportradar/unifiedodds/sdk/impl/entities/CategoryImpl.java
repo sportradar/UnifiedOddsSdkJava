@@ -24,7 +24,6 @@ public class CategoryImpl extends CategorySummaryImpl implements Category {
      */
     private final List<SportEvent> tournaments;
 
-
     /**
      * Initializes a new instance of the {@link CategoryImpl}
      *
@@ -40,7 +39,6 @@ public class CategoryImpl extends CategorySummaryImpl implements Category {
 
         this.tournaments = ImmutableList.copyOf(tournaments);
     }
-
 
     /**
      * Returns an unmodifiable {@link List} of tournaments which belong to the category represented by the current instance

@@ -55,7 +55,6 @@ public class ChildRaceImpl implements ChildRace {
         this.scheduleEndTime = childRaceCI.getScheduleEnd();
     }
 
-
     /**
      * Returns a {@link URN} instance representing the id uniquely identifying the race represented by the current instance
      *

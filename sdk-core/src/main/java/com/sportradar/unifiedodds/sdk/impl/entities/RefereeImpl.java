@@ -49,7 +49,6 @@ public class RefereeImpl implements Referee {
                 .collect(ImmutableMap.toImmutableMap(k -> k, refereeCI::getNationality));
     }
 
-
     /**
      * Returns the unique identifier of the current {@link Referee} instance
      *

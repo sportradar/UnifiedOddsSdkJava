@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableHoleCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCI;
 import com.sportradar.utils.URN;
 
@@ -47,6 +48,8 @@ public class VenueCI extends SportEntityCI {
 
     private String state;
 
+    private List<HoleCI> course;
+
     private final List<Locale> cachedLocales;
 
     /**
@@ -64,6 +67,7 @@ public class VenueCI extends SportEntityCI {
         names = new HashMap<>();
         cityNames = new HashMap<>();
         countryNames = new HashMap<>();
+        course = new ArrayList<>();
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
         merge(venue, locale);
@@ -80,6 +84,12 @@ public class VenueCI extends SportEntityCI {
         countryCode = exportable.getCountryCode();
         coordinates = exportable.getCoordinates();
         state = exportable.getState();
+        if(exportable.getCourse() != null){
+            exportable.getCourse().forEach(ci -> this.course.add(new HoleCI(ci)));
+        }
+        else{
+            this.course = null;
+        }
 
         cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
@@ -101,7 +111,12 @@ public class VenueCI extends SportEntityCI {
         countryNames.put(locale, venue.getCountryName());
         countryCode = venue.getCountryCode();
         state = venue.getState();
-
+        if(venue.getCourse() != null){
+            venue.getCourse().getHole().forEach(ci -> this.course.add(new HoleCI(ci.getNumber(), ci.getPar())));
+        }
+        else{
+            this.course = null;
+        }
         cachedLocales.add(locale);
     }
 
@@ -111,9 +126,7 @@ public class VenueCI extends SportEntityCI {
      * @param locale - {@link Locale} specifying the language of the returned name
      * @return - The name of the venue in the specified language if it exists. Null otherwise.
      */
-    public String getName(Locale locale) {
-        return names.getOrDefault(locale, null);
-    }
+    public String getName(Locale locale) { return names.getOrDefault(locale, null); }
 
     /**
      * Returns the city name of the venue in the specified language
@@ -173,6 +186,18 @@ public class VenueCI extends SportEntityCI {
         return state;
     }
 
+    /**
+     * Returns state/province of the country
+     *
+     * @return state
+     */
+    public List<HoleCI> getCourse() {
+        if(course == null || course.isEmpty()){
+            return null;
+        }
+        return course;
+    }
+
     public boolean hasTranslationsFor(List<Locale> locales) {
         Preconditions.checkNotNull(locales);
 
@@ -189,7 +214,8 @@ public class VenueCI extends SportEntityCI {
                 countryCode,
                 coordinates,
                 new ArrayList<>(cachedLocales),
-                state
+                state,
+                course
         );
     }
 }
