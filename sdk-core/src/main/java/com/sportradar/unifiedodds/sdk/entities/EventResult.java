@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Defines methods used by classes that provide event result information
@@ -146,4 +147,16 @@ public interface EventResult {
     {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
+
+    /**
+     * Returns the distance
+     * @return the distance
+     */
+    default Double getDistance() { return null; }
+
+    /**
+     * Returns the competitor results
+     * @return the competitor results
+     */
+    default List<CompetitorResult> getCompetitorResults() { return null; }
 }

@@ -7,10 +7,13 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFResultType;
 import com.sportradar.uf.sportsapi.datamodel.SAPIStageResult;
+import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents an event result entry
@@ -35,6 +38,8 @@ public class EventResultImpl implements EventResult {
     private final Double sprintDecimal;
     private final Double climberDecimal;
     private final Integer grid;
+    private final Double distance;
+    private final List<CompetitorResult> competitorResults;
 
     public EventResultImpl(SAPIStageResult.SAPICompetitor c) {
         Preconditions.checkNotNull(c);
@@ -63,6 +68,16 @@ public class EventResultImpl implements EventResult {
         awayScore = null;
         matchStatus = null;
         homeScore = null;
+
+        distance = c.getDistance();
+
+        if(c.getResult() != null && !c.getResult().isEmpty()){
+            competitorResults = new ArrayList<>();
+            c.getResult().forEach(result -> this.competitorResults.add(new CompetitorResultImpl(result)));
+        }
+        else{
+            competitorResults = null;
+        }
     }
 
     public EventResultImpl(UFResultType r) {
@@ -88,6 +103,8 @@ public class EventResultImpl implements EventResult {
         sprintDecimal = null;
         climberDecimal = null;
         grid = null;
+        distance = null;
+        competitorResults = null;
     }
 
     @Override
@@ -185,12 +202,25 @@ public class EventResultImpl implements EventResult {
         return grid;
     }
 
+    /**
+     * Returns the distance
+     * @return the distance
+     */
+    @Override
+    public Double getDistance() { return distance; }
+
+    /**
+     * Returns the competitor results
+     * @return the competitor results
+     */
+    @Override
+    public List<CompetitorResult> getCompetitorResults() { return competitorResults; }
+
     private static BigInteger assignIfFullNumber(Double value) {
         if (value != null && (value == Math.floor(value)) && !Double.isInfinite(value)) {
             // integer type
             return BigDecimal.valueOf(value).toBigInteger();
         }
-
         return null;
     }
 
