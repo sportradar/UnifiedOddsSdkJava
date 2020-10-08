@@ -48,28 +48,28 @@ public enum EventStatus {
      * reporting the match will likely take place anyhow, and after the match has been played
      * Sportradar will likely enter the results and the match will be moved to closed/finished
      */
-    Abandoned("abandoned", 6),
+    Abandoned("abandoned", 9),
 
     /**
      * Delayed - if a match has passed its scheduled start time but is delayed, unknown when it will
      * start this is something that often happens in Tennis
      */
-    Delayed("delayed", 7),
+    Delayed("delayed", 6),
 
     /**
      * Unknown - if a hitherto unsupported sport-event-status is received
      */
-    Unknown("unknown", 8),
+    Unknown("unknown", 10),
 
     /**
      * Postponed
      */
-    Postponed("postponed", 9),
+    Postponed("postponed", 8),
 
     /**
      * Interrupted
      */
-    Interrupted("interrupted", 10);
+    Interrupted("interrupted", 7);
 
 
     private String apiName;
