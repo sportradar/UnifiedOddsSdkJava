@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 
 import java.util.Date;
 import java.util.List;
@@ -18,12 +19,14 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
     private ExportableSportEventConditionsCI conditions;
     private Map<String, Map<String, String>> competitorsReferences;
     private String liveOdds;
+    private SportEventType sportEventType;
 
     ExportableCompetitionCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
                             Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus,
                             List<String> competitorIds, ExportableVenueCI venue,
                             ExportableSportEventConditionsCI conditions,
-                            Map<String, Map<String, String>> competitorsReferences, String liveOdds) {
+                            Map<String, Map<String, String>> competitorsReferences, String liveOdds,
+                            SportEventType sportEventType) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.bookingStatus = bookingStatus;
         this.competitorIds = competitorIds;
@@ -31,6 +34,7 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         this.conditions = conditions;
         this.competitorsReferences = competitorsReferences;
         this.liveOdds = liveOdds;
+        this.sportEventType = sportEventType;
     }
 
     public BookingStatus getBookingStatus() {
@@ -69,9 +73,7 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         return competitorsReferences;
     }
 
-    public void setCompetitorsReferences(Map<String, Map<String, String>> competitorsReferences) {
-        this.competitorsReferences = competitorsReferences;
-    }
+    public void setCompetitorsReferences(Map<String, Map<String, String>> competitorsReferences) { this.competitorsReferences = competitorsReferences; }
 
     public String getLiveOdds() {
         return liveOdds;
@@ -80,4 +82,8 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
     public void setLiveOdds(String liveOdds) {
         this.liveOdds = liveOdds;
     }
+
+    public SportEventType getSportEventType() { return sportEventType; }
+
+    public void setSportEventType(SportEventType sportEventType) { this.sportEventType = sportEventType; }
 }

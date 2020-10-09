@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
 
 import java.util.Date;
@@ -22,9 +23,11 @@ public class ExportableTournamentStageCI extends ExportableStageCI {
                                        ExportableSportEventConditionsCI conditions,
                                        Map<String, Map<String, String>> competitorsReferences, String parentStageId,
                                        List<String> stagesIds, StageType stageType, String categoryId,
-                                       Locale defaultLocale, List<Locale> cachedLocales, String liveOdds) {
+                                       Locale defaultLocale, List<Locale> cachedLocales, String liveOdds,
+                                       SportEventType sportEventType) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
-              conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId, liveOdds);
+              conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId, liveOdds,
+              sportEventType, null);
         this.defaultLocale = defaultLocale;
         this.cachedLocales = cachedLocales;
     }

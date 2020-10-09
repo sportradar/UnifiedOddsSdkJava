@@ -596,6 +596,22 @@ public class MatchImpl extends SportEventImpl implements Match {
     }
 
     /**
+     * Returns a {@link SportEventType} indicating the type of the associated event
+     * @return a {@link SportEventType} indicating the type of the associated event
+     */
+    @Override
+    public SportEventType getSportEventType(){
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getSportEventType", null);
+            return null;
+        }
+
+        return cacheItem.getSportEventType(locales);
+    }
+
+    /**
      * Returns a {@link List} which contains exactly 2 competitors (if available), which is a requirement
      * for an event of type match
      *

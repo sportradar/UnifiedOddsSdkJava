@@ -5,6 +5,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.SportEventType;
+import com.sportradar.unifiedodds.sdk.entities.StageType;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
     private List<Locale> loadedSummaryLocales;
     private List<Locale> loadedCompetitorLocales;
     private Map<Locale, ExportableEventTimelineCI> eventTimelines;
+    private StageType stageType;
 
     public ExportableMatchCI(String id,
                              Map<Locale, String> names,
@@ -49,9 +52,11 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
                              List<Locale> loadedSummaryLocales,
                              List<Locale> loadedCompetitorLocales,
                              Map<Locale, ExportableEventTimelineCI> eventTimelines,
-                             String liveOdds) {
+                             String liveOdds,
+                             SportEventType sportEventType,
+                             StageType stageType) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
-              conditions, competitorsReferences, liveOdds);
+              conditions, competitorsReferences, liveOdds, sportEventType);
         this.defaultLocale = defaultLocale;
         this.fixture = fixture;
         this.competitorQualifiers = competitorQualifiers;
@@ -65,6 +70,7 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         this.loadedSummaryLocales = loadedSummaryLocales;
         this.loadedCompetitorLocales = loadedCompetitorLocales;
         this.eventTimelines = eventTimelines;
+        this.stageType = stageType;
     }
 
     public Locale getDefaultLocale() {
@@ -156,4 +162,12 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
     }
 
     public void setEventTimelines(Map<Locale, ExportableEventTimelineCI> eventTimelines) { this.eventTimelines = eventTimelines; }
+
+    public StageType getStageType() {
+        return stageType;
+    }
+
+    public void setStageType(StageType stageType) {
+        this.stageType = stageType;
+    }
 }

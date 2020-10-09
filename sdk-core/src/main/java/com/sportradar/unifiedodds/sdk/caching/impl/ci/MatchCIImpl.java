@@ -20,10 +20,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableMatchCI;
-import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
-import com.sportradar.unifiedodds.sdk.entities.EventStatus;
-import com.sportradar.unifiedodds.sdk.entities.Fixture;
+import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -145,6 +142,16 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private String liveOdds;
 
     /**
+     * The stage type
+     */
+    private StageType stageType;
+
+    /**
+     * The sport event type
+     */
+    private SportEventType sportEventType;
+
+    /**
      * A {@link List} indicating which fixture translations were already fetched
      */
     private final List<Locale> loadedFixtureLocales = Collections.synchronizedList(new ArrayList<>());
@@ -248,7 +255,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         loadedFixtureLocales.add(dataLocale);
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIMatchSummaryEndpoint data, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy,
+                SAPIMatchSummaryEndpoint data, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
 
         Preconditions.checkNotNull(data);
@@ -267,7 +275,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         loadedSummaryLocales.add(dataLocale);
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale,
+                ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -295,6 +304,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         }else{
             this.sportEventNames.put(dataLocale, "");
         }
+
+        this.stageType = StageType.mapFromApiValue(endpointData.getStageType());
+
+        this.liveOdds = null;
+
+        this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
     }
 
     MatchCIImpl(ExportableMatchCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy, Cache<URN, Date> fixtureTimestampCache) {
@@ -336,6 +351,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.eventTimelines.putAll(exportable.getEventTimelines().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> new EventTimelineCI(e.getValue()))));
         this.liveOdds = exportable.getLiveOdds();
+        this.stageType = exportable.getStageType();
     }
 
     /**
@@ -807,6 +823,21 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     @Override
+    public SportEventType getSportEventType(List<Locale> locales) {
+        if (sportEventType != null) {
+            return sportEventType;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return null;
+        }
+
+        requestMissingSummaryData(locales, false);
+
+        return sportEventType;
+    }
+
+    @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
         if (endpointData instanceof SAPIFixture) {
             internalMerge((SAPIFixture) endpointData, dataLocale);
@@ -868,6 +899,15 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 : URN.parse(sportEvent.getReplacedBy());
         if(sportEvent.getLiveodds() != null){
             this.liveOdds = sportEvent.getLiveodds();
+        }
+        if(sportEvent.getLiveodds() != null){
+            this.liveOdds = sportEvent.getLiveodds();
+        }
+        if(sportEvent.getStageType() != null){
+            this.stageType = StageType.mapFromApiValue(sportEvent.getStageType());
+        }
+        if(sportEvent.getType() != null){
+            this.sportEventType = SportEventType.mapFromApiValue(sportEvent.getType());
         }
 
         constructEventName(currentLocale, sportEvent.getCompetitors());
@@ -1106,6 +1146,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         if(sportEvent.getLiveodds() != null) {
             this.liveOdds = sportEvent.getLiveodds();
         }
+        if(sportEvent.getStageType() != null){
+            this.stageType = StageType.mapFromApiValue(sportEvent.getStageType());
+        }
+        if(sportEvent.getType() != null){
+            this.sportEventType = SportEventType.mapFromApiValue(sportEvent.getType());
+        }
 
         constructEventName(locale, sportEvent.getCompetitors());
     }
@@ -1132,6 +1178,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         }
         else{
             this.sportEventNames.put(dataLocale, "");
+        }
+
+        if(endpointData.getStageType() != null){
+            this.stageType = StageType.mapFromApiValue(endpointData.getStageType());
+        }
+        if(endpointData.getType() != null){
+            this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
         }
     }
 
@@ -1259,7 +1312,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 new ArrayList<>(loadedCompetitorLocales),
                 eventTimelines.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
                                                                             e -> e.getValue().export())),
-                liveOdds
+                liveOdds,
+                sportEventType,
+                stageType
         );
     }
 }

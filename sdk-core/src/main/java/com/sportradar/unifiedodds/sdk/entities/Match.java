@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -108,4 +109,10 @@ public interface Match extends Competition {
      * @return the liveOdds
      */
     default String getLiveOdds(){ return null; }
+
+    /**
+     * Returns a {@link SportEventType} indicating the type of the associated event
+     * @return a {@link SportEventType} indicating the type of the associated event
+     */
+    default SportEventType getSportEventType() { return null; }
 }

@@ -1,6 +1,7 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
 
 import java.util.Date;
@@ -13,18 +14,21 @@ public class ExportableStageCI extends ExportableCompetitionCI {
     private List<String> stagesIds;
     private StageType stageType;
     private String categoryId;
+    private List<String> additionalParentsIds;
 
     ExportableStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
                       Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus, List<String> competitorIds,
                       ExportableVenueCI venue, ExportableSportEventConditionsCI conditions,
                       Map<String, Map<String, String>> competitorsReferences, String parentStageId, List<String> stagesIds,
-                      StageType stageType, String categoryId, String liveOdds) {
+                      StageType stageType, String categoryId, String liveOdds, SportEventType sportEventType,
+                      List<String> additionalParentsIds) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
-              conditions, competitorsReferences, liveOdds);
+              conditions, competitorsReferences, liveOdds, sportEventType);
         this.parentStageId = parentStageId;
         this.stagesIds = stagesIds;
         this.stageType = stageType;
         this.categoryId = categoryId;
+        this.additionalParentsIds = additionalParentsIds;
     }
 
     public String getParentStageId() {
@@ -58,4 +62,9 @@ public class ExportableStageCI extends ExportableCompetitionCI {
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
+
+    public List<String> getAdditionalParentsIds() { return additionalParentsIds; }
+
+    public void setAdditionalParentsIds(List<String> additionalParentsIds) { this.additionalParentsIds =
+            additionalParentsIds; }
 }

@@ -493,6 +493,50 @@ public class StageImpl extends SportEventImpl implements Stage {
     }
 
     /**
+     * Returns a {@link SportEventType} indicating the type of the associated event
+     * @return a {@link SportEventType} indicating the type of the associated event
+     */
+    @Override
+    public SportEventType getSportEventType(){
+        StageCI cacheItem = loadStageCI();
+
+        if (cacheItem == null) {
+            handleException("getSportEventType", null);
+            return null;
+        }
+
+        return cacheItem.getSportEventType(locales);
+    }
+
+    /**
+     * Returns a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
+     * @return a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
+     */
+    @Override
+    public List<Stage> getAdditionalParentStages() {
+        StageCI cacheItem = loadStageCI();
+
+        if (cacheItem == null) {
+            handleException("getAdditionalParentStages", null);
+            return null;
+        }
+
+        List<URN> stageIds = cacheItem.getAdditionalParentStages(locales);
+        if(stageIds != null && !stageIds.isEmpty()){
+            List<Stage> results = new ArrayList<>();
+            stageIds.forEach(f->results.add(new StageImpl(f,
+                                                          sportId,
+                                                          sportEventCache,
+                                                          sportEventStatusFactory,
+                                                          sportEntityFactory,
+                                                          locales,
+                                                          exceptionHandlingStrategy)));
+            return results;
+        }
+        return null;
+    }
+
+    /**
      * Returns a {@link String} describing the current {@link Stage} instance
      *
      * @return - a {@link String} describing the current {@link Stage} instance

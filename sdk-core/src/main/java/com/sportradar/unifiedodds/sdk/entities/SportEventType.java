@@ -16,5 +16,20 @@ public enum SportEventType {
     /**
      * Indicates a child sport event type(a specific stage in multi-stage race event, ...)
      */
-    CHILD
+    CHILD;
+
+    public static SportEventType mapFromApiValue(String str) {
+        if(str == null) {
+            return null;
+        }
+
+        switch (str.toLowerCase()) {
+            case "child":
+                return CHILD;
+            case "parent":
+                return PARENT;
+        }
+
+        return null;
+    }
 }

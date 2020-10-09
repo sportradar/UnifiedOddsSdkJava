@@ -8,6 +8,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
+import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.utils.URN;
 
 import java.util.List;
@@ -106,4 +107,11 @@ public interface MatchCI extends CompetitionCI {
      * @return the liveOdds
      */
     String getLiveOdds(List<Locale> locales);
+
+    /**
+     * Returns a {@link SportEventType} indicating the type of the associated event
+     * @param locales the {@link Locale}s in which the data should be provided
+     * @return a {@link SportEventType} indicating the type of the associated event
+     */
+    SportEventType getSportEventType(List<Locale> locales);
 }
