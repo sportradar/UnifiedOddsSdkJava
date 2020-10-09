@@ -51,4 +51,11 @@ public interface StageCI extends CompetitionCI {
      * @return the {@link URN} specifying the id of the parent category
      */
     URN getCategoryId();
+
+    /**
+     * Returns the liveOdds
+     * @param locales the {@link Locale}s in which the data should be provided
+     * @return the liveOdds
+     */
+    String getLiveOdds(List<Locale> locales);
 }

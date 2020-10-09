@@ -95,4 +95,17 @@ public interface Match extends Competition {
      * @return a {@link DelayedInfo} instance describing information about a possible delay
      */
     DelayedInfo getDelayedInfo();
+
+    /**
+     * Returns a {@link CoverageInfo} instance
+     *
+     * @return a {@link CoverageInfo} instance
+     */
+    default CoverageInfo getCoverageInfo(){ return null; }
+
+    /**
+     * Returns the liveOdds
+     * @return the liveOdds
+     */
+    default String getLiveOdds(){ return null; }
 }

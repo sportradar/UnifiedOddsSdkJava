@@ -4,11 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.DelayedInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
 import com.sportradar.utils.URN;
 
@@ -72,6 +70,14 @@ public interface MatchCI extends CompetitionCI {
     DelayedInfoCI getDelayedInfo(List<Locale> locales);
 
     /**
+     * Returns a {@link CoverageInfo} instance
+     *
+     * @param locales the {@link Locale}s in which the data should be provided
+     * @return a {@link CoverageInfo} instance
+     */
+     CoverageInfoCI getCoverageInfo(List<Locale> locales);
+
+    /**
      * Returns the associated event timeline
      * (the timeline is cached only after the event status indicates that the event has finished)
      *
@@ -93,4 +99,11 @@ public interface MatchCI extends CompetitionCI {
      * @return list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
      */
     Map<URN, Integer> getCompetitorsDivisions();
+
+    /**
+     * Returns the liveOdds
+     * @param locales the {@link Locale}s in which the data should be provided
+     * @return the liveOdds
+     */
+    String getLiveOdds(List<Locale> locales);
 }

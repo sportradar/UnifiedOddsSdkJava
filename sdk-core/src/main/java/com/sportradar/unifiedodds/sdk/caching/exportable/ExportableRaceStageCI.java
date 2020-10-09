@@ -18,8 +18,16 @@ public class ExportableRaceStageCI extends ExportableStageCI {
     private List<Locale> loadedFixtureLocales;
     private List<Locale> loadedCompetitorLocales;
 
-    public ExportableRaceStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus, List<String> competitorIds, ExportableVenueCI venue, ExportableSportEventConditionsCI conditions, Map<String, Map<String, String>> competitorsReferences, String parentStageId, List<String> stagesIds, StageType stageType, String categoryId, Locale defaultLocale, List<Locale> loadedSummaryLocales, List<Locale> loadedFixtureLocales, List<Locale> loadedCompetitorLocales) {
-        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue, conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId);
+    public ExportableRaceStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
+                                 Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus,
+                                 List<String> competitorIds, ExportableVenueCI venue,
+                                 ExportableSportEventConditionsCI conditions,
+                                 Map<String, Map<String, String>> competitorsReferences, String parentStageId,
+                                 List<String> stagesIds, StageType stageType, String categoryId, Locale defaultLocale
+            , List<Locale> loadedSummaryLocales, List<Locale> loadedFixtureLocales,
+                                 List<Locale> loadedCompetitorLocales, String liveOdds) {
+        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
+              conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId, liveOdds);
         this.defaultLocale = defaultLocale;
         this.loadedSummaryLocales = loadedSummaryLocales;
         this.loadedFixtureLocales = loadedFixtureLocales;

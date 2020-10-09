@@ -17,14 +17,20 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
     private ExportableVenueCI venue;
     private ExportableSportEventConditionsCI conditions;
     private Map<String, Map<String, String>> competitorsReferences;
+    private String liveOdds;
 
-    ExportableCompetitionCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus, List<String> competitorIds, ExportableVenueCI venue, ExportableSportEventConditionsCI conditions, Map<String, Map<String, String>> competitorsReferences) {
+    ExportableCompetitionCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
+                            Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus,
+                            List<String> competitorIds, ExportableVenueCI venue,
+                            ExportableSportEventConditionsCI conditions,
+                            Map<String, Map<String, String>> competitorsReferences, String liveOdds) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.bookingStatus = bookingStatus;
         this.competitorIds = competitorIds;
         this.venue = venue;
         this.conditions = conditions;
         this.competitorsReferences = competitorsReferences;
+        this.liveOdds = liveOdds;
     }
 
     public BookingStatus getBookingStatus() {
@@ -65,5 +71,13 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
 
     public void setCompetitorsReferences(Map<String, Map<String, String>> competitorsReferences) {
         this.competitorsReferences = competitorsReferences;
+    }
+
+    public String getLiveOdds() {
+        return liveOdds;
+    }
+
+    public void setLiveOdds(String liveOdds) {
+        this.liveOdds = liveOdds;
     }
 }

@@ -14,8 +14,13 @@ public class ExportableStageCI extends ExportableCompetitionCI {
     private StageType stageType;
     private String categoryId;
 
-    ExportableStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus, List<String> competitorIds, ExportableVenueCI venue, ExportableSportEventConditionsCI conditions, Map<String, Map<String, String>> competitorsReferences, String parentStageId, List<String> stagesIds, StageType stageType, String categoryId) {
-        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue, conditions, competitorsReferences);
+    ExportableStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
+                      Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus, List<String> competitorIds,
+                      ExportableVenueCI venue, ExportableSportEventConditionsCI conditions,
+                      Map<String, Map<String, String>> competitorsReferences, String parentStageId, List<String> stagesIds,
+                      StageType stageType, String categoryId, String liveOdds) {
+        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
+              conditions, competitorsReferences, liveOdds);
         this.parentStageId = parentStageId;
         this.stagesIds = stagesIds;
         this.stageType = stageType;

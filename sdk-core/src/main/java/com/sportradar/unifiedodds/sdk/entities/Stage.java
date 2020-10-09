@@ -45,4 +45,10 @@ public interface Stage extends Competition {
      * @return a {@link StageType} indicating the type of the associated stage
      */
     StageType getStageType();
+
+    /**
+     * Returns the liveOdds
+     * @return the liveOdds
+     */
+    default String getLiveOdds(){ return null; }
 }

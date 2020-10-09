@@ -9,8 +9,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
 import com.sportradar.uf.sportsapi.datamodel.SAPICoverageInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDelayedInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +52,15 @@ public class CoverageInfoCI {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(coverageInfo.getLevel()));
 
         merge(coverageInfo);
+    }
+
+    public CoverageInfoCI(ExportableCoverageInfoCI coverageInfo) {
+        Preconditions.checkNotNull(coverageInfo);
+
+        level = coverageInfo.getLevel();
+        isLive = coverageInfo.isLive();
+        includes = coverageInfo.getIncludes();
+        coveredFrom = coverageInfo.getCoveredFrom();
     }
 
     /**
@@ -115,5 +128,9 @@ public class CoverageInfoCI {
             default:
                 return null;
         }
+    }
+
+    public ExportableCoverageInfoCI export() {
+        return new ExportableCoverageInfoCI(level, isLive, includes, coveredFrom);
     }
 }

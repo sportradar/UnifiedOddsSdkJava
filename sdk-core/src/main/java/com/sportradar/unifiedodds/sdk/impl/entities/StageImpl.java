@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
+import com.sportradar.unifiedodds.sdk.caching.MatchCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.StageCI;
@@ -473,6 +474,22 @@ public class StageImpl extends SportEventImpl implements Stage {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the liveOdds
+     * @return the liveOdds
+     */
+    @Override
+    public String getLiveOdds(){
+        StageCI cacheItem = loadStageCI();
+
+        if (cacheItem == null) {
+            handleException("getLiveOdds", null);
+            return null;
+        }
+
+        return cacheItem.getLiveOdds(locales);
     }
 
     /**

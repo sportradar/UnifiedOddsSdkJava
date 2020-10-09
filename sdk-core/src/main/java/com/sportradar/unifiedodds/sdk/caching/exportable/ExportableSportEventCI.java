@@ -14,7 +14,12 @@ public class ExportableSportEventCI extends ExportableCI {
     private Boolean startTimeTbd;
     private String replacedBy;
 
-    ExportableSportEventCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy) {
+    ExportableSportEventCI(String id, Map<Locale,
+                           String> names,
+                           Date scheduled,
+                           Date scheduledEnd,
+                           Boolean startTimeTbd,
+                           String replacedBy) {
         super(id, names);
         this.scheduled = scheduled;
         this.scheduledEnd = scheduledEnd;

@@ -561,6 +561,41 @@ public class MatchImpl extends SportEventImpl implements Match {
     }
 
     /**
+     * Returns a {@link CoverageInfo} instance
+     *
+     * @return a {@link CoverageInfo} instance
+     */
+    @Override
+    public CoverageInfo getCoverageInfo(){
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getCoverageInfo", null);
+            return null;
+        }
+
+        CoverageInfoCI coverageInfo = cacheItem.getCoverageInfo(locales);
+
+        return coverageInfo == null ? null : new CoverageInfoImpl(coverageInfo);
+    }
+
+    /**
+     * Returns the liveOdds
+     * @return the liveOdds
+     */
+    @Override
+    public String getLiveOdds(){
+        MatchCI cacheItem = loadMatchCI();
+
+        if (cacheItem == null) {
+            handleException("getLiveOdds", null);
+            return null;
+        }
+
+        return cacheItem.getLiveOdds(locales);
+    }
+
+    /**
      * Returns a {@link List} which contains exactly 2 competitors (if available), which is a requirement
      * for an event of type match
      *

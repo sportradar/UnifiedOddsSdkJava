@@ -16,8 +16,15 @@ public class ExportableTournamentStageCI extends ExportableStageCI {
     private Locale defaultLocale;
     private List<Locale> cachedLocales;
 
-    public ExportableTournamentStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus, List<String> competitorIds, ExportableVenueCI venue, ExportableSportEventConditionsCI conditions, Map<String, Map<String, String>> competitorsReferences, String parentStageId, List<String> stagesIds, StageType stageType, String categoryId, Locale defaultLocale, List<Locale> cachedLocales) {
-        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue, conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId);
+    public ExportableTournamentStageCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
+                                       Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus,
+                                       List<String> competitorIds, ExportableVenueCI venue,
+                                       ExportableSportEventConditionsCI conditions,
+                                       Map<String, Map<String, String>> competitorsReferences, String parentStageId,
+                                       List<String> stagesIds, StageType stageType, String categoryId,
+                                       Locale defaultLocale, List<Locale> cachedLocales, String liveOdds) {
+        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
+              conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId, liveOdds);
         this.defaultLocale = defaultLocale;
         this.cachedLocales = cachedLocales;
     }

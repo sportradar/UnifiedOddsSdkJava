@@ -101,6 +101,11 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private URN categoryId;
 
     /**
+     * The liveOdds
+     */
+    private String liveOdds;
+
+    /**
      * A {@link List} of locales that are already fully cached - only when the full tournament info endpoint is cached
      */
     private List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
@@ -143,6 +148,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
                     SdkHelper.toDate(tournamentLength.getEndDate());
         }
+        this.liveOdds = null;
     }
 
     TournamentStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
@@ -177,6 +183,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.sportEventNames.putAll(exportable.getNames());
         this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
         this.cachedLocales.addAll(exportable.getCachedLocales());
+        this.liveOdds = exportable.getLiveOdds();
     }
 
     /**
@@ -278,6 +285,9 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
 
         return categoryId;
     }
+
+    @Override
+    public String getLiveOdds(List<Locale> locales) { return liveOdds; }
 
     /**
      * Returns a {@link BookingStatus} enum member providing booking status of the current instance
@@ -587,7 +597,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                 StageType.Parent,
                 categoryId != null ? categoryId.toString() : null,
                 defaultLocale,
-                new ArrayList<>(cachedLocales)
+                new ArrayList<>(cachedLocales),
+                liveOdds
         );
     }
 }

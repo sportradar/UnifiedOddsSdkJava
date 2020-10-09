@@ -21,6 +21,7 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableMatchCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
+import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
@@ -129,9 +130,19 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private DelayedInfoCI delayedInfo;
 
     /**
+     * A {@link CoverageInfoCI} instance
+     */
+    private CoverageInfoCI coverageInfo;
+
+    /**
      * A {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
      */
     private SportEventConditionsCI conditions;
+
+    /**
+     * The liveOdds
+     */
+    private String liveOdds;
 
     /**
      * A {@link List} indicating which fixture translations were already fetched
@@ -231,6 +242,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         constructWithSportEventData(data, dataLocale, true);
 
         this.delayedInfo = data.getDelayedInfo() == null ? null : new DelayedInfoCI(data.getDelayedInfo(), dataLocale);
+        this.coverageInfo = data.getCoverageInfo() == null ? null : new CoverageInfoCI(data.getCoverageInfo());
         this.fixture = new FixtureImpl(data);
 
         loadedFixtureLocales.add(dataLocale);
@@ -247,6 +259,10 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.conditions = data.getSportEventConditions() == null
                 ? null
                 : new SportEventConditionsCI(data.getSportEventConditions(), dataLocale);
+
+        this.coverageInfo = data.getCoverageInfo() == null
+                ? null
+                : new CoverageInfoCI(data.getCoverageInfo());
 
         loadedSummaryLocales.add(dataLocale);
     }
@@ -313,11 +329,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.tournamentRound = exportable.getTournamentRound() != null ? new LoadableRoundCIImpl(this, exportable.getTournamentRound(), dataRouterManager, exceptionHandlingStrategy) : null;
         this.season = exportable.getSeason() != null ? new SeasonCI(exportable.getSeason()) : null;
         this.delayedInfo = exportable.getDelayedInfo() != null ? new DelayedInfoCI(exportable.getDelayedInfo()) : null;
+        this.coverageInfo = exportable.getCoverageInfo() != null ? new CoverageInfoCI(exportable.getCoverageInfo()) : null;
         this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
         this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
         this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
         this.eventTimelines.putAll(exportable.getEventTimelines().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> new EventTimelineCI(e.getValue()))));
+        this.liveOdds = exportable.getLiveOdds();
     }
 
     /**
@@ -520,6 +538,26 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         requestMissingFixtureData(locales);
 
         return delayedInfo;
+    }
+
+    /**
+     * Returns a {@link CoverageInfo} instance
+     *
+     * @return a {@link CoverageInfo} instance
+     */
+    @Override
+    public CoverageInfoCI getCoverageInfo(List<Locale> locales) {
+        if (coverageInfo != null) {
+            return coverageInfo;
+        }
+
+        if (!loadedSummaryLocales.isEmpty() || !loadedFixtureLocales.isEmpty()) {
+            return null;
+        }
+
+        requestMissingSummaryData(locales, false);
+
+        return coverageInfo;
     }
 
     /**
@@ -754,6 +792,21 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     @Override
+    public String getLiveOdds(List<Locale> locales) {
+        if (liveOdds != null) {
+            return liveOdds;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return null;
+        }
+
+        requestMissingSummaryData(locales, false);
+
+        return liveOdds;
+    }
+
+    @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
         if (endpointData instanceof SAPIFixture) {
             internalMerge((SAPIFixture) endpointData, dataLocale);
@@ -785,7 +838,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @param currentLocale the {@link Locale} in which the data is provided
      */
     private void constructWithSportEventData(SAPISportEvent sportEvent, Locale currentLocale, boolean isFixtureEndpoint) {
-        this.bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
+        if(this.bookingStatus == null) {
+            this.bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
+        }
         this.scheduled = sportEvent.getScheduled() == null
                 ? null
                 : SdkHelper.toDate(sportEvent.getScheduled());
@@ -811,6 +866,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.replacedBy = sportEvent.getReplacedBy() == null
                 ? null
                 : URN.parse(sportEvent.getReplacedBy());
+        if(sportEvent.getLiveodds() != null){
+            this.liveOdds = sportEvent.getLiveodds();
+        }
 
         constructEventName(currentLocale, sportEvent.getCompetitors());
     }
@@ -916,6 +974,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 delayedInfo.merge(fixtureData.getDelayedInfo(), locale);
             }
         }
+        if (fixtureData.getCoverageInfo() != null) {
+            coverageInfo = new CoverageInfoCI(fixtureData.getCoverageInfo());
+        }
 
         fixture = new FixtureImpl(fixtureData);
 
@@ -945,6 +1006,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 conditions.merge(summaryEndpoint.getSportEventConditions(), locale);
             }
         }
+        if (summaryEndpoint.getCoverageInfo() != null) {
+            coverageInfo = new CoverageInfoCI(summaryEndpoint.getCoverageInfo());
+        }
 
         loadedSummaryLocales.add(locale);
     }
@@ -971,6 +1035,10 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
         if (endpointData.getTimeline() != null) {
             eventTimelines.put(dataLocale,new EventTimelineCI(endpointData.getTimeline(), dataLocale, isTimelineFinalized(endpointData)));
+        }
+
+        if (endpointData.getCoverageInfo() != null) {
+            coverageInfo = new CoverageInfoCI(endpointData.getCoverageInfo());
         }
     }
 
@@ -1033,6 +1101,10 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             } else {
                 venue.merge(sportEvent.getVenue(), locale);
             }
+        }
+
+        if(sportEvent.getLiveodds() != null) {
+            this.liveOdds = sportEvent.getLiveodds();
         }
 
         constructEventName(locale, sportEvent.getCompetitors());
@@ -1181,10 +1253,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 tournamentRound != null ? ((LoadableRoundCIImpl) tournamentRound).export() : null,
                 season != null ? season.export() : null,
                 delayedInfo != null ? delayedInfo.export() : null,
+                coverageInfo != null ? coverageInfo.export() : null,
                 new ArrayList<>(loadedFixtureLocales),
                 new ArrayList<>(loadedSummaryLocales),
                 new ArrayList<>(loadedCompetitorLocales),
-                eventTimelines.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().export()))
+                eventTimelines.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                                                                            e -> e.getValue().export())),
+                liveOdds
         );
     }
 }

@@ -173,6 +173,11 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      */
     private URN replacedBy;
 
+    /**
+     * The liveOdds
+     */
+    private String liveOdds;
+
     RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -226,6 +231,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.stageType = StageType.mapFromApiValue(endpointData.getType());
 
         this.fixtureTimestampCache = fixtureTimestampCache;
+
+        this.liveOdds = endpointData.getLiveodds();
     }
 
     RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIStageSummaryEndpoint endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
@@ -241,10 +248,6 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.conditions = endpointData.getSportEvent().getSportEventConditions() == null ?
                 null :
                 new SportEventConditionsCI(endpointData.getSportEvent().getSportEventConditions(), dataLocale);
-
-//        if (endpointData.getSportEventStatus() != null) {
-//            this.sportEventStatusDTO = new SportEventStatusDTO(endpointData.getSportEventStatus());
-//        }
 
         loadedSummaryLocales.add(dataLocale);
     }
@@ -324,6 +327,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
         this.startTimeTbd = exportable.getStartTimeTbd();
         this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
+        this.liveOdds = exportable.getLiveOdds();
     }
 
     /**
@@ -678,6 +682,21 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 : ImmutableMap.copyOf(competitorsReferences);
     }
 
+    @Override
+    public String getLiveOdds(List<Locale> locales) {
+        if (liveOdds != null) {
+            return liveOdds;
+        }
+
+        if (!loadedSummaryLocales.isEmpty()) {
+            return null;
+        }
+
+        requestMissingSummaryData(locales, false);
+
+        return liveOdds;
+    }
+
     /**
      * Merges the current instance with the provided {@link SAPIStageSummaryEndpoint}
      *
@@ -802,6 +821,10 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         if (sportEvent.getType() != null) {
             this.stageType = StageType.mapFromApiValue(sportEvent.getType());
+        }
+
+        if(sportEvent.getLiveodds() != null){
+            this.liveOdds = sportEvent.getLiveodds();
         }
     }
 
@@ -948,7 +971,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 defaultLocale,
                 new ArrayList<>(loadedSummaryLocales),
                 new ArrayList<>(loadedFixtureLocales),
-                new ArrayList<>(loadedCompetitorLocales)
+                new ArrayList<>(loadedCompetitorLocales),
+                liveOdds
         );
     }
 }
