@@ -450,10 +450,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             return stageType;
         }
 
-        if (loadedSummaryLocales.isEmpty()) {
+        if (!loadedSummaryLocales.isEmpty()) {
             return null;
-        }
-
+}
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
         return stageType;
@@ -714,8 +713,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             return liveOdds;
         }
 
-        if (!loadedSummaryLocales.isEmpty()) {
-            return null;
+        if (loadedFixtureLocales.containsAll(locales)) {
+            return liveOdds;
         }
 
         requestMissingSummaryData(locales, false);
@@ -729,8 +728,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             return sportEventType;
         }
 
-        if (!loadedSummaryLocales.isEmpty()) {
-            return null;
+        if (loadedFixtureLocales.containsAll(locales)) {
+            return sportEventType;
         }
 
         requestMissingSummaryData(locales, false);
@@ -744,8 +743,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             return additionalParentIds;
         }
 
-        if (!loadedSummaryLocales.isEmpty()) {
-            return null;
+        if (loadedFixtureLocales.containsAll(locales)) {
+            return additionalParentIds;
         }
 
         requestMissingSummaryData(locales, false);
@@ -949,8 +948,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             }
 
             logger.debug("Fetching stage fixtures for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -988,8 +986,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             }
 
             logger.debug("Fetching stage summary for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -1006,7 +1003,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     private void handleException(String request, Exception e) {
-        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw && !SdkHelper.isDataNotFound(e)) {
             if (e == null) {
                 throw new ObjectNotFoundException("RaceStageCI[" + id + "], request(" + request + ")");
             } else {

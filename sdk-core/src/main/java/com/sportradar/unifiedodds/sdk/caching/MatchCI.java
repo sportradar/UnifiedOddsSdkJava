@@ -100,18 +100,4 @@ public interface MatchCI extends CompetitionCI {
      * @return list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
      */
     Map<URN, Integer> getCompetitorsDivisions();
-
-    /**
-     * Returns the liveOdds
-     * @param locales the {@link Locale}s in which the data should be provided
-     * @return the liveOdds
-     */
-    String getLiveOdds(List<Locale> locales);
-
-    /**
-     * Returns a {@link SportEventType} indicating the type of the associated event
-     * @param locales the {@link Locale}s in which the data should be provided
-     * @return a {@link SportEventType} indicating the type of the associated event
-     */
-    SportEventType getSportEventType(List<Locale> locales);
 }

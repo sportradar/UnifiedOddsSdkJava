@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
+import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 
@@ -70,4 +71,18 @@ public interface CompetitionCI extends SportEventCI {
      * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
      */
     Map<URN, ReferenceIdCI> getCompetitorsReferences();
+
+    /**
+     * Returns the liveOdds
+     * @param locales the {@link Locale}s in which the data should be provided
+     * @return the liveOdds
+     */
+    String getLiveOdds(List<Locale> locales);
+
+    /**
+     * Returns a {@link SportEventType} indicating the type of the associated event
+     * @param locales the {@link Locale}s in which the data should be provided
+     * @return a {@link SportEventType} indicating the type of the associated event
+     */
+    SportEventType getSportEventType(List<Locale> locales);
 }

@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import org.apache.http.client.utils.DateUtils;
 
 import javax.xml.datatype.DatatypeConstants;
@@ -241,5 +242,25 @@ public final class SdkHelper {
             return String.valueOf(value);
         else
             return "0";
+    }
+
+    public static boolean isDataNotFound(Throwable e) {
+        return isDataNotFound(e, 0);
+    }
+
+    public static boolean isDataNotFound(Throwable e, int counter) {
+        if(e != null){
+            if(e instanceof CommunicationException){
+                if(e.getMessage().contains("404")){
+                    return true;
+                }
+            }
+            if(e.getCause() != null){
+                if(counter < 10){
+                    return isDataNotFound(e.getCause(), counter + 1);
+                }
+            }
+        }
+        return false;
     }
 }

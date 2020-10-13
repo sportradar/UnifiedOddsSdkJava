@@ -813,8 +813,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             return liveOdds;
         }
 
-        if (!loadedSummaryLocales.isEmpty()) {
-            return null;
+        if (loadedSummaryLocales.containsAll(locales)) {
+            return liveOdds;
         }
 
         requestMissingSummaryData(locales, false);
@@ -828,8 +828,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             return sportEventType;
         }
 
-        if (!loadedSummaryLocales.isEmpty()) {
-            return null;
+        if (loadedFixtureLocales.containsAll(locales)) {
+            return sportEventType;
         }
 
         requestMissingSummaryData(locales, false);
@@ -935,8 +935,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             }
 
             logger.debug("Fetching fixtures for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -974,8 +973,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             }
 
             logger.debug("Fetching summary for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -1269,7 +1267,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     private void handleException(String request, Exception e) {
-        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw && !SdkHelper.isDataNotFound(e)) {
             if (e == null) {
                 throw new ObjectNotFoundException("MatchCIImpl[" + id + "], request(" + request + ")");
             } else {

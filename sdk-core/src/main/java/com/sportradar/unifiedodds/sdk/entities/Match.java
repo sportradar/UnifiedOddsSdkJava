@@ -103,16 +103,4 @@ public interface Match extends Competition {
      * @return a {@link CoverageInfo} instance
      */
     default CoverageInfo getCoverageInfo(){ return null; }
-
-    /**
-     * Returns the liveOdds
-     * @return the liveOdds
-     */
-    default String getLiveOdds(){ return null; }
-
-    /**
-     * Returns a {@link SportEventType} indicating the type of the associated event
-     * @return a {@link SportEventType} indicating the type of the associated event
-     */
-    default SportEventType getSportEventType() { return null; }
 }

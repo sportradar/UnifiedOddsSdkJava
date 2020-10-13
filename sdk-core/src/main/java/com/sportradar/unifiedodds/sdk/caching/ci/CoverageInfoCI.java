@@ -74,12 +74,9 @@ public class CoverageInfoCI {
 
         level = coverageInfo.getLevel();
         isLive = coverageInfo.isLiveCoverage();
-
         if (coverageInfo.getCoverage() != null) {
-            includes = coverageInfo.getCoverage().stream().
-                            map(SAPICoverage::getIncludes).collect(Collectors.toList());
+            includes = coverageInfo.getCoverage().stream().map(SAPICoverage::getIncludes).collect(Collectors.toList());
         }
-
         coveredFrom = mapCoveredFrom(coverageInfo.getCoveredFrom());
     }
 
@@ -120,6 +117,9 @@ public class CoverageInfoCI {
     }
 
     private static CoveredFrom mapCoveredFrom(String value) {
+        if(value==null || value.isEmpty()){
+            return null;
+        }
         switch (value) {
             case "tv":
                 return CoveredFrom.Tv;

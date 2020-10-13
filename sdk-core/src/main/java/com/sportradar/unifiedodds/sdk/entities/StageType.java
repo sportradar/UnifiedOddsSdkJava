@@ -13,7 +13,11 @@ public enum StageType {
     Event,
     Season,
     Round,
-    CompetitionGroup
+    CompetitionGroup,
+    Prologue,
+    Discipline,
+    Race,
+    Stage
     ;
 
     public static StageType mapFromApiValue(String str) {
@@ -32,8 +36,17 @@ public enum StageType {
                 return Season;
             case "round":
                 return Round;
+            case "prologue":
+                return Prologue;
             case "competition_group":
                 return CompetitionGroup;
+            case "discipline":
+            case "dicipline":
+                return Discipline;
+            case "race":
+                return Race;
+            case "stage":
+                return Stage;
         }
 
         return null;

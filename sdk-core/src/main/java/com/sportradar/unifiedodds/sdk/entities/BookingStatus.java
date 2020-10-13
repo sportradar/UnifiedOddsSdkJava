@@ -47,6 +47,8 @@ public enum BookingStatus {
                 return BookingStatus.Bookable;
             case "buyable":
                 return BookingStatus.Buyable;
+            case "not_available":
+                return BookingStatus.Unavailable;
             default:
                 return BookingStatus.Unavailable;
         }

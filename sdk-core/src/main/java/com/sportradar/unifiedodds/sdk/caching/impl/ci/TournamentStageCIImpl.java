@@ -533,17 +533,13 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             this.categoryId = URN.parse(endpointData.getCategory().getId());
         }
 
-        this.scheduled = endpointData.getScheduled() == null ? null :
-                SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
-            this.scheduled = tournamentLength.getStartDate() == null ? null :
-                    SdkHelper.toDate(tournamentLength.getStartDate());
-            this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
-                    SdkHelper.toDate(tournamentLength.getEndDate());
+            this.scheduled = tournamentLength.getStartDate() == null ? null : SdkHelper.toDate(tournamentLength.getStartDate());
+            this.scheduledEnd = tournamentLength.getEndDate() == null ? null : SdkHelper.toDate(tournamentLength.getEndDate());
         }
     }
 
@@ -587,7 +583,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     private void handleException(String request, Exception e) {
-        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw && !SdkHelper.isDataNotFound(e)) {
             if (e == null) {
                 throw new ObjectNotFoundException("TournamentStageCI[" + id + "], request(" + request + ")");
             } else {

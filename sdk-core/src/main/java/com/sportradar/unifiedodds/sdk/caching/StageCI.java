@@ -54,20 +54,6 @@ public interface StageCI extends CompetitionCI {
     URN getCategoryId();
 
     /**
-     * Returns the liveOdds
-     * @param locales the {@link Locale}s in which the data should be provided
-     * @return the liveOdds
-     */
-    String getLiveOdds(List<Locale> locales);
-
-    /**
-     * Returns a {@link SportEventType} indicating the type of the associated event
-     * @param locales the {@link Locale}s in which the data should be provided
-     * @return a {@link SportEventType} indicating the type of the associated event
-     */
-    SportEventType getSportEventType(List<Locale> locales);
-
-    /**
      * Returns a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
      * @param locales the {@link Locale}s in which the data should be provided
      * @return a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages

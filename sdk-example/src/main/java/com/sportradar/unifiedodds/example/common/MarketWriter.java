@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class MarketWriter {
 
@@ -87,6 +88,7 @@ public class MarketWriter {
         sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
         sb.append(", MarketStatus:").append(market.getStatus());
         sb.append(", IsFavourite:").append(market.isFavourite());
+        sb.append(", MarketDefinition:[").append(writeMarketDefinition(market.getMarketDefinition(), locale)).append("]");
         writeMessage(sb.toString());
 
         writeMarketMappings(market);
@@ -105,6 +107,7 @@ public class MarketWriter {
             sb.append(", IsActive:").append(outcome.isActive());
             sb.append(", IsPlayerOutcome:").append(outcome.isPlayerOutcome());
             sb.append(", Probabilities:").append(outcome.getProbability());
+            sb.append(", OutcomeDefinition:[").append(writeOutcomeDefinition(outcome.getOutcomeDefinition(), locale)).append("]");
             writeMessage(sb.toString());
         }
         writeMarketOutcomeMappings(market);
@@ -158,6 +161,41 @@ public class MarketWriter {
         }
         StringJoiner sj = new StringJoiner(",");
         additionalInfo.forEach((s1, s2) -> sj.add(String.format("%s=%s", s1, s2)));
+        return sj.toString();
+    }
+
+    private String writeMarketDefinition(MarketDefinition definition, Locale locale)
+    {
+        if(definition == null)
+        {
+            return "";
+        }
+        StringJoiner sj = new StringJoiner(", ");
+        sj.add("NameTemplate=" + definition.getNameTemplate());
+        sj.add("NameTemplate[" + locale.getLanguage() + "]=" + definition.getNameTemplate(locale));
+        sj.add("OutcomeType=" + definition.getOutcomeType());
+        if(definition.getGroups() != null && !definition.getGroups().isEmpty()) {
+            sj.add(String.format("Groups=%s", String.join(",", definition.getGroups())));
+        }
+        if(definition.getAttributes() != null && !definition.getAttributes().isEmpty()) {
+            String mapAsString = definition.getAttributes().keySet().stream()
+                    .map(key -> key + "=" + definition.getAttributes().get(key))
+                    .collect(Collectors.joining(", ", "{", "}"));
+            sj.add(String.format("Groups=%s", mapAsString));
+        }
+        return sj.toString();
+    }
+
+    private String writeOutcomeDefinition(OutcomeDefinition definition, Locale locale)
+    {
+        if(definition == null)
+        {
+            return "";
+        }
+        StringJoiner sj = new StringJoiner(", ");
+        sj.add("NameTemplate=" + definition.getNameTemplate());
+        sj.add("NameTemplate[" + locale.getLanguage() + "]=" + definition.getNameTemplate(locale));
+
         return sj.toString();
     }
 

@@ -47,18 +47,6 @@ public interface Stage extends Competition {
     StageType getStageType();
 
     /**
-     * Returns the liveOdds
-     * @return the liveOdds
-     */
-    default String getLiveOdds(){ return null; }
-
-    /**
-     * Returns a {@link SportEventType} indicating the type of the associated event
-     * @return a {@link SportEventType} indicating the type of the associated event
-     */
-    default SportEventType getSportEventType() { return null; }
-
-    /**
      * Returns a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
      * @return a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
      */

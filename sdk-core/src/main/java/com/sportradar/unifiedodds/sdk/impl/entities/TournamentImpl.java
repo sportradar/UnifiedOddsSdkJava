@@ -79,7 +79,6 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-
     /**
      * Returns the name of the current long term event translated to the specified language
      *
@@ -211,7 +210,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
 
         SeasonCI currentSeason = tournamentCi.getCurrentSeason(locales);
         if (currentSeason == null) {
-            handleException("SeasonCI missing", null);
+            logger.debug("Tournament {} has no current season", id);
             return null;
         }
 
