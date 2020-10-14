@@ -1,4 +1,21 @@
 ### Unified Feed SDK 2.x changelog
+
+**2.0.41.0 (2020-10-13)**
+* Round - added getGroup, added getGroupName (breaking change)
+* Stage - added getAdditionalParentStages, getStageType (breaking change - result changed from SportEventType to
+ StageType)
+* extended EventResult with getDistance and getCompetitorResult methods
+* Competition extended with getLiveOdds and getSportEventType methods
+* added getCourse to the Venue
+* added Coverage to IMatch
+* optimized message deserialization
+* optimized fetching outcome names for multiple languages
+* improved connection error handling and reporting
+* improved fetching of multiple locales for market names
+* fix: allow null values when fetching multiple locales for market names
+* fix: added support for indonesian locale
+* fix: event status enumeration
+
 **2.0.40.1 (2020-09-22)**
 * added MaxConnPerRoute and MaxConnTotal configuration for HTTP client
 
