@@ -68,7 +68,8 @@ class ProducerInfo {
         if (!isFlaggedDown()) {
             producerManager.setLastAliveReceivedGenTimestamp(producerId, aliveGenTimestamp);
         }
-        if (recoveryState == RecoveryState.Started) {
+        // record during recovery or just move forward during normal operation
+        if (recoveryState == RecoveryState.Started || recoveryState == RecoveryState.Completed) {
             lastValidAliveGenTimestampInRecovery = aliveGenTimestamp;
         }
     }
@@ -176,9 +177,7 @@ class ProducerInfo {
         return producerStatusReason;
     }
 
-    long getLastValidAliveGenTimestampInRecovery() {
-        return lastValidAliveGenTimestampInRecovery;
-    }
+    long getLastValidAliveGenTimestampInRecovery() { return lastValidAliveGenTimestampInRecovery; }
 
     long getLastUserSessionAliveReceivedTimestamp() {
         return lastUserSessionAliveReceivedTimestamp;

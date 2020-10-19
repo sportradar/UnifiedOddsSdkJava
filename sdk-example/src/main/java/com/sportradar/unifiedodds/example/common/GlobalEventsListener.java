@@ -38,7 +38,7 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
      */
     @Override
     public void onProducerUp(ProducerUp producerUp) {
-        logger.info("Received producer up, reason: {}. Need to activate/validate/check all available markets currently handled by {}", producerUp.getReason(), producerUp.getProducer());
+       logger.info("Received producer up, reason: {}. Need to activate/validate/check all available markets currently handled by {}", producerUp.getReason(), producerUp.getProducer());
     }
 
     /**

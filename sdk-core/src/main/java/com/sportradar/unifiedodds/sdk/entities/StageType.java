@@ -17,7 +17,10 @@ public enum StageType {
     Prologue,
     Discipline,
     Race,
-    Stage
+    Stage,
+    Practice,
+    Qualifying,
+    QualifyingPart
     ;
 
     public static StageType mapFromApiValue(String str) {
@@ -47,6 +50,13 @@ public enum StageType {
                 return Race;
             case "stage":
                 return Stage;
+            case "practice":
+                return Practice;
+            case "qualifying":
+                return Qualifying;
+            case "qualifyingpart":
+            case "qualifying_part":
+                return QualifyingPart;
         }
 
         return null;

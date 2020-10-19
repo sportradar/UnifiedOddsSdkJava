@@ -620,7 +620,8 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
 
         switch (reason) {
             case AliveIntervalViolation:
-                logger.warn("ProducerDown:AliveIntervalViolation -> No alive received in {}s (longest inactivity interval), flagging producer as DOWN [{}]", config.getLongestInactivityInterval(), pi);
+                logger.warn("ProducerDown:AliveIntervalViolation -> No subscribed alive received in {}s (longest " +
+                                    "inactivity interval), flagging producer as DOWN [{}]", config.getLongestInactivityInterval(), pi);
                 break;
 
             case ProcessingQueueDelayViolation:
@@ -721,7 +722,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         Preconditions.checkNotNull(pi);
 
         if (recoveryId == 0) {
-            logger.debug("Ignoring snapshot failed dispatch for {}, recoveryId was 0", pi);
+            logger.debug("Recovery not started yet for {} - dispatch of snapshot failed (message ignored).", pi);
             return;
         }
 
