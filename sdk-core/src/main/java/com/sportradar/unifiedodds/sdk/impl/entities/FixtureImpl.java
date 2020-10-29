@@ -92,6 +92,10 @@ FixtureImpl implements Fixture {
 
     private final List<ScheduledStartTimeChange> scheduledStartTimeChanges;
 
+    private final URN parentId;
+
+    private final List<URN> additionalParentsIds;
+
     /**
      * Initializes a new instance of the {@link FixtureImpl}
      *
@@ -164,6 +168,10 @@ FixtureImpl implements Fixture {
                                 ch.getNewTime() == null ? null : SdkHelper.toDate(ch.getNewTime()),
                                 ch.getChangedAt() == null ? null : SdkHelper.toDate(ch.getChangedAt())))
                         .collect(ImmutableList.toImmutableList());
+        this.parentId = fixture.getParent() == null ? null : URN.parse(fixture.getParent().getId());
+        this.additionalParentsIds = fixture.getAdditionalParents() != null && !fixture.getAdditionalParents().getParent().isEmpty()
+                ? null
+                : fixture.getAdditionalParents().getParent().stream().map(m -> URN.parse(m.getId())).collect(ImmutableList.toImmutableList());
     }
 
     public FixtureImpl(ExportableFixtureCI exportable) {
@@ -179,6 +187,8 @@ FixtureImpl implements Fixture {
         this.startTimeTbd = exportable.getStartTimeTbd();
         this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
         this.scheduledStartTimeChanges = exportable.getScheduledStartTimeChanges() != null ? exportable.getScheduledStartTimeChanges().stream().map(ScheduledStartTimeChangeImpl::new).collect(ImmutableList.toImmutableList()) : null;
+        this.parentId = exportable.getParentId() != null ? exportable.getParentId() : null;
+        this.additionalParentsIds = exportable.getAdditionalParentsIds() != null ? exportable.getAdditionalParentsIds().stream().collect(ImmutableList.toImmutableList()) : null;
     }
 
     /**
@@ -307,9 +317,7 @@ FixtureImpl implements Fixture {
      * @return the {@link URN} identifier of the replacement event
      */
     @Override
-    public URN getReplacedBy() {
-        return replacedBy;
-    }
+    public URN getReplacedBy() { return replacedBy; }
 
     /**
      * Returns the list of all {@link ScheduledStartTimeChange} to start time
@@ -320,6 +328,20 @@ FixtureImpl implements Fixture {
     public List<ScheduledStartTimeChange> getScheduledStartTimeChanges() {
         return scheduledStartTimeChanges;
     }
+
+    /**
+     * Returns an id of the parent stage associated with the current instance
+     * @return id of the parent stage associated with the current instance
+     */
+    @Override
+    public URN getParentStageId() { return parentId; }
+
+    /**
+     * Returns the list specifying the additional parent ids associated with the current instance
+     * @return the list specifying the additional parent ids associated with the current instance
+     */
+    @Override
+    public List<URN> getAdditionalParentsIds() { return additionalParentsIds; }
 
     /**
      * Returns a {@link String} describing the current {@link Fixture} instance
@@ -353,7 +375,9 @@ FixtureImpl implements Fixture {
                 references != null ? new HashMap<>(references.getReferences()) : null,
                 startTimeTbd,
                 replacedBy != null ? replacedBy.toString() : null,
-                scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ScheduledStartTimeChangeImpl) s).export()).collect(Collectors.toList()) : null
+                scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ScheduledStartTimeChangeImpl) s).export()).collect(Collectors.toList()) : null,
+                parentId,
+                additionalParentsIds
         );
     }
 }

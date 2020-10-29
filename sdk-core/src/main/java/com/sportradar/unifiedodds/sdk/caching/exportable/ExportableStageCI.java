@@ -59,12 +59,9 @@ public class ExportableStageCI extends ExportableCompetitionCI {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
+    public void setCategoryId(String categoryId) { this.categoryId = categoryId; }
 
     public List<String> getAdditionalParentsIds() { return additionalParentsIds; }
 
-    public void setAdditionalParentsIds(List<String> additionalParentsIds) { this.additionalParentsIds =
-            additionalParentsIds; }
+    public void setAdditionalParentsIds(List<String> additionalParentsIds) { this.additionalParentsIds = additionalParentsIds; }
 }

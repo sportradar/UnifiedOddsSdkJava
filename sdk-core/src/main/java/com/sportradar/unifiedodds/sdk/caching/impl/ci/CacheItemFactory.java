@@ -36,6 +36,7 @@ public interface CacheItemFactory {
     StageCI buildStageCI(URN id, SAPISportEvent data, Locale dataLocale);
     StageCI buildStageCI(URN id, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale);
     StageCI buildStageCI(URN id, SAPIFixture data, Locale dataLocale);
+    StageCI buildStageCI(URN id, SAPIParentStage data, Locale dataLocale);
 
     SportCI buildSportCI(URN id, SAPISport sport, List<URN> categories, Locale dataLocale);
     CategoryCI buildCategoryCI(URN id, SAPICategory category, List<URN> tournaments, URN associatedSportCiId, Locale dataLocale);

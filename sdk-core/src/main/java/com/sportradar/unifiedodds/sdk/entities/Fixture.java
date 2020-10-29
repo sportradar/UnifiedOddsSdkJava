@@ -94,4 +94,16 @@ public interface Fixture {
      * @return the list of all {@link ScheduledStartTimeChange} to start time
      */
     List<ScheduledStartTimeChange> getScheduledStartTimeChanges();
+
+    /**
+     * Returns an id of the parent stage associated with the current instance
+     * @return id of the parent stage associated with the current instance
+     */
+    default URN getParentStageId() { return null; }
+
+    /**
+     * Returns the list specifying the additional parent ids associated with the current instance
+     * @return the list specifying the additional parent ids associated with the current instance
+     */
+    default List<URN> getAdditionalParentsIds() { return null; }
 }

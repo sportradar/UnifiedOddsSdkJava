@@ -192,6 +192,43 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         } else {
             ifPresent.merge(data, dataLocale);
         }
+        if(data.getParent() != null){
+            URN parentId = URN.parse(data.getParent().getId());
+            saveParentStage(parentId, data.getParent(), data.getTournament(), dataLocale);
+        }
+        if(data.getAdditionalParents() != null && !data.getAdditionalParents().getParent().isEmpty()){
+            for (SAPIParentStage parentStage : data.getAdditionalParents().getParent()) {
+                saveParentStage(URN.parse(parentStage.getId()), parentStage, data.getTournament(), dataLocale);
+            }
+        }
+    }
+
+    /**
+     * We save the parent stage, to save Type and StageType since for tournament if provided
+     * @param parentId
+     * @param parentStage
+     * @param tournament
+     * @param dataLocale
+     */
+    private void saveParentStage(URN parentId, SAPIParentStage parentStage, SAPITournament tournament, Locale dataLocale){
+        if(parentId == null || parentStage == null){
+            return;
+        }
+        SportEventCI stagePresent = sportEventsCache.getIfPresent(parentId);
+        if(stagePresent == null){
+            URN tournamentId = tournament == null ? null : URN.parse(tournament.getId());
+            if(parentId.equals(tournamentId)){
+                StageCI ci = cacheItemFactory.buildStageCI(parentId, tournament, dataLocale);
+                ci.merge(parentStage, dataLocale);
+                sportEventsCache.put(parentId, ci);
+            }
+            else{
+                sportEventsCache.put(parentId, cacheItemFactory.buildStageCI(parentId, parentStage, dataLocale));
+            }
+        }
+        else{
+            stagePresent.merge(parentStage, dataLocale);
+        }
     }
 
     @Override
@@ -284,6 +321,15 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         } else {
             ifPresent.merge(data, dataLocale);
         }
+        if(data.getSportEvent().getParent() != null){
+            URN parentId = URN.parse(data.getSportEvent().getParent().getId());
+            saveParentStage(parentId, data.getSportEvent().getParent(), data.getSportEvent().getTournament(), dataLocale);
+        }
+        if(data.getSportEvent().getAdditionalParents() != null && !data.getSportEvent().getAdditionalParents().getParent().isEmpty()){
+            for (SAPIParentStage parentStage : data.getSportEvent().getAdditionalParents().getParent()) {
+                saveParentStage(URN.parse(parentStage.getId()), parentStage, data.getSportEvent().getTournament(), dataLocale);
+            }
+        }
     }
 
     @Override
@@ -335,6 +381,15 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             }
         } else {
             ifPresent.merge(data, dataLocale);
+        }
+        if(data.getParent() != null){
+            URN parentId = URN.parse(data.getParent().getId());
+            saveParentStage(parentId, data.getParent(), data.getTournament(), dataLocale);
+        }
+        if(data.getAdditionalParents() != null && !data.getAdditionalParents().getParent().isEmpty()){
+            for (SAPIParentStage parentStage : data.getAdditionalParents().getParent()) {
+                saveParentStage(URN.parse(parentStage.getId()), parentStage, data.getTournament(), dataLocale);
+            }
         }
     }
 

@@ -8,10 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.sportradar.uf.sportsapi.datamodel.SAPICompetitors;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentInfoEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentLength;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
@@ -118,6 +115,16 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     List<URN> additionalParentIds;
 
     /**
+     * The {@link Boolean} indicating if the start time to be determined is set
+     */
+    private Boolean startTimeTbd;
+
+    /**
+     * The {@link URN} indicating the replacement sport event
+     */
+    private URN replacedBy;
+
+    /**
      * A {@link List} of locales that are already fully cached - only when the full tournament info endpoint is cached
      */
     private List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
@@ -148,17 +155,13 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         this.categoryId = URN.parse(endpointData.getCategory().getId());
-        this.scheduled = endpointData.getScheduled() == null ? null :
-                SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
-                SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
-            this.scheduled = tournamentLength.getStartDate() == null ? null :
-                    SdkHelper.toDate(tournamentLength.getStartDate());
-            this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
-                    SdkHelper.toDate(tournamentLength.getEndDate());
+            this.scheduled = tournamentLength.getStartDate() == null ? null : SdkHelper.toDate(tournamentLength.getStartDate());
+            this.scheduledEnd = tournamentLength.getEndDate() == null ? null : SdkHelper.toDate(tournamentLength.getEndDate());
         }
         this.stageType = null;
         this.liveOdds = null;
@@ -178,6 +181,10 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.competitorIds = endpointCompetitors == null ? null :
                 Collections.synchronizedList(endpointCompetitors.getCompetitor().stream()
                         .map(c -> URN.parse(c.getId())).collect(Collectors.toList()));
+
+        if(this.sportEventType == null && endpointData.getTournament() != null && this.id.toString().equals(endpointData.getTournament().getId())){
+            this.sportEventType = SportEventType.PARENT;
+        }
 
         cachedLocales.add(dataLocale);
     }
@@ -201,6 +208,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.stageType = exportable.getStageType();
         this.liveOdds = exportable.getLiveOdds();
         this.sportEventType = exportable.getSportEventType();
+//        exportable.getParentStageId() // is always null
         this.additionalParentIds = exportable.getAdditionalParentsIds() != null ? exportable.getAdditionalParentsIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
     }
 
@@ -371,8 +379,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public void fetchSportEventStatus() {
-    }
+    public void fetchSportEventStatus() { }
 
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current
@@ -448,9 +455,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Boolean isStartTimeTbd() {
-        return null;
-    }
+    public Boolean isStartTimeTbd() { return startTimeTbd; }
 
     /**
      * Returns the {@link URN} specifying the replacement sport event for the current instance
@@ -459,7 +464,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      */
     @Override
     public URN getReplacedBy() {
-        return null;
+        return replacedBy;
     }
 
     @Override
@@ -468,6 +473,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             internalMerge((SAPITournamentInfoEndpoint) endpointData, dataLocale);
         } else if (endpointData instanceof SAPITournament) {
             internalMerge((SAPITournament) endpointData, dataLocale);
+        } else if (endpointData instanceof SAPIParentStage) {
+            internalMerge((SAPIParentStage) endpointData, dataLocale);
         }
     }
 
@@ -533,13 +540,37 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             this.categoryId = URN.parse(endpointData.getCategory().getId());
         }
 
-        this.scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.scheduled = endpointData.getScheduled() == null ? this.scheduled : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd = endpointData.getScheduledEnd() == null ? this.scheduledEnd : SdkHelper.toDate(endpointData.getScheduledEnd());
 
         if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
-            this.scheduled = tournamentLength.getStartDate() == null ? null : SdkHelper.toDate(tournamentLength.getStartDate());
-            this.scheduledEnd = tournamentLength.getEndDate() == null ? null : SdkHelper.toDate(tournamentLength.getEndDate());
+            this.scheduled = tournamentLength.getStartDate() == null ? this.scheduled : SdkHelper.toDate(tournamentLength.getStartDate());
+            this.scheduledEnd = tournamentLength.getEndDate() == null ? this.scheduledEnd : SdkHelper.toDate(tournamentLength.getEndDate());
+        }
+    }
+
+    private void internalMerge(SAPIParentStage endpointData, Locale dataLocale) {
+        Preconditions.checkNotNull(endpointData);
+        Preconditions.checkNotNull(dataLocale);
+
+        this.scheduled = endpointData.getScheduled() == null ? this.scheduled : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd = endpointData.getScheduledEnd() == null ? this.scheduledEnd : SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.startTimeTbd = endpointData.isStartTimeTbd() == null ? this.startTimeTbd : endpointData.isStartTimeTbd();
+        this.replacedBy = endpointData.getReplacedBy() == null ? this.replacedBy : URN.parse(endpointData.getReplacedBy());
+
+        if (endpointData.getName() != null) {
+            this.sportEventNames.put(defaultLocale, endpointData.getName());
+        }
+        else{
+            this.sportEventNames.put(defaultLocale, "");
+        }
+
+        if(endpointData.getStageType() != null) {
+            this.stageType = StageType.mapFromApiValue(endpointData.getStageType());
+        }
+        if(endpointData.getType() != null) {
+            this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
         }
     }
 

@@ -116,6 +116,11 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
+    public StageCI buildStageCI(URN id, SAPIParentStage endpointData, Locale dataLocale) {
+        return new RaceStageCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, endpointData, dataLocale, fixtureTimestampCache);
+    }
+
+    @Override
     public SportCI buildSportCI(URN id, SAPISport sport, List<URN> categories, Locale dataLocale) {
         return new SportCIImpl(id, sport, categories, dataLocale);
     }
