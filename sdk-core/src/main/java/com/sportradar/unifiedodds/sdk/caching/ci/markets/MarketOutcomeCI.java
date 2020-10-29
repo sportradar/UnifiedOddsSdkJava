@@ -28,7 +28,7 @@ public class MarketOutcomeCI {
         id = o.getId();
 
         names = new ConcurrentHashMap<>();
-        names.put(locale, o.getName());
+        names.put(locale, o.getName() != null ? o.getName() : "");
 
         descriptions = new ConcurrentHashMap<>();
         if (!Strings.isNullOrEmpty(o.getDescription())) {
