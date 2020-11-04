@@ -27,4 +27,9 @@ public class SpecifierImpl implements Specifier{
     public String getName() {
         return ci.getName();
     }
+
+    @Override
+    public String toString() {
+        return "SpecifierImpl{" + ci.getName() + "=" + ci.getType() + '}';
+    }
 }

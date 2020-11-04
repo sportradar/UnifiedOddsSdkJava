@@ -53,12 +53,6 @@ public interface MarketDescriptionManager {
      */
     List<MarketMappingData> getMarketMapping(int marketId, Map<String, String> specifiers, Producer producer);
 
-    /// <summary>
-    /// Asynchronously loads the invariant and variant list of market descriptions from the Sports API
-    /// </summary>
-    /// <remarks>To be used when manually changed market data via betradar control</remarks>
-    /// <returns>Returns true if the action succeeded</returns>
-
     /**
      * Loads the invariant and variant list of market descriptions from the Sports API
      * @return true if the action succeeded

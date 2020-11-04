@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import org.apache.http.client.utils.DateUtils;
 
@@ -262,5 +263,64 @@ public final class SdkHelper {
             }
         }
         return false;
+    }
+
+    public static String stringSetToString(Set<String> set){
+        if(set == null || set.isEmpty()) {
+            return null;
+        }
+        String result = "";
+        for(String key : set){
+            result += "," + key;
+        }
+        if(result.length() > 1){
+            result = result.substring(1);
+        }
+        return result;
+    }
+
+    public static String integerSetToString(Set<Integer> set){
+        if(set == null || set.isEmpty()) {
+            return null;
+        }
+        String result = "";
+        for(int key : set){
+            result += "," + key;
+        }
+        if(result.length() > 1){
+            result = result.substring(1);
+        }
+        return result;
+    }
+
+    public static String dictionaryToString(Map<String, String> dict){
+        if(dict == null || dict.isEmpty()) {
+            return null;
+        }
+        String result = null;
+        for(String key : dict.keySet()){
+            result += "," + key + "=" + dict.get(key);
+        }
+        return result;
+    }
+
+    public static String specifierListToString(List<Specifier> specifiers){
+        if(specifiers == null || specifiers.isEmpty()) {
+            return null;
+        }
+        String result = specifiers.stream()
+                .map(n -> String.valueOf(n))
+                .collect(Collectors.joining("|", "{", "}"));
+        return result;
+    }
+
+    public static String specifierKeyListToString(List<Specifier> specifiers){
+        if(specifiers == null || specifiers.isEmpty()) {
+            return null;
+        }
+        String result = specifiers.stream()
+                .map(n -> n.getName())
+                .collect(Collectors.joining("|", "{", "}"));
+        return result;
     }
 }

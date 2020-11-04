@@ -7,12 +7,19 @@ package com.sportradar.unifiedodds.example.common;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
+import com.sportradar.utils.SdkHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MarketMappingWriter {
+    private static final Logger logger = LoggerFactory.getLogger("MarketMappingWriter");
+
     public static String writeMarketMapping(Market market, Locale locale)
     {
         if(market == null)
@@ -24,6 +31,24 @@ public class MarketMappingWriter {
         if(mappings == null || mappings.isEmpty())
         {
             return "";
+        }
+
+        if(mappings.size() > 1){
+             logger.warn("MarketId:{}, specifiers={} has too many mappings [{}].",
+                        market.getId(),
+                        SdkHelper.dictionaryToString(market.getSpecifiers()),
+                        mappings.size());
+            int i = 0;
+            for (MarketMappingData mapping : mappings) {
+                logger.debug("MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
+                             market.getId(),
+                             SdkHelper.integerSetToString(mapping.getProducerIds()),
+                             mapping.getSportId().getId(),
+                             SdkHelper.dictionaryToString(market.getSpecifiers()),
+                             i,
+                             mapping);
+                i++;
+            }
         }
 
         StringBuilder sb = new StringBuilder();
@@ -44,6 +69,10 @@ public class MarketMappingWriter {
         if(mappings == null || mappings.isEmpty())
         {
             return "";
+        }
+
+        if(mappings.size() > 1){
+            int c = mappings.size();
         }
 
         StringBuilder sb = new StringBuilder();

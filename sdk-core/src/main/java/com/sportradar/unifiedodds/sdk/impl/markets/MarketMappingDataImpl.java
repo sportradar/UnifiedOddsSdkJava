@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,8 +133,7 @@ public class MarketMappingDataImpl implements MarketMappingData {
 
     @Override
     public boolean canMap(int producerId, URN sportId, Map<String, String> specifiers) {
-        if ((producerIds == null || !producerIds.contains(producerId)) ||
-                (this.sportId != null && !this.sportId.equals(sportId))) {
+        if ((producerIds == null || !producerIds.contains(producerId)) || (this.sportId != null && !this.sportId.equals(sportId))) {
             return false;
         }
 
@@ -149,5 +149,19 @@ public class MarketMappingDataImpl implements MarketMappingData {
             );
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "MarketMappingData{" +
+                "MarketId=" + getMarketId() +
+                ", sportId=" + sportId +
+                ", producers=" + SdkHelper.integerSetToString(producerIds) +
+                ", sportId=" + sportId +
+                ", sov=" + sovTemplate +
+                ", validFor=" + validFor +
+                ", typeId=" + marketTypeId +
+                ", subTypeId=" + marketSubTypeId +
+                "}";
     }
 }

@@ -18,13 +18,11 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MarketManagerImpl implements MarketDescriptionManager {
@@ -93,10 +91,12 @@ public class MarketManagerImpl implements MarketDescriptionManager {
         MarketDescription marketDescriptor;
         try {
             marketDescriptor = marketDescriptionProvider.getMarketDescription(marketId, null, Lists.newArrayList(config.getDefaultLocale()), false);
-        } catch (CacheItemNotFoundException e) {
+        }
+        catch (CacheItemNotFoundException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new ObjectNotFoundException("Market mappings for " + marketId+ " could not be provided", e);
-            } else {
+                throw new ObjectNotFoundException("Market mappings for " + marketId + " could not be provided", e);
+            }
+            else {
                 logger.warn("Market mappings for the marketId: {} could not be provided, ex:", marketId, e);
                 return null;
             }
@@ -106,9 +106,36 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             return Collections.emptyList();
         }
 
-        return marketDescriptor.getMappings().stream()
+        List<MarketMappingData> mappings = marketDescriptor.getMappings().stream()
                 .filter(m -> m.getProducerIds().contains(producer.getId()))
                 .collect(Collectors.toList());
+
+        if (mappings.size() > 1) {
+            for (MarketMappingData mapping : mappings) {
+                if (mapping.getMarketId().equals(marketDescriptor.getId())) {
+                    return Arrays.asList(mapping);
+                }
+            }
+            logger.warn("MarketId:{}, producer:{}, sportId:{}, specifiers={} has too many mappings [{}].",
+                        marketDescriptor.getId(),
+                        producer.getId(),
+                        0,
+                        SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                        mappings.size());
+            int i = 0;
+            for (MarketMappingData mapping : mappings) {
+                logger.debug("MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
+                             marketDescriptor.getId(),
+                             producer.getId(),
+                             0,
+                             SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                             i,
+                             mapping);
+                i++;
+            }
+        }
+
+        return mappings;
     }
 
     @Override
@@ -129,9 +156,36 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             return Collections.emptyList();
         }
 
-        return marketDescriptor.getMappings().stream()
+        List<MarketMappingData> mappings = marketDescriptor.getMappings().stream()
                 .filter(m -> m.getProducerIds().contains(producer.getId()))
                 .collect(Collectors.toList());
+
+        if (mappings.size() > 1) {
+            for (MarketMappingData mapping : mappings) {
+                if (mapping.getMarketId().equals(marketDescriptor.getId())) {
+                    return Arrays.asList(mapping);
+                }
+            }
+            logger.warn("MarketId:{}, producer:{}, sportId:{}, specifiers={} has too many mappings [{}].",
+                        marketDescriptor.getId(),
+                        producer.getId(),
+                        0,
+                        SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                        mappings.size());
+            int i = 0;
+            for (MarketMappingData mapping : mappings) {
+                logger.debug("MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
+                             marketDescriptor.getId(),
+                             producer.getId(),
+                             0,
+                             SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                             i,
+                             mapping);
+                i++;
+            }
+        }
+
+        return mappings;
     }
 
     /**
