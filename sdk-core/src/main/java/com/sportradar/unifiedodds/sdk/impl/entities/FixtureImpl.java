@@ -170,8 +170,8 @@ FixtureImpl implements Fixture {
                         .collect(ImmutableList.toImmutableList());
         this.parentId = fixture.getParent() == null ? null : URN.parse(fixture.getParent().getId());
         this.additionalParentsIds = fixture.getAdditionalParents() != null && !fixture.getAdditionalParents().getParent().isEmpty()
-                ? null
-                : fixture.getAdditionalParents().getParent().stream().map(m -> URN.parse(m.getId())).collect(ImmutableList.toImmutableList());
+                ? fixture.getAdditionalParents().getParent().stream().map(m -> URN.parse(m.getId())).collect(ImmutableList.toImmutableList())
+                : null;
     }
 
     public FixtureImpl(ExportableFixtureCI exportable) {

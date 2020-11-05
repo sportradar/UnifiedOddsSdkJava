@@ -727,8 +727,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-        if(competitorsReferences == null || loadedFixtureLocales.isEmpty()) {
-            requestMissingFixtureData(Collections.singletonList(defaultLocale));
+        if(competitorsReferences == null || loadedCompetitorLocales.isEmpty()) {
+            requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
         }
 
         return competitorsReferences == null

@@ -758,7 +758,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-        if(loadedFixtureLocales.isEmpty()) {
+        if(loadedCompetitorLocales.isEmpty()) {
             requestMissingFixtureData(Collections.singletonList(defaultLocale));
         }
 
@@ -778,7 +778,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             return copyOf(competitorQualifiers);
         }
 
-        if (loadedSummaryLocales.isEmpty()) {
+        if (loadedCompetitorLocales.isEmpty()) {
             requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
         }
 
@@ -798,7 +798,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             return copyOf(competitorDivisions);
         }
 
-        if (loadedSummaryLocales.isEmpty()) {
+        if (loadedCompetitorLocales.isEmpty()) {
             requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
         }
 
