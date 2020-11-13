@@ -1,4 +1,10 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.42.0 (2020-11-13)**
+* added new stage types in StageType enum (Practice, Qualifying, QualifyingPart, Lap)
+* fix: use competitor data from fixture.xml API endpoint
+* fix: loading sportEventType and stageType from parent stage if available
+* fix: parsing outcomes
+* fix: restarting recovery timestamp fixed when alive violation happened during previous one
 
 **2.0.41.0 (2020-10-13)**
 * Round - added getGroup, added getGroupName (breaking change)
@@ -7,7 +13,7 @@
 * extended EventResult with getDistance and getCompetitorResult methods
 * Competition extended with getLiveOdds and getSportEventType methods
 * added getCourse to the Venue
-* added Coverage to IMatch
+* added getCoverage to Match
 * optimized message deserialization
 * optimized fetching outcome names for multiple languages
 * improved connection error handling and reporting
