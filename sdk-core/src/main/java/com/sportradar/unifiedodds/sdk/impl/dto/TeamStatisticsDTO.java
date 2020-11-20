@@ -108,4 +108,19 @@ public class TeamStatisticsDTO {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "TeamStatisticsDTO{" +
+                "teamId=" + teamId +
+                ", name='" + name + '\'' +
+                ", homeAway=" + homeAway +
+                ", cards=" + cards +
+                ", yellowCards=" + yellowCards +
+                ", redCards=" + redCards +
+                ", yellowRedCards=" + yellowRedCards +
+                ", cornerKicks=" + cornerKicks +
+                ", greenCards=" + greenCards +
+                '}';
+    }
 }

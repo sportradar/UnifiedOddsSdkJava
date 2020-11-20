@@ -15,7 +15,6 @@ import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
 class TeamStatisticsImpl implements TeamStatistics {
     private final TeamStatisticsDTO stats;
 
-
     TeamStatisticsImpl(TeamStatisticsDTO stats) {
         Preconditions.checkNotNull(stats);
 
@@ -98,5 +97,20 @@ class TeamStatisticsImpl implements TeamStatistics {
     @Override
     public String getName() {
         return stats.getName();
+    }
+
+    @Override
+    public String toString() {
+        return "TeamStatisticsImpl{" +
+                "teamId=" + stats.getTeamId() +
+                ", name='" + stats.getName() + '\'' +
+                ", homeAway=" + stats.getHomeAway() +
+                ", cards=" + stats.getCards() +
+                ", yellowCards=" + stats.getYellowCards() +
+                ", redCards=" + stats.getRedCards() +
+                ", yellowRedCards=" + stats.getYellowRedCards() +
+                ", cornerKicks=" + stats.getCornerKicks() +
+                ", greenCards=" + stats.getGreenCards() +
+                '}';
     }
 }

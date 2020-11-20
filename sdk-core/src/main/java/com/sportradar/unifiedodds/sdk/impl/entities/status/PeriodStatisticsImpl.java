@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.status.PeriodStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.TeamStatistics;
 import com.sportradar.unifiedodds.sdk.impl.dto.PeriodStatisticsDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,5 +56,25 @@ class PeriodStatisticsImpl implements PeriodStatistics {
         return stats.getTeamStatisticDTOs() == null
                 ? null
                 : stats.getTeamStatisticDTOs().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        if(stats == null){
+            return "PeriodStatisticsImpl{}";
+        }
+
+        String teamStatisticsResult = "";
+        for(TeamStatisticsDTO teamStatistics : stats.getTeamStatisticDTOs()){
+            teamStatisticsResult += " | " + teamStatistics.toString();
+        }
+        if(teamStatisticsResult.length() > 3){
+            teamStatisticsResult = teamStatisticsResult.substring(3);
+        }
+
+        return "PeriodStatisticsImpl{" +
+                "periodName=" + stats.getPeriodName() +
+                ", teamStatistics=[" + teamStatisticsResult + "]" +
+                '}';
     }
 }
