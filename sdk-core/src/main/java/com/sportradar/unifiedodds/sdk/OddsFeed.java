@@ -128,7 +128,7 @@ public class OddsFeed {
         Preconditions.checkNotNull(listener);
         Preconditions.checkNotNull(config);
 
-        logger.info("OddsFeed instance created with \n{}", config);
+        logger.info("OddsFeed instance created with: {}", config);
 
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
         this.injector = createSdkInjector(listener, null);

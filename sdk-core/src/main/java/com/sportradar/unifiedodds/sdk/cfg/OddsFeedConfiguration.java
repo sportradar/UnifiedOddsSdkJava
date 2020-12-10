@@ -320,32 +320,32 @@ public class OddsFeedConfiguration {
         String obfuscatedToken = String.format("%s***%s", accessToken.substring(0, 3), accessToken.substring(accessToken.length()-3));
 
         return "OddsFeedConfiguration{" +
-                "\n\taccessToken='" + obfuscatedToken + '\'' +
-                ",\n\tdefaultLocale=" + defaultLocale +
-                ",\n\tdesiredLocales=" + desiredLocales +
-                ",\n\thost='" + host + '\'' +
-                ",\n\tapiHost='" + apiHost + '\'' +
-                ",\n\tinactivitySeconds=" + inactivitySeconds +
-                ",\n\tmaxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes +
-                ",\n\tminIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests +
-                ",\n\tuseMessagingSsl=" + useMessagingSsl +
-                ",\n\tuseApiSsl=" + useApiSsl +
-                ",\n\tport=" + port +
-                ",\n\tmessagingUsername='" + messagingUsername + '\'' +
-                ",\n\tmessagingPassword='" + messagingPassword + '\'' +
-                ",\n\tsdkNodeId=" + sdkNodeId +
-                ",\n\tuseIntegrationEnvironment=" + useIntegrationEnvironment +
-                ",\n\tdisabledProducers=" + disabledProducers +
-                ",\n\texceptionHandlingStrategy=" + exceptionHandlingStrategy +
-                ",\n\tselectedEnvironment=" + selectedEnvironment +
-                ",\n\tmessagingVirtualHost=" + messagingVirtualHost +
-                ",\n\thttpClientTimeout=" + httpClientTimeout +
-                ",\n\thttpClientMaxConnTotal=" + httpClientMaxConnTotal +
-                ",\n\thttpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute +
-                ",\n\trecoveryHttpClientTimeout=" + recoveryHttpClientTimeout +
-                ",\n\trecoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal +
-                ",\n\trecoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute +
-                "\n}";
+                " accessToken='" + obfuscatedToken + '\'' +
+                ", defaultLocale=" + defaultLocale +
+                ", desiredLocales=" + desiredLocales +
+                ", host='" + host + '\'' +
+                ", apiHost='" + apiHost + '\'' +
+                ", inactivitySeconds=" + inactivitySeconds +
+                ", maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes +
+                ", minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests +
+                ", useMessagingSsl=" + useMessagingSsl +
+                ", useApiSsl=" + useApiSsl +
+                ", port=" + port +
+                ", messagingUsername='" + messagingUsername + '\'' +
+                ", messagingPassword='" + messagingPassword + '\'' +
+                ", sdkNodeId=" + sdkNodeId +
+                ", useIntegrationEnvironment=" + useIntegrationEnvironment +
+                ", disabledProducers=" + disabledProducers +
+                ", exceptionHandlingStrategy=" + exceptionHandlingStrategy +
+                ", selectedEnvironment=" + selectedEnvironment +
+                ", messagingVirtualHost=" + messagingVirtualHost +
+                ", httpClientTimeout=" + httpClientTimeout +
+                ", httpClientMaxConnTotal=" + httpClientMaxConnTotal +
+                ", httpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute +
+                ", recoveryHttpClientTimeout=" + recoveryHttpClientTimeout +
+                ", recoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal +
+                ", recoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute +
+                "}";
     }
 
 }
