@@ -161,7 +161,7 @@ public class NameProviderImpl implements NameProvider {
 
         MarketDescription marketDescription = getMarketDescriptionForOutcome(outcomeId, locales, true);
         if(marketDescription == null){
-            return null;
+            return Collections.emptyMap();
         }
 
         Optional<OutcomeDescription> optDesc = marketDescription.getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
