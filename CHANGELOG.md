@@ -1,4 +1,8 @@
 ### Unified Feed SDK 2.x changelog
+**2.0.42.1 (2020-12-18)**
+* fix: NPE in case of missing market description
+* improved logging
+
 **2.0.42.0 (2020-11-13)**
 * added new stage types in StageType enum (Practice, Qualifying, QualifyingPart, Lap)
 * fix: use competitor data from fixture.xml API endpoint
