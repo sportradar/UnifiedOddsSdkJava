@@ -17,12 +17,14 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCI;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.Group;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
+import com.sun.deploy.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -597,14 +599,44 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                 groups = Collections.synchronizedList(new ArrayList<>());
                 endpointData.getGroups().getGroup().forEach(g -> groups.add(new GroupCI(g, dataLocale)));
             } else {
-                groups.forEach(groupCI -> groupCI.merge(
-                        endpointData.getGroups().getGroup().stream()
-                                .filter(mergingGroup ->
-                                        (groupCI.getName() == null && mergingGroup.getName() == null) ||
-                                                (groupCI.getName() != null && groupCI.getName().equals(mergingGroup.getName())))
-                                .findFirst().orElse(null),
-                        dataLocale
-                ));
+                List<GroupCI> tmpGroups = Collections.synchronizedList(new ArrayList<>(groups));
+
+                // remove obsolete groups
+                if(groups != null && groups.size() > 0)
+                {
+                    try {
+                        groups.forEach(tmpGroup -> {
+                            if (tmpGroup.getId() != null && !tmpGroup.getId().isEmpty()) {
+                                if (endpointData.getGroups().getGroup().stream().filter(f -> f.getId().equals(tmpGroup.getId())).findFirst().orElse(null) == null) {
+                                    tmpGroups.remove(tmpGroup);
+                                }
+                            }
+                            if (tmpGroup.getId() == null && tmpGroup.getName() != null && !tmpGroup.getName().isEmpty()) {
+                                if (endpointData.getGroups().getGroup().stream().filter(f -> f.getName().equals(tmpGroup.getName())).findFirst().orElse(null) == null) {
+                                    tmpGroups.remove(tmpGroup);
+                                }
+                            }
+                        });
+                    }
+                    catch (Exception e) {
+                        //
+                    }
+                }
+
+                // add or merge groups
+                for (int i = 0; i < endpointData.getGroups().getGroup().size(); i++) {
+                    SAPITournamentGroup mergingGroup = endpointData.getGroups().getGroup().get(i);
+                    GroupCI tmpGroup = tmpGroups.stream().filter(existingGroup -> existingGroup.getName().equals(mergingGroup.getName())).findFirst().orElse(null);
+                    if(tmpGroup == null)
+                    {
+                        tmpGroups.add(new GroupCI(mergingGroup, dataLocale));
+                    }
+                    else
+                    {
+                        tmpGroup.merge(mergingGroup, dataLocale);
+                    }
+                }
+                groups = tmpGroups;
             }
         }
 
