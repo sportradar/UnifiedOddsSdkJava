@@ -21,10 +21,7 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +63,8 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * The utility used to identify the proper entity type
      */
     private final MappingTypeProvider mappingTypeProvider;
+
+    private final List<URN> soccerSportUrns = new ArrayList<URN>(Arrays.asList(URN.parse("sr:sport:1"), URN.parse("sr:sport:137")));
 
     /**
      * Initializes a new instance of the {@link SportEntityFactoryImpl}
@@ -401,7 +400,7 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
             logger.warn("EventCI missing sportId, providing default Match entity");
         }
 
-        if (sportId != null && sportId.getId() == 1) {
+        if (sportId != null && soccerSportUrns.contains(sportId)) {
             return new SoccerEventImpl(id, sportId, sportEventCache, sportEventStatusFactory, this, locales, exceptionHandlingStrategy);
         }
 
