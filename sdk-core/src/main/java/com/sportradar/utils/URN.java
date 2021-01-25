@@ -73,6 +73,7 @@ public class URN {
             put("team", ResourceTypeGroup.OTHER).
             put("competitor", ResourceTypeGroup.OTHER).
             put("simpleteam", ResourceTypeGroup.OTHER).
+            put("simple_team", ResourceTypeGroup.OTHER).
             put("venue", ResourceTypeGroup.OTHER).
             put("player", ResourceTypeGroup.OTHER).
             put("referee", ResourceTypeGroup.OTHER).
@@ -225,5 +226,23 @@ public class URN {
     @Override
     public int hashCode() {
         return toString().hashCode();
+    }
+
+    public boolean isSimpleTeam()
+    {
+        if(type != null && (type.equalsIgnoreCase("simpleteam") || type.equalsIgnoreCase("simple_team")))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSimpleTeam(String urn)
+    {
+        if(urn != null && (urn.contains("simpleteam") || urn.contains("simple_team")))
+        {
+            return true;
+        }
+        return false;
     }
 }

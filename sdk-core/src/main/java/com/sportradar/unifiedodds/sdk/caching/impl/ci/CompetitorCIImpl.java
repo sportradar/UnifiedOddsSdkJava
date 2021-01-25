@@ -592,8 +592,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
                         .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
-        if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE) ||
-                id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
+        if (id.isSimpleTeam() || id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
             handleSimpleTeamReference();
         }
 
@@ -660,8 +659,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
             missingLocales.forEach(l -> {
                 try {
-                    if (id.getType().equals(UnifiedFeedConstants.SIMPLETEAM_URN_TYPE) ||
-                            id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
+                    if (id.isSimpleTeam() || id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
                         dataRouterManager.requestSimpleTeamEndpoint(l, id, this);
                     } else {
                         dataRouterManager.requestCompetitorEndpoint(l, id, this);

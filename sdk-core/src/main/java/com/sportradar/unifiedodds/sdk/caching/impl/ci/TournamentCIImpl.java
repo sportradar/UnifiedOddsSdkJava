@@ -17,14 +17,12 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCI;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
-import com.sportradar.unifiedodds.sdk.entities.Group;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import com.sun.deploy.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
