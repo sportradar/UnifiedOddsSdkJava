@@ -20,16 +20,18 @@ import java.util.StringJoiner;
  * A simple demo entity utility which extracts data from the provided entities
  */
 public class SportEntityWriter {
-    private Locale locale;
+    private List<Locale> locales;
+    private Locale defaultLocale;
     private boolean writeNonCacheableData;
     private boolean writeLog;
     private final Logger logger;
 
-    public SportEntityWriter(Locale locale, boolean writeNonCacheableData, boolean writeLog){
+    public SportEntityWriter(List<Locale> locales, boolean writeNonCacheableData, boolean writeLog){
         logger = LoggerFactory.getLogger(this.getClass().getName());
-        this.locale = locale;
+        this.locales = locales;
         this.writeNonCacheableData = writeNonCacheableData;
         this.writeLog = writeLog;
+        this.defaultLocale = locales.stream().findFirst().orElse(Locale.ENGLISH);
     }
 
     /**
@@ -42,7 +44,7 @@ public class SportEntityWriter {
         return String.format("Id:'%s', SportId:'%s', Name:'%s', ScheduledTime:'%s', ScheduledEndTime:'%s'",
                 event.getId(),
                 event.getSportId(),
-                event.getName(locale),
+                event.getName(defaultLocale),
                 event.getScheduledTime(),
                 event.getScheduledEndTime());
     }
@@ -185,7 +187,7 @@ public class SportEntityWriter {
         return String.format("Season[%s, id:'%s', name:'%s', year:'%s', groups:'%s', coverage:'%s']",
                 baselineDescription,
                 season.getId(),
-                season.getName(locale),
+                season.getName(defaultLocale),
                 season.getYear(),
                 groups == null ? "no groups" : groups,
                 season.getSeasonCoverage());
@@ -252,7 +254,7 @@ public class SportEntityWriter {
             return "No tournament round info available";
         }
 
-        return String.format("Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s", tournamentRound.getName(locale), tournamentRound.getGroupName(), tournamentRound.getGroupId(), tournamentRound.getType(), tournamentRound.getNumber());
+        return String.format("Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s", tournamentRound.getName(defaultLocale), tournamentRound.getGroupName(), tournamentRound.getGroupId(), tournamentRound.getType(), tournamentRound.getNumber());
     }
 
     /**
@@ -266,7 +268,7 @@ public class SportEntityWriter {
             return "null";
         }
 
-        return String.format("%s[%s]  %s - s%", season.getName(locale), season.getId(), season.getStartDate(), season.getEndDate());
+        return String.format("%s[%s]  %s - s%", season.getName(defaultLocale), season.getId(), season.getStartDate(), season.getEndDate());
     }
 
     /**
@@ -278,9 +280,9 @@ public class SportEntityWriter {
     private String writeData(Competitor competitor) {
         return String.format("Id:%s, Name:%s, Abr:%s, Country:%s, CountryCode:%s, IsVirtual:%s, References:[%s]",
                 competitor.getId(),
-                competitor.getName(locale),
-                competitor.getAbbreviation(locale),
-                competitor.getCountry(locale),
+                competitor.getName(defaultLocale),
+                competitor.getAbbreviation(defaultLocale),
+                competitor.getCountry(defaultLocale),
                 competitor.getCountryCode(),
                 competitor.isVirtual(),
                 writeData(competitor.getReferences()));
@@ -326,7 +328,7 @@ public class SportEntityWriter {
             }
             else
             {
-                sj.add(String.format("Id:%s, Name:%s", competitor.getId(), competitor.getName(locale)));
+                sj.add(String.format("Id:%s, Name:%s", competitor.getId(), competitor.getName(defaultLocale)));
             }
         });
         return String.format("Competitors:[%s]", sj.toString());
@@ -424,10 +426,10 @@ public class SportEntityWriter {
         writeMessage(description);
     }
 
-    public static String writeSportEventData(SportEvent sportEvent, boolean writeLog) {
+    public static String writeSportEventData(SportEvent sportEvent, boolean writeLog, List<Locale> desiredLocales) {
         String description = null;
         if (sportEvent != null) {
-            SportEntityWriter sportEntityWriter = new SportEntityWriter(Locale.ENGLISH, false, writeLog);
+            SportEntityWriter sportEntityWriter = new SportEntityWriter(desiredLocales, false, writeLog);
 
             if (sportEvent instanceof Tournament) {
                 description = sportEntityWriter.writeData((Tournament) sportEvent, false);

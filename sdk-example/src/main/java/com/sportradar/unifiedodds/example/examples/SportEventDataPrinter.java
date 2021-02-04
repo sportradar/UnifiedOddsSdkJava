@@ -21,12 +21,13 @@ import java.util.Locale;
  */
 public class SportEventDataPrinter {
     private final OddsFeed oddsFeed;
+    private final OddsFeedConfiguration configuration;
 
     public SportEventDataPrinter(String token) {
         logEntry("Running the OddsFeed SDK Basic example - multiple session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder()
+        configuration = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
                 .selectIntegration()
                 .setSdkNodeId(SdkConstants.NODE_ID)
@@ -52,7 +53,7 @@ public class SportEventDataPrinter {
 
         String description = null;
         if (sportEvent != null) {
-            description = SportEntityWriter.writeSportEventData(sportEvent, false);
+            description = SportEntityWriter.writeSportEventData(sportEvent, false, configuration.getDesiredLocales());
         }
 
         if (description != null) {

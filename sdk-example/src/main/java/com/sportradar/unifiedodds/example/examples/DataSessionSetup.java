@@ -22,12 +22,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class DataSessionSetup {
     private final OddsFeed oddsFeed;
+    private final OddsFeedConfiguration configuration;
 
     public DataSessionSetup(String token) {
         logEntry("Running the OddsFeed SDK data example - single session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder()
+        configuration = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
                 .selectIntegration()
                 .setSdkNodeId(SdkConstants.NODE_ID)
@@ -46,7 +47,7 @@ public class DataSessionSetup {
         logEntry("Building a simple session which will receive all messages");
         oddsFeed.getSessionBuilder()
                 .setMessageInterest(MessageInterest.AllMessages)
-                .setListener(new DataMessageListener("SingleSessionSetup", true, true))
+                .setListener(new DataMessageListener("SingleSessionSetup", configuration.getDesiredLocales(), true, true))
                 .build();
 
         logEntry("Opening the feed instance");

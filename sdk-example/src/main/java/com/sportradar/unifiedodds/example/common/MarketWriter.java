@@ -16,16 +16,18 @@ import java.util.stream.Collectors;
 
 public class MarketWriter {
 
-    private Locale locale;
+    private List<Locale> locales;
+    private Locale defaultLocale;
     private boolean includeMappings;
     private boolean writeLog;
     private final Logger logger;
 
-    public MarketWriter(Locale locale, boolean includeMappings, boolean writeLog){
+    public MarketWriter(List<Locale> locales, boolean includeMappings, boolean writeLog){
         logger = LoggerFactory.getLogger(this.getClass().getName());
-        this.locale = locale;
+        this.locales = locales;
         this.includeMappings = includeMappings;
         this.writeLog = writeLog;
+        this.defaultLocale = locales.stream().findFirst().orElse(Locale.ENGLISH);
     }
 
     public void writeMarketNames(List<? extends Market> markets) {
@@ -83,12 +85,18 @@ public class MarketWriter {
     private void writeMarket(MarketWithOdds market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
-        sb.append(", Name:").append(market.getName());
+        sb.append(", Names:[");
+        StringBuilder finalSb = sb;
+        locales.forEach(l->{
+            finalSb.append(l.getLanguage()).append(": ").append(market.getName(l)).append("; ");
+        });
+        sb = finalSb;
+        sb.append("]");
         sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
         sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
         sb.append(", MarketStatus:").append(market.getStatus());
         sb.append(", IsFavourite:").append(market.isFavourite());
-        sb.append(", MarketDefinition:[").append(writeMarketDefinition(market.getMarketDefinition(), locale)).append("]");
+        sb.append(", MarketDefinition:[").append(writeMarketDefinition(market.getMarketDefinition(), locales)).append("]");
         writeMessage(sb.toString());
 
         writeMarketMappings(market);
@@ -107,7 +115,7 @@ public class MarketWriter {
             sb.append(", IsActive:").append(outcome.isActive());
             sb.append(", IsPlayerOutcome:").append(outcome.isPlayerOutcome());
             sb.append(", Probabilities:").append(outcome.getProbability());
-            sb.append(", OutcomeDefinition:[").append(writeOutcomeDefinition(outcome.getOutcomeDefinition(), locale)).append("]");
+            sb.append(", OutcomeDefinition:[").append(writeOutcomeDefinition(outcome.getOutcomeDefinition(), locales)).append("]");
             writeMessage(sb.toString());
         }
         writeMarketOutcomeMappings(market);
@@ -164,16 +172,18 @@ public class MarketWriter {
         return sj.toString();
     }
 
-    private String writeMarketDefinition(MarketDefinition definition, Locale locale)
+    private String writeMarketDefinition(MarketDefinition definition, List<Locale> locales)
     {
         if(definition == null)
         {
             return "";
         }
         StringJoiner sj = new StringJoiner(", ");
-        sj.add("NameTemplate=" + definition.getNameTemplate());
-        sj.add("NameTemplate[" + locale.getLanguage() + "]=" + definition.getNameTemplate(locale));
-        sj.add("OutcomeType=" + definition.getOutcomeType());
+        sj.add("NameTemplates=[");
+        locales.forEach(l -> {
+            sj.add(l.getLanguage() + ":" + definition.getNameTemplate(l));
+        });
+        sj.add("], OutcomeType=" + definition.getOutcomeType());
         if(definition.getGroups() != null && !definition.getGroups().isEmpty()) {
             sj.add(String.format("Groups=%s", String.join(",", definition.getGroups())));
         }
@@ -186,22 +196,25 @@ public class MarketWriter {
         return sj.toString();
     }
 
-    private String writeOutcomeDefinition(OutcomeDefinition definition, Locale locale)
+    private String writeOutcomeDefinition(OutcomeDefinition definition, List<Locale> locales)
     {
         if(definition == null)
         {
             return "";
         }
         StringJoiner sj = new StringJoiner(", ");
-        sj.add("NameTemplate=" + definition.getNameTemplate());
-        sj.add("NameTemplate[" + locale.getLanguage() + "]=" + definition.getNameTemplate(locale));
+        sj.add("NameTemplates=[");
+        locales.forEach(l -> {
+            sj.add(l.getLanguage() + ":" + definition.getNameTemplate(l));
+        });
+        sj.add("]");
 
         return sj.toString();
     }
 
     private void writeMarketMappings(Market market) {
         if (includeMappings) {
-            String result = MarketMappingWriter.writeMarketMapping(market, locale);
+            String result = MarketMappingWriter.writeMarketMapping(market, defaultLocale);
             if (result.isEmpty()) {
                 result = "No market mappings for market: " + market.getId();
             }
@@ -211,7 +224,7 @@ public class MarketWriter {
 
     private void writeMarketOutcomeMappings(Market market) {
         if (includeMappings) {
-            String result = MarketMappingWriter.writeMarketOutcomeMapping(market, locale);
+            String result = MarketMappingWriter.writeMarketOutcomeMapping(market, defaultLocale);
             if (result.isEmpty()) {
                 result = "No market outcome mappings for outcome: " + market.getId();
             }

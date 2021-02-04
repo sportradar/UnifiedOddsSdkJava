@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Locale;
 
 public class DataMessageListener implements OddsFeedListener {
@@ -20,10 +21,10 @@ public class DataMessageListener implements OddsFeedListener {
     private final boolean writeEventData;
     private final boolean writeMarketData;
 
-    public DataMessageListener(String listener_version, boolean writeEventData, boolean writeMarketData) {
+    public DataMessageListener(String listener_version, List<Locale>desiredLocales, boolean writeEventData, boolean writeMarketData) {
         this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
-        sportEntityWriter = new SportEntityWriter(Locale.ENGLISH, true, false);
-        marketWriter = new MarketWriter(Locale.ENGLISH, true, false);
+        sportEntityWriter = new SportEntityWriter(desiredLocales, true, false);
+        marketWriter = new MarketWriter(desiredLocales, true, false);
         this.writeEventData = writeEventData;
         this.writeMarketData = writeMarketData;
     }
