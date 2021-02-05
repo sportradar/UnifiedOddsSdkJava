@@ -391,7 +391,16 @@ public interface SportsInfoManager {
      *
      * @param items List of {@link ExportableCI} containing the items to be imported
      */
-    default void cacheImport(List<ExportableCI> items) {
+    default void cacheImport(List<ExportableCI> items) { }
 
+    /**
+     * Returns all the available lotteries
+     * (the returned data is translated in the specified {@link Locale})
+     *
+     * @param locale  - the {@link Locale} in which to provide the data
+     * @return - all available lotteries in specified locale (from SportsAPI All lotteries endpoint)
+     */
+    default List<Lottery> getLotteries(Locale locale) {
+        return null;
     }
 }

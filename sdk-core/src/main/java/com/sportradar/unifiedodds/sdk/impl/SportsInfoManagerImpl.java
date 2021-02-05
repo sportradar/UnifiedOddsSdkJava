@@ -802,6 +802,34 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         ((ExportableSdkCache) sportEventCache).importItems(items);
     }
 
+    /**
+     * Returns all the available lotteries
+     * (the returned data is translated in the specified {@link Locale})
+     *
+     * @param locale  - the {@link Locale} in which to provide the data
+     * @return - all available lotteries in specified locale
+     */
+    @Override
+    public List<Lottery> getLotteries(Locale locale) {
+        Preconditions.checkNotNull(locale);
+
+        Stopwatch timer = Stopwatch.createStarted();
+        List<Lottery> lotteries = new ArrayList<>();
+        try {
+            List<Locale> locales =  Lists.newArrayList(locale);
+            List<URN> lotteryIds = dataRouterManager.requestAllLotteriesEndpoint(locale, true);
+            if(lotteryIds != null){
+                for (URN tId : lotteryIds) {
+                    lotteries.add((Lottery) sportEntityFactory.buildSportEvent(tId, null, locales, false));
+                }
+            }
+        } catch (ObjectNotFoundException | CommunicationException e) {
+            return handleException("getAllLotteries", e);
+        }
+        clientInteractionLog.info("SportsInfoManager.getAllLotteries({}) invoked. Execution time: {}", locale, timer.stop());
+        return lotteries;
+    }
+
     private List<Sport> internalGetSports(List<Locale> locales) {
         try {
             return this.sportEntityFactory.buildSports(locales);

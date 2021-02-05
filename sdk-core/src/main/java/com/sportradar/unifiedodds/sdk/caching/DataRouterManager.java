@@ -33,7 +33,7 @@ public interface DataRouterManager {
 
     void requestAllSportsEndpoint(Locale locale) throws CommunicationException;
 
-    void requestAllLotteriesEndpoint(Locale locale) throws CommunicationException;
+    List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult) throws CommunicationException;
 
     List<URN> requestEventsFor(Locale locale, URN tournamentId) throws CommunicationException;
 

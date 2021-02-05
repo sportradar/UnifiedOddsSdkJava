@@ -467,22 +467,22 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public void requestAllLotteriesEndpoint(Locale locale) throws CommunicationException {
+    public List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult) throws CommunicationException {
         Preconditions.checkNotNull(locale);
 
         // if WNS producer inactive, ignore lotteries endpoint requests
         if (!isWnsActive) {
-            return;
+            return Collections.emptyList();
         }
 
-        if (lotteriesListDataFetched.contains(locale)) {
-            return;
+        if (!requireResult && lotteriesListDataFetched.contains(locale)) {
+            return Collections.emptyList();
         }
 
         lotteriesListLock.lock();
         try {
-            if (lotteriesListDataFetched.contains(locale)) {
-                return;
+            if (!requireResult && lotteriesListDataFetched.contains(locale)) {
+                return Collections.emptyList();
             }
 
             SAPILotteries endpoint;
@@ -497,6 +497,10 @@ public class DataRouterManagerImpl implements DataRouterManager {
             dataRouter.onAllLotteriesListFetched(endpoint, locale);
 
             lotteriesListDataFetched.add(locale);
+
+            List<URN> lotteryIds = endpoint.getLottery().stream().map(e -> URN.parse(e.getId())).collect(Collectors.toList());
+            return lotteryIds;
+
         } finally {
             lotteriesListLock.unlock();
         }
@@ -922,7 +926,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }
                 try {
-                    requestAllLotteriesEndpoint(l);
+                    requestAllLotteriesEndpoint(l, false);
                 } catch (CommunicationException e) {
                     logger.warn("DataRouterImpl->Lotteries endpoint request failed while refreshing tournaments/sports data", e);
                 }

@@ -314,7 +314,7 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
                 throw new IllegalCacheStateException("An error occurred while fetching all sports endpoint", e);
             }
             try {
-                dataRouterManager.requestAllLotteriesEndpoint(locale);
+                dataRouterManager.requestAllLotteriesEndpoint(locale, false);
             } catch (CommunicationException e) {
                 logger.warn("Lotteries endpoint request failed while ensuring cache integrity", e);
             }
