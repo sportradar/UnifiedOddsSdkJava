@@ -1,4 +1,14 @@
 ### Unified Feed SDK 2.x changelog
+
+**2.0.43.0 (2021-02-09)**
+* added support for eSoccer - returns SoccerEvent instead of Match
+* added SportsInfoManager.getLotteries
+* added support for simple_team urn
+* improved example to support all desired locales
+* fix: merging tournament groups
+* fix: merging tournament data
+* fix: NPE in data router fixture handling
+
 **2.0.42.1 (2020-12-18)**
 * fix: NPE in case of missing market description
 * improved logging

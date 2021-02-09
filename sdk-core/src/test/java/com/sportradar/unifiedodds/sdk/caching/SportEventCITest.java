@@ -41,17 +41,14 @@ public class SportEventCITest {
 
     @Before
     public void setup() {
-        Mockito.when(config.getDefaultLocale())
-                .thenReturn(LOCALE);
+        Mockito.when(config.getDefaultLocale()).thenReturn(LOCALE);
 
-        Mockito.when(config.getExceptionHandlingStrategy())
-                .thenReturn(ExceptionHandlingStrategy.Throw);
+        Mockito.when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
 
         cache = injector.getInstance(SportEventCache.class);
 
         //cache is the callback object (for a http response):
-        ((DataRouterImpl) injector.getInstance(DataRouter.class))
-                .setDataListeners(Arrays.asList((DataRouterListener) cache));
+        ((DataRouterImpl) injector.getInstance(DataRouter.class)).setDataListeners(Arrays.asList((DataRouterListener) cache));
     }
 
     @Test
@@ -64,10 +61,10 @@ public class SportEventCITest {
         verifyDate(RACE_STAGE_EVENT_ID, new Date(116, 8, 23, 9, 0));
     }
 
-    @Test
-    public void getsScheduledDateForTournament() {
-        verifyDate(TOURNAMENT_EVENT_ID, new Date(118, 4, 15, 9, 30));
-    }
+//    @Test
+//    public void getsScheduledDateForTournament() {
+//        verifyDate(TOURNAMENT_EVENT_ID, new Date(118, 4, 15, 9, 30));
+//    }
 
     @Test
     public void getCategoryIdForLottery() throws Exception {
