@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * // TODO @eti: Javadoc
  */
 class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
-    private final static Logger logger = LoggerFactory.getLogger(TournamentCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(TournamentCIImpl.class);
 
     /**
      * A {@link Locale} specifying the default language
@@ -714,18 +714,21 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             this.categoryId = URN.parse(endpointData.getCategory().getId());
         }
 
-        this.scheduled = endpointData.getScheduled() == null ? null :
+        Date endpointScheduled = endpointData.getScheduled() == null ? null :
                 SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null :
+        Date endpointScheduledEnd = endpointData.getScheduledEnd() == null ? null :
                 SdkHelper.toDate(endpointData.getScheduledEnd());
 
-        if ((this.scheduled == null || this.scheduledEnd == null) && endpointData.getTournamentLength() != null) {
+        if ((endpointScheduled == null || endpointScheduledEnd == null) && endpointData.getTournamentLength() != null) {
             SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
-            this.scheduled = tournamentLength.getStartDate() == null ? null :
+            endpointScheduled = tournamentLength.getStartDate() == null ? null :
                     SdkHelper.toDate(tournamentLength.getStartDate());
-            this.scheduledEnd = tournamentLength.getEndDate() == null ? null :
+            endpointScheduledEnd = tournamentLength.getEndDate() == null ? null :
                     SdkHelper.toDate(tournamentLength.getEndDate());
         }
+
+        this.scheduled = endpointScheduled == null ? this.scheduled : endpointScheduled;
+        this.scheduledEnd = endpointScheduledEnd == null ? this.scheduledEnd : endpointScheduledEnd;
 
         this.exhibitionGames = endpointData.isExhibitionGames();
     }
