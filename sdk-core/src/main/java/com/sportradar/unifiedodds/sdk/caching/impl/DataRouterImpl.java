@@ -24,7 +24,7 @@ import java.util.*;
  * Implements methods used to trigger API fetches
  */
 public class DataRouterImpl implements DataRouter {
-    private final static Logger logger = LoggerFactory.getLogger(DataRouterImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataRouterImpl.class);
 
     /**
      * A {@link List} of listeners interested in the router fetches
@@ -78,7 +78,9 @@ public class DataRouterImpl implements DataRouter {
 
         dataListeners.forEach(l -> l.onFixtureFetched(fixtureId, fixture, locale, requester));
 
-        dispatchTournament(fixture.getTournament(), locale);
+        if (fixture.getTournament() != null) {
+            dispatchTournament(fixture.getTournament(), locale);
+        }
         Optional.ofNullable(fixture.getCompetitors()).ifPresent(c -> dispatchEventCompetitors(c.getCompetitor(), locale, requester));
     }
 
