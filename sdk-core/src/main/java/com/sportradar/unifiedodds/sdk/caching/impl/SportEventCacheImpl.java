@@ -433,7 +433,24 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             requester.merge(data, dataLocale);
         }
 
-        // we only merge such data, this request wont be triggered before the cache item is created anyway
+        if (ifPresent == null) {
+            Class mappingType;
+            try {
+                mappingType = provideMappingType(id);
+            } catch (IllegalCacheStateException e) {
+                logger.warn("SportEventCache.onMatchTimelineFetched -> Failed to provide valid mapping type for id [{}]", id);
+                return;
+            }
+
+            if (mappingType.equals(Match.class)) {
+                sportEventsCache.put(id, cacheItemFactory.buildMatchCI(id));
+//            } else if (mappingType.equals(Stage.class)) {
+//                sportEventsCache.put(id, cacheItemFactory.buildStageCI(id, data, dataLocale));
+            } else {
+                logger.warn("SportEventCache.onMatchTimelineFetched -> discarding data, mapping type not supported. id:{}, type:{}", id, mappingType);
+            }
+            ifPresent = sportEventsCache.getIfPresent(id);
+        }
         if (ifPresent != null) {
             ifPresent.merge(data, dataLocale);
         }

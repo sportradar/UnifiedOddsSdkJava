@@ -618,13 +618,18 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                     }
                     catch (Exception e) {
                         //
+                        logger.debug("Error removing changed group: " + e.getMessage());
                     }
                 }
 
                 // add or merge groups
                 for (int i = 0; i < endpointData.getGroups().getGroup().size(); i++) {
                     SAPITournamentGroup mergingGroup = endpointData.getGroups().getGroup().get(i);
-                    GroupCI tmpGroup = tmpGroups.stream().filter(existingGroup -> existingGroup.getName().equals(mergingGroup.getName())).findFirst().orElse(null);
+                    GroupCI tmpGroup = mergingGroup.getName() != null
+                        ? tmpGroups.stream().filter(existingGroup -> existingGroup.getName().equals(mergingGroup.getName())).findFirst().orElse(null)
+                        : mergingGroup.getId() != null
+                            ? tmpGroups.stream().filter(existingGroup -> existingGroup.getId().equals(mergingGroup.getId())).findFirst().orElse(null)
+                            : tmpGroups.stream().filter(existingGroup -> existingGroup.getName() == null).findFirst().orElse(null);
                     if(tmpGroup == null)
                     {
                         tmpGroups.add(new GroupCI(mergingGroup, dataLocale));
