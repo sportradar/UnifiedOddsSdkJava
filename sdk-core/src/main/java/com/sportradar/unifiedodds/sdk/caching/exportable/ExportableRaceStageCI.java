@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
-import com.sportradar.utils.URN;
 
 import java.util.Date;
 import java.util.List;
@@ -50,9 +49,7 @@ public class ExportableRaceStageCI extends ExportableStageCI {
         return loadedSummaryLocales;
     }
 
-    public void setLoadedSummaryLocales(List<Locale> loadedSummaryLocales) {
-        this.loadedSummaryLocales = loadedSummaryLocales;
-    }
+    public void setLoadedSummaryLocales(List<Locale> loadedSummaryLocales) { this.loadedSummaryLocales = loadedSummaryLocales; }
 
     public List<Locale> getLoadedFixtureLocales() {
         return loadedFixtureLocales;

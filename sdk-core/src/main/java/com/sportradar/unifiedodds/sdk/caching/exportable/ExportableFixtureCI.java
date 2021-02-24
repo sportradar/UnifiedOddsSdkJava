@@ -19,12 +19,12 @@ public class ExportableFixtureCI implements Serializable {
     private Boolean startTimeTbd;
     private String replacedBy;
     private List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges;
-    private URN parentId;
-    private List<URN> additionalParentsIds;
+    private String parentId;
+    private List<String> additionalParentsIds;
 
     public ExportableFixtureCI(Date startTime, boolean startTimeConfirmed, Date nextLiveTime, Map<String, String> extraInfo, List<ExportableTvChannelCI> tvChannels,
                                ExportableCoverageInfoCI coverageInfo, ExportableProducerInfoCI producerInfo, Map<String, String> references, Boolean startTimeTbd, String replacedBy,
-                               List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges, URN parentId, List<URN> additionalParentsIds) {
+                               List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges, String parentId, List<String> additionalParentsIds) {
         this.startTime = startTime;
         this.startTimeConfirmed = startTimeConfirmed;
         this.nextLiveTime = nextLiveTime;
@@ -128,15 +128,13 @@ public class ExportableFixtureCI implements Serializable {
         this.scheduledStartTimeChanges = scheduledStartTimeChanges;
     }
 
-    public URN getParentId() {
-        return parentId;
-    }
+    public String getParentId() { return parentId; }
 
-    public void setParentId(URN parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
-    public List<URN> getAdditionalParentsIds() { return additionalParentsIds; }
+    public List<String> getAdditionalParentsIds() { return additionalParentsIds; }
 
-    public void setAdditionalParentsIds(List<URN> additionalParentsIds) { this.additionalParentsIds = additionalParentsIds; }
+    public void setAdditionalParentsIds(List<String> additionalParentsIds) { this.additionalParentsIds = additionalParentsIds; }
 }

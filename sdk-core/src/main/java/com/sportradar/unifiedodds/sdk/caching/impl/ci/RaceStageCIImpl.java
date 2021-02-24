@@ -1082,7 +1082,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 scheduled,
                 scheduledEnd,
                 startTimeTbd,
-                replacedBy.toString(),
+                replacedBy == null ? null : replacedBy.toString(),
                 bookingStatus,
                 competitorIds != null ? competitorIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
                 venue != null ? venue.export() : null,

@@ -187,8 +187,12 @@ FixtureImpl implements Fixture {
         this.startTimeTbd = exportable.getStartTimeTbd();
         this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
         this.scheduledStartTimeChanges = exportable.getScheduledStartTimeChanges() != null ? exportable.getScheduledStartTimeChanges().stream().map(ScheduledStartTimeChangeImpl::new).collect(ImmutableList.toImmutableList()) : null;
-        this.parentId = exportable.getParentId() != null ? exportable.getParentId() : null;
-        this.additionalParentsIds = exportable.getAdditionalParentsIds() != null ? exportable.getAdditionalParentsIds().stream().collect(ImmutableList.toImmutableList()) : null;
+        this.parentId = exportable.getParentId() == null || exportable.getParentId().isEmpty()
+                ? null
+                : URN.parse(exportable.getParentId());
+        this.additionalParentsIds = exportable.getAdditionalParentsIds() == null || exportable.getAdditionalParentsIds().isEmpty()
+                ? null
+                : exportable.getAdditionalParentsIds().stream().map(m-> URN.parse(m)).collect(ImmutableList.toImmutableList());
     }
 
     /**
@@ -376,8 +380,10 @@ FixtureImpl implements Fixture {
                 startTimeTbd,
                 replacedBy != null ? replacedBy.toString() : null,
                 scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ScheduledStartTimeChangeImpl) s).export()).collect(Collectors.toList()) : null,
-                parentId,
-                additionalParentsIds
+                parentId == null ? null : parentId.toString(),
+                additionalParentsIds == null || additionalParentsIds.isEmpty()
+                        ? null
+                        : additionalParentsIds.stream().map(m->m.toString()).collect(Collectors.toList())
         );
     }
 }

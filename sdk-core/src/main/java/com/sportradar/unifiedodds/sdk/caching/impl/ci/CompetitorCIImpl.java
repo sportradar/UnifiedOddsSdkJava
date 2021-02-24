@@ -491,7 +491,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         referenceId = exportable.getReferenceId() != null ? new ReferenceIdCI(exportable.getReferenceId()) : null;
         List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds() != null ? exportable.getAssociatedPlayerIds().stream()
                 .map(URN::parse)
-                .filter(i -> !associatedPlayerIds.contains(i))
+                .filter(i -> associatedPlayerIds == null || !associatedPlayerIds.contains(i))
                 .collect(Collectors.toList()) : new ArrayList<>();
         if (associatedPlayerIds == null)
             associatedPlayerIds = new ArrayList<>(missingAssociatedPlayerIds);

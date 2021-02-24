@@ -25,9 +25,11 @@ public class ExportablePlayerProfileCI extends ExportableCI {
     private String nickname;
     private String gender;
     private List<Locale> cachedLocales;
-    private URN competitorId;
+    private String competitorId;
 
-    public ExportablePlayerProfileCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> fullNames, Map<Locale, String> nationalities, Map<Locale, String> abbreviations, String type, Date dateOfBirth, Integer height, Integer weight, String countryCode, Integer jerseyNumber, String nickname, String gender, List<Locale> cachedLocales, URN competitorId) {
+    public ExportablePlayerProfileCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> fullNames, Map<Locale, String> nationalities, Map<Locale, String> abbreviations,
+                                     String type, Date dateOfBirth, Integer height, Integer weight, String countryCode, Integer jerseyNumber, String nickname, String gender,
+                                     List<Locale> cachedLocales, String competitorId) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.fullNames = fullNames;
@@ -149,7 +151,7 @@ public class ExportablePlayerProfileCI extends ExportableCI {
         this.cachedLocales = cachedLocales;
     }
 
-    public void setCompetitorId(URN competitorId) { this.competitorId = competitorId; }
+    public void setCompetitorId(String competitorId) { this.competitorId = competitorId; }
 
-    public URN getCompetitorId(){ return competitorId; }
+    public String getCompetitorId(){ return competitorId; }
 }

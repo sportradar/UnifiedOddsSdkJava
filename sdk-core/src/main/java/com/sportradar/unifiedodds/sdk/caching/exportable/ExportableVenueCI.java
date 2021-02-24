@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.caching.ci.HoleCI;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class ExportableVenueCI extends ExportableCI {
         this.cachedLocales = cachedLocales;
         this.state = state;
         if(course != null && !course.isEmpty()){
+            this.course = Lists.newArrayList();
             course.forEach(ci -> this.course.add(new ExportableHoleCI(ci.getNumber(), ci.getPar())));
         }
         else{

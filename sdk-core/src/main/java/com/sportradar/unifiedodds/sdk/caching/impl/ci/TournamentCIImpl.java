@@ -168,10 +168,9 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                 new CompleteRoundCIImpl(endpointData.getRound(), dataLocale);
         this.season = endpointData.getSeason() != null ? new SeasonCI(endpointData.getSeason(), dataLocale) : null;
 
-        this.groups = endpointData.getGroups() == null ? null :
-                Collections.synchronizedList(endpointData.getGroups().getGroup().stream().
-                        map(g -> new GroupCI(g, dataLocale)).collect(Collectors.toList()));
-
+        this.groups = endpointData.getGroups() == null
+                ? null
+                : Collections.synchronizedList(endpointData.getGroups().getGroup().stream().map(g -> new GroupCI(g, dataLocale)).collect(Collectors.toList()));
 
         SAPICompetitors endpointCompetitors = endpointData.getCompetitors() != null ?
                 endpointData.getCompetitors() :

@@ -403,7 +403,7 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
         jerseyNumber = exportable.getJerseyNumber();
         nickname = exportable.getNickname();
         gender = exportable.getGender();
-        competitorId = exportable.getCompetitorId();
+        competitorId = exportable.getCompetitorId() == null || exportable.getCompetitorId().isEmpty() ? null : URN.parse(exportable.getCompetitorId());
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
     }
 
@@ -531,7 +531,7 @@ class PlayerProfileCIImpl implements PlayerProfileCI, ExportableCacheItem {
                 nickname,
                 gender,
                 new ArrayList<>(cachedLocales),
-                competitorId
+                competitorId == null ? null : competitorId.toString()
         );
     }
 }

@@ -157,7 +157,10 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
 
     @Override
     public PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable) {
-        return new PlayerProfileCIImpl(exportable, dataRouterManager, exceptionHandlingStrategy, exportable.getCompetitorId());
+        return new PlayerProfileCIImpl(exportable,
+                                       dataRouterManager,
+                                       exceptionHandlingStrategy,
+                                       exportable.getCompetitorId() == null || exportable.getCompetitorId().isEmpty() ? null : URN.parse(exportable.getCompetitorId()));
     }
 
     @Override
