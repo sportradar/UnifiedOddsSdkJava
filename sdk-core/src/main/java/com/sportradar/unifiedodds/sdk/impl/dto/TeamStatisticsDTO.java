@@ -49,11 +49,11 @@ public class TeamStatisticsDTO {
         greenCards = null;
     }
 
-    TeamStatisticsDTO(HomeAway homeAway, int yellowCards, int redCards, int yellowRedCards, int cornerKicks, int greenCards) {
+    TeamStatisticsDTO(String name, URN teamId, HomeAway homeAway, Integer yellowCards, Integer redCards, Integer yellowRedCards, Integer cornerKicks, Integer greenCards) {
         Preconditions.checkNotNull(homeAway);
 
-        this.name = "";
-        this.teamId = null; // not available on the AMQP message
+        this.name = name; // not available on the AMQP message
+        this.teamId = teamId; // not available on the AMQP message
         this.homeAway = homeAway;
         this.yellowCards = yellowCards;
         this.redCards = redCards;

@@ -56,20 +56,24 @@ public class SportEventStatisticsDTO {
 
         totalStatisticsDTOs = new ArrayList<>();
         totalStatisticsDTOs.add(new TeamStatisticsDTO(
+                null,
+                null,
                 HomeAway.Home,
                 statistics.getYellowCards().getHome(),
                 statistics.getRedCards().getHome(),
                 statistics.getYellowRedCards().getHome(),
                 statistics.getCorners().getHome(),
-                statistics.getGreenCards() == null ? 0 : statistics.getGreenCards().getHome()
+                statistics.getGreenCards().getHome()
         ));
         totalStatisticsDTOs.add(new TeamStatisticsDTO(
+                null,
+                null,
                 HomeAway.Away,
                 statistics.getYellowCards().getAway(),
                 statistics.getRedCards().getAway(),
                 statistics.getYellowRedCards().getAway(),
                 statistics.getCorners().getAway(),
-                statistics.getGreenCards() == null ? 0 : statistics.getGreenCards().getAway()
+                statistics.getGreenCards().getAway()
         ));
 
         periodStatisticDTOs = null;
