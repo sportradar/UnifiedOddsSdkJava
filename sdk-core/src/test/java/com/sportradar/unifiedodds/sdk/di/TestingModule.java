@@ -44,9 +44,7 @@ public class TestingModule implements Module {
     }
 
     @Provides @Singleton
-    public DataProvider<MarketDescriptions> providesMarketsDataProvider() {
-        return new TestingDataProvider("test/rest/invariant_market_descriptions.en.xml");
-    }
+    public DataProvider<MarketDescriptions> providesMarketsDataProvider() { return new TestingDataProvider("test/rest/invariant_market_descriptions.en.xml"); }
 
     @Provides @Singleton @Named("BettingStatusDataProvider")
     protected DataProvider providesBettingStatusDataProvider() {
@@ -83,7 +81,8 @@ public class TestingModule implements Module {
         return new TestingSummaryDataProvider<>(ImmutableMap.of(
                 "match", "test/rest/match_summary.xml",
                 "stage", "test/rest/race_summary.xml",
-                "tournament", "test/rest/summaries/summary_sr_tournament_1030.en.xml"
+                "tournament", "test/rest/summaries/summary_sr_tournament_1030.en.xml",
+                "tournament40", "test/rest/tournament_info.xml"
         ));
     }
 

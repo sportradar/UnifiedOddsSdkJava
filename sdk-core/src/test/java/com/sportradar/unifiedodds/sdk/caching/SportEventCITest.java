@@ -61,10 +61,8 @@ public class SportEventCITest {
         verifyDate(RACE_STAGE_EVENT_ID, new Date(116, 8, 23, 9, 0));
     }
 
-//    @Test
-//    public void getsScheduledDateForTournament() {
-//        verifyDate(TOURNAMENT_EVENT_ID, new Date(118, 4, 15, 9, 30));
-//    }
+    @Test
+    public void getsScheduledDateForTournament() { verifyDate(TOURNAMENT_EVENT_ID, new Date(118, 4, 15, 9, 30)); }
 
     @Test
     public void getCategoryIdForLottery() throws Exception {
@@ -79,8 +77,6 @@ public class SportEventCITest {
         assertEquals("6/41", drawInfo.getGameType());
     }
 
-    //Helpers:
-
     private void verifyDate(URN eventId, Date expected) {
         try {
             SportEventCI cacheItem = cache.getEventCacheItem(eventId);
@@ -91,6 +87,5 @@ public class SportEventCITest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 }

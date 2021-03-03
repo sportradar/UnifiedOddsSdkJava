@@ -613,6 +613,11 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                                     tmpGroups.remove(tmpGroup);
                                 }
                             }
+                            if(tmpGroup.getId() == null
+                                    && tmpGroup.getName()==null
+                                    && endpointData.getGroups().getGroup().stream().filter(f -> f.getId() == null && f.getName() == null).findFirst().orElse(null) == null){
+                                tmpGroups.remove(tmpGroup);
+                            }
                         });
                     }
                     catch (Exception e) {
@@ -623,19 +628,19 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
 
                 // add or merge groups
                 for (int i = 0; i < endpointData.getGroups().getGroup().size(); i++) {
-                    SAPITournamentGroup mergingGroup = endpointData.getGroups().getGroup().get(i);
-                    GroupCI tmpGroup = mergingGroup.getName() != null
-                        ? tmpGroups.stream().filter(existingGroup -> existingGroup.getName().equals(mergingGroup.getName())).findFirst().orElse(null)
-                        : mergingGroup.getId() != null
-                            ? tmpGroups.stream().filter(existingGroup -> existingGroup.getId().equals(mergingGroup.getId())).findFirst().orElse(null)
-                            : tmpGroups.stream().filter(existingGroup -> existingGroup.getName() == null).findFirst().orElse(null);
+                    SAPITournamentGroup sapiGroup = endpointData.getGroups().getGroup().get(i);
+                    GroupCI tmpGroup = sapiGroup.getName() != null
+                        ? tmpGroups.stream().filter(existingGroup -> existingGroup.getName() != null && existingGroup.getName().equals(sapiGroup.getName())).findFirst().orElse(null)
+                        : sapiGroup.getId() != null
+                            ? tmpGroups.stream().filter(existingGroup -> existingGroup.getId() != null && existingGroup.getId().equals(sapiGroup.getId())).findFirst().orElse(null)
+                            : tmpGroups.stream().filter(existingGroup -> existingGroup.getId() == null && existingGroup.getName() == null).findFirst().orElse(null);
                     if(tmpGroup == null)
                     {
-                        tmpGroups.add(new GroupCI(mergingGroup, dataLocale));
+                        tmpGroups.add(new GroupCI(sapiGroup, dataLocale));
                     }
                     else
                     {
-                        tmpGroup.merge(mergingGroup, dataLocale);
+                        tmpGroup.merge(sapiGroup, dataLocale);
                     }
                 }
                 groups = tmpGroups;
