@@ -23,4 +23,13 @@ public class CompetitorResultImpl implements CompetitorResult {
 
     @Override
     public String getSpecifiers() { return specifiers; }
+
+    @Override
+    public String toString() {
+        return "CompetitorResultImpl{" +
+                "type='" + type + '\'' +
+                ", value='" + value + '\'' +
+                ", specifiers='" + specifiers + '\'' +
+                '}';
+    }
 }

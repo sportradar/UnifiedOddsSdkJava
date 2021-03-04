@@ -84,6 +84,14 @@ public class GroupCI {
         Preconditions.checkNotNull(locale);
 
         if (group.getCompetitor() != null) {
+            if(competitorIds != null && (competitorIds.size() != group.getCompetitor().size())){
+                competitorIds.clear();
+            }
+            group.getCompetitor().forEach(c -> {
+                if(!competitorIds.contains(URN.parse(c.getId()))){
+                    competitorIds.clear();
+                }
+            });
             group.getCompetitor().forEach(mergeCompetitor -> {
                 URN cId = URN.parse(mergeCompetitor.getId());
                 if (!competitorIds.contains(cId)) {
@@ -91,6 +99,10 @@ public class GroupCI {
                 }
             });
             competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
+        }
+        else if (competitorIds.size() > 0){
+            competitorIds.clear();
+            competitorsReferences.clear();
         }
     }
 
