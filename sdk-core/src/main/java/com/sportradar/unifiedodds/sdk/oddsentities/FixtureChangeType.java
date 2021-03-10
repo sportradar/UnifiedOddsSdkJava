@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
+import com.sportradar.unifiedodds.sdk.entities.Pitcher;
+
 /**
  * What is the reason for a SDKFixtureChange message. *
  */
@@ -11,6 +13,9 @@ public enum FixtureChangeType {
     New,
     TimeUpdate,
     Cancelled,
+    Format,
+    Coverage,
     OtherChange,
-    Coverage
+    Pitcher,
+    NotAvailable
 }

@@ -28,25 +28,32 @@ class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implem
 
         UFChangeType type = message.getChangeType();
         if (type == null) {
-            type = UFChangeType.FORMAT;
+            changeType = FixtureChangeType.NotAvailable;
         }
-        switch (type) {
-            case CANCELLED:
-                changeType = FixtureChangeType.Cancelled;
-                break;
-            case DATETIME:
-                changeType = FixtureChangeType.TimeUpdate;
-                break;
-            case NEW:
-                changeType = FixtureChangeType.New;
-                break;
-            case COVERAGE:
-                changeType = FixtureChangeType.Coverage;
-                break;
-            case FORMAT:
-            default:
-                changeType = FixtureChangeType.OtherChange;
-                break;
+        else {
+            switch (type) {
+                case NEW:
+                    changeType = FixtureChangeType.New;
+                    break;
+                case DATETIME:
+                    changeType = FixtureChangeType.TimeUpdate;
+                    break;
+                case CANCELLED:
+                    changeType = FixtureChangeType.Cancelled;
+                    break;
+                case FORMAT:
+                    changeType = FixtureChangeType.Format;
+                    break;
+                case COVERAGE:
+                    changeType = FixtureChangeType.Coverage;
+                    break;
+                case PITCHER:
+                    changeType = FixtureChangeType.Pitcher;
+                    break;
+                default:
+                    changeType = FixtureChangeType.OtherChange;
+                    break;
+            }
         }
 
         nextLiveTime = message.getNextLiveTime() == null ? null : new Date(message.getNextLiveTime());
@@ -54,17 +61,11 @@ class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implem
     }
 
     @Override
-    public FixtureChangeType getChangeType() {
-        return changeType;
-    }
+    public FixtureChangeType getChangeType() { return changeType; }
 
     @Override
-    public Date getNextLiveTime() {
-        return nextLiveTime;
-    }
+    public Date getNextLiveTime() { return nextLiveTime; }
 
     @Override
-    public Date getStartTime() {
-        return startTime;
-    }
+    public Date getStartTime() { return startTime; }
 }
