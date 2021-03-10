@@ -160,10 +160,8 @@ public class SportEventStatusDTO {
         }
         this.matchStatusId = calculateMatchStatusId(sportEventStatus.getMatchStatusCode(), status);
         this.reportingStatus = ReportingStatus.Unknown;
-        this.homeScore = sportEventStatus.getHomeScore() == null ? null :
-                new BigDecimal(sportEventStatus.getHomeScore());
-        this.awayScore = sportEventStatus.getAwayScore() == null ? null :
-                new BigDecimal(sportEventStatus.getAwayScore());
+        this.homeScore = sportEventStatus.getHomeScore() == null ? null : new BigDecimal(sportEventStatus.getHomeScore());
+        this.awayScore = sportEventStatus.getAwayScore() == null ? null : new BigDecimal(sportEventStatus.getAwayScore());
 
         this.winnerId = Strings.isNullOrEmpty(sportEventStatus.getWinnerId()) ? null : URN.parse(sportEventStatus.getWinnerId());
 
@@ -261,6 +259,7 @@ public class SportEventStatusDTO {
         properties.put("Yards", seStatus.getYards());
         properties.put("HomePenaltyScore", seStatus.getHomePenaltyScore());
         properties.put("AwayPenaltyScore", seStatus.getAwayPenaltyScore());
+        properties.put("PeriodOfLeader", seStatus.getPeriodOfLeader());
 
         eventClock = seStatus.getClock() == null ? null :
                 new EventClockImpl(
