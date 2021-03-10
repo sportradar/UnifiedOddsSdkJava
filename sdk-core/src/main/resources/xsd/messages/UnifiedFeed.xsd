@@ -125,6 +125,11 @@
           <xs:documentation>COVERAGE</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
+      <xs:enumeration value="6">
+        <xs:annotation>
+          <xs:documentation>PITCHER</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
@@ -206,6 +211,7 @@
     <xs:attribute name="home_dismissals" type="xs:int" use="optional"/>
     <xs:attribute name="away_dismissals" type="xs:int" use="optional"/>
     <xs:attribute name="current_ct_team" type="teamType" use="optional"/>
+    <xs:attribute name="period_of_leader" type="xs:int" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="oddsGenerationProperties">
@@ -410,6 +416,9 @@
 
   <xs:complexType name="marketMetadata">
     <xs:attribute name="next_betstop" type="xs:long"/>
+    <xs:attribute name="start_time" type="xs:long"/>
+    <xs:attribute name="end_time" type="xs:long"/>
+    <xs:attribute name="aams_id" type="xs:long"/>
   </xs:complexType>
 
   <xs:simpleType name="outcomeActive">
