@@ -143,12 +143,6 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         if (round.getName() != null) {
             names.put(locale, round.getName());
         }
-        else if (round.getGroupName() != null) {
-            names.put(locale, round.getGroupName());
-        }
-        else if(round.getGroupLongName() != null) {
-            names.put(locale, round.getGroupLongName());
-        }
         else {
             names.put(locale, "");
         }
@@ -156,24 +150,12 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         if (round.getGroupName() != null) {
             groupNames.put(locale, round.getGroupName());
         }
-        else if (round.getName() != null) {
-            groupNames.put(locale, round.getName());
-        }
-        else if (round.getGroupLongName() != null) {
-            groupNames.put(locale, round.getGroupLongName());
-        }
         else{
             groupNames.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
-        }
-        else if (round.getName() != null) {
-            phaseOrGroupLongNames.put(locale, round.getName());
-        }
-        else if (round.getGroupName() != null) {
-            phaseOrGroupLongNames.put(locale, round.getGroupName());
         }
         else{
             phaseOrGroupLongNames.put(locale, "");

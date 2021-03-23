@@ -15,7 +15,7 @@ public enum FixtureChangeType {
     Cancelled,
     Format,
     Coverage,
-    OtherChange,
     Pitcher,
+    OtherChange,
     NotAvailable
 }
