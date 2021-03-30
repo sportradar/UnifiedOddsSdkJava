@@ -110,7 +110,7 @@ public class URN {
     public URN(String prefix, String type, long id) {
         checkNotNull(prefix, "prefix can not be null");
         checkNotNull(type, "type can not be null");
-        checkArgument(id > 0, "id must be greater than 0");
+        checkArgument(id != 0, "id must not be 0");
 
         this.prefix = prefix;
         this.type = type;
