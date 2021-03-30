@@ -148,9 +148,7 @@ public class TimelineEventCI {
 
     public List<EventPlayerAssistCI> getAssists() { return assists; }
 
-    public EventPlayerCI getGoalScorer() {
-        return goalScorer;
-    }
+    public EventPlayerCI getGoalScorer() { return goalScorer; }
 
     public EventPlayerCI getPlayer() {
         return player;

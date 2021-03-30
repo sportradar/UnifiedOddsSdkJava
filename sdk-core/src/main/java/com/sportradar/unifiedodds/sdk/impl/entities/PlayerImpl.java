@@ -25,7 +25,7 @@ public class PlayerImpl implements Player {
      * An unmodifiable {@link Map} containing the available player name translations
      * @see com.google.common.collect.ImmutableMap
      */
-    private final Map<Locale, String> names;
+    protected final Map<Locale, String> names;
 
     /**
      * Initializes a new instance of the {@link PlayerImpl} class

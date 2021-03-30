@@ -144,7 +144,7 @@ public interface TimelineEvent {
      *
      * @return the period
      */
-    default Player getGoalScorer() {
+    default GoalScorer getGoalScorer() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -153,7 +153,7 @@ public interface TimelineEvent {
      *
      * @return the period
      */
-    default Player getPlayer() {
+    default EventPlayer getPlayer() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 

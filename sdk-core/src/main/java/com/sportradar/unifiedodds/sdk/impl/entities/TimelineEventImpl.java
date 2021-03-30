@@ -6,10 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCI;
-import com.sportradar.unifiedodds.sdk.entities.Assist;
-import com.sportradar.unifiedodds.sdk.entities.HomeAway;
-import com.sportradar.unifiedodds.sdk.entities.Player;
-import com.sportradar.unifiedodds.sdk.entities.TimelineEvent;
+import com.sportradar.unifiedodds.sdk.entities.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -199,13 +196,11 @@ class TimelineEventImpl implements TimelineEvent {
      * @return the period
      */
     @Override
-    public Player getGoalScorer() {
+    public GoalScorer getGoalScorer() {
         if(cacheItem.getGoalScorer() == null)
             return null;
 
-        HashMap<Locale, String> names = new HashMap<>();
-        names.put(dataLocale, cacheItem.getGoalScorer().getName());
-        return new PlayerImpl(cacheItem.getGoalScorer().getId(), names);
+        return new GoalScorerImpl(cacheItem.getGoalScorer(), dataLocale);
     }
 
     /**
@@ -214,13 +209,11 @@ class TimelineEventImpl implements TimelineEvent {
      * @return the period
      */
     @Override
-    public Player getPlayer() {
+    public EventPlayer getPlayer() {
         if(cacheItem.getPlayer() == null)
             return null;
 
-        HashMap<Locale, String> names = new HashMap<>();
-        names.put(dataLocale, cacheItem.getPlayer().getName());
-        return new PlayerImpl(cacheItem.getPlayer().getId(), names);
+        return new EventPlayerImpl(cacheItem.getPlayer(), dataLocale);
     }
 
     /**

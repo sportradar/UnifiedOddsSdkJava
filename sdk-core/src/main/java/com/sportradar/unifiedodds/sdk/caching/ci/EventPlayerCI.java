@@ -17,12 +17,16 @@ public class EventPlayerCI {
 
     private final URN id;
     private final String name;
+    private final String method;
+    private final String bench;
 
     EventPlayerCI(SAPIEventPlayer playerData) {
         Preconditions.checkNotNull(playerData);
 
         id = URN.parse(playerData.getId());
         name = playerData.getName();
+        method = playerData.getMethod();
+        bench = playerData.getBench();
     }
 
     EventPlayerCI(ExportableEventPlayerCI exportable) {
@@ -30,6 +34,8 @@ public class EventPlayerCI {
 
         id = URN.parse(exportable.getId());
         name = exportable.getName();
+        method = exportable.getMethod();
+        bench = exportable.getBench();
     }
 
     public URN getId() {
@@ -40,10 +46,20 @@ public class EventPlayerCI {
         return name;
     }
 
+    public String getMethod() {
+        return method;
+    }
+
+    public String getBench() {
+        return bench;
+    }
+
     public ExportableEventPlayerCI export() {
         return new ExportableEventPlayerCI(
                 id.toString(),
-                name
+                name,
+                method,
+                bench
         );
     }
 }
