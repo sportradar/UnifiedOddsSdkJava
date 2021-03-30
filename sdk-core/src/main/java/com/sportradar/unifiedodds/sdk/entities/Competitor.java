@@ -134,9 +134,7 @@ public interface Competitor extends Player {
      * Returns associated sport
      * @return sport if available; otherwise null
      */
-    default Sport getSport(){
-        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
+    default Sport getSport(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
 
     /**
      * Returns associated category

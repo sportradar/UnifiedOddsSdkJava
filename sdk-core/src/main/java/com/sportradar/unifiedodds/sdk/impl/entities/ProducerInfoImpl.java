@@ -6,6 +6,9 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfo;
+import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfoLinks;
+import com.sportradar.uf.sportsapi.datamodel.SAPIStreamingChannels;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfo;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
@@ -42,6 +45,12 @@ public class ProducerInfoImpl implements ProducerInfo {
     private final boolean isInLiveScore;
 
     /**
+     * A value indicating whether the sport event associated with the current
+     * instance is available in the LiveMatchTracker solution
+     */
+    private final boolean isInLiveMatchTracker;
+
+    /**
      * An unmodifiable {@link List} representing links to the producer represented by current instance
      * @see com.google.common.collect.ImmutableList
      */
@@ -57,24 +66,20 @@ public class ProducerInfoImpl implements ProducerInfo {
     /**
      * Initializes a new instance of the {@link ProducerInfoImpl} class
      *
-     * @param isAutoTraded - a value indicating whether the instance is being auto traded
-     * @param isInHostedStatistics - a value indicating whether the sport event associated with the current
-     *                               instance is available in hosted statistic solutions
-     * @param isInLiveCenterSoccer - a value indicating whether the sport event associated with the current
-     *                               instance is available in the LiveCenterSoccer solution
-     * @param isInLiveScore - a value indicating whether the sport event associated with the current
-     *                        instance is available in the LiveScore solution
-     * @param producerInfoLinks - a {@link List} representing links to the producer represented by current instance
-     * @param streamingChannels - a {@link List} representing streaming channels associated with producer
+     * @param productInfo - a product info data
      */
-    ProducerInfoImpl(boolean isAutoTraded, boolean isInHostedStatistics, boolean isInLiveCenterSoccer,
-                            boolean isInLiveScore, List<ProducerInfoLink> producerInfoLinks, List<StreamingChannel> streamingChannels) {
-        this.isAutoTraded = isAutoTraded;
-        this.isInHostedStatistics = isInHostedStatistics;
-        this.isInLiveCenterSoccer = isInLiveCenterSoccer;
-        this.isInLiveScore = isInLiveScore;
+    ProducerInfoImpl(SAPIProductInfo productInfo) {
 
-        this.producerInfoLinks = producerInfoLinks == null ? null : ImmutableList.copyOf(producerInfoLinks);
+        this.isAutoTraded = productInfo.getIsAutoTraded() != null;
+        this.isInHostedStatistics = productInfo.getIsInHostedStatistics() != null;
+        this.isInLiveCenterSoccer = productInfo.getIsInLiveCenterSoccer() != null;
+        this.isInLiveMatchTracker = productInfo.getIsInLiveMatchTracker() != null;
+        this.isInLiveScore = productInfo.getIsInLiveScore() != null;
+
+        List<ProducerInfoLink> productInfoLinks = prepareProductLinks(productInfo.getLinks());
+        List<StreamingChannel> streamingChannels = prepareProductStreams(productInfo.getStreaming());
+
+        this.producerInfoLinks = productInfoLinks == null ? null : ImmutableList.copyOf(productInfoLinks);
         this.streamingChannels = streamingChannels == null ? null : ImmutableList.copyOf(streamingChannels);
     }
 
@@ -84,8 +89,35 @@ public class ProducerInfoImpl implements ProducerInfo {
         this.isInHostedStatistics = exportable.isInHostedStatistics();
         this.isInLiveCenterSoccer = exportable.isInLiveCenterSoccer();
         this.isInLiveScore = exportable.isInLiveScore();
+        this.isInLiveMatchTracker = exportable.isInLiveMatchTracker();
         this.producerInfoLinks = exportable.getProducerInfoLinks() != null ? exportable.getProducerInfoLinks().stream().map(ProducerInfoLinkImpl::new).collect(ImmutableList.toImmutableList()) : null;
         this.streamingChannels = exportable.getStreamingChannels() != null ? exportable.getStreamingChannels().stream().map(StreamingChannelImpl::new).collect(ImmutableList.toImmutableList()) : null;
+    }
+
+    /**
+     * Prepares the {@link SAPIProductInfoLinks} entities for further use in the {@link FixtureImpl}
+     *
+     * @param links - the {@link SAPIProductInfoLinks} instance that should be prepped for further use
+     * @return - a {@link List} of processed {@link ProducerInfoLink} entities
+     */
+    private List<ProducerInfoLink> prepareProductLinks(SAPIProductInfoLinks links) {
+        return links == null ? null :
+                links.getLink().stream()
+                        .map(link -> new ProducerInfoLinkImpl(link.getRef(), link.getName()))
+                        .collect(Collectors.toList());
+    }
+
+    /**
+     * Prepares the {@link SAPIStreamingChannels} entities for further use in the {@link FixtureImpl}
+     *
+     * @param streamingChannels - the {@link SAPIStreamingChannels} instance that should be prepped for further use
+     * @return - a {@link List} of processed {@link StreamingChannel} entities
+     */
+    private List<StreamingChannel> prepareProductStreams(SAPIStreamingChannels streamingChannels) {
+        return streamingChannels == null ? null :
+                streamingChannels.getChannel().stream()
+                        .map(channel -> new StreamingChannelImpl(channel.getId(), channel.getName()))
+                        .collect(Collectors.toList());
     }
 
     /**
@@ -130,8 +162,18 @@ public class ProducerInfoImpl implements ProducerInfo {
      * instance is available in the LiveScore solution
      */
     @Override
-    public boolean isInLiveScore() {
-        return isInLiveScore;
+    public boolean isInLiveScore() { return isInLiveScore; }
+
+    /**
+     * Returns an indication if the sport event associated with the current
+     * instance is available in the LiveMatchTracker solution
+     *
+     * @return - an indication if the sport event associated with the current
+     * instance is available in the LiveMatchTracker solution
+     */
+    @Override
+    public boolean isInLiveMatchTracker() {
+        return isInLiveMatchTracker;
     }
 
     /**
@@ -167,6 +209,7 @@ public class ProducerInfoImpl implements ProducerInfo {
                 ", isInHostedStatistics=" + isInHostedStatistics +
                 ", isInLiveCenterSoccer=" + isInLiveCenterSoccer +
                 ", isInLiveScore=" + isInLiveScore +
+                ", isInLiveMatchTracker=" + isInLiveMatchTracker +
                 ", producerInfoLinks=" + producerInfoLinks +
                 ", streamingChannels=" + streamingChannels +
                 '}';
@@ -178,6 +221,7 @@ public class ProducerInfoImpl implements ProducerInfo {
                 isInHostedStatistics,
                 isInLiveCenterSoccer,
                 isInLiveScore,
+                isInLiveMatchTracker,
                 producerInfoLinks != null ? producerInfoLinks.stream().map(p -> ((ProducerInfoLinkImpl)p).export()).collect(Collectors.toList()) : null,
                 streamingChannels != null ? streamingChannels.stream().map(s -> ((StreamingChannelImpl)s).export()).collect(Collectors.toList()) : null
         );

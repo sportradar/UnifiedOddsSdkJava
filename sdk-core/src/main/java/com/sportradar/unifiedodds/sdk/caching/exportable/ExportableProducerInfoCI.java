@@ -8,14 +8,22 @@ public class ExportableProducerInfoCI implements Serializable {
     private boolean isInHostedStatistics;
     private boolean isInLiveCenterSoccer;
     private boolean isInLiveScore;
+    private boolean isInLiveMatchTracker;
     private List<ExportableProducerInfoLinkCI> producerInfoLinks;
     private List<ExportableStreamingChannelCI> streamingChannels;
 
-    public ExportableProducerInfoCI(boolean isAutoTraded, boolean isInHostedStatistics, boolean isInLiveCenterSoccer, boolean isInLiveScore, List<ExportableProducerInfoLinkCI> producerInfoLinks, List<ExportableStreamingChannelCI> streamingChannels) {
+    public ExportableProducerInfoCI(boolean isAutoTraded,
+                                    boolean isInHostedStatistics,
+                                    boolean isInLiveCenterSoccer,
+                                    boolean isInLiveScore,
+                                    boolean isInLiveMatchTracker,
+                                    List<ExportableProducerInfoLinkCI> producerInfoLinks,
+                                    List<ExportableStreamingChannelCI> streamingChannels) {
         this.isAutoTraded = isAutoTraded;
         this.isInHostedStatistics = isInHostedStatistics;
         this.isInLiveCenterSoccer = isInLiveCenterSoccer;
         this.isInLiveScore = isInLiveScore;
+        this.isInLiveMatchTracker = isInLiveMatchTracker;
         this.producerInfoLinks = producerInfoLinks;
         this.streamingChannels = streamingChannels;
     }
@@ -50,6 +58,14 @@ public class ExportableProducerInfoCI implements Serializable {
 
     public void setInLiveScore(boolean inLiveScore) {
         isInLiveScore = inLiveScore;
+    }
+
+    public boolean isInLiveMatchTracker() {
+        return isInLiveMatchTracker;
+    }
+
+    public void setInLiveMatchTracker(boolean inLiveMatchTracker) {
+        isInLiveMatchTracker = inLiveMatchTracker;
     }
 
     public List<ExportableProducerInfoLinkCI> getProducerInfoLinks() {

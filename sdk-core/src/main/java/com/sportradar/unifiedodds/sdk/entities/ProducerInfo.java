@@ -45,6 +45,15 @@ public interface ProducerInfo {
     boolean isInLiveScore();
 
     /**
+     * Returns an indication if the sport event associated with the current
+     * instance is available in the LiveMatchTracker solution
+     *
+     * @return - an indication if the sport event associated with the current
+     * instance is available in the LiveMatchTracker solution
+     */
+    default boolean isInLiveMatchTracker() { throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+
+    /**
      * Returns an unmodifiable {@link List} representing links to the producer represented by current instance
      *
      * @return - an unmodifiable {@link List} representing links to the producer represented by current instance

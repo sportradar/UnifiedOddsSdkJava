@@ -147,15 +147,7 @@ FixtureImpl implements Fixture {
                                 .stream().map(SAPICoverage::getIncludes)
                                 .collect(Collectors.toList()),
                         fixture.getCoverageInfo().getCoveredFrom());
-        this.producerInfo = fixture.getProductInfo() == null ? null :
-                new ProducerInfoImpl(
-                        fixture.getProductInfo().getIsAutoTraded() != null,
-                        fixture.getProductInfo().getIsInHostedStatistics() != null,
-                        fixture.getProductInfo().getIsInLiveCenterSoccer() != null,
-                        fixture.getProductInfo().getIsInLiveScore() != null,
-                        this.prepareProductLinks(fixture.getProductInfo().getLinks()),
-                        this.prepareProductStreams(fixture.getProductInfo().getStreaming())
-                );
+        this.producerInfo = fixture.getProductInfo() == null ? null : new ProducerInfoImpl(fixture.getProductInfo());
         this.references = fixture.getReferenceIds() == null ? null :
                 new ReferenceImpl(
                         new ReferenceIdCI(
@@ -287,32 +279,6 @@ FixtureImpl implements Fixture {
     @Override
     public Reference getReferences() {
         return references;
-    }
-
-    /**
-     * Prepares the {@link SAPIProductInfoLinks} entities for further use in the {@link FixtureImpl}
-     *
-     * @param links - the {@link SAPIProductInfoLinks} instance that should be prepped for further use
-     * @return - a {@link List} of processed {@link ProducerInfoLink} entities
-     */
-    private List<ProducerInfoLink> prepareProductLinks(SAPIProductInfoLinks links) {
-        return links == null ? null :
-                links.getLink().stream()
-                        .map(link -> new ProducerInfoLinkImpl(link.getRef(), link.getName()))
-                        .collect(Collectors.toList());
-    }
-
-    /**
-     * Prepares the {@link SAPIStreamingChannels} entities for further use in the {@link FixtureImpl}
-     *
-     * @param streamingChannels - the {@link SAPIStreamingChannels} instance that should be prepped for further use
-     * @return - a {@link List} of processed {@link StreamingChannel} entities
-     */
-    private List<StreamingChannel> prepareProductStreams(SAPIStreamingChannels streamingChannels) {
-        return streamingChannels == null ? null :
-                streamingChannels.getChannel().stream()
-                        .map(channel -> new StreamingChannelImpl(channel.getId(), channel.getName()))
-                        .collect(Collectors.toList());
     }
 
     /**

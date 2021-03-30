@@ -36,6 +36,11 @@ public class ProducerInfoCI {
     private final boolean isAutoTraded;
 
     /**
+     * The isInLiveMatchTracker property backing field
+     */
+    private final boolean isInLiveMatchTracker;
+
+    /**
      * A {@link List<ProducerInfoLinkCI>} containing the associated {@link ProducerInfoLinkCI}
      */
     private final List<ProducerInfoLinkCI> producerInfoLinks;
@@ -57,10 +62,10 @@ public class ProducerInfoCI {
         isInHostedStatistics = pInfo.getIsInHostedStatistics() != null;
         isInLiveCenterSoccer = pInfo.getIsInLiveCenterSoccer() != null;
         isAutoTraded = pInfo.getIsAutoTraded() != null;
+        isInLiveMatchTracker = pInfo.getIsInLiveMatchTracker() != null;
 
         if (pInfo.getLinks() != null && pInfo.getLinks().getLink() != null && !pInfo.getLinks().getLink().isEmpty()) {
-            producerInfoLinks = pInfo.getLinks().getLink().stream().
-                    map(ProducerInfoLinkCI::new).collect(Collectors.toList());
+            producerInfoLinks = pInfo.getLinks().getLink().stream().map(ProducerInfoLinkCI::new).collect(Collectors.toList());
         } else {
             producerInfoLinks = null;
         }
@@ -107,6 +112,15 @@ public class ProducerInfoCI {
      */
     public boolean isAutoTraded() {
         return isAutoTraded;
+    }
+
+    /**
+     * Returns <code>true</code> if the producer is in the live match tracker
+     *
+     * @return - <code>true</code> if the producer is in the live match tracker
+     */
+    public boolean isInLiveMatchTracker() {
+        return isInLiveMatchTracker;
     }
 
     /**
