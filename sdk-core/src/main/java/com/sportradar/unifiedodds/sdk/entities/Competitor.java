@@ -143,4 +143,12 @@ public interface Competitor extends Player {
     default CategorySummary getCategory(){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
+
+    /**
+     * Returns the short name
+     * @return the short name if available; otherwise null
+     */
+    default String getShortName(){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

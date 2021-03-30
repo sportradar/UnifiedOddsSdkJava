@@ -133,4 +133,10 @@ public interface CompetitorCI extends CacheItem {
      * @return category id
      */
     URN getCategoryId();
+
+    /**
+     * Return the short name
+     * @return the short name
+     */
+    String getShortName();
 }

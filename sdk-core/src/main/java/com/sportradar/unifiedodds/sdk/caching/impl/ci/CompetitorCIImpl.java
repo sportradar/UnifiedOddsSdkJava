@@ -132,6 +132,11 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     private URN categoryId;
 
     /**
+     * The short name
+     */
+    private String shortName;
+
+    /**
      * The locales which are merged into the CI
      */
     private final List<Locale> cachedLocales = Collections.synchronizedList(new ArrayList<>());
@@ -437,6 +442,17 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     }
 
     /**
+     * Get the short name
+     *
+     * @return the short name
+     */
+    @Override
+    public String getShortName() {
+        ensureDataLoaded(shortName);
+        return shortName;
+    }
+
+    /**
      * Returns race driver of the competitor
      *
      * @return the race driver of the competitor if available; otherwise null
@@ -507,6 +523,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         state = exportable.getState();
         sportId = Optional.ofNullable(exportable.getSportId()).map(URN::parse).orElse(null);
         categoryId = Optional.ofNullable(exportable.getCategoryId()).map(URN::parse).orElse(null);
+        shortName = exportable.getShortName();
     }
 
     private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
@@ -611,6 +628,9 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
         if (competitor.getState() != null) {
             state = competitor.getState();
+        }
+        if(competitor.getShortName() != null){
+            shortName = competitor.getShortName();
         }
     }
 
@@ -733,7 +753,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 new ArrayList<>(cachedLocales),
                 state,
                 Optional.ofNullable(sportId).map(URN::toString).orElse(null),
-                Optional.ofNullable(categoryId).map(URN::toString).orElse(null)
+                Optional.ofNullable(categoryId).map(URN::toString).orElse(null),
+                shortName
         );
     }
 }

@@ -52,7 +52,12 @@ public class CompetitorImpl implements Competitor {
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public CompetitorImpl(URN competitorId, ProfileCache profileCache, Map<URN, ReferenceIdCI> eventCompetitorsReferences, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public CompetitorImpl(URN competitorId,
+                          ProfileCache profileCache,
+                          Map<URN, ReferenceIdCI> eventCompetitorsReferences,
+                          List<Locale> locales,
+                          SportEntityFactory sportEntityFactory,
+                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -86,7 +91,12 @@ public class CompetitorImpl implements Competitor {
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public CompetitorImpl(URN competitorId, ProfileCache profileCache, SportEventCI parentSportEventCI, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public CompetitorImpl(URN competitorId,
+                          ProfileCache profileCache,
+                          SportEventCI parentSportEventCI,
+                          List<Locale> locales,
+                          SportEntityFactory sportEntityFactory,
+                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -354,6 +364,14 @@ public class CompetitorImpl implements Competitor {
                 })
                 .orElse(null);
     }
+
+    /**
+     * Returns the short name of the competitor
+     *
+     * @return the dhort name of the competitor if available; otherwise null
+     */
+    @Override
+    public String getShortName() { return loadCacheItem().map(CompetitorCI::getShortName).orElse(null);  }
 
     /**
      * Loads the associated entity cache item from the sport event cache
