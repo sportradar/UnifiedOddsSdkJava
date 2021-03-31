@@ -1,5 +1,23 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.44.0 (2021-03-31)**
+* added getEventChangeManager() to OddsFeed for a periodical fixture and result change updates
+* changed return value type for TimelineEvent.getPlayer() from Player to EventPlayer (breaking change)
+* changed return value type for TimelineEvent.getGoalScorer() from Player to GoalScorer (breaking change)
+* extended Player with GoalScorer (added getMethod()) used in TimelineEvent
+* extended Player with EventPlayer (added getBench()) used in TimelineEvent
+* added Competitor.getShortName
+* added Fixture.ProducerInfo.isInLiveMatchTracker
+* reverted populating Round name, groupName and phaseOrGroupLongName to exactly what is received from API
+* added getStartTime, getEndTime and getAamsId to the MarketMetaData
+* added PeriodOfLeader to the SportEventStatus.Properties
+* updated FixtureChangeType - also if not specified in fixtureChange message returns FixtureChangeType.NotAvailable
+* improved connection error reporting 
+* fix: WNS event ids can have negative value
+* fix: NPE merging tournament groups
+* fix: merging tournament groups (when no name or id)
+* fix: exporting/importing data
+
 **2.0.43.0 (2021-02-09)**
 * added support for eSoccer - returns SoccerEvent instead of Match
 * added SportsInfoManager.getLotteries
