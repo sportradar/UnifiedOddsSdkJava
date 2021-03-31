@@ -4,7 +4,7 @@ public class ExportableEventPlayerAssistCI extends ExportableEventPlayerCI {
     private String type;
 
     public ExportableEventPlayerAssistCI(String id, String name, String type) {
-        super(id, name);
+        super(id, name, null, null);
         this.type = type;
     }
 

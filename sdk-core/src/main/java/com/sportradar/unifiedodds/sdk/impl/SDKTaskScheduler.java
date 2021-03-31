@@ -23,7 +23,7 @@ public interface SDKTaskScheduler {
 
     /**
      * Schedules a repeating task.
-     * If the instance is closed, the task will be stored and started only once the intance has been opened with {@link #open()}
+     * If the instance is closed, the task will be stored and started only once the instance has been opened with {@link #open()}
      *
      * @param name the associated task name
      * @param command see {@link ScheduledExecutorService#scheduleAtFixedRate(Runnable, long, long, TimeUnit)}

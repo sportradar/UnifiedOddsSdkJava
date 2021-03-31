@@ -44,6 +44,7 @@ public class MasterInjectionModule extends AbstractModule {
         install(new CustomBetModule());
         install(new MessageProcessorPipeline());
         install(new MarketsModule());
+        install(new EventChangeManagerModule());
 
         if (customisableSDKModule == null) {
             install(new CustomisableSDKModule());

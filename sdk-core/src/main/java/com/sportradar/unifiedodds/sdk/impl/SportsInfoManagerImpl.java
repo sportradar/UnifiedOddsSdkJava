@@ -316,6 +316,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         return sportEvent;
     }
 
+    public SportEvent getSportEventForEventChange(URN id) {
+        Preconditions.checkNotNull(id);
+
+        SportEvent sportEvent;
+        try {
+            sportEvent = sportEntityFactory.buildSportEvent(id, desiredLocales, false);
+        } catch (ObjectNotFoundException e) {
+            return handleException("getSportEvent[" + id + "]", e);
+        }
+        return sportEvent;
+    }
+
     /**
      * Returns the specified sport event
      * (the returned data is translated in the specified {@link Locale})

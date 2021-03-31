@@ -118,6 +118,11 @@ public class OddsFeed {
     private OddsFeedExtListener oddsFeedExtListener;
 
     /**
+     * The instance used to automatically receive fixture and result changes
+     */
+    private EventChangeManager eventChangeManager;
+
+    /**
      * The most basic feed constructor
      *
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
@@ -333,6 +338,16 @@ public class OddsFeed {
     }
 
     /**
+     * Returns the {@link EventChangeManager} instance used to automatically receive fixture and result changes
+     *
+     * @return a {@link EventChangeManager} instance used to automatically receive fixture and result changes
+     */
+    public EventChangeManager getEventChangeManager() {
+        this.initOddsFeedInstance();
+        return eventChangeManager;
+    }
+
+    /**
      * This method opens/starts the feed with all the built sessions and
      * creates the various tasks needed for optimal OddsFeed operation
      *
@@ -479,6 +494,7 @@ public class OddsFeed {
         this.bookingManager = injector.getInstance(BookingManager.class);
         this.customBetManager = injector.getInstance(CustomBetManager.class);
         this.bookmakerDetails = whoAmI.getBookmakerDetails();
+        this.eventChangeManager = injector.getInstance(EventChangeManager.class);
 
         feedInitialized = true;
     }

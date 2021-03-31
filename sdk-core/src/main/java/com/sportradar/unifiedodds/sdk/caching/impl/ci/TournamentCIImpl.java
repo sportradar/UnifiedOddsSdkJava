@@ -829,7 +829,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                             .filter(Objects::nonNull)
                             .flatMap(Collection::stream)
                             .distinct()
-                    .collect(ImmutableList.toImmutableList());
+                            .collect(ImmutableList.toImmutableList());
         }
 
         return null;
@@ -841,11 +841,17 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         }
 
         if (groupSupplier != null && groupSupplier.get() != null) {
-            return groupSupplier.get().stream()
-                            .map(GroupCI::getCompetitorsReferences)
-                            .filter(Objects::nonNull)
-                            .flatMap(g -> g.entrySet().stream())
-                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+            Map<URN, ReferenceIdCI> tmpRefs = new HashMap<>();
+            for(GroupCI group : groupSupplier.get()){
+                if(group.getCompetitorsReferences() != null){
+                    for(Map.Entry<URN, ReferenceIdCI> entry : group.getCompetitorsReferences().entrySet()){
+                        if(!tmpRefs.containsKey(entry.getKey())){
+                            tmpRefs.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+                }
+            }
+            return tmpRefs;
         }
 
         return null;

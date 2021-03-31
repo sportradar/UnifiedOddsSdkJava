@@ -136,6 +136,7 @@ public class GeneralModule implements Module {
         binder.bind(MappingTypeProvider.class).to(MappingTypeProviderImpl.class).in(Singleton.class);
         binder.bind(BookingManager.class).to(BookingManagerImpl.class).in(Singleton.class);
         binder.bind(CustomBetManager.class).to(CustomBetManagerImpl.class).in(Singleton.class);
+        binder.bind(EventChangeManager.class).to(EventChangeManagerImpl.class).in(Singleton.class);
 
         // session
         binder.bind(OddsFeedSessionImpl.class);
