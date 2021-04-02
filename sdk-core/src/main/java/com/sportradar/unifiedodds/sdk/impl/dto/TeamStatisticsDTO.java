@@ -48,7 +48,7 @@ public class TeamStatisticsDTO {
         greenCards = null;
     }
 
-    public TeamStatisticsDTO(String name, URN teamId, HomeAway homeAway, Integer yellowCards, Integer redCards, Integer yellowRedCards, Integer cornerKicks, Integer greenCards) {
+    TeamStatisticsDTO(String name, URN teamId, HomeAway homeAway, Integer yellowCards, Integer redCards, Integer yellowRedCards, Integer cornerKicks, Integer greenCards) {
         Preconditions.checkNotNull(homeAway);
 
         this.name = name; // not available on the AMQP message
