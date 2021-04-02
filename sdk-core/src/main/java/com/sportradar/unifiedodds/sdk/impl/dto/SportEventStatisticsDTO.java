@@ -59,21 +59,21 @@ public class SportEventStatisticsDTO {
                 null,
                 null,
                 HomeAway.Home,
-                statistics.getYellowCards().getHome(),
-                statistics.getRedCards().getHome(),
-                statistics.getYellowRedCards().getHome(),
-                statistics.getCorners().getHome(),
-                statistics.getGreenCards().getHome()
+                statistics.getYellowCards() == null ? null : statistics.getYellowCards().getHome(),
+                statistics.getRedCards() == null ? null : statistics.getRedCards().getHome(),
+                statistics.getYellowRedCards() == null ? null : statistics.getYellowRedCards().getHome(),
+                statistics.getCorners() == null ? null : statistics.getCorners().getHome(),
+                statistics.getGreenCards() == null ? null : statistics.getGreenCards().getHome()
         ));
         totalStatisticsDTOs.add(new TeamStatisticsDTO(
                 null,
                 null,
                 HomeAway.Away,
-                statistics.getYellowCards().getAway(),
-                statistics.getRedCards().getAway(),
-                statistics.getYellowRedCards().getAway(),
-                statistics.getCorners().getAway(),
-                statistics.getGreenCards().getAway()
+                statistics.getYellowCards() == null ? null : statistics.getYellowCards().getAway(),
+                statistics.getRedCards() == null ? null : statistics.getRedCards().getAway(),
+                statistics.getYellowRedCards() == null ? null : statistics.getYellowRedCards().getAway(),
+                statistics.getCorners() == null ? null : statistics.getCorners().getAway(),
+                statistics.getGreenCards() == null ? null : statistics.getGreenCards().getAway()
         ));
 
         periodStatisticDTOs = null;

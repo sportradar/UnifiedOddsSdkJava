@@ -26,7 +26,6 @@ public class TeamStatisticsDTO {
     private final Integer cornerKicks;
     private final Integer greenCards;
 
-
     TeamStatisticsDTO(SAPITeamStatistics t, Map<HomeAway, String> homeAwayMap) {
         Preconditions.checkNotNull(t);
 
@@ -49,7 +48,7 @@ public class TeamStatisticsDTO {
         greenCards = null;
     }
 
-    TeamStatisticsDTO(String name, URN teamId, HomeAway homeAway, Integer yellowCards, Integer redCards, Integer yellowRedCards, Integer cornerKicks, Integer greenCards) {
+    public TeamStatisticsDTO(String name, URN teamId, HomeAway homeAway, Integer yellowCards, Integer redCards, Integer yellowRedCards, Integer cornerKicks, Integer greenCards) {
         Preconditions.checkNotNull(homeAway);
 
         this.name = name; // not available on the AMQP message
@@ -58,9 +57,32 @@ public class TeamStatisticsDTO {
         this.yellowCards = yellowCards;
         this.redCards = redCards;
         this.yellowRedCards = yellowRedCards;
-        this.cards = yellowCards + redCards + yellowRedCards + greenCards;
         this.cornerKicks = cornerKicks;
         this.greenCards = greenCards;
+
+        boolean valueExists = false;
+        int c = 0;
+        if(yellowCards != null)
+        {
+            valueExists = true;
+            c += yellowCards;
+        }
+        if(redCards != null)
+        {
+            valueExists = true;
+            c += redCards;
+        }
+        if(yellowRedCards != null)
+        {
+            valueExists = true;
+            c += yellowRedCards;
+        }
+        if(greenCards != null)
+        {
+            valueExists = true;
+            c += greenCards;
+        }
+        this.cards = valueExists ? c : null;
     }
 
     public String getName() {
