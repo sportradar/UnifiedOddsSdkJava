@@ -38,7 +38,7 @@ public class PlayerImpl implements Player {
         Preconditions.checkNotNull(names);
 
         this.id = id;
-        this.names = ImmutableMap.copyOf(names);
+        this.names = names;
     }
 
     /**

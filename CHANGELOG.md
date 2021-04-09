@@ -1,5 +1,8 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.44.1 (2021-04-02)**
+* fix: parsing TeamStatisticsDTO for sportEventStatusDTO
+
 **2.0.44.0 (2021-03-31)**
 * added getEventChangeManager() to OddsFeed for a periodical fixture and result change updates
 * changed return value type for TimelineEvent.getPlayer() from Player to EventPlayer (breaking change)
