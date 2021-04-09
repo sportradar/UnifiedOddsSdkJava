@@ -1,5 +1,9 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.44.2 (2021-04-09)**
+* fix: converting GoalScorer
+* fix: importing Venue
+
 **2.0.44.1 (2021-04-02)**
 * fix: parsing TeamStatisticsDTO for sportEventStatusDTO
 
