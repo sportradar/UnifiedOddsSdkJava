@@ -85,6 +85,7 @@ public class VenueCI extends SportEntityCI {
         coordinates = exportable.getCoordinates();
         state = exportable.getState();
         if(exportable.getCourse() != null){
+            this.course = new ArrayList<>();
             exportable.getCourse().forEach(ci -> this.course.add(new HoleCI(ci)));
         }
         else{
