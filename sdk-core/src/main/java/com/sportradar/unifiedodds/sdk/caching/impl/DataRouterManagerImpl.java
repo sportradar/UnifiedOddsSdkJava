@@ -20,6 +20,7 @@ import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
+import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
@@ -31,6 +32,7 @@ import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
+import com.sportradar.unifiedodds.sdk.impl.entities.PeriodStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.ResultChangeImpl;
 import com.sportradar.utils.URN;
 import org.apache.http.NameValuePair;
@@ -213,7 +215,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
     /**
      * A {@link DataProvider} instance which is used to get all available tournaments for specific sport
      */
-    private final DataProvider<SAPISportTournamentsEndpoint> availableSportTournaments;
+    private final DataProvider<SAPISportTournamentsEndpoint> availableSportTournamentsProvider;
+
+    /**
+     * A {@link DataProvider} instance which is used to get period summary endpoint for specific sport event
+     */
+    private final DataProvider<SAPIStagePeriodEndpoint> periodSummaryDataProvider;
 
     /**
      * The extended odds feed listener
@@ -251,7 +258,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider,
                           DataProvider<SAPIResultChangesEndpoint> resultChangesDataProvider,
                           @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider,
-                          DataProvider<SAPISportTournamentsEndpoint> availableSportTournaments) {
+                          DataProvider<SAPISportTournamentsEndpoint> availableSportTournamentsProvider,
+                          DataProvider<SAPIStagePeriodEndpoint> periodSummaryDataProvider) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkNotNull(scheduler);
@@ -278,7 +286,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(fixtureChangesDataProvider);
         Preconditions.checkNotNull(resultChangesDataProvider);
         Preconditions.checkNotNull(listSportEventsProvider);
-        Preconditions.checkNotNull(availableSportTournaments);
+        Preconditions.checkNotNull(availableSportTournamentsProvider);
+        Preconditions.checkNotNull(periodSummaryDataProvider);
 
         this.prefetchLocales = configuration.getDesiredLocales();
         this.isWnsActive = producerManager.getActiveProducers().values().stream().anyMatch(p -> p.getId() == 7 && p.isEnabled());
@@ -306,7 +315,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.fixtureChangesDataProvider = fixtureChangesDataProvider;
         this.resultChangesDataProvider = resultChangesDataProvider;
         this.listSportEventsProvider = listSportEventsProvider;
-        this.availableSportTournaments = availableSportTournaments;
+        this.availableSportTournamentsProvider = availableSportTournamentsProvider;
+        this.periodSummaryDataProvider = periodSummaryDataProvider;
 
         this.tournamentListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.sportsListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
@@ -803,12 +813,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         SAPISportTournamentsEndpoint endpoint;
         try {
-            endpoint = availableSportTournaments.getData(locale, sportId.toString());
+            endpoint = availableSportTournamentsProvider.getData(locale, sportId.toString());
         } catch (DataProviderException e) {
             throw new CommunicationException(String.format("Error executing getting available tournaments for id=%s, locale=%s", sportId, locale), e);
         }
 
-        dispatchReceivedRawApiData(availableSportTournaments.getFinalUrl(locale, sportId.toString()), endpoint);
+        dispatchReceivedRawApiData(availableSportTournamentsProvider.getFinalUrl(locale, sportId.toString()), endpoint);
 
         dataRouter.onSportTournamentsFetched(sportId, endpoint, locale);
 
@@ -819,6 +829,52 @@ public class DataRouterManagerImpl implements DataRouterManager {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public List<PeriodStatus> requestPeriodSummary(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) throws CommunicationException {
+        Preconditions.checkNotNull(id);
+
+        if(locale == null){
+            locale = prefetchLocales.get(0);
+        }
+
+        List<PeriodStatus> results = new ArrayList<>();
+        try {
+            String query = getPeriodSummaryQueryString(competitorIds, periods);
+            SAPIStagePeriodEndpoint response = periodSummaryDataProvider.getData(locale, id.toString(), query);
+            if(response != null && response.getPeriodStatuses() != null && response.getPeriodStatuses().getPeriodStatus() != null){
+                results = response.getPeriodStatuses().getPeriodStatus().stream().map(PeriodStatusImpl::new).collect(Collectors.toList());
+            }
+        } catch (DataProviderException e) {
+            throw new CommunicationException("Error executing period summary request", e);
+        }
+        return results;
+    }
+
+    private String getPeriodSummaryQueryString(List<URN> competitorIds, List<Integer> periods)
+    {
+        //host/v1/sports/en/sport_events/sr:stage:{id}/period_summary.xml?competitors=sr:competitor:{id}&competitors=sr:competitor:{id}&periods=2&periods=3&periods=4
+        String query = "";
+        String compQuery = "";
+        String periodQuery = "";
+        if (competitorIds != null && !competitorIds.isEmpty())
+        {
+            compQuery = competitorIds.stream().map(s -> "competitors=" + s.toString()).collect(Collectors.joining("&"));
+        }
+        if (periods != null && !periods.isEmpty())
+        {
+            periodQuery = periods.stream().map(s -> "periods=" + s).collect(Collectors.joining("&"));
+        }
+        if (!compQuery.isEmpty())
+        {
+            query = "?" + compQuery;
+        }
+        if (!periodQuery.isEmpty())
+        {
+            query = query.isEmpty() ? "?" + periodQuery : query + "&" + periodQuery;
+        }
+        return query;
     }
 
     private String getChangesQueryString(Date after, URN sportId) {

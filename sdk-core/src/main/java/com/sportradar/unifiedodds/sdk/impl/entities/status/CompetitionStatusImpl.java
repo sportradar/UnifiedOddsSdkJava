@@ -33,9 +33,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      * @return the sport event winner identifier, if available; otherwise null
      */
     @Override
-    public URN getWinnerId() {
-        return statusCI.getWinnerId();
-    }
+    public URN getWinnerId() { return statusCI.getWinnerId(); }
 
     /**
      * Returns an {@link EventStatus} describing the high-level status of the associated sport event
@@ -43,9 +41,7 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      * @return an {@link EventStatus} describing the high-level status of the associated sport event
      */
     @Override
-    public EventStatus getStatus() {
-        return statusCI.getStatus();
-    }
+    public EventStatus getStatus() { return statusCI.getStatus(); }
 
     /**
      * Returns a {@link ReportingStatus} describing the reporting status of the associated sport event
@@ -156,7 +152,13 @@ public class CompetitionStatusImpl implements CompetitionStatus {
      * @return a {@link Map} containing data of the sport event status ordered in key/value pairs
      */
     @Override
-    public Map<String, Object> toKeyValueStore() {
-        return statusCI.toKeyValueStore();
-    }
+    public Map<String, Object> toKeyValueStore() { return statusCI.toKeyValueStore(); }
+
+    /**
+     * Returns the period of ladder
+     *
+     * @return the period of ladder
+     */
+    @Override
+    public Integer getPeriodOfLadder() { return statusCI.getPeriodOfLadder(); }
 }

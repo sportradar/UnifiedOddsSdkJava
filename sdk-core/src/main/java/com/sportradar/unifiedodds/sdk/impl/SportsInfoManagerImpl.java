@@ -842,6 +842,36 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         return lotteries;
     }
 
+    /**
+     * Returns the list of {@link PeriodStatus} from the sport event period summary endpoint
+     *
+     * @param id            the id of the sport event to be fetched
+     * @param locale        the {@link Locale} in which to provide the data (can be null)
+     * @param competitorIds the list of competitor ids to fetch the results for (can be null)
+     * @param periods       the list of period ids to fetch the results for (can be null)
+     * @return the list of {@link PeriodStatus} from the sport event period summary endpoint
+     */
+    @Override
+    public List<PeriodStatus> getPeriodStatuses(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) {
+        Preconditions.checkNotNull(id);
+
+        Stopwatch timer = Stopwatch.createStarted();
+        List<PeriodStatus> periodStatuses = new ArrayList<>();
+        try {
+            periodStatuses = dataRouterManager.requestPeriodSummary(id, locale, competitorIds, periods);
+            clientInteractionLog.info("SportsInfoManager.getPeriodStatuses({}, {}) invoked. Execution time: {}", id, locale, timer.stop());
+        } catch (CommunicationException e) {
+            Throwable initException = getInitialException(e);
+            if(initException.getMessage() != null && initException.getMessage().contains("not found") || initException.getMessage().contains("404")){
+                clientInteractionLog.warn("SportsInfoManager.getPeriodStatuses({}, {}) invoked. SportEvent not found. Execution time: {}", id, locale, timer.stop());
+            }
+            else{
+                return handleException("getPeriodStatuses", e);
+            }
+        }
+        return periodStatuses;
+    }
+
     private List<Sport> internalGetSports(List<Locale> locales) {
         try {
             return this.sportEntityFactory.buildSports(locales);
@@ -956,6 +986,14 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
             ls.addAll(cat.getTournaments());
         }
         return ls;
+    }
+
+    private Throwable getInitialException(Exception e){
+        Throwable init = e;
+        while(init.getCause() != null){
+            init = init.getCause();
+        }
+        return init;
     }
 
     private <T> T handleException(String method, Exception e) {

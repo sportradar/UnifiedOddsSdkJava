@@ -326,6 +326,7 @@
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/tournament_seasons.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/match_timeline.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/simpleteam_profile.xsd</source>
+                                <source>${project.build.directory}/schemas/v1/endpoints/unified/period_summary.xsd</source>
                                 <!-- WNS -->
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/draw_fixtures.xsd</source>
                                 <source>${project.build.directory}/schemas/v1/endpoints/unified/draw_summary.xsd</source>

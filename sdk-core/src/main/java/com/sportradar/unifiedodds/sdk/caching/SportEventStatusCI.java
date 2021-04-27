@@ -154,4 +154,11 @@ public interface SportEventStatusCI {
      * @return an indication if the status is decided by fed if available; otherwise null
      */
     Boolean isDecidedByFed();
+
+    /**
+     * Returns the period of ladder
+     *
+     * @return the period of ladder
+     */
+    Integer getPeriodOfLadder();
 }

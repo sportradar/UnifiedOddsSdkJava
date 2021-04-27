@@ -100,6 +100,11 @@ public class SportEventStatusDTO {
     private final Boolean decidedByFed;
 
     /**
+     * Gets the period of ladder.
+     */
+    private Integer periodOfLadder;
+
+    /**
      * Initializes a new instance of the {@link SportEventStatusDTO} from the provided
      * {@link SAPIStageSportEventStatus} which is fetched from the API
      *
@@ -129,6 +134,8 @@ public class SportEventStatusDTO {
         awayPenaltyScore = null;
 
         decidedByFed = null;
+
+        this.periodOfLadder = sportEventStatus.getPeriodOfLeader();
 
         cleanupProperties();
     }
@@ -205,6 +212,8 @@ public class SportEventStatusDTO {
         }
 
         decidedByFed = sportEventStatus.isDecidedByFed();
+
+        periodOfLadder = null;
 
         cleanupProperties();
     }
@@ -302,6 +311,8 @@ public class SportEventStatusDTO {
 
         decidedByFed = null;
 
+        periodOfLadder = seStatus.getPeriodOfLeader();
+
         cleanupProperties();
     }
 
@@ -323,6 +334,7 @@ public class SportEventStatusDTO {
         this.homePenaltyScore = null;
         this.awayPenaltyScore = null;
         this.decidedByFed = null;
+        this.periodOfLadder = null;
     }
 
     /**
@@ -346,9 +358,7 @@ public class SportEventStatusDTO {
      *
      * @return - an {@link EventStatus} describing the status of the associated sport event
      */
-    public EventStatus getStatus() {
-        return status;
-    }
+    public EventStatus getStatus() { return status; }
 
     /**
      * Returns a numeric representation of the event status
@@ -443,6 +453,12 @@ public class SportEventStatusDTO {
     public Boolean isDecidedByFed() {
         return decidedByFed;
     }
+
+    /**
+     * Returns the period of ladder
+     * @return the period of ladder
+     */
+    public Integer getPeriodOfLadder() { return periodOfLadder; }
 
     /**
      * Adds a period entry to the {@link #periodScores} collection

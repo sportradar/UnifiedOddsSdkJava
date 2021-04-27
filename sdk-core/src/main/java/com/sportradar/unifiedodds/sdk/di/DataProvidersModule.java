@@ -293,6 +293,19 @@ public class DataProvidersModule extends AbstractModule {
         return new DataProvider<>("/descriptions/producers.xml", configuration, logHttpDataFetcher, deserializer);
     }
 
+    @Provides
+    private DataProvider<SAPIStagePeriodEndpoint> periodSummaryDataProvider(SDKInternalConfiguration cfg,
+                                                                            LogHttpDataFetcher httpDataFetcher,
+                                                                            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        //host/v1/sports/en/sport_events/sr:stage:{id}/period_summary.xml?competitors=sr:competitor:{id}&competitors=sr:competitor:{id}&periods=2&periods=3&periods=4
+        return new DataProvider<>(
+                "/sports/%s/sport_events/%s/period_summary.xml%s",
+                cfg,
+                httpDataFetcher,
+                deserializer
+        );
+    }
+
     //Helpers:
 
     private static DataProvider<SAPIFixturesEndpoint> fixturesEndpointProvider(

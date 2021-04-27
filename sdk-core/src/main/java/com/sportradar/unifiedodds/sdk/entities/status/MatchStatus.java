@@ -86,7 +86,5 @@ public interface MatchStatus extends CompetitionStatus {
      * Returns an indication if the status is decided by fed
      * @return boolean value
      */
-    default Boolean isDecidedByFed() {
-        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
+    default Boolean isDecidedByFed() { throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
 }

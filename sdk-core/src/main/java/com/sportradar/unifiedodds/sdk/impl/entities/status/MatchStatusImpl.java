@@ -139,7 +139,5 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      * Returns an indication if the status is decided by fed
      */
     @Override
-    public Boolean isDecidedByFed() {
-        return statusCI.isDecidedByFed();
-    }
+    public Boolean isDecidedByFed() { return statusCI.isDecidedByFed(); }
 }

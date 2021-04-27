@@ -28,6 +28,8 @@ public class SoccerStatusImpl extends MatchStatusImpl implements SoccerStatus {
      */
     @Override
     public SoccerStatistics getStatistics() {
-        return statusCI.getSportEventStatisticsDTO() == null ? null : new SoccerStatisticsImpl(statusCI.getSportEventStatisticsDTO());
+        return statusCI.getSportEventStatisticsDTO() == null
+                ? null
+                : new SoccerStatisticsImpl(statusCI.getSportEventStatisticsDTO());
     }
 }

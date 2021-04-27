@@ -238,4 +238,15 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
         }
         return null;
     }
+
+    @Override
+    public Integer getPeriodOfLadder(){
+        if (feedDTO != null && feedDTO.getPeriodOfLadder() != null) {
+            return feedDTO.getPeriodOfLadder();
+        }
+        if (sapiDTO != null) {
+            return sapiDTO.getPeriodOfLadder();
+        }
+        return null;
+    }
 }

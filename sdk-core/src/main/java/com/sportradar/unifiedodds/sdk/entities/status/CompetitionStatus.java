@@ -121,4 +121,11 @@ public interface CompetitionStatus {
      * @return a {@link Map} containing data of the sport event status ordered in key/value pairs
      */
     Map<String, Object> toKeyValueStore();
+
+    /**
+     * Returns the period of ladder
+     *
+     * @return the period of ladder
+     */
+    default Integer getPeriodOfLadder() { throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
 }

@@ -403,4 +403,14 @@ public interface SportsInfoManager {
     default List<Lottery> getLotteries(Locale locale) {
         return null;
     }
+
+    /**
+     * Returns the list of {@link PeriodStatus} from the sport event period summary endpoint
+     * @param id the id of the sport event to be fetched
+     * @param locale the {@link Locale} in which to provide the data (can be null)
+     * @param competitorIds the list of competitor ids to fetch the results for (can be null)
+     * @param periods the list of period ids to fetch the results for (can be null)
+     * @return the list of {@link PeriodStatus} from the sport event period summary endpoint
+     */
+    default List<PeriodStatus> getPeriodStatuses(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) { return null; }
 }
