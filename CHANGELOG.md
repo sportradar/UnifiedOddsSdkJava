@@ -1,5 +1,9 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.45.0 (2021-04-29)**
+* Added SportInfoManager.getPeriodStatuses to fetch period summary for stages 
+* Extended CompetitionStatus with getPeriodOfLadder
+  
 **2.0.44.2 (2021-04-09)**
 * fix: converting GoalScorer
 * fix: importing Venue

@@ -107,16 +107,16 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
     }
 
     private MarketDescription provideDynamicVariantEndpointMarket(int marketId, List<Locale> locales, MarketDescription marketDescriptor, String variantValue) {
-        MarketDescription dynamicVariantMarketDescirption;
+        MarketDescription dynamicVariantMarketDescription;
         try {
-            dynamicVariantMarketDescirption = variantMarketCache.getMarketDescriptor(marketId, variantValue, locales);
+            dynamicVariantMarketDescription = variantMarketCache.getMarketDescriptor(marketId, variantValue, locales);
         } catch (CachingException e) {
             logger.warn("There was an error providing the explicit variant market descriptor -> marketId:{}, variantValue: {}, locales: {}",
                     marketId, variantValue, locales, e);
             return marketDescriptor;
         }
 
-        return dynamicVariantMarketDescirption;
+        return dynamicVariantMarketDescription;
     }
 
     private static boolean isMarketPlayerProps(MarketDescription marketDescriptor) {

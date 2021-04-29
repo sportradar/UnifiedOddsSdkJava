@@ -30,6 +30,7 @@ public class MarketMappingWriter {
 
         if(mappings == null || mappings.isEmpty())
         {
+            logger.warn("MarketId:{}, specifiers={} has no mappings.", market.getId(), SdkHelper.dictionaryToString(market.getSpecifiers()));
             return "";
         }
 
@@ -79,6 +80,13 @@ public class MarketMappingWriter {
         sb.append("MarketId:").append(market.getId()).append(" has outcome mappings:");
         for (MarketMappingData data:mappings) {
             Map<String, OutcomeMappingData> outcomeMappings = data.getOutcomeMappings();
+            if(outcomeMappings.isEmpty()){
+                logger.warn("MarketMappingData: MarketId={}, SportId={}, specifiers={} has no outcome mappings.",
+                            data.getMarketId(),
+                            data.getSportId(),
+                            SdkHelper.dictionaryToString(market.getSpecifiers()));
+            }
+
             outcomeMappings.forEach((s, o) -> sb.append("\n").append("Legacy marketId:").append(data.getMarketId()).append(" and outcomeId:").append(o.getOutcomeId()).append(" is mapped to Id:").append(o.getProducerOutcomeId()).append(" and Name:").append(o.getProducerOutcomeName(locale)));
         }
         return sb.toString();

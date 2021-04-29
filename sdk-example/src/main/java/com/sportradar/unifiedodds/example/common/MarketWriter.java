@@ -38,13 +38,13 @@ public class MarketWriter {
         }
 
         for (Market market:markets) {
-            if(market instanceof MarketCancel)
-            {
-                writeMarket((MarketCancel)market);
-            }
-            else if(market instanceof MarketWithOdds)
+            if(market instanceof MarketWithOdds)
             {
                 writeMarket((MarketWithOdds) market);
+            }
+            else if(market instanceof MarketCancel)
+            {
+                writeMarket((MarketCancel)market);
             }
             else if(market instanceof MarketWithSettlement)
             {
