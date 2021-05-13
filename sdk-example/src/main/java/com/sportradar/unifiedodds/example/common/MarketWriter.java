@@ -116,6 +116,7 @@ public class MarketWriter {
             sb.append(", IsPlayerOutcome:").append(outcome.isPlayerOutcome());
             sb.append(", Probabilities:").append(outcome.getProbability());
             sb.append(", OutcomeDefinition:[").append(writeOutcomeDefinition(outcome.getOutcomeDefinition(), locales)).append("]");
+            sb.append(", AdditionalProbabilities:[").append(getAdditionalProbabilities(outcome.getAdditionalProbabilities())).append("]");
             writeMessage(sb.toString());
         }
         writeMarketOutcomeMappings(market);
@@ -230,6 +231,23 @@ public class MarketWriter {
             }
             writeMessage(result);
         }
+    }
+
+    private String getAdditionalProbabilities(AdditionalProbabilities probabilities){
+        if(probabilities == null ||
+                (probabilities.getWin() == null
+                && probabilities.getLose() == null
+                && probabilities.getHalfWin() == null
+                && probabilities.getHalfLose() == null
+                && probabilities.getRefund() == null)){
+            return "";
+        }
+        return String.format("Win={}, Lose={}, HalfWin={}, HalfLose={}, Refund={}",
+                             probabilities.getWin(),
+                             probabilities.getLose(),
+                             probabilities.getHalfWin(),
+                             probabilities.getHalfLose(),
+                             probabilities.getRefund());
     }
 
     private void writeMessage(String message)

@@ -21,14 +21,18 @@ import java.util.Locale;
  */
 class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
     private final double odds;
-    private final AdditionalProbabilities additionalProbabilities;
 
-    OutcomeOddsImpl(String id, NameProvider nameProvider, OutcomeDefinition outcomeDefinition, Locale defaultLocale,
-                    UFOutcomeActive active, Double odds, Double probability, AdditionalProbabilities additionalProbabilities) {
-        super(id, nameProvider, outcomeDefinition, defaultLocale, active, probability);
+    OutcomeOddsImpl(String id,
+                    NameProvider nameProvider,
+                    OutcomeDefinition outcomeDefinition,
+                    Locale defaultLocale,
+                    UFOutcomeActive active,
+                    Double odds,
+                    Double probability,
+                    AdditionalProbabilities additionalProbabilities) {
+        super(id, nameProvider, outcomeDefinition, defaultLocale, active, probability, additionalProbabilities);
 
         this.odds = odds == null ? Double.NaN : odds;
-        this.additionalProbabilities = additionalProbabilities;
     }
 
     /**
@@ -60,12 +64,6 @@ class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
         }
 
         return convertEuOddsToUs(this.odds);
-    }
-
-    @Override
-    public AdditionalProbabilities getAdditionalProbabilities()
-    {
-        return additionalProbabilities;
     }
 
     /**

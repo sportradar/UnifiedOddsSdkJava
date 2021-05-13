@@ -21,4 +21,13 @@ public interface OutcomeProbabilities extends Outcome {
      * @return the likelihood of this outcome happening in percent (i.e. 0-100)
      */
     double getProbability();
+
+    /**
+     * Additional probability attributes for markets which potentially will be (partly) refunded
+     * @return additional probability attributes for markets which potentially will be (partly) refunded
+     */
+    default AdditionalProbabilities getAdditionalProbabilities()
+    {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

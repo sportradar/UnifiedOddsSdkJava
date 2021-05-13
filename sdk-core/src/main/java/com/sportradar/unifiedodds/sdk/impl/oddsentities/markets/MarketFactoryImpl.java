@@ -241,17 +241,6 @@ public class MarketFactoryImpl implements MarketFactory {
         for (UFOddsChangeMarket.UFOutcome o : outcomes) {
             OutcomeOdds outcomeOdds;
 
-            AdditionalProbabilities additionalProbabilities = o.getWinProbabilities() != null
-                                                            || o.getLoseProbabilities() != null
-                                                            || o.getHalfWinProbabilities() != null
-                                                            || o.getHalfLoseProbabilities() != null
-                                                            || o.getRefundProbabilities() != null
-                    ? new AdditionalProbabilitiesImpl(o.getWinProbabilities(),
-                                                    o.getLoseProbabilities(),
-                                                    o.getHalfWinProbabilities(),
-                                                    o.getHalfLoseProbabilities(),
-                                                    o.getRefundProbabilities())
-                    : null;
             if (isValidPlayerOutcome(sportEvent, md.getId(), o.getId(), o.getTeam())) {
                 outcomeOdds = new PlayerOutcomeOddsImpl(
                         o.getId(),
@@ -263,7 +252,7 @@ public class MarketFactoryImpl implements MarketFactory {
                         o.getProbabilities(),
                         (Match) sportEvent, // casting gets validated in the #isValidPlayerOutcome(...)
                         o.getTeam(),
-                        additionalProbabilities
+                        buildAdditionalProbabilities(o)
                 );
             } else {
                 outcomeOdds = new OutcomeOddsImpl(
@@ -274,7 +263,7 @@ public class MarketFactoryImpl implements MarketFactory {
                         o.getActive(),
                         o.getOdds(),
                         o.getProbabilities(),
-                        additionalProbabilities
+                        buildAdditionalProbabilities(o)
                 );
             }
 
@@ -320,7 +309,8 @@ public class MarketFactoryImpl implements MarketFactory {
                         new OutcomeDefinitionImpl(md, o.getId(), sportEvent.getSportId(), producerId, specifiersMap, marketDescriptionProvider, defaultLocale, exceptionHandlingStrategy),
                         defaultLocale,
                         o.getActive(),
-                        o.getProbabilities()
+                        o.getProbabilities(),
+                        buildAdditionalProbabilities(o)
                 )).collect(Collectors.toList());
     }
 
@@ -337,5 +327,19 @@ public class MarketFactoryImpl implements MarketFactory {
         }
 
         return true;
+    }
+
+    private AdditionalProbabilities buildAdditionalProbabilities(UFOddsChangeMarket.UFOutcome outcome){
+        return outcome.getWinProbabilities() != null
+                || outcome.getLoseProbabilities() != null
+                || outcome.getHalfWinProbabilities() != null
+                || outcome.getHalfLoseProbabilities() != null
+                || outcome.getRefundProbabilities() != null
+                ? new AdditionalProbabilitiesImpl(outcome.getWinProbabilities(),
+                                                  outcome.getLoseProbabilities(),
+                                                  outcome.getHalfWinProbabilities(),
+                                                  outcome.getHalfLoseProbabilities(),
+                                                  outcome.getRefundProbabilities())
+                : null;
     }
 }
