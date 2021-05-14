@@ -27,10 +27,15 @@ class MarketWithOddsImpl extends MarketImpl implements MarketWithOdds {
     private final boolean favourite;
     private final MarketMetadata marketMetadata;
 
-
-    MarketWithOddsImpl(int id, NameProvider nameProvider, Map<String, String> specifiersMap,
-                       Map<String, String> extendedSpecifiers, MarketDefinition marketDefinition, Locale defaultLocale, UFMarketStatus status,
-                       UFFavourite favourite, UFMarketMetadata marketMetadata, List<OutcomeOdds> outcomes) {
+    MarketWithOddsImpl(int id,
+                       NameProvider nameProvider,
+                       Map<String, String> specifiersMap,
+                       Map<String, String> extendedSpecifiers,
+                       MarketDefinition marketDefinition,
+                       Locale defaultLocale, UFMarketStatus status,
+                       UFFavourite favourite,
+                       UFMarketMetadata marketMetadata,
+                       List<OutcomeOdds> outcomes) {
         super(id, nameProvider, specifiersMap, extendedSpecifiers, marketDefinition, defaultLocale);
 
         MarketStatus stat = MarketStatus.fromFeedValue(status);
@@ -82,7 +87,5 @@ class MarketWithOddsImpl extends MarketImpl implements MarketWithOdds {
      * @return a {@link MarketMetadata} which contains additional market information
      */
     @Override
-    public MarketMetadata getMarketMetadata() {
-        return marketMetadata;
-    }
+    public MarketMetadata getMarketMetadata() { return marketMetadata; }
 }

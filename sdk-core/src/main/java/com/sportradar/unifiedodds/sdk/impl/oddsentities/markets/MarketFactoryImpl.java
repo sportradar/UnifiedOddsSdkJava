@@ -169,7 +169,8 @@ public class MarketFactoryImpl implements MarketFactory {
                 defaultLocale,
                 market.getStatus(),
                 buildProbabilityOutcomes(marketDescriptor, nameProvider, sportEvent, producerId, specifiersMap, market.getOutcome()),
-                market.getCashoutStatus()
+                market.getCashoutStatus(),
+                market.getMarketMetadata()
         ));
     }
 

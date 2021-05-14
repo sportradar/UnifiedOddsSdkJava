@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
+import com.sportradar.uf.datamodel.UFMarketMetadata;
 import com.sportradar.uf.datamodel.UFMarketStatus;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
@@ -23,8 +24,18 @@ public class MarketWithProbabilitiesImpl extends MarketImpl implements MarketWit
     private final MarketStatus status;
     private final List<OutcomeProbabilities> outcomeProbabilities;
     private final CashOutStatus cashOutStatus;
+    private final MarketMetadata marketMetadata;
 
-    MarketWithProbabilitiesImpl(int id, NameProvider nameProvider, Map<String, String> specifiersMap, Map<String, String> extendedSpecifiers, MarketDefinition marketDefinition, Locale defaultLocale, UFMarketStatus status, List<OutcomeProbabilities> outcomeProbabilities, Integer cashoutStatus) {
+    MarketWithProbabilitiesImpl(int id,
+                                NameProvider nameProvider,
+                                Map<String, String> specifiersMap,
+                                Map<String, String> extendedSpecifiers,
+                                MarketDefinition marketDefinition,
+                                Locale defaultLocale,
+                                UFMarketStatus status,
+                                List<OutcomeProbabilities> outcomeProbabilities,
+                                Integer cashoutStatus,
+                                UFMarketMetadata marketMetadata) {
         super(id, nameProvider, specifiersMap, extendedSpecifiers, marketDefinition, defaultLocale);
 
         MarketStatus stat = MarketStatus.fromFeedValue(status);
@@ -36,6 +47,7 @@ public class MarketWithProbabilitiesImpl extends MarketImpl implements MarketWit
 
         this.outcomeProbabilities = outcomeProbabilities;
         this.cashOutStatus = CashOutStatus.fromFeedValue(cashoutStatus);
+        this.marketMetadata = marketMetadata == null ? null : new MarketMetadataImpl(marketMetadata);
     }
 
     /**
@@ -54,9 +66,7 @@ public class MarketWithProbabilitiesImpl extends MarketImpl implements MarketWit
      * @return a list of probabilities for the different outcomes for this market
      */
     @Override
-    public List<OutcomeProbabilities> getOutcomeProbabilities() {
-        return outcomeProbabilities;
-    }
+    public List<OutcomeProbabilities> getOutcomeProbabilities() { return outcomeProbabilities; }
 
     /**
      * Returns a {@link CashOutStatus} enum which indicates the availability of cashout
@@ -67,4 +77,12 @@ public class MarketWithProbabilitiesImpl extends MarketImpl implements MarketWit
     public CashOutStatus getCashOutStatus() {
         return cashOutStatus;
     }
+
+    /**
+     * Returns a {@link MarketMetadata} which contains additional market information
+     *
+     * @return a {@link MarketMetadata} which contains additional market information
+     */
+    @Override
+    public MarketMetadata getMarketMetadata() { return marketMetadata; }
 }

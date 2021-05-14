@@ -230,7 +230,7 @@ public class GeneralModule implements Module {
                 Connection connection = connectionFactory.newConnection();
                 return connection.createChannel();
             } catch (NoSuchAlgorithmException | KeyManagementException | TimeoutException | IOException e) {
-                throw new IllegalStateException("Failed to create Rabbit MQ channel, ex: ", e);
+                throw new IllegalStateException("Failed to create Rabbit MQ channel, ex: " + e.getMessage(), e);
             }
         };
     }
