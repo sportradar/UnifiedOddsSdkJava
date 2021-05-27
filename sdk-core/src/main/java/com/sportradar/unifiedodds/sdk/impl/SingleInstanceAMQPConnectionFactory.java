@@ -133,7 +133,9 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      * @return The created {@link Connection} instance
      */
     private Connection newConnectionInternal(ConnectionFactory rabbitConnectionFactory,
-                                             SDKInternalConfiguration config, String version2, WhoAmIReader whoAmIReader)
+                                             SDKInternalConfiguration config,
+                                             String version2,
+                                             WhoAmIReader whoAmIReader)
                 throws KeyManagementException, NoSuchAlgorithmException, IOException, TimeoutException {
         logger.info("Creating new connection (Sportradar Unified Odds SDK " + version2 + ")");
 

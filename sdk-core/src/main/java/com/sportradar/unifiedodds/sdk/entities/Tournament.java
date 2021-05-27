@@ -41,4 +41,14 @@ public interface Tournament extends LongTermEvent {
     default Boolean isExhibitionGames() {
         return null;
     }
+
+    /**
+     * Returns a {@link List} of events that belong to the associated tournament
+     *
+     * @return - a {@link List} of events that belong to the associated tournament
+     */
+    default List<Competition> getSchedule()
+    {
+        return null;
+    }
 }

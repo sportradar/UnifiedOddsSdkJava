@@ -50,6 +50,10 @@ public class MarketWriter {
             {
                 writeMarket((MarketWithSettlement) market);
             }
+            else if(market instanceof MarketWithProbabilities)
+            {
+                writeMarket((MarketWithProbabilities) market);
+            }
             else
             {
                 writeMarket(market);
@@ -82,6 +86,19 @@ public class MarketWriter {
         writeMarketMappings(market);
     }
 
+    private void writeMarket(MarketWithProbabilities market)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("MarketId:").append(market.getId());
+        sb.append(", Name:").append(market.getName());
+        sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
+        sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
+        sb.append(", MarketMetaData:").append(getMarketMetaData(market.getMarketMetadata()));
+        writeMessage(sb.toString());
+
+        writeMarketMappings(market);
+    }
+
     private void writeMarket(MarketWithOdds market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
@@ -97,6 +114,7 @@ public class MarketWriter {
         sb.append(", MarketStatus:").append(market.getStatus());
         sb.append(", IsFavourite:").append(market.isFavourite());
         sb.append(", MarketDefinition:[").append(writeMarketDefinition(market.getMarketDefinition(), locales)).append("]");
+        sb.append(", MarketMetaData:").append(getMarketMetaData(market.getMarketMetadata()));
         writeMessage(sb.toString());
 
         writeMarketMappings(market);
@@ -248,6 +266,13 @@ public class MarketWriter {
                              probabilities.getHalfWin(),
                              probabilities.getHalfLose(),
                              probabilities.getRefund());
+    }
+
+    private String getMarketMetaData(MarketMetadata metadata){
+        if(metadata == null){
+            return "";
+        }
+        return metadata.toString();
     }
 
     private void writeMessage(String message)
