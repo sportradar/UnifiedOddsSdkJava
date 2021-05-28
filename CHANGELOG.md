@@ -1,5 +1,10 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.46.0 (2021-05-28)**
+* OutcomeProbabilities extended with getAdditionalProbabilities
+* Extended MarketWithProbabilities with getMarketMetaData
+* Extended Tournament with getSchedule
+
 **2.0.45.0 (2021-04-29)**
 * Added SportInfoManager.getPeriodStatuses to fetch period summary for stages 
 * Extended CompetitionStatus with getPeriodOfLadder
