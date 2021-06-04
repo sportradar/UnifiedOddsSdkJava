@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
@@ -52,6 +52,8 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private static final String VIRTUAL_HOST_PREFIX = "/unifiedfeed/";
 
     private final String version;
+
+    private String sslVersion;
 
     /**
      * A {@link SDKInternalConfiguration} instance representing odds feed configuration
@@ -104,9 +106,11 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      *        outside world when the connection is closed
      */
     @Inject
-    public SingleInstanceAMQPConnectionFactory(ConnectionFactory rabbitConnectionFactory, SDKInternalConfiguration config,
+    public SingleInstanceAMQPConnectionFactory(ConnectionFactory rabbitConnectionFactory,
+                                               SDKInternalConfiguration config,
                                                SDKConnectionStatusListener connectionStatusListener,
-                                               @Named("version") String version, WhoAmIReader whoAmIReader,
+                                               @Named("version") String version,
+                                               WhoAmIReader whoAmIReader,
                                                @Named("DedicatedRabbitMqExecutor") ExecutorService dedicatedRabbitMqExecutor) {
         checkNotNull(rabbitConnectionFactory, "rabbitConnectionFactory cannot be a null reference");
         checkNotNull(config, "config cannot be a null reference");
@@ -135,8 +139,12 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private Connection newConnectionInternal(ConnectionFactory rabbitConnectionFactory,
                                              SDKInternalConfiguration config,
                                              String version2,
-                                             WhoAmIReader whoAmIReader)
-                throws KeyManagementException, NoSuchAlgorithmException, IOException, TimeoutException {
+                                             WhoAmIReader whoAmIReader,
+                                             String sslVersion)
+                throws KeyManagementException,
+                       NoSuchAlgorithmException,
+                       IOException,
+                       TimeoutException {
         logger.info("Creating new connection (Sportradar Unified Odds SDK " + version2 + ")");
 
         if (config.getAccessToken() == null) { // this is just a failsafe, the configuration gets validated on creation
@@ -147,7 +155,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         rabbitConnectionFactory.setHost(config.getMessagingHost());
         rabbitConnectionFactory.setPort(config.getPort());
         if (config.getUseMessagingSsl()) {
-            rabbitConnectionFactory.useSslProtocol();
+            rabbitConnectionFactory.useSslProtocol(sslVersion);
         }
 
         int bookmakerId = whoAmIReader.getBookmakerId();
@@ -198,7 +206,32 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
                 throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
         checkFirewall();
         logger.info("Creating new SDKConnection for {}", config.getMessagingHost());
-        Connection actualConnection = newConnectionInternal(rabbitConnectionFactory, config, version, whoAmIReader);
+        Connection actualConnection = null;
+        if (config.getUseMessagingSsl()) {
+            if(sslVersion != null){
+                actualConnection = newConnectionInternal(rabbitConnectionFactory, config, version, whoAmIReader, sslVersion);
+            }
+            else{
+                List<String> sslProtocols =  Arrays.asList(SSLContext.getDefault().getSupportedSSLParameters().getProtocols());
+                Collections.reverse(sslProtocols);
+                for(String testSslVersion : sslProtocols) {
+                    try{
+                        actualConnection = newConnectionInternal(rabbitConnectionFactory, config, version, whoAmIReader, testSslVersion);
+                        sslVersion = testSslVersion;
+                        break;
+                    }
+                    catch(Exception ex){
+                        logger.debug("Error creating connection for SSL version {}. Exception={}", testSslVersion, ex.getMessage());
+                    }
+                }
+            }
+        }
+        else{
+            actualConnection = newConnectionInternal(rabbitConnectionFactory, config, version, whoAmIReader, null);
+        }
+        if(actualConnection == null){
+            return null;
+        }
         SDKConnection sdkConnection = new SDKConnection(actualConnection);
         sdkConnection.addShutdownListener(shutdownListener);
         return sdkConnection;
