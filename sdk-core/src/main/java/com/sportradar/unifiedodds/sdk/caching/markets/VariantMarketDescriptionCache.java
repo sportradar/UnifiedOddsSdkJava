@@ -10,6 +10,7 @@ import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
+import com.sportradar.unifiedodds.sdk.caching.impl.SportEventCacheImpl;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
@@ -18,6 +19,8 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
 import com.sportradar.utils.SdkHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Single variant market description cache
  */
 public class VariantMarketDescriptionCache implements MarketDescriptionCache {
+    private static final Logger logger = LoggerFactory.getLogger(VariantMarketDescriptionCache.class);
     private final Cache<String, MarketDescriptionCI> cache;
     private final DataProvider<MarketDescriptions> dataProvider;
     private final MappingValidatorFactory mappingValidatorFactory;
@@ -105,7 +109,10 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     @Override
     public void deleteCacheItem(int marketId, String variant) {
         String cacheId  = getCacheKey(marketId, variant);
-        cache.invalidate(cacheId);
+        if(cache.asMap().containsKey(cacheId)){
+            logger.debug("Delete variant market: {}", cacheId);
+            cache.invalidate(cacheId);
+        }
     }
 
     @Override
@@ -129,6 +136,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
                     throw new IllegalCacheStateException("Received variant market[" + marketId + " " + variant + "] response with invalid market entry count");
                 }
 
+                String cacheId = getCacheKey(marketId, variant);
                 DescMarket descMarket = data.getMarket().get(0);
                 if (existingMarketDescriptor == null) {
                     existingMarketDescriptor = new MarketDescriptionCI(descMarket, mappingValidatorFactory, mLoc, SdkHelper.VariantMarketSingleCache);

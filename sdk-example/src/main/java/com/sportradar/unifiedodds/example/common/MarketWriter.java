@@ -61,7 +61,7 @@ public class MarketWriter {
         }
     }
 
-    private void writeMarket(Market market)
+    public void writeMarket(Market market)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
@@ -73,7 +73,7 @@ public class MarketWriter {
         writeMarketMappings(market);
     }
 
-    private void writeMarket(MarketCancel market)
+    public void writeMarket(MarketCancel market)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
@@ -86,7 +86,7 @@ public class MarketWriter {
         writeMarketMappings(market);
     }
 
-    private void writeMarket(MarketWithProbabilities market)
+    public void writeMarket(MarketWithProbabilities market)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
@@ -99,7 +99,7 @@ public class MarketWriter {
         writeMarketMappings(market);
     }
 
-    private void writeMarket(MarketWithOdds market) {
+    public void writeMarket(MarketWithOdds market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
         sb.append(", Names:[");
@@ -140,7 +140,7 @@ public class MarketWriter {
         writeMarketOutcomeMappings(market);
     }
 
-    private void writeMarket(MarketWithSettlement market)
+    public void writeMarket(MarketWithSettlement market)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());

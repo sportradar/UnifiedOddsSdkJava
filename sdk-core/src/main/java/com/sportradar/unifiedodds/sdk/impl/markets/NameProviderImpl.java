@@ -52,17 +52,16 @@ public class NameProviderImpl implements NameProvider {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Supplier<List<URN>> competitorList;
 
-    private volatile MarketDescription marketDescription;
     private volatile Date lastReload = new Date(0);
 
     NameProviderImpl(MarketDescriptionProvider descriptorProvider,
-                            ProfileCache profileCache,
-                            NameExpressionFactory expressionFactory,
-                            SportEvent sportEvent,
-                            int marketId,
-                            Map<String, String> marketSpecifiers,
-                            int producerId,
-                            ExceptionHandlingStrategy exceptionHandlingStrategy) {
+                    ProfileCache profileCache,
+                    NameExpressionFactory expressionFactory,
+                    SportEvent sportEvent,
+                    int marketId,
+                    Map<String, String> marketSpecifiers,
+                    int producerId,
+                    ExceptionHandlingStrategy exceptionHandlingStrategy) {
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(expressionFactory);
@@ -70,7 +69,6 @@ public class NameProviderImpl implements NameProvider {
         Preconditions.checkArgument(marketId > 0);
         Preconditions.checkArgument(producerId > 0);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
-
 
         this.descriptorProvider = descriptorProvider;
         this.profileCache = profileCache;
@@ -252,17 +250,8 @@ public class NameProviderImpl implements NameProvider {
     private MarketDescription getMarketDescriptor(List<Locale> locales) throws ObjectNotFoundException {
         Preconditions.checkNotNull(locales);
 
-        Collection<Locale> cachedLocales = marketDescription != null
-                ? marketDescription.getLocales()
-                : Collections.emptyList();
-
-        List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, locales);
-        if (missingLocales.isEmpty()) {
-            return marketDescription;
-        }
-
         try {
-            marketDescription = descriptorProvider.getMarketDescription(marketId, marketSpecifiers, locales, true);
+            MarketDescription marketDescription = descriptorProvider.getMarketDescription(marketId, marketSpecifiers, locales, true);
             return marketDescription;
         } catch (CacheItemNotFoundException e) {
             throw new ObjectNotFoundException("The requested market[" + marketId + "] was not found", e);
