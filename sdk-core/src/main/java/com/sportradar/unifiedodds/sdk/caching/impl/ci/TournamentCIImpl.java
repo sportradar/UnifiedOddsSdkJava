@@ -604,12 +604,12 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                     try {
                         groups.forEach(tmpGroup -> {
                             if (tmpGroup.getId() != null && !tmpGroup.getId().isEmpty()) {
-                                if (endpointData.getGroups().getGroup().stream().filter(f -> f.getId().equals(tmpGroup.getId())).findFirst().orElse(null) == null) {
+                                if (endpointData.getGroups().getGroup().stream().filter(f -> f.getId() != null && f.getId().equals(tmpGroup.getId())).findFirst().orElse(null) == null) {
                                     tmpGroups.remove(tmpGroup);
                                 }
                             }
                             if (tmpGroup.getId() == null && tmpGroup.getName() != null && !tmpGroup.getName().isEmpty()) {
-                                if (endpointData.getGroups().getGroup().stream().filter(f -> f.getName().equals(tmpGroup.getName())).findFirst().orElse(null) == null) {
+                                if (endpointData.getGroups().getGroup().stream().filter(f -> f.getName() != null && f.getName().equals(tmpGroup.getName())).findFirst().orElse(null) == null) {
                                     tmpGroups.remove(tmpGroup);
                                 }
                             }
