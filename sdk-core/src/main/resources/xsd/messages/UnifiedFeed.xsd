@@ -193,6 +193,12 @@
     <xs:attribute name="bases" type="xs:string" use="optional"/>
     <xs:attribute name="home_batter" type="xs:int" use="optional"/>
     <xs:attribute name="away_batter" type="xs:int" use="optional"/>
+    <xs:attribute name="pitcher" type="xs:string" use="optional"/>
+    <xs:attribute name="batter" type="xs:string" use="optional"/>
+    <xs:attribute name="pitch_count" type="xs:int" use="optional"/>
+    <xs:attribute name="pitches_seen" type="xs:int" use="optional"/>
+    <xs:attribute name="total_hits" type="xs:int" use="optional"/>
+    <xs:attribute name="total_pitches" type="xs:int" use="optional"/>
     <xs:attribute name="possession" type="xs:int" use="optional"/>
     <xs:attribute name="position" type="xs:int" use="optional"/>
     <xs:attribute name="try" type="xs:int" use="optional"/>

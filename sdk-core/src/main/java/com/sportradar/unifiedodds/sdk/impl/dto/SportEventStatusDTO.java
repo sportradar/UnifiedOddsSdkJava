@@ -269,6 +269,12 @@ public class SportEventStatusDTO {
         properties.put("HomePenaltyScore", seStatus.getHomePenaltyScore());
         properties.put("AwayPenaltyScore", seStatus.getAwayPenaltyScore());
         properties.put("PeriodOfLeader", seStatus.getPeriodOfLeader());
+        properties.put("Pitcher", seStatus.getPitcher());
+        properties.put("Batter", seStatus.getBatter());
+        properties.put("PitchCount", seStatus.getPitchCount());
+        properties.put("PitchesSeen", seStatus.getPitchesSeen());
+        properties.put("TotalHits", seStatus.getTotalHits());
+        properties.put("TotalPitches", seStatus.getTotalPitches());
 
         eventClock = seStatus.getClock() == null ? null :
                 new EventClockImpl(
