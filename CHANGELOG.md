@@ -1,5 +1,12 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.47.0 (2021-06-15)**
+* Added pitcher, batter, pitch_count, pitches_seen, total_hits, total_pitches to SportEventStatus properties
+* PeriodScore - match status code 120 mapped to penalties
+* Connecting to rabbit with the newest supported SSL protocol
+* Fix: Re-fetching variant market descriptions after deleting the SDK cache for an event
+* Fix: merging tournament groups
+
 **2.0.46.0 (2021-05-28)**
 * OutcomeProbabilities extended with getAdditionalProbabilities
 * Extended MarketWithProbabilities with getMarketMetaData
