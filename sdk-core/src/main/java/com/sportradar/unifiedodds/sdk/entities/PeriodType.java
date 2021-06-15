@@ -8,5 +8,8 @@ package com.sportradar.unifiedodds.sdk.entities;
  * An indication of the type of the related period
  */
 public enum PeriodType {
-    RegularPeriod, Overtime, Penalties, Other
+    RegularPeriod,
+    Overtime,
+    Penalties,
+    Other
 }

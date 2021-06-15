@@ -86,7 +86,7 @@ public class PeriodScoreImpl implements PeriodScore {
             if (matchStatusCode == 40) {
                 // <match_status description="Overtime" id="40"/>
                 tempPeriodType = PeriodType.Overtime;
-            } else if (matchStatusCode == 50 || matchStatusCode == 51 || matchStatusCode == 52) {
+            } else if (matchStatusCode == 50 || matchStatusCode == 51 || matchStatusCode == 52 || matchStatusCode == 120) {
                 // <match_status description="Penalties" id="50"/>
                 // <match_status description="Penalties" id="51"/>
                 // <match_status description="Penalties" id="52"/>
