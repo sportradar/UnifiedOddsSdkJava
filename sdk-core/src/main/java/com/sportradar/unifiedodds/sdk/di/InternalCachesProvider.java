@@ -37,4 +37,6 @@ public interface InternalCachesProvider {
     Cache<String, VariantDescriptionCI> getVariantDescriptionCache();
 
     Cache<URN, Date> getFixtureTimestampCache();
+
+    Cache<String, Date> getIgnoreEventsTimelineCache();
 }

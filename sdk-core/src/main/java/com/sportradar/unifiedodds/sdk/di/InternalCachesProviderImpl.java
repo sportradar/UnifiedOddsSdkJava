@@ -2,6 +2,7 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
@@ -28,6 +29,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     private final Cache<String, String> dispatchedFixtureChanges;
     private final Cache<String, VariantDescriptionCI> variantDescriptionCache;
     private final Cache<URN, Date> fixtureTimestampCache;
+    private final Cache<String, Date> ignoreEventsTimelineCache;
 
     InternalCachesProviderImpl() {
         sportDataCache = CacheBuilder.newBuilder().build();
@@ -39,11 +41,11 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
                 .build();
 
         playerProfileCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(24, TimeUnit.HOURS)
+                .expireAfterWrite(OperationManager.getProfileCacheTimeout().toHours(), TimeUnit.HOURS)
                 .removalListener(new SDKCacheRemovalListener<>("PlayerProfileCache"))
                 .build();
         competitorCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(24, TimeUnit.HOURS)
+                .expireAfterWrite(OperationManager.getProfileCacheTimeout().toHours(), TimeUnit.HOURS)
                 .removalListener(new SDKCacheRemovalListener<>("CompetitorProfileCache"))
                 .build();
         simpleTeamCompetitorCache = CacheBuilder.newBuilder()
@@ -52,14 +54,15 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
                 .build();
 
         sportEventStatusCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .expireAfterWrite(OperationManager.getSportEventStatusCacheTimeout().toMinutes(), TimeUnit.MINUTES)
                 .removalListener(new SDKCacheRemovalListener<>("SportEventStatusCache", true))
                 .build();
 
         invariantMarketCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
         variantDescriptionCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
-        variantMarketCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.HOURS).build();
+        variantMarketCache = CacheBuilder.newBuilder().expireAfterAccess(OperationManager.getVariantMarketDescriptionCacheTimeout().toHours(), TimeUnit.HOURS).build();
         fixtureTimestampCache = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+        ignoreEventsTimelineCache = CacheBuilder.newBuilder().expireAfterAccess(OperationManager.getIgnoreBetPalTimelineSportEventStatusCacheTimeout().toHours(), TimeUnit.HOURS).build();
 
         dispatchedFixtureChanges = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     }
@@ -123,4 +126,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     public Cache<URN, Date> getFixtureTimestampCache() {
         return fixtureTimestampCache;
     }
+
+    @Override
+    public Cache<String, Date> getIgnoreEventsTimelineCache() { return ignoreEventsTimelineCache; }
 }

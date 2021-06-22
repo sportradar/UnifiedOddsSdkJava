@@ -616,7 +616,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return scheduled;
+            return null;
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
@@ -638,7 +638,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return scheduledEnd;
+            return null;
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
@@ -702,7 +702,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return replacedBy;
+            return null;
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
@@ -1257,8 +1257,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private static boolean isTimelineFinalized(SAPIMatchTimelineEndpoint endpointData) {
         Preconditions.checkNotNull(endpointData);
 
-        if (endpointData.getSportEventStatus() != null
-                && endpointData.getSportEventStatus().getStatus() != null) {
+        if (endpointData.getSportEventStatus() != null && endpointData.getSportEventStatus().getStatus() != null) {
             EventStatus eventStatus = EventStatus.valueOfApiStatusName(endpointData.getSportEventStatus().getStatus());
             return eventStatus == EventStatus.Ended || eventStatus == EventStatus.Finished;
         }

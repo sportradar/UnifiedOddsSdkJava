@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
+import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.SportEventStatusCIImpl;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
@@ -13,6 +14,8 @@ import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * Cache storing sport event statuses
@@ -32,20 +35,28 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
     private final SportEventCache sportEventCache;
 
     /**
+     * A {@link Cache} instance used to store event ids for which timeline SES should be ignored
+     */
+    private final Cache<String, Date> ignoreEventsTimelineCache;
+
+    /**
      * Initializes a new {@link SportEventStatusCacheImpl} instance
      *
      * @param sportEventStatusCache - the {@link Cache} instance used to store sport event statuses
      * @param sportEventCache - the {@link SportEventCache} instance used to fetch sport event
      *                          statuses if they are not yet cached
+     * @param ignoreEventsTimelineCache - the {@link Cache} instance used to store event ids for which timeline SES should be ignored
      */
-    public SportEventStatusCacheImpl(Cache<String,
-                                     SportEventStatusCI> sportEventStatusCache,
-                                     SportEventCache sportEventCache) {
+    public SportEventStatusCacheImpl(Cache<String, SportEventStatusCI> sportEventStatusCache,
+                                     SportEventCache sportEventCache,
+                                     Cache<String, Date> ignoreEventsTimelineCache) {
         Preconditions.checkNotNull(sportEventStatusCache);
         Preconditions.checkNotNull(sportEventCache);
+        Preconditions.checkNotNull(ignoreEventsTimelineCache);
 
         this.sportEventStatusCache = sportEventStatusCache;
         this.sportEventCache = sportEventCache;
+        this.ignoreEventsTimelineCache = ignoreEventsTimelineCache;
     }
 
     /**
@@ -94,6 +105,16 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
                 source.contains("Summary") ||
                 sportEventStatusCache.getIfPresent(id.toString()) == null) {
 
+            Date d = ignoreEventsTimelineCache.getIfPresent(id.toString());
+            if (OperationManager.getIgnoreBetPalTimelineSportEventStatus() && source.contains("Timeline") && d != null)
+            {
+                logger.debug(String.format("Received SES for %s from %s with EventStatus:%s (timeline ignored)",
+                                                 id,
+                                                 source,
+                                                 data.getStatus()));
+                return;
+            }
+
             logger.debug(String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus()));
 
             SportEventStatusCI cacheItem = sportEventStatusCache.getIfPresent(id.toString());
@@ -128,6 +149,28 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
     @Override
     public void purgeSportEventStatus(URN id) {
         sportEventStatusCache.invalidate(id.toString());
+    }
+
+    /**
+     * Adds the event identifier for timeline ignore
+     * Used for BetPal events to have ignored timeline event status cache
+     *
+     * @param eventId     the event identifier
+     * @param producerId  the producer identifier
+     * @param messageType type of the feed message
+     */
+    @Override
+    public void addEventIdForTimelineIgnore(URN eventId, int producerId, String messageType) {
+        if (producerId == 4) // BetPal
+        {
+            Date d = ignoreEventsTimelineCache.getIfPresent(eventId.toString());
+            if (d == null)
+            {
+                String msg = String.format("Received %s - added %s to the ignore timeline list", messageType, eventId);
+                logger.debug(msg);
+                ignoreEventsTimelineCache.put(eventId.toString(), new Date());
+            }
+        }
     }
 
     /**

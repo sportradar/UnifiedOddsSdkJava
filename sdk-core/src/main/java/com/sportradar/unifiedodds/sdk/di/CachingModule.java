@@ -109,7 +109,8 @@ public class CachingModule extends AbstractModule {
     protected SportEventStatusCache providesSportEventStatusCache(SportEventCache sportEventCache) {
         return new SportEventStatusCacheImpl(
                 internalCachesProvider.getSportEventStatusCache(),
-                sportEventCache
+                sportEventCache,
+                internalCachesProvider.getIgnoreEventsTimelineCache()
         );
     }
 

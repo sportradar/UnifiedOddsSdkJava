@@ -82,14 +82,23 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
      */
     @Override
     public void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
+
         if (message instanceof UFOddsChange) {
-            processOddsChangeMessage((UFOddsChange) message);
+            UFOddsChange fm = (UFOddsChange) message;
+            sportEventStatusCache.addEventIdForTimelineIgnore(URN.parse(fm.getEventId()), fm.getProduct(), fm.getClass().getSimpleName());
+            processOddsChangeMessage(fm);
         } else if (message instanceof UFFixtureChange) {
-            processFixtureChangeMessage((UFFixtureChange) message);
+            UFFixtureChange fm = (UFFixtureChange) message;
+            sportEventStatusCache.addEventIdForTimelineIgnore(URN.parse(fm.getEventId()), fm.getProduct(), fm.getClass().getSimpleName());
+            processFixtureChangeMessage(fm);
         } else if (message instanceof UFBetStop) {
-            processBetStopMessage((UFBetStop) message);
+            UFBetStop fm = (UFBetStop) message;
+            sportEventStatusCache.addEventIdForTimelineIgnore(URN.parse(fm.getEventId()), fm.getProduct(), fm.getClass().getSimpleName());
+            processBetStopMessage(fm);
         } else if (message instanceof UFBetSettlement) {
-            processBetSettlementMessage((UFBetSettlement) message);
+            UFBetSettlement fm = (UFBetSettlement) message;
+            sportEventStatusCache.addEventIdForTimelineIgnore(URN.parse(fm.getEventId()), fm.getProduct(), fm.getClass().getSimpleName());
+            processBetSettlementMessage(fm);
         }
 
         if (nextMessageProcessor != null) {

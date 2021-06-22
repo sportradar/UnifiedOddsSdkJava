@@ -66,10 +66,10 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     private final CacheItemFactory cacheItemFactory;
 
     public ProfileCacheImpl(CacheItemFactory cacheItemFactory,
-                     DataRouterManager dataRouterManager,
-                     Cache<URN, PlayerProfileCI> playerCache,
-                     Cache<URN, CompetitorCI> competitorCache,
-                     Cache<URN, CompetitorCI> simpleTeamCache) {
+                             DataRouterManager dataRouterManager,
+                             Cache<URN, PlayerProfileCI> playerCache,
+                             Cache<URN, CompetitorCI> competitorCache,
+                             Cache<URN, CompetitorCI> simpleTeamCache) {
         Preconditions.checkNotNull(cacheItemFactory);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(playerCache);

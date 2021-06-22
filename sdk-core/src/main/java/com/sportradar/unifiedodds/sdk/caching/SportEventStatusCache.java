@@ -27,4 +27,13 @@ public interface SportEventStatusCache {
      * @param id the id of the event that you want to purge the sport event status
      */
     void purgeSportEventStatus(URN id);
+
+    /**
+     * Adds the event identifier for timeline ignore
+     * Used for BetPal events to have ignored timeline event status cache
+     * @param eventId the event identifier
+     * @param producerId the producer identifier
+     * @param messageType type of the feed message
+     */
+    void addEventIdForTimelineIgnore(URN eventId, int producerId, String messageType);
 }
