@@ -1,5 +1,9 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.48.0 (2021-06-23)**
+* Added OperationManager to provide option to set sdk values (before OddsFeed instance creation)
+*  Added option to ignore sport event status from timeline endpoint for BetPal events
+
 **2.0.47.0 (2021-06-15)**
 * Added pitcher, batter, pitch_count, pitches_seen, total_hits, total_pitches to SportEventStatus properties
 * PeriodScore - match status code 120 mapped to penalties
