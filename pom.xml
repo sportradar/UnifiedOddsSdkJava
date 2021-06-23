@@ -34,7 +34,7 @@
         <apache.httpComponents.version>4.5.1</apache.httpComponents.version>
         <slf4j.version>1.7.13</slf4j.version>
         <logback.version>1.2.3</logback.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mockito.version>2.7.22</mockito.version>
         <guava.version>21.0</guava.version>
         <guice.version>4.0</guice.version>
