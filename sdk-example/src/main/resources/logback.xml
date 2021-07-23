@@ -8,7 +8,7 @@
     <!-- the folder in which the SDK logs will be stored -->
     <property name="UF_SDK_LOG_FOLDER" value="uf-sdk-logs" />
     <!-- TRACE, DEBUG, INFO, WARN, ERROR, ALL or OFF -->
-    <property name="UF_SDK_LOG_LEVEL" value="debug" />
+    <property name="UF_SDK_LOG_LEVEL" value="info" />
 
     <!-- the execution log file appender configuration -->
     <appender name="SdkExampleLogFileAppender"

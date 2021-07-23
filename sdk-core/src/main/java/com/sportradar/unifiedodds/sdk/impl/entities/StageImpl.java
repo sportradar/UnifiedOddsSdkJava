@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
+import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
@@ -52,9 +53,9 @@ public class StageImpl extends SportEventImpl implements Stage {
     private final SportEntityFactory sportEntityFactory;
 
     /**
-     * A {@link CompetitionStatus} containing information about the progress of the event associated with the current instance
+     * A {@link StageStatus} containing information about the progress of the event associated with the current instance
      */
-    private CompetitionStatus status;
+    private StageStatus status;
 
     /**
      * The exception strategy that should be used within the instance
@@ -231,7 +232,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      * associated with the current instance
      */
     @Override
-    public CompetitionStatus getStatus() {
+    public StageStatus getStatus() {
         StageCI cacheItem = loadStageCI();
 
         if (cacheItem == null) {
@@ -240,7 +241,7 @@ public class StageImpl extends SportEventImpl implements Stage {
         }
 
         if (status == null) {
-            status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class, true);
+            status = sportEventStatusFactory.buildSportEventStatus(id, StageStatus.class, true);
         }
 
         return status;
@@ -256,7 +257,7 @@ public class StageImpl extends SportEventImpl implements Stage {
     @Override
     public Optional<CompetitionStatus> getStatusIfPresent()  {
         if (status == null) {
-            status = sportEventStatusFactory.buildSportEventStatus(id, CompetitionStatus.class, false);
+            status = sportEventStatusFactory.buildSportEventStatus(id, StageStatus.class, false);
         }
         if(status == null) {
             return Optional.empty();

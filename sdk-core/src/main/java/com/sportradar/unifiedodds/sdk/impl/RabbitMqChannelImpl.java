@@ -17,10 +17,16 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
+
+import static com.sportradar.unifiedodds.sdk.entities.TimeType.Interval;
 
 /**
  * An implementation of the {@link RabbitMqChannel}
@@ -63,6 +69,9 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
      */
     private boolean isOpened = false;
 
+    private LocalDateTime channelLastMessage;
+
+    private List<String> routingKeys;
 
     /**
      * Initializes a new instance of the {@link RabbitMqChannelImpl}
@@ -104,10 +113,20 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             throw new IOException("Provided AMQP channel is null");
         }
 
+        this.routingKeys = routingKeys;
         this.channelMessageConsumer = channelMessageConsumer;
+
+        internalOpen();
+    }
+
+    private synchronized void internalOpen() throws IOException {
         try {
             initChannelQueue(routingKeys);
             isOpened = true;
+
+            new Thread(()->{
+                WriteChannelInfo();
+            }).start();
         } catch (IOException e) {
             throw new IOException("Channel queue declaration failed, ex: ", e);
         }
@@ -133,6 +152,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             public synchronized void handleDelivery(String tag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                 MDC.setContextMap(sdkMdcContextDescription);
                 try {
+                    channelLastMessage = LocalDateTime.now();
                     channelMessageConsumer.onMessageReceived(envelope.getRoutingKey(), body, properties, new TimeUtilsImpl().now());
                 } catch (Exception e) {
                     logger.error("An exception occurred while processing AMQP message. Routing key: '{}', body: '{}'",
@@ -180,5 +200,53 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
     @Override
     public synchronized boolean isOpened() {
         return channel != null && channel.isOpen();
+    }
+
+    private void WriteChannelInfo()
+    {
+        if(channelLastMessage == null){
+            channelLastMessage = LocalDateTime.now();
+        }
+
+        while(isOpened)
+        {
+            try {
+                Thread.sleep(1000L * 20L);
+            }
+            catch (InterruptedException e) {
+            }
+            Duration d = Duration.between(LocalDateTime.now(), channelLastMessage);
+            long dMins = Math.abs(d.toMinutes());
+//            logger.debug("Channel {} receive last message {} ago. Channel isOpen={}",
+//                        channel == null ? "null" : channel.getChannelNumber(),
+//                        channelLastMessage,
+//                        channel == null ? "null" : channel.isOpen());
+            if(dMins >= 3){
+                logger.warn("Channel {} didn't receive any message since {}. Channel isOpen={}",
+                             channel == null ? "null" : channel.getChannelNumber(),
+                             channelLastMessage,
+                            channel == null ? "null" : channel.isOpen());
+                if(channel.isOpen()) {
+                    logger.warn("Channel {} didn't receive any message since {}, but is marked as Opened. Channel isOpen={}. Restarting channel...",
+                                channel == null ? "null" : channel.getChannelNumber(),
+                                channelLastMessage,
+                                channel == null ? "null" : channel.isOpen());
+
+                    try {
+                        close();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        internalOpen();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+            }
+        }
     }
 }

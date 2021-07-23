@@ -4,6 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
+import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
+import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
+
 import java.util.List;
 
 /**
@@ -51,4 +54,13 @@ public interface Stage extends Competition {
      * @return a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
      */
     default List<Stage> getAdditionalParentStages() { return null; }
+
+    /**
+     * Returns a {@link StageStatus} containing information about the progress of the stage
+     * associated with the current instance
+     *
+     * @return - a {@link StageStatus} containing information about the progress of the stage
+     * associated with the current instance
+     */
+    default StageStatus getStatus() { return null; }
 }

@@ -234,7 +234,7 @@ public class MarketWriter {
     private void writeMarketMappings(Market market) {
         if (includeMappings) {
             String result = MarketMappingWriter.writeMarketMapping(market, defaultLocale);
-            if (result.isEmpty()) {
+            if (result == null || result.isEmpty()) {
                 result = "No market mappings for market: " + market.getId();
             }
             writeMessage(result);
@@ -244,7 +244,7 @@ public class MarketWriter {
     private void writeMarketOutcomeMappings(Market market) {
         if (includeMappings) {
             String result = MarketMappingWriter.writeMarketOutcomeMapping(market, defaultLocale);
-            if (result.isEmpty()) {
+            if (result == null || result.isEmpty()) {
                 result = "No market outcome mappings for outcome: " + market.getId();
             }
             writeMessage(result);

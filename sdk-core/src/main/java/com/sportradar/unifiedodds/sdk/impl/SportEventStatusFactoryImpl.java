@@ -12,9 +12,11 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
+import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
 import com.sportradar.unifiedodds.sdk.impl.entities.status.CompetitionStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.status.MatchStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.status.SoccerStatusImpl;
+import com.sportradar.unifiedodds.sdk.impl.entities.status.StageStatusImpl;
 import com.sportradar.utils.URN;
 
 /**
@@ -56,7 +58,9 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
             return (T) new SoccerStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
         } else if (targetClass == MatchStatus.class) {
             return (T) new MatchStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
-        } else {
+        } else if (targetClass == StageStatus.class) {
+            return (T) new StageStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
+        }else {
             return (T) new CompetitionStatusImpl(statusCI);
         }
     }
