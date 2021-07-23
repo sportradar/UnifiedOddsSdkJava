@@ -1,5 +1,8 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.49.0 (2021-07-23)**
+* Extended Stage with getStatus returning StageStatus (with match status)
+
 **2.0.48.0 (2021-06-23)**
 * Added OperationManager to provide option to set sdk values (before OddsFeed instance creation)
 * Added option to ignore sport event status from timeline endpoint for BetPal events
