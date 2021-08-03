@@ -7,9 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.sportsapi.datamodel.SAPICategory;
-import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.CategoryCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
@@ -143,6 +141,15 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
             mergeCategoryData(lData.getId(), lData.getCategory(), dataLocale);
         } else if (endpointData instanceof ExportableCategoryCI) {
             mergeCategoryData((ExportableCategoryCI) endpointData);
+        } else if (endpointData instanceof SAPISportCategoriesEndpoint) {
+            SAPISportCategoriesEndpoint cData = (SAPISportCategoriesEndpoint) endpointData;
+            SAPICategories categories = cData.getCategories();
+            if (categories != null) {
+                categories.getCategory().stream()
+                        .filter(category -> id.toString().equals(category.getId()))
+                        .findFirst()
+                        .ifPresent(category -> mergeCategoryData(category, dataLocale));
+            }
         }
     }
 
@@ -152,15 +159,9 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
         cachedLocales.addAll(endpointData.getCachedLocales());
     }
 
-    private void mergeCategoryData(String associatedTournamentId, SAPICategory categoryData, Locale locale) {
-        Preconditions.checkNotNull(associatedTournamentId);
+    private void mergeCategoryData(SAPICategory categoryData, Locale locale) {
         Preconditions.checkNotNull(categoryData);
         Preconditions.checkNotNull(locale);
-
-        URN tId = URN.parse(associatedTournamentId);
-        if (!associatedTournaments.contains(tId)) {
-            associatedTournaments.add(tId);
-        }
 
         if (categoryData.getName() != null) {
             names.put(locale, categoryData.getName());
@@ -170,6 +171,16 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
         }
 
         cachedLocales.add(locale);
+    }
+
+    private void mergeCategoryData(String associatedTournamentId, SAPICategory categoryData, Locale locale) {
+        Preconditions.checkNotNull(associatedTournamentId);
+        mergeCategoryData(categoryData, locale);
+
+        URN tId = URN.parse(associatedTournamentId);
+        if (!associatedTournaments.contains(tId)) {
+            associatedTournaments.add(tId);
+        }
     }
 
     @Override
