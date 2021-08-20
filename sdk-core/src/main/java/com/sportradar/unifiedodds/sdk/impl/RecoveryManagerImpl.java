@@ -87,8 +87,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         this.snapshotRequestManager = snapshotRequestManager;
         this.httpHelper = httpHelper;
         this.messageFactory = messageFactory;
-        this.maxRecoveryExecutionTime =
-                TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionMinutes(), TimeUnit.MINUTES);
+        this.maxRecoveryExecutionTime = TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionMinutes(), TimeUnit.MINUTES);
         this.taskScheduler = taskScheduler;
         this.executorServices = executorServices;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();

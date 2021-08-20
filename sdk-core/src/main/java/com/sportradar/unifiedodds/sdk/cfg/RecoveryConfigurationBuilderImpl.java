@@ -17,14 +17,14 @@ import java.util.concurrent.TimeUnit;
 abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderBaseImpl<T> implements RecoveryConfigurationBuilder<T> {
     private final static int MIN_INACTIVITY_SECONDS = 20;
     private final static int MAX_INACTIVITY_SECONDS = 180;
-    private final static int MIN_RECOVERY_EXECUTION_MINUTES = 15;
+    private final static int MIN_RECOVERY_EXECUTION_MINUTES = 10;
     private final static int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
     private final static int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
     private final static int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
     private final static int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
 
     int maxInactivitySeconds = MIN_INACTIVITY_SECONDS;
-    int maxRecoveryExecutionTimeMinutes = MAX_RECOVERY_EXECUTION_MINUTES;
+    int maxRecoveryExecutionTimeMinutes = 60;
     int minIntervalBetweenRecoveryRequests = DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS;
 
     RecoveryConfigurationBuilderImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
@@ -48,7 +48,7 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     /**
      * Sets the max time window between two consecutive alive messages before the associated producer is marked as down(min 20s - max 180s)
      *
-     * @param inactivitySeconds the max time window between two consequtive alive messages
+     * @param inactivitySeconds the max time window between two consecutive alive messages
      * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
      */
     @Override
