@@ -275,6 +275,10 @@ public class SportEventStatusDTO {
         properties.put("PitchesSeen", seStatus.getPitchesSeen());
         properties.put("TotalHits", seStatus.getTotalHits());
         properties.put("TotalPitches", seStatus.getTotalPitches());
+        properties.put("HomeDriveCount", seStatus.getHomeDriveCount());
+        properties.put("HomePlayCount", seStatus.getHomePlayCount());
+        properties.put("AwayDriveCount", seStatus.getAwayDriveCount());
+        properties.put("AwayPlayCount", seStatus.getAwayPlayCount());
 
         eventClock = seStatus.getClock() == null ? null :
                 new EventClockImpl(

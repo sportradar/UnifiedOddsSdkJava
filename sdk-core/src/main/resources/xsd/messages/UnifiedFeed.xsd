@@ -218,6 +218,10 @@
     <xs:attribute name="away_dismissals" type="xs:int" use="optional"/>
     <xs:attribute name="current_ct_team" type="teamType" use="optional"/>
     <xs:attribute name="period_of_leader" type="xs:int" use="optional"/>
+    <xs:attribute name="home_drive_count" type="xs:int" use="optional"/>
+    <xs:attribute name="away_drive_count" type="xs:int" use="optional"/>
+    <xs:attribute name="home_play_count" type="xs:int" use="optional"/>
+    <xs:attribute name="away_play_count" type="xs:int" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="oddsGenerationProperties">
