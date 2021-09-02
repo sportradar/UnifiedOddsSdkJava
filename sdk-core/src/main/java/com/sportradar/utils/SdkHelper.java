@@ -323,4 +323,24 @@ public final class SdkHelper {
                 .collect(Collectors.joining("|", "{", "}"));
         return result;
     }
+
+    public static boolean checkCauseReason(Throwable cause, String message){
+        if(cause == null || message == null){
+            return false;
+        }
+
+        int i = 10;
+        while(i > 0){
+            i--;
+            if(cause.getMessage().contains(message)){
+                return true;
+            }
+            if(cause.getCause() != null) {
+                cause = cause.getCause();
+                continue;
+            }
+            break;
+        }
+        return false;
+    }
 }

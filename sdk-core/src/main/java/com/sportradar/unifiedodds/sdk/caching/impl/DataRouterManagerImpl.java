@@ -34,6 +34,7 @@ import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.PeriodStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.ResultChangeImpl;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -362,7 +363,17 @@ public class DataRouterManagerImpl implements DataRouterManager {
             DataProvider<SAPIFixturesEndpoint> provider = useCachedProvider ? fixtureProvider : fixtureChangeFixtureProvider;
             endpoint = provider.getData(locale, id.toString());
         } catch (DataProviderException e) {
-            throw new CommunicationException(String.format("Error executing fixture request for id=%s, locale=%s", id, locale), e);
+            if(!useCachedProvider && e.getCause() != null && SdkHelper.checkCauseReason(e.getCause(), "InternalServerError")){
+                try {
+                    endpoint = fixtureProvider.getData(locale, id.toString());
+                }
+                catch (DataProviderException e1){
+                    throw new CommunicationException(String.format("Error executing cached fixture request for id=%s, locale=%s", id, locale), e);
+                }
+            }
+            else{
+                throw new CommunicationException(String.format("Error executing fixture request for id=%s, locale=%s", id, locale), e);
+            }
         }
 
         String finalUrl = useCachedProvider
