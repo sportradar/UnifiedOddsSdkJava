@@ -10,7 +10,6 @@ import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
-import com.sportradar.unifiedodds.sdk.caching.impl.SportEventCacheImpl;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;

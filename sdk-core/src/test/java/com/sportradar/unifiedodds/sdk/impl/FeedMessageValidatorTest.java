@@ -16,9 +16,9 @@ import org.mockito.Mockito;
 import java.util.Locale;
 import java.util.function.Consumer;
 
+import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.ValidationResult.*;
 import static org.junit.Assert.assertEquals;
-import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 
 public class FeedMessageValidatorTest {
     private static final String INVALID_EVENT_ID = "some_event_id";

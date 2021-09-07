@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableHoleCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCI;
 import com.sportradar.utils.URN;
 

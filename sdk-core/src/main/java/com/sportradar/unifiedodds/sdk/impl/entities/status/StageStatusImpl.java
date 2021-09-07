@@ -5,21 +5,14 @@
 package com.sportradar.unifiedodds.sdk.impl.entities.status;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
-import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
-import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
-import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
-import com.sportradar.unifiedodds.sdk.impl.entities.PeriodScoreImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 
 /**

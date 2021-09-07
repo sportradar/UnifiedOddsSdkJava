@@ -4,9 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
-import java.time.Instant;
-import java.util.Date;
-
 /**
  * Defines methods used to access market metadata values
  */

@@ -8,7 +8,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.utils.URN;
 
 import java.util.List;

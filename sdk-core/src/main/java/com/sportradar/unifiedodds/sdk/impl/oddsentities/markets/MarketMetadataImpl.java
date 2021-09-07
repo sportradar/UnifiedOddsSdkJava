@@ -7,10 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFMarketMetadata;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketMetadata;
-import com.sportradar.utils.SdkHelper;
-
-import java.time.Instant;
-import java.util.Date;
 
 /**
  * An implementation of the {@link MarketMetadata} instance which uses data provided by the feed to define metadata information

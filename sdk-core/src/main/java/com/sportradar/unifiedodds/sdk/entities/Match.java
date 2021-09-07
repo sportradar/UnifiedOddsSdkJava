@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 

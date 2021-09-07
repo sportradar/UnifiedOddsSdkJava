@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFOddsChange;
-import com.sportradar.uf.datamodel.UFOddsChangeMarket;
 import com.sportradar.uf.datamodel.UFOddsGenerationProperties;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
@@ -17,7 +16,6 @@ import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

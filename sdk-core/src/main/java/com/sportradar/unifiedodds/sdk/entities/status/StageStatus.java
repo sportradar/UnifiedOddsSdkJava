@@ -4,12 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.entities.status;
 
-import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
-import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 
 /**

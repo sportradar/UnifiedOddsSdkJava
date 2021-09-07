@@ -4,26 +4,24 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournament;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentGroup;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentInfoEndpoint;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.di.TestingModule;
-import com.sportradar.unifiedodds.sdk.entities.DrawType;
-import com.sportradar.unifiedodds.sdk.entities.Group;
-import com.sportradar.unifiedodds.sdk.entities.TimeType;
 import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
 import com.sportradar.utils.URN;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 

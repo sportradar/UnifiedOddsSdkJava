@@ -1,7 +1,6 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCarCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableHoleCI;
 
 public class HoleCI {

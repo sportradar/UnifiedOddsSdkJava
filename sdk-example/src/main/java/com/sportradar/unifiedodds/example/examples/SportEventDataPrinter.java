@@ -13,7 +13,6 @@ import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
 
-import java.io.IOException;
 import java.util.Locale;
 
 /**

@@ -4,8 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
-import com.sportradar.unifiedodds.sdk.entities.Pitcher;
-
 /**
  * What is the reason for a SDKFixtureChange message. *
  */

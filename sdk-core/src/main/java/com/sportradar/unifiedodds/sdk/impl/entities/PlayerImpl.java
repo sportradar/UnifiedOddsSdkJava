@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.Player;
 import com.sportradar.utils.URN;
 

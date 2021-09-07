@@ -11,11 +11,9 @@ import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MarketMappingWriter {
     private static final Logger logger = LoggerFactory.getLogger("MarketMappingWriter");

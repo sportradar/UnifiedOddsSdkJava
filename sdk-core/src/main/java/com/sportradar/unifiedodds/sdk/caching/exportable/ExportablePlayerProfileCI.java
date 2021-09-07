@@ -4,8 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;

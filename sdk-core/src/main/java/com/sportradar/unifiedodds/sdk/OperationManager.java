@@ -1,12 +1,9 @@
 package com.sportradar.unifiedodds.sdk;
 
-import com.sportradar.unifiedodds.sdk.impl.ProducerManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Defines methods used to get or set various values for sdk operations

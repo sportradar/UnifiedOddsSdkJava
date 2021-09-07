@@ -4,14 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
-import ch.qos.logback.classic.Level;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.Recoverable;
+import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +14,11 @@ import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
-
-import static com.sportradar.unifiedodds.sdk.entities.TimeType.Interval;
 
 /**
  * An implementation of the {@link RabbitMqChannel}

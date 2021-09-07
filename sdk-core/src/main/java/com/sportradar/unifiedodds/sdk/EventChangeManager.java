@@ -8,7 +8,6 @@ import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 
 import java.time.Duration;
-import java.time.Duration;
 import java.util.Date;
 
 /**

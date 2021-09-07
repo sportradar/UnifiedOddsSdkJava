@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.stream.Collectors;
 

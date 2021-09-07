@@ -4,7 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.utils.URN;
 

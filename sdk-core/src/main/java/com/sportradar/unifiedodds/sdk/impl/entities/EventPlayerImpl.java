@@ -5,15 +5,12 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.EventPlayerCI;
 import com.sportradar.unifiedodds.sdk.entities.EventPlayer;
 import com.sportradar.unifiedodds.sdk.entities.Player;
-import com.sportradar.utils.URN;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Represents a player or driver in a sport event

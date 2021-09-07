@@ -15,7 +15,6 @@ import org.apache.http.client.utils.DateUtils;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.InvalidParameterException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;

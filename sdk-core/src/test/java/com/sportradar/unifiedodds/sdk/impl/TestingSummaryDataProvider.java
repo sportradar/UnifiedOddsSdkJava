@@ -4,7 +4,7 @@ import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import org.mockito.Mockito;
 
-import java.io.*;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
