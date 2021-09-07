@@ -57,7 +57,6 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
      */
     private final Object lock = new Object();
 
-
     /**
      * Initializes a new instance of {@link LocalizedNamedValueCacheImpl}
      *
@@ -77,7 +76,6 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
 
         scheduler.scheduleAtFixedRate("LocalizedNamedValueRefreshTask", this::onTimerElapsed, 24, 24, TimeUnit.HOURS);
     }
-
 
     /**
      * Gets a {@link LocalizedNamedValue} with the specified translations
@@ -109,7 +107,7 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
             return new LocalizedNamedValueImpl(id, null, null);
         }
 
-        return new LocalizedNamedValueImpl(id, cachedTranslations, locales.stream().findFirst().orElseGet(null));
+        return new LocalizedNamedValueImpl(id, cachedTranslations, locales.stream().findFirst().orElse(defaultLocales.get(0)));
     }
 
     /**

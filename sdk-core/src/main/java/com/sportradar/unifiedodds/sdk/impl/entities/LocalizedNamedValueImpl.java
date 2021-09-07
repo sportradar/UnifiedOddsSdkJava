@@ -40,7 +40,6 @@ public class LocalizedNamedValueImpl extends NamedValueImpl implements Localized
         this.defaultLocale = defaultLocale;
     }
 
-
     /**
      * Returns the current instance description in the default {@link Locale}
      *

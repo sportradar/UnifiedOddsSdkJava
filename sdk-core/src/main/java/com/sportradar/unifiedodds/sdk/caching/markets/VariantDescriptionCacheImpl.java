@@ -59,7 +59,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         this.prefetchLocales = prefetchLocales;
         this.fetchedLocales = Collections.synchronizedList(new ArrayList<>());
 
-        scheduler.scheduleAtFixedRate("VariantDescriptionsTask", this::onTimerElapsed, 5, 60 * 60 * 6, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate("VariantDescriptionsTask", this::onTimerElapsed, 5, 60 * 60 * 6L, TimeUnit.SECONDS);
     }
 
     @Override

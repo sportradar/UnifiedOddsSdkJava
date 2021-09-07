@@ -49,7 +49,6 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     @SuppressWarnings("unchecked")
     public T loadConfigFromSdkProperties() {
         loadConfigFrom(sdkConfigurationPropertiesReader);
-
         return (T) this;
     }
 
@@ -66,7 +65,6 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     @SuppressWarnings("unchecked")
     public T loadConfigFromApplicationYml() {
         loadConfigFrom(sdkConfigurationYamlReader);
-
         return (T) this;
     }
 

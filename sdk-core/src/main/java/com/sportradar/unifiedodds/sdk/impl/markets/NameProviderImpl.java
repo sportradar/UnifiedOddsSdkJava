@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
  */
 public class NameProviderImpl implements NameProvider {
     private static final Logger logger = LoggerFactory.getLogger(NameProviderImpl.class);
-    private final static String PLAYER_PROFILE_MARKET_PREFIX = "sr:player:";
-    private final static String COMPETITOR_PROFILE_MARKET_PREFIX = "sr:competitor";
-    private final static String SIMPLETEAM_PROFILE_MARKET_PREFIX = "sr:simpleteam";
-    private final static String COMPOSITE_ID_SEPARATOR = ",";
+    private static final String PLAYER_PROFILE_MARKET_PREFIX = "sr:player:";
+    private static final String COMPETITOR_PROFILE_MARKET_PREFIX = "sr:competitor";
+    private static final String SIMPLETEAM_PROFILE_MARKET_PREFIX = "sr:simpleteam";
+    private static final String COMPOSITE_ID_SEPARATOR = ",";
 
     private final MarketDescriptionProvider descriptorProvider;
     private final ProfileCache profileCache;
@@ -52,7 +52,7 @@ public class NameProviderImpl implements NameProvider {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Supplier<List<URN>> competitorList;
 
-    private volatile Date lastReload = new Date(0);
+    private Date lastReload = new Date(0);
 
     NameProviderImpl(MarketDescriptionProvider descriptorProvider,
                     ProfileCache profileCache,

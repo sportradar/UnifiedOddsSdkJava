@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -410,6 +411,21 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         result = 31 * result + (oddsFeedListener != null ? oddsFeedListener.hashCode() : 0);
         result = 31 * result + (messageInterest != null ? messageInterest.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if(obj instanceof OddsFeedSessionImpl){
+            OddsFeedSessionImpl other = (OddsFeedSessionImpl) obj;
+            return other.hashCode() == this.hashCode();
+        }
+        return false;
     }
 }
 

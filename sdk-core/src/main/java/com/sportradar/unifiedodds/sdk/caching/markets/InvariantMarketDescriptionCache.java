@@ -66,7 +66,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         this.prefetchLocales = prefetchLocales;
         this.fetchedLocales = new ArrayList<>();
 
-        scheduler.scheduleAtFixedRate("InvariantMarketCacheRefreshTask", this::onTimerElapsed, 5, 60 * 60 * 6, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate("InvariantMarketCacheRefreshTask", this::onTimerElapsed, 5, 60 * 60 * 6L, TimeUnit.SECONDS);
 
         additionalMappingsProvider.registerWatcher(this.getClass(), this::additionalMappingsChanged);
     }

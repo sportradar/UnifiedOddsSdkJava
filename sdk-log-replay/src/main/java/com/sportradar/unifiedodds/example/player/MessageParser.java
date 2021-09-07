@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 class MessageParser {
     private static final Pattern REGEX_PATTERN = composePattern();
-    private static final DateFormat LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss,SSS", Locale.ENGLISH);
+    private final DateFormat logDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss,SSS", Locale.ENGLISH);
 
     public ParsedLine parseLine(String line) {
         Preconditions.checkNotNull(line);
@@ -37,7 +37,7 @@ class MessageParser {
 
         Date logEntryTimestamp;
         try {
-            logEntryTimestamp = LOG_DATE_FORMAT.parse(timestamp);
+            logEntryTimestamp = logDateFormat.parse(timestamp);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Log entry timestamp is malformed -> " + timestamp);
         }

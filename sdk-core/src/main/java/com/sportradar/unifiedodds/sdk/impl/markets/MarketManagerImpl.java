@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MarketManagerImpl implements MarketDescriptionManager {
-    private final static Logger logger = LoggerFactory.getLogger(MarketManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MarketManagerImpl.class);
     private final SDKInternalConfiguration config;
     private final MarketDescriptionProvider marketDescriptionProvider;
     private final InvariantMarketDescriptionCache invariantMarketDescriptionCache;
@@ -112,7 +112,7 @@ public class MarketManagerImpl implements MarketDescriptionManager {
 
         if (mappings.size() > 1) {
             for (MarketMappingData mapping : mappings) {
-                if (mapping.getMarketId().equals(marketDescriptor.getId())) {
+                if (mapping.getMarketId().equals(String.valueOf(marketDescriptor.getId()))) {
                     return Arrays.asList(mapping);
                 }
             }
@@ -162,7 +162,7 @@ public class MarketManagerImpl implements MarketDescriptionManager {
 
         if (mappings.size() > 1) {
             for (MarketMappingData mapping : mappings) {
-                if (mapping.getMarketId().equals(marketDescriptor.getId())) {
+                if (mapping.getMarketId().equals(String.valueOf(marketDescriptor.getId()))) {
                     return Arrays.asList(mapping);
                 }
             }

@@ -56,4 +56,14 @@ public class DeserializerImpl implements Deserializer {
             throw new DeserializationException("There was a problem marshaling the provided data", e);
         }
     }
+
+    @Override
+    public void unload() {
+        if(unmarshaller != null) {
+            unmarshaller.remove();
+        }
+        if (marshaller != null) {
+            marshaller.remove();
+        }
+    }
 }

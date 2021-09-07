@@ -15,13 +15,13 @@ import java.util.concurrent.TimeUnit;
  * A base implementation of the {@link RecoveryConfigurationBuilder}
  */
 abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderBaseImpl<T> implements RecoveryConfigurationBuilder<T> {
-    private final static int MIN_INACTIVITY_SECONDS = 20;
-    private final static int MAX_INACTIVITY_SECONDS = 180;
-    private final static int MIN_RECOVERY_EXECUTION_MINUTES = 10;
-    private final static int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
-    private final static int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
-    private final static int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
-    private final static int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
+    private static final int MIN_INACTIVITY_SECONDS = 20;
+    private static final int MAX_INACTIVITY_SECONDS = 180;
+    private static final int MIN_RECOVERY_EXECUTION_MINUTES = 10;
+    private static final int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
+    private static final int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
+    private static final int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
+    private static final int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
 
     int maxInactivitySeconds = MIN_INACTIVITY_SECONDS;
     int maxRecoveryExecutionTimeMinutes = 60;
@@ -33,15 +33,13 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
 
     @Override
     public T loadConfigFromSdkProperties() {
-        loadConfigFrom(sdkConfigurationPropertiesReader);
-
+        loadRecoveryConfigFrom(sdkConfigurationPropertiesReader);
         return super.loadConfigFromSdkProperties();
     }
 
     @Override
     public T loadConfigFromApplicationYml() {
-        loadConfigFrom(sdkConfigurationYamlReader);
-
+        loadRecoveryConfigFrom(sdkConfigurationYamlReader);
         return super.loadConfigFromApplicationYml();
     }
 
@@ -103,7 +101,7 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
      *
      * @param sdkConfigurationReader the reader from which the properties should be red
      */
-    private void loadConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
+    private void loadRecoveryConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
         Preconditions.checkNotNull(sdkConfigurationReader);
 
         sdkConfigurationReader.readMaxRecoveryTime().ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));

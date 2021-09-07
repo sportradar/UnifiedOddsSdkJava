@@ -74,8 +74,12 @@ public final class OperationManager
      */
     public static void setSportEventStatusCacheTimeout(Duration timeout)
     {
-        if (timeout != null && timeout.toMinutes() >= 1 && timeout.toMinutes() <= 60)
-        {
+        if(timeout == null){
+            String msg = "Missing timeout value for SportEventStatusCacheTimeout";
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (timeout.toMinutes() >= 1 && timeout.toMinutes() <= 60) {
             sportEventStatusCacheTimeout = timeout;
             InteractionLog.info("Set SportEventStatusCacheTimeout to {} min.", timeout.toMinutes());
             return;
@@ -91,8 +95,12 @@ public final class OperationManager
      */
     public static void setProfileCacheTimeout(Duration timeout)
     {
-        if (timeout != null && timeout.toHours() >= 1 && timeout.toHours() <= 48)
-        {
+        if(timeout == null){
+            String msg = "Missing timeout value for ProfileCacheTimeout";
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (timeout.toHours() >= 1 && timeout.toHours() <= 48) {
             profileCacheTimeout = timeout;
             InteractionLog.info("Set ProfileCacheTimeout to {} hours.", timeout.toHours());
             return;
@@ -108,8 +116,12 @@ public final class OperationManager
      */
     public static void setVariantMarketDescriptionCacheTimeout(Duration timeout)
     {
-        if (timeout != null && timeout.toHours() >= 1 && timeout.toHours() <= 24)
-        {
+        if(timeout == null) {
+            String msg = "Missing timeout value for VariantMarketDescriptionCacheTimeout";
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (timeout != null && timeout.toHours() >= 1 && timeout.toHours() <= 24) {
             variantMarketDescriptionCacheTimeout = timeout;
             InteractionLog.info("Set VariantMarketDescriptionCacheTimeout to {} hours.", timeout.toHours());
             return;
@@ -126,8 +138,12 @@ public final class OperationManager
      */
     public static void setIgnoreBetPalTimelineSportEventStatusCacheTimeout(Duration timeout)
     {
-        if (timeout != null && timeout.toHours() >= 1 && timeout.toHours() <= 24)
-        {
+        if(timeout == null) {
+            String msg = "Missing timeout value for IgnoreBetPalTimelineSportEventStatusCacheTimeout";
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (timeout.toHours() >= 1 && timeout.toHours() <= 24) {
             ignoreBetPalTimelineSportEventStatusCacheTimeout = timeout;
             InteractionLog.info("Set IgnoreBetPalTimelineSportEventStatusCacheTimeout to {} hours.", timeout.toHours());
             return;

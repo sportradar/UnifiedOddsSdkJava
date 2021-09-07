@@ -82,7 +82,7 @@ class Score {
     @Override
     public String toString() {
         if ((homeScore % 1) == 0 && (awayScore % 1) == 0) {
-            return new Double(homeScore).intValue() + ":" + new Double(awayScore).intValue();
+            return (int)homeScore + ":" + (int)awayScore;
         }
 
         return homeScore + ":" + awayScore;

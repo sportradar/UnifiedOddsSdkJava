@@ -324,7 +324,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.lotteriesListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.fetchedScheduleDates = Collections.synchronizedList(new ArrayList<>(SCHEDULE_DAYS_PREFETCH));
 
-        scheduler.scheduleAtFixedRate("DateSchedulePrefetchTask", this::onDateScheduleTimerElapsed, 5, 60 * 60 * 12, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate("DateSchedulePrefetchTask", this::onDateScheduleTimerElapsed, 5, 60 * 60 * 12L, TimeUnit.SECONDS);
 
         // initial is triggered as soon as it is needed
         scheduler.scheduleAtFixedRate("SportsDataRefreshTask", this::onSportsDataTimerElapsed, 12, 12, TimeUnit.HOURS);
@@ -917,6 +917,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
      */
     private void onSportsDataTimerElapsed() {
         try {
+            if(prefetchLocales == null || prefetchLocales.isEmpty()){
+                return;
+            }
             triggerAllSportsDataFetch(prefetchLocales);
             logger.info("Tournament data for languages [" +
                     prefetchLocales.stream().

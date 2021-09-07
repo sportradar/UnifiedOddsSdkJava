@@ -127,6 +127,7 @@ public class MessagePlayer {
         } catch (InterruptedException e) {
             System.err.println("Message delay failed");
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
         this.previousMessageDate = parsedLine.getTimestamp();

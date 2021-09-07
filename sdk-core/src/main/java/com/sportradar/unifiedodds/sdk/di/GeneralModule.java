@@ -108,9 +108,9 @@ public class GeneralModule implements Module {
      * 
      * @param binder A {@link Binder} representing the injection container handle
      */
+    @SuppressWarnings("java:S2119") // "Random" objects should be reused
     @Override
     public void configure(Binder binder) {
-        // TODO @eti check & cleanup the bindings
         // listeners instance bind
         binder.bind(SDKProducerStatusListener.class).toInstance(this.sdkListener);
         binder.bind(SDKConnectionStatusListener.class).toInstance(this.sdkListener);

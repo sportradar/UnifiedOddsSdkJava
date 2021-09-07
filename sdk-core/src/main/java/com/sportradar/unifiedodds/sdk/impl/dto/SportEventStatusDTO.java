@@ -167,8 +167,8 @@ public class SportEventStatusDTO {
         }
         this.matchStatusId = calculateMatchStatusId(sportEventStatus.getMatchStatusCode(), status);
         this.reportingStatus = ReportingStatus.Unknown;
-        this.homeScore = sportEventStatus.getHomeScore() == null ? null : new BigDecimal(sportEventStatus.getHomeScore());
-        this.awayScore = sportEventStatus.getAwayScore() == null ? null : new BigDecimal(sportEventStatus.getAwayScore());
+        this.homeScore = sportEventStatus.getHomeScore() == null ? null : BigDecimal.valueOf(sportEventStatus.getHomeScore());
+        this.awayScore = sportEventStatus.getAwayScore() == null ? null : BigDecimal.valueOf(sportEventStatus.getAwayScore());
 
         this.winnerId = Strings.isNullOrEmpty(sportEventStatus.getWinnerId()) ? null : URN.parse(sportEventStatus.getWinnerId());
 

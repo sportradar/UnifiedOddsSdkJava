@@ -43,13 +43,13 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
 
     @Override
     public CustomConfigurationBuilder loadConfigFromSdkProperties() {
-        loadConfigFrom(sdkConfigurationPropertiesReader);
+        loadCustomConfigFrom(sdkConfigurationPropertiesReader);
         return super.loadConfigFromSdkProperties();
     }
 
     @Override
     public CustomConfigurationBuilder loadConfigFromApplicationYml() {
-        loadConfigFrom(sdkConfigurationYamlReader);
+        loadCustomConfigFrom(sdkConfigurationYamlReader);
         return super.loadConfigFromApplicationYml();
     }
 
@@ -198,7 +198,7 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      *
      * @param sdkConfigurationReader the reader from which the properties should be red
      */
-    private void loadConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
+    private void loadCustomConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
         Preconditions.checkNotNull(sdkConfigurationReader);
 
         sdkConfigurationReader.readMessagingHost().ifPresent(this::setMessagingHost);

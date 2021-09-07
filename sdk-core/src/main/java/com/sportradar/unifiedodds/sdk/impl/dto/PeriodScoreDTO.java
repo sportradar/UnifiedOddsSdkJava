@@ -44,8 +44,8 @@ public class PeriodScoreDTO {
      * @param periodScore - the period score received from the API
      */
     PeriodScoreDTO(SAPIPeriodScore periodScore) {
-        this.homeScore = new BigDecimal(periodScore.getHomeScore());
-        this.awayScore = new BigDecimal(periodScore.getAwayScore());
+        this.homeScore = BigDecimal.valueOf(periodScore.getHomeScore());
+        this.awayScore = BigDecimal.valueOf(periodScore.getAwayScore());
         this.number = periodScore.getNumber();
         this.matchStatusCode = periodScore.getMatchStatusCode();
         this.periodType = periodScore.getType();

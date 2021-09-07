@@ -367,6 +367,9 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link SoccerStatus}
      */
     private String writeData(SoccerStatus status) {
+        if(status == null){
+            return "";
+        }
         return writeData((MatchStatus) status) + ", " + String.format("Statistics:'%s'", writeData(status.getStatistics()));
     }
 

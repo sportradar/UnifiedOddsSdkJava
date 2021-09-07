@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.rabbitmq.client.AMQP;
@@ -214,14 +215,16 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 Thread.sleep(1000L * 20L);
             }
             catch (InterruptedException e) {
+                logger.warn("Interrupted!", e);
+                Thread.currentThread().interrupt();
             }
             Duration d = Duration.between(LocalDateTime.now(), channelLastMessage);
-            long dMins = Math.abs(d.toMinutes());
+            long durationInMinutes = Math.abs(d.toMinutes());
 //            logger.debug("Channel {} receive last message {} ago. Channel isOpen={}",
 //                        channel == null ? "null" : channel.getChannelNumber(),
 //                        channelLastMessage,
 //                        channel == null ? "null" : channel.isOpen());
-            if(dMins >= 3){
+            if(durationInMinutes >= 3){
                 logger.warn("Channel {} didn't receive any message since {}. Channel isOpen={}",
                              channel == null ? "null" : channel.getChannelNumber(),
                              channelLastMessage,

@@ -41,6 +41,7 @@ public class MultithreadedMessageListener implements OddsFeedListener, Closeable
                 }
             } catch (InterruptedException e) {
                 logger.info("Parsing thread stopped");
+                Thread.currentThread().interrupt();
             }
         };
     }
@@ -198,6 +199,7 @@ public class MultithreadedMessageListener implements OddsFeedListener, Closeable
             messages.put(message);
         } catch (InterruptedException e) {
             logger.error("Error while adding message to queue.");
+            Thread.currentThread().interrupt();
         }
     }
 
