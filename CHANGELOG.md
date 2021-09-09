@@ -1,5 +1,11 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.49.1 (2021-09-09)**
+* When fetching non-cached fixture change endpoint fails due to server error, try also normal fixture endpoint
+* Update: default timeout for max recovery time set to 1h
+* Fix: Properly fetch multiple languages for categories
+* other minor improvements and bug fixes
+
 **2.0.49.0 (2021-07-23)**
 * Extended Stage with getStatus returning StageStatus (with match status)
 

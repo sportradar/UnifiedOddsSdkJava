@@ -37,7 +37,7 @@ public class RecoveryConfigurationBuilderTests {
     @Test(expected = IllegalArgumentException.class)
     public void testRecoveryExecutionTimeLowerLimitExceeded() {
         getBuilderWithEmptyProperties()
-                .setMaxRecoveryExecutionTime(14, TimeUnit.MINUTES);
+                .setMaxRecoveryExecutionTime(9, TimeUnit.MINUTES);
     }
 
     @Test

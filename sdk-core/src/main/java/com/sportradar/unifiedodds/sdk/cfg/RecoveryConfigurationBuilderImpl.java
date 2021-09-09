@@ -60,7 +60,7 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     }
 
     /**
-     * Sets the maximum time in seconds in which recovery must be completed (minimum 15 minutes - max 6 hours)
+     * Sets the maximum time in seconds in which recovery must be completed (minimum 10 minutes - max 6 hours)
      *
      * @param value the {@link TimeUnit} value
      * @param timeUnit the used {@link TimeUnit}
