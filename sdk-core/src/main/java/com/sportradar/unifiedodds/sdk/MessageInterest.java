@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum MessageInterest {
     // hi.-.live.odds_change.5.sr:match.12329150
     /**

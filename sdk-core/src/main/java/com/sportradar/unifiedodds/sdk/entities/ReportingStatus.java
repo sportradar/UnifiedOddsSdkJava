@@ -12,6 +12,7 @@ import java.util.Optional;
 /**
  * An enum describing the reporting status of a sport event
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum ReportingStatus {
     /**
      * The reporting status of the sport event is not available

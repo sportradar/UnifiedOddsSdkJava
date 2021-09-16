@@ -10,6 +10,7 @@ import com.sportradar.uf.datamodel.UFEventStatusStatus;
  * Possible competition statuses. This is a fixed set of states that are the same for any sport
  * Sportradar covers
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum EventStatus {
     /**
      * NotStarted - the match as far as we know has not yet started

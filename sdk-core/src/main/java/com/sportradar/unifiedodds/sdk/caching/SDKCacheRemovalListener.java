@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created on 27/10/2017.
- * // TODO @eti: Javadoc
+ * SDKCacheRemovalListener
  */
 public class SDKCacheRemovalListener<K, V> implements RemovalListener<K, V> {
-    private final static Logger logger = LoggerFactory.getLogger(SDKCacheRemovalListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(SDKCacheRemovalListener.class);
     private final String cacheName;
     private final boolean useDebugLog;
 

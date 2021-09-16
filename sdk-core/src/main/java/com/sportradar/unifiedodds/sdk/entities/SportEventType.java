@@ -28,8 +28,8 @@ public enum SportEventType {
                 return CHILD;
             case "parent":
                 return PARENT;
+            default:
+                return null;
         }
-
-        return null;
     }
 }

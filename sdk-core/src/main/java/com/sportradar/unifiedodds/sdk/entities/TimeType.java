@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 /**
  * Possible time types
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum TimeType {
     Interval,
     Fixed,

@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 /**
  * An indication if the associated entity is home/away
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum HomeAway {
     /**
      * The associated entity is home
@@ -30,8 +31,8 @@ public enum HomeAway {
                 return Home;
             case "away":
                 return Away;
+            default:
+                return null;
         }
-
-        return null;
     }
 }

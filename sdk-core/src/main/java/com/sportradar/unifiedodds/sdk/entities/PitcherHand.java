@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 /**
  * An indication if the pitcher uses left of right hand
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum PitcherHand {
     /**
      * The associated entity is left handed
@@ -32,8 +33,8 @@ public enum PitcherHand {
             case "R":
             case "r":
                 return Right;
+            default:
+                return null;
         }
-
-        return null;
     }
 }

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 /**
  * An indication of the type of the related period
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum PeriodType {
     RegularPeriod,
     Overtime,

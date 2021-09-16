@@ -5,6 +5,7 @@ import java.util.EnumSet;
 /**
  * Enumerates the types of the caches supported by the SDK
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum CacheType {
     /**
      * Cache used to hold sport data items (sports and categories)

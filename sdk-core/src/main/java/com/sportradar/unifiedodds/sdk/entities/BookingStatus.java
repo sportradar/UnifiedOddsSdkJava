@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 /**
  * The enum describing various booking statuses
  */
+@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
 public enum BookingStatus {
     /**
      * Indicates if the associated event is buyable
