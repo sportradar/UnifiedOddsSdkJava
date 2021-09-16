@@ -236,9 +236,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Boolean isStartTimeTbd() {
-        return null;
-    }
+    public Optional<Boolean> isStartTimeTbd() { return Optional.empty(); }
 
     /**
      * Returns the {@link URN} specifying the replacement sport event for the current instance
@@ -374,9 +372,8 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching missing draw data for id='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            logger.debug("Fetching missing draw data for id='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
                 try {

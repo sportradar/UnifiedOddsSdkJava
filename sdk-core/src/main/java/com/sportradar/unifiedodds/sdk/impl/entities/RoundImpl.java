@@ -34,7 +34,6 @@ public class RoundImpl implements Round {
         this.locales = locales;
     }
 
-
     /**
      * Returns the type of the round
      *
@@ -92,7 +91,7 @@ public class RoundImpl implements Round {
         if (locales.isEmpty()) {
             return null;
         }
-        return roundCI.getGroupName(locales.stream().findFirst().get());
+        return roundCI.getGroupName(locales.get(0));
     }
 
     /**

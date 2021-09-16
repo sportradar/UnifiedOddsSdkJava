@@ -22,7 +22,7 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
     private int jaxbHttpGet;
     private int recoveryMessages;
     private int fixtureChanges;
-    private int betCanccelRollbacks;
+    private int betCancelRollbacks;
     private String lastUrl;
     private int purgesDone;
     private long totalPurgeTime;
@@ -34,7 +34,7 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
     private int prematchMessages;
     private long totalMsgSizeReceived;
 
-    private ThreadLocal<byte[]> tmpBuf = new ThreadLocal<byte[]>() {
+    private final ThreadLocal<byte[]> tmpBuf = new ThreadLocal<byte[]>() {
         @Override
         public byte[] initialValue() {
             return new byte[200];
@@ -87,15 +87,13 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
         else if (o instanceof UFBetCancel)
             betCancels++;
         else if (o instanceof UFRollbackBetCancel)
-            betCanccelRollbacks++;
+            betCancelRollbacks++;
         else if (o instanceof UFRollbackBetSettlement)
             betSettlementRollbacks++;
         else if (o instanceof UFFixtureChange)
             fixtureChanges++;
-        byte[] b = tmpBuf.get();
-        //System.arraycopy(body, 0, b, 0, b.length < body.length ? b.length : body.length);
         String msgExcerpt = new String(tmpBuf.get());
-        if (msgExcerpt.indexOf("request_id") != -1)
+        if (msgExcerpt.contains("request_id"))
             recoveryMessages++;
         int pid = msgExcerpt.indexOf("product=\"");
         if (pid != -1) {
@@ -105,6 +103,10 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
             else
                 prematchMessages++;
         }
+    }
+
+    public void unload() {
+        tmpBuf.remove();
     }
 
     public void onStreamingHttpGet(String path) {
@@ -124,7 +126,7 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
 
     @Override
     public int getNumberOfRollbackBetCancelsReceived() {
-        return betCanccelRollbacks;
+        return betCancelRollbacks;
     }
 
     @Override

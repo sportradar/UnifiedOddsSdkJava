@@ -287,7 +287,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
             return null;
         }
 
-        return lotteryCI.isStartTimeTbd();
+        return lotteryCI.isStartTimeTbd().isPresent() ? lotteryCI.isStartTimeTbd().get() : null;
     }
 
     /**

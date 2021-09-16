@@ -792,14 +792,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 logger.info("Recovery request executed for: {}, status: {}, message: {}", pi, recoveryRequestStatus ? "SUCCESSFUL" : "FAILED", responseMessage);
                 if (recoveryRequestStatus) {
                     // recovery executed successfully, thread end
-                    RecoveryInfo recoveryInfo;
-                    if(responseData != null)
-                    {
-                        recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
-                    }
-                    else{
-                        recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, 0, "no response data", config.getSdkNodeId());
-                    }
+                    RecoveryInfo recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
                     producerManager.setProducerRecoveryInfo(pi.getProducerId(), recoveryInfo);
                     return;
                 }

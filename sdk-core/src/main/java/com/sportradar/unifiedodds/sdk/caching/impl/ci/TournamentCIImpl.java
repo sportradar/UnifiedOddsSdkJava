@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created on 19/10/2017.
- * // TODO @eti: Javadoc
+ * Tournament cache item
  */
 class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(TournamentCIImpl.class);
@@ -454,8 +454,8 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Boolean isStartTimeTbd() {
-        return null;
+    public Optional<Boolean> isStartTimeTbd() {
+        return Optional.empty();
     }
 
     /**
@@ -583,6 +583,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         }
     }
 
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
     private void internalMerge(SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
@@ -599,7 +600,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                 List<GroupCI> tmpGroups = Collections.synchronizedList(new ArrayList<>(groups));
 
                 // remove obsolete groups
-                if(groups != null && groups.size() > 0)
+                if(groups != null && !groups.isEmpty())
                 {
                     try {
                         groups.forEach(tmpGroup -> {
@@ -763,11 +764,8 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching missing tournament data for id='{}' for languages '{}'",
-                    id,
-                    missingLocales.stream()
-                            .map(Locale::getLanguage)
-                            .collect(Collectors.joining(", ")));
+            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            logger.debug("Fetching missing tournament data for id='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
                 try {
@@ -832,9 +830,10 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                             .collect(ImmutableList.toImmutableList());
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
     private static Map<URN, ReferenceIdCI> prepareCompetitorReferences(Map<URN, ReferenceIdCI> references, Supplier<List<GroupCI>> groupSupplier) {
         if (references != null && !references.isEmpty()) {
             return ImmutableMap.copyOf(references);

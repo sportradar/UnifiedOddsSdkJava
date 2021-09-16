@@ -323,6 +323,14 @@ public final class SdkHelper {
         return result;
     }
 
+    public static String localeListToString(List<Locale> locales){
+        if(locales == null || locales.isEmpty()) {
+            return null;
+        }
+        String result = locales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+        return result;
+    }
+
     public static boolean checkCauseReason(Throwable cause, String message){
         if(cause == null || message == null){
             return false;

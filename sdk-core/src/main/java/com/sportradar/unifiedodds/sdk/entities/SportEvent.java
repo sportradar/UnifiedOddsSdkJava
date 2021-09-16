@@ -58,6 +58,7 @@ public interface SportEvent {
      *
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
+    @SuppressWarnings("java:S2447") // Null should not be returned from a "Boolean" method
     default Boolean isStartTimeTbd() {
         return null;
     }

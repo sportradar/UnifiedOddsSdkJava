@@ -39,10 +39,10 @@ import static com.google.common.collect.ImmutableMap.copyOf;
 
 /**
  * Created on 19/10/2017.
- * // TODO @eti: Javadoc
+ * Match cache item
  */
 class MatchCIImpl implements MatchCI, ExportableCacheItem {
-    private final static Logger logger = LoggerFactory.getLogger(MatchCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MatchCIImpl.class);
 
     /**
      * A {@link Locale} specifying the default language
@@ -676,18 +676,18 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Boolean isStartTimeTbd() {
+    public Optional<Boolean> isStartTimeTbd() {
         if (startTimeTbd != null) {
-            return startTimeTbd;
+            return Optional.of(startTimeTbd);
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return startTimeTbd;
+            return Optional.empty();
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
-        return startTimeTbd;
+        return startTimeTbd == null ? Optional.empty() : Optional.of(startTimeTbd);
     }
 
     /**
@@ -934,8 +934,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching fixtures for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            String localeStr = SdkHelper.localeListToString(missingLocales);
+            logger.debug("Fetching fixtures for eventId='{}' for languages '{}'", id, localeStr);
 
             missingLocales.forEach(l -> {
                 try {
@@ -972,8 +972,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching summary for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            String localeStr = SdkHelper.localeListToString(missingLocales);
+            logger.debug("Fetching summary for eventId='{}' for languages '{}'", id, localeStr);
 
             missingLocales.forEach(l -> {
                 try {
@@ -1086,6 +1086,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @param sportEvent the {@link SAPISportEvent} containing the data to be merged
      * @param locale the {@link Locale} in which the data is provided
      */
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
     private void internalMerge(SAPISportEvent sportEvent, Locale locale, boolean isFixtureEndpoint) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(locale);
@@ -1094,10 +1095,6 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         // re-cache it only if the fetch is from a fixture endpoint or if it was null so we set the default value
         if (isFixtureEndpoint || bookingStatus == null) {
             bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
-        }
-
-        if(!Strings.isNullOrEmpty(sportEvent.getStatus())){
-            String status = sportEvent.getStatus();
         }
 
         scheduled = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());

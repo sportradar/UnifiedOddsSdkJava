@@ -437,6 +437,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      *
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
+    @SuppressWarnings("java:S2447") // Null should not be returned from a "Boolean" method
     @Override
     public Boolean isStartTimeTbd() {
         MatchCI cacheItem = loadMatchCI();
@@ -446,7 +447,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return null;
         }
 
-        return cacheItem.isStartTimeTbd();
+        return cacheItem.isStartTimeTbd().isPresent() ? cacheItem.isStartTimeTbd().get() : null;
     }
 
     /**

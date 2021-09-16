@@ -192,7 +192,7 @@ public class DrawImpl extends SportEventImpl implements Draw {
             return null;
         }
 
-        return drawCI.isStartTimeTbd();
+        return drawCI.isStartTimeTbd().isPresent() ? drawCI.isStartTimeTbd().get() : null;
     }
 
     /**

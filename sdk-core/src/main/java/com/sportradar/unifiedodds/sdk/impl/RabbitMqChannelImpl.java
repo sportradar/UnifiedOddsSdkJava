@@ -220,11 +220,11 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                              channel == null ? "null" : channel.getChannelNumber(),
                              channelLastMessage,
                             channel == null ? "null" : channel.isOpen());
-                if(channel.isOpen()) {
+                if(channel != null && channel.isOpen()) {
                     logger.warn("Channel {} didn't receive any message since {}, but is marked as Opened. Channel isOpen={}. Restarting channel...",
-                                channel == null ? "null" : channel.getChannelNumber(),
+                                channel.getChannelNumber(),
                                 channelLastMessage,
-                                channel == null ? "null" : channel.isOpen());
+                                channel.isOpen());
 
                     try {
                         close();

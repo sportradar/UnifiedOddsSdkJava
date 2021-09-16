@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created on 19/10/2017.
- * // TODO @eti: Javadoc
+ * RaceStage cache item
  */
 class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(RaceStageCIImpl.class);
@@ -182,7 +182,14 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      */
     List<URN> additionalParentIds;
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
+    RaceStageCIImpl(URN id,
+                    DataRouterManager dataRouterManager,
+                    Locale defaultLocale,
+                    ExceptionHandlingStrategy exceptionHandlingStrategy,
+                    SAPISportEvent endpointData,
+                    Locale dataLocale,
+                    Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -458,7 +465,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
@@ -663,18 +670,18 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Boolean isStartTimeTbd() {
+    public Optional<Boolean> isStartTimeTbd() {
         if (startTimeTbd != null) {
-            return startTimeTbd;
+            return Optional.of(startTimeTbd);
         }
 
         if (!loadedSummaryLocales.isEmpty()) {
-            return startTimeTbd;
+            return Optional.empty();
         }
 
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
-        return startTimeTbd;
+        return startTimeTbd == null ? Optional.empty() : Optional.of(startTimeTbd);
     }
 
     /**
@@ -849,6 +856,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      * @param sportEvent - the {@link SAPISportEvent} containing the data to be merged
      * @param locale - the {@link Locale} in which the data is provided
      */
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
     private void internalMerge(SAPISportEvent sportEvent, Locale locale, boolean isFixtureEndpoint) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(locale);
@@ -1003,8 +1011,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching stage fixtures for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            logger.debug("Fetching stage fixtures for eventId='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
                 try {
@@ -1041,8 +1049,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching stage summary for eventId='{}' for languages '{}'",
-                    id, missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            logger.debug("Fetching stage summary for eventId='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
                 try {

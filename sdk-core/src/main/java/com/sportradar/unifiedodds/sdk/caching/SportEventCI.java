@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.utils.URN;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Defines methods used to access sport event type properties
@@ -53,7 +54,7 @@ public interface SportEventCI extends CacheItem {
      *
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
-    Boolean isStartTimeTbd();
+    Optional<Boolean> isStartTimeTbd();
 
     /**
      * Returns the {@link URN} specifying the replacement sport event for the current instance

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created on 19/10/2017.
- * // TODO @eti: Javadoc
+ * TournamentStage cache item
  */
 class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private static final Logger logger = LoggerFactory.getLogger(TournamentStageCIImpl.class);
@@ -379,7 +379,9 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * Fetch a {@link SportEventStatusDTO} via event summary
      */
     @Override
-    public void fetchSportEventStatus() { }
+    public void fetchSportEventStatus() {
+        // tournament stages does not have sportEventStatus
+    }
 
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current
@@ -455,7 +457,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Boolean isStartTimeTbd() { return startTimeTbd; }
+    public Optional<Boolean> isStartTimeTbd() { return startTimeTbd == null ? Optional.empty() : Optional.of(startTimeTbd); }
 
     /**
      * Returns the {@link URN} specifying the replacement sport event for the current instance
@@ -595,9 +597,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching missing stage tournament data for id='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            logger.debug("Fetching missing stage tournament data for id='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
                 try {
