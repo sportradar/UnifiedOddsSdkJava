@@ -24,32 +24,32 @@ public class RecoveryConfigurationBuilderTests {
         builderWithEmptyProperties.setMaxInactivitySeconds(33);
         builderWithEmptyProperties.setMaxRecoveryExecutionTime(55, TimeUnit.MINUTES);
 
-        Assert.assertEquals(builderWithEmptyProperties.maxInactivitySeconds, 33);
-        Assert.assertEquals(builderWithEmptyProperties.maxRecoveryExecutionTimeMinutes, 55);
+        Assert.assertEquals(33, builderWithEmptyProperties.maxInactivitySeconds);
+        Assert.assertEquals(55, builderWithEmptyProperties.maxRecoveryExecutionTimeMinutes);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testRecoveryExecutionTimeUpperLimitExceeded() {
-        getBuilderWithEmptyProperties()
-                .setMaxRecoveryExecutionTime((60*6) +1, TimeUnit.MINUTES);
+        getBuilderWithEmptyProperties().setMaxRecoveryExecutionTime((60*6) +1, TimeUnit.MINUTES);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testRecoveryExecutionTimeLowerLimitExceeded() {
-        getBuilderWithEmptyProperties()
-                .setMaxRecoveryExecutionTime(9, TimeUnit.MINUTES);
+        getBuilderWithEmptyProperties().setMaxRecoveryExecutionTime(9, TimeUnit.MINUTES);
     }
 
     @Test
     public void testRecoveryExecutionTimeUpperBound() {
-        getBuilderWithEmptyProperties()
-                .setMaxRecoveryExecutionTime(60 * 6, TimeUnit.MINUTES);
+        TestableRecoveryConfigurationBuilder builderWithEmptyProperties = getBuilderWithEmptyProperties();
+        builderWithEmptyProperties.setMaxRecoveryExecutionTime(60 * 6, TimeUnit.MINUTES);
+        Assert.assertEquals(60*6, builderWithEmptyProperties.maxRecoveryExecutionTimeMinutes);
     }
 
     @Test
     public void testRecoveryExecutionTimeLowerBound() {
-        getBuilderWithEmptyProperties()
-                .setMaxRecoveryExecutionTime(15, TimeUnit.MINUTES);
+        TestableRecoveryConfigurationBuilder builderWithEmptyProperties = getBuilderWithEmptyProperties();
+        builderWithEmptyProperties.setMaxRecoveryExecutionTime(15, TimeUnit.MINUTES);
+        Assert.assertEquals(15, builderWithEmptyProperties.maxRecoveryExecutionTimeMinutes);
     }
 
     @Test
@@ -61,8 +61,8 @@ public class RecoveryConfigurationBuilderTests {
 
         builderWithFullProperties.loadConfigFromSdkProperties();
 
-        Assert.assertEquals(builderWithFullProperties.maxInactivitySeconds, SDKPropertiesReaderUtil.INACTIVITY_SECONDS);
-        Assert.assertEquals(builderWithFullProperties.maxRecoveryExecutionTimeMinutes, SDKPropertiesReaderUtil.MAX_RECOVERY_TIME);
+        Assert.assertEquals(SDKPropertiesReaderUtil.INACTIVITY_SECONDS, builderWithFullProperties.maxInactivitySeconds);
+        Assert.assertEquals(SDKPropertiesReaderUtil.MAX_RECOVERY_TIME, builderWithFullProperties.maxRecoveryExecutionTimeMinutes);
     }
 
     @Test
@@ -74,8 +74,8 @@ public class RecoveryConfigurationBuilderTests {
 
         builderWithFullProperties.loadConfigFromApplicationYml();
 
-        Assert.assertEquals(builderWithFullProperties.maxInactivitySeconds, SDKPropertiesReaderUtil.INACTIVITY_SECONDS);
-        Assert.assertEquals(builderWithFullProperties.maxRecoveryExecutionTimeMinutes, SDKPropertiesReaderUtil.MAX_RECOVERY_TIME_YAML);
+        Assert.assertEquals(SDKPropertiesReaderUtil.INACTIVITY_SECONDS, builderWithFullProperties.maxInactivitySeconds);
+        Assert.assertEquals(SDKPropertiesReaderUtil.MAX_RECOVERY_TIME_YAML, builderWithFullProperties.maxRecoveryExecutionTimeMinutes);
     }
 
     private static TestableRecoveryConfigurationBuilder getBuilderWithFullProperties() {

@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 
 import java.util.*;
 
@@ -30,11 +31,13 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     Integer recoveryHttpClientTimeout = null;
     Integer recoveryHttpClientMaxConnTotal = null;
     Integer recoveryHttpClientMaxConnPerRoute = null;
+    Environment environment;
 
     ConfigurationBuilderBaseImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
-        this.sdkConfigurationYamlReader = sdkConfigurationYamlReader;
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
+        Preconditions.checkNotNull(sdkConfigurationYamlReader);
 
+        this.sdkConfigurationYamlReader = sdkConfigurationYamlReader;
         this.sdkConfigurationPropertiesReader = sdkConfigurationPropertiesReader;
     }
 
@@ -265,5 +268,6 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         sdkConfigurationReader.readHttpClientTimeout().ifPresent(this::setRecoveryHttpClientTimeout);
         sdkConfigurationReader.readRecoveryHttpClientMaxConnTotal().ifPresent(this::setRecoveryHttpClientMaxConnTotal);
         sdkConfigurationReader.readRecoveryHttpClientMaxConnPerRoute().ifPresent(this::setRecoveryHttpClientMaxConnPerRoute);
+        this.environment = sdkConfigurationReader.readUfEnvironment();
     }
 }

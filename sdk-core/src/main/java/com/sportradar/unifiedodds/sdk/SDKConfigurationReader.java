@@ -4,6 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -107,12 +110,11 @@ public abstract class SDKConfigurationReader {
     }
 
     public Optional<Boolean> readUseIntegration() {
-        Optional<Boolean> useIntegration = Optional.ofNullable(sdkProperties.get("uf.sdk.useIntegration"))
-                .map(value -> value.equals("true"));
+        Optional<Boolean> useIntegration = Optional.ofNullable(sdkProperties.get("uf.sdk.useIntegration")).map(value -> value.equals("true"));
 
-        if (!useIntegration.isPresent())
-            useIntegration = Optional.ofNullable(sdkProperties.get("uf.sdk.useStaging"))
-                    .map(value -> value.equals("true"));
+        if (!useIntegration.isPresent()) {
+            useIntegration = Optional.ofNullable(sdkProperties.get("uf.sdk.useStaging")).map(value -> value.equals("true"));
+        }
 
         return useIntegration;
     }
@@ -229,20 +231,39 @@ public abstract class SDKConfigurationReader {
         });
     }
 
+    public Environment readUfEnvironment() {
+        Optional<Boolean> useIntegration = readUseIntegration();
+        Environment environment = Environment.Integration;
+        if(useIntegration.isPresent() && !useIntegration.get()){
+            environment = Environment.Production;
+        }
+
+        Optional<String> ufEnv = Optional.ofNullable(sdkProperties.get("uf.sdk.ufEnvironment"));
+        if(ufEnv.isPresent())
+        {
+            Environment configEnv = Environment.getEnvironment(ufEnv.get());
+            if(configEnv != null){
+                return configEnv;
+            }
+        }
+
+        return environment;
+    }
+
     abstract Map<String,String> readConfiguration();
 
     //NOTE: Access to SDKConfigurationReader must be single-threaded
     static class SdkProperties {
         private Map<String, String> sdkProperties;
-        private final Supplier<Map<String, String>> configSuplier;
+        private final Supplier<Map<String, String>> configSupplier;
 
-        SdkProperties(Supplier<Map<String, String>> configSuplier) {
-            this.configSuplier = configSuplier;
+        SdkProperties(Supplier<Map<String, String>> configSupplier) {
+            this.configSupplier = configSupplier;
         }
 
         public String get(String key) {
             if (sdkProperties == null) {
-                sdkProperties = configSuplier.get();
+                sdkProperties = configSupplier.get();
             }
 
             return sdkProperties.get(key);

@@ -166,10 +166,9 @@ public class CompetitorImpl implements Competitor {
     }
 
     /**
-     * Returns a value indicating whether the current instance represents a virtual {@link Competitor}
-     * i.e. competes in a virtual sports
+     * Returns a value indicating whether the current instance represents a placeholder team
      *
-     * @return - a value indicating whether the current instance represents a virtual {@link Competitor}
+     * @return - a value indicating whether the current instance represents a placeholder team
      */
     @Override
     public boolean isVirtual() {

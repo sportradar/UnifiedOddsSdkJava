@@ -622,8 +622,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                         });
                     }
                     catch (Exception e) {
-                        //
-                        logger.debug("Error removing changed group: " + e.getMessage());
+                        logger.debug("Error removing changed group: {}", e.getMessage());
                     }
                 }
 

@@ -9,10 +9,7 @@ import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
-import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +29,7 @@ public class WhoAmIReaderTests {
     public void validTokenProductionConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
@@ -45,7 +42,7 @@ public class WhoAmIReaderTests {
     public void validTokenIntegrationConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidIntegrationDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
@@ -59,7 +56,7 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
 
@@ -79,7 +76,7 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
 
@@ -98,12 +95,12 @@ public class WhoAmIReaderTests {
     public void replayServerConfigSelectionTestValidProductionEndpoint() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
 
-        Mockito.verify(config, Mockito.times(0)).updateApiHost(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Mockito.verify(config, Mockito.times(0)).updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 33);
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
     }
@@ -112,12 +109,12 @@ public class WhoAmIReaderTests {
     public void replayServerConfigSelectionTestValidIntegrationEndpoint() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
 
-        Mockito.verify(config, Mockito.times(1)).updateApiHost(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Mockito.verify(config, Mockito.times(1)).updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 3311);
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
     }
@@ -127,7 +124,7 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
 
@@ -147,7 +144,7 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
 
@@ -167,7 +164,7 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
 
@@ -186,7 +183,7 @@ public class WhoAmIReaderTests {
     public void validXmlDataProvider() {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getAPIHost()).thenReturn(UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
         TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>("test/rest/bookmaker_details.xml");
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, dataProvider, dataProvider, dataProvider);

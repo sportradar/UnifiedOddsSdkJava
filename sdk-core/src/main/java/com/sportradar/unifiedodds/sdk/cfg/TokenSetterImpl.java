@@ -50,8 +50,7 @@ public class TokenSetterImpl implements TokenSetter {
     public EnvironmentSelector setAccessTokenFromSdkProperties() {
         Optional<String> ifPresent = sdkConfigurationPropertiesReader.readAccessToken();
 
-        String token = ifPresent
-                .orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK properties(uf.sdk.accessToken)"));
+        String token = ifPresent.orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK properties(uf.sdk.accessToken)"));
 
         return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
     }
@@ -67,8 +66,7 @@ public class TokenSetterImpl implements TokenSetter {
     public EnvironmentSelector setAccessTokenFromApplicationYaml() {
         Optional<String> ifPresent = sdkConfigurationYamlReader.readAccessToken();
 
-        String token = ifPresent
-                .orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK YAML file(sportradar.sdk.uf.accessToken)"));
+        String token = ifPresent.orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK YAML file(sportradar.sdk.uf.accessToken)"));
 
         return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
     }
@@ -88,5 +86,35 @@ public class TokenSetterImpl implements TokenSetter {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Token system variable uf.accesstoken not found");
 
         return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+    }
+
+    /**
+     * Sets the general configuration properties to values read from configuration file. Only value which can be set
+     * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
+     * are overridden. Builds and returns a {@link OddsFeedConfiguration} instance
+     * <p>
+     * The properties file should be named "UFSdkConfiguration.properties" and localed in the application resources folder
+     *
+     * @return builds and returns a {@link OddsFeedConfiguration} instance
+     */
+    @Override
+    public OddsFeedConfiguration buildConfigFromSdkProperties() {
+        Environment ufEnvironment = sdkConfigurationPropertiesReader.readUfEnvironment();
+        return setAccessTokenFromSdkProperties().selectEnvironment(ufEnvironment).loadConfigFromSdkProperties().build();
+    }
+
+    /**
+     * Sets the general configuration properties to values read from configuration file. Only value which can be set
+     * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
+     * are overridden. Builds and returns a {@link OddsFeedConfiguration} instance
+     * <p>
+     * The YAML file should be named "application.yml" and localed in the application resources folder
+     *
+     * @return builds and returns a {@link OddsFeedConfiguration} instance
+     */
+    @Override
+    public OddsFeedConfiguration buildConfigFromApplicationYml() {
+        Environment ufEnvironment = sdkConfigurationYamlReader.readUfEnvironment();
+        return setAccessTokenFromApplicationYaml().selectEnvironment(ufEnvironment).loadConfigFromApplicationYml().build();
     }
 }

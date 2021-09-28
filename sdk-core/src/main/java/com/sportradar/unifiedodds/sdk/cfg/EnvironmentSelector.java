@@ -47,4 +47,12 @@ public interface EnvironmentSelector {
      * @return a {@link CustomConfigurationBuilder} allowing the properties to be set to custom values
      */
     CustomConfigurationBuilder selectCustom();
+
+    /**
+     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access specified environment.
+     * (for accessing replay or custom server use selectReplay or selectCustom)
+     * @param environment a {@link Environment} specifying to which environment to connect
+     * @return a {@link ConfigurationBuilder} with properties set to values needed to access specified environment
+     */
+    ConfigurationBuilder selectEnvironment(Environment environment);
 }

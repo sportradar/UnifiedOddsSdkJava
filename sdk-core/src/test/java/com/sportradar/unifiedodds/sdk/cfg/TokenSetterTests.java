@@ -25,12 +25,10 @@ public class TokenSetterTests {
     @BeforeClass
     public static void init() {
         propertiesWithToken = Mockito.mock(SDKConfigurationPropertiesReader.class);
-        Mockito.when(propertiesWithToken.readAccessToken())
-                .thenReturn(Optional.of("some-token"));
+        Mockito.when(propertiesWithToken.readAccessToken()).thenReturn(Optional.of("some-token"));
 
         propertiesWithoutToken = Mockito.mock(SDKConfigurationPropertiesReader.class);
-        Mockito.when(propertiesWithoutToken.readAccessToken())
-                .thenReturn(Optional.empty());
+        Mockito.when(propertiesWithoutToken.readAccessToken()).thenReturn(Optional.empty());
     }
 
     @Test(expected = NullPointerException.class)

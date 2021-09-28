@@ -16,6 +16,7 @@ import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,11 +178,11 @@ public class WhoAmIReader {
 
         logger.warn("Bookmaker details fetch failed from the configured environment, checking token status on other available environments...");
 
-        if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.INTEGRATION_API_HOST)) {
-            attemptTokenValidationOn(Environment.Integration, UnifiedFeedConstants.INTEGRATION_API_HOST, integrationDataProvider);
+        if (!config.getAPIHost().equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Integration))) {
+            attemptTokenValidationOn(Environment.Integration, EnvironmentManager.getApiHost(Environment.Integration), integrationDataProvider);
         }
-        if (!config.getAPIHost().equalsIgnoreCase(UnifiedFeedConstants.PRODUCTION_API_HOST)) {
-            attemptTokenValidationOn(Environment.Production, UnifiedFeedConstants.PRODUCTION_API_HOST, productionDataProvider);
+        if (!config.getAPIHost().equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Production))) {
+            attemptTokenValidationOn(Environment.Production, EnvironmentManager.getApiHost(Environment.Production), productionDataProvider);
         }
 
         logger.info("Bookmaker details fetch failed on all available environments");
@@ -231,7 +232,7 @@ public class WhoAmIReader {
 
         if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
             logger.info("Integration WhoAmI request successful, switching SDK configuration to integration API");
-            config.updateApiHost(UnifiedFeedConstants.INTEGRATION_API_HOST);
+            config.updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
         }
 
         return bookmakerDetails;

@@ -6,10 +6,8 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.impl.*;
 
 /**
  * Created on 2019-03-29
@@ -33,7 +31,7 @@ public class DataProvidersModule extends AbstractModule {
                 : "";
 
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replaySummary = httpHttps + "://" + UnifiedFeedConstants.REPLAY_API_HOST + "/v1/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
+        String replaySummary = httpHttps + "://" + EnvironmentManager.getApiHost(Environment.Replay) + "/v1/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
 
         return new DataProvider<>(
                 cfg.isReplaySession()
@@ -188,7 +186,7 @@ public class DataProvidersModule extends AbstractModule {
                 : "";
 
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replayTimeline = httpHttps + "://" + UnifiedFeedConstants.REPLAY_API_HOST + "/v1/replay/sports/%s/sport_events/%s/timeline.xml" + nodeIdStr;
+        String replayTimeline = httpHttps + "://" + EnvironmentManager.getApiHost(Environment.Replay) + "/v1/replay/sports/%s/sport_events/%s/timeline.xml" + nodeIdStr;
 
         return new DataProvider<>(
                 cfg.isReplaySession()
@@ -315,7 +313,7 @@ public class DataProvidersModule extends AbstractModule {
                 : "";
 
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replayFixture = httpHttps + "://" + UnifiedFeedConstants.REPLAY_API_HOST + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
+        String replayFixture = httpHttps + "://" + EnvironmentManager.getApiHost(Environment.Replay) + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
 
         return new DataProvider<>(
                 cfg.isReplaySession() ? replayFixture : "/sports/%s/sport_events/%s/" + filename,

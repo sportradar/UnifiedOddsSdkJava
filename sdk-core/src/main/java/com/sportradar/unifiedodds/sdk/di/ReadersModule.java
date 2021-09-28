@@ -12,10 +12,8 @@ import com.google.inject.name.Named;
 import com.sportradar.uf.datamodel.UFCashout;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 
 import java.util.Locale;
@@ -59,7 +57,7 @@ public class ReadersModule extends AbstractModule {
                                                                           @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/users/whoami.xml",
-                UnifiedFeedConstants.PRODUCTION_API_HOST,
+                EnvironmentManager.getApiHost(Environment.Production),
                 true,
                 Locale.ENGLISH,
                 httpDataFetcher,
@@ -72,7 +70,7 @@ public class ReadersModule extends AbstractModule {
                                                                            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/users/whoami.xml",
-                UnifiedFeedConstants.INTEGRATION_API_HOST,
+                EnvironmentManager.getApiHost(Environment.Replay),
                 true,
                 Locale.ENGLISH,
                 httpDataFetcher,

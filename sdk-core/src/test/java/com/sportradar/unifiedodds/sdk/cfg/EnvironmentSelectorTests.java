@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -88,8 +89,8 @@ public class EnvironmentSelectorTests {
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
-        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Assert.assertEquals(cfg.getMessagingHost(), EnvironmentManager.getMqHost(Environment.Integration));
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Replay));
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
@@ -109,8 +110,8 @@ public class EnvironmentSelectorTests {
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
-        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.PRODUCTION_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Assert.assertEquals(cfg.getMessagingHost(), EnvironmentManager.getMqHost(Environment.Production));
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Production));
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
@@ -130,8 +131,8 @@ public class EnvironmentSelectorTests {
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
-        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.REPLAY_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.PRODUCTION_API_HOST);
+        Assert.assertEquals(cfg.getMessagingHost(), EnvironmentManager.getMqHost(Environment.Replay));
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Replay));
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
@@ -151,8 +152,8 @@ public class EnvironmentSelectorTests {
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
-        Assert.assertEquals(cfg.getMessagingHost(), UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST);
-        Assert.assertEquals(cfg.getAPIHost(), UnifiedFeedConstants.INTEGRATION_API_HOST);
+        Assert.assertEquals(cfg.getMessagingHost(), EnvironmentManager.getMqHost(Environment.Integration));
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);

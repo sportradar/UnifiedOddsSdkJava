@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 
 /**
@@ -34,21 +35,7 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
      */
     @Override
-    public ConfigurationBuilder selectIntegration() {
-        String messagingHost = UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST;
-        String apiHost = UnifiedFeedConstants.INTEGRATION_API_HOST;
-        int messagingPort = 5671;
-
-        return new ConfigurationBuilderImpl(accessToken,
-                messagingHost,
-                apiHost,
-                messagingPort,
-                true,
-                true,
-                sdkConfigurationPropertiesReader,
-                sdkConfigurationYamlReader,
-                Environment.Integration);
-    }
+    public ConfigurationBuilder selectIntegration() { return selectEnvironment(Environment.Integration); }
 
     /**
      * Returns a {@link ConfigurationBuilder} with properties set to values needed to access production environment
@@ -56,21 +43,7 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      * @return a {@link ConfigurationBuilder} with properties set to values needed to access production environment
      */
     @Override
-    public ConfigurationBuilder selectProduction() {
-        String messagingHost = UnifiedFeedConstants.PRODUCTION_MESSAGING_HOST;
-        String apiHost = UnifiedFeedConstants.PRODUCTION_API_HOST;
-        int messagingPort = 5671;
-
-        return new ConfigurationBuilderImpl(accessToken,
-                messagingHost,
-                apiHost,
-                messagingPort,
-                true,
-                true,
-                sdkConfigurationPropertiesReader,
-                sdkConfigurationYamlReader,
-                Environment.Production);
-    }
+    public ConfigurationBuilder selectProduction() { return selectEnvironment(Environment.Production); }
 
     /**
      * Returns a {@link ReplayConfigurationBuilder} with properties set to values needed to access replay server
@@ -79,15 +52,13 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      */
     @Override
     public ReplayConfigurationBuilder selectReplay() {
-        String messagingHost = UnifiedFeedConstants.REPLAY_MESSAGING_HOST;
-        // It will be overwritten by the WhoAmIReader to INTEGRATION if needed (depending on the token)
-        String apiHost = UnifiedFeedConstants.PRODUCTION_API_HOST;
-        int messagingPort = 5671;
+        String messagingHost = EnvironmentManager.getMqHost(Environment.Replay);
+        String apiHost = EnvironmentManager.getApiHost(Environment.Replay);
 
         return new ReplayConfigurationBuilderImpl(accessToken,
                 messagingHost,
                 apiHost,
-                messagingPort,
+                EnvironmentManager.DEFAULT_MQ_HOST_PORT,
                 true,
                 true,
                 sdkConfigurationPropertiesReader,
@@ -102,18 +73,45 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      */
     @Override
     public CustomConfigurationBuilder selectCustom() {
-        String messagingHost = UnifiedFeedConstants.INTEGRATION_MESSAGING_HOST;
-        String apiHost = UnifiedFeedConstants.INTEGRATION_API_HOST;
-        int messagingPort = 5671;
+        String messagingHost = EnvironmentManager.getMqHost(Environment.Integration);
+        String apiHost = EnvironmentManager.getApiHost(Environment.Integration);
 
         return new CustomConfigurationBuilderImpl(accessToken,
                 messagingHost,
                 apiHost,
-                messagingPort,
+                EnvironmentManager.DEFAULT_MQ_HOST_PORT,
                 true,
                 true,
                 sdkConfigurationPropertiesReader,
                 sdkConfigurationYamlReader,
                 Environment.Custom);
+    }
+
+    /**
+     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access specified environment.
+     * (for accessing replay or custom server use selectReplay or selectCustom)
+     *
+     * @param environment a {@link Environment} specifying to which environment to connect
+     * @return a {@link ConfigurationBuilder} with properties set to values needed to access specified environment
+     */
+    @Override
+    public ConfigurationBuilder selectEnvironment(Environment environment) {
+        String messagingHost = EnvironmentManager.getMqHost(Environment.Integration);
+        String apiHost = EnvironmentManager.getApiHost(Environment.Integration);
+
+        if(!environment.equals(Environment.Custom)){
+            messagingHost = EnvironmentManager.getMqHost(environment);
+            apiHost = EnvironmentManager.getApiHost(environment);
+        }
+
+        return new ConfigurationBuilderImpl(accessToken,
+                                            messagingHost,
+                                            apiHost,
+                                            EnvironmentManager.DEFAULT_MQ_HOST_PORT,
+                                            true,
+                                            true,
+                                            sdkConfigurationPropertiesReader,
+                                            sdkConfigurationYamlReader,
+                                            environment);
     }
 }

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.cfg;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -40,6 +41,7 @@ class SDKPropertiesReaderUtil {
     static final int MAX_RECOVERY_TIME_YAML = 78;
     static final int SDK_NODE_ID = -99;
     static final ExceptionHandlingStrategy EXCEPTION_HANDLING = ExceptionHandlingStrategy.Throw;
+    static final Environment ENVIRONMENT = Environment.Production;
 
     static SDKConfigurationPropertiesReader getReaderWithFullData() {
         SDKConfigurationPropertiesReader mock = Mockito.mock(SDKConfigurationPropertiesReader.class);
@@ -64,6 +66,18 @@ class SDKPropertiesReaderUtil {
         return mock;
     }
 
+    static SDKConfigurationPropertiesReader getReaderWithMinData() {
+        SDKConfigurationPropertiesReader mock = Mockito.mock(SDKConfigurationPropertiesReader.class);
+
+        Mockito.when(mock.readAccessToken()).thenReturn(Optional.of(ACCESS_TOKEN));
+        Mockito.when(mock.readDefaultLocale()).thenReturn(Optional.of(DEFAULT_LOCALE));
+        Mockito.when(mock.readDesiredLocales()).thenReturn(DESIRED_LOCALES);
+        Mockito.when(mock.readSdkNodeId()).thenReturn(Optional.of(SDK_NODE_ID));
+        Mockito.when(mock.readUfEnvironment()).thenReturn(ENVIRONMENT);
+
+        return mock;
+    }
+
     static SDKConfigurationYamlReader getYamlReaderWithFullData() {
         SDKConfigurationYamlReader mock = Mockito.mock(SDKConfigurationYamlReader.class);
 
@@ -83,6 +97,18 @@ class SDKPropertiesReaderUtil {
         Mockito.when(mock.readMaxRecoveryTime()).thenReturn(Optional.of(MAX_RECOVERY_TIME_YAML));
         Mockito.when(mock.readSdkNodeId()).thenReturn(Optional.of(SDK_NODE_ID));
         Mockito.when(mock.readExceptionHandlingStrategy()).thenReturn(Optional.of(EXCEPTION_HANDLING));
+
+        return mock;
+    }
+
+    static SDKConfigurationYamlReader getYamlReaderWithMinData() {
+        SDKConfigurationYamlReader mock = Mockito.mock(SDKConfigurationYamlReader.class);
+
+        Mockito.when(mock.readAccessToken()).thenReturn(Optional.of(ACCESS_TOKEN));
+        Mockito.when(mock.readDefaultLocale()).thenReturn(Optional.of(DEFAULT_LOCALE));
+        Mockito.when(mock.readDesiredLocales()).thenReturn(DESIRED_LOCALES);
+        Mockito.when(mock.readSdkNodeId()).thenReturn(Optional.of(SDK_NODE_ID));
+        Mockito.when(mock.readUfEnvironment()).thenReturn(ENVIRONMENT);
 
         return mock;
     }

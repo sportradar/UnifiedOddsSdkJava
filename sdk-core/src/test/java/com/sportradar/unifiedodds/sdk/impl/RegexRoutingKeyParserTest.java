@@ -1,6 +1,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.utils.URN;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -32,6 +33,7 @@ public class RegexRoutingKeyParserTest {
         String key = "hi.-.live.oddschange.6.sr:match.9536715";
 
         parser.getRoutingKeyInfo(key);
+        Assert.assertNotNull(parser);
     }
 
     @Test
@@ -40,6 +42,7 @@ public class RegexRoutingKeyParserTest {
         String key = "hi.-.live.odds_change.6sr:match.9536715";
 
         parser.getRoutingKeyInfo(key);
+        Assert.assertNotNull(parser);
     }
 
     @Test
@@ -48,5 +51,6 @@ public class RegexRoutingKeyParserTest {
         String key = "hi.-.live.odds_change.6b.sr:match.9536715";
 
         parser.getRoutingKeyInfo(key);
+        Assert.assertNotNull(parser);
     }
 }

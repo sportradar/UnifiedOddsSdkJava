@@ -50,3 +50,6 @@ uf.sdk.nodeId=
 
 # the exception handling strategy that should be used trough the SDK (throw/catch)
 uf.sdk.exceptionHandlingStrategy=
+
+# a value indicating to which unified feed environment sdk should connect
+uf.sdk.ufEnvironment=

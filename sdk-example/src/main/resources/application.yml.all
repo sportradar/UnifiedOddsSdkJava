@@ -32,5 +32,8 @@ sportradar:
       # a list of producer identifiers that should be automatically disabled[3,4,...]
       disabledProducers:
         -
-      # the exception handling strategy that should be used trough the SDK(throw/catch)
+      # the exception handling strategy that should be used through the SDK (throw/catch)
       exceptionHandlingStrategy:
+
+      # a value indicating to which unified feed environment sdk should connect
+      ufEnvironment:

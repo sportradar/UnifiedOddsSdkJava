@@ -22,7 +22,15 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
     private final boolean useApiSsl;
     private final Environment environment;
 
-    ReplayConfigurationBuilderImpl(String accessToken, String messagingHost, String apiHost, int messagingPort, boolean useMessagingSsl, boolean useApiSsl, SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader, Environment environment) {
+    ReplayConfigurationBuilderImpl(String accessToken,
+                                   String messagingHost,
+                                   String apiHost,
+                                   int messagingPort,
+                                   boolean useMessagingSsl,
+                                   boolean useApiSsl,
+                                   SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+                                   SDKConfigurationYamlReader sdkConfigurationYamlReader,
+                                   Environment environment) {
         super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
 
         this.accessToken = accessToken;
@@ -63,6 +71,12 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,
-                null, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute);
+                null,
+                httpClientTimeout,
+                httpClientMaxConnTotal,
+                httpClientMaxConnPerRoute,
+                recoveryHttpClientTimeout,
+                recoveryHttpClientMaxConnTotal,
+                recoveryHttpClientMaxConnPerRoute);
     }
 }

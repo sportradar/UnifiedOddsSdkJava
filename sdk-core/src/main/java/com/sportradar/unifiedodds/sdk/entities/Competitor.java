@@ -27,10 +27,8 @@ public interface Competitor extends Player {
     Map<Locale, String> getAbbreviations();
 
     /**
-     * Returns a value indicating whether the current instance represents a virtual {@link Competitor}
-     * i.e. competes in a virtual sports
-     *
-     * @return - a value indicating whether the current instance represents a virtual {@link Competitor}
+     * Returns a value indicating whether the current instance represents a placeholder team
+     * @return - a value indicating whether the current instance represents a placeholder team
      */
     boolean isVirtual();
 
