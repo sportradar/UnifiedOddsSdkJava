@@ -27,6 +27,8 @@ public enum Environment {
 
     GlobalProduction,
 
+    GlobalIntegration,
+
     ProxySingapore,
 
     ProxyTokyo;

@@ -14,6 +14,10 @@ public final class EnvironmentManager {
      */
     public static final int DEFAULT_MQ_HOST_PORT = 5671;
 
+    /**
+     * Gets the list of all possible environment settings (Custom is not listed, as user should manually put MQ and API host)
+     * @return the list of all possible environment settings (Custom is not listed, as user should manually put MQ and API host)
+     */
     public static List<EnvironmentSetting> getEnvironmentSettings() { return environmentSettings; }
 
     static
@@ -24,6 +28,7 @@ public final class EnvironmentManager {
             new EnvironmentSetting(Environment.Integration, "stgmq.betradar.com", "stgapi.betradar.com", true, Lists.newArrayList(Environment.Production)),
             new EnvironmentSetting(Environment.Replay, "replaymq.betradar.com", "stgapi.betradar.com", true, basicRetryList),
             new EnvironmentSetting(Environment.GlobalProduction, "mq.betradar.com", "global.api.betradar.com", true, basicRetryList),
+            new EnvironmentSetting(Environment.GlobalIntegration, "global.stgmq.betradar.com", "global.stgapi.betradar.com", true, basicRetryList),
             new EnvironmentSetting(Environment.ProxySingapore, "mq.ap-southeast-1.betradar.com", "api.ap-southeast-1.betradar.com", true, basicRetryList),
             new EnvironmentSetting(Environment.ProxyTokyo, "mq.ap-northeast-1.betradar.com", "api.ap-northeast-1.betradar.com", true, basicRetryList)
         );
