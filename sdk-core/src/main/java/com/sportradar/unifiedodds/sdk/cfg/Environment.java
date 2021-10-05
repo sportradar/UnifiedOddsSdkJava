@@ -50,6 +50,8 @@ public enum Environment {
                 return Replay;
             case "GlobalProduction":
                 return GlobalProduction;
+            case "GlobalIntegration":
+                return GlobalIntegration;
             case "ProxySingapore":
                 return ProxySingapore;
             case "ProxyTokyo":

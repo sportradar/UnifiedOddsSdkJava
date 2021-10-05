@@ -27,7 +27,7 @@ public final class EnvironmentManager {
             new EnvironmentSetting(Environment.Production, "mq.betradar.com", "api.betradar.com", true, Lists.newArrayList(Environment.Integration)),
             new EnvironmentSetting(Environment.Integration, "stgmq.betradar.com", "stgapi.betradar.com", true, Lists.newArrayList(Environment.Production)),
             new EnvironmentSetting(Environment.Replay, "replaymq.betradar.com", "stgapi.betradar.com", true, basicRetryList),
-            new EnvironmentSetting(Environment.GlobalProduction, "mq.betradar.com", "global.api.betradar.com", true, basicRetryList),
+            new EnvironmentSetting(Environment.GlobalProduction, "global.mq.betradar.com", "global.api.betradar.com", true, basicRetryList),
             new EnvironmentSetting(Environment.GlobalIntegration, "global.stgmq.betradar.com", "global.stgapi.betradar.com", true, basicRetryList),
             new EnvironmentSetting(Environment.ProxySingapore, "mq.ap-southeast-1.betradar.com", "api.ap-southeast-1.betradar.com", true, basicRetryList),
             new EnvironmentSetting(Environment.ProxyTokyo, "mq.ap-northeast-1.betradar.com", "api.ap-northeast-1.betradar.com", true, basicRetryList)
