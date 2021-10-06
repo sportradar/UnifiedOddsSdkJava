@@ -1,5 +1,10 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.50.0 (2021-10-06)**
+* Extended configuration with ufEnvironment attribute
+* Extended TokenSetter and EnvironmentSelector 
+* New values added to Environment enum (GlobalIntegration, GlobalProduction, ProxySingapore, ProxyTokyo)
+
 **2.0.49.1 (2021-09-09)**
 * When fetching non-cached fixture change endpoint fails due to server error, try also normal fixture endpoint
 * Update: default timeout for max recovery time set to 1h
