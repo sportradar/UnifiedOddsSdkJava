@@ -233,9 +233,14 @@ public abstract class SDKConfigurationReader {
 
     public Environment readUfEnvironment() {
         Optional<Boolean> useIntegration = readUseIntegration();
-        Environment environment = Environment.Integration;
-        if(useIntegration.isPresent() && !useIntegration.get()){
-            environment = Environment.Production;
+        Environment environment = Environment.GlobalIntegration;
+        if(useIntegration.isPresent()) {
+            if (useIntegration.get()) {
+                environment = Environment.Integration;
+            }
+            else{
+                environment = Environment.Production;
+            }
         }
 
         Optional<String> ufEnv = Optional.ofNullable(sdkProperties.get("uf.sdk.ufEnvironment"));

@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.example.common.SportEntityWriter;
 import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.SportsInfoManager;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
@@ -28,7 +29,7 @@ public class SportEventDataPrinter {
         logEntry("Building the configuration using the provided token");
         configuration = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
-                .selectIntegration()
+                .selectEnvironment(Environment.GlobalIntegration)
                 .setSdkNodeId(SdkConstants.NODE_ID)
                 .setDefaultLocale(Locale.ENGLISH)
                 .build();

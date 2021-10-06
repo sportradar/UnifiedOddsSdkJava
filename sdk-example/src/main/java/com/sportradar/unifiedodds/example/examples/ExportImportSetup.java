@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.SportsInfoManager;
 import com.sportradar.unifiedodds.sdk.caching.exportable.CacheType;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 
@@ -32,7 +33,7 @@ public class ExportImportSetup {
         logEntry("Building the configuration using the provided token");
         OddsFeedConfiguration configuration = OddsFeed.getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
-                .selectIntegration()
+                .selectEnvironment(Environment.GlobalIntegration)
                 .setSdkNodeId(SdkConstants.NODE_ID)
                 .setDefaultLocale(Locale.ENGLISH)
                 .build();
