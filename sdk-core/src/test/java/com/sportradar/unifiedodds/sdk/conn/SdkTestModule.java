@@ -24,9 +24,7 @@ import java.util.Optional;
 public class SdkTestModule implements Module {
     private Optional<SportsInfoManager> sportsInfoManager;
 
-    public SdkTestModule() {
-//        this(Optional.of(Mockito.mock(SportsInfoManager.class)));
-    }
+    public SdkTestModule() {    }
 
     public SdkTestModule(Optional<SportsInfoManager> sportsInfoManager) {
         this.sportsInfoManager = sportsInfoManager;
@@ -37,14 +35,7 @@ public class SdkTestModule implements Module {
         WhoAmIReader stubWhoAmIReader = Mockito.mock(WhoAmIReader.class);
 
         binder.bind(WhoAmIReader.class).toInstance(stubWhoAmIReader);
-
-//        sportsInfoManager.ifPresent(value -> binder.bind(SportsInfoManager.class).toInstance(value));
     }
-
-//    @Provides @Singleton
-//    public DataProvider<Producers> providesProducersDataProvider() {
-//        return new TestingDataProvider("test/rest/bookmaker_details.xml");
-//    }
 
     /**
      * Provides the http client used to fetch data from the API
