@@ -1,5 +1,14 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.51.0 (2021-11-18)**
+* Improvements for connection resilience
+* Added onRecoveryInitiate to SDKProducerStatusListener
+* Added RabbitConnectionTimeout and RabbitHeartbeat to OperationManager
+* Improved logging regarding connection and recovery process
+* Fix: how connection and channels are made
+* Extended StageType with Run enum value
+* Changed default UF environment from Integration to GlobalIntegration
+
 **2.0.50.0 (2021-10-06)**
 * Extended configuration with ufEnvironment attribute
 * Extended TokenSetter and EnvironmentSelector 
