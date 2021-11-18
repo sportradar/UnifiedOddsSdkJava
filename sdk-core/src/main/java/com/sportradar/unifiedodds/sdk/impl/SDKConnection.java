@@ -178,10 +178,7 @@ public class SDKConnection implements Connection {
     }
 
     @Override
-    public void addShutdownListener(ShutdownListener shutdownListener) {
-
-        actualConnection.addShutdownListener(shutdownListener);
-    }
+    public void addShutdownListener(ShutdownListener shutdownListener) { actualConnection.addShutdownListener(shutdownListener); }
 
     @Override
     public void removeShutdownListener(ShutdownListener shutdownListener) {
@@ -194,13 +191,10 @@ public class SDKConnection implements Connection {
     }
 
     @Override
-    public void notifyListeners() {
-        actualConnection.notifyListeners();
-    }
+    public void notifyListeners() { actualConnection.notifyListeners(); }
 
     @Override
     public boolean isOpen() {
         return actualConnection.isOpen();
     }
-
 }

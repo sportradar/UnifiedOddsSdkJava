@@ -16,9 +16,10 @@ public interface RabbitMqChannel {
      *
      * @param routingKeys - a {@link List} of routing keys which should be binded
      * @param channelMessageConsumer - a {@link ChannelMessageConsumer} which consumes the received payloads
+     * @param messageInterest message interest this channel is linked to
      * @throws IOException if the routing keys bind failed
      */
-    void open(List<String> routingKeys, ChannelMessageConsumer channelMessageConsumer) throws IOException;
+    void open(List<String> routingKeys, ChannelMessageConsumer channelMessageConsumer, String messageInterest) throws IOException;
 
     /**
      * Terminates the current channel

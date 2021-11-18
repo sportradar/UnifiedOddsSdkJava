@@ -222,7 +222,7 @@ public class RecoveryManagerTests {
         producerStatusListener.assertProducerStatusChangeInvoked(1, ProducerStatusReason.FirstRecoveryCompleted);
 
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(1, 3, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(1, 3, Long.valueOf(recoveryId), mockedTimeUtils.now());
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
@@ -233,12 +233,12 @@ public class RecoveryManagerTests {
         assertFalse(producer.isFlaggedDown());
 
         adjustMockedTimeUtils(12);
-        recoveryManager.onMessageProcessingStarted(1, 3, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(1, 3, Long.valueOf(recoveryId), mockedTimeUtils.now());
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
         adjustMockedTimeUtils(10);
-        recoveryManager.onMessageProcessingStarted(1, 3, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(1, 3, Long.valueOf(recoveryId), mockedTimeUtils.now());
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
@@ -266,7 +266,7 @@ public class RecoveryManagerTests {
 
         // delayed message
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(-33, 1, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(-33, 1, Long.valueOf(recoveryId), mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
         recoveryManager.onMessageProcessingEnded(-33, 1, getAdjustedMilliseconds(-22));
 
@@ -280,7 +280,7 @@ public class RecoveryManagerTests {
 
         // ok message
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(-33, 1, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(-33, 1, Long.valueOf(recoveryId), mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
         recoveryManager.onMessageProcessingEnded(-33, 1, mockedTimeUtils.now());
 
@@ -312,7 +312,7 @@ public class RecoveryManagerTests {
 
         // delayed message
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(-33, 1, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(-33, 1, Long.valueOf(recoveryId), mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
         recoveryManager.onMessageProcessingEnded(-33, 1, getAdjustedMilliseconds(-22));
 
@@ -332,7 +332,7 @@ public class RecoveryManagerTests {
 
         // ok message
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(-33, 1, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(-33, 1, Long.valueOf(recoveryId), mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
         recoveryManager.onMessageProcessingEnded(-33, 1, mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
@@ -572,7 +572,7 @@ public class RecoveryManagerTests {
         producerStatusListener.assertProducerStatusChangeInvoked(1, ProducerStatusReason.FirstRecoveryCompleted);
 
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(1, 3, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(1, 3, Long.valueOf(recoveryId), mockedTimeUtils.now());
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
@@ -612,7 +612,7 @@ public class RecoveryManagerTests {
 
         // delayed message
         adjustMockedTimeUtils(1);
-        recoveryManager.onMessageProcessingStarted(-33, 1, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(-33, 1, Long.valueOf(recoveryId), mockedTimeUtils.now());
         adjustMockedTimeUtils(1);
         recoveryManager.onMessageProcessingEnded(-33, 1, getAdjustedMilliseconds(-22));
 
@@ -625,7 +625,7 @@ public class RecoveryManagerTests {
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
 
         adjustMockedTimeUtils(12);
-        recoveryManager.onMessageProcessingStarted(1, 3, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(1, 3, Long.valueOf(recoveryId), mockedTimeUtils.now());
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
@@ -635,7 +635,7 @@ public class RecoveryManagerTests {
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
 
         adjustMockedTimeUtils(10);
-        recoveryManager.onMessageProcessingStarted(1, 3, mockedTimeUtils.now());
+        recoveryManager.onMessageProcessingStarted(1, 3, Long.valueOf(recoveryId), mockedTimeUtils.now());
         recoveryManager.onMessageProcessingEnded(1, 3, getAdjustedMilliseconds(-1));
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), true, false);
 
@@ -700,7 +700,7 @@ public class RecoveryManagerTests {
 
         long onMessageReceivedTimestamp = mockedTimeUtils.now();
         long receivedMessageGenTimestamp = getAdjustedMilliseconds(-1);
-        recoveryManager.onMessageProcessingStarted(processorId, 3, onMessageReceivedTimestamp);
+        recoveryManager.onMessageProcessingStarted(processorId, 3, null, onMessageReceivedTimestamp);
         recoveryManager.onMessageProcessingEnded(processorId, 3, receivedMessageGenTimestamp);
         adjustMockedTimeUtils(1);
 

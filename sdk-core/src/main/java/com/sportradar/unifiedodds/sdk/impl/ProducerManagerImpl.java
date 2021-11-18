@@ -137,6 +137,7 @@ public class ProducerManagerImpl implements SDKProducerManager {
             long maxRecoveryInterval = TimeUnit.MILLISECONDS.convert(maxRequestMinutes, TimeUnit.MINUTES);
             long requestedRecoveryInterval = System.currentTimeMillis() - lastMessageTimestamp;
             if (requestedRecoveryInterval > maxRecoveryInterval) {
+
                 throw new IllegalArgumentException(String.format("Last received message timestamp can not be more than '%s' minutes ago, producerId:%s timestamp:%s (max recovery = '%s' minutes ago)", maxRequestMinutes, producerId, lastMessageTimestamp, maxRequestMinutes));
             }
         }
@@ -187,6 +188,15 @@ public class ProducerManagerImpl implements SDKProducerManager {
     }
 
     @Override
+    public void internalSetProducerLastRecoveryMessageTimestamp(int producerId, long lastRecoveryMessageTimestamp) {
+
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setLastRecoveryMessageReceivedTimestamp(lastRecoveryMessageTimestamp);
+        }
+    }
+
+    @Override
     public void setLastProcessedMessageGenTimestamp(int producerId, long lastProcessedMessageGenTimestamp) {
         Preconditions.checkArgument(lastProcessedMessageGenTimestamp > 0);
 
@@ -222,5 +232,31 @@ public class ProducerManagerImpl implements SDKProducerManager {
         catch(Exception ex) {
             logger.warn("Error saving recovery info to the producer " + producerId, ex);
         }
+    }
+
+    @Override
+    public long getProducerLastRecoveryMessageTimestamp(int producerId) {
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            return producerData.getLastRecoveryMessageTimestamp();
+        }
+        return 0;
+    }
+
+    @Override
+    public void internalSetProducerLastRecoveryAttemptTimestamp(int producerId, long lastRecoveryAttemptTimestamp) {
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            producerData.setLastRecoveryAttemptTimestamp(lastRecoveryAttemptTimestamp);
+        }
+    }
+
+    @Override
+    public long getProducerLastRecoveryAttemptTimestamp(int producerId) {
+        if (producers.containsKey(producerId)) {
+            ProducerData producerData = producers.get(producerId);
+            return producerData.getLastRecoveryAttemptTimestamp();
+        }
+        return 0;
     }
 }

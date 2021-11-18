@@ -49,7 +49,7 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
     public void open(List<String> routingKeys, MessageConsumer messageConsumer) throws IOException {
         channelMessageConsumer.open(messageConsumer);
 
-        rabbitMqChannel.open(routingKeys, channelMessageConsumer);
+        rabbitMqChannel.open(routingKeys, channelMessageConsumer, messageConsumer.getMessageInterest().toShortString());
     }
 
     /**

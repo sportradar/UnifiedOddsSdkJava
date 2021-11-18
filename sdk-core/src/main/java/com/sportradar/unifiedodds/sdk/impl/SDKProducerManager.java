@@ -23,4 +23,12 @@ public interface SDKProducerManager extends ProducerManager {
     void setLastAliveReceivedGenTimestamp(int producerId, long aliveReceivedGenTimestamp);
 
     void setProducerRecoveryInfo(int producerId, RecoveryInfo recoveryInfo);
+
+    void internalSetProducerLastRecoveryMessageTimestamp(int producerId, long lastRecoveryMessageTimestamp);
+
+    long getProducerLastRecoveryMessageTimestamp(int producerId);
+
+    void internalSetProducerLastRecoveryAttemptTimestamp(int producerId, long lastRecoveryAttemptTimestamp);
+
+    long getProducerLastRecoveryAttemptTimestamp(int producerId);
 }

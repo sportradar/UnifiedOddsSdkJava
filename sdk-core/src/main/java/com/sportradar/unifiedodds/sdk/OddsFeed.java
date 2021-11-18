@@ -55,7 +55,7 @@ public class OddsFeed {
     /**
      * The OddsFeed main configuration file
      */
-    private final SDKInternalConfiguration oddsFeedConfiguration;
+    protected final SDKInternalConfiguration oddsFeedConfiguration;
 
     /**
      * A HashSet that contains all the created sessions
@@ -499,7 +499,7 @@ public class OddsFeed {
         feedInitialized = true;
     }
 
-    private Injector createSdkInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
+    protected Injector createSdkInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
         return Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
     }
 

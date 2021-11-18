@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<producers response_code="OK">
+    <producer id="1" name="LO" description="Live Odds" api_url="https://stgapi.betradar.com/v1/liveodds/" active="true" scope="live" stateful_recovery_window_in_minutes="600"/>
+    <producer id="3" name="Ctrl" description="Betradar Ctrl" api_url="https://stgapi.betradar.com/v1/pre/" active="true" scope="prematch" stateful_recovery_window_in_minutes="4320"/>
+    <producer id="4" name="BetPal" description="BetPal" api_url="https://stgapi.betradar.com/v1/betpal/" active="false" scope="live" stateful_recovery_window_in_minutes="4320"/>
+    <producer id="5" name="PremiumCricket" description="Premium Cricket" api_url="https://stgapi.betradar.com/v1/premium_cricket/" active="true" scope="live|prematch" stateful_recovery_window_in_minutes="4320"/>
+    <producer id="6" name="VF" description="Virtual football" api_url="https://stgapi.betradar.com/v1/vf/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="7" name="WNS" description="Numbers Betting" api_url="https://stgapi.betradar.com/v1/wns/" active="true" scope="prematch" stateful_recovery_window_in_minutes="4320"/>
+    <producer id="8" name="VBL" description="Virtual Basketball League" api_url="https://stgapi.betradar.com/v1/vbl/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="9" name="VTO" description="Virtual Tennis Open" api_url="https://stgapi.betradar.com/v1/vto/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="10" name="VDR" description="Virtual Dog Racing" api_url="https://stgapi.betradar.com/v1/vdr/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="11" name="VHC" description="Virtual Horse Classics" api_url="https://stgapi.betradar.com/v1/vhc/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="12" name="VTI" description="Virtual Tennis In-Play" api_url="https://stgapi.betradar.com/v1/vti/" active="false" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="14" name="C-Odds" description="Competition Odds" api_url="https://stgapi.betradar.com/v1/codds/" active="true" scope="live" stateful_recovery_window_in_minutes="4320"/>
+    <producer id="15" name="VBI" description="Virtual Baseball In-Play" api_url="https://stgapi.betradar.com/v1/vbi/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+    <producer id="16" name="PB" description="Performance betting" api_url="https://stgapi.betradar.com/v1/performance/" active="false" scope="live|prematch" stateful_recovery_window_in_minutes="4320"/>
+    <producer id="17" name="VCI" description="Virtual Cricket In-Play" api_url="https://stgapi.betradar.com/v1/vci/" active="true" scope="virtual" stateful_recovery_window_in_minutes="180"/>
+</producers>

@@ -49,13 +49,31 @@ public class OddsFeedConfiguration {
     private final int recoveryHttpClientMaxConnTotal;
     private final int recoveryHttpClientMaxConnPerRoute;
 
-    OddsFeedConfiguration(String accessToken, Locale defaultLocale, List<Locale> desiredLocales,
-                          String host, String apiHost, int inactivitySeconds, int maxRecoveryExecutionMinutes, int minIntervalBetweenRecoveryRequests,
-                          boolean useMessagingSsl, boolean useApiSsl, int port, String messagingUsername, String messagingPassword, Integer sdkNodeId,
-                          boolean useIntegrationEnvironment, List<Integer> disabledProducers, ExceptionHandlingStrategy exceptionHandlingStrategy, Environment selectedEnvironment,
+    OddsFeedConfiguration(String accessToken,
+                          Locale defaultLocale,
+                          List<Locale> desiredLocales,
+                          String host,
+                          String apiHost,
+                          int inactivitySeconds,
+                          int maxRecoveryExecutionMinutes,
+                          int minIntervalBetweenRecoveryRequests,
+                          boolean useMessagingSsl,
+                          boolean useApiSsl,
+                          int port,
+                          String messagingUsername,
+                          String messagingPassword,
+                          Integer sdkNodeId,
+                          boolean useIntegrationEnvironment,
+                          List<Integer> disabledProducers,
+                          ExceptionHandlingStrategy exceptionHandlingStrategy,
+                          Environment selectedEnvironment,
                           String messagingVirtualHost,
-                          Integer httpClientTimeout, Integer httpClientMaxConnTotal, Integer httpClientMaxConnPerRoute,
-                          Integer recoveryHttpClientTimeout, Integer recoveryHttpClientMaxConnTotal, Integer recoveryHttpClientMaxConnPerRoute) {
+                          Integer httpClientTimeout,
+                          Integer httpClientMaxConnTotal,
+                          Integer httpClientMaxConnPerRoute,
+                          Integer recoveryHttpClientTimeout,
+                          Integer recoveryHttpClientMaxConnTotal,
+                          Integer recoveryHttpClientMaxConnPerRoute) {
         // ctor parameters are validated in the cfg builder instance
         this.accessToken = accessToken;
         this.defaultLocale = defaultLocale;
@@ -124,9 +142,7 @@ public class OddsFeedConfiguration {
     /**
      * @return The minimal interval between recovery requests initiated by alive messages(seconds)
      */
-    public int getMinIntervalBetweenRecoveryRequests() {
-        return minIntervalBetweenRecoveryRequests;
-    }
+    public int getMinIntervalBetweenRecoveryRequests() { return minIntervalBetweenRecoveryRequests; }
 
     /**
      * 

@@ -12,8 +12,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.impl.*;
@@ -38,13 +36,10 @@ import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.*;
-import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -215,24 +210,6 @@ public class GeneralModule implements Module {
     @Provides @Named("MessageDeserializer")
     private Deserializer provideMessageDeserializer() {
         return new DeserializerImpl(messagesJaxbContext);
-    }
-
-    /**
-     * Provides the {@link Channel} used to communicate with the Rabbit MQ broker
-     * 
-     * @param connectionFactory - the connection factory used to create the channel
-     * @return - the {@link Channel} used to communicate with the Rabbit MQ broker
-     */
-    @Provides
-    private Supplier<Channel> provideChannel(AMQPConnectionFactory connectionFactory) {
-        return () -> {
-            try {
-                Connection connection = connectionFactory.newConnection();
-                return connection.createChannel();
-            } catch (NoSuchAlgorithmException | KeyManagementException | TimeoutException | IOException e) {
-                throw new IllegalStateException("Failed to create Rabbit MQ channel, ex: " + e.getMessage(), e);
-            }
-        };
     }
 
     /**

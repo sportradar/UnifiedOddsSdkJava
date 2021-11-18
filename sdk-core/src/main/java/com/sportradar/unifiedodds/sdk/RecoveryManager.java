@@ -18,9 +18,10 @@ public interface RecoveryManager {
      *
      * @param uniqueMessageProcessorIdentifier a unique representation of the message processor invoking the method
      * @param producerId the source producer of the message
+     * @param requestId the recovery request id of the message (if present)
      * @param now the current timestamp
      */
-    void onMessageProcessingStarted(int uniqueMessageProcessorIdentifier, int producerId, long now);
+    void onMessageProcessingStarted(int uniqueMessageProcessorIdentifier, int producerId, Long requestId, long now);
 
     /**
      * Method invoked when the AMQP message processing ended

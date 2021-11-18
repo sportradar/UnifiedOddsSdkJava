@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Strings;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.*;
+import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
@@ -97,6 +98,21 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private final ShutdownListener shutdownListener;
 
     /**
+     * A {@link BlockedListener} used to detect when the connection gets blocked
+     */
+    private final BlockedListener blockedListener;
+
+    /**
+     * When the connection was started
+     */
+    private long connectionStarted;
+
+    /**
+     * An {@link Object} used for thread safety
+     */
+    private final Object syncLock = new Object();
+
+    /**
      * Initializes a new instance of the {@link SingleInstanceAMQPConnectionFactory} class
      * 
      * @param rabbitConnectionFactory A {@link ConnectionFactory} instance used to create the
@@ -126,6 +142,8 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
         this.messagingPassword = Strings.isNullOrEmpty(config.getMessagingPassword()) ? "" : config.getMessagingPassword();
         this.shutdownListener = new ShutdownListenerImpl(this);
+        this.blockedListener = new BlockedListenerImpl(this);
+        this.connectionStarted = 0;
     }
 
     /**
@@ -178,7 +196,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
             // the default behaviour
             rabbitConnectionFactory.setUsername(config.getAccessToken());
         }
-
+        rabbitConnectionFactory.setPassword(messagingPassword);
         if (config.getMessagingVirtualHost() != null) {
             rabbitConnectionFactory.setVirtualHost(config.getMessagingVirtualHost());
         } else {
@@ -186,13 +204,14 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
             rabbitConnectionFactory.setVirtualHost(VIRTUAL_HOST_PREFIX + bookmakerId);
         }
 
-        rabbitConnectionFactory.setPassword(messagingPassword);
-
         rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
+        rabbitConnectionFactory.setConnectionTimeout(OperationManager.getRabbitConnectionTimeout() * 1000);
+        rabbitConnectionFactory.setRequestedHeartbeat(OperationManager.getRabbitHeartbeat());
 
         rabbitConnectionFactory.setExceptionHandler(new SDKExceptionHandler(connectionStatusListener));
 
         Connection con = rabbitConnectionFactory.newConnection(dedicatedRabbitMqExecutor);
+        connectionStarted = new TimeUtilsImpl().now();
         logger.info("Connection created successfully");
         return con;
     }
@@ -234,6 +253,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         }
         SDKConnection sdkConnection = new SDKConnection(actualConnection);
         sdkConnection.addShutdownListener(shutdownListener);
+        sdkConnection.addBlockedListener(blockedListener);
         return sdkConnection;
     }
 
@@ -281,31 +301,20 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      * Returns a {@link Connection} instance representing connection to the AMQP broker
      * 
      * @return a {@link Connection} instance representing connection to the AMQP broker
-     * @throws IOException An error occurred while creating the connection instance
-     * @throws TimeoutException An error occurred while creating the connection instance
-     * @throws NoSuchAlgorithmException An error occurred while configuring the factory to use SSL
-     * @throws KeyManagementException An error occurred while configuring the factory to use SSL
      */
     @Override
-    public synchronized Connection newConnection()
-                throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
-        Channel channel = null;
-        try {
-            channel = this.connection.createChannel();
-        } catch (Exception exc) {
-            this.close();
-            SDKConnection sdkConnection = this.createSdkConnection();
-            this.connection = sdkConnection;
-            return sdkConnection;
-        } finally {
+    public synchronized Connection getConnection() {
+        synchronized (syncLock) {
             try {
-                if (channel != null) {
-                    channel.close();
+                if(this.connection == null){
+                    SDKConnection sdkConnection = this.createSdkConnection();
+                    this.connection = sdkConnection;
                 }
-            } catch (Exception ignored) {
+            } catch (Exception exc) {
+                logger.error("Error creating connection: " + exc.getMessage(), exc);
             }
+            return this.connection;
         }
-        return connection;
     }
 
     /**
@@ -317,11 +326,12 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     public synchronized void close() throws IOException {
         logger.info("Closing underlying AMQP connection");
         try {
-            if (this.connection != null) {
+            if (this.connection != null && this.connection.isOpen()) {
                 this.connection.close();
             }
         } finally {
             this.connection = null;
+            connectionStarted = 0;
         }
         logger.info("Connection closed");
     }
@@ -330,6 +340,14 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     public synchronized boolean isConnectionOpen() {
         return this.connection != null && this.connection.isOpen();
     }
+
+    /**
+     * Get the timestamp when the connection started
+     *
+     * @return the timestamp when the connection started
+     */
+    @Override
+    public long getConnectionStarted() { return connectionStarted; }
 
     private synchronized void handleShutdown(ShutdownSignalException cause) {
         try {
@@ -350,17 +368,47 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         }
     }
 
+    private synchronized void handleBlocked(String reason, boolean blocked) {
+        try {
+            MDC.setContextMap(whoAmIReader.getAssociatedSdkMdcContextMap());
+            try {
+                this.connectionStatusListener.onConnectionDown();
+            } catch (Exception re) {
+                logger.warn("Problems dispatching onConnectionDown()", re);
+            }
+
+            if (blocked) {
+                logger.warn("Existing AMQP connection has been blocked. " + reason);
+            } else {
+                logger.info("Existing AMQP connection has been unblocked.");
+            }
+        } finally {
+            MDC.clear();
+        }
+    }
+
     private final static class ShutdownListenerImpl implements ShutdownListener {
 
         private final SingleInstanceAMQPConnectionFactory parent;
 
-        private ShutdownListenerImpl(final SingleInstanceAMQPConnectionFactory parent) {
-            this.parent = parent;
-        }
+        private ShutdownListenerImpl(final SingleInstanceAMQPConnectionFactory parent) { this.parent = parent; }
 
         @Override
         public void shutdownCompleted(ShutdownSignalException cause) {
             this.parent.handleShutdown(cause);
         }
+    }
+
+    private final static class BlockedListenerImpl implements BlockedListener {
+
+        private final SingleInstanceAMQPConnectionFactory parent;
+
+        private BlockedListenerImpl(final SingleInstanceAMQPConnectionFactory parent) { this.parent = parent; }
+
+        @Override
+        public void handleBlocked(String s) throws IOException { this.parent.handleBlocked(s, true); }
+
+        @Override
+        public void handleUnblocked() throws IOException { this.parent.handleBlocked(null, false); }
     }
 }

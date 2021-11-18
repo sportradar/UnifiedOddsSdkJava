@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
+import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInitiated;
 
 
 /**
@@ -50,6 +51,16 @@ public interface SDKProducerStatusListener {
      * @since v2.0.8
      */
     default void onProducerStatusChange(ProducerStatus producerStatus) {
-        // roll out default behaviour - its advised to update the code to use this method instead of the onProducerDown/onProducerUp
+        // roll out default behaviour - it is advised to update the code to use this method instead of the onProducerDown/onProducerUp
+    }
+
+    /**
+     * Invoked when the recovery is initiated
+     *
+     * @param recoveryInitiated the new {@link RecoveryInitiated}
+     * @since v2.0.51
+     */
+    default void onRecoveryInitiated(RecoveryInitiated recoveryInitiated) {
+        // roll out default behaviour - it is advised to update the code to use this method instead of the onProducerDown/onProducerUp
     }
 }

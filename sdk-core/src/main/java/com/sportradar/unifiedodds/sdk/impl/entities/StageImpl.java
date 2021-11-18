@@ -99,7 +99,7 @@ public class StageImpl extends SportEventImpl implements Stage {
         StageCI cacheItem = loadStageCI();
 
         if (cacheItem == null || cacheItem.getCategoryId() == null) {
-                handleException("getSport - missing category data", null);
+            handleException("getSport - missing category data", null);
             return null;
         }
 

@@ -39,7 +39,7 @@ class ProducerInfo {
     private volatile ProducerStatusReason producerStatusReason;
     private volatile long lastUserSessionAliveReceivedTimestamp = 0;
     private volatile long lastValidAliveGenTimestampInRecovery;
-
+    private volatile long created;
 
     ProducerInfo(int producerId, SDKProducerManager producerManager) {
         Preconditions.checkNotNull(producerManager);
@@ -47,8 +47,8 @@ class ProducerInfo {
 
         this.producerId = producerId;
         this.producerManager = producerManager;
+        created = new TimeUtilsImpl().now();
     }
-
 
     void onFirstRecoveryCompleted() {
         firstRecoveryCompleted = true;
@@ -115,17 +115,13 @@ class ProducerInfo {
         return recoveryId == requestId || eventRecoveries.containsKey(requestId);
     }
 
-    boolean isPerformingRecovery() {
-        return recoveryState == RecoveryState.Started || recoveryState == RecoveryState.Interrupted;
-    }
+    boolean isPerformingRecovery() { return recoveryState == RecoveryState.Started || recoveryState == RecoveryState.Interrupted; }
 
     boolean isDisabled() {
         return !producerManager.isProducerEnabled(producerId);
     }
 
-    boolean isFlaggedDown() {
-        return producerManager.isProducerDown(producerId);
-    }
+    boolean isFlaggedDown() { return producerManager.isProducerDown(producerId); }
 
     boolean isFirstRecoveryCompleted() {
         return firstRecoveryCompleted;
@@ -141,17 +137,15 @@ class ProducerInfo {
         return recoveryId;
     }
 
-    long getLastRecoveryStartedAt() {
-        return recoveryStartedAt;
-    }
+    long getLastRecoveryStartedAt() { return recoveryStartedAt; }
+
+    long getLastRecoveryAttemptedAt() { return producerManager.getProducerLastRecoveryAttemptTimestamp(producerId); }
 
     EventRecovery getEventRecoveryData(long recoveryId) {
         return eventRecoveries.get(recoveryId);
     }
 
-    long getTimestampForRecovery() {
-        return producerManager.getProducer(producerId).getTimestampForRecovery();
-    }
+    long getTimestampForRecovery() { return producerManager.getProducer(producerId).getTimestampForRecovery(); }
 
     long getLastSystemAliveReceivedTimestamp() {
         return lastSystemAliveReceivedTimestamp;
@@ -185,6 +179,10 @@ class ProducerInfo {
 
     int getStatefulRecoveryWindowInMinutes() { return producerManager.getProducer(producerId).getStatefulRecoveryWindowInMinutes(); }
 
+    long getLastRecoveryMessageReceivedTimestamp() { return producerManager.getProducerLastRecoveryMessageTimestamp(producerId); }
+
+    long getCreated() { return this.created; }
+
     void setProducerRecoveryState(int recoveryId, long recoveryStartedAt, RecoveryState recoveryState) {
         logger.info("{} recovery state set to: recoveryId[{}], recoveryStartedAt[{}], recoveryState[{}]", this, recoveryId, recoveryStartedAt, recoveryState);
 
@@ -214,6 +212,10 @@ class ProducerInfo {
     void setLastMessageReceivedTimestamp(long timestamp) {
         producerManager.internalSetProducerLastMessageTimestamp(producerId, timestamp);
     }
+
+    void setLastRecoveryMessageReceivedTimestamp(long timestamp) { producerManager.internalSetProducerLastRecoveryMessageTimestamp(producerId, timestamp); }
+
+    void setLastRecoveryAttemptedTimestamp(long timestamp) { producerManager.internalSetProducerLastRecoveryAttemptTimestamp(producerId, timestamp); }
 
     void setLastProcessedMessageGenTimestamp(long lastProcessedMessageGenTimestamp) {
         producerManager.setLastProcessedMessageGenTimestamp(producerId, lastProcessedMessageGenTimestamp);

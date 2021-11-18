@@ -44,7 +44,6 @@ public class ProducerManagerTest {
 
         activeProducers
                 .values()
-                .stream()
                 .forEach(producer -> assertTrue(producer.isAvailable()));
     }
 

@@ -138,6 +138,12 @@ public class HttpHelper {
             this.message = httpResponseContent == null ? EMPTY_RESPONSE : tryDeserializeResponseMessage(deserializer, httpResponseContent);
         }
 
+        public ResponseData(Integer statusCode, String message) {
+            this.statusCode = statusCode;
+            this.successStatus = statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_ACCEPTED;
+            this.message = message;
+        }
+
         public Integer getStatusCode() {
             return statusCode;
         }

@@ -16,9 +16,7 @@ public interface EnvironmentSelector {
      * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
      */
     @Deprecated
-    default ConfigurationBuilder selectStaging() {
-        return selectIntegration();
-    };
+    default ConfigurationBuilder selectStaging() { return selectIntegration(); };
 
     /**
      * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment

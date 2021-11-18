@@ -46,10 +46,12 @@ public class ProducerData {
     private boolean flaggedDown = true;
     private long lastProcessedMessageGenTimestamp;
     private long lastAliveReceivedGenTimestamp = 0;
+    private long lastRecoveryMessageTimestamp = 0;
+    private long lastRecoveryAttemptTimestamp;
     private long recoveryFromTimestamp;
     private RecoveryInfo lastRecoveryInfo;
 
-    ProducerData(int id, String name, String description, boolean active, String apiUrl, String producerScopes, Integer statefulRecoveryWindowInMinutes) {
+    public ProducerData(int id, String name, String description, boolean active, String apiUrl, String producerScopes, Integer statefulRecoveryWindowInMinutes) {
         Preconditions.checkArgument(id > 0);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name));
         Preconditions.checkArgument(!Strings.isNullOrEmpty(description));
@@ -84,6 +86,7 @@ public class ProducerData {
                 ? DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES
                 : statefulRecoveryWindowInMinutes;
         this.lastRecoveryInfo = null;
+        this.lastRecoveryAttemptTimestamp = 0;
     }
 
     public int getId() {
@@ -122,6 +125,10 @@ public class ProducerData {
         return lastProcessedMessageGenTimestamp;
     }
 
+    public long getLastRecoveryMessageTimestamp() { return lastRecoveryMessageTimestamp; }
+
+    public long getLastRecoveryAttemptTimestamp() { return lastRecoveryAttemptTimestamp; }
+
     public long getTimestampForRecovery() {
         if (lastAliveReceivedGenTimestamp == 0) {
             return recoveryFromTimestamp;
@@ -158,6 +165,8 @@ public class ProducerData {
         this.lastProcessedMessageGenTimestamp = lastProcessedMessageGenTimestamp;
     }
 
+    public void setLastRecoveryMessageReceivedTimestamp(long lastRecoveryMessageTimestamp) { this.lastRecoveryMessageTimestamp = lastRecoveryMessageTimestamp; }
+
     public void setLastAliveReceivedGenTimestamp(long lastAliveReceivedGenTimestamp) {
         this.lastAliveReceivedGenTimestamp = lastAliveReceivedGenTimestamp;
     }
@@ -168,7 +177,7 @@ public class ProducerData {
 
     public RecoveryInfo getRecoveryInfo() { return lastRecoveryInfo; }
 
-    public void setRecoveryInfo(RecoveryInfo recoveryInfo){
-        this.lastRecoveryInfo = recoveryInfo;
-    }
+    public void setRecoveryInfo(RecoveryInfo recoveryInfo){ this.lastRecoveryInfo = recoveryInfo; }
+
+    public void setLastRecoveryAttemptTimestamp(long lastRecoveryAttemptTimestamp) { this.lastRecoveryAttemptTimestamp = lastRecoveryAttemptTimestamp; }
 }

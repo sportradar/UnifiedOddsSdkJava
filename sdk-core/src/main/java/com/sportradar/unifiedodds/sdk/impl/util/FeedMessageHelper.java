@@ -132,4 +132,37 @@ public class FeedMessageHelper {
 
         return timestamp;
     }
+
+    /**
+     * Provides the request id of the message (if present)
+     *
+     * @param o - the message from which the requestId should be provided
+     * @return - the id of the recovery request associated with the message
+     */
+    public static Long provideRequestIdFromMessage(UnmarshalledMessage o) {
+        Long requestId;
+        if (o instanceof UFOddsChange) {
+            requestId = ((UFOddsChange) o).getRequestId();
+        } else if (o instanceof UFBetStop) {
+            requestId = ((UFBetStop) o).getRequestId();
+        } else if (o instanceof UFBetSettlement) {
+            requestId = ((UFBetSettlement) o).getRequestId();
+        } else if (o instanceof UFRollbackBetSettlement) {
+            requestId = ((UFRollbackBetSettlement) o).getRequestId();
+        } else if (o instanceof UFBetCancel) {
+            requestId = ((UFBetCancel) o).getRequestId();
+        } else if (o instanceof UFFixtureChange) {
+            requestId = ((UFFixtureChange) o).getRequestId();
+        } else if (o instanceof UFRollbackBetCancel) {
+            requestId = ((UFRollbackBetCancel) o).getRequestId();
+        } else if (o instanceof UFSnapshotComplete) {
+            requestId = ((UFSnapshotComplete) o).getRequestId();
+//        } else if (o instanceof UFAlive) {
+//            requestId = ((UFAlive) o).getRequestId();
+        } else {
+            requestId = null;
+        }
+
+        return requestId;
+    }
 }

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import com.sportradar.utils.URN;
 
 /**
  * Created on 22/06/2017.
@@ -19,6 +20,8 @@ public interface FeedMessageFactory {
     ProducerDown buildProducerDown(int producerId, ProducerDownReason reason, long timestamp);
 
     ProducerStatus buildProducerStatus(int producerId, ProducerStatusReason reason, boolean isDown, boolean isDelayed, long timestamp);
+
+    RecoveryInitiated buildRecoveryInitiated(int producerId, long requestId, Long after, URN eventId, String message, long timestamp);
 
     <T extends SportEvent> BetStop<T> buildBetStop(T sportEvent, UFBetStop message, byte[] rawMessage, MessageTimestamp timestamp);
 

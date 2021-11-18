@@ -22,6 +22,7 @@ import org.slf4j.MDC;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -120,9 +121,12 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     }
 
     @Override
-    public void onMessageProcessingStarted(int uniqueMessageProcessorIdentifier, int producerId, long now) {
+    public void onMessageProcessingStarted(int uniqueMessageProcessorIdentifier, int producerId, Long requestId, long now) {
         messageProcessingTimes.put(uniqueMessageProcessorIdentifier, now);
         provideProducerInfo(producerId).setLastMessageReceivedTimestamp(now);
+        if(requestId != null && requestId > 0){
+            provideProducerInfo(producerId).setLastRecoveryMessageReceivedTimestamp(now);
+        }
     }
 
     @Override
@@ -368,10 +372,34 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             // checkups for activity & producerDown dispatch
             long currentSystemAliveActivityInterval = now - pi.getLastSystemAliveReceivedTimestamp();
             long maxInactivityIntervalMs = config.getLongestInactivityInterval() * 1000L;
-            if (currentSystemAliveActivityInterval > maxInactivityIntervalMs) {
+            if (pi.getLastRecoveryStartedAt() > 0 && currentSystemAliveActivityInterval > maxInactivityIntervalMs) {
                 flagProducerDown(pi, ProducerDownReason.AliveIntervalViolation);
             } else if (!queDelayStatusCalc(pi, now)) {
                 flagProducerDown(pi, ProducerDownReason.ProcessingQueueDelayViolation);
+            }
+
+            // check if any message arrived for this producer in the last X seconds; if not, start recovery
+            long missingAliveSince = pi.getLastSystemAliveReceivedTimestamp() == 0 ? pi.getCreated() : pi.getLastSystemAliveReceivedTimestamp();
+            missingAliveSince = now - missingAliveSince;
+            if((pi.getRecoveryState().equals(RecoveryState.NotStarted) || pi.getRecoveryState().equals(RecoveryState.Error))
+            && missingAliveSince > Duration.ofSeconds(60).toMillis()){
+                logger.warn("Producer id={}: no alive messages arrived since {}ms. New recovery will be done.",
+                            pi.getProducerId(),
+                            missingAliveSince);
+                performProducerRecovery(pi);
+            }
+
+            // recovery is called, and we check if any recovery message arrived in last X time; or restart recovery
+            long timeSinceLastRecoveryMessageReceived = pi.getLastRecoveryMessageReceivedTimestamp() == 0
+                                                            ? now - pi.getCreated()
+                                                            : now - pi.getLastRecoveryMessageReceivedTimestamp();
+            if(pi.isPerformingRecovery() && timeSinceLastRecoveryMessageReceived > Duration.ofSeconds(300).toMillis()){
+                logger.warn("Producer id={}: no recovery messages arrived since {}ms. New recovery will be done.",
+                            pi.getProducerId(),
+                            timeSinceLastRecoveryMessageReceived);
+                dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
+                pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
+                performProducerRecovery(pi);
             }
 
             updateLogStringBuilders(now, pi, heartBeatBuilder, statusBuilder);
@@ -395,7 +423,18 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         if (subscribed) {
             long now = timeUtils.now();
 
-            if (pi.isFlaggedDown() && !pi.isPerformingRecovery() && pi.getProducerDownReason() == ProducerDownReason.ProcessingQueueDelayViolation) {
+//            logger.warn("StatusCheck: Producer {} isFlaggedDown={}, downReason={}, recoveryState={}, recoveryId={}, lastRecoveryStart={}, created={}, timestampForRecovery={}",
+//                        pi,
+//                        pi.isFlaggedDown(),
+//                        pi.getProducerDownReason(),
+//                        pi.getRecoveryState(),
+//                        pi.getCurrentRecoveryId(),
+//                        new Date(pi.getLastRecoveryStartedAt()),
+//                        new Date(pi.getCreated()),
+//                        pi.getTimestampForRecovery());
+
+            if (pi.isFlaggedDown() && !pi.isPerformingRecovery() && pi.getProducerDownReason() == ProducerDownReason.ProcessingQueueDelayViolation
+                    && pi.getRecoveryState() != RecoveryState.Error && pi.getRecoveryState() != RecoveryState.Interrupted) {
                 if (queDelayStatusCalc(pi, now)) {
                     flagProducerUp(pi, ProducerUpReason.ProcessingQueDelayStabilized);
                 }
@@ -469,6 +508,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                         .append(" - ")
                         .append(pi.getProducerDownReason());
             }
+            statusBuilder.append(", RecoveryState=").append(pi.getRecoveryState());
         }
         statusBuilder.append(")");
     }
@@ -482,7 +522,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     }
 
     private boolean shouldPerformProducerRecovery(ProducerInfo pi) {
-        Instant start = Instant.ofEpochMilli(pi.getLastRecoveryStartedAt());
+        Instant start = Instant.ofEpochMilli(pi.getLastRecoveryAttemptedAt());
         Instant end = Instant.ofEpochMilli(timeUtils.now());
         Duration between = Duration.between(start, end);
 
@@ -533,12 +573,12 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         long now = timeUtils.now();
         int recoveryId = sequenceGenerator.getNext();
         pi.setProducerRecoveryState(recoveryId, now, RecoveryState.Started);
+        pi.setLastRecoveryAttemptedTimestamp(now);
 
         logger.info("Scheduling recovery request for {}, recoveryId: {}, recoveryFrom: {}", pi, recoveryId, recoveryFrom);
 
         try {
-            snapshotRequestManager.scheduleRequest(
-                    new SnapshotRequestImpl(bookmakerId, pi.getProducerId(), recoveryId, recoveryFrom, onRecoveryApproved(pi, recoveryFrom, recoveryId))
+            snapshotRequestManager.scheduleRequest(new SnapshotRequestImpl(bookmakerId, pi.getProducerId(), recoveryId, recoveryFrom, onRecoveryApproved(pi, recoveryFrom, recoveryId))
             );
         } catch (Exception e) {
             logger.error("Failed to schedule recovery request for {}, recoveryId: {}. Exc: {}", pi, recoveryId, e);
@@ -581,6 +621,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             logger.info("Event recovery[{}] request executed for event: {}, producer: {}, status: {}, message: {}", type, eventId, producerInfo, postStatus ? "SUCCESSFUL" : "FAILED", message);
             if (postStatus) {
                 // recovery request executed successfully
+                callOnRecoveryInitiated(producerInfo.getProducerId(), requestId, 0L, eventId, "");
                 return true;
             }
         } catch (CommunicationException e) {
@@ -588,10 +629,27 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             message = "Exception: " + e.getMessage();
         }
 
-        logger.warn("Failed to request event recovery for event: {}, producer: {}, type: {}, message: {}", eventId, producerInfo, type, message);
+        String failedMessage = String.format("Failed to request event recovery for event: %s, producer: %s, type: %s, message: %s", eventId, producerInfo, type, message);
+        logger.warn(failedMessage);
+        callOnRecoveryInitiated(producerInfo.getProducerId(), requestId, 0L, eventId, failedMessage);
         producerInfo.onEventRecoveryCompleted(requestId);
 
         return false;
+    }
+
+    private void callOnRecoveryInitiated(int producerId, long requestId, Long after, URN eventId, String message){
+        RecoveryInitiated recoveryInitiated = messageFactory.buildRecoveryInitiated(producerId, requestId, after, eventId, message, timeUtils.now());
+        try {
+            producerStatusListener.onRecoveryInitiated(recoveryInitiated);
+        } catch (Exception e) {
+            logger.warn("Problems dispatching onRecoveryInitiated for producer={}, requestId={}, after={}, eventId={}, message={}. Error={}",
+                        producerId,
+                        requestId,
+                        after,
+                        eventId,
+                        message,
+                        e.getMessage());
+        }
     }
 
     private void flagProducerDown(ProducerInfo pi, ProducerDownReason reason) {
@@ -622,11 +680,9 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 logger.warn("ProducerDown:AliveIntervalViolation -> No subscribed alive received in {}s (longest " +
                                     "inactivity interval), flagging producer as DOWN [{}]", config.getLongestInactivityInterval(), pi);
                 break;
-
             case ProcessingQueueDelayViolation:
                 logger.warn("ProducerDown:ProcessingQueueDelayViolation -> The max processing queue delay({}s) was exceeded, flagging producer as DOWN [{}]", config.getLongestInactivityInterval(), pi);
                 break;
-
             case Other:
             default:
                 logger.warn("ProducerDown:Other -> Flagging producer as DOWN [{}] (e.g. Received message producer down, alive w/subscribed=0)", pi);
@@ -794,6 +850,8 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                     // recovery executed successfully, thread end
                     RecoveryInfo recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
                     producerManager.setProducerRecoveryInfo(pi.getProducerId(), recoveryInfo);
+                    pi.setLastRecoveryMessageReceivedTimestamp(timeUtils.now());
+                    callOnRecoveryInitiated(pi.getProducerId(), recoveryId, fromTimestamp, null, "");
                     return;
                 }
             } catch (CommunicationException e) {
@@ -801,7 +859,9 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 responseMessage = "Exception: " + e.getMessage();
             }
 
-            logger.warn("Failed to request recovery for {}, message: {}", pi, responseMessage);
+            String failedMessage = String.format("Request recovery failed. Producer: %s, recoveryId: %s, after: %s, message: %s", pi, recoveryId, fromTimestamp, responseMessage);
+            logger.warn(failedMessage);
+            callOnRecoveryInitiated(pi.getProducerId(), recoveryId, fromTimestamp, null, failedMessage);
 
             dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             pi.setProducerRecoveryState(0, 0, RecoveryState.Error);

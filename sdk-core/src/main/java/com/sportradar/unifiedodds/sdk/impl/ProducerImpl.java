@@ -123,9 +123,7 @@ public class ProducerImpl implements Producer {
     }
 
     @Override
-    public long getTimestampForRecovery() {
-        return producerData == null ? 0 : producerData.getTimestampForRecovery();
-    }
+    public long getTimestampForRecovery() { return producerData == null ? 0 : producerData.getTimestampForRecovery(); }
 
     @Override
     public int getStatefulRecoveryWindowInMinutes() {

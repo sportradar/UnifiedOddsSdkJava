@@ -12,7 +12,7 @@ public final class EnvironmentManager {
     /**
      * The default MQ host port
      */
-    public static final int DEFAULT_MQ_HOST_PORT = 5671;
+    public static final int DEFAULT_MQ_HOST_PORT = 5671; // using ssl
 
     /**
      * Gets the list of all possible environment settings (Custom is not listed, as user should manually put MQ and API host)

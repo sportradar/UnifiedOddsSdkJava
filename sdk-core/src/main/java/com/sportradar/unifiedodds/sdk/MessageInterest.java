@@ -190,4 +190,25 @@ public enum MessageInterest {
                 return true;
         }
     }
+
+    public String toShortString(){
+        switch (this){
+            case LiveMessagesOnly:
+                return "live";
+            case PrematchMessagesOnly:
+                return "prematch";
+            case VirtualSports:
+                return "virtuals";
+            case AllMessages:
+                return "all";
+            case HiPrioMessagesOnly:
+                return "hi";
+            case LoPrioMessagesOnly:
+                return "lo";
+            case SpecifiedMatchesOnly:
+                return "specified";
+            default:
+                return "";
+        }
+    }
 }

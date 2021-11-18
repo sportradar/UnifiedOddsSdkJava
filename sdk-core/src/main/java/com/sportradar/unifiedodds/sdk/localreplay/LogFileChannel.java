@@ -66,9 +66,10 @@ public class LogFileChannel implements RabbitMqChannel {
      *
      * @param routingKeys            - a {@link List} of routing keys which should be binded
      * @param channelMessageConsumer - a {@link ChannelMessageConsumer} which consumes the received payloads
+     * @param messageInterest        - message interest this channel is linked to
      */
     @Override
-    public void open(List<String> routingKeys, ChannelMessageConsumer channelMessageConsumer) {
+    public void open(List<String> routingKeys, ChannelMessageConsumer channelMessageConsumer, String messageInterest) {
         if(isOpened()){
             throw new IllegalStateException("The channel is already opened");
         }

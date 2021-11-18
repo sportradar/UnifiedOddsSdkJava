@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.impl.FeedMessageFactory;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import com.sportradar.utils.URN;
 
 /**
  * Created on 22/06/2017.
@@ -47,6 +48,11 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public ProducerStatus buildProducerStatus(int producerId, ProducerStatusReason reason, boolean isDown, boolean isDelayed, long timestamp) {
         return new ProducerStatusImpl(producerManager.getProducer(producerId), reason, isDown, isDelayed, timestamp);
+    }
+
+    @Override
+    public RecoveryInitiated buildRecoveryInitiated(int producerId, long requestId, Long after, URN eventId, String message, long timestamp) {
+        return new RecoveryInitiatedImpl(producerManager.getProducer(producerId), requestId, after, eventId, message, timestamp);
     }
 
     @Override

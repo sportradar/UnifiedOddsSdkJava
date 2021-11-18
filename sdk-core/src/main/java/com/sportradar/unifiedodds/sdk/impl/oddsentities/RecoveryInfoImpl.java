@@ -17,14 +17,14 @@ public class RecoveryInfoImpl implements RecoveryInfo {
     private final String responseMessage;
     private final int nodeId;
 
-    public RecoveryInfoImpl(long after, long timestamp, long requestId, int responseCode, String responseMessage, int nodeId)
+    public RecoveryInfoImpl(long after, long timestamp, long requestId, int responseCode, String responseMessage, Integer nodeId)
     {
         this.after = after;
         this.timestamp = timestamp;
         this.requestId = requestId;
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
-        this.nodeId = nodeId;
+        this.nodeId = nodeId == null ? 0 : nodeId.intValue();
     }
 
     /**

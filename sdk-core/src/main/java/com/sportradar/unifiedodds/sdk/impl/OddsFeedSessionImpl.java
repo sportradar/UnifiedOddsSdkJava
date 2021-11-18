@@ -147,7 +147,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
 
         int producerId = FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage);
 
-        recoveryManager.onMessageProcessingStarted(this.hashCode(), producerId, now);
+        recoveryManager.onMessageProcessingStarted(this.hashCode(), producerId, FeedMessageHelper.provideRequestIdFromMessage(unmarshalledMessage), now);
         messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp);
         recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, FeedMessageHelper.provideMessageGenTimestampFromMessage(unmarshalledMessage));
 

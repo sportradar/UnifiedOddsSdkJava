@@ -19,4 +19,11 @@ public class Constants {
     public static final String ROLLBACK_BET_CANCEL_MSG_URI = "test/feed_xml/rollback_bet_cancel.xml";
 
     public static final String SCHEDULE_MSG_URI = "test/rest/schedule.en.xml";
+
+    // local rabbit data for tests
+    public static final String RABBIT_IP = "192.168.64.100";
+    public static final String SDK_USERNAME = "testuser";
+    public static final String SDK_PASSWORD = "testpass";
+    public static final String UF_EXCHANGE = "unifiedfeed";
+    public static final String UF_VIRTUALHOST = "/virtualhost";
 }

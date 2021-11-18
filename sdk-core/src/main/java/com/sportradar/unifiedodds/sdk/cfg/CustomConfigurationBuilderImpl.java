@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.utils.SdkHelper;
 
 import java.util.ArrayList;
@@ -158,6 +159,10 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     @Override
     public CustomConfigurationBuilder useMessagingSsl(boolean useMessagingSsl) {
         this.useMessagingSsl = useMessagingSsl;
+
+        if(messagingPort == 0 || messagingPort == EnvironmentManager.DEFAULT_MQ_HOST_PORT || messagingPort == 5672) {
+            this.messagingPort = useMessagingSsl ? EnvironmentManager.DEFAULT_MQ_HOST_PORT : 5672;
+        }
         return this;
     }
 
@@ -170,6 +175,16 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     public OddsFeedConfiguration build() {
 
         defaultLocale = SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
+
+        if(messagingPort == 0)
+        {
+            if(useMessagingSsl){
+                messagingPort = 5671;
+            }
+            else{
+                messagingPort = 5672;
+            }
+        }
 
         return new OddsFeedConfiguration(
                 accessToken,

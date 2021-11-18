@@ -24,7 +24,7 @@ public interface AMQPConnectionFactory {
      * @throws NoSuchAlgorithmException An error occurred while configuring the factory to use SSL
      * @throws KeyManagementException An error occurred while configuring the factory to use SSL
      */
-    Connection newConnection() throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException;
+    Connection getConnection() throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException;
 
     /**
      * Close the AMQP connection
@@ -39,4 +39,10 @@ public interface AMQPConnectionFactory {
      * @return the status of the connection
      */
     boolean isConnectionOpen();
+
+    /**
+     * Get the timestamp when the connection started
+     * @return the timestamp when the connection started
+     */
+    long getConnectionStarted();
 }

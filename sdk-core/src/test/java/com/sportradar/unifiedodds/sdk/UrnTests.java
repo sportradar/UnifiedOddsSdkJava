@@ -3,9 +3,6 @@ package com.sportradar.unifiedodds.sdk;
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
 import com.sportradar.utils.URN;
 import org.junit.Test;
-
-import java.util.Optional;
-
 import static org.junit.Assert.*;
 
 public class UrnTests {

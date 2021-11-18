@@ -196,7 +196,7 @@ public class WhoAmIReaderTests {
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 1);
         Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
-        Assert.assertEquals(whoAmIReader.getVirtualHost(),  "/virtualhost/1");
+        Assert.assertEquals(whoAmIReader.getVirtualHost(),  "/virtualhost");
     }
 
     @SuppressWarnings("unchecked")
