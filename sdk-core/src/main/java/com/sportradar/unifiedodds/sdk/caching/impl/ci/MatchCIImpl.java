@@ -1263,7 +1263,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     private void handleException(String request, Exception e) {
-        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw && !SdkHelper.isDataNotFound(e)) {
+        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
                 throw new ObjectNotFoundException("MatchCIImpl[" + id + "], request(" + request + ")");
             } else {
