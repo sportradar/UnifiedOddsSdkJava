@@ -509,10 +509,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 .map(URN::parse)
                 .filter(i -> associatedPlayerIds == null || !associatedPlayerIds.contains(i))
                 .collect(Collectors.toList()) : new ArrayList<>();
-        if (associatedPlayerIds == null)
+        if (associatedPlayerIds == null) {
             associatedPlayerIds = new ArrayList<>(missingAssociatedPlayerIds);
-        else
+        }
+        else {
             associatedPlayerIds.addAll(missingAssociatedPlayerIds);
+        }
         jerseys = exportable.getJerseys() != null ? exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList()) : null;
         manager = exportable.getManager() != null ? new ManagerCI(exportable.getManager()) : null;
         venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
@@ -539,10 +541,11 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
         internalMerge(data.getCompetitor(), dataLocale);
 
-        associatedPlayerIds = Optional.ofNullable(data.getPlayers())
-                .map(p -> p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList()))
-                .orElse(null);
-
+        if(data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
+            associatedPlayerIds = Optional.ofNullable(data.getPlayers())
+                    .map(p -> p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList()))
+                    .orElse(null);
+        }
         jerseys = Optional.ofNullable(data.getJerseys())
                 .map(j -> j.getJersey().stream().map(JerseyCI::new).collect(Collectors.toList()))
                 .orElse(null);
@@ -631,6 +634,11 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
         if(competitor.getShortName() != null){
             shortName = competitor.getShortName();
+        }
+        if(competitor.getPlayers() != null && !competitor.getPlayers().getPlayer().isEmpty()) {
+            associatedPlayerIds = Optional.ofNullable(competitor.getPlayers())
+                    .map(p -> p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList()))
+                    .orElse(null);
         }
     }
 

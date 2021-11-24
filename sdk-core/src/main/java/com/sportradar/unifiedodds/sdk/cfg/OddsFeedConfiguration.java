@@ -128,9 +128,7 @@ public class OddsFeedConfiguration {
     /**
      * @return The longest inactivity interval between producer alive messages(seconds)
      */
-    public int getLongestInactivityInterval() {
-        return inactivitySeconds;
-    }
+    public int getLongestInactivityInterval() { return inactivitySeconds; }
 
     /**
      * @return The max recovery execution time, after which the recovery request is repeated(minutes)
