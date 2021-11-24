@@ -3,9 +3,6 @@
 # the access token provided by Sportradar
 uf.sdk.accessToken=
 
-# the maximum inactivity seconds between alive messages
-uf.sdk.maxInactivitySeconds=
-
 # the default locale
 uf.sdk.defaultLocale=
 
@@ -38,6 +35,9 @@ uf.sdk.useMessagingSsl=
 
 # a list of producer identifiers that should be automatically disabled, separated with comma(1,2,4)
 uf.sdk.disabledProducers=
+
+# the maximum inactivity seconds between alive messages
+uf.sdk.maxInactivitySeconds=
 
 # the maximum recovery time - minutes
 uf.sdk.maxRecoveryTime=

@@ -100,6 +100,9 @@ public class TokenSetterImpl implements TokenSetter {
     @Override
     public OddsFeedConfiguration buildConfigFromSdkProperties() {
         Environment ufEnvironment = sdkConfigurationPropertiesReader.readUfEnvironment();
+        if(ufEnvironment.equals(Environment.Custom)){
+            return setAccessTokenFromSdkProperties().selectCustom().loadConfigFromSdkProperties().build();
+        }
         return setAccessTokenFromSdkProperties().selectEnvironment(ufEnvironment).loadConfigFromSdkProperties().build();
     }
 
