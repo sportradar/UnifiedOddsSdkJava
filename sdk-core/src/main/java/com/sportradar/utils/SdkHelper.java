@@ -11,6 +11,8 @@ import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import org.apache.http.client.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
  * An utility class that contains various methods which perform common language tasks
  */
 public final class SdkHelper {
+
+    public final static Logger ExecutionLog = LoggerFactory.getLogger(SdkHelper.class);
 
     public static int MarketDescriptionMinFetchInterval = 30;
     public static String InVariantMarketListCache = "InVariantMarketListCache";
@@ -349,5 +353,14 @@ public final class SdkHelper {
             break;
         }
         return false;
+    }
+
+    /**
+     * Check is string is null or empty
+     * @param string to be checked
+     * @return true if null or empty, otherwise false
+     */
+    public static boolean stringIsNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
     }
 }

@@ -6,9 +6,11 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFResultType;
+import com.sportradar.uf.sportsapi.datamodel.SAPIResultScore;
 import com.sportradar.uf.sportsapi.datamodel.SAPIStageResult;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
+import com.sportradar.utils.SdkHelper;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -65,9 +67,9 @@ public class EventResultImpl implements EventResult {
 
         grid = c.getGrid();
 
+        homeScore = null;
         awayScore = null;
         matchStatus = null;
-        homeScore = null;
 
         distance = c.getDistance();
 
@@ -86,6 +88,41 @@ public class EventResultImpl implements EventResult {
         homeScore = r.getHomeScore();
         awayScore = r.getAwayScore();
         matchStatus = r.getMatchStatusCode();
+
+        id = null;
+        position = null;
+        points = null;
+        time = null;
+        timeRanking = null;
+        status = null;
+        statusComment = null;
+        sprint = null;
+        sprintRanking = null;
+        climber = null;
+        climberRanking = null;
+        wcPoints = null;
+        pointsDecimal = null;
+        sprintDecimal = null;
+        climberDecimal = null;
+        grid = null;
+        distance = null;
+        competitorResults = null;
+    }
+
+    public EventResultImpl(SAPIResultScore result) {
+        Preconditions.checkNotNull(result);
+
+        if (!SdkHelper.stringIsNullOrEmpty(result.getHomeScore())) {
+            homeScore = new BigDecimal(result.getHomeScore());
+        } else {
+            homeScore = null;
+        }
+        if (!SdkHelper.stringIsNullOrEmpty(result.getAwayScore())) {
+            awayScore = new BigDecimal(result.getAwayScore());
+        } else {
+            awayScore = null;
+        }
+        matchStatus = result.getMatchStatusCode();
 
         id = null;
         position = null;

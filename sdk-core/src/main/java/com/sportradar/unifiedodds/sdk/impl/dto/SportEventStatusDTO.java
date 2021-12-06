@@ -17,6 +17,7 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIStageSportEventStatus;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventClockImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventResultImpl;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 
 import java.math.BigDecimal;
@@ -167,8 +168,8 @@ public class SportEventStatusDTO {
         }
         this.matchStatusId = calculateMatchStatusId(sportEventStatus.getMatchStatusCode(), status);
         this.reportingStatus = ReportingStatus.Unknown;
-        this.homeScore = sportEventStatus.getHomeScore() == null ? null : BigDecimal.valueOf(sportEventStatus.getHomeScore());
-        this.awayScore = sportEventStatus.getAwayScore() == null ? null : BigDecimal.valueOf(sportEventStatus.getAwayScore());
+        this.homeScore = SdkHelper.stringIsNullOrEmpty(sportEventStatus.getHomeScore()) ? null : new BigDecimal(sportEventStatus.getHomeScore());
+        this.awayScore = SdkHelper.stringIsNullOrEmpty(sportEventStatus.getAwayScore()) ? null : new BigDecimal(sportEventStatus.getAwayScore());
 
         this.winnerId = Strings.isNullOrEmpty(sportEventStatus.getWinnerId()) ? null : URN.parse(sportEventStatus.getWinnerId());
 
@@ -190,7 +191,9 @@ public class SportEventStatusDTO {
 
         sportEventStatisticsDTO = statistics == null ? null : new SportEventStatisticsDTO(statistics, homeAwayMap);
 
-        eventResults = null;
+        eventResults = sportEventStatus.getResults() == null || sportEventStatus.getResults().getResult() == null
+                ? null
+                : sportEventStatus.getResults().getResult().stream().map(EventResultImpl::new).collect(Collectors.toList());
         eventClock = null;
 
         homePenaltyScore = null;
@@ -293,9 +296,9 @@ public class SportEventStatusDTO {
             seStatus.getPeriodScores().getPeriodScore().forEach(this::addPeriodScore);
         }
 
-        eventResults = seStatus.getResults() == null ? null :
-                seStatus.getResults().getResult()
-                        .stream().map(EventResultImpl::new).collect(Collectors.toList());
+        eventResults = seStatus.getResults() == null
+                ? null
+                : seStatus.getResults().getResult().stream().map(EventResultImpl::new).collect(Collectors.toList());
 
         sportEventStatisticsDTO = seStatus.getStatistics() == null ? null : new SportEventStatisticsDTO(seStatus.getStatistics());
 
