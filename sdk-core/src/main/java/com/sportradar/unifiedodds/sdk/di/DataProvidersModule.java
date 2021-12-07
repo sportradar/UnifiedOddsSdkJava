@@ -31,7 +31,7 @@ public class DataProvidersModule extends AbstractModule {
                 : "";
 
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replaySummary = httpHttps + "://" + EnvironmentManager.getApiHost(Environment.Replay) + "/v1/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
+        String replaySummary = httpHttps + "://" + cfg.getAPIHost() + "/v1/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
 
         return new DataProvider<>(
                 cfg.isReplaySession()
@@ -186,7 +186,7 @@ public class DataProvidersModule extends AbstractModule {
                 : "";
 
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replayTimeline = httpHttps + "://" + EnvironmentManager.getApiHost(Environment.Replay) + "/v1/replay/sports/%s/sport_events/%s/timeline.xml" + nodeIdStr;
+        String replayTimeline = httpHttps + "://" + cfg.getAPIHost() + "/v1/replay/sports/%s/sport_events/%s/timeline.xml" + nodeIdStr;
 
         return new DataProvider<>(
                 cfg.isReplaySession()
@@ -313,7 +313,7 @@ public class DataProvidersModule extends AbstractModule {
                 : "";
 
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
-        String replayFixture = httpHttps + "://" + EnvironmentManager.getApiHost(Environment.Replay) + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
+        String replayFixture = httpHttps + "://" + cfg.getAPIHost() + "/v1/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
 
         return new DataProvider<>(
                 cfg.isReplaySession() ? replayFixture : "/sports/%s/sport_events/%s/" + filename,

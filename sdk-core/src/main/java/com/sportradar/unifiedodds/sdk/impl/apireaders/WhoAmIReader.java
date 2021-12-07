@@ -220,6 +220,8 @@ public class WhoAmIReader {
         }
 
         if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
+            logger.info("Production WhoAmI request successful, switching SDK configuration to production API");
+            config.updateApiHost(EnvironmentManager.getApiHost(Environment.Production));
             return bookmakerDetails;
         }
 

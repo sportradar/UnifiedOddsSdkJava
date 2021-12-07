@@ -147,7 +147,7 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
      * @return - a valid value from {@link HttpStatus}
      * @see HttpStatus
      */
-    private int mapReponseCode2HttpStatus(ResponseCode responseCode) {
+    private int mapResponseCode2HttpStatus(ResponseCode responseCode) {
         switch (responseCode) {
             case OK:
                 return HttpStatus.SC_OK;
