@@ -179,9 +179,9 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                     channelLastMessage = LocalDateTime.now();
                     channelMessageConsumer.onMessageReceived(envelope.getRoutingKey(), body, properties, new TimeUtilsImpl().now());
                 } catch (Exception e) {
-                    logger.error("An exception occurred while processing AMQP message. Routing key: '{}', body: '{}'",
+                    logger.error(String.format("An exception occurred while processing AMQP message. Routing key: '%s', body: '%s'",
                             envelope.getRoutingKey(),
-                            body == null ? "null" : new String(body),
+                            body == null ? "null" : new String(body)),
                             e
                     );
                 }
@@ -191,7 +191,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
 
         channel.addShutdownListener(rabbitMqSystemListener);
         ((Recoverable) channel).addRecoveryListener(rabbitMqSystemListener);
-        String consumerTag = String.format("UfSdk-Java|%s|%s|%s|%s", sdkVersion, messageInterest, channel.getChannelNumber(), new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()));
+        String consumerTag = String.format("UfSdk-Java|%s|%s|%s|%s", sdkVersion, messageInterest, channel.getChannelNumber(), new SimpleDateFormat("yyyyMMdd-hhmmss").format(new Date()));
         channel.basicConsume(qName, true, consumerTag, consumer);
         channelStarted = timeUtils.now();
         channelLastMessage = LocalDateTime.MIN;
@@ -309,6 +309,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
     private void channelClosePure(){
         try {
             if (channel != null && channel.isOpen()) {
+                ((Recoverable) channel).removeRecoveryListener(rabbitMqSystemListener);
                 channel.close();
             }
         } catch (TimeoutException | IOException e) {

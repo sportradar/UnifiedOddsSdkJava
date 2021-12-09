@@ -167,16 +167,27 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                     loggerTraffic.debug("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, producerId);
                 }
             }
-        } catch (JAXBException e) {
+        } catch (JAXBException jaxbException) {
             loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
             dispatchUnparsableMessage(
-                            String.format("Problems deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
+                            String.format("Problem deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
                                           routingKey,
                                           new String(body),
-                                          e),
+                                          jaxbException),
                             body,
                             routingKeyInfo.getEventId(),
                             timestamp);
+            return;
+        } catch (Exception e){
+            loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
+            dispatchUnparsableMessage(
+                    String.format("Problem consuming received message. RoutingKey:%s, Message:%s, ex: %s",
+                                  routingKey,
+                                  body == null || body.length == 0 ? "null" : new String(body),
+                                  e),
+                    body,
+                    routingKeyInfo.getEventId(),
+                    timestamp);
             return;
         }
 

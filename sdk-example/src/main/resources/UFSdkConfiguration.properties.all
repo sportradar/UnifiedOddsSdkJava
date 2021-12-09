@@ -3,10 +3,10 @@
 # the access token provided by Sportradar
 uf.sdk.accessToken=
 
-# the default locale
-uf.sdk.defaultLocale=
+# the default locale (en)
+uf.sdk.defaultLocale=en
 
-# the desired locales, separated with comma
+# the desired locales, separated with comma (es,fr)
 uf.sdk.desiredLocales=
 
 # the api host
@@ -33,7 +33,7 @@ uf.sdk.useApiSsl=
 # an indication if the connection to the messaging broker should use ssl (true/false)
 uf.sdk.useMessagingSsl=
 
-# a list of producer identifiers that should be automatically disabled, separated with comma(1,2,4)
+# a list of producer identifiers that should be automatically disabled, separated with comma (1,2,4)
 uf.sdk.disabledProducers=
 
 # the maximum inactivity seconds between alive messages
@@ -51,5 +51,5 @@ uf.sdk.nodeId=
 # the exception handling strategy that should be used trough the SDK (throw/catch)
 uf.sdk.exceptionHandlingStrategy=
 
-# a value indicating to which unified feed environment sdk should connect
+# a value indicating to which unified feed environment sdk should connect (Environment enum value)
 uf.sdk.ufEnvironment=
