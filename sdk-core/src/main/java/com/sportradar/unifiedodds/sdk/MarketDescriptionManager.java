@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
+import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 
 import java.util.List;
@@ -67,6 +68,45 @@ public interface MarketDescriptionManager {
      * @param variantValue the variant value used to delete variant market description from the cache
      */
     default void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue){
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Prefetch variant market descriptions in parallel
+     * Useful when list of markets on feed message contains many variant markets which calls single variant market description api endpoint
+     * Only call this if name of the market is needed. If only id part is, then this is not needed.
+     *
+     * @param markets the list of markets to be checked and fetched
+     * @return the time needed for processing in ms
+     */
+    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets){
+        return parallelPrefetchVariantMarketDescriptions(markets, true, 100);
+    }
+
+    /**
+     * Prefetch variant market descriptions in parallel
+     * Useful when list of markets on feed message contains many variant markets which calls single variant market description api endpoint
+     * Only call this if name of the market is needed. If only id part is, then this is not needed.
+     *
+     * @param markets the list of markets to be checked and fetched
+     * @param onlyVariantMarkets prefetch only variant markets or all markets in the list (default: true)
+     * @return the time needed for processing in ms
+     */
+    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets, boolean onlyVariantMarkets){
+        return parallelPrefetchVariantMarketDescriptions(markets, onlyVariantMarkets, 100);
+    }
+
+    /**
+     * Prefetch variant market descriptions in parallel
+     * Useful when list of markets on feed message contains many variant markets which calls single variant market description api endpoint
+     * Only call this if name of the market is needed. If only id part is, then this is not needed.
+     *
+     * @param markets the list of markets to be checked and fetched
+     * @param onlyVariantMarkets prefetch only variant markets or all markets in the list (default: true)
+     * @param threadPoolSize the size of the fixed thread pool (default: 100)
+     * @return the time needed for processing in ms
+     */
+    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets, boolean onlyVariantMarkets, int threadPoolSize){
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

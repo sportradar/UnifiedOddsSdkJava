@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -151,13 +152,13 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp);
         recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, FeedMessageHelper.provideMessageGenTimestampFromMessage(unmarshalledMessage));
 
-        clientInteractionLog.info("Message -> ({}|{}|{}|{}) processing finished on {}, duration: {}",
+        clientInteractionLog.info("Message -> ({}|{}|{}|{}) processing finished on {}, duration: {} ms",
                 producerId,
                 FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage),
                 unmarshalledMessage.getClass().getSimpleName(),
                 FeedMessageHelper.provideGenTimestampFromMessage(unmarshalledMessage),
                 getConsumerDescription(),
-                timer.stop());
+                timer.stop().elapsed(TimeUnit.MILLISECONDS));
 
         statisticsMBean.onMessageReceived(now, System.currentTimeMillis(), unmarshalledMessage);
     }

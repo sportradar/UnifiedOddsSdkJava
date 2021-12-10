@@ -21,7 +21,7 @@
             Once any of the below condition met, it will change the file name as below and compressed it. -->
             <fileNamePattern>${UF_SDK_LOG_FOLDER}/uf-sdk-example-%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
             <!-- or whenever the file size reaches 50MB -->
-            <maxFileSize>50MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
             <!-- keep 7 days' worth of history -->
             <maxHistory>7</maxHistory>
         </rollingPolicy>

@@ -5,10 +5,12 @@
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.markets.InvariantMarketDescriptionCache;
@@ -20,16 +22,22 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
+import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MarketManagerImpl implements MarketDescriptionManager {
     private static final Logger logger = LoggerFactory.getLogger(MarketManagerImpl.class);
+    private static final Logger interactionLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
     private final SDKInternalConfiguration config;
     private final MarketDescriptionProvider marketDescriptionProvider;
     private final InvariantMarketDescriptionCache invariantMarketDescriptionCache;
@@ -211,5 +219,55 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     @Override
     public void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue){
         variantMarketDescriptionCache.deleteCacheItem(marketId, variantValue);
+    }
+
+    /**
+     * Prefetch variant market descriptions in parallel
+     * Useful when list of markets on feed message contains many variant markets which calls single variant market description api endpoint
+     *
+     * @param markets the list of markets to be checked and fetched
+     * @param onlyVariantMarkets prefetch only variant markets or all markets in the list (default: true)
+     * @param threadPoolSize the size of the fixed thread pool (default: 100)
+     * @return the time needed for processing in ms
+     */
+    @Override
+    public long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets, boolean onlyVariantMarkets, int threadPoolSize) {
+        if (markets == null || markets.isEmpty()) {
+            interactionLogger.info("Prefetching variant market description called for 0 markets");
+            return 0;
+        }
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        ExecutorService threadPool = Executors.newFixedThreadPool(threadPoolSize);
+        List<Callable<String>> tasks = new ArrayList<>();
+        for (Market market : markets) {
+            if(onlyVariantMarkets) {
+                if (market.getSpecifiers() != null && market.getSpecifiers().containsKey("variant")) {
+                    for(Locale l : config.getDesiredLocales()) {
+                        tasks.add(() -> market.getName(l));
+                    }
+                }
+            } else {
+                for (Locale l : config.getDesiredLocales()) {
+                    tasks.add(() -> market.getName(l));
+                }
+            }
+        }
+        try {
+            interactionLogger.info("Prefetching variant market descriptions called for {} markets. Tasks: {}.", markets.size(), tasks.size());
+            threadPool.invokeAll(tasks);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
+        catch (Exception ex) {
+            interactionLogger.error("Error prefetching variant market descriptions.", ex);
+        }
+
+        threadPool.shutdown();
+        stopwatch.stop();
+        interactionLogger.info("Prefetching variant market descriptions for {} markets. Tasks: {}. Took {} ms.", markets.size(), tasks.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return stopwatch.elapsed(TimeUnit.MILLISECONDS);
     }
 }

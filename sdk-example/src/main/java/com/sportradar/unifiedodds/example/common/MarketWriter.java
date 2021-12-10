@@ -169,7 +169,7 @@ public class MarketWriter {
         writeMarketOutcomeMappings(market);
     }
 
-    private String writeSpecifiers(Map<String, String> specifiers)
+    private static String writeSpecifiers(Map<String, String> specifiers)
     {
         if(specifiers == null || specifiers.isEmpty())
         {
