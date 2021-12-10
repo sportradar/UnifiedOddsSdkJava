@@ -1,5 +1,14 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.52.0 (2021-12-10)**
+* Added support for event results in SportEventStatus received from api
+* Extended MarketDescriptionManager with parallelPrefetchVariantMarketDescriptions
+* Improved logging exception during message consumption
+* Fix: connecting to replay server with production token
+* Fix: setting custom configuration from properties files
+* Fix: loading competitor associated players data from match summary
+* Fix: throws exception if match, stage or draw not found exception happens
+
 **2.0.51.0 (2021-11-18)**
 * Improvements for connection resilience
 * Added onRecoveryInitiate to SDKProducerStatusListener
