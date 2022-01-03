@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A basic implementation of the {@link ChannelMessageConsumer} interface
@@ -78,26 +79,35 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     private ProducerManager producerManager;
 
     /**
+     * ReentrantLock for jabx unmarshaller because it is not thread safe by itself
+     */
+    private ReentrantLock jabxLock;
+
+    /**
      * @param unmarshaller an {@link Unmarshaller} instance used to deserialize the payloads
      * @param routingKeyParser a {@link RoutingKeyParser} used to parse the rabbit's routing key
      * @param configuration the associated feed configuration
      * @param producerManager the producer manager
+     * @param jabxReentrantLock lock for jabx unmarshaller
      */
     @Inject
     public ChannelMessageConsumerImpl(@Named("MessageUnmarshaller") Unmarshaller unmarshaller,
                                       RoutingKeyParser routingKeyParser,
                                       SDKInternalConfiguration configuration,
-                                      SDKProducerManager producerManager) {
+                                      SDKProducerManager producerManager,
+                                      ReentrantLock jabxReentrantLock) {
 
         Preconditions.checkNotNull(unmarshaller);
         Preconditions.checkNotNull(routingKeyParser);
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
+        Preconditions.checkNotNull(jabxReentrantLock);
 
         this.unmarshaller = unmarshaller;
         this.routingKeyParser = routingKeyParser;
         this.configuration = configuration;
         this.producerManager = producerManager;
+        this.jabxLock = jabxReentrantLock;
     }
 
     /**
@@ -153,7 +163,9 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         UnmarshalledMessage unmarshalledMessage;
         int producerId;
         try {
+            jabxLock.lock();
             unmarshalledMessage = (UnmarshalledMessage) unmarshaller.unmarshal(new ByteArrayInputStream(body));
+            jabxLock.unlock();
             producerId = FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage);
 
             if(producerManager.isProducerEnabled(producerId))
@@ -168,6 +180,9 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                 }
             }
         } catch (JAXBException jaxbException) {
+            if(jabxLock.isLocked()){
+                jabxLock.unlock();
+            }
             loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
             dispatchUnparsableMessage(
                             String.format("Problem deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
@@ -179,6 +194,9 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                             timestamp);
             return;
         } catch (Exception e){
+            if(jabxLock.isLocked()){
+                jabxLock.unlock();
+            }
             loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
             dispatchUnparsableMessage(
                     String.format("Problem consuming received message. RoutingKey:%s, Message:%s, ex: %s",

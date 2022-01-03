@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -74,6 +75,7 @@ public class GeneralModule implements Module {
      */
     private final SDKInternalConfiguration configuration;
 
+    private ReentrantLock jabxReentrantLock;
 
     /**
      * Constructs a new instance of the {@link GeneralModule} class
@@ -90,6 +92,7 @@ public class GeneralModule implements Module {
         this.configuration = configuration;
 
         try {
+            jabxReentrantLock = new ReentrantLock();
             messagesJaxbContext = JAXBContext.newInstance("com.sportradar.uf.datamodel");
             sportsApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
             customBetApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.custombet.datamodel");
@@ -154,6 +157,7 @@ public class GeneralModule implements Module {
         binder.bind(SportEventStatusFactory.class).to(SportEventStatusFactoryImpl.class);
         binder.bind(FeedMessageValidator.class).to(FeedMessageValidatorImpl.class);
         binder.bind(TimeUtils.class).to(TimeUtilsImpl.class);
+        binder.bind(ReentrantLock.class).toInstance(jabxReentrantLock);
     }
 
     private String loadVersion() {

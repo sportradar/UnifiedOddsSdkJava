@@ -21,7 +21,7 @@ public class Constants {
     public static final String SCHEDULE_MSG_URI = "test/rest/schedule.en.xml";
 
     // local rabbit data for tests
-    public static final String RABBIT_IP = "192.168.64.100";
+    public static final String RABBIT_IP = "192.168.64.101";
     public static final String SDK_USERNAME = "testuser";
     public static final String SDK_PASSWORD = "testpass";
     public static final String UF_EXCHANGE = "unifiedfeed";
