@@ -1,5 +1,8 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.52.1 (2022-01-20)**
+* Fix: after disconnection some feed messages can not be deserialized
+
 **2.0.52.0 (2021-12-10)**
 * Added support for event results in SportEventStatus received from api
 * Extended MarketDescriptionManager with parallelPrefetchVariantMarketDescriptions
