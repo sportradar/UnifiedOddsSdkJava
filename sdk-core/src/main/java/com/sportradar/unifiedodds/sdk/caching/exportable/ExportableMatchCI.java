@@ -54,9 +54,10 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
                              Map<Locale, ExportableEventTimelineCI> eventTimelines,
                              String liveOdds,
                              SportEventType sportEventType,
-                             StageType stageType) {
+                             StageType stageType,
+                             List<String> competitorVirtual) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
-              conditions, competitorsReferences, liveOdds, sportEventType);
+              conditions, competitorsReferences, liveOdds, sportEventType, competitorVirtual);
         this.defaultLocale = defaultLocale;
         this.fixture = fixture;
         this.competitorQualifiers = competitorQualifiers;

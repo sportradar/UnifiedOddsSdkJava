@@ -85,4 +85,10 @@ public interface CompetitionCI extends SportEventCI {
      * @return a {@link SportEventType} indicating the type of the associated event
      */
     SportEventType getSportEventType(List<Locale> locales);
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     * @return list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     */
+    List<URN> getCompetitorsVirtual();
 }

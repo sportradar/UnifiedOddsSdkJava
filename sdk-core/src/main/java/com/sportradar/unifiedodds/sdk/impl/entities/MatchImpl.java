@@ -218,7 +218,12 @@ public class MatchImpl extends SportEventImpl implements Match {
             return competitors.stream()
                     .map(c -> {
                         try {
-                            return sportEntityFactory.buildCompetitor(c, provideCompetitorQualifier(matchCI, c), provideCompetitorDivision(matchCI, c), matchCI, locales);
+                            return sportEntityFactory.buildCompetitor(c,
+                                                                      provideCompetitorQualifier(matchCI, c),
+                                                                      provideCompetitorDivision(matchCI, c),
+                                                                      provideCompetitorVirtual(matchCI, c),
+                                                                      matchCI,
+                                                                      locales);
                         } catch (ObjectNotFoundException e) {
                             throw new StreamWrapperException(e.getMessage(), e);
                         }
@@ -703,5 +708,14 @@ public class MatchImpl extends SportEventImpl implements Match {
         return ci.getCompetitorsDivisions() == null
                 ? null
                 : ci.getCompetitorsDivisions().get(competitorId);
+    }
+
+    private static Boolean provideCompetitorVirtual(MatchCI ci, URN competitorId) {
+        Preconditions.checkNotNull(ci);
+        Preconditions.checkNotNull(competitorId);
+
+        return ci.getCompetitorsVirtual() == null
+                ? null
+                : ci.getCompetitorsVirtual().contains(competitorId);
     }
 }

@@ -27,10 +27,11 @@ public class ExportableRaceStageCI extends ExportableStageCI {
                                  List<String> stagesIds, StageType stageType, String categoryId, Locale defaultLocale
             , List<Locale> loadedSummaryLocales, List<Locale> loadedFixtureLocales,
                                  List<Locale> loadedCompetitorLocales, String liveOdds, SportEventType sportEventType
-            , List<String> additionalParentStageIds) {
+            , List<String> additionalParentStageIds,
+                                 List<String> competitorVirtual) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
               conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId, liveOdds,
-              sportEventType, additionalParentStageIds);
+              sportEventType, additionalParentStageIds, competitorVirtual);
         this.defaultLocale = defaultLocale;
         this.loadedSummaryLocales = loadedSummaryLocales;
         this.loadedFixtureLocales = loadedFixtureLocales;

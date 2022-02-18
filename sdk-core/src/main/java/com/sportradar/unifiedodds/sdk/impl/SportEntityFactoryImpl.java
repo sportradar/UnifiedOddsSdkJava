@@ -272,21 +272,22 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @param id the competitor identifier
      * @param qualifier the competitor qualifier (if available)
      * @param division the competitor division (if available)
-     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
+     * @param isVirtual
+     * @param parentSportEventCI the parent {@link SportEventCI} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
     @Override
-    public Competitor buildCompetitor(URN id, String qualifier, Integer division, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException {
+    public Competitor buildCompetitor(URN id, String qualifier, Integer division, Boolean isVirtual, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
 
         if(qualifier != null) {
-            return new TeamCompetitorImpl(id, profileCache, qualifier, division, parentSportEventCI, locales, this, exceptionHandlingStrategy);
+            return new TeamCompetitorImpl(id, profileCache, qualifier, division, isVirtual, parentSportEventCI, locales, this, exceptionHandlingStrategy);
         }
 
-        return new CompetitorImpl(id, profileCache, parentSportEventCI, locales, this, exceptionHandlingStrategy);
+        return new CompetitorImpl(id, profileCache, parentSportEventCI, locales, this, exceptionHandlingStrategy, isVirtual);
     }
 
     /**
@@ -306,7 +307,7 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         return competitorIds.stream()
                 .map(c -> {
                     try {
-                        return this.buildCompetitor(c, null, null, parentSportEventCI, locales);
+                        return this.buildCompetitor(c, null, null, null, parentSportEventCI, locales);
                     } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
                         throw new StreamWrapperException(e.getMessage(), e);
                     }

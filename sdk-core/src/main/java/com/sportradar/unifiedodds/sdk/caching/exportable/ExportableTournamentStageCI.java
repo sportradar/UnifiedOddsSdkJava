@@ -24,10 +24,11 @@ public class ExportableTournamentStageCI extends ExportableStageCI {
                                        Map<String, Map<String, String>> competitorsReferences, String parentStageId,
                                        List<String> stagesIds, StageType stageType, String categoryId,
                                        Locale defaultLocale, List<Locale> cachedLocales, String liveOdds,
-                                       SportEventType sportEventType) {
+                                       SportEventType sportEventType,
+                                       List<String> competitorVirtual) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
               conditions, competitorsReferences, parentStageId, stagesIds, stageType, categoryId, liveOdds,
-              sportEventType, null);
+              sportEventType, null, competitorVirtual);
         this.defaultLocale = defaultLocale;
         this.cachedLocales = cachedLocales;
     }

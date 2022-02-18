@@ -94,12 +94,13 @@ public interface SportEntityFactory {
      * @param id the competitor identifier
      * @param qualifier the competitor qualifier (if available)     *
      * @param division the competitor division (if available)
-     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
+     * @param isVirtual indication if the competitor is marked as virtual
+     * @param parentSportEventCI the parent {@link SportEventCI} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
-    Competitor buildCompetitor(URN id, String qualifier, Integer division, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException;
+    Competitor buildCompetitor(URN id, String qualifier, Integer division, Boolean isVirtual, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException;
 
     /**
      * Builds a {@link List} of {@link Competitor} instances

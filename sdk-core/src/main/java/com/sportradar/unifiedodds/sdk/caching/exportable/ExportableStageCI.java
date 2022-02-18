@@ -21,9 +21,10 @@ public class ExportableStageCI extends ExportableCompetitionCI {
                       ExportableVenueCI venue, ExportableSportEventConditionsCI conditions,
                       Map<String, Map<String, String>> competitorsReferences, String parentStageId, List<String> stagesIds,
                       StageType stageType, String categoryId, String liveOdds, SportEventType sportEventType,
-                      List<String> additionalParentsIds) {
+                      List<String> additionalParentsIds,
+                      List<String> competitorVirtual) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
-              conditions, competitorsReferences, liveOdds, sportEventType);
+              conditions, competitorsReferences, liveOdds, sportEventType, competitorVirtual);
         this.parentStageId = parentStageId;
         this.stagesIds = stagesIds;
         this.stageType = stageType;

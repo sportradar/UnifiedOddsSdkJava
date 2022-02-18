@@ -93,6 +93,11 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private Map<URN, Integer> competitorDivisions;
 
     /**
+     * A {@link List} of competitor identifiers which are marked as virtual in the sport event
+     */
+    private List<URN> competitorVirtual;
+
+    /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
@@ -275,8 +280,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         loadedSummaryLocales.add(dataLocale);
     }
 
-    MatchCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale,
-                ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+    MatchCIImpl(URN id,
+                DataRouterManager dataRouterManager,
+                Locale defaultLocale,
+                ExceptionHandlingStrategy exceptionHandlingStrategy,
+                SAPISportEventChildren.SAPISportEvent endpointData,
+                Locale dataLocale,
+                Cache<URN, Date> fixtureTimestampCache) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -340,6 +350,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue)) : null;
         this.competitorDivisions = exportable.getCompetitorDivisions() != null ? exportable.getCompetitorDivisions().entrySet().stream()
                 .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue)) : null;
+        this.competitorVirtual = exportable.getCompetitorVirtual() != null
+                ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
         this.tournamentId = exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
         this.tournamentRound = exportable.getTournamentRound() != null ? new LoadableRoundCIImpl(this, exportable.getTournamentRound(), dataRouterManager, exceptionHandlingStrategy) : null;
         this.season = exportable.getSeason() != null ? new SeasonCI(exportable.getSeason()) : null;
@@ -807,6 +820,26 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 : copyOf(competitorDivisions);
     }
 
+    /**
+     * Returns list of {@link URN} of {@link CompetitorCI} which are marked as virtual for this sport event
+     *
+     * @return list of {@link URN} of {@link CompetitorCI} which are marked as virtual for this sport event
+     */
+    @Override
+    public List<URN> getCompetitorsVirtual() {
+        if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
+            return competitorVirtual;
+        }
+
+        if (loadedCompetitorLocales.isEmpty()) {
+            requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+        }
+
+        return competitorVirtual == null
+                ? null
+                : competitorVirtual;
+    }
+
     @Override
     public String getLiveOdds(List<Locale> locales) {
         if (liveOdds != null) {
@@ -1201,10 +1234,11 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         List<URN> competitorIdsLocal = new ArrayList<>(competitors.size());
         Map<URN, String> competitorQualifiersLocal = new HashMap<>(competitors.size());
         Map<URN, Integer> competitorDivisionsLocal = new HashMap<>(competitors.size());
+        List<URN> competitorVirtualLocal = new ArrayList<>();
 
         competitors.forEach(inputC -> {
             URN parsedId = URN.parse(inputC.getId());
-                competitorIdsLocal.add(parsedId);
+            competitorIdsLocal.add(parsedId);
 
             if (inputC.getQualifier() != null) {
                 competitorQualifiersLocal.put(parsedId, inputC.getQualifier());
@@ -1212,12 +1246,16 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             if (inputC.getDivision() != null) {
                 competitorDivisionsLocal.put(parsedId, inputC.getDivision());
             }
+            if(inputC.isVirtual() != null && inputC.isVirtual()){
+                competitorVirtualLocal.add(parsedId);
+            }
         });
 
         this.competitorIds = competitorIdsLocal;
         this.competitorQualifiers = competitorQualifiersLocal;
         this.competitorDivisions = competitorDivisionsLocal;
         this.competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
+        this.competitorVirtual = competitorVirtualLocal;
         this.loadedCompetitorLocales.add(locale);
     }
 
@@ -1304,11 +1342,11 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                 new ArrayList<>(loadedFixtureLocales),
                 new ArrayList<>(loadedSummaryLocales),
                 new ArrayList<>(loadedCompetitorLocales),
-                eventTimelines.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-                                                                            e -> e.getValue().export())),
+                eventTimelines.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().export())),
                 liveOdds,
                 sportEventType,
-                stageType
+                stageType,
+                competitorVirtual == null ? null : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
         );
     }
 }

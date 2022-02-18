@@ -85,6 +85,11 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private Map<URN, ReferenceIdCI> competitorsReferences;
 
     /**
+     * A {@link List} of competitor identifiers which are marked as virtual in the sport event
+     */
+    private List<URN> competitorVirtual;
+
+    /**
      * A {@link Map} storing the available sport event names
      */
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
@@ -202,6 +207,9 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.scheduledEnd = exportable.getScheduledEnd();
         this.competitorIds = exportable.getCompetitorIds() != null ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
         this.competitorsReferences = exportable.getCompetitorsReferences() != null ? exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))) : null;
+        this.competitorVirtual = exportable.getCompetitorVirtual() != null
+                ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
         this.sportEventNames.putAll(exportable.getNames());
         this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
         this.cachedLocales.addAll(exportable.getCachedLocales());
@@ -504,6 +512,27 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                 : ImmutableMap.copyOf(competitorsReferences);
     }
 
+
+    /**
+     * Returns list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     *
+     * @return list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     */
+    @Override
+    public List<URN> getCompetitorsVirtual() {
+        if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
+            return competitorVirtual;
+        }
+
+        if (cachedLocales.isEmpty()) {
+            requestMissingStageTournamentData(Collections.singletonList(defaultLocale));
+        }
+
+        return competitorVirtual == null
+                ? null
+                : competitorVirtual;
+    }
+
     private void internalMerge(SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
@@ -651,7 +680,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                 defaultLocale,
                 new ArrayList<>(cachedLocales),
                 liveOdds,
-                sportEventType
+                sportEventType,
+                competitorVirtual == null ? null : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
         );
     }
 }

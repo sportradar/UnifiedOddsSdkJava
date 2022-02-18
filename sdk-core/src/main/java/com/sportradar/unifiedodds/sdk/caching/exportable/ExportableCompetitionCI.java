@@ -20,13 +20,22 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
     private Map<String, Map<String, String>> competitorsReferences;
     private String liveOdds;
     private SportEventType sportEventType;
+    private List<String> competitorVirtual;
 
-    ExportableCompetitionCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd,
-                            Boolean startTimeTbd, String replacedBy, BookingStatus bookingStatus,
-                            List<String> competitorIds, ExportableVenueCI venue,
+    ExportableCompetitionCI(String id,
+                            Map<Locale, String> names,
+                            Date scheduled,
+                            Date scheduledEnd,
+                            Boolean startTimeTbd,
+                            String replacedBy,
+                            BookingStatus bookingStatus,
+                            List<String> competitorIds,
+                            ExportableVenueCI venue,
                             ExportableSportEventConditionsCI conditions,
-                            Map<String, Map<String, String>> competitorsReferences, String liveOdds,
-                            SportEventType sportEventType) {
+                            Map<String, Map<String, String>> competitorsReferences,
+                            String liveOdds,
+                            SportEventType sportEventType,
+                            List<String> competitorVirtual) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.bookingStatus = bookingStatus;
         this.competitorIds = competitorIds;
@@ -35,6 +44,7 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         this.competitorsReferences = competitorsReferences;
         this.liveOdds = liveOdds;
         this.sportEventType = sportEventType;
+        this.competitorVirtual = competitorVirtual;
     }
 
     public BookingStatus getBookingStatus() {
@@ -86,4 +96,8 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
     public SportEventType getSportEventType() { return sportEventType; }
 
     public void setSportEventType(SportEventType sportEventType) { this.sportEventType = sportEventType; }
+
+    public List<String> getCompetitorVirtual() { return competitorVirtual; }
+
+    public void setCompetitorVirtual(List<String> competitorVirtual) { this.competitorVirtual = competitorVirtual; }
 }

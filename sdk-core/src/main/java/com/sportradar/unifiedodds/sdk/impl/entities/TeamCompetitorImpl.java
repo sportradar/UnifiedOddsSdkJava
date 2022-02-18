@@ -25,6 +25,7 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
      * @param competitorId the associated competitor id
      * @param profileCache the cache instance used to retrieve the cached data
      * @param qualifier the associated team qualifier
+     * @param isVirtual indication if the competitor is marked as virtual
      * @param parentSportEventCI the {@link SportEventCI} this {@link CompetitorCI} belongs to
      * @param locales a {@link List} in which is provided the {@link CompetitorCI}
      * @param sportEntityFactory the factory used to create additional entities
@@ -34,11 +35,12 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
                               ProfileCache profileCache,
                               String qualifier,
                               Integer division,
+                              Boolean isVirtual,
                               SportEventCI parentSportEventCI,
                               List<Locale> locales,
                               SportEntityFactory sportEntityFactory,
                               ExceptionHandlingStrategy exceptionHandlingStrategy) {
-        super(competitorId, profileCache, parentSportEventCI, locales, sportEntityFactory, exceptionHandlingStrategy);
+        super(competitorId, profileCache, parentSportEventCI, locales, sportEntityFactory, exceptionHandlingStrategy, isVirtual);
 
         TeamQualifier = qualifier;
         TeamDivision = division;

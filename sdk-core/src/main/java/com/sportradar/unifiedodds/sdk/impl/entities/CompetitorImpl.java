@@ -36,6 +36,7 @@ public class CompetitorImpl implements Competitor {
     private final SportEventCI sportEventCI;
     protected String TeamQualifier;
     protected Integer TeamDivision;
+    protected Boolean IsVirtual;
 
     /**
      * A {@link ReentrantLock} used to synchronize api request operations
@@ -44,10 +45,10 @@ public class CompetitorImpl implements Competitor {
 
     /**
      * Initializes a new instance of the {@link CompetitorImpl} class
-     *
-     * @param competitorId the associated competitor id
+     *  @param competitorId the associated competitor id
      * @param profileCache the cache instance used to retrieve the cached data
      * @param eventCompetitorsReferences the list of competitors and associated references
+     * @param isVirtual indication if the competitor is marked as virtual
      * @param locales a {@link List} in which is provided the {@link CompetitorCI}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
@@ -55,6 +56,7 @@ public class CompetitorImpl implements Competitor {
     public CompetitorImpl(URN competitorId,
                           ProfileCache profileCache,
                           Map<URN, ReferenceIdCI> eventCompetitorsReferences,
+                          Boolean isVirtual,
                           List<Locale> locales,
                           SportEntityFactory sportEntityFactory,
                           ExceptionHandlingStrategy exceptionHandlingStrategy) {
@@ -71,6 +73,7 @@ public class CompetitorImpl implements Competitor {
         referenceIdCI = null;
         sportEventCI = null;
         TeamQualifier = null;
+        IsVirtual = isVirtual;
         if (eventCompetitorsReferences != null && !eventCompetitorsReferences.isEmpty())
         {
             ReferenceIdCI q = eventCompetitorsReferences.get(competitorId);
@@ -90,13 +93,15 @@ public class CompetitorImpl implements Competitor {
      * @param locales a {@link List} in which is provided the {@link CompetitorCI}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
+     * @param isVirtual indication if the competitor is marked as virtual
      */
     public CompetitorImpl(URN competitorId,
                           ProfileCache profileCache,
                           SportEventCI parentSportEventCI,
                           List<Locale> locales,
                           SportEntityFactory sportEntityFactory,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
+                          ExceptionHandlingStrategy exceptionHandlingStrategy,
+                          Boolean isVirtual) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -110,6 +115,7 @@ public class CompetitorImpl implements Competitor {
         referenceIdCI = null;
         sportEventCI = parentSportEventCI;
         TeamQualifier = null;
+        IsVirtual = isVirtual;
     }
 
     /**
@@ -172,7 +178,8 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public boolean isVirtual() {
-        return loadCacheItem().map(CompetitorCI::isVirtual).orElse(false);
+        FetchEventCompetitorsVirtual();
+        return IsVirtual != null && IsVirtual.booleanValue();
     }
 
     /**
@@ -182,7 +189,6 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Reference getReferences() {
-
         FetchEventCompetitorsReferenceIds();
         return referenceIdCI != null
                 ? new ReferenceImpl(referenceIdCI)
@@ -240,7 +246,7 @@ public class CompetitorImpl implements Competitor {
                                     return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
                                 }
                                 else {
-                                    return sportEntityFactory.buildCompetitor(id, null, null, null, locales);
+                                    return sportEntityFactory.buildCompetitor(id, null, null, null, null, locales);
                                 }
 
                             } catch (ObjectNotFoundException e) {
@@ -488,6 +494,27 @@ public class CompetitorImpl implements Competitor {
             }
         } catch (DataRouterStreamException e) {
             handleException(String.format("getCompetitorsDivisions(%s)", competitorId), e);
+        } finally {
+            reentrantLock.unlock();
+        }
+    }
+
+    protected void FetchEventCompetitorsVirtual()
+    {
+        reentrantLock.lock();
+        try {
+            if (IsVirtual == null && sportEventCI != null && sportEventCI instanceof MatchCI)
+            {
+                MatchCI matchCI = (MatchCI) sportEventCI;
+                List<URN> competitorsVirtual = matchCI.getCompetitorsVirtual();
+
+                if (competitorsVirtual != null && !competitorsVirtual.isEmpty())
+                {
+                    IsVirtual = competitorsVirtual.contains(competitorId);
+                }
+            }
+        } catch (DataRouterStreamException e) {
+            handleException(String.format("getCompetitorsVirtual(%s)", competitorId), e);
         } finally {
             reentrantLock.unlock();
         }

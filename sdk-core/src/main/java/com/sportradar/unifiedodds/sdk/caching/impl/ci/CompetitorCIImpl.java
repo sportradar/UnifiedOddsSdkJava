@@ -169,8 +169,6 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
             }
             this.cultureCompetitorProfileFetched.add(dataLocale);
-            this.cultureCompetitorProfileFetched.add(dataLocale);
-            this.cultureCompetitorProfileFetched.add(dataLocale);
         }
 
         merge(data, dataLocale);

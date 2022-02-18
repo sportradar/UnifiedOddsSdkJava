@@ -99,7 +99,7 @@ public class GroupImpl implements Group {
                     competitorIds.stream()
                             .map(c -> {
                                 try {
-                                    return sportEntityFactory.buildCompetitor(c, null, null, null, locales);
+                                    return sportEntityFactory.buildCompetitor(c, null, null, null, null, locales);
                                 } catch (ObjectNotFoundException e) {
                                     throw new StreamWrapperException(e.getMessage(), e);
                                 }

@@ -92,6 +92,11 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     private Map<URN, ReferenceIdCI> competitorsReferences;
 
     /**
+     * A {@link List} of competitor identifiers which are marked as virtual in the sport event
+     */
+    private List<URN> competitorVirtual;
+
+    /**
      * The {@link URN} specifying the id of the parent stage
      */
     private URN parentStageId;
@@ -388,6 +393,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.sportEventType = exportable.getSportEventType();
         this.additionalParentIds = exportable.getAdditionalParentsIds() != null ?
                 exportable.getAdditionalParentsIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
+        this.competitorVirtual = exportable.getCompetitorVirtual() != null
+                ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
     }
 
     /**
@@ -743,6 +751,26 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 : ImmutableMap.copyOf(competitorsReferences);
     }
 
+    /**
+     * Returns list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     *
+     * @return list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     */
+    @Override
+    public List<URN> getCompetitorsVirtual() {
+        if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
+            return competitorVirtual;
+        }
+
+        if (loadedCompetitorLocales.isEmpty()) {
+            requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
+        }
+
+        return competitorVirtual == null
+                ? null
+                : competitorVirtual;
+    }
+
     @Override
     public String getLiveOdds(List<Locale> locales) {
         if (liveOdds != null) {
@@ -883,10 +911,17 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         if (sportEvent.getCompetitors() != null && sportEvent.getCompetitors().getCompetitor() != null) {
-            competitorIds = sportEvent.getCompetitors().getCompetitor().stream()
-                    .map(c -> URN.parse(c.getId())).collect(Collectors.toList());
+            competitorIds = sportEvent.getCompetitors().getCompetitor().stream().map(c -> URN.parse(c.getId())).collect(Collectors.toList());
             loadedCompetitorLocales.add(locale);
             competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(sportEvent.getCompetitors().getCompetitor(), competitorsReferences);
+            for (SAPITeamCompetitor teamCompetitor : sportEvent.getCompetitors().getCompetitor()){
+                if(teamCompetitor.isVirtual() != null && teamCompetitor.isVirtual()){
+                    if(competitorVirtual == null){
+                        competitorVirtual = new ArrayList<>();
+                    }
+                    competitorVirtual.add(URN.parse(teamCompetitor.getId()));
+                }
+            }
         }
 
         if (sportEvent.getRaces() != null) {
@@ -1106,7 +1141,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 new ArrayList<>(loadedCompetitorLocales),
                 liveOdds,
                 sportEventType,
-                additionalParentIds != null ? additionalParentIds.stream().map(URN::toString).collect(Collectors.toList()) : null
+                additionalParentIds != null ? additionalParentIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
+                competitorVirtual == null ? null : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
         );
     }
 }
