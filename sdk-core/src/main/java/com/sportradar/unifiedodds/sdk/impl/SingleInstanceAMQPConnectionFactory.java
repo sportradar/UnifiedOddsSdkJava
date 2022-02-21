@@ -326,9 +326,11 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     public synchronized void close() throws IOException {
         logger.info("Closing underlying AMQP connection");
         try {
-            if (this.connection != null && this.connection.isOpen()) {
+            if (this.connection != null) {
                 this.connection.close();
             }
+        } catch(IOException ex){
+            logger.error("Error closing connection: " + ex.getMessage());
         } finally {
             this.connection = null;
             connectionStarted = 0;

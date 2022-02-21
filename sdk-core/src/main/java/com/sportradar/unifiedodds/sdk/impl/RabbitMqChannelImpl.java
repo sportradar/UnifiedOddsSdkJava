@@ -296,8 +296,9 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                         Thread.sleep(5000);
                     }
                     catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                        logger.error(String.format("Error closing connection: {}", e.getMessage()), e);
+                        String msg = String.format("Error closing connection: %s", e.getMessage());
+                        logger.error(msg, e);
+                        Thread.currentThread().interrupt();
                     }
                     logger.info("Resetting connection finished for the channel with channelNumber: {}", channelNumber);
                 }

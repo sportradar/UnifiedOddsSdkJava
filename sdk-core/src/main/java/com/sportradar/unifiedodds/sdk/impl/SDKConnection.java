@@ -62,7 +62,6 @@ public class SDKConnection implements Connection {
         logger.debug("Channel created. New channel count is {}", channelCount);
     }
 
-
     @Override
     public InetAddress getAddress() {
         return actualConnection.getAddress();
@@ -105,7 +104,6 @@ public class SDKConnection implements Connection {
             postChannelCreated(channel);
             return channel;
         }
-
     }
 
     @Override
