@@ -372,9 +372,22 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             // checkups for activity & producerDown dispatch
             long currentSystemAliveActivityInterval = now - pi.getLastSystemAliveReceivedTimestamp();
             long maxInactivityIntervalMs = config.getLongestInactivityInterval() * 1000L;
-            if (pi.getLastRecoveryStartedAt() > 0 && currentSystemAliveActivityInterval > maxInactivityIntervalMs) {
+            if (/*pi.getLastRecoveryStartedAt() > 0 && */currentSystemAliveActivityInterval > maxInactivityIntervalMs) {
+//                logger.warn("AliveIntervalViolation [{}] - last system alive: {}, behind: {}ms, maxInactivityInterval: {}ms",
+//                            pi.getProducerId(),
+//                            new Date(pi.getLastSystemAliveReceivedTimestamp()),
+//                            currentSystemAliveActivityInterval,
+//                            maxInactivityIntervalMs);
                 flagProducerDown(pi, ProducerDownReason.AliveIntervalViolation);
             } else if (!queDelayStatusCalc(pi, now)) {
+//                logger.warn("ProcessingQueueDelayViolation [{}] - last system alive: {}, behind: {}ms, maxInactivityInterval: {}ms, currentMessageProcessingDelay: {}ms, " +
+//                                    "currentUserSessionAliveDelay: {}ms",
+//                            pi.getProducerId(),
+//                            new Date(pi.getLastSystemAliveReceivedTimestamp()),
+//                            currentSystemAliveActivityInterval,
+//                            maxInactivityIntervalMs,
+//                            now - pi.getLastProcessedMessageGenTimestamp(),
+//                            now - pi.getLastUserSessionAliveReceivedTimestamp());
                 flagProducerDown(pi, ProducerDownReason.ProcessingQueueDelayViolation);
             }
 
