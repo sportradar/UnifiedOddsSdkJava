@@ -36,7 +36,7 @@ public class WeatherInfoImpl implements WeatherInfo {
      * The wind advantage information
      */
     private final String windAdvantage;
-    
+
     /**
      * Initializes a new instance of the {@link WeatherInfoImpl} class
      *

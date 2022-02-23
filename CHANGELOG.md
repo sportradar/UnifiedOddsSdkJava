@@ -1,5 +1,11 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.53.0 (2022-02-23)**
+* Added getBetradarName to Round
+* Improvement: handling of alive messages in regard to producer status
+* Fix: multiple connections in case of disconnection
+* Fix: Competition competitors did not expose IsVirtual correctly
+
 **2.0.52.1 (2022-01-20)**
 * Fix: after disconnection some feed messages can not be deserialized
 
