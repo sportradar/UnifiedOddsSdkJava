@@ -191,6 +191,14 @@ public class RoundImpl implements Round {
     }
 
     /**
+     * Returns the betradar name
+     *
+     * @return - the betradar name
+     */
+    @Override
+    public String getBetradarName(){ return roundCI.getBetradarName(); }
+
+    /**
      * Returns a {@link String} describing the current {@link Round} instance
      *
      * @return - a {@link String} describing the current {@link Round} instance

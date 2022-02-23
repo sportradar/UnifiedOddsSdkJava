@@ -19,10 +19,26 @@ public class ExportableLoadableRoundCI implements Serializable {
     private Integer cupRoundMatchNumber;
     private Integer betradarId;
     private String phase;
+    private String betradarName;
     private List<Locale> cachedSummaryLocales;
     private List<Locale> cachedFixtureLocales;
 
-    public ExportableLoadableRoundCI(Map<Locale, String> names, Map<Locale, String> groupNames, Map<Locale, String> phaseOrGroupLongNames, Locale defaultLocale, String type, String group, String groupId, String otherMatchId, Integer number, Integer cupRoundMatches, Integer cupRoundMatchNumber, Integer betradarId, String phase, List<Locale> cachedSummaryLocales, List<Locale> cachedFixtureLocales) {
+    public ExportableLoadableRoundCI(Map<Locale, String> names,
+                                     Map<Locale, String> groupNames,
+                                     Map<Locale, String> phaseOrGroupLongNames,
+                                     Locale defaultLocale,
+                                     String type,
+                                     String group,
+                                     String groupId,
+                                     String otherMatchId,
+                                     Integer number,
+                                     Integer cupRoundMatches,
+                                     Integer cupRoundMatchNumber,
+                                     Integer betradarId,
+                                     String phase,
+                                     String betradarName,
+                                     List<Locale> cachedSummaryLocales,
+                                     List<Locale> cachedFixtureLocales) {
         this.names = names;
         this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
@@ -36,6 +52,7 @@ public class ExportableLoadableRoundCI implements Serializable {
         this.cupRoundMatchNumber = cupRoundMatchNumber;
         this.betradarId = betradarId;
         this.phase = phase;
+        this.betradarName = betradarName;
         this.cachedSummaryLocales = cachedSummaryLocales;
         this.cachedFixtureLocales = cachedFixtureLocales;
     }
@@ -142,6 +159,12 @@ public class ExportableLoadableRoundCI implements Serializable {
 
     public void setPhase(String phase) {
         this.phase = phase;
+    }
+
+    public String getBetradarName() { return betradarName; }
+
+    public void setBetradarName(String betradarName) {
+        this.betradarName = betradarName;
     }
 
     public List<Locale> getCachedSummaryLocales() {

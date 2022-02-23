@@ -104,7 +104,6 @@ public interface Round {
      */
      default String getPhase(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
 
-
     /**
      * Returns the group name of the group associated with the current round
      *
@@ -118,4 +117,11 @@ public interface Round {
      * @return - the group name of the group associated with the current round
      */
     default String getGroup(){ return null; }
+
+    /**
+     * Returns the betradar name
+     *
+     * @return - the betradar name
+     */
+    default String getBetradarName(){ return null; }
 }

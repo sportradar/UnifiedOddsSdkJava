@@ -78,6 +78,11 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      */
     private String phase;
 
+    /**
+     * The betradar name
+     */
+    private String betradarName;
+
     private final List<Locale> cachedLocales;
 
     /**
@@ -116,6 +121,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         this.cupRoundMatchNumber = exportable.getCupRoundMatchNumber();
         this.betradarId = exportable.getBetradarId();
         this.phase = exportable.getPhase();
+        this.betradarName = exportable.getBetradarName();
         this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
@@ -160,6 +166,8 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         else{
             phaseOrGroupLongNames.put(locale, "");
         }
+
+        betradarName = round.getBetradarName();
     }
 
     /**
@@ -284,6 +292,13 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     public String getPhase() { return phase; }
 
     /**
+     * Returns the betradar name
+     * @return the betradar name
+     */
+    @Override
+    public String getBetradarName() { return betradarName; }
+
+    /**
      * Checks if the associated cache item contains all the provided {@link Locale}s
      *
      * @param locales the {@link Locale}s that should be checked
@@ -309,6 +324,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
                 ", cupRoundMatchNumber=" + cupRoundMatchNumber +
                 ", betradarId=" + betradarId +
                 ", phase=" + phase +
+                ", betradarName=" + betradarName +
                 ", cachedLocales=" + cachedLocales +
                 '}';
     }
@@ -327,6 +343,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
                 cupRoundMatchNumber,
                 betradarId,
                 phase,
+                betradarName,
                 new ArrayList<>(cachedLocales)
         );
     }

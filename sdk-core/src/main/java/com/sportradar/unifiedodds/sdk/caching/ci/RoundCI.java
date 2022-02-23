@@ -101,4 +101,10 @@ public interface RoundCI {
      * @return the phase of the round
      */
     String getPhase();
+
+    /**
+     * Returns the betradar name
+     * @return the betradar name
+     */
+    String getBetradarName();
 }

@@ -16,9 +16,9 @@ public interface WeatherInfo {
     String getPitch();
 
     /**
-     * Returns the temperature in degrees celsius
+     * Returns the temperature in degrees Celsius
      *
-     * @return - the temperature in degrees celsius or a null reference if the temperature is not known
+     * @return - the temperature in degrees Celsius or a null reference if the temperature is not known
      */
     Integer getTemperature();
 

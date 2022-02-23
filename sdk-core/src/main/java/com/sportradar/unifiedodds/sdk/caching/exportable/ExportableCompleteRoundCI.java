@@ -18,9 +18,23 @@ public class ExportableCompleteRoundCI implements Serializable {
     private Integer cupRoundMatchNumber;
     private Integer betradarId;
     private String phase;
+    private String betradarName;
     private List<Locale> cachedLocales;
 
-    public ExportableCompleteRoundCI(Map<Locale, String> names, Map<Locale, String> groupNames, Map<Locale, String> phaseOrGroupLongNames, String type, String group, String groupId, String otherMatchId, Integer number, Integer cupRoundMatches, Integer cupRoundMatchNumber, Integer betradarId, String phase, List<Locale> cachedLocales) {
+    public ExportableCompleteRoundCI(Map<Locale, String> names,
+                                     Map<Locale, String> groupNames,
+                                     Map<Locale, String> phaseOrGroupLongNames,
+                                     String type,
+                                     String group,
+                                     String groupId,
+                                     String otherMatchId,
+                                     Integer number,
+                                     Integer cupRoundMatches,
+                                     Integer cupRoundMatchNumber,
+                                     Integer betradarId,
+                                     String phase,
+                                     String betradarName,
+                                     List<Locale> cachedLocales) {
         this.names = names;
         this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
@@ -33,6 +47,7 @@ public class ExportableCompleteRoundCI implements Serializable {
         this.cupRoundMatchNumber = cupRoundMatchNumber;
         this.betradarId = betradarId;
         this.phase = phase;
+        this.betradarName = betradarName;
         this.cachedLocales = cachedLocales;
     }
 
@@ -130,6 +145,12 @@ public class ExportableCompleteRoundCI implements Serializable {
 
     public void setPhase(String phase) {
         this.phase = phase;
+    }
+
+    public String getBetradarName() { return betradarName; }
+
+    public void setBetradarName(String betradarName) {
+        this.betradarName = betradarName;
     }
 
     public List<Locale> getCachedLocales() {

@@ -116,6 +116,11 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     private String phase;
 
     /**
+     * The betradar name
+     */
+    private String betradarName;
+
+    /**
      * A list of cached locales
      */
     private final List<Locale> cachedSummaryLocales = Collections.synchronizedList(new ArrayList<>());
@@ -166,7 +171,10 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         merge(roundData, dataLocale, isFixtureEndpoint);
     }
 
-    public LoadableRoundCIImpl(CacheItem associatedEventCI, ExportableLoadableRoundCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public LoadableRoundCIImpl(CacheItem associatedEventCI,
+                               ExportableLoadableRoundCI exportable,
+                               DataRouterManager dataRouterManager,
+                               ExceptionHandlingStrategy exceptionHandlingStrategy) {
         this(associatedEventCI, dataRouterManager, exportable.getDefaultLocale(), exceptionHandlingStrategy);
 
         this.names.putAll(exportable.getNames());
@@ -181,10 +189,10 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         this.cupRoundMatchNumber = exportable.getCupRoundMatchNumber();
         this.betradarId = exportable.getBetradarId();
         this.phase = exportable.getPhase();
+        this.betradarName = exportable.getBetradarName();
         this.cachedSummaryLocales.addAll(exportable.getCachedSummaryLocales());
         this.cachedFixtureLocales.addAll(exportable.getCachedFixtureLocales());
     }
-
 
     /**
      * Returns the type of the round
@@ -386,6 +394,21 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     }
 
     /**
+     * Returns the betradar name
+     * @return the betradar name
+     */
+    @Override
+    public String getBetradarName(){
+        if (summaryLoadedCheck(betradarName, defaultLocale)) {
+            return betradarName;
+        }
+
+        initiateSummaryRequest(defaultLocale);
+
+        return betradarName;
+    }
+
+    /**
      * Merges the information from the provided {@link SAPIMatchRound} into the current instance
      *
      * @param round             {@link SAPIMatchRound} containing information about the round
@@ -472,6 +495,8 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             phaseOrGroupLongNames.put(locale, "");
         }
 
+        betradarName = round.getBetradarName();
+
         cachedSummaryLocales.add(locale);
 
         if (isFixtureEndpoint) {
@@ -501,8 +526,8 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             }
 
             logger.debug("Fetching summary for LoadableRoundCIImpl[EventId:'{}'] for languages '{}'",
-                    associatedEventId, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+                         associatedEventId,
+                         missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
 
             missingLocales.forEach(l -> {
                 try {
@@ -558,6 +583,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
                 ", summaryRequest=" + summaryRequest +
                 ", fixtureRequest=" + fixtureRequest +
                 ", phase=" + phase +
+                ", betradarName=" + betradarName +
                 '}';
     }
 
@@ -576,6 +602,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
                 cupRoundMatchNumber,
                 betradarId,
                 phase,
+                betradarName,
                 new ArrayList<>(cachedSummaryLocales),
                 new ArrayList<>(cachedFixtureLocales)
         );
