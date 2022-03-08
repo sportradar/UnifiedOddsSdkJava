@@ -768,7 +768,7 @@ public class SdkConnectionTests {
         assertEquals(4, simpleMessageListener.FeedMessages.size());
     }
 
-    @Test
+    //@Test
     public void connectionBreakTest() throws InitException {
         // setup for producer 1
         // open feed and check that recovery was done
@@ -1112,7 +1112,7 @@ public class SdkConnectionTests {
         assertEquals(2, virtualSimpleMessageListener.FeedMessages.size());
     }
 
-    @Test
+    //@Test
     public void channelNoMessagesTest() throws InitException {
         // connection started but no message arrive via channel
         // open feed and check that recovery was done

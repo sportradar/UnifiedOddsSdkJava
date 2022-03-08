@@ -48,7 +48,7 @@ public class DataProvidersModuleTest {
         fixtureProviders = injector.getInstance(FixtureProviders.class);
 
         assertEquals(
-                "http://stgapi.betradar.com/v1/replay/sports/en/sport_events/sr:match:12345/fixture.xml?node_id=314",
+                "http://api.betradar.com/v1/replay/sports/en/sport_events/sr:match:12345/fixture.xml?node_id=314",
                 fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID)
         );
     }
@@ -74,7 +74,7 @@ public class DataProvidersModuleTest {
         fixtureProviders = injector.getInstance(FixtureProviders.class);
 
         assertEquals(
-                "http://stgapi.betradar.com/v1/replay/sports/en/sport_events/sr:match:12345/fixture.xml?node_id=314",
+                "http://api.betradar.com/v1/replay/sports/en/sport_events/sr:match:12345/fixture.xml?node_id=314",
                 fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID)
         );
     }
