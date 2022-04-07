@@ -311,9 +311,31 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
      */
     @Override
     public void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest) {
-        if(oddsFeedExtListener != null)
-        {
+        if(oddsFeedExtListener == null) {
+            return;
+        }
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
+        try {
             oddsFeedExtListener.onRawFeedMessageReceived(routingKey, feedMessage, timestamp, messageInterest);
+            stopwatch.stop();
+            String msg = String.format("Dispatching raw feed message [%s]: %s for event %s and timestamp=%s took %sms.",
+                                       messageInterest,
+                                       feedMessage.getClass().getSimpleName(),
+                                       routingKey,
+                                       timestamp.getCreated(),
+                                       stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            logger.info(msg);
+        }
+        catch (Exception e) {
+            stopwatch.stop();
+            String errorMsg = String.format("Error dispatching raw feed message [%s] for %s and timestamp=%s. Took %sms.",
+                                            messageInterest,
+                                            routingKey,
+                                            timestamp.getCreated(),
+                                            stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            logger.error(errorMsg, e);
         }
     }
 

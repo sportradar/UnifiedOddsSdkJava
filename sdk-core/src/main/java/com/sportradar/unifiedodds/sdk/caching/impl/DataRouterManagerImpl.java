@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
@@ -1008,17 +1009,29 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
     private void dispatchReceivedRawApiData(String uri, Object restMessage)
     {
-        // send RawFeedMessage if needed
+        if(oddsFeedExtListener == null) {
+            return;
+        }
+        // send RawFeedMessage
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
         try
         {
-            if(oddsFeedExtListener != null)
-            {
-                oddsFeedExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
-            }
+            oddsFeedExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
+            stopwatch.stop();
+            String msg = String.format("Dispatching raw api message for %s took %sms.",
+                                       uri,
+                                       stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            logger.info(msg);
         }
         catch (Exception e)
         {
             logger.error("Error dispatching raw api data for {}", uri);
+            stopwatch.stop();
+            String errorMsg = String.format("Error dispatching raw api data for %s. Took %sms.",
+                                            uri,
+                                            stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            logger.error(errorMsg, e);
         }
         // continue normal processing
     }
