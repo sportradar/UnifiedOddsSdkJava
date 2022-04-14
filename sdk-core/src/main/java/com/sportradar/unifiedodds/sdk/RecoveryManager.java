@@ -29,8 +29,9 @@ public interface RecoveryManager {
      * @param uniqueMessageProcessorIdentifier a unique representation of the message processor invoking the method
      * @param producerId the source producer of the message
      * @param processedMessageGenTimestamp the generated timestamp of the processed message
+     * @param eventId the eventId associated with feed message (if present)
      */
-    void onMessageProcessingEnded(int uniqueMessageProcessorIdentifier, int producerId, Long processedMessageGenTimestamp);
+    void onMessageProcessingEnded(int uniqueMessageProcessorIdentifier, int producerId, Long processedMessageGenTimestamp, String eventId);
 
     /**
      * Method invoked when the message of type "Alive" is received

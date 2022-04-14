@@ -260,6 +260,27 @@ public class GeneralModule implements Module {
     }
 
     /**
+     * Provides the http client used to fetch data from the API on feed queue thread (profiles, variant market or summary)
+     */
+    @Provides @Singleton @Named("FastHttpClient")
+    private CloseableHttpClient provideCriticalHttpClient(){
+//        int maxTimeout = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
+        int maxTimeout = 5;
+        RequestConfig.Builder requestBuilder = RequestConfig.custom()
+                .setConnectTimeout(maxTimeout)
+                .setConnectionRequestTimeout(maxTimeout)
+                .setSocketTimeout(maxTimeout);
+
+        return HttpClientBuilder.create()
+                .useSystemProperties()
+                .setRedirectStrategy(new LaxRedirectStrategy())
+                .setDefaultRequestConfig(requestBuilder.build())
+                .setMaxConnTotal(configuration.getHttpClientMaxConnTotal())
+                .setMaxConnPerRoute(configuration.getHttpClientMaxConnPerRoute())
+                .build();
+    }
+
+    /**
      * Provides the http client used to fetch data from the API
      */
     @Provides @Singleton @Named("RecoveryHttpClient")

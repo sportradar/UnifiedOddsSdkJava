@@ -181,7 +181,7 @@ public class CachingModule extends AbstractModule {
 
     @Provides @Singleton @Named("VariantMarketCache")
     protected MarketDescriptionCache provideVariantMarketDescriptionCache(SDKInternalConfiguration cfg,
-                                                                          LogHttpDataFetcher httpDataFetcher,
+                                                                          LogFastHttpDataFetcher httpDataFetcher,
                                                                           @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
                                                                           MappingValidatorFactory mappingFactory) {
         return new VariantMarketDescriptionCache(

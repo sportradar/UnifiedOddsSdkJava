@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.impl.*;
 
 /**
@@ -24,7 +23,7 @@ public class DataProvidersModule extends AbstractModule {
     @Provides
     @Named("SummaryEndpointDataProvider")
     private DataProvider<Object> provideSummaryEndpointDataProvider(SDKInternalConfiguration cfg,
-                                                                    LogHttpDataFetcher httpDataFetcher,
+                                                                    LogFastHttpDataFetcher httpDataFetcher,
                                                                     @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
                 ? "?node_id=" + cfg.getSdkNodeId()
@@ -131,7 +130,7 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     private DataProvider<SAPIPlayerProfileEndpoint> providePlayerProfileEndpointDataProvider(SDKInternalConfiguration cfg,
-                                                                                             LogHttpDataFetcher httpDataFetcher,
+                                                                                             LogFastHttpDataFetcher httpDataFetcher,
                                                                                              @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/sports/%s/players/%s/profile.xml",
@@ -143,7 +142,7 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     private DataProvider<SAPICompetitorProfileEndpoint> provideCompetitorProfileEndpointDataProvider(SDKInternalConfiguration cfg,
-                                                                                                     LogHttpDataFetcher httpDataFetcher,
+                                                                                                     LogFastHttpDataFetcher httpDataFetcher,
                                                                                                      @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/sports/%s/competitors/%s/profile.xml",
@@ -155,7 +154,7 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     private DataProvider<SAPISimpleTeamProfileEndpoint> provideSimpleTeamProfileEndpointDataProvider(SDKInternalConfiguration cfg,
-                                                                                                     LogHttpDataFetcher httpDataFetcher,
+                                                                                                     LogFastHttpDataFetcher httpDataFetcher,
                                                                                                      @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
         return new DataProvider<>(
                 "/sports/%s/competitors/%s/profile.xml",

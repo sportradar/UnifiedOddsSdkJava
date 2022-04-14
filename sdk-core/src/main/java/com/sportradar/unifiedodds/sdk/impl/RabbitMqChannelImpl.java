@@ -224,6 +224,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         return channel != null && channel.isOpen();
     }
 
+    // todo: should use Scheduler without thread.sleep
     private void checkChannelStatus()
     {
         while(shouldBeOpened) {

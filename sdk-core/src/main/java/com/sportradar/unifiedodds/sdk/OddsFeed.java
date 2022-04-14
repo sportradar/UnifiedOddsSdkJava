@@ -435,6 +435,7 @@ public class OddsFeed {
 
         injector.getInstance(AMQPConnectionFactory.class).close();
         injector.getInstance(CloseableHttpClient.class).close();
+        injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("FastHttpClient"))).close();
         injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("RecoveryHttpClient"))).close();
         injector.getInstance(SDKTaskScheduler.class).shutdownNow();
         injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();

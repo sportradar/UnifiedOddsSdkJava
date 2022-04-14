@@ -130,7 +130,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     }
 
     @Override
-    public void onMessageProcessingEnded(int uniqueMessageProcessorIdentifier, int producerId, Long processedMessageGenTimestamp) {
+    public void onMessageProcessingEnded(int uniqueMessageProcessorIdentifier, int producerId, Long processedMessageGenTimestamp, String eventId) {
         if (processedMessageGenTimestamp != null) {
             provideProducerInfo(producerId).setLastProcessedMessageGenTimestamp(processedMessageGenTimestamp);
         }
@@ -149,8 +149,8 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         long endedAt = timeUtils.now();
         long processingTime = endedAt - messageProcessingStartedTime;
         if (processingTime > MAX_RECOMMENDED_PROCESSING_TIME) {
-            logger.warn(String.format("Client took more than %s second to process a message. (%.3f seconds)",
-                    MAX_RECOMMENDED_PROCESSING_TIME / 1000, (double) processingTime / 1000));
+            logger.warn(String.format("Client took more than %s second to process a message for producer %s and event %s (%.3f seconds)",
+                    MAX_RECOMMENDED_PROCESSING_TIME / 1000, producerId, eventId, (double) processingTime / 1000));
         }
 
         messageProcessingTimes.put(uniqueMessageProcessorIdentifier, 0L);

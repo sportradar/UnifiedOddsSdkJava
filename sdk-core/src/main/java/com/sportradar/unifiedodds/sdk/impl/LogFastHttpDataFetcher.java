@@ -20,15 +20,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * Wrapper class for the {@link HttpDataFetcher} with the sole purpose of API request logging
  */
-public class LogHttpDataFetcher extends HttpDataFetcher {
-    private final static Logger logger = LoggerFactory.getLogger(LogHttpDataFetcher.class);
+public class LogFastHttpDataFetcher extends LogHttpDataFetcher {
+    private final static Logger logger = LoggerFactory.getLogger(LogFastHttpDataFetcher.class);
     private final static Logger trafficLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkRestTrafficLog.class);
 
     @Inject
-    public LogHttpDataFetcher(SDKInternalConfiguration config,
-                              CloseableHttpClient httpClient,
-                              UnifiedOddsStatistics statsBean,
-                              @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
+    public LogFastHttpDataFetcher(SDKInternalConfiguration config,
+                                  @Named("FastHttpClient") CloseableHttpClient httpClient,
+                                  UnifiedOddsStatistics statsBean,
+                                  @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
         super(config, httpClient, statsBean, apiDeserializer);
     }
 

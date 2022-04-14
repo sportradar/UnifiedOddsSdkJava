@@ -119,18 +119,19 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
 
         long now = System.currentTimeMillis();
         ValidationResult validationResult = feedMessageValidator.validate(unmarshalledMessage, routingKeyInfo);
+        String eventId = FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage);
         switch (validationResult) {
             case Success:
                 logger.debug("Message {} successfully validated. ProducerId:{}, EventId:'{}'. Message processing continues", unmarshalledMessage.getClass().getSimpleName(),
-                             FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
+                             FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), eventId);
                 break;
             case ProblemsDetected:
                 logger.warn("Problems were detected while validating message {}, but the message is still eligible for further processing. ProducerId:{}, EventId:'{}'",
-                        unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
+                        unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), eventId);
                 break;
             case Failure:
                 logger.warn("Validation of message {} failed. Raising onUnparseableMessage event. ProducerId:{}, EventId:'{}'",
-                        unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
+                        unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), eventId);
 
                 SportEvent event = routingKeyInfo.getEventId() == null ?
                         null :
@@ -140,7 +141,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
                 return;
             default:
                 logger.error("Validation result '{}' is not supported. Aborting message processing. Type:{} ProducerId:{}, EventId:'{}'",
-                        validationResult, unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), FeedMessageHelper.provideEventIdFromMessage(unmarshalledMessage));
+                        validationResult, unmarshalledMessage.getClass().getName(), FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage), eventId);
                 return;
         }
 
@@ -150,7 +151,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
 
         recoveryManager.onMessageProcessingStarted(this.hashCode(), producerId, FeedMessageHelper.provideRequestIdFromMessage(unmarshalledMessage), now);
         messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp);
-        recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, FeedMessageHelper.provideMessageGenTimestampFromMessage(unmarshalledMessage));
+        recoveryManager.onMessageProcessingEnded(this.hashCode(), producerId, FeedMessageHelper.provideMessageGenTimestampFromMessage(unmarshalledMessage), eventId);
 
         clientInteractionLog.info("Message -> ({}|{}|{}|{}) processing finished on {}, duration: {} ms",
                 producerId,
