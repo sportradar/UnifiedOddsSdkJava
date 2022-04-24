@@ -1,5 +1,6 @@
 package com.sportradar.unifiedodds.sdk;
 
+import com.ibm.icu.util.DateRule;
 import com.rabbitmq.client.ConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ public final class OperationManager
     private static boolean ignoreBetPalTimelineSportEventStatus;
     private static int rabbitConnectionTimeout;
     private static int rabbitHeartbeat;
+    private static Duration fastHttpClientTimeout;
 
     /**
      * Gets the sport event status cache timeout - how long status is cached
@@ -72,6 +74,13 @@ public final class OperationManager
     public static int getRabbitHeartbeat() { return rabbitHeartbeat; }
 
     /**
+     * Gets a timeout for HttpClient for fast api request (in seconds).
+     * Between 1 and 30 (default 5s). Used for summary, competitor profile, player profile and variant description endpoint. Must be set before feed instance is created.
+     * @return a timeout for HttpClient for fast api request (in seconds).
+     */
+    public static Duration getFastHttpClientTimeout() { return fastHttpClientTimeout; }
+
+    /**
      * Initialization of default values of the OperationManager
      */
     static
@@ -83,6 +92,7 @@ public final class OperationManager
         ignoreBetPalTimelineSportEventStatus = false;
         rabbitConnectionTimeout = 30; // ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT / 1000;
         rabbitHeartbeat = ConnectionFactory.DEFAULT_HEARTBEAT;
+        fastHttpClientTimeout = Duration.ofSeconds(5);
     }
 
     /**
@@ -206,5 +216,26 @@ public final class OperationManager
             rabbitHeartbeat = heartbeat;
             InteractionLog.info("Set RabbitHeartbeat to {}s.", heartbeat);
         }
+    }
+
+    /**
+     * Sets the timeout for HttpClient for fast api request (in seconds).
+     * @param timeout timeout value
+     */
+    public static void setFastHttpClientTimeout(Duration timeout)
+    {
+        if(timeout == null) {
+            String msg = "Missing timeout value for FastHttpClientTimeout";
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (timeout != null && timeout.toMillis() >= 1000 && timeout.toMillis() <= 30000) {
+            fastHttpClientTimeout = timeout;
+            InteractionLog.info("Set FastHttpClientTimeout to {} ms.", timeout.toMillis());
+            return;
+        }
+
+        String msg = String.format("Invalid timeout value for FastHttpClientTimeout: %s ms.", timeout.toMillis());
+        throw new IllegalArgumentException(msg);
     }
 }
