@@ -695,7 +695,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public void requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+    public SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
@@ -709,6 +709,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
         dispatchReceivedRawApiData(matchTimelineEndpointDataProvider.getFinalUrl(locale, id.toString()), endpoint);
 
         dataRouter.onMatchTimelineFetched(id, endpoint, locale, requester);
+
+        return endpoint;
     }
 
     @Override

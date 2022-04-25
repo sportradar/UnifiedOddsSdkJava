@@ -413,4 +413,12 @@ public interface SportsInfoManager {
      * @return the list of {@link PeriodStatus} from the sport event period summary endpoint
      */
     default List<PeriodStatus> getPeriodStatuses(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) { return null; }
+
+    /**
+     * Returns the list of {@link TimelineEvent} for the sport event
+     * @param id the id of the sport event to be fetched
+     * @param locale the {@link Locale} in which to provide the data (can be null)
+     * @return the list of {@link TimelineEvent} for the sport event
+     */
+    default List<TimelineEvent> getTimelineEvents(URN id, Locale locale) { return null; }
 }

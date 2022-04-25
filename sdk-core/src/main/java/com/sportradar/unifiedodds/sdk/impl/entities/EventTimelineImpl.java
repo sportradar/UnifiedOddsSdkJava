@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 /**
  * An implementation of the {@link EventTimeline} interface
  */
-class EventTimelineImpl implements EventTimeline {
+public class EventTimelineImpl implements EventTimeline {
     private final EventTimelineCI eventTimeline;
 
-    EventTimelineImpl(EventTimelineCI eventTimeline) {
+    public EventTimelineImpl(EventTimelineCI eventTimeline) {
         Preconditions.checkNotNull(eventTimeline);
 
         this.eventTimeline = eventTimeline;

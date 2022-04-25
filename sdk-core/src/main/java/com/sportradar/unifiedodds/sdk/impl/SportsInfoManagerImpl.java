@@ -8,16 +8,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.CacheType;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.impl.entities.EventTimelineImpl;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1007,6 +1011,41 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
             }
         }
         return periodStatuses;
+    }
+
+    /**
+     * Returns the list of {@link TimelineEvent} for the sport event
+     * @param id the id of the sport event to be fetched
+     * @param locale the {@link Locale} in which to provide the data (can be null)
+     * @return the list of {@link TimelineEvent} for the sport event
+     */
+    @Override
+    public List<TimelineEvent> getTimelineEvents(URN id, Locale locale) {
+        Preconditions.checkNotNull(id);
+
+        Stopwatch timer = Stopwatch.createStarted();
+        if(locale == null){
+            locale = defaultLocale;
+        }
+        List<TimelineEvent> timelineEvents = new ArrayList<>();
+        try {
+            SAPIMatchTimelineEndpoint matchTimelineEndpoint = dataRouterManager.requestEventTimelineEndpoint(locale, id, null);
+            if(matchTimelineEndpoint != null && matchTimelineEndpoint.getTimeline() != null){
+                EventTimelineCI eventTimelineCI = new EventTimelineCI(matchTimelineEndpoint.getTimeline(), locale, false);
+                EventTimeline eventTimeline = new EventTimelineImpl(eventTimelineCI);
+                timelineEvents = eventTimeline.getTimelineEvents();
+            }
+            clientInteractionLog.info("SportsInfoManager.getTimelineEvents({}, {}) invoked. Execution time: {}", id, locale, timer.stop());
+        } catch (CommunicationException e) {
+            Throwable initException = getInitialException(e);
+            if(initException.getMessage() != null && initException.getMessage().contains("not found") || initException.getMessage().contains("404")){
+                clientInteractionLog.warn("SportsInfoManager.getTimelineEvents({}, {}) invoked. MatchTimeline not found. Execution time: {}", id, locale, timer.stop());
+            }
+            else{
+                return handleException("getTimelineEvents", e);
+            }
+        }
+        return timelineEvents;
     }
 
     private List<Sport> internalGetSports(List<Locale> locales) {

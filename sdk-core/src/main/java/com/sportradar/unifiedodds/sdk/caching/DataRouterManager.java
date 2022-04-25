@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
+import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
@@ -50,7 +51,7 @@ public interface DataRouterManager {
 
     List<URN> requestSeasonsFor(Locale locale, URN tournamentID) throws CommunicationException;
 
-    void requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
 
     void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
 
