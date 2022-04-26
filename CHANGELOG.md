@@ -1,5 +1,12 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.54.0 (2022-04-26)**
+* Separate HttpClient for critical and other requests
+* Added configuration option for fast HttpClient in OperationManager (default timeout 5s)
+* Extended SportsInfoManager with getTimelineEvents
+* Improved how SportInfoManager is handling exceptions
+* Improved logging for raw data events
+
 **2.0.53.0 (2022-02-23)**
 * Added getBetradarName to Round
 * Improvement: handling of alive messages in regard to producer status
