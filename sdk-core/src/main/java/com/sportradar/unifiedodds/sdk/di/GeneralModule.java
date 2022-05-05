@@ -264,12 +264,11 @@ public class GeneralModule implements Module {
      */
     @Provides @Singleton @Named("FastHttpClient")
     private CloseableHttpClient provideCriticalHttpClient(){
-//        int maxTimeout2 = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
-        int maxTimeout = (int) OperationManager.getFastHttpClientTimeout().toMillis();
+        int maxTimeoutInMillis = (int) OperationManager.getFastHttpClientTimeout().toMillis();
         RequestConfig.Builder requestBuilder = RequestConfig.custom()
-                .setConnectTimeout(maxTimeout)
-                .setConnectionRequestTimeout(maxTimeout)
-                .setSocketTimeout(maxTimeout);
+                .setConnectTimeout(maxTimeoutInMillis)
+                .setConnectionRequestTimeout(maxTimeoutInMillis)
+                .setSocketTimeout(maxTimeoutInMillis);
 
         return HttpClientBuilder.create()
                 .useSystemProperties()

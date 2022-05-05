@@ -1,5 +1,8 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.54.1 (2022-05-05)**
+* Fix: fast HttpClient timeout fixed
+
 **2.0.54.0 (2022-04-26)**
 * Separate HttpClient for critical and other requests
 * Added configuration option for fast HttpClient in OperationManager (default timeout 5s)
