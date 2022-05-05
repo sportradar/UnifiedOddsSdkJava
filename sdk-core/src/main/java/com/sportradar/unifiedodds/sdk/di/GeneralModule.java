@@ -264,8 +264,8 @@ public class GeneralModule implements Module {
      */
     @Provides @Singleton @Named("FastHttpClient")
     private CloseableHttpClient provideCriticalHttpClient(){
-//        int maxTimeout = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
-        int maxTimeout = (int) OperationManager.getFastHttpClientTimeout().getSeconds();
+//        int maxTimeout2 = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
+        int maxTimeout = (int) OperationManager.getFastHttpClientTimeout().toMillis();
         RequestConfig.Builder requestBuilder = RequestConfig.custom()
                 .setConnectTimeout(maxTimeout)
                 .setConnectionRequestTimeout(maxTimeout)
