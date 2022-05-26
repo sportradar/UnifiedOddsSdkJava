@@ -75,6 +75,11 @@ public class GeneralModule implements Module {
      */
     private final SDKInternalConfiguration configuration;
 
+    /**
+     * The HTTP client factory.
+     */
+    private final HttpClientFactory httpClientFactory;
+
     private ReentrantLock jabxReentrantLock;
 
     /**
@@ -84,12 +89,14 @@ public class GeneralModule implements Module {
      *        implementation used to notify the outside world about global events
      * @param configuration The associated SDK configuration
      */
-    GeneralModule(SDKGlobalEventsListener sdkListener, SDKInternalConfiguration configuration) {
+    GeneralModule(SDKGlobalEventsListener sdkListener, SDKInternalConfiguration configuration, HttpClientFactory httpClientFactory) {
         checkNotNull(sdkListener, "sdkListener cannot be a null reference");
         checkNotNull(configuration, "the SDKInternalConfiguration can not be null");
+        checkNotNull(httpClientFactory, "the httpClientFactory can not be null");
 
         this.sdkListener = sdkListener;
         this.configuration = configuration;
+        this.httpClientFactory = httpClientFactory;
 
         try {
             jabxReentrantLock = new ReentrantLock();
@@ -103,7 +110,7 @@ public class GeneralModule implements Module {
 
     /**
      * Registers required types with the injection container
-     * 
+     *
      * @param binder A {@link Binder} representing the injection container handle
      */
     @SuppressWarnings("java:S2119") // "Random" objects should be reused
@@ -174,7 +181,7 @@ public class GeneralModule implements Module {
 
     /**
      * Provides the {@link Unmarshaller} used to unmarshal incoming messages
-     * 
+     *
      * @return The {@link Unmarshaller} instance to be registered with the DI container
      */
     @Provides @Named("MessageUnmarshaller")
@@ -243,60 +250,36 @@ public class GeneralModule implements Module {
      * Provides the http client used to fetch data from the API
      */
     @Provides @Singleton
-    private CloseableHttpClient provideHttpClient(){
-        int maxTimeout = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
-        RequestConfig.Builder requestBuilder = RequestConfig.custom()
-                .setConnectTimeout(maxTimeout)
-                .setConnectionRequestTimeout(maxTimeout)
-                .setSocketTimeout(maxTimeout);
+    CloseableHttpClient provideHttpClient(){
+        int maxTimeoutInMillis = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
+        int connectionPoolSize = configuration.getHttpClientMaxConnTotal();
+        int maxConcurrentConnectionsPerRoute = configuration.getHttpClientMaxConnPerRoute();
 
-        return HttpClientBuilder.create()
-                .useSystemProperties()
-                .setRedirectStrategy(new LaxRedirectStrategy())
-                .setDefaultRequestConfig(requestBuilder.build())
-                .setMaxConnTotal(configuration.getHttpClientMaxConnTotal())
-                .setMaxConnPerRoute(configuration.getHttpClientMaxConnPerRoute())
-                .build();
+        return httpClientFactory.create(maxTimeoutInMillis, connectionPoolSize, maxConcurrentConnectionsPerRoute);
     }
 
     /**
      * Provides the http client used to fetch data from the API on feed queue thread (profiles, variant market or summary)
      */
     @Provides @Singleton @Named("FastHttpClient")
-    private CloseableHttpClient provideCriticalHttpClient(){
+    CloseableHttpClient provideCriticalHttpClient(){
         int maxTimeoutInMillis = (int) OperationManager.getFastHttpClientTimeout().toMillis();
-        RequestConfig.Builder requestBuilder = RequestConfig.custom()
-                .setConnectTimeout(maxTimeoutInMillis)
-                .setConnectionRequestTimeout(maxTimeoutInMillis)
-                .setSocketTimeout(maxTimeoutInMillis);
+        int connectionPoolSize = configuration.getHttpClientMaxConnTotal();
+        int maxConcurrentConnectionsPerRoute = configuration.getHttpClientMaxConnPerRoute();
 
-        return HttpClientBuilder.create()
-                .useSystemProperties()
-                .setRedirectStrategy(new LaxRedirectStrategy())
-                .setDefaultRequestConfig(requestBuilder.build())
-                .setMaxConnTotal(configuration.getHttpClientMaxConnTotal())
-                .setMaxConnPerRoute(configuration.getHttpClientMaxConnPerRoute())
-                .build();
+        return httpClientFactory.create(maxTimeoutInMillis, connectionPoolSize, maxConcurrentConnectionsPerRoute);
     }
 
     /**
      * Provides the http client used to fetch data from the API
      */
     @Provides @Singleton @Named("RecoveryHttpClient")
-    private CloseableHttpClient provideRecoveryHttpClient(){
-        int maxTimeout = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getRecoveryHttpClientTimeout(), TimeUnit.SECONDS));
-        RequestConfig.Builder requestBuilder = RequestConfig.custom()
-                .setConnectTimeout(maxTimeout)
-                .setConnectionRequestTimeout(maxTimeout)
-                .setSocketTimeout(maxTimeout);
+    CloseableHttpClient provideRecoveryHttpClient(){
+        int maxTimeoutInMillis = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getRecoveryHttpClientTimeout(), TimeUnit.SECONDS));
+        int connectionPoolSize = configuration.getRecoveryHttpClientMaxConnTotal();
+        int maxConcurrentConnectionsPerRoute = configuration.getRecoveryHttpClientMaxConnPerRoute();
 
-        return HttpClientBuilder.create()
-                .useSystemProperties()
-                .setRedirectStrategy(new LaxRedirectStrategy())
-                .setDefaultRequestConfig(requestBuilder.build())
-                .setMaxConnTotal(configuration.getRecoveryHttpClientMaxConnTotal())
-                .setMaxConnPerRoute(configuration.getRecoveryHttpClientMaxConnPerRoute())
-                .build();
+        return httpClientFactory.create(maxTimeoutInMillis, connectionPoolSize, maxConcurrentConnectionsPerRoute);
     }
 
     /**

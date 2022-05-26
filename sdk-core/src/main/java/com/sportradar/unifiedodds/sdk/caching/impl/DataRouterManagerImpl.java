@@ -1009,16 +1009,14 @@ public class DataRouterManagerImpl implements DataRouterManager {
         }
     }
 
-    private void dispatchReceivedRawApiData(String uri, Object restMessage)
-    {
-        if(oddsFeedExtListener == null) {
+    private void dispatchReceivedRawApiData(String uri, Object restMessage) {
+        if (oddsFeedExtListener == null) {
             return;
         }
         // send RawFeedMessage
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try
-        {
+        try {
             oddsFeedExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
             stopwatch.stop();
             String msg = String.format("Dispatching raw api message for %s took %sms.",
@@ -1026,9 +1024,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                                        stopwatch.elapsed(TimeUnit.MILLISECONDS));
             logger.info(msg);
         }
-        catch (Exception e)
-        {
-            logger.error("Error dispatching raw api data for {}", uri);
+        catch (Exception e) {
             stopwatch.stop();
             String errorMsg = String.format("Error dispatching raw api data for %s. Took %sms.",
                                             uri,

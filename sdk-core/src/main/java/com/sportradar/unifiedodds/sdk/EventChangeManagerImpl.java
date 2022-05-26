@@ -10,6 +10,8 @@ import com.sportradar.unifiedodds.sdk.impl.SportsInfoManagerImpl;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+import org.yaml.snakeyaml.error.Mark;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -238,37 +240,30 @@ public class EventChangeManagerImpl implements EventChangeManager {
         }
     }
 
-    private void fetchFixtures()
-    {
-        if (!isRunning)
-        {
+    private void fetchFixtures() {
+        if (!isRunning) {
             executionLogger.debug("Invoked fixture change fetch when isRunning=false.");
             return;
         }
 
-        if (eventChangeListener == null)
-        {
+        if (eventChangeListener == null) {
             executionLogger.debug("Invoked fixture change fetch when no listener specified. Aborting.");
             return;
         }
 
         fixtureLock.lock();
 
-        if(!isRunning)
-        {
+        if(!isRunning) {
             return;
         }
 
-        try
-        {
+        try {
             List<FixtureChange> changes;
-            if (lastFixtureChange == null)
-            {
+            if (lastFixtureChange == null) {
                 executionLogger.info("Invoking getFixtureChanges. After=null");
                 changes = sportsInfoManager.getFixtureChanges(configuration.getDefaultLocale());
             }
-            else
-            {
+            else {
                 executionLogger.info("Invoking getFixtureChanges. After={}", lastFixtureChange);
                 changes = sportsInfoManager.getFixtureChanges(lastFixtureChange, null, configuration.getDefaultLocale());
             }
@@ -277,22 +272,16 @@ public class EventChangeManagerImpl implements EventChangeManager {
                 changes = changes.stream().sorted(Comparator.comparing(c->c.getUpdateTime().getTime())).collect(Collectors.toList());
             }
 
-            for (FixtureChange fixtureChange : changes)
-            {
-                if(!isRunning)
-                {
+            for (FixtureChange fixtureChange : changes) {
+                if(!isRunning) {
                     break;
                 }
 
                 EventUpdate eventUpdate = eventUpdates.stream().filter(a -> a.id.equals(fixtureChange.getSportEventId())).findFirst().orElse(null);
-                if (eventUpdate != null)
-                {
-                    if(fixtureChange.getUpdateTime().after(eventUpdate.updated))
-                    {
+                if (eventUpdate != null) {
+                    if(fixtureChange.getUpdateTime().after(eventUpdate.updated)) {
                         eventUpdates.remove(eventUpdate);
-                    }
-                    else
-                    {
+                    } else {
                         updateLastFixtureChange(fixtureChange.getUpdateTime());
                         continue;
                     }
@@ -303,8 +292,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
                 updateLastFixtureChange(fixtureChange.getUpdateTime());
             }
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             executionLogger.error("Error fetching fixture changes. Exception={}", ex.getMessage());
         }
 
@@ -315,37 +303,30 @@ public class EventChangeManagerImpl implements EventChangeManager {
         dispatchUpdateChangeMessages();
     }
 
-    private void fetchResults()
-    {
-        if (!isRunning)
-        {
+    private void fetchResults() {
+        if (!isRunning) {
             executionLogger.debug("Invoked result change fetch when isRunning=false.");
             return;
         }
 
-        if (eventChangeListener == null)
-        {
+        if (eventChangeListener == null) {
             executionLogger.debug("Invoked result change fetch when no listener specified. Aborting.");
             return;
         }
 
         resultLock.lock();
 
-        if(!isRunning)
-        {
+        if(!isRunning) {
             return;
         }
 
-        try
-        {
+        try {
             List<ResultChange> changes;
-            if (lastResultChange == null)
-            {
+            if (lastResultChange == null) {
                 executionLogger.info("Invoking getResultChanges. After=null");
                 changes = sportsInfoManager.getResultChanges(configuration.getDefaultLocale());
             }
-            else
-            {
+            else {
                 executionLogger.info("Invoking getResultChanges. After={}", lastFixtureChange);
                 changes = sportsInfoManager.getResultChanges(lastFixtureChange, null, configuration.getDefaultLocale());
             }
@@ -354,22 +335,16 @@ public class EventChangeManagerImpl implements EventChangeManager {
                 changes = changes.stream().sorted(Comparator.comparing(c->c.getUpdateTime().getTime())).collect(Collectors.toList());
             }
 
-            for (ResultChange resultChange : changes)
-            {
-                if(!isRunning)
-                {
+            for (ResultChange resultChange : changes) {
+                if(!isRunning) {
                     break;
                 }
 
                 EventUpdate eventUpdate = eventUpdates.stream().filter(a -> a.id.equals(resultChange.getSportEventId())).findFirst().orElse(null);
-                if (eventUpdate != null)
-                {
-                    if(resultChange.getUpdateTime().after(eventUpdate.updated))
-                    {
+                if (eventUpdate != null) {
+                    if(resultChange.getUpdateTime().after(eventUpdate.updated)) {
                         eventUpdates.remove(eventUpdate);
-                    }
-                    else
-                    {
+                    } else {
                         updateLastResultChange(resultChange.getUpdateTime());
                         continue;
                     }
@@ -380,8 +355,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
                 updateLastResultChange(resultChange.getUpdateTime());
             }
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             executionLogger.error("Error fetching result changes. Exception={}", ex.getMessage());
         }
 

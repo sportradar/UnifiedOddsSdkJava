@@ -51,6 +51,7 @@
         <url>https://github.com/sportradar/UnifiedOddsSdkJava</url>
     </scm>
 
+    <!-- FIXME should be inherited from the parent pom.xml but we aren't linked with it -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rabbitMQ.version>3.6.0</rabbitMQ.version>
@@ -58,7 +59,7 @@
         <slf4j.version>1.7.13</slf4j.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
-        <mockito.version>2.7.22</mockito.version>
+        <mockito.version>4.5.1</mockito.version>
         <guava.version>21.0</guava.version>
         <guice.version>4.0</guice.version>
         <icu4j.version>57.1</icu4j.version>
@@ -111,6 +112,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>

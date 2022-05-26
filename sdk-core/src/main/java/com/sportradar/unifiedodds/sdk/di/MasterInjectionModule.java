@@ -37,7 +37,7 @@ public class MasterInjectionModule extends AbstractModule {
 
         bind(SDKInternalConfiguration.class).toInstance(config);
 
-        install(new GeneralModule(sdkListener, config));
+        install(new GeneralModule(sdkListener, config, new HttpClientFactory()));
         install(new ReadersModule());
         install(new DataProvidersModule());
         install(new CachingModule(new InternalCachesProviderImpl()));

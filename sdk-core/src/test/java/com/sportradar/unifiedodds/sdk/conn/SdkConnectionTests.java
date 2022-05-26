@@ -9,11 +9,13 @@ import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
+import com.sportradar.unifiedodds.sdk.junit.AssumingRabbitRunningRule;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.shared.*;
 import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -24,6 +26,9 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 
 public class SdkConnectionTests {
+
+    @ClassRule
+    public static AssumingRabbitRunningRule rabbitRunning = new AssumingRabbitRunningRule();
 
     private RabbitProducer rabbitProducer;
     private TestFeed feed;

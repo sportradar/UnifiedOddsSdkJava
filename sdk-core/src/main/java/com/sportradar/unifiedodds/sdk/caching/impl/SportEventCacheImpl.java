@@ -476,7 +476,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     @Override
-    @SuppressWarnings("Duplicates") // its not a duplicate, different CI factory method
+    @SuppressWarnings("Duplicates") // it is not a duplicate, different CI factory method
     public void onDrawFetched(URN id, SAPIDrawEvent data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
@@ -496,7 +496,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     @Override
-    @SuppressWarnings("Duplicates") // its not a duplicate, different CI factory method
+    @SuppressWarnings("Duplicates") // it is not a duplicate, different CI factory method
     public void onDrawFixtureFetched(URN id, SAPIDrawFixture data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
@@ -516,7 +516,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     @Override
-    @SuppressWarnings("Duplicates") // its not a duplicate, different CI factory method
+    @SuppressWarnings("Duplicates") // it is not a duplicate, different CI factory method
     public void onDrawSummaryEndpointFetched(URN id, SAPIDrawSummary data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
@@ -572,7 +572,8 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         Preconditions.checkNotNull(before);
 
         long startCount = sportEventsCache.size();
-        for (SportEventCI ci : sportEventsCache.asMap().values()) {
+        List<SportEventCI> cacheItems = sportEventsCache.asMap().values().stream().collect(Collectors.toList());
+        for (SportEventCI ci : cacheItems) {
             if(ci.getScheduledRaw() != null){
                 if(ci.getScheduledRaw().before(before)){
                     sportEventsCache.invalidate(ci.getId());
@@ -586,7 +587,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         }
         long endCount = sportEventsCache.size();
         long diff = startCount - endCount;
-        logger.info("Deleted {} items from cache.", diff);
+        logger.info("Deleted {} items from cache [before={}].", diff, before);
         return (int)diff;
     }
 
