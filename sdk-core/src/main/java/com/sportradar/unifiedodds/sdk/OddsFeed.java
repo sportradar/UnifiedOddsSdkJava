@@ -422,6 +422,15 @@ public class OddsFeed {
     }
 
     /**
+     * Returns true if feed is opened
+     *
+     * @return true if opened
+     */
+    public boolean isOpen() {
+        return feedOpened;
+    }
+
+    /**
      * Method used to close the feed and all its sessions
      *
      * @throws IOException if the AMQP connection closure fails
