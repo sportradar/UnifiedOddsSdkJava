@@ -6,10 +6,7 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
+import com.google.inject.*;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
@@ -24,6 +21,8 @@ import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.URN;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Date;
 
 /**

@@ -6,6 +6,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
 import com.sportradar.utils.URN;
 
+import java.io.Closeable;
 import java.util.Date;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Date;
  *
  * @author e.roznik
  */
-public interface InternalCachesProvider {
+public interface InternalCachesProvider extends Closeable {
     Cache<URN, SportCI> getSportDataCache();
 
     Cache<URN, CategoryCI> getCategoryDataCache();

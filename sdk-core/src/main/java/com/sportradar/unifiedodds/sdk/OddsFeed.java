@@ -9,20 +9,24 @@ import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
+import com.sportradar.unifiedodds.sdk.caching.impl.*;
+import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
+import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactoryImpl;
+import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
+import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProviderImpl;
 import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.di.CachingModule;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
+import com.sportradar.unifiedodds.sdk.di.InternalCachesProvider;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsException;
 import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
-import com.sportradar.unifiedodds.sdk.impl.AMQPConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.OddsFeedSessionImpl;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.URN;
@@ -442,13 +446,97 @@ public class OddsFeed {
 
         logger.warn("OddsFeed.close invoked - closing the feed instance");
 
-        injector.getInstance(AMQPConnectionFactory.class).close();
-        injector.getInstance(CloseableHttpClient.class).close();
-        injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("FastHttpClient"))).close();
-        injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("RecoveryHttpClient"))).close();
-        injector.getInstance(SDKTaskScheduler.class).shutdownNow();
-        injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
-        injector.getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor"))).shutdownNow();
+        try{
+            injector.getInstance(AMQPConnectionFactory.class).close(true);
+        } catch(Exception ex) {
+            logger.warn("Error during close - AMQPConnectionFactory close", ex);
+        }
+        try{
+            injector.getInstance(CloseableHttpClient.class).close();
+        } catch(Exception ex) {
+            logger.warn("Error during close - HttpClient close", ex);
+        }
+        try{
+            injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("FastHttpClient"))).close();
+        } catch(Exception ex) {
+            logger.warn("Error during close - FastHttpClient close", ex);
+        }
+        try{
+            injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("RecoveryHttpClient"))).close();
+        } catch(Exception ex) {
+            logger.warn("Error during close - RecoveryHttpClient close", ex);
+        }
+        try{
+            injector.getInstance(SDKTaskScheduler.class).shutdownNow();
+        } catch(Exception ex) {
+            logger.warn("Error during close - SDKTaskScheduler close", ex);
+        }
+        try{
+            injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
+        } catch(Exception ex) {
+            logger.warn("Error during close - ScheduledExecutorService close", ex);
+        }
+        try{
+            injector.getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor"))).shutdownNow();
+        } catch(Exception ex) {
+            logger.warn("Error during close - ExecutorService close", ex);
+        }
+        try{
+            InternalCachesProvider internalCachesProvider = injector.getInstance(Key.get(InternalCachesProvider.class));
+            internalCachesProvider.close();
+            internalCachesProvider = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - InternalCachesProvider close", ex);
+        }
+
+        try{
+            SportEventCache sportEventCache = injector.getInstance(Key.get(SportEventCache.class));
+            sportEventCache = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - SportEventCache close", ex);
+        }
+        try{
+            SportsDataCache sportsDataCache = injector.getInstance(Key.get(SportsDataCache.class));
+            sportsDataCache = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - SportsDataCache close", ex);
+        }
+        try{
+            CacheItemFactory cacheItemFactory = injector.getInstance(Key.get(CacheItemFactory.class));
+            cacheItemFactory = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - CacheItemFactory close", ex);
+        }
+        try{
+            SportEntityFactory sportEntityFactory = injector.getInstance(Key.get(SportEntityFactory.class));
+            sportEntityFactory = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - SportEntityFactory close", ex);
+        }
+        try{
+            DataRouterManager dataRouterManager = injector.getInstance(Key.get(DataRouterManager.class));
+            dataRouterManager = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - DataRouterManager close", ex);
+        }
+        try{
+            DataRouter dataRouter = injector.getInstance(Key.get(DataRouter.class));
+            dataRouter = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - DataRouter close", ex);
+        }
+        try{
+            NamedValuesProvider namedValuesProvider = injector.getInstance(Key.get(NamedValuesProvider.class));
+            namedValuesProvider = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - NamedValuesProvider close", ex);
+        }
+        try{
+            MarketDescriptionProvider marketDescriptionProvider = injector.getInstance(Key.get(MarketDescriptionProvider.class));
+            marketDescriptionProvider = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - MarketDescriptionProvider close", ex);
+        }
     }
 
     public List<Locale> getAvailableLanguages() {

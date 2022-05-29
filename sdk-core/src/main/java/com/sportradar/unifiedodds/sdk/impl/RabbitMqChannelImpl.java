@@ -134,7 +134,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         try {
             initChannelQueue(routingKeys, messageInterest);
         } catch (IOException e) {
-            throw new IOException("Channel queue declaration failed, ex: ", e);
+            throw new IOException("Channel queue declaration failed.", e);
         }
     }
 
@@ -228,6 +228,12 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
     private void checkChannelStatus()
     {
         while(shouldBeOpened) {
+            if(!connectionFactory.canConnectionOpen()){
+                try {
+                    close();
+                } catch (IOException ignored) { }
+                return;
+            }
             try {
                 Thread.sleep(1000L * 20L);
             }
@@ -293,7 +299,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                     channelClosePure();
                     logger.info("Resetting connection for the channel with channelNumber: {}", channelNumber);
                     try {
-                        connectionFactory.close();
+                        connectionFactory.close(false);
                         Thread.sleep(5000);
                     }
                     catch (IOException | InterruptedException e) {

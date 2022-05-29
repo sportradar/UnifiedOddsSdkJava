@@ -113,6 +113,11 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private final Object syncLock = new Object();
 
     /**
+     * Can the feed connection be opened
+     */
+    private boolean canFeedBeOpened;
+
+    /**
      * Initializes a new instance of the {@link SingleInstanceAMQPConnectionFactory} class
      * 
      * @param rabbitConnectionFactory A {@link ConnectionFactory} instance used to create the
@@ -144,6 +149,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         this.shutdownListener = new ShutdownListenerImpl(this);
         this.blockedListener = new BlockedListenerImpl(this);
         this.connectionStarted = 0;
+        this.canFeedBeOpened = true;
     }
 
     /**
@@ -305,6 +311,10 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     @Override
     public synchronized Connection getConnection() {
         synchronized (syncLock) {
+            if(!canFeedBeOpened){
+                logger.warn("Connection should be closed.");
+                return null;
+            }
             try {
                 if(this.connection == null){
                     SDKConnection sdkConnection = this.createSdkConnection();
@@ -319,18 +329,21 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
     /**
      * Close the AMQP connection
-     *
+     * @param feedStopped indication if feed was stopped
      * @throws IOException if the connection couldn't be terminated
      */
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close(boolean feedStopped) throws IOException {
         logger.info("Closing underlying AMQP connection");
+        if(feedStopped){
+            canFeedBeOpened = false;
+        }
         try {
             if (this.connection != null) {
                 this.connection.close();
             }
         } catch(IOException ex){
-            logger.error("Error closing connection: " + ex.getMessage());
+            logger.error("Error closing connection: ", ex);
         } finally {
             this.connection = null;
             connectionStarted = 0;
@@ -350,6 +363,14 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      */
     @Override
     public long getConnectionStarted() { return connectionStarted; }
+
+    /**
+     * Check if the connection can or should be opened
+     *
+     * @return value indicating if the connection can or should be opened
+     */
+    @Override
+    public boolean canConnectionOpen() { return canFeedBeOpened; }
 
     private synchronized void handleShutdown(ShutdownSignalException cause) {
         try {

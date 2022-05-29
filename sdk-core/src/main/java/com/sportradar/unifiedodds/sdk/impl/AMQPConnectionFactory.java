@@ -28,10 +28,10 @@ public interface AMQPConnectionFactory {
 
     /**
      * Close the AMQP connection
-     *
+     * @param feedStopped indication if feed was stopped
      * @throws IOException if the connection couldn't be terminated
      */
-    void close() throws IOException;
+    void close(boolean feedStopped) throws IOException;
 
     /**
      * Check if the connection is currently alive
@@ -45,4 +45,11 @@ public interface AMQPConnectionFactory {
      * @return the timestamp when the connection started
      */
     long getConnectionStarted();
+
+    /**
+     * Check if the connection can or should be opened
+     *
+     * @return value indicating if the connection can or should be opened
+     */
+    boolean canConnectionOpen();
 }

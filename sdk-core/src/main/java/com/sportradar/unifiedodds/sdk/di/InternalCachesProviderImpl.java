@@ -8,6 +8,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
 import com.sportradar.utils.URN;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -30,32 +31,43 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     private final Cache<String, VariantDescriptionCI> variantDescriptionCache;
     private final Cache<URN, Date> fixtureTimestampCache;
     private final Cache<String, Date> ignoreEventsTimelineCache;
+    private final SDKCacheRemovalListener removalListenerSportEventCache;
+    private final SDKCacheRemovalListener removalListenerPlayerProfileCache;
+    private final SDKCacheRemovalListener removalListenerCompetitorProfileCache;
+    private final SDKCacheRemovalListener removalListenerSimpleTeamCompetitorCache;
+    private final SDKCacheRemovalListener removalListenerSportEventStatusCache;
 
     InternalCachesProviderImpl() {
+        removalListenerSportEventCache = new SDKCacheRemovalListener<>("SportEventCache");
+        removalListenerPlayerProfileCache = new SDKCacheRemovalListener<>("PlayerProfileCache");
+        removalListenerCompetitorProfileCache = new SDKCacheRemovalListener<>("CompetitorProfileCache");
+        removalListenerSimpleTeamCompetitorCache = new SDKCacheRemovalListener<>("SimpleTeamCompetitorCache");
+        removalListenerSportEventStatusCache = new SDKCacheRemovalListener<>("SportEventStatusCache", true);
+
         sportDataCache = CacheBuilder.newBuilder().build();
         categoryDataCache = CacheBuilder.newBuilder().build();
 
         sportEventCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(12, TimeUnit.HOURS)
-                .removalListener(new SDKCacheRemovalListener<>("SportEventCache"))
+                .removalListener(removalListenerSportEventCache)
                 .build();
 
         playerProfileCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(OperationManager.getProfileCacheTimeout().toHours(), TimeUnit.HOURS)
-                .removalListener(new SDKCacheRemovalListener<>("PlayerProfileCache"))
+                .removalListener(removalListenerPlayerProfileCache)
                 .build();
         competitorCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(OperationManager.getProfileCacheTimeout().toHours(), TimeUnit.HOURS)
-                .removalListener(new SDKCacheRemovalListener<>("CompetitorProfileCache"))
+                .removalListener(removalListenerCompetitorProfileCache)
                 .build();
         simpleTeamCompetitorCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(24, TimeUnit.HOURS)
-                .removalListener(new SDKCacheRemovalListener<>("SimpleTeamCompetitorCache"))
+                .removalListener(removalListenerSimpleTeamCompetitorCache)
                 .build();
 
         sportEventStatusCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(OperationManager.getSportEventStatusCacheTimeout().toMinutes(), TimeUnit.MINUTES)
-                .removalListener(new SDKCacheRemovalListener<>("SportEventStatusCache", true))
+                .removalListener(removalListenerSportEventStatusCache)
                 .build();
 
         invariantMarketCache = CacheBuilder.newBuilder().build(); // timer cleanup & refresh
@@ -78,9 +90,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     }
 
     @Override
-    public Cache<URN, SportEventCI> getSportEventCache() {
-        return sportEventCache;
-    }
+    public Cache<URN, SportEventCI> getSportEventCache() { return sportEventCache; }
 
     @Override
     public Cache<URN, PlayerProfileCI> getPlayerProfileCache() {
@@ -129,4 +139,39 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
 
     @Override
     public Cache<String, Date> getIgnoreEventsTimelineCache() { return ignoreEventsTimelineCache; }
+
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     *
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        removalListenerSportEventCache.EnableLogRemoval(false);
+        removalListenerPlayerProfileCache.EnableLogRemoval(false);
+        removalListenerCompetitorProfileCache.EnableLogRemoval(false);
+        removalListenerSimpleTeamCompetitorCache.EnableLogRemoval(false);
+        removalListenerSportEventStatusCache.EnableLogRemoval(false);
+        sportDataCache.invalidateAll();
+        categoryDataCache.invalidateAll();
+        sportEventCache.invalidateAll();
+        playerProfileCache.invalidateAll();
+        competitorCache.invalidateAll();
+        simpleTeamCompetitorCache.invalidateAll();
+        sportEventStatusCache.invalidateAll();
+        invariantMarketCache.invalidateAll();
+        variantMarketCache.invalidateAll();
+        dispatchedFixtureChanges.invalidateAll();
+        variantDescriptionCache.invalidateAll();
+        fixtureTimestampCache.invalidateAll();
+        ignoreEventsTimelineCache.invalidateAll();
+    }
 }
