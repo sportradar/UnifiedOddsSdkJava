@@ -61,6 +61,7 @@ public class OddsFeed {
      */
     protected final SDKInternalConfiguration oddsFeedConfiguration;
 
+    private OddsFeedSessionImpl systemMessagesSession;
     /**
      * A HashSet that contains all the created sessions
      */
@@ -388,7 +389,7 @@ public class OddsFeed {
                     boolean aliveRoutingKeySessionPresent = createdSessionData.stream()
                             .anyMatch(cs -> cs.messageInterest == MessageInterest.SystemAliveMessages);
                     if (!aliveRoutingKeySessionPresent) {
-                        OddsFeedSessionImpl systemMessagesSession = injector.getInstance(OddsFeedSessionImpl.class);
+                        systemMessagesSession = injector.getInstance(OddsFeedSessionImpl.class);
                         SessionData firstCreatedSession = createdSessionData.stream()
                                 .findFirst()
                                 .orElseThrow(() -> new IllegalStateException("Feed created without sessions?"));
@@ -449,93 +450,104 @@ public class OddsFeed {
         try{
             injector.getInstance(AMQPConnectionFactory.class).close(true);
         } catch(Exception ex) {
-            logger.warn("Error during close - AMQPConnectionFactory close", ex);
+            logger.warn("Error during close - AMQPConnectionFactory", ex);
+        }
+        try{
+            this.feedOpened = false;
+            if(systemMessagesSession != null){
+                systemMessagesSession.close();
+            }
+            for (SessionData sessionData : createdSessionData) {
+                sessionData.session.close();
+            }
+        } catch(Exception ex) {
+            logger.warn("Error during close - Sessions", ex);
         }
         try{
             injector.getInstance(CloseableHttpClient.class).close();
         } catch(Exception ex) {
-            logger.warn("Error during close - HttpClient close", ex);
+            logger.warn("Error during close - HttpClient", ex);
         }
         try{
             injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("FastHttpClient"))).close();
         } catch(Exception ex) {
-            logger.warn("Error during close - FastHttpClient close", ex);
+            logger.warn("Error during close - FastHttpClient", ex);
         }
         try{
             injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("RecoveryHttpClient"))).close();
         } catch(Exception ex) {
-            logger.warn("Error during close - RecoveryHttpClient close", ex);
+            logger.warn("Error during close - RecoveryHttpClient", ex);
         }
         try{
             injector.getInstance(SDKTaskScheduler.class).shutdownNow();
         } catch(Exception ex) {
-            logger.warn("Error during close - SDKTaskScheduler close", ex);
+            logger.warn("Error during close - SDKTaskScheduler", ex);
         }
         try{
             injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
         } catch(Exception ex) {
-            logger.warn("Error during close - ScheduledExecutorService close", ex);
+            logger.warn("Error during close - ScheduledExecutorService", ex);
         }
         try{
             injector.getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor"))).shutdownNow();
         } catch(Exception ex) {
-            logger.warn("Error during close - ExecutorService close", ex);
+            logger.warn("Error during close - ExecutorService", ex);
         }
         try{
             InternalCachesProvider internalCachesProvider = injector.getInstance(Key.get(InternalCachesProvider.class));
             internalCachesProvider.close();
             internalCachesProvider = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - InternalCachesProvider close", ex);
+            logger.warn("Error during close - InternalCachesProvider", ex);
         }
 
         try{
             SportEventCache sportEventCache = injector.getInstance(Key.get(SportEventCache.class));
             sportEventCache = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - SportEventCache close", ex);
+            logger.warn("Error during close - SportEventCache", ex);
         }
         try{
             SportsDataCache sportsDataCache = injector.getInstance(Key.get(SportsDataCache.class));
             sportsDataCache = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - SportsDataCache close", ex);
+            logger.warn("Error during close - SportsDataCache", ex);
         }
         try{
             CacheItemFactory cacheItemFactory = injector.getInstance(Key.get(CacheItemFactory.class));
             cacheItemFactory = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - CacheItemFactory close", ex);
+            logger.warn("Error during close - CacheItemFactory", ex);
         }
         try{
             SportEntityFactory sportEntityFactory = injector.getInstance(Key.get(SportEntityFactory.class));
             sportEntityFactory = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - SportEntityFactory close", ex);
+            logger.warn("Error during close - SportEntityFactory", ex);
         }
         try{
             DataRouterManager dataRouterManager = injector.getInstance(Key.get(DataRouterManager.class));
             dataRouterManager = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - DataRouterManager close", ex);
+            logger.warn("Error during close - DataRouterManager", ex);
         }
         try{
             DataRouter dataRouter = injector.getInstance(Key.get(DataRouter.class));
             dataRouter = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - DataRouter close", ex);
+            logger.warn("Error during close - DataRouter", ex);
         }
         try{
             NamedValuesProvider namedValuesProvider = injector.getInstance(Key.get(NamedValuesProvider.class));
             namedValuesProvider = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - NamedValuesProvider close", ex);
+            logger.warn("Error during close - NamedValuesProvider", ex);
         }
         try{
             MarketDescriptionProvider marketDescriptionProvider = injector.getInstance(Key.get(MarketDescriptionProvider.class));
             marketDescriptionProvider = null;
         } catch(Exception ex) {
-            logger.warn("Error during close - MarketDescriptionProvider close", ex);
+            logger.warn("Error during close - MarketDescriptionProvider", ex);
         }
     }
 

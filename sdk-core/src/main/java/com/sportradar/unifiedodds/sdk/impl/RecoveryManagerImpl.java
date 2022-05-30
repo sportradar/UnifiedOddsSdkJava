@@ -207,7 +207,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                     snapshotRequestManager.requestCompleted(new SnapshotCompletedImpl(bookmakerId, pi.getProducerId(), requestId, needsToBeRestarted)
                     );
                 } catch (Exception e) {
-                    logger.warn("An exception occurred while notifying the SnapshotRequestManager for a completed request, exc:", e);
+                    logger.warn("An exception occurred while notifying the SnapshotRequestManager for a completed request.", e);
                 }
 
                 if (needsToBeRestarted) {

@@ -104,6 +104,14 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         logger.info("OddsFeedSession opened(Message interest: {})", messageInterest);
     }
 
+    public void close(){
+        try {
+            messageReceiver.close();
+        }
+        catch (IOException ignored) {
+        }
+    }
+
     /**
      * Consumes the provided message
      *
