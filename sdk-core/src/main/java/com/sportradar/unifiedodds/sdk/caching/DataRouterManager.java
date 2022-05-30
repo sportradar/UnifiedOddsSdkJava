@@ -68,4 +68,6 @@ public interface DataRouterManager {
     List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId) throws CommunicationException;
 
     List<PeriodStatus> requestPeriodSummary(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) throws CommunicationException;
+
+    void close();
 }

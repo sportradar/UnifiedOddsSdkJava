@@ -464,6 +464,19 @@ public class OddsFeed {
             logger.warn("Error during close - Sessions", ex);
         }
         try{
+            DataRouterManager dataRouterManager = injector.getInstance(Key.get(DataRouterManager.class));
+            dataRouterManager.close();
+            dataRouterManager = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - DataRouterManager", ex);
+        }
+        try{
+            DataRouter dataRouter = injector.getInstance(Key.get(DataRouter.class));
+            dataRouter = null;
+        } catch(Exception ex) {
+            logger.warn("Error during close - DataRouter", ex);
+        }
+        try{
             injector.getInstance(CloseableHttpClient.class).close();
         } catch(Exception ex) {
             logger.warn("Error during close - HttpClient", ex);
@@ -524,18 +537,6 @@ public class OddsFeed {
             sportEntityFactory = null;
         } catch(Exception ex) {
             logger.warn("Error during close - SportEntityFactory", ex);
-        }
-        try{
-            DataRouterManager dataRouterManager = injector.getInstance(Key.get(DataRouterManager.class));
-            dataRouterManager = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - DataRouterManager", ex);
-        }
-        try{
-            DataRouter dataRouter = injector.getInstance(Key.get(DataRouter.class));
-            dataRouter = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - DataRouter", ex);
         }
         try{
             NamedValuesProvider namedValuesProvider = injector.getInstance(Key.get(NamedValuesProvider.class));

@@ -49,6 +49,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
     private OddsFeedListener oddsFeedListener;
     private MessageInterest messageInterest;
     private OddsFeedExtListener oddsFeedExtListener;
+    private boolean isFeedClosed;
 
     @Inject
     public OddsFeedSessionImpl(SDKInternalConfiguration config,
@@ -86,6 +87,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         this.feedMessageValidator = feedMessageValidator;
         this.dispatchedFixtureChangesCache = dispatchedFixtureChangesCache;
         this.processorId = UUID.randomUUID().toString();
+        this.isFeedClosed = false;
     }
 
     public void open(List<String> routingKeys, MessageInterest messageInterest, OddsFeedListener oddsFeedListener, OddsFeedExtListener oddsFeedExtListener) throws IOException {
@@ -106,6 +108,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
 
     public void close(){
         try {
+            isFeedClosed = true;
             messageReceiver.close();
         }
         catch (IOException ignored) {
@@ -121,6 +124,10 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
      */
     @Override
     public void onMessageReceived(UnmarshalledMessage unmarshalledMessage, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
+        if(isFeedClosed){
+            return;
+        }
+
         if (isMessageDiscardable(unmarshalledMessage)) {
             return;
         }
@@ -324,12 +331,16 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
             return;
         }
 
+        if(isFeedClosed){
+            return;
+        }
+
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         try {
             oddsFeedExtListener.onRawFeedMessageReceived(routingKey, feedMessage, timestamp, messageInterest);
             stopwatch.stop();
-            String msg = String.format("Dispatching raw feed message [%s]: %s for event %s and timestamp=%s took %sms.",
+            String msg = String.format("Dispatching raw feed message [%s]: %s for event %s and timestamp=%s took %s ms.",
                                        messageInterest,
                                        feedMessage.getClass().getSimpleName(),
                                        routingKey,
@@ -339,7 +350,7 @@ public class OddsFeedSessionImpl implements OddsFeedSession, MessageConsumer, Fe
         }
         catch (Exception e) {
             stopwatch.stop();
-            String errorMsg = String.format("Error dispatching raw feed message [%s] for %s and timestamp=%s. Took %sms.",
+            String errorMsg = String.format("Error dispatching raw feed message [%s] for %s and timestamp=%s. Took %s ms.",
                                             messageInterest,
                                             routingKey,
                                             timestamp.getCreated(),

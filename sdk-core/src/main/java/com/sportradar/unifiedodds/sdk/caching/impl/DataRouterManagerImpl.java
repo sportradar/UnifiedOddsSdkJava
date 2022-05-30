@@ -233,6 +233,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final ReentrantLock sportsListLock = new ReentrantLock();
     private final ReentrantLock lotteriesListLock = new ReentrantLock();
 
+    private boolean isFeedClosed;
+
     @Inject
     DataRouterManagerImpl(SDKInternalConfiguration configuration,
                           SDKTaskScheduler scheduler,
@@ -329,6 +331,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         // initial is triggered as soon as it is needed
         scheduler.scheduleAtFixedRate("SportsDataRefreshTask", this::onSportsDataTimerElapsed, 12, 12, TimeUnit.HOURS);
+
+        this.isFeedClosed = false;
     }
 
     public void addOddsFeedExtListener(OddsFeedExtListener oddsFeedExtListener)
@@ -866,6 +870,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
         return results;
     }
 
+    @Override
+    public void close() {
+        this.isFeedClosed = true;
+    }
+
     private String getPeriodSummaryQueryString(List<URN> competitorIds, List<Integer> periods)
     {
         //host/v1/sports/en/sport_events/sr:stage:{id}/period_summary.xml?competitors=sr:competitor:{id}&competitors=sr:competitor:{id}&periods=2&periods=3&periods=4
@@ -1013,20 +1022,25 @@ public class DataRouterManagerImpl implements DataRouterManager {
         if (oddsFeedExtListener == null) {
             return;
         }
+
+        if(isFeedClosed){
+            return;
+        }
+
         // send RawFeedMessage
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
             oddsFeedExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
             stopwatch.stop();
-            String msg = String.format("Dispatching raw api message for %s took %sms.",
+            String msg = String.format("Dispatching raw api message for %s took %s ms.",
                                        uri,
                                        stopwatch.elapsed(TimeUnit.MILLISECONDS));
             logger.info(msg);
         }
         catch (Exception e) {
             stopwatch.stop();
-            String errorMsg = String.format("Error dispatching raw api data for %s. Took %sms.",
+            String errorMsg = String.format("Error dispatching raw api data for %s. Took %s ms.",
                                             uri,
                                             stopwatch.elapsed(TimeUnit.MILLISECONDS));
             logger.error(errorMsg, e);
