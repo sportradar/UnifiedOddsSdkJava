@@ -205,7 +205,9 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
     @Override
     public synchronized void close() throws IOException {
         if (!shouldBeOpened) {
-            logger.warn("Attempting to close an already closed channel");
+            if(connectionFactory != null && connectionFactory.canConnectionOpen()){
+                logger.warn("Attempting to close an already closed channel");
+            }
             return;
         }
 
@@ -228,18 +230,20 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
     private void checkChannelStatus()
     {
         while(shouldBeOpened) {
-            if(!connectionFactory.canConnectionOpen()){
-                try {
-                    close();
-                } catch (IOException ignored) { }
-                return;
-            }
+
             try {
                 Thread.sleep(1000L * 20L);
             }
             catch (InterruptedException e) {
                 logger.warn("Interrupted!", e);
                 Thread.currentThread().interrupt();
+            }
+
+            if(!connectionFactory.canConnectionOpen()){
+                try {
+                    close();
+                } catch (IOException ignored) { }
+                return;
             }
 
             if (channel == null) {

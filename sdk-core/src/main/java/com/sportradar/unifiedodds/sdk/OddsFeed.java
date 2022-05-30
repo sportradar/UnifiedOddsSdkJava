@@ -466,15 +466,8 @@ public class OddsFeed {
         try{
             DataRouterManager dataRouterManager = injector.getInstance(Key.get(DataRouterManager.class));
             dataRouterManager.close();
-            dataRouterManager = null;
         } catch(Exception ex) {
             logger.warn("Error during close - DataRouterManager", ex);
-        }
-        try{
-            DataRouter dataRouter = injector.getInstance(Key.get(DataRouter.class));
-            dataRouter = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - DataRouter", ex);
         }
         try{
             injector.getInstance(CloseableHttpClient.class).close();
@@ -509,46 +502,8 @@ public class OddsFeed {
         try{
             InternalCachesProvider internalCachesProvider = injector.getInstance(Key.get(InternalCachesProvider.class));
             internalCachesProvider.close();
-            internalCachesProvider = null;
         } catch(Exception ex) {
             logger.warn("Error during close - InternalCachesProvider", ex);
-        }
-
-        try{
-            SportEventCache sportEventCache = injector.getInstance(Key.get(SportEventCache.class));
-            sportEventCache = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - SportEventCache", ex);
-        }
-        try{
-            SportsDataCache sportsDataCache = injector.getInstance(Key.get(SportsDataCache.class));
-            sportsDataCache = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - SportsDataCache", ex);
-        }
-        try{
-            CacheItemFactory cacheItemFactory = injector.getInstance(Key.get(CacheItemFactory.class));
-            cacheItemFactory = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - CacheItemFactory", ex);
-        }
-        try{
-            SportEntityFactory sportEntityFactory = injector.getInstance(Key.get(SportEntityFactory.class));
-            sportEntityFactory = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - SportEntityFactory", ex);
-        }
-        try{
-            NamedValuesProvider namedValuesProvider = injector.getInstance(Key.get(NamedValuesProvider.class));
-            namedValuesProvider = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - NamedValuesProvider", ex);
-        }
-        try{
-            MarketDescriptionProvider marketDescriptionProvider = injector.getInstance(Key.get(MarketDescriptionProvider.class));
-            marketDescriptionProvider = null;
-        } catch(Exception ex) {
-            logger.warn("Error during close - MarketDescriptionProvider", ex);
         }
     }
 
