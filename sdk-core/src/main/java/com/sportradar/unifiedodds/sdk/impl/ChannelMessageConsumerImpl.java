@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -83,6 +84,8 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
      */
     private ReentrantLock jabxLock;
 
+    private final int consumerName;
+
     /**
      * @param unmarshaller an {@link Unmarshaller} instance used to deserialize the payloads
      * @param routingKeyParser a {@link RoutingKeyParser} used to parse the rabbit's routing key
@@ -108,6 +111,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         this.configuration = configuration;
         this.producerManager = producerManager;
         this.jabxLock = jabxReentrantLock;
+        this.consumerName = new Random().nextInt(99999);
     }
 
     /**
@@ -212,14 +216,13 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         // send RawFeedMessage if needed
         try
         {
-            if(producerManager.isProducerEnabled(producerId))
-            {
+            if(producerManager.isProducerEnabled(producerId)) {
                 messageConsumer.onRawFeedMessageReceived(routingKeyInfo, unmarshalledMessage, timestamp, messageConsumer.getMessageInterest());
             }
         }
         catch (Exception e)
         {
-            logger.error("Error dispatching raw message for {feedMessage.EventId}", e);
+            logger.error("Error dispatching raw message for {}", routingKey, e);
         }
         // continue normal processing
 

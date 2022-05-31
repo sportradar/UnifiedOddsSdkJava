@@ -442,7 +442,7 @@ public class OddsFeed {
      */
     public void close() throws IOException {
         if (!this.feedOpened) {
-            throw new IllegalStateException("Can't close an already closed OddsFeed instance");
+            logger.warn("Invoked close on already closed OddsFeed instance");
         }
 
         logger.warn("OddsFeed.close invoked - closing the feed instance");
