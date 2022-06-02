@@ -23,6 +23,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -111,7 +112,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         this.configuration = configuration;
         this.producerManager = producerManager;
         this.jabxLock = jabxReentrantLock;
-        this.consumerName = new Random().nextInt(99999);
+        this.consumerName = UUID.randomUUID().hashCode();
     }
 
     /**
