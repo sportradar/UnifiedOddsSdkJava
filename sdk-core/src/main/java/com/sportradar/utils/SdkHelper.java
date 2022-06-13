@@ -357,10 +357,22 @@ public final class SdkHelper {
 
     /**
      * Check is string is null or empty
-     * @param string to be checked
+     * @param input to be checked
      * @return true if null or empty, otherwise false
      */
-    public static boolean stringIsNullOrEmpty(String string) {
-        return string == null || string.isEmpty();
+    public static boolean stringIsNullOrEmpty(String input) {
+        return input == null || input.isEmpty();
+    }
+
+    /**
+     * Obfuscate the input string
+     * @param input text to be obfuscated
+     * @return obfuscated string with only first and last 3 letters
+     */
+    public static String obfuscate(String input){
+         if(!stringIsNullOrEmpty(input) && input.length() > 3)   {
+            return String.format("%s***%s", input.substring(0, 3), input.substring(input.length()-3));
+         }
+         return input;
     }
 }

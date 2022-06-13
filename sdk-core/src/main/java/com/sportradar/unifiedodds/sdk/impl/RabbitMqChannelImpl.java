@@ -311,6 +311,9 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                         logger.error(msg, e);
                         Thread.currentThread().interrupt();
                     }
+                    catch(Exception ex){
+                        logger.error("Error closing connection", ex);
+                    }
                     logger.info("Resetting connection finished for the channel with channelNumber: {}", channelNumber);
                 }
                 restartChannel();

@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -331,7 +332,7 @@ public class OddsFeedConfiguration {
     @Override
     public String toString() {
 
-        String obfuscatedToken = String.format("%s***%s", accessToken.substring(0, 3), accessToken.substring(accessToken.length()-3));
+        String obfuscatedToken = SdkHelper.obfuscate(accessToken);
 
         return "OddsFeedConfiguration{" +
                 " accessToken='" + obfuscatedToken + '\'' +

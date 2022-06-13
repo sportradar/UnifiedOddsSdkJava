@@ -214,7 +214,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         rabbitConnectionFactory.setConnectionTimeout(OperationManager.getRabbitConnectionTimeout() * 1000);
         rabbitConnectionFactory.setRequestedHeartbeat(OperationManager.getRabbitHeartbeat());
 
-        rabbitConnectionFactory.setExceptionHandler(new SDKExceptionHandler(connectionStatusListener));
+        rabbitConnectionFactory.setExceptionHandler(new SDKExceptionHandler(connectionStatusListener, config.getAccessToken()));
 
         Connection con = rabbitConnectionFactory.newConnection(dedicatedRabbitMqExecutor);
         connectionStarted = new TimeUtilsImpl().now();

@@ -10,6 +10,7 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.TopologyRecoveryException;
 import com.rabbitmq.client.impl.DefaultExceptionHandler;
 import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,16 +20,21 @@ class SDKExceptionHandler extends DefaultExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(SDKExceptionHandler.class);
 
     private final SDKConnectionStatusListener connectionStatusListener;
+    private final String orgToken;
+    private final String cleanToken;
 
-    public SDKExceptionHandler(SDKConnectionStatusListener connectionStatusListener) {
+    public SDKExceptionHandler(SDKConnectionStatusListener connectionStatusListener, String token) {
         checkNotNull(connectionStatusListener, "connectionStatusListener cannot be a null reference");
 
         this.connectionStatusListener = connectionStatusListener;
+        this.orgToken = token;
+        this.cleanToken = SdkHelper.obfuscate(token);
     }
 
     @Override
     public void handleUnexpectedConnectionDriverException(Connection connection, Throwable throwable) {
-        logger.error("Unexpected connection driver exception for connection {}", connection, throwable);
+        String connectionName = connection.toString().replace(orgToken, cleanToken);
+        logger.error("Unexpected connection driver exception for connection {}", connectionName, throwable);
         super.handleUnexpectedConnectionDriverException(connection, throwable);
         dispatchException(throwable);
     }
@@ -56,7 +62,8 @@ class SDKExceptionHandler extends DefaultExceptionHandler {
 
     @Override
     public void handleBlockedListenerException(Connection connection, Throwable throwable) {
-        logger.error("Blocked listener exception for connection {}", connection, throwable);
+        String connectionName = connection.toString().replace(orgToken, cleanToken);
+        logger.error("Blocked listener exception for connection {}", connectionName, throwable);
         super.handleBlockedListenerException(connection, throwable);
         dispatchException(throwable);
     }
@@ -70,7 +77,8 @@ class SDKExceptionHandler extends DefaultExceptionHandler {
 
     @Override
     public void handleConnectionRecoveryException(Connection connection, Throwable throwable) {
-        logger.error("Connection recovery exception for connection {}", connection, throwable);
+        String connectionName = connection.toString().replace(orgToken, cleanToken);
+        logger.error("Connection recovery exception for connection {}", connectionName, throwable);
         super.handleConnectionRecoveryException(connection, throwable);
         dispatchException(throwable);
     }
@@ -84,7 +92,8 @@ class SDKExceptionHandler extends DefaultExceptionHandler {
 
     @Override
     public void handleTopologyRecoveryException(Connection connection, Channel channel, TopologyRecoveryException e) {
-        logger.error("Topology recovery exception for connection {}, channel {}", connection, channel, e);
+        String connectionName = connection.toString().replace(orgToken, cleanToken);
+        logger.error("Topology recovery exception for connection {}, channel {}", connectionName, channel, e);
         super.handleTopologyRecoveryException(connection, channel, e);
         dispatchException(e);
     }

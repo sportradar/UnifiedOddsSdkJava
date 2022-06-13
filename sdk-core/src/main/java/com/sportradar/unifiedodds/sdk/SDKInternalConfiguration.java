@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.utils.SdkHelper;
 
 import java.util.*;
 
@@ -352,7 +353,8 @@ public class SDKInternalConfiguration {
 
     @Override
     public String toString() {
-        String obfuscatedToken = String.format("%s***%s", accessToken.substring(0, 3), accessToken.substring(accessToken.length()-3));
+
+        String obfuscatedToken = SdkHelper.obfuscate(accessToken);
 
         return new StringJoiner(", ", SDKInternalConfiguration.class.getSimpleName() + "[", "]")
                 .add("accessToken='" + obfuscatedToken + "'")
