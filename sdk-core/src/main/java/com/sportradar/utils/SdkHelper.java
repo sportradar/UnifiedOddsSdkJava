@@ -375,4 +375,21 @@ public final class SdkHelper {
          }
          return input;
     }
+
+    /**
+     * Get the specified size of UUID
+     * @param size the substring size
+     * @return the substring of uuid
+     */
+    public static String getUuid(int size){
+        if(size < 3){
+            size = 3;
+        } else if (size > 20){
+            size = 20;
+        }
+        String strUuid = UUID.randomUUID().toString();
+        strUuid = strUuid.replace("-", "");
+        return strUuid.substring(0, size);
+    }
+
 }

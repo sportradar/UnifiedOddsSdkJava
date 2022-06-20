@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -24,6 +25,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -125,7 +127,19 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         this.messageInterest = messageInterest;
         this.timeUtils = new TimeUtilsImpl();
 
-        new Thread(this::checkChannelStatus).start();
+//        new Thread(this::checkChannelStatus).start();
+
+        Thread monitorThread = new Thread(this::checkChannelStatus);
+        monitorThread.setName("MqChannelMonitor-" + messageInterest + "-" + hashCode());
+        monitorThread.setUncaughtExceptionHandler(
+                new Thread.UncaughtExceptionHandler() {
+                    @Override
+                    public void uncaughtException(Thread thread, Throwable throwable) {
+                        logger.error(String.format("Uncaught thread exception monitoring %s", messageInterest), throwable);
+                    }
+                });
+
+        monitorThread.start();
 
         internalOpen();
     }
@@ -156,11 +170,14 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 }
                 channel = conn.createChannel();
             } catch (TimeoutException e) {
-                logger.error(String.format("Error creating channel: %s", e.getMessage()));
+                logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
                 Thread.currentThread().interrupt();
                 return;
             } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
-                logger.error(String.format("Error creating channel: %s", e.getMessage()));
+                logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
+                return;
+            } catch (Exception e) {
+                logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
                 return;
             }
         }
@@ -191,8 +208,14 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
 
         channel.addShutdownListener(rabbitMqSystemListener);
         ((Recoverable) channel).addRecoveryListener(rabbitMqSystemListener);
-        String consumerTag = String.format("UfSdk-Java|%s|%s|%s|%s", sdkVersion, messageInterest, channel.getChannelNumber(), new SimpleDateFormat("yyyyMMdd-hhmmss").format(new Date()));
+        String consumerTag = String.format("UfSdk-Java|%s|%s|%s|%s|%s",
+                                           sdkVersion,
+                                           SdkHelper.stringIsNullOrEmpty(messageInterest) ? "system" : messageInterest,
+                                           channel.getChannelNumber(),
+                                           new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()),
+                                           SdkHelper.getUuid(8));
         channel.basicConsume(qName, true, consumerTag, consumer);
+        logger.info("BasicConsume for channel={}, queue={} and consumer tag {} executed.", channel.getChannelNumber(), qName, consumerTag);
         channelStarted = timeUtils.now();
         channelLastMessage = LocalDateTime.MIN;
     }
@@ -229,6 +252,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
     // todo: should use Scheduler without thread.sleep
     private void checkChannelStatus()
     {
+        try{
         while(shouldBeOpened) {
 
             try {
@@ -252,7 +276,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                     initChannelQueue(routingKeys, messageInterest);
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
                     continue;
                 }
             }
@@ -319,6 +342,9 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 restartChannel();
             }
         }
+        } finally {
+            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
+        }
     }
 
     private void channelClosePure(){
@@ -343,7 +369,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             initChannelQueue(routingKeys, messageInterest);
         }
         catch (IOException e) {
-            e.printStackTrace();
             logger.error(String.format("Error creating channel: %s", e.getMessage()));
         }
     }
