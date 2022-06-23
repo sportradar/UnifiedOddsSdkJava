@@ -70,6 +70,10 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
 
     private String ReplaceProducerApiUrl(String url)
     {
+        if(url.contains(config.getAPIHost()))
+        {
+            return url;
+        }
         if (url.contains(EnvironmentManager.getApiHost(Environment.Integration)))
         {
             return url.replace(EnvironmentManager.getApiHost(Environment.Integration), config.getAPIHost());

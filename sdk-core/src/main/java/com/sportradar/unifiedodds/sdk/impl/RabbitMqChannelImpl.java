@@ -326,7 +326,12 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                     channelClosePure();
                     logger.info("Resetting connection for the channel with channelNumber: {}", channelNumber);
                     try {
-                        connectionFactory.close(false);
+                        synchronized (connectionFactory) {
+                            if (connectionFactory.isConnectionOpen()) {
+                                // Throws rabbit AlreadyClosedException which is a RuntimeException
+                                connectionFactory.close(false);
+                            }
+                        }
                         Thread.sleep(5000);
                     }
                     catch (IOException | InterruptedException e) {
