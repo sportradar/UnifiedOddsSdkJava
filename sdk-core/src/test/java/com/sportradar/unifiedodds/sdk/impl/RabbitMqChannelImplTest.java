@@ -27,8 +27,6 @@ public class RabbitMqChannelImplTest {
 
     private RabbitMqChannelImpl rabbitMqChannel;
 
-    //private Thread monitorThread;
-
     @Before
     public void setup() throws Exception {
         // Sort out logging interception
@@ -56,9 +54,6 @@ public class RabbitMqChannelImplTest {
         ArrayList<String> routingKeys = new ArrayList<String>();
         routingKeys.add("-.-.-.snapshot_complete.-.-.-.-");
         rabbitMqChannel.open(routingKeys, channelMessageConsumer, "SystemMessages");
-
-        //monitorThread = new Thread(rabbitMqChannel::checkChannelStatus);
-        //monitorThread.setUncaughtExceptionHandler(myUncaughtExceptionHandler);
     }
 
     private void assertContainsLogLine(final String text) {
