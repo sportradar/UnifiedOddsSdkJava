@@ -1,5 +1,9 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.56.0 (2022-07-15)**
+* Fix: recovery request url when configuring custom environment
+* Fix: handling for system session connection reset
+
 **2.0.55.0 (2022-06-02)**
 * Added method isOpen to OddsFeed
 * Feed close cleanup improvements (cache items invalidated, session closed)
