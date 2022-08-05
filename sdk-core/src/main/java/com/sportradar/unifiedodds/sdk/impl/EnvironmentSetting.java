@@ -10,14 +10,16 @@ public class EnvironmentSetting {
     private Environment environment;
     private String mqHost;
     private String apiHost;
+    private int apiPort;
     private Boolean onlySsl;
     private List<Environment> retryList;
 
-    public EnvironmentSetting(Environment environment, String mqHost, String apiHost, Boolean onlySsl, List<Environment> environmentRetryList)
+    public EnvironmentSetting(Environment environment, String mqHost, String apiHost,int apiPort, Boolean onlySsl, List<Environment> environmentRetryList)
     {
         this.environment = environment;
         this.mqHost = mqHost;
         this.apiHost = apiHost;
+        this.apiPort = apiPort;
         this.onlySsl = onlySsl;
         this.retryList = environmentRetryList == null ? Lists.newArrayList() : environmentRetryList;
     }
@@ -39,6 +41,9 @@ public class EnvironmentSetting {
      * @return the API host
      */
     public String getApiHost() { return apiHost; }
+
+    @Deprecated // FIXME API port comes from config files now so remove?
+    public int getApiPort() { return apiPort; }
 
     /**
      * Gets a value indicating whether only SSL is supported on the endpoint or also non-ssl

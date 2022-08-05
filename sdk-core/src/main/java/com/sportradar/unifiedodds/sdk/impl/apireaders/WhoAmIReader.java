@@ -17,7 +17,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +162,7 @@ public class WhoAmIReader {
     }
 
     private BookmakerDetails fetchBookmakerDetails() {
-        logger.info("Attempting bookmaker details fetch from the configured environment[{}], API: '{}'", config.getEnvironment(), config.getAPIHost());
+        logger.info("Attempting bookmaker details fetch from the configured environment[{}], API: '{}'", config.getEnvironment(), config.getApiHostAndPort());
 
         BookmakerDetails bookmakerDetails = null;
         try {

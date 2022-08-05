@@ -4,11 +4,11 @@ import com.sportradar.unifiedodds.sdk.oddsentities.AdditionalProbabilities;
 
 public class AdditionalProbabilitiesImpl implements AdditionalProbabilities {
 
-    private Double win;
-    private Double lose;
-    private Double half_win;
-    private Double half_lose;
-    private Double refund;
+    private final Double win;
+    private final Double lose;
+    private final Double half_win;
+    private final Double half_lose;
+    private final Double refund;
 
     AdditionalProbabilitiesImpl(Double win, Double lose, Double half_win, Double half_lose, Double refund) {
         this.win = win;

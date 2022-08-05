@@ -30,7 +30,7 @@ public class DataProvider<TOut> {
     private final String uriFormat;
     private final LogHttpDataFetcher logHttpDataFetcher;
     private final Deserializer deserializer;
-    private final String apiHost;
+    private final String apiHostAndPort;
     private final boolean useApiSsl;
     private final Locale defaultLocale;
 
@@ -48,18 +48,18 @@ public class DataProvider<TOut> {
         this.logHttpDataFetcher = logHttpDataFetcher;
 
         useApiSsl = config.getUseApiSsl();
-        apiHost = config.getAPIHost();
+        apiHostAndPort = config.getApiHostAndPort();
         defaultLocale = config.getDefaultLocale();
     }
 
     public DataProvider(String uriFormat,
-                        String apiHost,
+                        String apiHostAndPort,
                         boolean useApiSsl,
                         Locale defaultLocale,
                         LogHttpDataFetcher logHttpDataFetcher,
                         Deserializer deserializer) {
         Preconditions.checkNotNull(uriFormat);
-        Preconditions.checkNotNull(apiHost);
+        Preconditions.checkNotNull(apiHostAndPort);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(logHttpDataFetcher);
         Preconditions.checkNotNull(deserializer);
@@ -67,7 +67,7 @@ public class DataProvider<TOut> {
         this.uriFormat = uriFormat;
         this.logHttpDataFetcher = logHttpDataFetcher;
         this.deserializer = deserializer;
-        this.apiHost = apiHost;
+        this.apiHostAndPort = apiHostAndPort;
         this.useApiSsl = useApiSsl;
         this.defaultLocale = defaultLocale;
     }
@@ -187,8 +187,7 @@ public class DataProvider<TOut> {
         }
         String formattedPath = String.format(uriFormat, (Object[]) forwardArgs);
         String httpHttps = useApiSsl ? "https" : "http";
-        String finalUrl = uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHost + "/v1" + formattedPath;
-        return finalUrl;
+        return uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHostAndPort + "/v1" + formattedPath;
     }
 
     @Override

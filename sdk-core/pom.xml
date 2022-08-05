@@ -5,23 +5,14 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>unified-feed-sdk-parent</artifactId>
+        <groupId>com.sportradar.unifiedodds.sdk</groupId>
+        <version>2.0.56</version>
+    </parent>
 
     <artifactId>unified-feed-sdk</artifactId>
-    <groupId>com.sportradar.unifiedodds.sdk</groupId>
-    <version>2.0.56</version>
-    <name>Unified Odds feed SDK</name>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>${sr.snapshotRepository.id}</id>
-            <url>${sr.snapshotRepository.url}</url>
-        </snapshotRepository>
-        <repository>
-            <id>${sr.repository.id}</id>
-            <url>${sr.repository.url}</url>
-            <uniqueVersion>true</uniqueVersion>
-        </repository>
-    </distributionManagement>
+    <name>Unified Odds Feed SDK - Core</name>
 
     <description>UnifiedFeed SDK is a client library that enables easier integration with the Betradar XML feeds. SDK exposes XML feed service interface in a more user-friendly way and isolates the client from having to do XML feed parsing, proper connection handling, error recovery, event queuing, data caching and dispatching. It also makes a client solution more stable and robust when it comes to feed handling, especially with the release of new and updated XML feed versions.</description>
     <inceptionYear>2016</inceptionYear>
@@ -51,80 +42,76 @@
         <url>https://github.com/sportradar/UnifiedOddsSdkJava</url>
     </scm>
 
-    <!-- FIXME should be inherited from the parent pom.xml but we aren't linked with it -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>${sr.snapshotRepository.id}</id>
+            <url>${sr.snapshotRepository.url}</url>
+        </snapshotRepository>
+        <repository>
+            <id>${sr.repository.id}</id>
+            <url>${sr.repository.url}</url>
+            <uniqueVersion>true</uniqueVersion>
+        </repository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>betradar-java</id>
+            <name>com.betradar.java</name>
+            <url>https://archiva.sportradar.ag/repository/betradar-java/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>betradar-internal</id>
+            <url>https://archiva.sportradar.ag/repository/internal/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>odds-models</id>
+            <url>https://archiva.sportradar.ag/repository/odds-models/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+    </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <rabbitMQ.version>3.6.0</rabbitMQ.version>
-        <apache.httpComponents.version>4.5.1</apache.httpComponents.version>
-        <slf4j.version>1.7.13</slf4j.version>
-        <logback.version>1.2.3</logback.version>
-        <junit.version>4.12</junit.version>
-        <mockito.version>4.5.1</mockito.version>
-        <guava.version>21.0</guava.version>
-        <guice.version>4.0</guice.version>
-        <icu4j.version>57.1</icu4j.version>
-        <snake.yaml.version>1.20</snake.yaml.version>
-        <com.rabbitmq.http-client.version>3.12.0</com.rabbitmq.http-client.version>
-        <org.springframework.spring-web.version>5.3.9</org.springframework.spring-web.version>
-        <com.fasterxml.jackson.core.jackson-databind.version>2.13.0</com.fasterxml.jackson.core.jackson-databind.version>
-        <com.fasterxml.jackson.dataformat.version>2.13.0</com.fasterxml.jackson.dataformat.version>
-    </properties>
 
+         <!-- TODO rabbitMQ.version is 3.6.0 in parent pom, but 3.12.0 here -->
+        <rabbitMQ.http.version>3.12.0</rabbitMQ.http.version>
+        <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>${rabbitMQ.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${apache.httpComponents.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>2.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -144,19 +131,44 @@
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>http-client</artifactId>
-            <version>${com.rabbitmq.http-client.version}</version>
+            <version>${rabbitMQ.http.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${org.springframework.spring-web.version}</version>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8</artifactId>
+            <version>2.33.1</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-alpn-java-server</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>rabbitmq</artifactId>
+            <version>1.16.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${com.fasterxml.jackson.core.jackson-databind.version}</version>
+            <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.22.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sportradar.unifiedodds.sdk.example</groupId>
+            <artifactId>unified-feed-sdk-log-replay</artifactId>
+            <version>2.0.56</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sportradar.unifiedodds.sdk.api</groupId>
+            <artifactId>api-log-replay</artifactId>
+            <version>2.0.56</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -207,14 +219,23 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.21.0</version>
+                <version>3.0.0-M7</version>
                 <configuration>
                     <includes>
                         <include>**/*Tests.java</include>
                         <include>**/*Test.java</include>
                     </includes>
                     <argLine>${argLine} -Xmx2048m</argLine>
+                    <!-- FROM https://stackoverflow.com/questions/6612344/prevent-unit-tests-but-allow-integration-tests-in-maven -->
+                    <!-- skips surefire tests without skipping failsafe tests.
+                         Property value seems to magically default to false. -->
+                    <skipTests>${skip.surefire.tests}</skipTests>
                 </configuration>
             </plugin>
             <plugin>
@@ -252,6 +273,26 @@
                 </executions>
             </plugin>
             <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
                 <executions>
@@ -283,13 +324,13 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${basedir}/target/uf-schema/xsd</outputDirectory>
-                            <resources>          
+                            <resources>
                                 <resource>
                                     <directory>src/main/resources/xsd</directory>
                                     <filtering>true</filtering>
                                 </resource>
-                            </resources>              
-                        </configuration>	
+                            </resources>
+                        </configuration>
                     </execution>
 
                     <!-- WNS schemas are stored in a different folder because they are from a different schema source -->
@@ -362,7 +403,7 @@
                                 <xjbSource>${basedir}/src/main/xjb/Bindings.xjb
                                 </xjbSource>
                             </xjbSources>
-                            <outputDirectory>${project.build.directory}/generated-sources/messages</outputDirectory>						
+                            <outputDirectory>${project.build.directory}/generated-sources/messages</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -412,12 +453,12 @@
                                         <pattern>Bindings.xjb</pattern>
                                     </patterns>
                                 </filter>
-                            </xjbExcludeFilters>		                
+                            </xjbExcludeFilters>
                             <xjbSources>
                                 <xjbSource>${basedir}/src/main/xjb/BindingsSportsAPI.xjb
                                 </xjbSource>
                             </xjbSources>
-                            <outputDirectory>${project.build.directory}/generated-sources/sportsapi</outputDirectory>						
+                            <outputDirectory>${project.build.directory}/generated-sources/sportsapi</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -460,6 +501,18 @@
                             </sources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>add-component-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/component/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- Change the name of the output to something the makes sense for end consumers -->
@@ -468,7 +521,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <finalName>sdk-core-${project.version}</finalName>
+                    <finalName>unified-feed-sdk-${project.version}</finalName>
                 </configuration>
             </plugin>
             <plugin>

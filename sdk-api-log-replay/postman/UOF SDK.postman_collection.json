@@ -1,0 +1,267 @@
+{
+	"info": {
+		"_postman_id": "6c32508b-f5e4-471c-982c-365e86da41ad",
+		"name": "UOF SDK",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/users/whoami.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/users/whoami.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"users",
+						"whoami.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/descriptions/producers.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/descriptions/producers.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"descriptions",
+						"producers.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/descriptions/betstop_reasons.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/descriptions/betstop_reasons.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"descriptions",
+						"betstop_reasons.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/descriptions/betting_status.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/descriptions/betting_status.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"descriptions",
+						"betting_status.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/descriptions/{locale}/markets.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/descriptions/en/markets.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"descriptions",
+						"en",
+						"markets.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/descriptions/{locale}/variants.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/descriptions/en/variants.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"descriptions",
+						"en",
+						"variants.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/descriptions/{locale}/markets/{marketId}/variants/{urn}",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/descriptions/en/markets/15/variants/sr:winning_margin:3+?include_mappings=true",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"descriptions",
+						"en",
+						"markets",
+						"15",
+						"variants",
+						"sr:winning_margin:3+"
+					],
+					"query": [
+						{
+							"key": "include_mappings",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sports/{locale}/sport_events/{urn}/summary.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/sports/en/sport_events/sr:match:123/summary.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"sports",
+						"en",
+						"sport_events",
+						"sr:match:123",
+						"summary.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sports/en/schedules/{date}/schedule.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/sports/en/schedules/2022-12-01/schedule.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"sports",
+						"en",
+						"schedules",
+						"2022-12-01",
+						"schedule.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sports/en/players/{urn}/profile.xml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/sports/en/players/sr:player:2038675/profile.xml",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"sports",
+						"en",
+						"players",
+						"sr:player:2038675",
+						"profile.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/{product}/recovery/initiate_request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:{{api-port}}/v1/liveodds/recovery/initiate_request?node_id=1&request_id=4365",
+					"host": [
+						"localhost"
+					],
+					"port": "{{api-port}}",
+					"path": [
+						"v1",
+						"liveodds",
+						"recovery",
+						"initiate_request"
+					],
+					"query": [
+						{
+							"key": "node_id",
+							"value": "1"
+						},
+						{
+							"key": "request_id",
+							"value": "4365"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "api-port",
+			"value": "8080"
+		}
+	]
+}

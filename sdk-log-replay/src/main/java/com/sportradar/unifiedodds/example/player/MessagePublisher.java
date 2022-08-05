@@ -17,12 +17,14 @@ import java.util.concurrent.TimeoutException;
  * Created on 08/01/2018.
  * // TODO @eti: Javadoc
  */
-class MessagePublisher {
+public class MessagePublisher {
     private static final String EXCHANGE = "unifiedfeed";
 
     private final ConnectionFactory connectionFactory;
     private final String host;
     private final String password;
+    private String username;
+    private int port;
 
     private boolean isOpen = false;
 
@@ -39,12 +41,26 @@ class MessagePublisher {
         this.password = password;
     }
 
+    public MessagePublisher(String host, int port, String username, String password, int bookmakerId) {
+        this(host, password, bookmakerId);
+        this.username = username;
+        this.port = port;
+    }
+
     public void init() {
         if (isOpen) {
             return;
         }
 
         connectionFactory.setHost(host);
+
+        if (port > 0) {
+            connectionFactory.setPort(port);
+        }
+
+        if (!Strings.isNullOrEmpty(username)) {
+            connectionFactory.setUsername(username);
+        }
 
         if (!Strings.isNullOrEmpty(password)) {
             connectionFactory.setPassword(password);

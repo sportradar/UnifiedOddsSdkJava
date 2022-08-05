@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.cfg;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -29,6 +28,7 @@ class SDKPropertiesReaderUtil {
     static final Locale DEFAULT_LOCALE = Locale.ITALIAN;
     static final List<Locale> DESIRED_LOCALES = Arrays.asList(Locale.ENGLISH, Locale.FRENCH, Locale.ITALIAN);
     static final String API_HOST = "sample-props-api-host";
+    static final int API_PORT = 80;
     static final String MESSAGING_HOST = "sample-props-messaging-host";
     static final int MESSAGING_PORT = 77;
     static final String MESSAGING_USERNAME = "messaging-props-uname";
@@ -51,6 +51,7 @@ class SDKPropertiesReaderUtil {
         Mockito.when(mock.readDefaultLocale()).thenReturn(Optional.of(DEFAULT_LOCALE));
         Mockito.when(mock.readDesiredLocales()).thenReturn(DESIRED_LOCALES);
         Mockito.when(mock.readApiHost()).thenReturn(Optional.of(API_HOST));
+        Mockito.when(mock.readApiPort()).thenReturn(Optional.of(API_PORT));
         Mockito.when(mock.readMessagingHost()).thenReturn(Optional.of(MESSAGING_HOST));
         Mockito.when(mock.readMessagingPort()).thenReturn(Optional.of(MESSAGING_PORT));
         Mockito.when(mock.readMessagingUsername()).thenReturn(Optional.of(MESSAGING_USERNAME));
@@ -86,6 +87,7 @@ class SDKPropertiesReaderUtil {
         Mockito.when(mock.readDefaultLocale()).thenReturn(Optional.of(DEFAULT_LOCALE));
         Mockito.when(mock.readDesiredLocales()).thenReturn(DESIRED_LOCALES);
         Mockito.when(mock.readApiHost()).thenReturn(Optional.of(API_HOST));
+        Mockito.when(mock.readApiPort()).thenReturn(Optional.of(API_PORT));
         Mockito.when(mock.readMessagingHost()).thenReturn(Optional.of(MESSAGING_HOST));
         Mockito.when(mock.readMessagingPort()).thenReturn(Optional.of(MESSAGING_PORT));
         Mockito.when(mock.readMessagingUsername()).thenReturn(Optional.of(MESSAGING_USERNAME));

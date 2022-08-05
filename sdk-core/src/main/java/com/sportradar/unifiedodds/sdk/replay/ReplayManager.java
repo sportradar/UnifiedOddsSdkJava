@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,8 +99,8 @@ public class ReplayManager {
         try {
             replaySetContent = dataProvider.getData();
         } catch (DataProviderException e) {
-            logger.warn("ReplayManager.getReplayList() request failed, ex:", e);
-            clientInteractionLog.info("ReplayManager.getReplayList() -> FAILED", events.size());
+            logger.warn("ReplayManager.getReplaySportEventsList() request failed, ex:", e);
+            clientInteractionLog.info("ReplayManager.getReplaySportEventsList() -> FAILED with {} events", events.size());
             return null;
         }
 
@@ -172,7 +171,7 @@ public class ReplayManager {
         boolean status = false;
         try {
             HttpHelper.ResponseData responseData = httpHelper.put(String.format("https://%s/v1/replay/events/%s?%s%s",
-                                                                                config.getAPIHost(),
+                                                                                config.getApiHostAndPort(),
                                                                                 id,
                                                                                 startTime == null ? "" : "start_time=" + startTime,
                                                                                 buildNodeIdQuery("&")));
@@ -204,7 +203,7 @@ public class ReplayManager {
         boolean status = false;
         try {
             HttpHelper.ResponseData responseData = httpHelper.delete(String.format("https://%s/v1/replay/events/%s%s",
-                                                                                   config.getAPIHost(),
+                                                                                   config.getApiHostAndPort(),
                                                                                     id,
                                                                                     buildNodeIdQuery("?")));
             status = responseData.isSuccessful();
@@ -230,7 +229,7 @@ public class ReplayManager {
      * @return an indication of the request success
      */
     public boolean play() {
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play%s", config.getAPIHost(), buildNodeIdQuery("?")));
+        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play%s", config.getApiHostAndPort(), buildNodeIdQuery("?")));
 
         clientInteractionLog.info("ReplayManager.play() -> response status: {}", responseStatusString(responseStatus));
         return responseStatus;
@@ -308,7 +307,7 @@ public class ReplayManager {
                 .collect(Collectors.toList());
 
         boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play?%s",
-                                                                 config.getAPIHost(),
+                                                                 config.getApiHostAndPort(),
                                                                  URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
 
         clientInteractionLog.info("ReplayManager.play({},{},{},{}) -> response status: {}", speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, responseStatusString(responseStatus));
@@ -321,7 +320,7 @@ public class ReplayManager {
      * @return an indication of the request success
      */
     public boolean stop() {
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/stop%s", config.getAPIHost(), buildNodeIdQuery("?")));
+        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/stop%s", config.getApiHostAndPort(), buildNodeIdQuery("?")));
 
         clientInteractionLog.info("ReplayManager.stop() -> response status: {}", responseStatusString(responseStatus));
         return responseStatus;
@@ -399,7 +398,7 @@ public class ReplayManager {
      * @return <code>true</code> if the request executed successfully, otherwise <code>false</code>
      */
     public boolean playScenario(int id) {
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d%s", config.getAPIHost(), id, buildNodeIdQuery("?")));
+        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d%s", config.getApiHostAndPort(), id, buildNodeIdQuery("?")));
 
         clientInteractionLog.info("ReplayManager.playScenario({}) -> response status: {}", id, responseStatusString(responseStatus));
         return responseStatus;
@@ -443,15 +442,15 @@ public class ReplayManager {
                 .filter(v -> v.getValue() != null)
                 .collect(Collectors.toList());
 
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d?%s", config.getAPIHost(), id,
-                URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
+        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d?%s", config.getApiHostAndPort(),
+            id, URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
 
         clientInteractionLog.info("ReplayManager.playScenario({},{},{},{},{}) -> response status: {}", id, speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, responseStatusString(responseStatus));
         return responseStatus;
     }
 
     private boolean internalClear() {
-        return tryPerformRequest(String.format("https://%s/v1/replay/reset%s", config.getAPIHost(), buildNodeIdQuery("?")));
+        return tryPerformRequest(String.format("https://%s/v1/replay/reset%s", config.getApiHostAndPort(), buildNodeIdQuery("?")));
     }
 
     private boolean tryPerformRequest(String path) {
@@ -482,7 +481,7 @@ public class ReplayManager {
 
         return new DataProvider<>(
                 query,
-                config.getAPIHost(),
+                config.getApiHostAndPort(),
                 true,
                 config.getDefaultLocale(),
                 logHttpDataFetcher,

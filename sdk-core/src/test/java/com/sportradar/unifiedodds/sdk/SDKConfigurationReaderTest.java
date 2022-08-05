@@ -57,4 +57,79 @@ public class SDKConfigurationReaderTest {
 
         assertFalse(token.isPresent());
     }
+
+    @Test
+    public void readConcurrentListenerEnabledFromYaml() {
+        Optional<Boolean> token = defaultYaml().readConcurrentListenerEnabled();
+
+        assertEquals(true, token.get());
+    }
+
+    @Test
+    public void readConcurrentListenerEnabledFromProperties() {
+        Optional<Boolean> token = defaultProperties().readConcurrentListenerEnabled();
+
+        assertEquals(true, token.get());
+    }
+
+    @Test
+    public void readConcurrentListenerThreadsFromYaml() {
+        Optional<Integer> token = defaultYaml().readConcurrentListenerThreads();
+
+        assertEquals(25, token.get().intValue());
+    }
+
+    @Test
+    public void readConcurrentListenerThreadsFromProperties() {
+        Optional<Integer> token = defaultProperties().readConcurrentListenerThreads();
+
+        assertEquals(25, token.get().intValue());
+    }
+
+    @Test
+    public void readConcurrentListenerQueueSizeFromYaml() {
+        Optional<Integer> token = defaultYaml().readConcurrentListenerQueueSize();
+
+        assertEquals(1000, token.get().intValue());
+    }
+
+    @Test
+    public void readConcurrentListenerQueueSizeFromProperties() {
+        Optional<Integer> token = defaultProperties().readConcurrentListenerQueueSize();
+
+        assertEquals(1000, token.get().intValue());
+    }
+
+    @Test
+    public void readConcurrentListenerHandleErrorsAsynchronouslyFromYaml() {
+        Optional<Boolean> token = defaultYaml().readConcurrentListenerHandleErrorsAsynchronously();
+
+        assertEquals(false, token.get());
+    }
+
+    @Test
+    public void readConcurrentListenerHandleErrorsAsynchronouslyFromProperties() {
+        Optional<Boolean> token = defaultProperties().readConcurrentListenerHandleErrorsAsynchronously();
+
+        assertEquals(false, token.get());
+    }
+
+    @Test
+    public void readApiPortFromProperties() {
+        Optional<Integer> port = defaultProperties().readApiPort();
+
+        assertEquals(80, (int) port.get());
+    }
+
+    private SDKConfigurationPropertiesReader defaultProperties() {
+        return new SDKConfigurationPropertiesReader();
+    }
+
+    private SDKConfigurationYamlReader defaultYaml() {
+        return yaml("application.yml");
+    }
+
+    private SDKConfigurationYamlReader yaml(String yamlFilename) {
+        return new SDKConfigurationYamlReader("application.yml");
+    }
 }

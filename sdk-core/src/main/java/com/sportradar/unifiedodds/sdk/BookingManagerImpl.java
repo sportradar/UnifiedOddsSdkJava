@@ -48,7 +48,7 @@ public class BookingManagerImpl implements BookingManager {
 
         clientInteractionLogger.info("BookingManager.bookLiveOddsEvent({})", eventId);
 
-        String requestUri = String.format("https://%s/v1/liveodds/booking-calendar/events/%s/book", configuration.getAPIHost(), eventId);
+        String requestUri = String.format("https://%s/v1/liveodds/booking-calendar/events/%s/book", configuration.getApiHostAndPort(), eventId);
 
         try {
             HttpHelper.ResponseData post = httpHelper.post(requestUri);

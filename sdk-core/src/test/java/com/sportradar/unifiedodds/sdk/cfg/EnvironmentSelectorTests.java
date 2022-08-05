@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.cfg;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

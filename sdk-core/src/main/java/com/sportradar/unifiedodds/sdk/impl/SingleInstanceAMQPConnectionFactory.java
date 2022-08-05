@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Strings;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.*;
@@ -11,6 +13,17 @@ import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import java.io.IOException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeoutException;
+import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -21,20 +34,6 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import javax.inject.Inject;
-import javax.net.ssl.SSLContext;
-import java.io.IOException;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeoutException;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A {@link AMQPConnectionFactory} implementation which creates only one connection instance. All
@@ -263,45 +262,47 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         return sdkConnection;
     }
 
-    private void checkFirewall() throws IOException {
-        URI uri;
-        try {
-            uri = new URI(config.getAPIHost());
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid API host format", e);
-        }
-        try {
-            Socket s = new Socket(uri.getHost(), uri.getPort() < 0 ? 443 : uri.getPort());
-            s.close();
-        } catch (UnknownHostException uhe) {
-            logger.error("Unable to lookup " + config.getAPIHost() + ". Network down?");
-            System.exit(3);
-        } catch (SocketException e) {
-            boolean fwProblem = e.getMessage().toLowerCase().contains("permission denied");
-            if (!fwProblem)
-                return;
-            CloseableHttpClient httpClient = HttpClientBuilder.create()
-                    .useSystemProperties()
-                    .setRedirectStrategy(new LaxRedirectStrategy())
-                    .build();
-            try {
-                HttpGet httpGet = new HttpGet("http://ipecho.net/plain");
-                ResponseHandler<String> handler = resp -> {
-                    if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
-                        return EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8);
-                    else
-                        return "";
-                };
-                String resp = httpClient.execute(httpGet, handler);
-                throw new IOException(
-                            "Firewall problem? If you believe your firewall is ok, please contact Sportradar and check that your ip ("
-                                        + resp + ") is whitelisted ",
-                            e);
-            } catch (Exception exc) {
-                logger.warn("Error during firewall test, ex:", exc);
-            }
-        }
+  private void checkFirewall() throws IOException {
+    URI uri;
+    try {
+      uri = new URI(config.getAPIHost());
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Invalid API host format", e);
     }
+    int port = uri.getPort() < 0 ? 443 : uri.getPort();
+    try {
+      Socket s = new Socket(uri.getHost(), uri.getPort() < 0 ? 443 : uri.getPort());
+      s.close();
+    } catch (UnknownHostException uhe) {
+      logger.error("Unable to lookup " + config.getAPIHost() + ":" + port + ". Network down?");
+      System.exit(3);
+    } catch (SocketException e) {
+      boolean fwProblem = e.getMessage().toLowerCase().contains("permission denied");
+      if (!fwProblem) return;
+      CloseableHttpClient httpClient =
+          HttpClientBuilder.create()
+              .useSystemProperties()
+              .setRedirectStrategy(new LaxRedirectStrategy())
+              .build();
+      try {
+        HttpGet httpGet = new HttpGet("http://ipecho.net/plain");
+        ResponseHandler<String> handler =
+            resp -> {
+              if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+                return EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8);
+              else return "";
+            };
+        String resp = httpClient.execute(httpGet, handler);
+        throw new IOException(
+            "Firewall problem? If you believe your firewall is ok, please contact Sportradar and check that your ip ("
+                + resp
+                + ") is whitelisted ",
+            e);
+      } catch (Exception exc) {
+        logger.warn("Error during firewall test, ex:", exc);
+      }
+    }
+  }
 
     /**
      * Returns a {@link Connection} instance representing connection to the AMQP broker

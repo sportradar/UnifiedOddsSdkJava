@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -49,6 +48,16 @@ public abstract class SDKConfigurationReader {
 
     public Optional<String> readApiHost() {
         return Optional.ofNullable(sdkProperties.get("uf.sdk.apiHost"));
+    }
+
+    public Optional<Integer> readApiPort() {
+        return Optional.ofNullable(sdkProperties.get("uf.sdk.apiPort")).map(value -> {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("The provided uf.sdk.apiPort is not a valid number, value: " + value);
+            }
+        });
     }
 
     public Optional<String> readMessagingHost() {
@@ -229,6 +238,54 @@ public abstract class SDKConfigurationReader {
                 throw new IllegalArgumentException("The provided uf.sdk.minIntervalBetweenRecoveryRequests is not a valid number, value: " + value);
             }
         });
+    }
+
+    public Optional<Boolean> readConcurrentListenerEnabled() {
+        String property = "uf.sdk.concurrentListenerEnabled";
+        return Optional.ofNullable(sdkProperties.get(property))
+            .map(value -> {
+                try {
+                    return Boolean.valueOf(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("The provided " + property + " is not a valid boolean, value: " + value);
+                }
+            });
+    }
+
+    public Optional<Integer> readConcurrentListenerThreads() {
+        String property = "uf.sdk.concurrentListenerThreads";
+        return Optional.ofNullable(sdkProperties.get(property))
+            .map(value -> {
+                try {
+                    return Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("The provided " + property + " is not a valid number, value: " + value);
+                }
+            });
+    }
+
+    public Optional<Integer> readConcurrentListenerQueueSize() {
+        String property = "uf.sdk.concurrentListenerQueueSize";
+        return Optional.ofNullable(sdkProperties.get(property))
+            .map(value -> {
+                try {
+                    return Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("The provided " + property + " is not a valid number, value: " + value);
+                }
+            });
+    }
+
+    public Optional<Boolean> readConcurrentListenerHandleErrorsAsynchronously() {
+        String property = "uf.sdk.concurrentListenerHandleErrorsAsync";
+        return Optional.ofNullable(sdkProperties.get(property))
+            .map(value -> {
+                try {
+                    return Boolean.valueOf(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("The provided " + property + " is not a valid boolean, value: " + value);
+                }
+            });
     }
 
     public Environment readUfEnvironment() {

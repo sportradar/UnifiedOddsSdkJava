@@ -8,6 +8,7 @@ import com.sportradar.unifiedodds.sdk.OddsFeedListener;
 import com.sportradar.unifiedodds.sdk.OddsFeedSession;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,14 @@ public class MessageListener implements OddsFeedListener {
      */
     @Override
     public void onOddsChange(OddsFeedSession sender, OddsChange<SportEvent> oddsChanges) {
-        logger.info("Received odds change for: " + oddsChanges.getEvent());
+        SportEvent event = oddsChanges.getEvent();
+        logger.info("Received odds change for: " + event);
+
+        event.getName(Locale.ENGLISH);
+        event.getId();
+        event.getSportId();
+        event.getScheduledTime();
+        event.getScheduledEndTime();
 
         // Now loop through the odds for each market
         for (MarketWithOdds marketOdds : oddsChanges.getMarkets()) {
@@ -42,8 +50,12 @@ public class MessageListener implements OddsFeedListener {
 
             // If the market is active printout odds for all outcomes
             if (marketOdds.getStatus() == MarketStatus.Active) {
+                marketOdds.getMarketMetadata();
+                marketOdds.getMarketDefinition();
                 for (OutcomeOdds outcomeOdds : marketOdds.getOutcomeOdds()) {
                     String outcomeDesc = outcomeOdds.getName();
+                    outcomeOdds.getAdditionalProbabilities();
+                    outcomeOdds.getOutcomeDefinition();
 
                     logger.info("Outcome " + outcomeDesc + " has odds " + outcomeOdds.getOdds() + " "
                                 + outcomeOdds.getProbability());

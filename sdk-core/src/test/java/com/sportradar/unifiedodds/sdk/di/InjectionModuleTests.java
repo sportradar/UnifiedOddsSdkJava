@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import com.google.inject.util.Modules;
+import com.sportradar.uf.datamodel.UFCashout;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.RecoveryManager;
 import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
@@ -37,10 +37,7 @@ public class InjectionModuleTests {
 
     @Test
     public void provideDifferentMessageProcessorForEachSession() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
 
         CompositeMessageProcessor instance1 = injector.getInstance(CompositeMessageProcessor.class);
         CompositeMessageProcessor instance2 = injector.getInstance(CompositeMessageProcessor.class);
@@ -51,10 +48,7 @@ public class InjectionModuleTests {
 
     @Test
     public void provideSameProcessedFixtureChangesTrackerForEachSession() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         ProcessedFixtureChangesTracker instance1 = injector.getInstance(ProcessedFixtureChangesTracker.class);
         ProcessedFixtureChangesTracker instance2 = injector.getInstance(ProcessedFixtureChangesTracker.class);
         Assert.assertNotNull(instance1);
@@ -63,10 +57,7 @@ public class InjectionModuleTests {
 
     @Test
     public void provideSameSportEntityFactoryForEachSession() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         SportEntityFactory instance1 = injector.getInstance(SportEntityFactory.class);
         SportEntityFactory instance2 = injector.getInstance(SportEntityFactory.class);
         Assert.assertNotNull(instance1);
@@ -75,10 +66,7 @@ public class InjectionModuleTests {
 
     @Test
     public void provideDifferentFeedMessageFactoryForEachSession() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         FeedMessageFactory instance1 = injector.getInstance(FeedMessageFactory.class);
         FeedMessageFactory instance2 = injector.getInstance(FeedMessageFactory.class);
         Assert.assertNotNull(instance1);
@@ -88,10 +76,7 @@ public class InjectionModuleTests {
 
     @Test
     public void provideSessions() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         OddsFeedSessionImpl instance1 = injector.getInstance(OddsFeedSessionImpl.class);
         OddsFeedSessionImpl instance2 = injector.getInstance(OddsFeedSessionImpl.class);
         Assert.assertNotNull(instance1);
@@ -101,10 +86,7 @@ public class InjectionModuleTests {
 
     @Test
     public void provideBookmakerDetailsProvider() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         DataProvider<BookmakerDetails> configDataProviderInstance = injector.getInstance(Key.get(new TypeLiteral<DataProvider<BookmakerDetails>>() {}, Names.named("ConfigDataProvider")));
         DataProvider<BookmakerDetails> productionDataProviderInstance = injector.getInstance(Key.get(new TypeLiteral<DataProvider<BookmakerDetails>>() {}, Names.named("ProductionDataProvider")));
         DataProvider<BookmakerDetails> integrationDataProviderInstance = injector.getInstance(Key.get(new TypeLiteral<DataProvider<BookmakerDetails>>() {}, Names.named("IntegrationDataProvider")));
@@ -115,21 +97,28 @@ public class InjectionModuleTests {
 
     @Test
     public void provideRecoveryManager() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         RecoveryManager instance = injector.getInstance(RecoveryManager.class);
         Assert.assertNotNull(instance);
     }
 
     @Test
     public void provideDataRouterManager() {
-        Injector injector = Guice.createInjector(
-                Modules.override(new MockedMasterModule())
-                        .with(new TestingModule())
-        );
+        Injector injector = createInjector();
         DataRouterManager instance = injector.getInstance(DataRouterManager.class);
         Assert.assertNotNull(instance);
+    }
+
+    @Test
+    public void providesCashOutDataProvider() {
+        Injector injector = createInjector();
+        DataProvider<UFCashout> cashOutDataProvider = injector.getInstance(
+            Key.get(new TypeLiteral<DataProvider<UFCashout>>() {
+            }));
+        Assert.assertNotNull(cashOutDataProvider);
+    }
+
+    private Injector createInjector() {
+        return new TestInjectorFactory().create();
     }
 }

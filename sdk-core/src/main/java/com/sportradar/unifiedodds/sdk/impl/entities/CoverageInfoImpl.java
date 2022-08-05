@@ -37,7 +37,7 @@ public class CoverageInfoImpl implements CoverageInfo {
     /**
      * The coverage location field
      */
-    private CoveredFrom coveredFrom;
+    private final CoveredFrom coveredFrom;
 
     /**
      * Initializes a new instance of {@link CoverageInfoImpl}

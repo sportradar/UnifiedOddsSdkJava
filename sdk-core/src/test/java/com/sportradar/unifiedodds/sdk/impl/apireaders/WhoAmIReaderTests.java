@@ -95,7 +95,7 @@ public class WhoAmIReaderTests {
     public void replayServerConfigSelectionTestValidProductionEndpoint() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
-        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
+        initMockForEnvironment(config, Environment.Production);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
         whoAmIReader.validateBookmakerDetails();
@@ -143,8 +143,7 @@ public class WhoAmIReaderTests {
     public void switchedTokenProductionIntegrationConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
-        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
+        initMockForEnvironment(config, Environment.Production);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
 
@@ -163,8 +162,7 @@ public class WhoAmIReaderTests {
     public void switchedTokenIntegrationProductionConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
-        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
+        initMockForEnvironment(config, Environment.Integration);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
 
@@ -277,5 +275,15 @@ public class WhoAmIReaderTests {
         Mockito.when(mock.getData()).thenReturn(bookmakerDetails);
         Mockito.when(mock.getServerResponseTime()).thenReturn(ZonedDateTime.now());
         return mock;
+    }
+
+    private void initMockForEnvironment(SDKInternalConfiguration config, Environment environment) {
+        String host = EnvironmentManager.getApiHost(environment);
+        int port = EnvironmentManager.getApiPort(environment);
+        String hostAndPort = host + (port == 80 ? "" : ":" + port);
+        Mockito.when(config.getEnvironment()).thenReturn(environment);
+        Mockito.when(config.getAPIHost()).thenReturn(host);
+        Mockito.when(config.getAPIPort()).thenReturn(port);
+        Mockito.when(config.getApiHostAndPort()).thenReturn(hostAndPort);
     }
 }

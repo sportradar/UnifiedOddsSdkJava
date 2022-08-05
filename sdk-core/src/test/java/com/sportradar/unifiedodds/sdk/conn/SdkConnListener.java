@@ -55,7 +55,7 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
      */
     @Override
     public void onConnectionDown() {
-        String message = String.format("Connection to the feed lost");
+        String message = "Connection to the feed lost";
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onConnectionDown: " + message);
     }

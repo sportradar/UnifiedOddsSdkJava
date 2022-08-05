@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import static com.sportradar.unifiedodds.sdk.listener.concurrent.oddsfeed.ConcurrentOddsFeedListenerConfig.newConcurrentOddsFeedListenerConfig;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
@@ -28,6 +30,10 @@ import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsExceptio
 import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.listener.concurrent.ConcurrentListenerFactory;
+import com.sportradar.unifiedodds.sdk.listener.concurrent.oddsfeed.ConcurrentOddsFeedListenerConfig;
+import com.sportradar.unifiedodds.sdk.listener.concurrent.executor.ExecutorFactory;
+import com.sportradar.unifiedodds.sdk.listener.concurrent.executor.ExecutorFactoryProvider;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.URN;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -50,6 +56,11 @@ public class OddsFeed {
      * The logger instance used for the OddsFeed logs
      */
     private static final Logger logger = LoggerFactory.getLogger(OddsFeed.class);
+
+    /**
+     * The SDK global event listener
+     */
+    protected final SDKGlobalEventsListener globalListener;
 
     /**
      * The injector used by this feed instance
@@ -127,6 +138,9 @@ public class OddsFeed {
      */
     private EventChangeManager eventChangeManager;
 
+    private final ConcurrentListenerConfig concurrentListenerConfig;
+    private final ConcurrentListenerFactory concurrentListenerFactory;
+
     /**
      * The most basic feed constructor
      *
@@ -144,10 +158,13 @@ public class OddsFeed {
         this.injector = createSdkInjector(listener, null);
         checkLocales();
         this.oddsFeedExtListener = null;
+        this.concurrentListenerConfig = config.getConcurrentListenerConfig();
+        this.concurrentListenerFactory = createConcurrentListenerFactory();
+        this.globalListener = createGlobalListener(listener);
     }
 
     /**
-     * The following constructor is used to crate the OddsFeed instance directly with the internal configuration
+     * The following constructor is used to create the OddsFeed instance directly with the internal configuration
      *
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
      * @param config {@link SDKInternalConfiguration}, the configuration class used to configure the new feed
@@ -162,6 +179,9 @@ public class OddsFeed {
         this.oddsFeedConfiguration = config;
         this.injector = createSdkInjector(listener, null);
         this.oddsFeedExtListener = oddsFeedExtListener;
+        this.concurrentListenerConfig = config.getConcurrentListenerConfig();
+        this.concurrentListenerFactory = createConcurrentListenerFactory();
+        this.globalListener = createGlobalListener(listener);
     }
 
     /**
@@ -181,6 +201,9 @@ public class OddsFeed {
         this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
         this.injector = createSdkInjector(listener, customisableSDKModule);
         this.oddsFeedExtListener = oddsFeedExtListener;
+        this.concurrentListenerConfig = config.getConcurrentListenerConfig();
+        this.concurrentListenerFactory = createConcurrentListenerFactory();
+        this.globalListener = createGlobalListener(listener);
     }
 
     /**
@@ -201,6 +224,9 @@ public class OddsFeed {
         this.oddsFeedConfiguration = config;
         this.injector = createSdkInjector(listener, customisableSDKModule);
         this.oddsFeedExtListener = oddsFeedExtListener;
+        this.concurrentListenerConfig = config.getConcurrentListenerConfig();
+        this.concurrentListenerFactory = createConcurrentListenerFactory();
+        this.globalListener = createGlobalListener(listener);
     }
 
     /**
@@ -215,8 +241,11 @@ public class OddsFeed {
 
         logger.info("OddsFeed instance created with \n{}", config);
 
+        this.globalListener = null;
         this.oddsFeedConfiguration = config;
         this.injector = injector;
+        this.concurrentListenerConfig = config.getConcurrentListenerConfig();
+        this.concurrentListenerFactory = createConcurrentListenerFactory();
 
         logger.warn("OddsFeed initialised with a provided predefined injector");
     }
@@ -258,7 +287,7 @@ public class OddsFeed {
      */
     public OddsFeedSessionBuilder getSessionBuilder() {
         this.initOddsFeedInstance(); // init so the initial token validation gets triggered
-        return new OddsFeedSessionBuilderImpl(this);
+        return new OddsFeedSessionBuilderImpl(this, concurrentListenerFactory);
     }
 
     /**
@@ -593,6 +622,32 @@ public class OddsFeed {
         }
     }
 
+    private ConcurrentOddsFeedListenerConfig createConcurrentListenerConfig() {
+        ConcurrentOddsFeedListenerConfig.Builder builder = newConcurrentOddsFeedListenerConfig()
+            .withNumberOfThreads(concurrentListenerConfig.getThreads())
+            .withQueueSize(concurrentListenerConfig.getQueueSize());
+        if (concurrentListenerConfig.isHandleErrorsAsynchronously()) {
+            builder.handleErrorsAsynchronously();
+        } else {
+            builder.handleErrorsSynchronously();
+        }
+        return builder.build();
+    }
+
+    private ConcurrentListenerFactory createConcurrentListenerFactory() {
+        ConcurrentOddsFeedListenerConfig concurrentListenerConfig = createConcurrentListenerConfig();
+        ExecutorFactory executorFactory = new ExecutorFactoryProvider(concurrentListenerConfig).create();
+        return new ConcurrentListenerFactory(concurrentListenerConfig, executorFactory);
+    }
+
+    private SDKGlobalEventsListener createGlobalListener(SDKGlobalEventsListener listener) {
+        if (concurrentListenerConfig.isEnabled()) {
+            return concurrentListenerFactory.createGlobalEventsListener(listener);
+        } else {
+            return listener;
+        }
+    }
+
     class SessionData {
         private final OddsFeedSessionImpl session;
         private final MessageInterest messageInterest;
@@ -608,19 +663,26 @@ public class OddsFeed {
     }
 
     class OddsFeedSessionBuilderImpl implements OddsFeedSessionBuilder {
-        private OddsFeed oddsFeed;
+        private final OddsFeed oddsFeed;
+        private final ConcurrentListenerFactory concurrentListenerFactory;
         private OddsFeedListener mainOddsFeedListener;
         private MessageInterest msgInterestLevel;
         private HashSet<URN> eventIds;
         private HashSet<GenericOddsFeedListener> specificOddsFeedListeners;
 
-        OddsFeedSessionBuilderImpl(OddsFeed oddsFeed) {
+        OddsFeedSessionBuilderImpl(OddsFeed oddsFeed, ConcurrentListenerFactory concurrentListenerFactory) {
             this.oddsFeed = oddsFeed;
+            this.concurrentListenerFactory = concurrentListenerFactory;
         }
 
         @Override
         public OddsFeedSessionBuilder setListener(OddsFeedListener listener) {
-            this.mainOddsFeedListener = listener;
+            if (concurrentListenerConfig.isEnabled()) {
+                logger.info("Creating concurrent listener");
+                this.mainOddsFeedListener = wrapWithConcurrentListener(listener);
+            } else {
+                this.mainOddsFeedListener = listener;
+            }
             return this;
         }
 
@@ -665,6 +727,10 @@ public class OddsFeed {
         @Override
         public OddsFeedSessionBuilder setSpecificEventsOnly(URN specificEventsOnly) {
             return setSpecificEventsOnly(Collections.singleton(specificEventsOnly));
+        }
+
+        private OddsFeedListener wrapWithConcurrentListener(OddsFeedListener customerListener) {
+            return concurrentListenerFactory.createOddsFeedListener(customerListener);
         }
 
         @Override

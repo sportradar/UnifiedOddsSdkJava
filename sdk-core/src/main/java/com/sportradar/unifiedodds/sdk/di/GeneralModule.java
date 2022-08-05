@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.di;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Binder;
@@ -22,17 +24,6 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.util.MdcScheduledExecutorService;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.management.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
@@ -40,9 +31,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.management.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link Module} implementation used to set-up general SDK dependency injection settings
@@ -80,8 +78,6 @@ public class GeneralModule implements Module {
      */
     private final HttpClientFactory httpClientFactory;
 
-    private ReentrantLock jabxReentrantLock;
-
     /**
      * Constructs a new instance of the {@link GeneralModule} class
      *
@@ -98,15 +94,14 @@ public class GeneralModule implements Module {
         this.configuration = configuration;
         this.httpClientFactory = httpClientFactory;
 
-        try {
-            jabxReentrantLock = new ReentrantLock();
-            messagesJaxbContext = JAXBContext.newInstance("com.sportradar.uf.datamodel");
-            sportsApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
-            customBetApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.custombet.datamodel");
-        } catch (JAXBException e) {
-            throw new IllegalStateException("JAXB contexts creation failed, ex: ", e);
-        }
+    try {
+      messagesJaxbContext = JAXBContext.newInstance("com.sportradar.uf.datamodel");
+      sportsApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
+      customBetApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.custombet.datamodel");
+    } catch (JAXBException e) {
+      throw new IllegalStateException("JAXB contexts creation failed, ex: ", e);
     }
+  }
 
     /**
      * Registers required types with the injection container
@@ -164,7 +159,6 @@ public class GeneralModule implements Module {
         binder.bind(SportEventStatusFactory.class).to(SportEventStatusFactoryImpl.class);
         binder.bind(FeedMessageValidator.class).to(FeedMessageValidatorImpl.class);
         binder.bind(TimeUtils.class).to(TimeUtilsImpl.class);
-        binder.bind(ReentrantLock.class).toInstance(jabxReentrantLock);
     }
 
     private String loadVersion() {
@@ -193,15 +187,22 @@ public class GeneralModule implements Module {
         }
     }
 
-    /**
-     * Provides the {@link Deserializer} used to deserialize sports API xmls
-     *
-     * @return The {@link Deserializer} instance to be registered with the DI container
-     */
-    @Provides @Named("SportsApiJaxbDeserializer")
-    private Deserializer provideSportsApiJaxbDeserializer() {
-        return new DeserializerImpl(sportsApiJaxbContext);
-    }
+  @Provides
+  @Named("MessageJAXBContext")
+  private JAXBContext provideMessageJAXBContext() {
+    return messagesJaxbContext;
+  }
+
+  /**
+   * Provides the {@link Deserializer} used to deserialize sports API xmls
+   *
+   * @return The {@link Deserializer} instance to be registered with the DI container
+   */
+  @Provides
+  @Named("SportsApiJaxbDeserializer")
+  private Deserializer provideSportsApiJaxbDeserializer() {
+    return new DeserializerImpl(sportsApiJaxbContext);
+  }
 
     /**
      * Provides the {@link Deserializer} used to deserialize custom bet API xmls

@@ -1,0 +1,26 @@
+title Concurrent Listener Recovery
+
+participant Recovery Manager as RecMan
+participant Global Listener as GLOL
+participant Concurrent Listener as CONL
+participant Task Queues as Q
+participant Customer Listener as CUSL
+
+RecMan->GLOL: onRecoveryInitiated()
+note right of RecMan
+contains requestID
+end note
+GLOL->CONL: onRecoveryInitiated()
+note right of CONL
+store requestID
+end note
+RecMan->GLOL: onProducerUp()
+GLOL->CONL: onProducerUp()
+
+CONL->Q: Query
+note right of Q
+Wait until no more
+tasks for requestID
+end note
+
+CONL->CUSL: Producer Up

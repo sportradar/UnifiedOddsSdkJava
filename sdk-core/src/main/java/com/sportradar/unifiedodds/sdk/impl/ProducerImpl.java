@@ -54,7 +54,7 @@ public class ProducerImpl implements Producer {
         description = "Unknown producer";
         active = true;
         enabled = true;
-        apiUrl = configuration.getAPIHost();
+        apiUrl = configuration.getApiHostAndPort();
         producerScopes = ImmutableSet.<ProducerScope>builder()
                 .addAll(Arrays.asList(ProducerScope.values()))
                 .build();

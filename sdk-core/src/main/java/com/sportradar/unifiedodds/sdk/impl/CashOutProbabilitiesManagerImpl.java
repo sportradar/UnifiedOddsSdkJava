@@ -30,7 +30,7 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
     /**
      * The logger instance used to log possible execution problems
      */
-    private static Logger logger = LoggerFactory.getLogger(CashOutProbabilitiesManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CashOutProbabilitiesManagerImpl.class);
 
     /**
      * A {@link DataProvider} instance used to fetch various CashOut data

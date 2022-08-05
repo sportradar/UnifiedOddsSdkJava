@@ -21,7 +21,7 @@ public class CompositeMappingValidator implements MappingValidator {
     /**
      * A list of {@link MappingValidator} used for actual validation
      */
-    private List<MappingValidator> validators;
+    private final List<MappingValidator> validators;
 
 
     CompositeMappingValidator(List<MappingValidator> validators){

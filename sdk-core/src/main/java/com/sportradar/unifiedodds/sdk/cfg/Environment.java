@@ -4,8 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.cfg;
 
-import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
-
 /**
  * A description of the environment
  */

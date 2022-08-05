@@ -53,11 +53,13 @@ public class ReadersModule extends AbstractModule {
     }
 
     @Provides @Named("ProductionDataProvider")
-    private DataProvider<BookmakerDetails> providesProductionDataProvider(LogHttpDataFetcher httpDataFetcher,
+    private DataProvider<BookmakerDetails> providesProductionDataProvider(SDKInternalConfiguration cfg,
+                                                                          LogHttpDataFetcher httpDataFetcher,
                                                                           @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        EnvironmentSetting setting = EnvironmentManager.getSetting(Environment.Production);
         return new DataProvider<>(
                 "/users/whoami.xml",
-                EnvironmentManager.getApiHost(Environment.Production),
+                hostAndPort(setting.getApiHost(), cfg.getAPIPort()),
                 true,
                 Locale.ENGLISH,
                 httpDataFetcher,
@@ -66,15 +68,21 @@ public class ReadersModule extends AbstractModule {
     }
 
     @Provides @Named("IntegrationDataProvider")
-    private DataProvider<BookmakerDetails> providesIntegrationDataProvider(LogHttpDataFetcher httpDataFetcher,
+    private DataProvider<BookmakerDetails> providesIntegrationDataProvider(SDKInternalConfiguration cfg,
+                                                                           LogHttpDataFetcher httpDataFetcher,
                                                                            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        EnvironmentSetting setting = EnvironmentManager.getSetting(Environment.Replay);
         return new DataProvider<>(
                 "/users/whoami.xml",
-                EnvironmentManager.getApiHost(Environment.Replay),
+                hostAndPort(setting.getApiHost(), cfg.getAPIPort()),
                 true,
                 Locale.ENGLISH,
                 httpDataFetcher,
                 deserializer
         );
+    }
+
+    private String hostAndPort(String host, int port) {
+        return host + (port == 80 ? "" : ":" + port);
     }
 }

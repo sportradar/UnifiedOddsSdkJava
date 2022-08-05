@@ -1,7 +1,6 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;

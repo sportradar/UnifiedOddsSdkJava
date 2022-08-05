@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 
+import com.sportradar.unifiedodds.sdk.listener.concurrent.oddsfeed.ConcurrentOddsFeedListenerConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private boolean useApiSsl;
     private String host;
     private String apiHost;
+    private int apiPort;
     private int port;
     private int inactivitySeconds;
     private int maxRecoveryExecutionMinutes;
@@ -50,6 +52,10 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private Integer sdkNodeId;
     private boolean useIntegrationEnvironment;
     private List<Integer> disabledProducers;
+    private boolean concurrentListenerEnabled;
+    private int concurrentListenerThreads;
+    private int concurrentListenerQueueSize;
+    private boolean concurrentListenerHandleErrorsAsynchronously;
 
     public OddsFeedConfigurationBuilderImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader) {
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
@@ -192,6 +198,20 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     }
 
     /**
+     * Specify the Sportradar port used for API access (if not specified this defaults to 80)
+     *
+     * @param apiPort the port used for API access
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    @Override
+    public OddsFeedConfigurationBuilder setApiPort(int apiPort) {
+        Preconditions.checkArgument(apiPort > 0, "Invalid API port value");
+
+        this.apiPort = apiPort;
+        return this;
+    }
+
+    /**
      * Sets the port used to connect to AMQP broker
      *
      * @param port the port used to connect to AMQP broker
@@ -304,6 +324,38 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         return this;
     }
 
+    @Override
+    public OddsFeedConfigurationBuilder setConcurrentListenerEnabled(boolean enabled) {
+        this.concurrentListenerEnabled = enabled;
+        return this;
+    }
+
+    @Override
+    public OddsFeedConfigurationBuilder setConcurrentListenerThreads(int threadCount) {
+        int min = ConcurrentOddsFeedListenerConfig.THREADS_MIN;
+        int max = ConcurrentOddsFeedListenerConfig.THREADS_MAX;
+        Preconditions.checkArgument(threadCount >= min, "Minimum concurrent listener threads is " + min);
+        Preconditions.checkArgument(threadCount <= max, "Maximum concurrent listener threads is " + max);
+        this.concurrentListenerThreads = threadCount;
+        return this;
+    }
+
+    @Override
+    public OddsFeedConfigurationBuilder setConcurrentListenerQueueSize(int queueSize) {
+        int min = ConcurrentOddsFeedListenerConfig.QUEUE_SIZE_MIN;
+        int max = ConcurrentOddsFeedListenerConfig.QUEUE_SIZE_MAX;
+        Preconditions.checkArgument(queueSize >= min, "Minimum concurrent listener queue size is " + min);
+        Preconditions.checkArgument(queueSize <= max, "Maximum concurrent listener queue size is " + max);
+        this.concurrentListenerQueueSize = queueSize;
+        return this;
+    }
+
+    @Override
+    public OddsFeedConfigurationBuilder setConcurrentListenerHandleErrorsAsynchronously(boolean handleErrorsAsynchronously) {
+        this.concurrentListenerHandleErrorsAsynchronously = handleErrorsAsynchronously;
+        return this;
+    }
+
     /**
      * Reads the SDK properties file and sets the available properties
      *
@@ -313,6 +365,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     public OddsFeedConfigurationBuilder loadConfigFromSdkProperties() {
         sdkConfigurationPropertiesReader.readMaxInactivitySeconds().ifPresent(val -> inactivitySeconds = val);
         sdkConfigurationPropertiesReader.readApiHost().ifPresent(val -> apiHost = val);
+        sdkConfigurationPropertiesReader.readApiPort().ifPresent(val -> apiPort = val);
         sdkConfigurationPropertiesReader.readMessagingHost().ifPresent(val -> host = val);
         sdkConfigurationPropertiesReader.readUseApiSsl().ifPresent(val -> useApiSsl = val);
         sdkConfigurationPropertiesReader.readUseMessagingSsl().ifPresent(val -> useMessagingSsl = val);
@@ -321,6 +374,10 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         sdkConfigurationPropertiesReader.readUseIntegration().ifPresent(val -> useIntegrationEnvironment = val);
         sdkConfigurationPropertiesReader.readSdkNodeId().ifPresent(val -> sdkNodeId = val);
         sdkConfigurationPropertiesReader.readDefaultLocale().ifPresent(val -> defaultLocale = val);
+        sdkConfigurationPropertiesReader.readConcurrentListenerEnabled().ifPresent(this::setConcurrentListenerEnabled);
+        sdkConfigurationPropertiesReader.readConcurrentListenerThreads().ifPresent(this::setConcurrentListenerThreads);
+        sdkConfigurationPropertiesReader.readConcurrentListenerQueueSize().ifPresent(this::setConcurrentListenerQueueSize);
+        sdkConfigurationPropertiesReader.readConcurrentListenerHandleErrorsAsynchronously().ifPresent(this::setConcurrentListenerHandleErrorsAsynchronously);
 
         desiredLocales.addAll(sdkConfigurationPropertiesReader.readDesiredLocales());
         disabledProducers.addAll(sdkConfigurationPropertiesReader.readDisabledProducers());
@@ -346,12 +403,14 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         ExceptionHandlingStrategy exceptionHandlingStrategy = sdkConfigurationPropertiesReader.readExceptionHandlingStrategy()
                 .orElse(ExceptionHandlingStrategy.Catch);
 
+        // FIXME pass concurrentListener config fields here
         OddsFeedConfiguration oddsFeedConfiguration = new OddsFeedConfiguration(
                 accessToken,
                 defaultLocale,
                 desiredLocales,
                 host,
                 apiHost,
+                apiPort,
                 inactivitySeconds,
                 maxRecoveryExecutionMinutes,
                 minIntervalBetweenRecoveryRequests,
@@ -371,7 +430,9 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
                 HTTP_CLIENT_MAX_CONN_PER_ROUTE,
                 RECOVERY_HTTP_CLIENT_TIMEOUT,
                 RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL,
-                RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE);
+                RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE,
+                concurrentListenerConfig()
+        );
 
         setDefaultValues();
         return oddsFeedConfiguration;
@@ -385,6 +446,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         useApiSsl = true;
         host = "mq.betradar.com";
         apiHost = "api.betradar.com";
+        apiPort = 80;
         port = 5671;
         inactivitySeconds = 20;
         maxRecoveryExecutionMinutes = MAX_RECOVERY_EXECUTION_MINUTES;
@@ -393,5 +455,18 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         sdkNodeId = null;
         useIntegrationEnvironment = false;
         disabledProducers = new ArrayList<>();
+        concurrentListenerEnabled = false;
+        concurrentListenerThreads = ConcurrentOddsFeedListenerConfig.THREADS_DEFAULT;
+        concurrentListenerQueueSize = ConcurrentOddsFeedListenerConfig.QUEUE_SIZE_DEFAULT;
+        concurrentListenerHandleErrorsAsynchronously = true;
+    }
+
+    private ConcurrentListenerConfig concurrentListenerConfig() {
+        return ConcurrentListenerConfig.builder()
+            .enabled(concurrentListenerEnabled)
+            .threads(concurrentListenerThreads)
+            .queueSize(concurrentListenerQueueSize)
+            .handleErrorsAsynchronously(concurrentListenerHandleErrorsAsynchronously)
+            .build();
     }
 }

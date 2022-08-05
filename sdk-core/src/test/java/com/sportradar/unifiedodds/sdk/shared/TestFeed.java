@@ -3,7 +3,6 @@ package com.sportradar.unifiedodds.sdk.shared;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.google.inject.util.Modules;
 import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;

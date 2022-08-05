@@ -29,6 +29,7 @@ public class OddsFeedConfiguration {
     private final List<Locale> desiredLocales;
     private final String host;
     private final String apiHost;
+    private final int apiPort;
     private final int inactivitySeconds;
     private final int maxRecoveryExecutionMinutes;
     private final int minIntervalBetweenRecoveryRequests;
@@ -49,12 +50,14 @@ public class OddsFeedConfiguration {
     private final int recoveryHttpClientTimeout;
     private final int recoveryHttpClientMaxConnTotal;
     private final int recoveryHttpClientMaxConnPerRoute;
+    private final ConcurrentListenerConfig concurrentListenerConfig;
 
     OddsFeedConfiguration(String accessToken,
                           Locale defaultLocale,
                           List<Locale> desiredLocales,
                           String host,
                           String apiHost,
+                          int apiPort,
                           int inactivitySeconds,
                           int maxRecoveryExecutionMinutes,
                           int minIntervalBetweenRecoveryRequests,
@@ -74,13 +77,15 @@ public class OddsFeedConfiguration {
                           Integer httpClientMaxConnPerRoute,
                           Integer recoveryHttpClientTimeout,
                           Integer recoveryHttpClientMaxConnTotal,
-                          Integer recoveryHttpClientMaxConnPerRoute) {
+                          Integer recoveryHttpClientMaxConnPerRoute,
+                          ConcurrentListenerConfig concurrentListenerConfig) {
         // ctor parameters are validated in the cfg builder instance
         this.accessToken = accessToken;
         this.defaultLocale = defaultLocale;
         this.desiredLocales = desiredLocales;
         this.host = host;
         this.apiHost = apiHost;
+        this.apiPort = apiPort;
         this.inactivitySeconds = inactivitySeconds;
         this.maxRecoveryExecutionMinutes = maxRecoveryExecutionMinutes;
         this.minIntervalBetweenRecoveryRequests = minIntervalBetweenRecoveryRequests;
@@ -105,6 +110,7 @@ public class OddsFeedConfiguration {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.selectedEnvironment = selectedEnvironment;
         this.messagingVirtualHost = messagingVirtualHost;
+        this.concurrentListenerConfig = concurrentListenerConfig;
     }
 
     /**
@@ -119,6 +125,13 @@ public class OddsFeedConfiguration {
      */
     public String getAPIHost() {
         return apiHost;
+    }
+
+    /**
+     * @return The port of Sportradar host used for API-access
+     */
+    public int getAPIPort() {
+        return apiPort;
     }
 
     /**
@@ -329,6 +342,15 @@ public class OddsFeedConfiguration {
         return recoveryHttpClientMaxConnPerRoute;
     }
 
+    /**
+     * Returns concurrent listener config
+     *
+     * @return oncurrent listener config
+     */
+    public ConcurrentListenerConfig getConcurrentListenerConfig() {
+        return concurrentListenerConfig;
+    }
+
     @Override
     public String toString() {
 
@@ -340,6 +362,7 @@ public class OddsFeedConfiguration {
                 ", desiredLocales=" + desiredLocales +
                 ", host='" + host + '\'' +
                 ", apiHost='" + apiHost + '\'' +
+                ", apiPort=" + apiPort +
                 ", inactivitySeconds=" + inactivitySeconds +
                 ", maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes +
                 ", minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests +

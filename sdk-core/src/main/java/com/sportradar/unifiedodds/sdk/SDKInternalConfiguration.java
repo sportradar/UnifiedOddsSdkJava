@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.sportradar.unifiedodds.sdk.cfg.ConcurrentListenerConfig;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.utils.SdkHelper;
@@ -39,11 +40,14 @@ public class SDKInternalConfiguration {
     private final Set<String> schedulerTasksToSkip;
     private final String messagingVirtualHost;
     private String apiHost;
+    private final int apiPort;
+    private String apiHostAndPort;
     private final Environment selectedEnvironment;
     private final int httpClientMaxConnTotal;
     private final int httpClientMaxConnPerRoute;
     private final int recoveryHttpClientMaxConnTotal;
     private final int recoveryHttpClientMaxConnPerRoute;
+    private final ConcurrentListenerConfig concurrentListenerConfig;
 
     SDKInternalConfiguration(OddsFeedConfiguration cfg,
                              SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
@@ -61,6 +65,8 @@ public class SDKInternalConfiguration {
 
         host = cfg.getMessagingHost();
         apiHost = cfg.getAPIHost();
+        apiPort = cfg.getAPIPort();
+        apiHostAndPort = hostAndPort(apiHost, apiPort);
         useApiSsl = cfg.getUseApiSsl();
         useMessagingSsl = cfg.getUseMessagingSsl();
         port = cfg.getPort();
@@ -96,6 +102,7 @@ public class SDKInternalConfiguration {
         schedulerTasksToSkip = new HashSet<>();
         schedulerTasksToSkip.addAll(sdkConfigurationPropertiesReader.readSchedulerTasksToSkip());
         schedulerTasksToSkip.addAll(sdkConfigurationYamlReader.readSchedulerTasksToSkip());
+        concurrentListenerConfig = cfg.getConcurrentListenerConfig();
     }
 
     /**
@@ -111,6 +118,12 @@ public class SDKInternalConfiguration {
      * @return The Sportradar host used for API-access
      */
     public String getAPIHost() { return apiHost; }
+
+    public int getAPIPort() { return apiPort; }
+
+    public String getApiHostAndPort() {
+        return apiHostAndPort;
+    }
 
     /**
      * @return The selected environment used for API-access
@@ -339,6 +352,15 @@ public class SDKInternalConfiguration {
     }
 
     /**
+     * Returns maximum number of concurrent connections per route for recovery http client
+     *
+     * @return maximum number of concurrent connections per route for recovery http client
+     */
+    public ConcurrentListenerConfig getConcurrentListenerConfig() {
+        return concurrentListenerConfig;
+    }
+
+    /**
      * Updates the API host - this method can be used only while in replay mode, no other SDK modes support this
      *
      * @param newApiHost the new API host
@@ -348,6 +370,7 @@ public class SDKInternalConfiguration {
 
         if (isReplaySession) {
             apiHost = newApiHost;
+            apiHostAndPort = hostAndPort(apiHost, apiPort);
         }
     }
 
@@ -384,8 +407,12 @@ public class SDKInternalConfiguration {
                 .add("schedulerTasksToSkip=" + schedulerTasksToSkip)
                 .add("messagingVirtualHost='" + messagingVirtualHost + "'")
                 .add("apiHost='" + apiHost + "'")
+                .add("apiPort=" + apiPort)
                 .add("selectedEnvironment=" + selectedEnvironment)
                 .toString();
     }
 
+    private String hostAndPort(String apiHost, int apiPort) {
+        return apiHost + (apiPort == 80 ? "" : ":" + apiPort);
+    }
 }

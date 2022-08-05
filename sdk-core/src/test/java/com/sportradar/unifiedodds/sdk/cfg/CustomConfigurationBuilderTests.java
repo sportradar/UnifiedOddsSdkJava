@@ -33,6 +33,7 @@ public class CustomConfigurationBuilderTests {
                 "sample-access-token",
                 "messaging-host",
                 "api-host",
+                80,
                 7777,
                 true,
                 true,
@@ -50,6 +51,7 @@ public class CustomConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "sample-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), SDKPropertiesReaderUtil.MESSAGING_HOST);
         Assert.assertEquals(cfg.getAPIHost(), SDKPropertiesReaderUtil.API_HOST);
+        Assert.assertEquals(cfg.getAPIPort(), SDKPropertiesReaderUtil.API_PORT);
         Assert.assertEquals(cfg.getMessagingVirtualHost(), SDKPropertiesReaderUtil.MESSAGING_VHOST);
         Assert.assertEquals(cfg.getMessagingUsername(), SDKPropertiesReaderUtil.MESSAGING_USERNAME);
         Assert.assertEquals(cfg.getMessagingPassword(), SDKPropertiesReaderUtil.MESSAGING_PASSWORD);
@@ -64,6 +66,7 @@ public class CustomConfigurationBuilderTests {
                 "sample-access-token",
                 "messaging-host",
                 "api-host",
+                80,
                 7777,
                 true,
                 true,
@@ -81,6 +84,7 @@ public class CustomConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "sample-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), SDKPropertiesReaderUtil.MESSAGING_HOST);
         Assert.assertEquals(cfg.getAPIHost(), SDKPropertiesReaderUtil.API_HOST);
+        Assert.assertEquals(cfg.getAPIPort(), SDKPropertiesReaderUtil.API_PORT);
         Assert.assertEquals(cfg.getMessagingVirtualHost(), SDKPropertiesReaderUtil.MESSAGING_VHOST);
         Assert.assertEquals(cfg.getMessagingUsername(), SDKPropertiesReaderUtil.MESSAGING_USERNAME);
         Assert.assertEquals(cfg.getMessagingPassword(), SDKPropertiesReaderUtil.MESSAGING_PASSWORD);
@@ -93,6 +97,7 @@ public class CustomConfigurationBuilderTests {
     public void customEnvironmentBuilderFieldSetValidation() {
         OddsFeedConfiguration cfg = getSampleCustomBuilder()
                 .setApiHost("sample-api-host")
+                .setApiPort(8080)
                 .setMessagingHost("sample-messaging-host")
                 .setMessagingVirtualHost("msg-vHost")
                 .setMessagingUsername("msg-uname")
@@ -107,6 +112,7 @@ public class CustomConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "sample-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "sample-messaging-host");
         Assert.assertEquals(cfg.getAPIHost(), "sample-api-host");
+        Assert.assertEquals(cfg.getAPIPort(), 8080);
         Assert.assertEquals(cfg.getMessagingVirtualHost(), "msg-vHost");
         Assert.assertEquals(cfg.getMessagingUsername(), "msg-uname");
         Assert.assertEquals(cfg.getMessagingPassword(), "msg-pass");
@@ -126,6 +132,11 @@ public class CustomConfigurationBuilderTests {
     @Test(expected = IllegalArgumentException.class)
     public void customEnvironmentBuilderPreconditionsValidation_setApiHost1() {
         getSampleCustomBuilder().setApiHost("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void customEnvironmentBuilderPreconditionsValidation_setApiPort() {
+        getSampleCustomBuilder().setApiPort(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -158,6 +169,7 @@ public class CustomConfigurationBuilderTests {
                 "sample-access-token",
                 "messaging-host",
                 "api-host",
+                80,
                 7777,
                 true,
                 true,

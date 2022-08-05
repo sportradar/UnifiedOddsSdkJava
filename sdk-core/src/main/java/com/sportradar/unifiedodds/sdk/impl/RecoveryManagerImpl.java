@@ -22,7 +22,6 @@ import org.slf4j.MDC;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -203,12 +202,12 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
 
                 boolean needsToBeRestarted = pi.getRecoveryState() == RecoveryState.Interrupted;
 
-                try {
-                    snapshotRequestManager.requestCompleted(new SnapshotCompletedImpl(bookmakerId, pi.getProducerId(), requestId, needsToBeRestarted)
-                    );
-                } catch (Exception e) {
-                    logger.warn("An exception occurred while notifying the SnapshotRequestManager for a completed request.", e);
-                }
+        try {
+          snapshotRequestManager.requestCompleted(new SnapshotCompletedImpl(bookmakerId, pi.getProducerId(), requestId, needsToBeRestarted)
+          );
+        } catch (Exception e) {
+          logger.warn("An exception occurred while notifying the SnapshotRequestManager for a completed request, exc:", e);
+        }
 
                 if (needsToBeRestarted) {
                     // restart the recovery from the last valid timestamp
@@ -838,23 +837,12 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             }
             logger.info(msg.toString());
 
-            StringBuilder reqBuilder = new StringBuilder(pi.getProducerApiUrl());
-            reqBuilder.append("recovery/initiate_request?");
-
-            if (fromTimestamp != 0) {
-                reqBuilder.append("after=").append(fromTimestamp).append("&");
-            }
-
-            if (config.getSdkNodeId() != null) {
-                reqBuilder.append("node_id=").append(config.getSdkNodeId()).append("&");
-            }
-
-            reqBuilder.append("request_id=").append(recoveryId);
+      String initiateRecoveryUrl = createInitiateRecoveryUrl();
 
             String responseMessage;
             HttpHelper.ResponseData responseData = null;
             try {
-                responseData = httpHelper.post(reqBuilder.toString());
+                responseData = httpHelper.post(initiateRecoveryUrl);
                 boolean recoveryRequestStatus = responseData.isSuccessful();
                 responseMessage = responseData.getMessage();
 
@@ -879,15 +867,31 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
 
-            RecoveryInfo recoveryInfo;
-            if(responseData != null)
-            {
-                recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
-            }
-            else{
-                recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, 0, "no response data", config.getSdkNodeId());
-            }
-            producerManager.setProducerRecoveryInfo(pi.getProducerId(), recoveryInfo);
-        }
+      RecoveryInfo recoveryInfo;
+      if (responseData != null) {
+        recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, responseData.getStatusCode(), responseData.getMessage(), config.getSdkNodeId());
+      } else {
+        recoveryInfo = new RecoveryInfoImpl(fromTimestamp, timestampRequested, recoveryId, 0, "no response data", config.getSdkNodeId());
+      }
+      producerManager.setProducerRecoveryInfo(pi.getProducerId(), recoveryInfo);
     }
+
+    private String createInitiateRecoveryUrl() {
+      String apiUrl = pi.getProducerApiUrl();
+      StringBuilder reqBuilder = new StringBuilder(apiUrl);
+      reqBuilder.append("recovery/initiate_request?");
+
+      if (fromTimestamp != 0) {
+        reqBuilder.append("after=").append(fromTimestamp).append("&");
+      }
+
+      if (config.getSdkNodeId() != null) {
+        reqBuilder.append("node_id=").append(config.getSdkNodeId()).append("&");
+      }
+
+      reqBuilder.append("request_id=").append(recoveryId);
+
+      return reqBuilder.toString();
+    }
+  }
 }

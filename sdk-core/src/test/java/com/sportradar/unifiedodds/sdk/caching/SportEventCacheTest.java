@@ -1,14 +1,11 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.util.Modules;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
-import com.sportradar.unifiedodds.sdk.di.TestingModule;
+import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
@@ -29,10 +26,7 @@ public class SportEventCacheTest {
 
     SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
 
-    private Injector injector = Guice.createInjector(Modules
-            .override(new MockedMasterModule(config))
-            .with(new TestingModule())
-    );
+    private Injector injector = new TestInjectorFactory(config).create();
 
     private SportEventCache cache;
 

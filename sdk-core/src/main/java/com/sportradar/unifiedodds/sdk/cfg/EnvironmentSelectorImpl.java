@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 
 /**
  * A basic implementation of the {@link EnvironmentSelector}
@@ -75,10 +74,12 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
     public CustomConfigurationBuilder selectCustom() {
         String messagingHost = EnvironmentManager.getMqHost(Environment.Integration);
         String apiHost = EnvironmentManager.getApiHost(Environment.Integration);
+        int apiPort = EnvironmentManager.getApiPort(Environment.Integration);
 
         return new CustomConfigurationBuilderImpl(accessToken,
                 messagingHost,
                 apiHost,
+                apiPort,
                 EnvironmentManager.DEFAULT_MQ_HOST_PORT,
                 true,
                 true,
@@ -98,15 +99,18 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
     public ConfigurationBuilder selectEnvironment(Environment environment) {
         String messagingHost = EnvironmentManager.getMqHost(Environment.Integration);
         String apiHost = EnvironmentManager.getApiHost(Environment.Integration);
+        int apiPort = EnvironmentManager.getApiPort(Environment.Integration);
 
         if(!environment.equals(Environment.Custom)){
             messagingHost = EnvironmentManager.getMqHost(environment);
             apiHost = EnvironmentManager.getApiHost(environment);
+            apiPort = EnvironmentManager.getApiPort(environment);
         }
 
         return new ConfigurationBuilderImpl(accessToken,
                                             messagingHost,
                                             apiHost,
+                                            apiPort,
                                             EnvironmentManager.DEFAULT_MQ_HOST_PORT,
                                             true,
                                             true,

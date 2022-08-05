@@ -1,0 +1,43 @@
+include:
+  - project: internal/ci
+    ref: 2.0.3
+    file: /public/v2/.java_templates.yml
+
+
+variables:
+  MULTI_MODULE_PROJECT: "true"
+  MAVEN_VERSION: 3
+  ARTIFACT_PATH: "**/target/*.jar"
+
+build:build-java:
+  extends: .build-java
+  variables:
+    JDK_VERSION: 8
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+
+release:release-java:
+  image: maven:$MAVEN_VERSION-$JDK_DISTRIBUTION-$JDK_VERSION
+  stage: release
+  variables:
+    ARCHIVA_USERNAME: $ARCHIVA_USERNAME
+    ARCHIVA_PASSWORD: $ARCHIVA_PASSWORD
+  before_script:
+    - curl -sL https://internal.pages.sportradar.ag/ci/.settings.xml |
+      sed "s/ARCHIVA_USERNAME/$ARCHIVA_USERNAME/g" |
+      sed "s/ARCHIVA_PASSWORD/$ARCHIVA_PASSWORD/g" > settings.xml
+  script:
+    - mvn $MAVEN_CLI_OPTS deploy -Dmaven.test.skip=true
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: manual
+
+release:release-snapshot-java:
+  extends: .release-java-snapshot
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: manual
+
+stages:
+  - build
+  - release

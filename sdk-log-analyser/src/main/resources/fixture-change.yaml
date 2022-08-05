@@ -1,0 +1,8 @@
+customer: fixture-change
+timezone: Europe/London
+
+dateTimeFormat: yyyy-MM-dd HH:mm:ss,SSS
+
+# not supplied
+logOffsetLoggerName:
+logOffsetThreadName: 3

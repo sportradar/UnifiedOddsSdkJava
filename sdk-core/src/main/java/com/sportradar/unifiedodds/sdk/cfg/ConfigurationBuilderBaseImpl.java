@@ -9,8 +9,8 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 
+import com.sportradar.unifiedodds.sdk.listener.concurrent.oddsfeed.ConcurrentOddsFeedListenerConfig;
 import java.util.*;
 
 /**
@@ -32,6 +32,10 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     Integer recoveryHttpClientMaxConnTotal = null;
     Integer recoveryHttpClientMaxConnPerRoute = null;
     Environment environment;
+    boolean concurrentListenerEnabled;
+    int concurrentListenerThreads = ConcurrentOddsFeedListenerConfig.THREADS_DEFAULT;
+    int concurrentListenerQueueSize = ConcurrentOddsFeedListenerConfig.QUEUE_SIZE_DEFAULT;
+    boolean concurrentListenerHandleErrorsAsynchronously;
 
     ConfigurationBuilderBaseImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
@@ -249,6 +253,43 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         return (T) this;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setConcurrentListenerEnabled(boolean enabled) {
+        this.concurrentListenerEnabled = enabled;
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setConcurrentListenerThreads(int threads) {
+        this.concurrentListenerThreads = threads;
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setConcurrentListenerQueueSize(int queueSize) {
+        this.concurrentListenerQueueSize = queueSize;
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setConcurrentListenerHandleErrorsAsynchronously(boolean handleErrorsAsynchronously) {
+        this.concurrentListenerHandleErrorsAsynchronously = handleErrorsAsynchronously;
+        return (T) this;
+    }
+
+    public final ConcurrentListenerConfig concurrentListenerConfig() {
+        return ConcurrentListenerConfig.builder()
+            .enabled(concurrentListenerEnabled)
+            .threads(concurrentListenerThreads)
+            .queueSize(concurrentListenerQueueSize)
+            .handleErrorsAsynchronously(concurrentListenerHandleErrorsAsynchronously)
+            .build();
+    }
+
     /**
      * Loads the properties that are relevant to the builder from the provided {@link SDKConfigurationReader}
      *
@@ -269,5 +310,9 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         sdkConfigurationReader.readRecoveryHttpClientMaxConnTotal().ifPresent(this::setRecoveryHttpClientMaxConnTotal);
         sdkConfigurationReader.readRecoveryHttpClientMaxConnPerRoute().ifPresent(this::setRecoveryHttpClientMaxConnPerRoute);
         this.environment = sdkConfigurationReader.readUfEnvironment();
+        sdkConfigurationReader.readConcurrentListenerEnabled().ifPresent(this::setConcurrentListenerEnabled);
+        sdkConfigurationReader.readConcurrentListenerThreads().ifPresent(this::setConcurrentListenerThreads);
+        sdkConfigurationReader.readConcurrentListenerQueueSize().ifPresent(this::setConcurrentListenerQueueSize);
+        sdkConfigurationReader.readConcurrentListenerHandleErrorsAsynchronously().ifPresent(this::setConcurrentListenerHandleErrorsAsynchronously);
     }
 }

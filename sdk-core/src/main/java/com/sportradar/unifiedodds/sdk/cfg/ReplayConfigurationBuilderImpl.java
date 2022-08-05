@@ -58,6 +58,7 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
                 new ArrayList<>(getSupportedLocales()),
                 messagingHost,
                 apiHost,
+                80,
                 20, // its not used by the SDK ifs its in replay mode
                 30, // its not used by the SDK ifs its in replay mode
                 30, // its not used by the SDK ifs its in replay mode
@@ -77,6 +78,7 @@ class ReplayConfigurationBuilderImpl extends ConfigurationBuilderBaseImpl<Replay
                 httpClientMaxConnPerRoute,
                 recoveryHttpClientTimeout,
                 recoveryHttpClientMaxConnTotal,
-                recoveryHttpClientMaxConnPerRoute);
+                recoveryHttpClientMaxConnPerRoute,
+                concurrentListenerConfig());
     }
 }

@@ -65,6 +65,14 @@ public interface OddsFeedConfigurationBuilder {
     OddsFeedConfigurationBuilder setApiHost(String apiHost);
 
     /**
+     * Specify the port used for API access (if not specified this defaults to 80)
+     *
+     * @param apiPort the port used for API access
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setApiPort(int apiPort);
+
+    /**
      * Sets the port used to connect to AMQP broker
      *
      * @param port the port used to connect to AMQP broker
@@ -146,6 +154,39 @@ public interface OddsFeedConfigurationBuilder {
      * @return the current instance {@link OddsFeedConfigurationBuilder}
      */
     OddsFeedConfigurationBuilder setDisabledProducers(List<Integer> disabledProducers);
+
+    /**
+     * Enables use of concurrent listener {@link ConcurrentOddsFeedListener}
+     *
+     * @param enabled enable the concurrent listener
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setConcurrentListenerEnabled(boolean enabled);
+
+    /**
+     * Sets the number of threads to use for concurrent listener {@link ConcurrentOddsFeedListener}
+     *
+     * @param threadCount the number of threads to use for the concurrent  listener
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setConcurrentListenerThreads(int threadCount);
+
+    /**
+     * Sets the queue size to use for concurrent listener {@link ConcurrentOddsFeedListener}
+     *
+     * @param queueSize the queue size
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setConcurrentListenerQueueSize(int queueSize);
+
+    /**
+     * Enables the handling of errors asynchronously if <code>true</code>, or on the
+     * receiving thread <code>false</code> for concurrent listener {@link ConcurrentOddsFeedListener}
+     *
+     * @param handleErrorsAsynchronously enable the handling of errors asynchronously
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setConcurrentListenerHandleErrorsAsynchronously(boolean handleErrorsAsynchronously);
 
     /**
      * Reads the SDK properties file and sets the available properties

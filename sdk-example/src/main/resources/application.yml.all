@@ -27,6 +27,8 @@ sportradar:
       useMessagingSsl:
       # the api host
       apiHost:
+      # the api port
+      apiPort:
       # an indication if the request to the API should use ssl (boolean)
       useApiSsl:
       # a list of producer identifiers that should be automatically disabled[3,4,...]
@@ -37,3 +39,13 @@ sportradar:
 
       # a value indicating to which unified feed environment sdk should connect
       ufEnvironment:
+
+      # concurrent listener related properties
+      # enables use of concurrent OddsFeedListener
+      concurrentListenerEnabled:
+      # the number of threads to use for concurrent OddsFeedListener
+      concurrentListenerThreads:
+      # the queue size to use for concurrent listener
+      concurrentListenerQueueSize:
+      # enables the handling of errors asynchronously for concurrent listener
+      concurrentListenerHandleErrorsAsync:

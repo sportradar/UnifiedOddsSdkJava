@@ -240,7 +240,7 @@ class TimelineEventImpl implements TimelineEvent {
      */
     @Override
     public String toString() {
-        Integer assistsCount = getAssists() == null ? 0 : getAssists().size();
+        int assistsCount = getAssists() == null ? 0 : getAssists().size();
 
         return "TimelineEventImpl{" +
                 "id=" + getId() +

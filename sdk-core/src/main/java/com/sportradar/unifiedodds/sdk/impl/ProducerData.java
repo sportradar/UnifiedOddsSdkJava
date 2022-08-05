@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * This contains the data from a /producers.xml API call
  * Created on 03/07/2017.
  * // TODO @eti: Javadoc
  */

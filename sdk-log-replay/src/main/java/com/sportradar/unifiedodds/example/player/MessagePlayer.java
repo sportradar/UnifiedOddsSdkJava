@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sportradar.unifiedodds.example.player.exceptions.LogFileNotFound;
 import com.sportradar.unifiedodds.example.player.exceptions.MalformedLogEntry;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,13 +28,13 @@ import java.util.stream.Stream;
  * // TODO @eti: Javadoc
  */
 public class MessagePlayer {
-    private static final boolean DO_MESSAGE_DELAYS = false;
+    private static final boolean DO_MESSAGE_DELAYS = false; // FIXME disable this?
     private static final Set<String> IGNORED_ROUTING_KEYS = ImmutableSet.<String>builder()
             .add("-.-.-.snapshot_complete.-.-.-.-")
-            .add("-.-.-.alive.-.-.-.-")
+            .add("-.-.-.alive.-.-.-.-") // FIXME disable this?
             .build();
 
-    private final List<String> logFiles;
+    private final List<File> logFiles;
     private final MessageParser messageParser;
     private final MessagePublisher messagePublisher;
 
@@ -43,15 +44,24 @@ public class MessagePlayer {
     /**
      * Initializes a new message player instance
      *
-     * @param logFiles listed relative to the resources folder
+     * @param logFilePaths listed relative to the resources folder
      */
-    public MessagePlayer(List<String> logFiles, String amqpHost, int bookmakerId, String password) {
+    public MessagePlayer(List<String> logFilePaths, String amqpHost, int bookmakerId, String password) {
+        Preconditions.checkNotNull(logFilePaths);
+        Preconditions.checkNotNull(amqpHost);
+
+        this.logFiles = new FileValidator().validate(logFilePaths);
+        this.messageParser = new MessageParser();
+        this.messagePublisher = new MessagePublisher(amqpHost, password, bookmakerId);
+    }
+
+    public MessagePlayer(List<File> logFiles, String amqpHost, int port, int bookmakerId, String username, String password) {
         Preconditions.checkNotNull(logFiles);
         Preconditions.checkNotNull(amqpHost);
 
         this.logFiles = logFiles;
         this.messageParser = new MessageParser();
-        this.messagePublisher = new MessagePublisher(amqpHost, password, bookmakerId);
+        this.messagePublisher = new MessagePublisher(amqpHost, port, username, password, bookmakerId);
     }
 
     public void validateLogs() throws LogFileNotFound, MalformedLogEntry {
@@ -70,29 +80,16 @@ public class MessagePlayer {
     }
 
     private void processLogFiles(Consumer<String> lineConsumer) throws LogFileNotFound, MalformedLogEntry {
-        for (String filePath : logFiles) {
-            Path path = provideValidPath(filePath);
+        for (File file : logFiles) {
+            Path path = file.toPath();
 
             try (Stream<String> stream = Files.lines(path)) {
                 stream.forEach(lineConsumer);
             } catch (IOException e) {
-                throw new LogFileNotFound("Error opening log file ~> " + filePath, e);
+                throw new LogFileNotFound("Error opening log file ~> " + file, e);
             } catch (IllegalArgumentException exc) {
-                throw new MalformedLogEntry("Log file entry invalid ~> " + filePath, exc);
+                throw new MalformedLogEntry("Log file entry invalid ~> " + file, exc);
             }
-        }
-    }
-
-    private Path provideValidPath(String filePath) throws LogFileNotFound {
-        try {
-            URI fullUriPath = Optional
-                    .ofNullable(getClass().getClassLoader().getResource(filePath))
-                    .orElseThrow(() -> new IllegalArgumentException("Log file not found ~> " + filePath))
-                    .toURI();
-
-            return Paths.get(fullUriPath);
-        } catch (URISyntaxException e) {
-            throw new LogFileNotFound("Invalid log URI path ~> " + filePath, e);
         }
     }
 

@@ -161,26 +161,19 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
      */
     private void initChannelQueue(List<String> routingKeys, String messageInterest) throws IOException {
 
-        if(channel == null){
-            try {
-                Connection conn = connectionFactory.getConnection();
-                if(conn == null){
-                    logger.error("Error creating channel: no connection");
-                    return;
-                }
-                channel = conn.createChannel();
-            } catch (TimeoutException e) {
-                logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
-                Thread.currentThread().interrupt();
-                return;
-            } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
-                logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
-                return;
-            } catch (Exception e) {
-                logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
-                return;
-            }
+    if (channel == null) {
+      try {
+        Connection conn = connectionFactory.getConnection();
+        if (conn == null) {
+          logger.error("Error creating channel: no connection");
+          return;
         }
+        channel = conn.createChannel();
+      } catch (Exception e) {
+        logger.error(String.format("Error creating channel: %s", e.getMessage()));
+        return;
+      }
+    }
 
         String qName = channel.queueDeclare().getQueue();
         for (String routingKey : routingKeys) {
@@ -260,7 +253,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             }
             catch (InterruptedException e) {
                 logger.warn("Interrupted!", e);
-                Thread.currentThread().interrupt();
             }
 
             if(!connectionFactory.canConnectionOpen()){
@@ -276,6 +268,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                     initChannelQueue(routingKeys, messageInterest);
                 }
                 catch (IOException e) {
+                    logger.warn("Error creating connection channel", e);
                     continue;
                 }
             }
@@ -322,35 +315,43 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                             channelLastMessage);
                 int channelNumber = channel == null ? 0 : channel.getChannelNumber();
 
-                if(connectionFactory.getConnectionStarted() < channelStarted) {
-                    channelClosePure();
-                    logger.info("Resetting connection for the channel with channelNumber: {}", channelNumber);
-                    try {
-                        synchronized (connectionFactory) {
-                            if (connectionFactory.isConnectionOpen()) {
-                                // Throws rabbit AlreadyClosedException which is a RuntimeException
-                                connectionFactory.close(false);
-                            }
-                        }
-                        Thread.sleep(5000);
-                    }
-                    catch (IOException | InterruptedException e) {
-                        String msg = String.format("Error closing connection: %s", e.getMessage());
-                        logger.error(msg, e);
-                        Thread.currentThread().interrupt();
-                    }
-                    catch(Exception ex){
-                        logger.error("Error closing connection", ex);
-                    }
-                    logger.info("Resetting connection finished for the channel with channelNumber: {}", channelNumber);
+          if (connectionFactory.getConnectionStarted() < channelStarted) {
+            channelClosePure();
+
+            logger.info(
+                "Resetting connection for the channel with channelNumber: {}", channelNumber);
+
+            try {
+              synchronized (connectionFactory) {
+                if (connectionFactory.isConnectionOpen()) {
+                  // Throws rabbit AlreadyClosedException which is a RuntimeException
+                  connectionFactory.close(false);
                 }
-                restartChannel();
+              }
+            } catch (Exception e) {
+              String msg = String.format("Error closing connection: %s", e.getMessage());
+              logger.error(msg, e);
+            } finally {
+              try {
+                Thread.sleep(5000);
+              } catch (InterruptedException e) {
+                // Do nothing
+                logger.warn("Interrupted!", e);
+              }
             }
+
+            logger.info(
+                "Resetting connection finished for the channel with channelNumber: {}",
+                channelNumber);
+          }
+
+          restartChannel();
         }
-        } finally {
-            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
-        }
+      }
+    } finally {
+      logger.warn(String.format("Thread monitoring %s ended", messageInterest));
     }
+  }
 
     private void channelClosePure(){
         try {

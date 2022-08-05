@@ -181,4 +181,7 @@
         <appender-ref ref="SdkClientInteractionLogFileAppender" />
         <appender-ref ref="STDOUT" />
     </logger>
+
+    <logger name="org.testcontainers" level="INFO"/>
+    <logger name="com.github.dockerjava" level="WARN"/>
 </configuration>

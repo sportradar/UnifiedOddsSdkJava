@@ -3,6 +3,7 @@ package com.sportradar.unifiedodds.sdk;
 import org.junit.Test;
 
 public class ThreadInterruptTest {
+
     @Test
     public void test_interrupt() {
         Thread t = new Thread(this::run);

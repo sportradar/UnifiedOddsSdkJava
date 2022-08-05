@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -24,7 +25,7 @@ public class SDKConfigurationYamlReaderTests {
         SDKConfigurationYamlReader sdkConfigurationYamlReader = new SDKConfigurationYamlReader();
         Map<String, String> stringStringMap = sdkConfigurationYamlReader.readConfiguration();
 
-        assertEquals(26, stringStringMap.size());
+        assertEquals(31, stringStringMap.size());
     }
 
     @Test
@@ -45,6 +46,7 @@ public class SDKConfigurationYamlReaderTests {
         assertEquals("msg-vhost", reader.readMessagingVirtualHost().get());
         assertTrue(reader.readUseMessagingSsl().get());
         assertEquals("api-host", reader.readApiHost().get());
+        assertEquals(80, (int) reader.readApiPort().get());
         assertTrue(reader.readUseApiSsl().get());
         assertTrue(reader.readDisabledProducers().containsAll(getExpectedDisabledProducers()));
         assertEquals(ExceptionHandlingStrategy.Throw, reader.readExceptionHandlingStrategy().get());
@@ -57,6 +59,10 @@ public class SDKConfigurationYamlReaderTests {
         assertEquals(22, (int) reader.readRecoveryHttpClientMaxConnPerRoute().get());
         assertTrue(reader.readSimpleVariantCaching().get());
         assertTrue(reader.readSchedulerTasksToSkip().containsAll(getExpectedTasksToSkip()));
+        assertTrue(reader.readConcurrentListenerEnabled().get());
+        assertEquals(25, (int) reader.readConcurrentListenerThreads().get());
+        assertEquals(1000, (int) reader.readConcurrentListenerQueueSize().get());
+        assertFalse(reader.readConcurrentListenerHandleErrorsAsynchronously().get());
     }
 
     private static List<Locale> getExpectedDesiredLocales(){

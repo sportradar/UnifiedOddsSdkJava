@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.shared.*;
 import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class SdkConnectionTests {
 
     @ClassRule
@@ -80,6 +82,7 @@ public class SdkConnectionTests {
         rabbitProducer.stop();
     }
 
+    @Ignore
     @Test
     public void normalRunTest() throws InitException {
         // setup for producer 1
@@ -139,7 +142,8 @@ public class SdkConnectionTests {
 
         assertEquals(2, simpleMessageListener.FeedMessages.size());
     }
-    
+
+    @Ignore
     @Test
     public void normalStartWithSetAfterTest() throws InitException {
         // setup for producer 1
@@ -205,6 +209,7 @@ public class SdkConnectionTests {
         assertEquals(1, simpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void multipleProducersWithAfterTest() throws InitException {
         // setup for producer 1 and 3
@@ -298,6 +303,7 @@ public class SdkConnectionTests {
         assertEquals(3, simpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void multipleProducersMultiSessionTest() throws InitException {
         // setup for producer 1 and 3, with 3 sessions (Live, Pre and Virtuals)
@@ -398,6 +404,7 @@ public class SdkConnectionTests {
         assertEquals(0, virtualSimpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void recoveryUnsuccessfulRetryTest() throws InitException {
         // setup for producer 1
@@ -515,6 +522,7 @@ public class SdkConnectionTests {
         assertEquals(4, simpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void producerNoAlivesMakeRecoveryTest() throws InitException {
         // setup for producer 1
@@ -578,6 +586,7 @@ public class SdkConnectionTests {
         assertEquals(2, simpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void unsuccessfulRecoveryDoesNotRepeatToOftenTest() throws InitException {
         // setup for producer 1
@@ -665,6 +674,7 @@ public class SdkConnectionTests {
         assertEquals(2, simpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void aliveSubscribedFalseTest() throws InitException {
         // setup for producer 1
@@ -773,7 +783,8 @@ public class SdkConnectionTests {
         assertEquals(4, simpleMessageListener.FeedMessages.size());
     }
 
-    //@Test
+    @Ignore
+    @Test
     public void connectionBreakTest() throws InitException {
         // setup for producer 1
         // open feed and check that recovery was done
@@ -905,6 +916,7 @@ public class SdkConnectionTests {
         assertEquals(4, simpleMessageListener.FeedMessages.size());
     }
 
+    @Ignore
     @Test
     public void connectionBreakMultiSessionTest() throws InitException {
         // setup for producer 1, 3, 6 and 3 different session
@@ -1117,7 +1129,8 @@ public class SdkConnectionTests {
         assertEquals(2, virtualSimpleMessageListener.FeedMessages.size());
     }
 
-    //@Test
+    @Ignore
+    @Test
     public void channelNoMessagesTest() throws InitException {
         // connection started but no message arrive via channel
         // open feed and check that recovery was done

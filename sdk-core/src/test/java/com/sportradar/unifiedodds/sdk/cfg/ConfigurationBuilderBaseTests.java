@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -118,7 +119,8 @@ public class ConfigurationBuilderBaseTests {
         getBuilderWithEmptyProperties().setDisabledProducers(null);
     }
 
-//    @Test
+    @Ignore("Implementation used to test functionality methods only - build not supported")
+    @Test
     public void testMinPropertiesSettings(){
         TestableConfigurationBuilderBase builderWithFullProperties = getBuilderWithMinProperties();
         builderWithFullProperties.setSdkNodeId(200);

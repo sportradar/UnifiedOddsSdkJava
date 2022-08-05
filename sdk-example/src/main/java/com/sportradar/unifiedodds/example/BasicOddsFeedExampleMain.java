@@ -15,7 +15,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
 import java.util.Locale;
 
-/**
+/** FIXME this is the best way to connect to prod mq feed and capture messages
  * The following example is a very simple example that just connects to the Unified Odds Feed and
  * prints out some information about all the messages it receives.
  */
@@ -28,7 +28,7 @@ public class BasicOddsFeedExampleMain {
         //        and than invoking setAccessTokenFromSystemVar on the builder
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
         OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
-                .setAccessToken("your-staging-token-here")
+                .setAccessToken("tkIQxFhK84x4QdgPXR")
                 .selectEnvironment(Environment.GlobalIntegration)
                 .setSdkNodeId(SdkConstants.NODE_ID)
                 .setDefaultLocale(Locale.ENGLISH)

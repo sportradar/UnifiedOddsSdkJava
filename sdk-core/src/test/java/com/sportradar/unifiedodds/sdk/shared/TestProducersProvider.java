@@ -2,10 +2,8 @@ package com.sportradar.unifiedodds.sdk.shared;
 
 import com.sportradar.unifiedodds.sdk.impl.ProducerData;
 import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
-import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 /**

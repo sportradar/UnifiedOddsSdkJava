@@ -1,12 +1,9 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.util.Modules;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
-import com.sportradar.unifiedodds.sdk.di.TestingModule;
+import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import org.junit.Before;
@@ -26,10 +23,7 @@ public class FeedMessageValidatorTest {
 
     SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
 
-    Injector injector = Guice.createInjector(Modules
-            .override(new MockedMasterModule(config))
-            .with(new TestingModule())
-    );
+    Injector injector = new TestInjectorFactory(config).create();
 
     FeedMessageValidator validator;
     RoutingKeyParser keyParser;

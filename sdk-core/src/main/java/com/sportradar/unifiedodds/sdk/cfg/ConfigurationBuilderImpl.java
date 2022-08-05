@@ -17,17 +17,21 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
     private final String accessToken;
     private final String messagingHost;
     private final String apiHost;
+    private final int apiPort;
     private final int messagingPort;
     private final boolean useMessagingSsl;
     private final boolean useApiSsl;
     private final Environment environment;
 
-    ConfigurationBuilderImpl(String accessToken, String messagingHost, String apiHost, int messagingPort, boolean useMessagingSsl, boolean useApiSsl, SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader, Environment environment) {
+    ConfigurationBuilderImpl(String accessToken, String messagingHost, String apiHost, int apiPort, int messagingPort,
+        boolean useMessagingSsl, boolean useApiSsl, SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SDKConfigurationYamlReader sdkConfigurationYamlReader, Environment environment) {
         super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
 
         this.accessToken = accessToken;
         this.messagingHost = messagingHost;
         this.apiHost = apiHost;
+        this.apiPort = apiPort;
         this.messagingPort = messagingPort;
         this.useMessagingSsl = useMessagingSsl;
         this.useApiSsl = useApiSsl;
@@ -50,6 +54,7 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
                 new ArrayList<>(getSupportedLocales()),
                 messagingHost,
                 apiHost,
+                apiPort,
                 maxInactivitySeconds,
                 maxRecoveryExecutionTimeMinutes,
                 minIntervalBetweenRecoveryRequests,
@@ -63,6 +68,7 @@ class ConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Configur
                 new ArrayList<>(disabledProducers),
                 exceptionHandlingStrategy,
                 environment,
-                null, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute);
+                null, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute,
+                concurrentListenerConfig());
     }
 }

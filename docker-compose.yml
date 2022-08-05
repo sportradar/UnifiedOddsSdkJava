@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  eroznik-rabbitmq:
+    image: rabbitmq:management
+    container_name: eroznik-rabbitmq
+    hostname: eroznik-rabbitmq
+    ports:
+      - "15671:15671"
+      - "15672:15672"
+      - "5671:5671"
+      - "5672:5672"

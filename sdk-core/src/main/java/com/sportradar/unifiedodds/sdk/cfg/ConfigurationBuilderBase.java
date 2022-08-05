@@ -132,4 +132,36 @@ public interface ConfigurationBuilderBase<T> {
      * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
      */
     T setRecoveryHttpClientMaxConnPerRoute(Integer recoveryHttpClientMaxConnPerRoute);
+
+    /**
+     * Enables use of concurrent OddsFeedListener.
+     * Default: true
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setConcurrentListenerEnabled(boolean enable);
+
+    /**
+     * Sets the number of threads to use for concurrent OddsFeedListener.
+     * Default: 10
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setConcurrentListenerThreads(int threadCount);
+
+    /**
+     * Sets the queue size to use for concurrent listener.
+     * Default: 10000
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setConcurrentListenerQueueSize(int queueSize);
+
+    /**
+     * Enables the handling of errors asynchronously for concurrent listener.
+     * Default: true
+     *
+     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
+     */
+    T setConcurrentListenerHandleErrorsAsynchronously(boolean handleErrorsAsynchronously);
 }

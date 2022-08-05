@@ -36,6 +36,7 @@ public class ConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "t-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
         Assert.assertEquals(cfg.getAPIHost(), "api-host");
+        Assert.assertEquals(cfg.getAPIPort(), 80);
         Assert.assertNull(cfg.getMessagingVirtualHost());
         Assert.assertNull(cfg.getMessagingUsername());
         Assert.assertNull(cfg.getMessagingPassword());
@@ -65,6 +66,7 @@ public class ConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "t-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
         Assert.assertEquals(cfg.getAPIHost(), "api-host");
+        Assert.assertEquals(cfg.getAPIPort(), 80);
         Assert.assertNull(cfg.getMessagingVirtualHost());
         Assert.assertNull(cfg.getMessagingUsername());
         Assert.assertNull(cfg.getMessagingPassword());
@@ -91,6 +93,7 @@ public class ConfigurationBuilderTests {
         Assert.assertEquals(cfg.getAccessToken(), "t-access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
         Assert.assertEquals(cfg.getAPIHost(), "api-host");
+        Assert.assertEquals(cfg.getAPIPort(), 80);
         Assert.assertNull(cfg.getMessagingVirtualHost());
         Assert.assertNull(cfg.getMessagingUsername());
         Assert.assertNull(cfg.getMessagingPassword());
@@ -113,6 +116,7 @@ public class ConfigurationBuilderTests {
                 "t-access-token",
                 "msg-host",
                 "api-host",
+                80,
                 7878,
                 true,
                 true,
@@ -127,6 +131,7 @@ public class ConfigurationBuilderTests {
                 "t-access-token",
                 "msg-host",
                 "api-host",
+            80,
                 7878,
                 true,
                 true,
