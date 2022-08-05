@@ -48,7 +48,6 @@ public class TournamentCITest {
         ((DataRouterImpl) injector.getInstance(DataRouter.class)).setDataListeners(Arrays.asList((DataRouterListener) cache));
     }
 
-    @Ignore("fails due to timezone")
     @Test
     public void getsScheduledDateForTournament() { verifyDate(TOURNAMENT_EVENT_ID_1030, new Date(118, 4, 15, 9, 30)); }
 

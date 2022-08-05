@@ -91,7 +91,6 @@ public class RabbitMqChannelImplTest {
     System.out.println("field: " + str1);
   }
 
-  @Ignore("slow test")
   @Test
   public void test_180s_connection_factory_close_with_io_exception() throws Exception {
     // Need to wait a bit more than 180 seconds to see the connection reconnection logic
@@ -107,7 +106,6 @@ public class RabbitMqChannelImplTest {
     assertContainsLogLine("Error closing connection:");
   }
 
-  @Ignore("slow test")
   @Test
   public void test_180s_connection_factory_close_with_runtime_exception() throws Exception {
     // Need to wait a bit more than 180 seconds to see the connection reconnection logic
@@ -123,7 +121,6 @@ public class RabbitMqChannelImplTest {
     assertContainsLogLine("Error closing connection:");
   }
 
-  @Ignore("slow test")
   @Test
   public void test_180s_connection_factory_already_closed() throws Exception {
     // Need to wait a bit more than 180 seconds to see the connection reconnection logic

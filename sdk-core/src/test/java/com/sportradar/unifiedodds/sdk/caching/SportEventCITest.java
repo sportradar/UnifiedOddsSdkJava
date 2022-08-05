@@ -46,19 +46,16 @@ public class SportEventCITest {
         ((DataRouterImpl) injector.getInstance(DataRouter.class)).setDataListeners(Arrays.asList((DataRouterListener) cache));
     }
 
-    @Ignore("fails due to timezone")
     @Test
     public void getsScheduledDateForMatch() {
         verifyDate(MATCH_EVENT_ID, new Date(116, 7, 10, 2, 0));
     }
 
-    @Ignore("fails due to timezone")
     @Test
     public void getsScheduledDateForRaceStage() {
         verifyDate(RACE_STAGE_EVENT_ID, new Date(116, 8, 23, 9, 0));
     }
 
-    @Ignore("fails due to timezone")
     @Test
     public void getsScheduledDateForTournament() { verifyDate(TOURNAMENT_EVENT_ID, new Date(118, 4, 15, 9, 30)); }
 
