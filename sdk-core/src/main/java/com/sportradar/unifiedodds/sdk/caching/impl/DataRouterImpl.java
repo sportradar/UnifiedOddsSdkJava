@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
@@ -279,6 +280,13 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(selections);
         Preconditions.checkNotNull(calculation);
         dataListeners.forEach(l -> l.onCalculateProbabilityFetched(selections, calculation));
+    }
+
+    @Override
+    public void onCalculateProbabilityFilterFetched(List<Selection> selections, CAPIFilteredCalculationResponse calculation) {
+        Preconditions.checkNotNull(selections);
+        Preconditions.checkNotNull(calculation);
+        dataListeners.forEach(l -> l.onCalculateProbabilityFilterFetched(selections, calculation));
     }
 
     @Override

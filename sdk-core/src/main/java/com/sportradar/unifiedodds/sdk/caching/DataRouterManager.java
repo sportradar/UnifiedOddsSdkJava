@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
+import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
@@ -58,6 +59,8 @@ public interface DataRouterManager {
     AvailableSelections requestAvailableSelections(URN id) throws CommunicationException;
 
     Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException;
+
+    CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections) throws CommunicationException;
 
     List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale) throws CommunicationException;
 

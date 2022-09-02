@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Provides a market
  */
-public interface Market {
+public interface MarketFilter {
 
     /**
      * Returns the id of the market
@@ -30,5 +30,11 @@ public interface Market {
      *
      * @return outcomes for this market
      */
-    List<String> getOutcomes();
+    List<OutcomeFilter> getOutcomes();
+
+    /**
+     * Returns the value indicating if this market is in conflict
+     * @return the value indicating if this market is in conflict
+     */
+    Boolean isConflict();
 }

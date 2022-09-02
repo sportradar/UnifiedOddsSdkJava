@@ -6,12 +6,10 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPISelectionType;
-import com.sportradar.uf.custombet.datamodel.CAPISelections;
+import com.sportradar.uf.custombet.datamodel.*;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
@@ -19,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
+import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
@@ -31,6 +30,7 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.PeriodStatusImpl;
@@ -200,6 +200,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider;
 
     /**
+     * A {@link DataProvider} used to fetch probability calculations (filtered)
+     */
+    private final DataProvider<CAPIFilteredCalculationResponse> calculateProbabilityFilterDataProvider;
+
+    /**
      * A {@link DataProvider} used to fetch fixture changes
      */
     private final DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider;
@@ -259,6 +264,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                           DataProvider<SAPILotterySchedule> lotteryScheduleProvider,
                           DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
                           DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider,
+                          DataProvider<CAPIFilteredCalculationResponse> calculateProbabilityFilterDataProvider,
                           DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider,
                           DataProvider<SAPIResultChangesEndpoint> resultChangesDataProvider,
                           @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider,
@@ -287,6 +293,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(lotteryScheduleProvider);
         Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
         Preconditions.checkNotNull(calculateProbabilityDataProvider);
+        Preconditions.checkNotNull(calculateProbabilityFilterDataProvider);
         Preconditions.checkNotNull(fixtureChangesDataProvider);
         Preconditions.checkNotNull(resultChangesDataProvider);
         Preconditions.checkNotNull(listSportEventsProvider);
@@ -316,6 +323,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.lotteryScheduleProvider = lotteryScheduleProvider;
         this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
         this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
+        this.calculateProbabilityFilterDataProvider = calculateProbabilityFilterDataProvider;
         this.fixtureChangesDataProvider = fixtureChangesDataProvider;
         this.resultChangesDataProvider = resultChangesDataProvider;
         this.listSportEventsProvider = listSportEventsProvider;
@@ -774,6 +782,35 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dataRouter.onCalculateProbabilityFetched(selections, calculation);
         return new CalculationImpl(calculation);
+    }
+
+    @Override
+    public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections) throws CommunicationException {
+        Preconditions.checkNotNull(selections);
+
+        CAPIFilteredCalculationResponse calculation;
+        try {
+            CAPIFilterSelections content = new CAPIFilterSelections();
+
+            for(Selection selection : selections){
+                CAPIFilterSelectionMarketType filterSelectionMarketType = new CAPIFilterSelectionMarketType();
+                filterSelectionMarketType.setMarketId(selection.getMarketId());
+                filterSelectionMarketType.setOutcomeId(selection.getOutcomeId());
+                filterSelectionMarketType.setSpecifiers(selection.getSpecifiers());
+
+                CAPIFilterSelectionType filterSelectionType = new CAPIFilterSelectionType();
+                filterSelectionType.setId(selection.getEventId().toString());
+                filterSelectionType.getMarkets().add(filterSelectionMarketType);
+                content.getSelections().add(filterSelectionType);
+            }
+
+            calculation = calculateProbabilityFilterDataProvider.postData(content);
+        } catch (DataProviderException e) {
+            throw new CommunicationException("Error executing calculate probability request", e);
+        }
+
+        dataRouter.onCalculateProbabilityFilterFetched(selections, calculation);
+        return new CalculationFilterImpl(calculation);
     }
 
     @Override

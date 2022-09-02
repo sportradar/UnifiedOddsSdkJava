@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
+import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -34,6 +35,11 @@ public class CustomBetManagerImpl implements CustomBetManager {
 
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = configuration.getExceptionHandlingStrategy();
+    }
+
+    @Override
+    public CustomBetSelectionBuilder getCustomBetSelectionBuilder() {
+        return new CustomBetSelectionBuilderImpl();
     }
 
     @Override
@@ -63,9 +69,18 @@ public class CustomBetManagerImpl implements CustomBetManager {
     }
 
     @Override
-    public CustomBetSelectionBuilder getCustomBetSelectionBuilder() {
-        return new CustomBetSelectionBuilderImpl();
+    public CalculationFilter calculateProbabilityFilter(List<Selection> selections) {
+        Preconditions.checkNotNull(selections);
+
+        clientInteractionLogger.info("CustomBetManager.calculateProbabilityFilter()");
+
+        try {
+            return dataRouterManager.requestCalculateProbabilityFilter(selections);
+        } catch (CommunicationException e) {
+            return handleException("Calculating probabilities (filtered) failed", e);
+        }
     }
+
 
     private <T> T handleException(String message, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Catch) {

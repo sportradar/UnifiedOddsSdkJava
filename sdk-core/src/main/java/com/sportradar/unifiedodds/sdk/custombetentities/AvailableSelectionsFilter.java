@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Provides an available selections for a particular event
  */
-public interface AvailableSelections {
+public interface AvailableSelectionsFilter {
 
     /**
      * Returns the {@link URN} of the event
@@ -23,5 +23,5 @@ public interface AvailableSelections {
      * Returns the list of markets for this event
      * @return the list of markets for this event
      */
-    List<Market> getMarkets();
+    List<MarketFilter> getMarkets();
 }

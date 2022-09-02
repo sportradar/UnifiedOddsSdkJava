@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Provides a probability calculation
  */
-public interface Calculation {
+public interface CalculationFilter {
 
     /**
      * Gets the odds
@@ -30,7 +30,7 @@ public interface Calculation {
      * Returns list of available selections
      * @return list of available selections
      */
-    List<AvailableSelections> getAvailableSelections();
+    List<AvailableSelectionsFilter> getAvailableSelections();
 
     /**
      * Returns the date when API response was generated

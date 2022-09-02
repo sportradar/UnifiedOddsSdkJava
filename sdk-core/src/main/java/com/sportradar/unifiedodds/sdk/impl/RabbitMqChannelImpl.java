@@ -281,8 +281,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             }
 
             // it means, the connection was reset in between
-            if(connectionFactory.getConnectionStarted() > channelStarted)
-            {
+            if(connectionFactory.getConnectionStarted() > channelStarted) {
                 logger.warn("Channel to old. Recreating connection channel ...");
                 restartChannel();
                 continue;

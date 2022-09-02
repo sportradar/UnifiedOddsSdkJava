@@ -498,7 +498,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         }
 
         if (!loadedFixtureLocales.isEmpty()) {
-            return bookingStatus;
+            return null;
         }
 
         requestMissingFixtureData(Collections.singletonList(defaultLocale));
@@ -890,7 +890,6 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      */
     @Override
     public void onEventBooked() {
-
         bookingStatus = BookingStatus.Booked;
     }
 

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
@@ -50,6 +51,7 @@ public interface DataRouterListener {
 
     default void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections) {}
     default void onCalculateProbabilityFetched(List<Selection> selections, CAPICalculationResponse calculation) {}
+    default void onCalculateProbabilityFilterFetched(List<Selection> selections, CAPIFilteredCalculationResponse calculation) {}
 
     default void onSportTournamentsFetched(URN id, SAPISportTournamentsEndpoint data, Locale locale) {}
 }
