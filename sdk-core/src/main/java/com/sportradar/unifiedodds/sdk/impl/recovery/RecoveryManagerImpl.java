@@ -2,7 +2,7 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.recovery;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
@@ -11,6 +11,7 @@ import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.RecoveryInfoImpl;
@@ -22,7 +23,6 @@ import org.slf4j.MDC;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;

@@ -21,11 +21,9 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
+import com.sportradar.unifiedodds.sdk.impl.recovery.RecoveryManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.util.MdcScheduledExecutorService;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

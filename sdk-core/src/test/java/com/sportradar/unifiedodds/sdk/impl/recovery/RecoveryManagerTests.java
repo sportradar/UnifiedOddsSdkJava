@@ -2,7 +2,7 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.recovery;
 
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Recoverable;
@@ -12,10 +12,12 @@ import com.sportradar.unifiedodds.sdk.SDKEventRecoveryStatusListener;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.SDKProducerStatusListener;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
+import com.sportradar.unifiedodds.sdk.impl.recovery.RecoveryManagerImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.junit.After;
 import org.junit.Before;
