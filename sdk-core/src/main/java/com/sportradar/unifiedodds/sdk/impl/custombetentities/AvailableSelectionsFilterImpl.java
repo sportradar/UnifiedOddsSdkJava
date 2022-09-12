@@ -37,7 +37,7 @@ public class AvailableSelectionsFilterImpl implements AvailableSelectionsFilter 
     public AvailableSelectionsFilterImpl(CAPIFilteredEventType eventType, String generatedAt) {
         Preconditions.checkNotNull(eventType);
 
-        this.event = URN.parse(eventType.getId().replace(":live", "").replace(":prematch", ""));
+        this.event = URN.parse(eventType.getId());
 
         this.markets = (eventType.getMarkets() != null) ?
                 eventType.getMarkets().getMarkets().stream()
