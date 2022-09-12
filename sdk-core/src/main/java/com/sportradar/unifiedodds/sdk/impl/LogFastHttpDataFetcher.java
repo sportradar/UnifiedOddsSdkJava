@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Wrapper class for the {@link HttpDataFetcher} with the sole purpose of API request logging
  */
-public class LogFastHttpDataFetcher extends LogHttpDataFetcher {
+public class LogFastHttpDataFetcher extends HttpDataFetcher {
     private final static Logger logger = LoggerFactory.getLogger(LogFastHttpDataFetcher.class);
     private final static Logger trafficLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkRestTrafficLog.class);
 

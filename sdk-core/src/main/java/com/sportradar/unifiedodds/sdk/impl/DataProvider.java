@@ -28,7 +28,7 @@ import java.util.Locale;
 public class DataProvider<TOut> {
 
     private final String uriFormat;
-    private final LogHttpDataFetcher logHttpDataFetcher;
+    private final HttpDataFetcher logHttpDataFetcher;
     private final Deserializer deserializer;
     private final String apiHost;
     private final boolean useApiSsl;
@@ -36,7 +36,7 @@ public class DataProvider<TOut> {
 
     public DataProvider(String uriFormat,
                         SDKInternalConfiguration config,
-                        LogHttpDataFetcher logHttpDataFetcher,
+                        HttpDataFetcher logHttpDataFetcher,
                         Deserializer deserializer) {
         Preconditions.checkNotNull(uriFormat);
         Preconditions.checkNotNull(config);
