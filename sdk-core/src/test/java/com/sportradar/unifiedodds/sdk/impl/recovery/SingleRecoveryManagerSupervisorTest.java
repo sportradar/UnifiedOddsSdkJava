@@ -33,7 +33,7 @@ public class SingleRecoveryManagerSupervisorTest {
 
     @Test
     public void shouldCreateRecoveryManagerSingleton() {
-        assertThat(supervisor.getRecoveryManager(), is(notNullValue()));
+        assertNotNull(supervisor.getRecoveryManager());
     }
 
     @Test
@@ -41,6 +41,6 @@ public class SingleRecoveryManagerSupervisorTest {
         RecoveryManager rm1 = supervisor.getRecoveryManager();
         RecoveryManager rm2 = supervisor.getRecoveryManager();
 
-        assertSame("The class is expected to supervise only one RecoveryManager", rm1, rm2);
+        assertSame(rm1, rm2);
     }
 }
