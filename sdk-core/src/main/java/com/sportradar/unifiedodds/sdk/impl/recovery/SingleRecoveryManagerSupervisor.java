@@ -6,6 +6,7 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class SingleRecoveryManagerSupervisor {
@@ -14,6 +15,8 @@ public class SingleRecoveryManagerSupervisor {
     private final ScheduledExecutorService executorServices;
 
     private boolean isStarted;
+
+    private ScheduledFuture<?> supervisionJob;
 
     public SingleRecoveryManagerSupervisor(SDKInternalConfiguration config,
                                        SDKProducerManager producerManager,
@@ -38,8 +41,15 @@ public class SingleRecoveryManagerSupervisor {
 
     public void startSupervising() {
         if (!isStarted) {
-            executorServices.scheduleAtFixedRate(() -> {}, 20L, 10L, TimeUnit.SECONDS);
+            supervisionJob = executorServices.scheduleAtFixedRate(() -> {}, 20L, 10L, TimeUnit.SECONDS);
             isStarted = true;
+        }
+    }
+
+    public void stopSupervising() {
+        if (isStarted) {
+            supervisionJob.cancel(false);
+            isStarted = false;
         }
     }
 }
