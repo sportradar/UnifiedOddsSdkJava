@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
@@ -42,6 +41,6 @@ public class SingleRecoveryManagerSupervisorTest {
         RecoveryManager rm1 = supervisor.getRecoveryManager();
         RecoveryManager rm2 = supervisor.getRecoveryManager();
 
-        assertThat(rm1, is(sameInstance(rm2)));
+        assertSame("The class is expected to supervise only one RecoveryManager", rm1, rm2);
     }
 }
