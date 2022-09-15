@@ -9,11 +9,6 @@ package com.sportradar.unifiedodds.sdk;
  */
 public interface RecoveryManager {
     /**
-     * Initialization of the recovery state tracking
-     */
-    void init();
-
-    /**
      * Method invoked when the AMQP message processing started
      *
      * @param uniqueMessageProcessorIdentifier a unique representation of the message processor invoking the method

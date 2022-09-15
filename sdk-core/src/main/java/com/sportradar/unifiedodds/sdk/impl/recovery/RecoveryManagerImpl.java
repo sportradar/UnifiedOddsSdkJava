@@ -48,22 +48,19 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
     private final ReentrantLock onAliveLock = new ReentrantLock();
     private final ReentrantLock onSnapshotCompleteLock = new ReentrantLock();
     private final SDKTaskScheduler taskScheduler;
-    private final ScheduledExecutorService executorServices;
     private final Map<String, String> sdkMdcContextDescription;
     private final int bookmakerId;
     private final SequenceGenerator sequenceGenerator;
     private final TimeUtils timeUtils;
     private volatile boolean initialized;
 
-    @Inject
     RecoveryManagerImpl(SDKInternalConfiguration config,
                         SDKProducerManager producerManager,
                         SDKProducerStatusListener producerStatusListener,
                         SDKEventRecoveryStatusListener eventRecoveryStatusListener,
                         SnapshotRequestManager snapshotRequestManager,
                         SDKTaskScheduler taskScheduler,
-                        @Named("DedicatedRecoveryManagerExecutor") ScheduledExecutorService executorServices,
-                        @Named("RecoveryHttpHelper") HttpHelper httpHelper,
+                        HttpHelper httpHelper,
                         FeedMessageFactory messageFactory,
                         WhoAmIReader whoAmIReader,
                         SequenceGenerator sequenceGenerator,
@@ -74,7 +71,6 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         Preconditions.checkNotNull(eventRecoveryStatusListener);
         Preconditions.checkNotNull(snapshotRequestManager);
         Preconditions.checkNotNull(taskScheduler);
-        Preconditions.checkNotNull(executorServices);
         Preconditions.checkNotNull(httpHelper);
         Preconditions.checkNotNull(messageFactory);
         Preconditions.checkNotNull(whoAmIReader);
@@ -90,15 +86,13 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         this.messageFactory = messageFactory;
         this.maxRecoveryExecutionTime = TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionMinutes(), TimeUnit.MINUTES);
         this.taskScheduler = taskScheduler;
-        this.executorServices = executorServices;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
         this.bookmakerId = whoAmIReader.getBookmakerId();
         this.sequenceGenerator = sequenceGenerator;
         this.timeUtils = timeUtils;
     }
 
-    @Override
-    public void init() {
+    void init() {
         if (initialized) {
             return;
         }
@@ -109,7 +103,6 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         }
 
         activeProducers.forEach((id, p) -> perProducerInfo.computeIfAbsent(id, (producerId) -> new ProducerInfo(producerId, producerManager)));
-        executorServices.scheduleAtFixedRate(this::onTimerElapsed, 20, 10, TimeUnit.SECONDS);
 
         if (!config.isReplaySession()) {
             logger.info("RecoveryManager initialized");
@@ -356,7 +349,7 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
         performProducerRecovery(provideProducerInfo(id), timestampForRecovery);
     }
 
-    private void onTimerElapsed() {
+    void onTimerElapsed() {
         if (config.isReplaySession()) {
             return;
         }

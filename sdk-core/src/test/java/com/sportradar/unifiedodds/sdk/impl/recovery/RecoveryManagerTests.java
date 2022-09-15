@@ -90,7 +90,7 @@ public class RecoveryManagerTests {
                 .build();
         when(whoAmIReader.getAssociatedSdkMdcContextMap()).thenReturn(testMdcContext);
 
-        recoveryManager = new RecoveryManagerImpl(
+        SingleRecoveryManagerSupervisor supervisor = new SingleRecoveryManagerSupervisor(
                 cfg,
                 producerManager,
                 producerStatusListener,
@@ -105,7 +105,8 @@ public class RecoveryManagerTests {
                 mockedTimeUtils
         );
 
-        recoveryManager.init();
+        recoveryManager = supervisor.getRecoveryManager();
+        supervisor.startSupervising();
     }
 
     @After
