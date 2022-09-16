@@ -522,6 +522,55 @@ public class RecoveryManagerTests {
     }
 
     @Test
+    public void handleChannelRecoveryWhenProducerIsSlowProcessingMessagesTest() {
+        Producer producer = producerManager.getProducer(1);
+        assertTrue(producer.isFlaggedDown());
+
+        int recoveryId = 55;
+        when(mockedSequenceGenerator.getNext()).thenReturn(recoveryId);
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), false, true);
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(10);
+        recoveryManager.onSnapshotCompleteReceived(1, mockedTimeUtils.now(), recoveryId, MessageInterest.AllMessages);
+        assertFalse(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(3);
+
+        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
+        producerStatusListener.assertProducerStatusChangeInvoked(1, ProducerStatusReason.FirstRecoveryCompleted);
+
+        adjustMockedTimeUtils(1);
+        recoveryManager.onMessageProcessingStarted(-33, 1, Long.valueOf(recoveryId), mockedTimeUtils.now());
+        adjustMockedTimeUtils(1);
+        recoveryManager.onMessageProcessingEnded(-33, 1, getAdjustedMilliseconds(-22), null);
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
+
+        adjustMockedTimeUtils(1);
+
+        mockedExecutor.execRecoveryManagerTimer();
+        assertTrue(producer.isFlaggedDown());
+        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
+        producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.shutdownCompleted(mock(ShutdownSignalException.class));
+        recoveryManager.handleRecovery(mock(Recoverable.class));
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(10);
+
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
+        assertTrue(producer.isFlaggedDown());
+        assertEquals(2, taskScheduler.getOneTimeTaskRuns());
+        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
+        producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.ProcessingQueueDelayViolation);
+
+        recoveryManager.onSnapshotCompleteReceived(1, mockedTimeUtils.now(), recoveryId, MessageInterest.AllMessages);
+        assertFalse(producer.isFlaggedDown());
+    }
+
+    @Test
     public void handleChannelRecoveryWhileProducerIsDownTest() {
         Producer producer = producerManager.getProducer(1);
         assertTrue(producer.isFlaggedDown());
