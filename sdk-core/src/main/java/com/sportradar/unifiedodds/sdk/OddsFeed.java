@@ -28,6 +28,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsExceptio
 import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.recovery.SingleRecoveryManagerSupervisor;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.URN;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -411,7 +412,7 @@ public class OddsFeed {
                         );
                     }
 
-                    injector.getInstance(RecoveryManager.class).init();
+                    injector.getInstance(SingleRecoveryManagerSupervisor.class).startSupervising();
                     injector.getInstance(SDKTaskScheduler.class).open();
                 } catch (IOException exception) {
                     throw new InitException("Unexpected issue initializing OddsFeed", exception);

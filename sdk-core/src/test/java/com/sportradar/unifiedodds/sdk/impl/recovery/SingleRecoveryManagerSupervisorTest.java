@@ -6,13 +6,14 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.sportradar.unifiedodds.sdk.impl.recovery.ProducerDataBuilder.producerData;
+import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
@@ -22,23 +23,47 @@ import static org.mockito.Mockito.*;
 
 public class SingleRecoveryManagerSupervisorTest {
 
+    private static final boolean SUBSCRIBED = true;
+
+    private static final boolean SYSTEM_SESSION = true;
+
+    private static final long ANY_LONG = 2930482765839L;
+
+    private static final int PRODUCER_ID = 7;
+
+    private static final int CURRENT_TIMESTAMP = 123456;
+
     private ScheduledExecutorService executorServices = mock(ScheduledExecutorService.class);
 
     private ScheduledFuture supervisingJobFuture = mock(ScheduledFuture.class);
 
-    private SingleRecoveryManagerSupervisor supervisor = new SingleRecoveryManagerSupervisor(
-            mock(SDKInternalConfiguration.class),
-            mock(SDKProducerManager.class),
-            mock(SDKProducerStatusListener.class),
-            mock(SDKEventRecoveryStatusListener.class),
-            mock(SnapshotRequestManager.class),
-            mock(SDKTaskScheduler.class),
-            executorServices,
-            mock(HttpHelper.class),
-            mock(FeedMessageFactory.class),
-            mock(WhoAmIReader.class),
-            mock(SequenceGenerator.class),
-            mock(TimeUtils.class));
+    private ProducerDataProvider producerDataProvider = mock(ProducerDataProvider.class);
+
+    private SDKProducerManager producerManager = new ProducerManagerImpl(mock(SDKInternalConfiguration.class), producerDataProvider);
+
+    private SingleRecoveryManagerSupervisor supervisor;
+
+    @Before
+    public void setupSupervisorForSingleProducer() {
+        ProducerData producerData = producerData().active().withId(PRODUCER_ID);
+        when(producerDataProvider.getAvailableProducers()).thenReturn(asList(producerData));
+
+        producerManager = new ProducerManagerImpl(mock(SDKInternalConfiguration.class), producerDataProvider);
+
+        supervisor = new SingleRecoveryManagerSupervisor(
+                mock(SDKInternalConfiguration.class),
+                producerManager,
+                mock(SDKProducerStatusListener.class),
+                mock(SDKEventRecoveryStatusListener.class),
+                mock(SnapshotRequestManager.class),
+                mock(SDKTaskScheduler.class),
+                executorServices,
+                mock(HttpHelper.class),
+                mock(FeedMessageFactory.class),
+                mock(WhoAmIReader.class),
+                mock(SequenceGenerator.class),
+                TimeUtilsStub.withCurrentTime(Instant.ofEpochMilli(CURRENT_TIMESTAMP)));
+    }
 
     @Test
     public void shouldIssueRecoveryManager() {
@@ -87,5 +112,23 @@ public class SingleRecoveryManagerSupervisorTest {
         supervisor.stopSupervising();
 
         verify(supervisingJobFuture, times(1)).cancel(false);
+    }
+
+    @Test
+    public void recoveriesShouldBeDisallowedBeforeSupervisionStarts() {
+        final int recoveryNotAttempted = 0;
+
+        supervisor.getRecoveryManager().onAliveReceived(PRODUCER_ID, ANY_LONG, ANY_LONG, SUBSCRIBED, SYSTEM_SESSION);
+
+        assertEquals(recoveryNotAttempted, producerManager.getProducerLastRecoveryAttemptTimestamp(PRODUCER_ID));
+    }
+
+    @Test
+    public void recoveriesShouldBeAllowedAfterSupervisionStarts() {
+        supervisor.startSupervising();
+
+        supervisor.getRecoveryManager().onAliveReceived(PRODUCER_ID, ANY_LONG, ANY_LONG, SUBSCRIBED, SYSTEM_SESSION);
+
+        assertEquals(CURRENT_TIMESTAMP, producerManager.getProducerLastRecoveryAttemptTimestamp(PRODUCER_ID));
     }
 }

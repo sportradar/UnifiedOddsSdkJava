@@ -22,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.recovery.RecoveryManagerImpl;
+import com.sportradar.unifiedodds.sdk.impl.recovery.SingleRecoveryManagerSupervisor;
 import com.sportradar.unifiedodds.sdk.impl.util.MdcScheduledExecutorService;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class GeneralModule implements Module {
         IncrementalSequenceGenerator sequenceGenerator = new IncrementalSequenceGenerator(min, 1000000);
         binder.bind(SequenceGenerator.class).toInstance(sequenceGenerator);
 
-        binder.bind(RecoveryManagerImpl.class).in(Singleton.class);
+        binder.bind(SingleRecoveryManagerSupervisor.class).in(Singleton.class);
         binder.bind(RecoveryManager.class).to(RecoveryManagerImpl.class);
         binder.bind(RabbitMqSystemListener.class).to(RecoveryManagerImpl.class);
         binder.bind(EventRecoveryRequestIssuer.class).to(RecoveryManagerImpl.class);
@@ -163,6 +164,11 @@ public class GeneralModule implements Module {
         binder.bind(FeedMessageValidator.class).to(FeedMessageValidatorImpl.class);
         binder.bind(TimeUtils.class).to(TimeUtilsImpl.class);
         binder.bind(ReentrantLock.class).toInstance(jabxReentrantLock);
+    }
+
+    @Provides @Singleton
+    private RecoveryManagerImpl provideRecoveryManger(SingleRecoveryManagerSupervisor singleRecoveryManagerSupervisor) {
+        return singleRecoveryManagerSupervisor.getRecoveryManager();
     }
 
     private String loadVersion() {
