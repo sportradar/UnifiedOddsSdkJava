@@ -59,9 +59,7 @@ public class SdkTestModule implements Module {
     }
 
     @Provides @Singleton @Named("BetStopReasonDataProvider")
-    protected DataProvider providesBetStopReasonDataProvider() {
-        return new TestingDataProvider("test/rest/betstop_reasons.xml");
-    }
+    protected DataProvider providesBetStopReasonDataProvider() { return new TestingDataProvider("test/rest/betstop_reasons.xml"); }
 
     @Provides @Singleton
     protected DataProvider<SAPICompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {

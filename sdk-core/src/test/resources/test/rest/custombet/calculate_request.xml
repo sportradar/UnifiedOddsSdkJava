@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.sportradar.com/custombet/v1/endpoints">
+	<selection id="sr:match:31561675" market_id="10" outcome_id="9"/>
+	<selection id="sr:match:31561675" market_id="881" outcome_id="74"/>
+</selections> 

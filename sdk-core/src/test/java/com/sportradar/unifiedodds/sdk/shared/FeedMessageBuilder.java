@@ -4,6 +4,7 @@ import com.sportradar.uf.datamodel.UFAlive;
 import com.sportradar.uf.datamodel.UFBetStop;
 import com.sportradar.uf.datamodel.UFOddsChange;
 import com.sportradar.uf.datamodel.UFSnapshotComplete;
+import com.sportradar.utils.URN;
 
 import java.util.Date;
 import java.util.Random;
@@ -31,7 +32,7 @@ public class FeedMessageBuilder
     {
         if (eventId != null && eventId.equals(-1L))
         {
-            eventId = generateEventId();
+            eventId = Helper.generateEventId().getId();
         }
 
         UFOddsChange message = new UFOddsChange();
@@ -55,7 +56,7 @@ public class FeedMessageBuilder
     {
         if (eventId != null && eventId.equals(-1L))
         {
-            eventId = generateEventId();
+            eventId = Helper.generateEventId().getId();
         }
 
         UFBetStop message = new UFBetStop();
@@ -120,9 +121,5 @@ public class FeedMessageBuilder
         message.setRequestId(requestId);
 
         return message;
-    }
-
-    private static Long generateEventId(){
-        return (long) Math.abs(new Random().nextInt(999999));
     }
 }

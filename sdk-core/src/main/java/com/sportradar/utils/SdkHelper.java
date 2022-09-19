@@ -239,6 +239,11 @@ public final class SdkHelper {
         return sdf.parse(dateString);
     }
 
+    public static String dateToString(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
+        return sdf.format(date);
+    }
+
     public static String doubleToStringWithSign(double value) {
         if (value > 0)
             return "+" + value;

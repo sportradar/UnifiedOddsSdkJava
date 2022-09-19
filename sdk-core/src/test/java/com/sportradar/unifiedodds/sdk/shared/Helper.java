@@ -1,12 +1,14 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
+import com.sportradar.utils.URN;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 public class Helper {
 
@@ -78,4 +80,8 @@ public class Helper {
         cal.add(calendarType, value);
         return cal.getTime();
     }
+
+    public static URN generateEventId(){ return generateEventId("match"); }
+
+    public static URN generateEventId(String urnGroup){ return URN.parse("sr:" + urnGroup + ":" + Math.abs(new Random().nextInt(999999))); }
 }

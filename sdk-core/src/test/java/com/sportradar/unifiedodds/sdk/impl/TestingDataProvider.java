@@ -29,8 +29,7 @@ public class TestingDataProvider<T> extends DataProvider<T> {
     }
 
     public TestingDataProvider(Supplier<InputStream> streamFactory) {
-        super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class),
-                Mockito.mock(Deserializer.class));
+        super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class), Mockito.mock(Deserializer.class));
         this.streamFactory = streamFactory;
     }
 
