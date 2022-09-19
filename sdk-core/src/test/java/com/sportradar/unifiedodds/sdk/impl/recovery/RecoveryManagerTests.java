@@ -17,7 +17,6 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
-import com.sportradar.unifiedodds.sdk.impl.recovery.RecoveryManagerImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import org.junit.After;
 import org.junit.Before;
@@ -477,6 +476,7 @@ public class RecoveryManagerTests {
 
         recoveryManager.shutdownCompleted(mock(ShutdownSignalException.class));
         recoveryManager.handleRecovery(mock(Recoverable.class));
+        assertTrue(producer.isFlaggedDown());
 
         adjustMockedTimeUtils(22);
 
@@ -487,6 +487,70 @@ public class RecoveryManagerTests {
 
         recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
         assertEquals(2, taskScheduler.getOneTimeTaskRuns());
+    }
+
+    @Test
+    public void handleChannelRecoveryFollowedByAliveMessageWhileProducerIsUpTest() {
+        Producer producer = producerManager.getProducer(1);
+        assertTrue(producer.isFlaggedDown());
+
+        int recoveryId = 55;
+        when(mockedSequenceGenerator.getNext()).thenReturn(recoveryId);
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), false, true);
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(10);
+        recoveryManager.onSnapshotCompleteReceived(1, mockedTimeUtils.now(), recoveryId, MessageInterest.AllMessages);
+        assertFalse(producer.isFlaggedDown());
+        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
+        producerStatusListener.assertProducerStatusChangeInvoked(1, ProducerStatusReason.FirstRecoveryCompleted);
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.shutdownCompleted(mock(ShutdownSignalException.class));
+        recoveryManager.handleRecovery(mock(Recoverable.class));
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(22);
+
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
+        assertTrue(producer.isFlaggedDown());
+        assertEquals(2, taskScheduler.getOneTimeTaskRuns());
+
+        recoveryManager.onSnapshotCompleteReceived(1, mockedTimeUtils.now(), recoveryId, MessageInterest.AllMessages);
+        assertFalse(producer.isFlaggedDown());
+    }
+
+    @Test
+    public void handleChannelRecoveryWhileProducerIsDownTest() {
+        Producer producer = producerManager.getProducer(1);
+        assertTrue(producer.isFlaggedDown());
+
+        int recoveryId = 55;
+        when(mockedSequenceGenerator.getNext()).thenReturn(recoveryId);
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), false, true);
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.shutdownCompleted(mock(ShutdownSignalException.class));
+        recoveryManager.handleRecovery(mock(Recoverable.class));
+        assertTrue(producer.isFlaggedDown());
+
+        adjustMockedTimeUtils(22);
+
+        mockedExecutor.execRecoveryManagerTimer();
+        assertTrue(producer.isFlaggedDown());
+        producerStatusListener.assertProducerUpInvoked(0);
+        producerStatusListener.assertProducerStatusChangeInvoked(0);
+
+        adjustMockedTimeUtils(5);
+
+        recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
+        assertEquals(2, taskScheduler.getOneTimeTaskRuns());
+
+        recoveryManager.onSnapshotCompleteReceived(1, mockedTimeUtils.now(), recoveryId, MessageInterest.AllMessages);
+        assertFalse(producer.isFlaggedDown());
     }
 
     @Test
@@ -835,6 +899,10 @@ public class RecoveryManagerTests {
         void assertProducerDownInvoked(int count, ProducerDownReason reason) {
             assertEquals(count, producerDownTriggered);
             assertEquals(reason, lastProducerDownReason);
+        }
+
+        void assertProducerStatusChangeInvoked(int count) {
+            assertEquals(count, producerStatusChangeTriggered);
         }
 
         void assertProducerStatusChangeInvoked(int count, ProducerStatusReason reason) {

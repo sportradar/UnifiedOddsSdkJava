@@ -19,6 +19,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -1036,15 +1037,15 @@ public class SdkConnectionTests {
 
         waitAndCheckTillTimeout(w -> checkListContainsString(sdkListener.CalledEvents, "Producer LO is down", 2), "Producer doown event called", 3000, 60000);
         Helper.sleep(2000); // so all events can be called
-        assertEquals(2, sdkListener.CalledEvents.stream().filter(c -> c.contains("Producer LO is down")).collect(Collectors.toList()).size()); // producers are marked down
-        assertEquals(2, sdkListener.CalledEvents.stream().filter(c -> c.contains("Producer Ctrl is down")).collect(Collectors.toList()).size());
-        assertEquals(2, sdkListener.CalledEvents.stream().filter(c -> c.contains("Producer VF is down")).collect(Collectors.toList()).size());
-        assertTrue(sdkListener.CalledEvents.stream().filter(c -> c.contains("Connection exception")).count() > 0); //Connection to the feed lost
-
+        assertEquals(2, sdkListener.CalledEvents.stream().filter(c -> c.contains("Producer LO is down: ConnectionDown")).collect(Collectors.toList()).size()); // producers are marked down
+        assertEquals(2, sdkListener.CalledEvents.stream().filter(c -> c.contains("Producer Ctrl is down: ConnectionDown")).collect(Collectors.toList()).size());
+        assertEquals(2, sdkListener.CalledEvents.stream().filter(c -> c.contains("Producer VF is down: ConnectionDown")).collect(Collectors.toList()).size());
+        Helper.sleep(2000);
         sdkListener.CalledEvents.clear();
 
         // reset user so sdk connection can be made
         rabbitProducer.ManagementClient.updateUser(Constants.SDK_USERNAME, Constants.SDK_PASSWORD.toCharArray(), Collections.singletonList("administrator"));
+        waitAndCheckTillTimeout(w -> checkListContainsString(sdkListener.CalledEvents, "Connection to the feed lost", 1), "Connection to the feed lost", 1000, 60000);
 
         // reset alives and check all
         waitAndCheckTillTimeout(w -> checkListContainsString(sdkListener.CalledEvents, "Recovery initiated", 3), "Producers second recovery not initiated", 3000, 60000);

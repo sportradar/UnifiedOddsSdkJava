@@ -81,7 +81,7 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
      */
     @Override
     public void onProducerDown(ProducerDown producerDown) {
-        String message = String.format("onProducerDown: Producer %s is down", producerDown.getProducer().getName());
+        String message = String.format("onProducerDown: Producer %s is down: %s", producerDown.getProducer().getName(), producerDown.getReason());
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onProducerDown: " + message);
     }
@@ -101,7 +101,7 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
     @Override
     public void onProducerStatusChange(ProducerStatus producerStatus) {
         String upDown = producerStatus.isDown() ? "down" : "up";
-        String message = String.format("onProducerStatusChange: Producer %s is %s", producerStatus.getProducer().getName(), upDown);
+        String message = String.format("onProducerStatusChange: Producer %s is %s: %s", producerStatus.getProducer().getName(), upDown, producerStatus.getProducerStatusReason());
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onProducerStatusChange: " + message);
     }

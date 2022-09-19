@@ -330,6 +330,9 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
                 continue;
             }
 
+            if (!pi.isFlaggedDown()) {
+                flagProducerDown(pi, ProducerDownReason.ConnectionDown);
+            }
             dispatchSnapshotFailed(pi, pi.getCurrentRecoveryId());
             pi.setProducerRecoveryState(0, 0, RecoveryState.Error);
         }
@@ -685,6 +688,9 @@ public class RecoveryManagerImpl implements RecoveryManager, EventRecoveryReques
             case AliveIntervalViolation:
                 logger.warn("ProducerDown:AliveIntervalViolation -> No subscribed alive received in {}s (longest " +
                                     "inactivity interval), flagging producer as DOWN [{}]", config.getLongestInactivityInterval(), pi);
+                break;
+            case ConnectionDown:
+                logger.warn("ProducerDown:ConnectionDown -> Connection to the server was lost, flagging producer as DOWN [{}]", pi);
                 break;
             case ProcessingQueueDelayViolation:
                 logger.warn("ProducerDown:ProcessingQueueDelayViolation -> The max processing queue delay({}s) was exceeded, flagging producer as DOWN [{}]", config.getLongestInactivityInterval(), pi);

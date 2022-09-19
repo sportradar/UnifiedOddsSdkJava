@@ -25,7 +25,13 @@ public enum ProducerDownReason {
      * Indicates that the {@link ProducerDown} message was dispatched due to information received
      * from the feed.
      */
-    Other;
+    Other,
+
+    /**
+     * Indicates that the {@link ProducerDown} message was dispatched due to the loss of connection
+     * to the server.
+     */
+    ConnectionDown;
 
     public ProducerStatusReason asProducerStatusReason() {
         switch (this) {
@@ -33,6 +39,8 @@ public enum ProducerDownReason {
                 return ProducerStatusReason.AliveIntervalViolation;
             case ProcessingQueueDelayViolation:
                 return ProducerStatusReason.ProcessingQueueDelayViolation;
+            case ConnectionDown:
+                return ProducerStatusReason.ConnectionDown;
             case Other:
                 return ProducerStatusReason.Other;
         }
