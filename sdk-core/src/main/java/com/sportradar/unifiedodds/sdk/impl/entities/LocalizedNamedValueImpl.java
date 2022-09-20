@@ -47,7 +47,7 @@ public class LocalizedNamedValueImpl extends NamedValueImpl implements Localized
      */
     @Override
     public String getDescription() {
-        return descriptions.getOrDefault(defaultLocale, null);
+        return descriptions == null ? null : descriptions.getOrDefault(defaultLocale, null);
     }
 
     /**
@@ -58,7 +58,5 @@ public class LocalizedNamedValueImpl extends NamedValueImpl implements Localized
      *           otherwise null
      */
     @Override
-    public String getDescription(Locale locale) {
-        return descriptions.getOrDefault(locale, null);
-    }
+    public String getDescription(Locale locale) { return descriptions == null ? null : descriptions.getOrDefault(locale, null); }
 }
