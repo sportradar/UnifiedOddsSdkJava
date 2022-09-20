@@ -1,5 +1,10 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.57.0 (2022-09-20)**
+* CustomBet - added support for calculate-filter endpoint
+* Fix: http request logged twice
+* Fix: NPE when LocalizedNamedValue does not have description
+
 **2.0.56.0 (2022-07-15)**
 * Fix: recovery request url when configuring custom environment
 * Fix: handling for system session connection reset
