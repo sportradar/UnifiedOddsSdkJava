@@ -253,23 +253,25 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 Thread.currentThread().interrupt();
             }
 
-            if (checkChannelStatusAndReturnWhetherUnderlyingConnectionIsPermanentlyClosed()) return;
+            if (checkStatus().getUnderlyingConnectionStatus() == UnderlyingConnectionStatus.PERMANENTLY_CLOSED) {
+                return;
+            }
         }
         } finally {
             logger.warn(String.format("Thread monitoring %s ended", messageInterest));
         }
     }
 
-    private boolean checkChannelStatusAndReturnWhetherUnderlyingConnectionIsPermanentlyClosed() {
+    private ChannelStatus checkStatus() {
             if(!connectionFactory.canConnectionOpen()){
                 try {
                     close();
                 } catch (IOException ignored) { }
-                return true;
+                return new ChannelStatus(UnderlyingConnectionStatus.PERMANENTLY_CLOSED);
             }
 
             stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration();
-            return false;
+            return new ChannelStatus(UnderlyingConnectionStatus.CAN_BE_OPEN);
     }
 
     private void stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration() {
@@ -374,5 +376,22 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         catch (IOException e) {
             logger.error(String.format("Error creating channel: %s", e.getMessage()));
         }
+    }
+
+    private class ChannelStatus {
+        private UnderlyingConnectionStatus underlyingConnectionStatus;
+
+        private ChannelStatus(UnderlyingConnectionStatus underlyingConnectionStatus) {
+            this.underlyingConnectionStatus = underlyingConnectionStatus;
+        }
+
+        private UnderlyingConnectionStatus getUnderlyingConnectionStatus() {
+            return underlyingConnectionStatus;
+        }
+    }
+
+    private enum UnderlyingConnectionStatus {
+        CAN_BE_OPEN,
+        PERMANENTLY_CLOSED
     }
 }
