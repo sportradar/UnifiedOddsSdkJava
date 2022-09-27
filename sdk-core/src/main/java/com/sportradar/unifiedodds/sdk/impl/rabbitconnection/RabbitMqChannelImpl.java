@@ -239,16 +239,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         channelClosePure();
     }
 
-    /**
-     * Indicates if the associated channel instance is opened
-     *
-     * @return - <code>true</code> if the channel is opened; <code>false</code> otherwise
-     */
-    @Override
-    public synchronized boolean isOpened() {
-        return channel != null && channel.isOpen();
-    }
-
     // todo: should use Scheduler without thread.sleep
     private void checkChannelStatus()
     {

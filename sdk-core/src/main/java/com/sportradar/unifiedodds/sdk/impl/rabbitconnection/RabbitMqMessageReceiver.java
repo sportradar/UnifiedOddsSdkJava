@@ -64,14 +64,4 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
     public void close() throws IOException {
         rabbitMqChannel.close();
     }
-
-    /**
-     * Indicates if the current instance is opened and receiving messages
-     *
-     * @return <code>true</code> if the instance is opened; otherwise <code>false</code>
-     */
-    @Override
-    public boolean isOpened() {
-        return rabbitMqChannel.isOpened();
-    }
 }
