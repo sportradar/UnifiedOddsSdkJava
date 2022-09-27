@@ -253,18 +253,23 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 Thread.currentThread().interrupt();
             }
 
-            if(!connectionFactory.canConnectionOpen()){
-                try {
-                    close();
-                } catch (IOException ignored) { }
-                return;
-            }
-
-            stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration();
+            if (checkChannelStatusAndReturnWhetherUnderlyingConnectionIsPermanentlyClosed()) return;
         }
         } finally {
             logger.warn(String.format("Thread monitoring %s ended", messageInterest));
         }
+    }
+
+    private boolean checkChannelStatusAndReturnWhetherUnderlyingConnectionIsPermanentlyClosed() {
+            if(!connectionFactory.canConnectionOpen()){
+                try {
+                    close();
+                } catch (IOException ignored) { }
+                return true;
+            }
+
+            stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration();
+            return false;
     }
 
     private void stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration() {
