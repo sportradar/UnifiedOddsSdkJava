@@ -5,17 +5,18 @@ import static org.mockito.Mockito.*;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Recoverable;
+import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
 import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -129,6 +130,21 @@ public class RabbitMqChannelImplTest {
         rabbitMqChannel.close();
 
         assertDoesNotContainLogLine("Error closing connection:");
+    }
+
+    @Test
+    public void rabbitMqChannelShouldBeCreatedOnOpen() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+        Channel channel = mock(ChannelRecoverable.class);
+        Connection connection = mock(Connection.class);
+        when(channel.queueDeclare()).thenReturn(mock(AMQP.Queue.DeclareOk.class));
+        when(connection.createChannel()).thenReturn(channel);
+        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        when(connectionFactory.getConnection()).thenReturn(connection);
+        RabbitMqChannelImpl rabbitMqChannel = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
+
+        rabbitMqChannel.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
+
+        verify(channel).basicConsume(isNull(), anyBoolean(), anyString(), any());
     }
 
     public interface ChannelRecoverable extends Channel, Recoverable {
