@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.localreplay;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqChannel;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.RabbitMqChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

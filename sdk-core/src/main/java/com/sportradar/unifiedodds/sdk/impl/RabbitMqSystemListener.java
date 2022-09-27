@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.rabbitmq.client.RecoveryListener;
 import com.rabbitmq.client.ShutdownListener;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.RabbitMqChannel;
 
 /**
  * Defines methods invoked by the {@link RabbitMqChannel} regarding system events

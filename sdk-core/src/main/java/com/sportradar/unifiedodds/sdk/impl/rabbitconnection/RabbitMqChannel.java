@@ -2,7 +2,9 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
+
+import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
 
 import java.io.IOException;
 import java.util.List;

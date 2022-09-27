@@ -2,12 +2,16 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.*;
+import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
@@ -22,7 +26,6 @@ import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 /**

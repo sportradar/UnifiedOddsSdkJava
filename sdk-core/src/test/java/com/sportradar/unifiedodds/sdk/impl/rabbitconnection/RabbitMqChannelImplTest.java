@@ -1,4 +1,4 @@
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
@@ -9,11 +9,14 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Recoverable;
+import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

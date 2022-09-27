@@ -21,6 +21,7 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.*;
 import com.sportradar.unifiedodds.sdk.impl.recovery.RecoveryManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.recovery.SingleRecoveryManagerSupervisor;
 import com.sportradar.unifiedodds.sdk.impl.util.MdcScheduledExecutorService;
