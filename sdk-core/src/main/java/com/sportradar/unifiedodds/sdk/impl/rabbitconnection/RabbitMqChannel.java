@@ -29,11 +29,4 @@ public interface RabbitMqChannel {
      * @throws IOException if the channel closure failed
      */
     void close() throws IOException;
-
-    /**
-     * Indicates if the associated channel instance is opened
-     *
-     * @return - <code>true</code> if the channel is opened; <code>false</code> otherwise
-     */
-    boolean isOpened();
 }
