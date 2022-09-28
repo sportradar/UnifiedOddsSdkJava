@@ -2,7 +2,9 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
+
+import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,11 +29,4 @@ public interface RabbitMqChannel {
      * @throws IOException if the channel closure failed
      */
     void close() throws IOException;
-
-    /**
-     * Indicates if the associated channel instance is opened
-     *
-     * @return - <code>true</code> if the channel is opened; <code>false</code> otherwise
-     */
-    boolean isOpened();
 }

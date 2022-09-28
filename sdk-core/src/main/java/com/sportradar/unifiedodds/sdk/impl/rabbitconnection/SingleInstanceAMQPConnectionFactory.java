@@ -2,7 +2,7 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import com.google.common.base.Strings;
 import com.google.inject.name.Named;
@@ -10,6 +10,7 @@ import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;

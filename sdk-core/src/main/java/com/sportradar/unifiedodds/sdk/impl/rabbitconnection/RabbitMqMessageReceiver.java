@@ -2,10 +2,13 @@
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
 
-package com.sportradar.unifiedodds.sdk.impl;
+package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.impl.MessageConsumer;
+import com.sportradar.unifiedodds.sdk.impl.MessageReceiver;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,15 +63,5 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
     @Override
     public void close() throws IOException {
         rabbitMqChannel.close();
-    }
-
-    /**
-     * Indicates if the current instance is opened and receiving messages
-     *
-     * @return <code>true</code> if the instance is opened; otherwise <code>false</code>
-     */
-    @Override
-    public boolean isOpened() {
-        return rabbitMqChannel.isOpened();
     }
 }
