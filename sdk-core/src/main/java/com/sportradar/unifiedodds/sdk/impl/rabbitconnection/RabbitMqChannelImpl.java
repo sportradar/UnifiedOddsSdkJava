@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ChannelStatus.UnderlyingConnectionStatus;
 import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -376,22 +377,5 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         catch (IOException e) {
             logger.error(String.format("Error creating channel: %s", e.getMessage()));
         }
-    }
-
-    private class ChannelStatus {
-        private UnderlyingConnectionStatus underlyingConnectionStatus;
-
-        private ChannelStatus(UnderlyingConnectionStatus underlyingConnectionStatus) {
-            this.underlyingConnectionStatus = underlyingConnectionStatus;
-        }
-
-        private UnderlyingConnectionStatus getUnderlyingConnectionStatus() {
-            return underlyingConnectionStatus;
-        }
-    }
-
-    private enum UnderlyingConnectionStatus {
-        CAN_BE_OPEN,
-        PERMANENTLY_CLOSED
     }
 }
