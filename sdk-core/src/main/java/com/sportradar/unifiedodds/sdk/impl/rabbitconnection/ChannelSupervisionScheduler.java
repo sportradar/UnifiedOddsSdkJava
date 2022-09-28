@@ -1,12 +1,11 @@
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.NEWLY_CLOSED;
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.WAS_CLOSED_ALREADY;
@@ -14,22 +13,29 @@ import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.WAS_OPENED_ALREADY;
 
 public class ChannelSupervisionScheduler {
-    private RabbitMqChannel rabbitMqChannel;
-    private ScheduledExecutorService executorService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChannelSupervisionScheduler.class);
+
+    private final RabbitMqChannelImpl rabbitMqChannel;
+
+    private final RabbitMqMonitoringThreads rabbitMqMonitoringThreads;
 
     private boolean supervisionStarted;
 
-    private ScheduledFuture<?> scheduledSupervision;
+    private String messageInterest;
 
-    public ChannelSupervisionScheduler(RabbitMqChannel rabbitMqChannel, ScheduledExecutorService executorService) {
+
+
+    public ChannelSupervisionScheduler(RabbitMqChannelImpl rabbitMqChannel, RabbitMqMonitoringThreads rabbitMqMonitoringThreads) {
         this.rabbitMqChannel = rabbitMqChannel;
-        this.executorService = executorService;
+        this.rabbitMqMonitoringThreads = rabbitMqMonitoringThreads;
     }
 
     public synchronized OpeningResult openChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
+        this.messageInterest = messageInterest;
         if (!supervisionStarted) {
-            openSupervisedChannel(routingKeys, messageConsumer, messageInterest);
             supervisionStarted = true;
+            openSupervisedChannel(routingKeys, messageConsumer, messageInterest);
             return NEWLY_OPENED;
         } else {
             return WAS_OPENED_ALREADY;
@@ -38,8 +44,8 @@ public class ChannelSupervisionScheduler {
 
     public synchronized ClosingResult closeChannel() throws IOException {
         if(supervisionStarted) {
-            closeSupervisedChannel();
             supervisionStarted = false;
+            closeSupervisedChannel();
             return NEWLY_CLOSED;
         } else {
             return WAS_CLOSED_ALREADY;
@@ -47,13 +53,38 @@ public class ChannelSupervisionScheduler {
     }
 
     private void openSupervisedChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
-        scheduledSupervision = executorService.scheduleAtFixedRate(() -> {
-        }, 20, 20, TimeUnit.SECONDS);
+        startSupervision(messageInterest);
         rabbitMqChannel.open(routingKeys, messageConsumer, messageInterest);
     }
 
     private void closeSupervisedChannel() throws IOException {
         rabbitMqChannel.close();
-        scheduledSupervision.cancel(false);
+    }
+
+    private void startSupervision(String messageInterest) {
+        rabbitMqMonitoringThreads.startNew(this::checkChannelStatus, messageInterest, hashCode());
+
+    }
+
+    private void checkChannelStatus()
+    {
+        try{
+            while(supervisionStarted) {
+
+                try {
+                    Thread.sleep(1000L * 20L);
+                }
+                catch (InterruptedException e) {
+                    logger.warn("Interrupted!", e);
+                    Thread.currentThread().interrupt();
+                }
+
+                if (rabbitMqChannel.checkStatus().getUnderlyingConnectionStatus() == ChannelStatus.UnderlyingConnectionStatus.PERMANENTLY_CLOSED) {
+                    return;
+                }
+            }
+        } finally {
+            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
+        }
     }
 }

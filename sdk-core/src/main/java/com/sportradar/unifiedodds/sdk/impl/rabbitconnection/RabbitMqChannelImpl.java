@@ -263,7 +263,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         }
     }
 
-    private ChannelStatus checkStatus() {
+    ChannelStatus checkStatus() {
             if(!connectionFactory.canConnectionOpen()){
                 try {
                     close();
