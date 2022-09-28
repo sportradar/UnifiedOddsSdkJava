@@ -26,7 +26,7 @@ public class ChannelSupervisionScheduler {
         this.executorService = executorService;
     }
 
-    public OpeningResult openChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
+    public synchronized OpeningResult openChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
         if (!supervisionStarted) {
             openSupervisedChannel(routingKeys, messageConsumer, messageInterest);
             supervisionStarted = true;
@@ -36,7 +36,7 @@ public class ChannelSupervisionScheduler {
         }
     }
 
-    public ClosingResult closeChannel() throws IOException {
+    public synchronized ClosingResult closeChannel() throws IOException {
         if(supervisionStarted) {
             closeSupervisedChannel();
             supervisionStarted = false;
