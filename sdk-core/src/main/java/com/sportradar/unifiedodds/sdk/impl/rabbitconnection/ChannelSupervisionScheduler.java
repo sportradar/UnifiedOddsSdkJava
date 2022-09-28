@@ -8,6 +8,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.NEWLY_CLOSED;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.WAS_CLOSED_ALREADY;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.WAS_OPENED_ALREADY;
+
 public class ChannelSupervisionScheduler {
     private RabbitMqChannel rabbitMqChannel;
     private ScheduledExecutorService executorService;
@@ -21,20 +26,34 @@ public class ChannelSupervisionScheduler {
         this.executorService = executorService;
     }
 
-    public void openChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
+    public OpeningResult openChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
         if (!supervisionStarted) {
-            scheduledSupervision = executorService.scheduleAtFixedRate(() -> {
-            }, 20, 20, TimeUnit.SECONDS);
-            rabbitMqChannel.open(routingKeys, messageConsumer, messageInterest);
+            openSupervisedChannel(routingKeys, messageConsumer, messageInterest);
+            supervisionStarted = true;
+            return NEWLY_OPENED;
+        } else {
+            return WAS_OPENED_ALREADY;
         }
-        supervisionStarted = true;
     }
 
-    public void closeChannel() throws IOException {
+    public ClosingResult closeChannel() throws IOException {
         if(supervisionStarted) {
-            rabbitMqChannel.close();
-            scheduledSupervision.cancel(false);
+            closeSupervisedChannel();
+            supervisionStarted = false;
+            return NEWLY_CLOSED;
+        } else {
+            return WAS_CLOSED_ALREADY;
         }
-        supervisionStarted = false;
+    }
+
+    private void openSupervisedChannel(List<String> routingKeys, ChannelMessageConsumer messageConsumer, String messageInterest) throws IOException {
+        scheduledSupervision = executorService.scheduleAtFixedRate(() -> {
+        }, 20, 20, TimeUnit.SECONDS);
+        rabbitMqChannel.open(routingKeys, messageConsumer, messageInterest);
+    }
+
+    private void closeSupervisedChannel() throws IOException {
+        rabbitMqChannel.close();
+        scheduledSupervision.cancel(false);
     }
 }

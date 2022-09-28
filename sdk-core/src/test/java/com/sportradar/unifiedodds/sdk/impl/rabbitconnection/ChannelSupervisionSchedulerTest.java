@@ -11,6 +11,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.NEWLY_CLOSED;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.WAS_CLOSED_ALREADY;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -38,9 +43,10 @@ public class ChannelSupervisionSchedulerTest {
 
     @Test
     public void shouldOpenRabbitMqChannel() throws IOException {
-        supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
+        OpeningResult openingResult = supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         verify(rabbitMqChannel).open(routingKeys, messageConsumer, interest);
+        assertEquals(NEWLY_OPENED, openingResult);
     }
 
     @Test
@@ -53,9 +59,10 @@ public class ChannelSupervisionSchedulerTest {
     @Test
     public void openingChannelTwiceShouldScheduleSupervisionOnlyOnce() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
-        supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
+        OpeningResult openingResult = supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         verify(executorService, times(1)).scheduleAtFixedRate(any(), eq(20L), eq(20L), eq(TimeUnit.SECONDS));
+        assertEquals(OpeningResult.WAS_OPENED_ALREADY, openingResult);
     }
 
     @Test
@@ -70,9 +77,10 @@ public class ChannelSupervisionSchedulerTest {
     public void shouldCloseRabbitMqChannel() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        supervisorScheduler.closeChannel();
+        ClosingResult closingResult = supervisorScheduler.closeChannel();
 
         verify(rabbitMqChannel).close();
+        assertEquals(NEWLY_CLOSED, closingResult);
     }
 
     @Test
@@ -88,9 +96,10 @@ public class ChannelSupervisionSchedulerTest {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         supervisorScheduler.closeChannel();
-        supervisorScheduler.closeChannel();
+        ClosingResult closingResult = supervisorScheduler.closeChannel();
 
         verify(scheduledSupervision, times(1)).cancel(false);
+        assertEquals(WAS_CLOSED_ALREADY, closingResult);
     }
 
     @Test
@@ -109,4 +118,5 @@ public class ChannelSupervisionSchedulerTest {
 
         verify(scheduledSupervision, never()).cancel(false);
     }
+
 }
