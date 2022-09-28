@@ -15,14 +15,20 @@ import static org.mockito.Mockito.*;
 
 public class ChannelSupervisionSchedulerTest {
 
+    private final ScheduledExecutorService executorService = mock(ScheduledExecutorService.class);
+
+    private final RabbitMqChannel rabbitMqChannel = mock(RabbitMqChannel.class);
+
+    private final List<String> routingKeys = Arrays.asList("routingKeys");
+
+    private final ChannelMessageConsumer messageConsumer = mock(ChannelMessageConsumer.class);
+
+    private final String interest = "someMessageInterest";
+
+    private final ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, executorService);
+
     @Test
     public void shouldOpenRabbitMqChannel() throws IOException {
-        RabbitMqChannel rabbitMqChannel = mock(RabbitMqChannel.class);
-        ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, mock(ScheduledExecutorService.class));
-        List<String> routingKeys = Arrays.asList("routingKeys");
-        ChannelMessageConsumer messageConsumer = mock(ChannelMessageConsumer.class);
-        String interest = "someMessageInterest";
-
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         verify(rabbitMqChannel).open(routingKeys, messageConsumer, interest);
@@ -30,13 +36,6 @@ public class ChannelSupervisionSchedulerTest {
 
     @Test
     public void openingChannelShouldAlsoScheduleSupervision() throws IOException {
-        ScheduledExecutorService executorService = mock(ScheduledExecutorService.class);
-        RabbitMqChannel rabbitMqChannel = mock(RabbitMqChannel.class);
-        ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, executorService);
-        List<String> routingKeys = Arrays.asList("routingKeys");
-        ChannelMessageConsumer messageConsumer = mock(ChannelMessageConsumer.class);
-        String interest = "someMessageInterest";
-
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         verify(executorService).scheduleAtFixedRate(any(), eq(20L), eq(20L), eq(TimeUnit.SECONDS));
@@ -44,13 +43,6 @@ public class ChannelSupervisionSchedulerTest {
 
     @Test
     public void openingChannelTwiceShouldScheduleSupervisionOnlyOnce() throws IOException {
-        ScheduledExecutorService executorService = mock(ScheduledExecutorService.class);
-        RabbitMqChannel rabbitMqChannel = mock(RabbitMqChannel.class);
-        ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, executorService);
-        List<String> routingKeys = Arrays.asList("routingKeys");
-        ChannelMessageConsumer messageConsumer = mock(ChannelMessageConsumer.class);
-        String interest = "someMessageInterest";
-
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
@@ -59,13 +51,6 @@ public class ChannelSupervisionSchedulerTest {
 
     @Test
     public void openingChannelTwiceShouldOpenRabbitMqChannelOnlyOnce() throws IOException {
-        ScheduledExecutorService executorService = mock(ScheduledExecutorService.class);
-        RabbitMqChannel rabbitMqChannel = mock(RabbitMqChannel.class);
-        ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, executorService);
-        List<String> routingKeys = Arrays.asList("routingKeys");
-        ChannelMessageConsumer messageConsumer = mock(ChannelMessageConsumer.class);
-        String interest = "someMessageInterest";
-
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
