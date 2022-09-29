@@ -16,7 +16,7 @@ public class ChannelSupervisionScheduler implements ChannelSupervisor {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelSupervisionScheduler.class);
 
-    private final RabbitMqChannelImpl rabbitMqChannel;
+    private final OnDemandChannelSupervisor rabbitMqChannel;
 
     private final RabbitMqMonitoringThreads rabbitMqMonitoringThreads;
 
@@ -26,7 +26,7 @@ public class ChannelSupervisionScheduler implements ChannelSupervisor {
 
 
 
-    public ChannelSupervisionScheduler(RabbitMqChannelImpl rabbitMqChannel, RabbitMqMonitoringThreads rabbitMqMonitoringThreads) {
+    public ChannelSupervisionScheduler(OnDemandChannelSupervisor rabbitMqChannel, RabbitMqMonitoringThreads rabbitMqMonitoringThreads) {
         this.rabbitMqChannel = rabbitMqChannel;
         this.rabbitMqMonitoringThreads = rabbitMqMonitoringThreads;
     }

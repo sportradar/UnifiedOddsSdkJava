@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
- * An implementation of the {@link RabbitMqChannel}
+ * An implementation of the {@link OnDemandChannelSupervisor}
  */
-public class RabbitMqChannelImpl implements RabbitMqChannel {
+public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
     private static final Logger logger = LoggerFactory.getLogger(RabbitMqChannelImpl.class);
 
     /**
@@ -263,7 +263,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         }
     }
 
-    ChannelStatus checkStatus() {
+    public ChannelStatus checkStatus() {
             if(!connectionFactory.canConnectionOpen()){
                 try {
                     close();

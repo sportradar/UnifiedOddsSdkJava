@@ -24,7 +24,7 @@ public class ChannelSupervisionSchedulerTest {
 
     private final ScheduledFuture scheduledSupervision = mock(ScheduledFuture.class);
 
-    private final RabbitMqChannelImpl rabbitMqChannel = mock(RabbitMqChannelImpl.class);
+    private final OnDemandChannelSupervisor onDemandSupervisor = mock(OnDemandChannelSupervisor.class);
 
     private final List<String> routingKeys = Arrays.asList("routingKeys");
 
@@ -32,13 +32,13 @@ public class ChannelSupervisionSchedulerTest {
 
     private final String interest = "someMessageInterest";
 
-    private final ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, rabbitMqMonitoringThreads);
+    private final ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(onDemandSupervisor, rabbitMqMonitoringThreads);
 
     @Test
     public void shouldOpenRabbitMqChannel() throws IOException {
         OpeningResult openingResult = supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        verify(rabbitMqChannel).open(routingKeys, messageConsumer, interest);
+        verify(onDemandSupervisor).open(routingKeys, messageConsumer, interest);
         assertEquals(NEWLY_OPENED, openingResult);
     }
 
@@ -63,7 +63,7 @@ public class ChannelSupervisionSchedulerTest {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        verify(rabbitMqChannel, times(1)).open(routingKeys, messageConsumer, interest);
+        verify(onDemandSupervisor, times(1)).open(routingKeys, messageConsumer, interest);
     }
 
     @Test
@@ -72,29 +72,29 @@ public class ChannelSupervisionSchedulerTest {
 
         ClosingResult closingResult = supervisorScheduler.closeChannel();
 
-        verify(rabbitMqChannel).close();
+        verify(onDemandSupervisor).close();
         assertEquals(NEWLY_CLOSED, closingResult);
     }
 
     @Test
-    public void closingClosedChannelShouldCloseRabbitMqChanngekOnlyOnce() throws IOException {
+    public void closingClosedChannelShouldCloseRabbitMqChanngelOnlyOnce() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         supervisorScheduler.closeChannel();
         supervisorScheduler.closeChannel();
 
-        verify(rabbitMqChannel, times(1)).close();
+        verify(onDemandSupervisor, times(1)).close();
     }
 
     @Test
-    public void closingNotOpenedChannelShouldNotUnscheduleSupervision() throws IOException {
+    public void closingNotYetOpenedChannelShouldNotUnscheduleSupervision() throws IOException {
         supervisorScheduler.closeChannel();
 
         verify(scheduledSupervision, never()).cancel(false);
     }
 
     @Test
-    public void openAndCloseOperationsShouldBeMutuallyExclusiveInMultithreadedContext() throws InterruptedException, IOException {
+    public void openAndCloseOperationsShouldBeMutuallyExclusiveAndIntegralInMultithreadedContext() throws InterruptedException, IOException {
         CountDownLatch startBarrier = new CountDownLatch(1);
         List<ChannelSupervisorExerciser> exercisers = IntStream
                 .range(0, 20)
