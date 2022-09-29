@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ChannelStatus.UnderlyingConnectionStatus;
 import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,20 +254,35 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 Thread.currentThread().interrupt();
             }
 
+            if (checkStatus().getUnderlyingConnectionStatus() == UnderlyingConnectionStatus.PERMANENTLY_CLOSED) {
+                return;
+            }
+        }
+        } finally {
+            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
+        }
+    }
+
+    private ChannelStatus checkStatus() {
             if(!connectionFactory.canConnectionOpen()){
                 try {
                     close();
                 } catch (IOException ignored) { }
-                return;
+                return new ChannelStatus(UnderlyingConnectionStatus.PERMANENTLY_CLOSED);
             }
 
+            stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration();
+            return new ChannelStatus(UnderlyingConnectionStatus.CAN_BE_OPEN);
+    }
+
+    private void stagesNotExitingTheLoopButPrematurilyTerminatingCurrentIteration() {
             if (channel == null) {
                 try {
                     logger.info("No channel. Creating connection channel ...");
                     initChannelQueue(routingKeys, messageInterest);
                 }
                 catch (IOException e) {
-                    continue;
+                    return;
                 }
             }
 
@@ -274,7 +290,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
             if(connectionFactory.getConnectionStarted() > channelStarted) {
                 logger.warn("Channel to old. Recreating connection channel ...");
                 restartChannel();
-                continue;
+                return;
             }
 
             // no messages arrived in last maxTimeBetweenMessages seconds, from the start of the channel
@@ -293,7 +309,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                             messageInterest,
                             channelLastMessage);
                 restartChannel();
-                continue;
+                return;
             }
 
             // we have received messages in the past, but not in last maxTimeBetweenMessages seconds
@@ -335,10 +351,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
                 }
                 restartChannel();
             }
-        }
-        } finally {
-            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
-        }
     }
 
     private void channelClosePure(){
