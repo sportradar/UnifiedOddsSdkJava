@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 public class ChannelSupervisorExerciserTest {
 
-    public static final int EXCESS_OF_EXECUTION_TIME = 2;
+    public static final int EXCESS_OF_EXECUTION_TIME = 20;
     private final ChannelSupervisionScheduler supervisor = mock(ChannelSupervisionScheduler.class);
 
     @Test
@@ -86,7 +86,7 @@ public class ChannelSupervisorExerciserTest {
     }
 
     @Test
-    public void shouldNotStartExecutionOnlyBeforeSignalIsSent() {
+    public void shouldNotStartExecutionBeforeSignalIsSent() {
         CountDownLatch latch = new CountDownLatch(1);
         Thread exerciser = new Thread(new ChannelSupervisorExerciser(2, supervisor, latch));
         exerciser.start();
@@ -105,6 +105,7 @@ public class ChannelSupervisorExerciserTest {
         exerciser.join();
 
         long timeActuallyTaken = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-        assertTrue(timeActuallyTaken < EXCESS_OF_EXECUTION_TIME);
+        assertTrue(timeActuallyTaken + " was actually more than headroom provided " + EXCESS_OF_EXECUTION_TIME + " in millis",
+                timeActuallyTaken < EXCESS_OF_EXECUTION_TIME);
     }
 }
