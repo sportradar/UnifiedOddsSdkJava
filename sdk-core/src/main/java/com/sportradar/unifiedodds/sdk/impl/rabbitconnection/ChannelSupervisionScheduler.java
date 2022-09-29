@@ -12,7 +12,7 @@ import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.WAS_OPENED_ALREADY;
 
-public class ChannelSupervisionScheduler {
+public class ChannelSupervisionScheduler implements ChannelSupervisor {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelSupervisionScheduler.class);
 
