@@ -146,18 +146,79 @@ public class RabbitMqChannelImplTest {
     }
 
     @Test
-    public void rabbitMqChannelShouldBeCreatedOnOpen() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+    public void rabbitMqChannelShouldBeCreatedOnOpeningSupervisor() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Channel channel = mock(ChannelRecoverable.class);
         Connection connection = mock(Connection.class);
         when(channel.queueDeclare()).thenReturn(mock(AMQP.Queue.DeclareOk.class));
         when(connection.createChannel()).thenReturn(channel);
         AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
         when(connectionFactory.getConnection()).thenReturn(connection);
-        RabbitMqChannelImpl rabbitMqChannel = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
+        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
 
-        rabbitMqChannel.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
+        supervisor.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
 
         verify(channel).basicConsume(isNull(), anyBoolean(), anyString(), any());
+    }
+
+    @Test
+    public void rabbitMqChannelShouldNotBeCreatedIfConnectionWasUnavailableWhenOpeningSupervisor() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
+
+        supervisor.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
+
+        //ensuring no exception is thrown
+    }
+
+    @Test
+    public void rabbitMqChannelShouldBeCreatedOnInspectionIfChannelIsNotYetCreated() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+        Channel channel = mock(ChannelRecoverable.class);
+        Connection connection = mock(Connection.class);
+        when(channel.queueDeclare()).thenReturn(mock(AMQP.Queue.DeclareOk.class));
+        when(connection.createChannel()).thenReturn(channel);
+        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        when(connectionFactory.getConnection()).thenReturn(null, connection);
+        when(connectionFactory.canConnectionOpen()).thenReturn(true);
+        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
+        supervisor.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
+
+        supervisor.checkStatus();
+
+        verify(channel).basicConsume(isNull(), anyBoolean(), anyString(), any());
+    }
+
+    @Test
+    public void rabbitMqChannelShouldNotBeCreatedOnInspectionIfChannelIsAlreadyCreated() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+        Channel channel = mock(ChannelRecoverable.class);
+        Connection connection = mock(Connection.class);
+        when(channel.queueDeclare()).thenReturn(mock(AMQP.Queue.DeclareOk.class));
+        when(connection.createChannel()).thenReturn(channel);
+        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        when(connectionFactory.getConnection()).thenReturn(connection);
+        when(connectionFactory.canConnectionOpen()).thenReturn(true);
+        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
+        supervisor.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
+
+        supervisor.checkStatus();
+
+        verify(channel, times(1)).basicConsume(isNull(), anyBoolean(), anyString(), any());
+    }
+
+    @Test
+    public void rabbitMqChannelShouldNotBeRestartedOnInspectionIfItIsUsingStaleConnection() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+        Channel channel = mock(ChannelRecoverable.class);
+        Connection connection = mock(Connection.class);
+        when(channel.queueDeclare()).thenReturn(mock(AMQP.Queue.DeclareOk.class));
+        when(connection.createChannel()).thenReturn(channel);
+        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        when(connectionFactory.getConnection()).thenReturn(connection);
+        when(connectionFactory.canConnectionOpen()).thenReturn(true);
+        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(mock(RabbitMqSystemListener.class), mock(WhoAmIReader.class), "any", connectionFactory);
+        supervisor.open(Arrays.asList("any"), mock(ChannelMessageConsumer.class), "any");
+
+        supervisor.checkStatus();
+
+        verify(channel, times(1)).basicConsume(isNull(), anyBoolean(), anyString(), any());
     }
 
     public interface ChannelRecoverable extends Channel, Recoverable {
