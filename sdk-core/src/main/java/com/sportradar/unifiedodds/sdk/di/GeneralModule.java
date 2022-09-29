@@ -130,6 +130,7 @@ public class GeneralModule implements Module {
 
         // other rabbit instances
         binder.bind(OnDemandChannelSupervisor.class).to(RabbitMqChannelImpl.class);
+        binder.bind(ChannelSupervisor.class).to(ChannelSupervisionScheduler.class);
         binder.bind(MessageReceiver.class).to(RabbitMqMessageReceiver.class);
 
         // managers

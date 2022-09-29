@@ -128,20 +128,6 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         this.messageInterest = messageInterest;
         this.timeUtils = new TimeUtilsImpl();
 
-//        new Thread(this::checkChannelStatus).start();
-
-        Thread monitorThread = new Thread(this::checkChannelStatus);
-        monitorThread.setName("MqChannelMonitor-" + messageInterest + "-" + hashCode());
-        monitorThread.setUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException(Thread thread, Throwable throwable) {
-                        logger.error(String.format("Uncaught thread exception monitoring %s", messageInterest), throwable);
-                    }
-                });
-
-        monitorThread.start();
-
         internalOpen();
     }
 
@@ -238,29 +224,6 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         shouldBeOpened = false;
         channelLastMessage = LocalDateTime.MIN;
         channelClosePure();
-    }
-
-    // todo: should use Scheduler without thread.sleep
-    private void checkChannelStatus()
-    {
-        try{
-        while(shouldBeOpened) {
-
-            try {
-                Thread.sleep(1000L * 20L);
-            }
-            catch (InterruptedException e) {
-                logger.warn("Interrupted!", e);
-                Thread.currentThread().interrupt();
-            }
-
-            if (checkStatus().getUnderlyingConnectionStatus() == UnderlyingConnectionStatus.PERMANENTLY_CLOSED) {
-                return;
-            }
-        }
-        } finally {
-            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
-        }
     }
 
     public ChannelStatus checkStatus() {

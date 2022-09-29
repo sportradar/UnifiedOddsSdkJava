@@ -1,5 +1,6 @@
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,7 @@ public class ChannelSupervisionScheduler implements ChannelSupervisor {
 
     private String messageInterest;
 
-
-
+    @Inject
     public ChannelSupervisionScheduler(OnDemandChannelSupervisor rabbitMqChannel, RabbitMqMonitoringThreads rabbitMqMonitoringThreads) {
         this.rabbitMqChannel = rabbitMqChannel;
         this.rabbitMqMonitoringThreads = rabbitMqMonitoringThreads;

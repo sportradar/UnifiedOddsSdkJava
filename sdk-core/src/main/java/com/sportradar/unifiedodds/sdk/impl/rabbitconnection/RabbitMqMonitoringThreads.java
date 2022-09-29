@@ -7,7 +7,7 @@ public class RabbitMqMonitoringThreads {
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMqMonitoringThreads.class);
 
-
+    // todo: should use Scheduler without thread.sleep
     public void startNew(Runnable runnable, String messageInterest, int channelId) {
         Thread monitorThread = new Thread(runnable);
         monitorThread.setName("MqChannelMonitor-" + messageInterest + "-" + channelId);
