@@ -86,15 +86,17 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
      * Initializes a new instance of the {@link RabbitMqChannelImpl}
      *
      * @param rabbitMqSystemListener a {@link RabbitMqSystemListener} instance used to dispatch system events
-     * @param whoAmIReader a {@link WhoAmIReader} used to access current SDK instance context information
-     * @param sdkVersion version of the sdk
-     * @param connectionFactory Connection factory for getting actual connection
+     * @param whoAmIReader           a {@link WhoAmIReader} used to access current SDK instance context information
+     * @param sdkVersion             version of the sdk
+     * @param connectionFactory      Connection factory for getting actual connection
+     * @param timeUtils              a time utility class
      */
     @Inject
-    public RabbitMqChannelImpl(RabbitMqSystemListener rabbitMqSystemListener, WhoAmIReader whoAmIReader, @Named("version") String sdkVersion, AMQPConnectionFactory connectionFactory) {
+    public RabbitMqChannelImpl(RabbitMqSystemListener rabbitMqSystemListener, WhoAmIReader whoAmIReader, @Named("version") String sdkVersion, AMQPConnectionFactory connectionFactory, TimeUtils timeUtils) {
         Preconditions.checkNotNull(rabbitMqSystemListener);
         Preconditions.checkNotNull(whoAmIReader);
         Preconditions.checkNotNull(connectionFactory);
+        Preconditions.checkNotNull(timeUtils);
 
         this.rabbitMqSystemListener = rabbitMqSystemListener;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
@@ -102,6 +104,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         this.connectionFactory = connectionFactory;
         this.channelLastMessage = LocalDateTime.MIN;
         this.channelStarted = 0;
+        this.timeUtils = timeUtils;
     }
 
     /**
@@ -126,7 +129,6 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         this.routingKeys = routingKeys;
         this.channelMessageConsumer = channelMessageConsumer;
         this.messageInterest = messageInterest;
-        this.timeUtils = new TimeUtilsImpl();
 
         internalOpen();
     }
@@ -180,7 +182,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             public synchronized void handleDelivery(String tag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                 MDC.setContextMap(sdkMdcContextDescription);
                 try {
-                    channelLastMessage = LocalDateTime.now();
+                    channelLastMessage = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeUtils.now()), ZoneId.systemDefault());
                     channelMessageConsumer.onMessageReceived(envelope.getRoutingKey(), body, properties, new TimeUtilsImpl().now());
                 } catch (Exception e) {
                     logger.error(String.format("An exception occurred while processing AMQP message. Routing key: '%s', body: '%s'",
@@ -259,7 +261,9 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             // no messages arrived in last maxTimeBetweenMessages seconds, from the start of the channel
             Instant channelStartedInstant = Instant.ofEpochMilli(channelStarted);
             LocalDateTime channelStartedDateTime = LocalDateTime.ofInstant(channelStartedInstant, ZoneId.systemDefault());
-            Duration channelDuration = Duration.between(LocalDateTime.now(), channelStartedDateTime).abs();
+            long now = timeUtils.now();
+            LocalDateTime dateTimeNow = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.systemDefault());
+            Duration channelDuration = Duration.between(dateTimeNow, channelStartedDateTime).abs();
             long channelStartedDiff = channelDuration.toMinutes() != 0 && channelDuration.toMinutes() < 1000 ? channelDuration.toMillis() : 1; // to avoid long overflow
             channelStartedDiff = Math.abs(channelStartedDiff / 1000);
             if (channelLastMessage == LocalDateTime.MIN && channelStarted > 0 && channelStartedDiff >= 180)
@@ -276,7 +280,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             }
 
             // we have received messages in the past, but not in last maxTimeBetweenMessages seconds
-            Duration duration = Duration.between(LocalDateTime.now(), channelLastMessage).abs();
+            Duration duration = Duration.between(dateTimeNow, channelLastMessage).abs();
             long lastMessageDiff = duration.toMinutes() != 0 && duration.toMinutes() < 1000 ? duration.toMillis() : 1; // to avoid long overflow
             lastMessageDiff = Math.abs(lastMessageDiff / 1000);
             if (channelLastMessage != LocalDateTime.MIN && lastMessageDiff >= 180)
