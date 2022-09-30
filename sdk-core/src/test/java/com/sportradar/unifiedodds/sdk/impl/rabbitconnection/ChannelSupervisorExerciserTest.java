@@ -13,8 +13,7 @@ import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
 import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.WAS_OPENED_ALREADY;
 import static com.sportradar.unifiedodds.sdk.shared.Helper.sleep;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -22,8 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class ChannelSupervisorExerciserTest {
 
-    public static final int EXCESS_OF_EXECUTION_TIME = 20;
-    private final ChannelSupervisionScheduler supervisor = mock(ChannelSupervisionScheduler.class);
+    private final ChannelSupervisor supervisor = mock(ChannelSupervisionScheduler.class);
 
     @Test
     public void shouldCountNonDuplicateChannelOpeningCallsHappened() throws IOException {
@@ -86,26 +84,16 @@ public class ChannelSupervisorExerciserTest {
     }
 
     @Test
-    public void shouldNotStartExecutionBeforeSignalIsSent() {
-        CountDownLatch latch = new CountDownLatch(1);
-        Thread exerciser = new Thread(new ChannelSupervisorExerciser(2, supervisor, latch));
-        exerciser.start();
-
-        sleep(EXCESS_OF_EXECUTION_TIME);
-
-        assertTrue("thread finished work", exerciser.isAlive());
-        latch.countDown();
-    }
-
-    @Test
     public void shouldStartExecutionOnlyAfterSignalIsSent() throws InterruptedException {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        Thread exerciser = new Thread(new ChannelSupervisorExerciser(2, supervisor, new CountDownLatch(0)));
+        CountDownLatch signalToStart = new CountDownLatch(1);
+        Thread exerciser = new Thread(new ChannelSupervisorExerciser(1, supervisor, signalToStart));
         exerciser.start();
-        exerciser.join();
+        Thread.yield();
+        assertTrue("exerciser was not waiting for a signal", exerciser.isAlive());
 
-        long timeActuallyTaken = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-        assertTrue(timeActuallyTaken + " was actually more than headroom provided " + EXCESS_OF_EXECUTION_TIME + " in millis",
-                timeActuallyTaken < EXCESS_OF_EXECUTION_TIME);
+        signalToStart.countDown();
+
+        exerciser.join(1000);
+        assertFalse("exerciser potentially missed the signal", exerciser.isAlive());
     }
 }
