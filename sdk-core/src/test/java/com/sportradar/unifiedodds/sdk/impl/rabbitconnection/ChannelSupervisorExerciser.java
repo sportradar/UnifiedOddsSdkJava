@@ -16,14 +16,14 @@ class ChannelSupervisorExerciser implements Runnable {
 
     private final int numberOrIterations;
 
-    private final ChannelSupervisionScheduler supervisor;
+    private final ChannelSupervisor supervisor;
     private final CountDownLatch latch;
 
     private final List<String> routingKeys = Arrays.asList("routingKeys");
 
     private final ChannelMessageConsumer consumer = getAnyChannelMessageConsumer();
 
-    ChannelSupervisorExerciser(int numberOrIterations, ChannelSupervisionScheduler supervisor, CountDownLatch latch) {
+    ChannelSupervisorExerciser(int numberOrIterations, ChannelSupervisor supervisor, CountDownLatch latch) {
         openingResults = new OpeningResult[numberOrIterations];
         closingResults = new ClosingResult[numberOrIterations];
         this.numberOrIterations = numberOrIterations;
