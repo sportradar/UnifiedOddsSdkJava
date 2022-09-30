@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
- * An implementation of the {@link RabbitMqChannel}
+ * An implementation of the {@link OnDemandChannelSupervisor}
  */
-public class RabbitMqChannelImpl implements RabbitMqChannel {
+public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
     private static final Logger logger = LoggerFactory.getLogger(RabbitMqChannelImpl.class);
 
     /**
@@ -127,20 +127,6 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         this.channelMessageConsumer = channelMessageConsumer;
         this.messageInterest = messageInterest;
         this.timeUtils = new TimeUtilsImpl();
-
-//        new Thread(this::checkChannelStatus).start();
-
-        Thread monitorThread = new Thread(this::checkChannelStatus);
-        monitorThread.setName("MqChannelMonitor-" + messageInterest + "-" + hashCode());
-        monitorThread.setUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException(Thread thread, Throwable throwable) {
-                        logger.error(String.format("Uncaught thread exception monitoring %s", messageInterest), throwable);
-                    }
-                });
-
-        monitorThread.start();
 
         internalOpen();
     }
@@ -240,30 +226,7 @@ public class RabbitMqChannelImpl implements RabbitMqChannel {
         channelClosePure();
     }
 
-    // todo: should use Scheduler without thread.sleep
-    private void checkChannelStatus()
-    {
-        try{
-        while(shouldBeOpened) {
-
-            try {
-                Thread.sleep(1000L * 20L);
-            }
-            catch (InterruptedException e) {
-                logger.warn("Interrupted!", e);
-                Thread.currentThread().interrupt();
-            }
-
-            if (checkStatus().getUnderlyingConnectionStatus() == UnderlyingConnectionStatus.PERMANENTLY_CLOSED) {
-                return;
-            }
-        }
-        } finally {
-            logger.warn(String.format("Thread monitoring %s ended", messageInterest));
-        }
-    }
-
-    private ChannelStatus checkStatus() {
+    public ChannelStatus checkStatus() {
             if(!connectionFactory.canConnectionOpen()){
                 try {
                     close();

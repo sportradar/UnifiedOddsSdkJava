@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Defines methods implemented by classes used to connect to the RabbitMQ broker
  */
-public interface RabbitMqChannel {
+public interface OnDemandChannelSupervisor {
     /**
      * Opens the current channel and binds the created queue to the provided routing keys
      *
@@ -29,4 +29,10 @@ public interface RabbitMqChannel {
      * @throws IOException if the channel closure failed
      */
     void close() throws IOException;
+
+    /**
+     * Checks channel status on demand
+     */
+
+    ChannelStatus checkStatus();
 }

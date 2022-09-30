@@ -18,9 +18,9 @@ import java.util.List;
  */
 public class RabbitMqMessageReceiver implements MessageReceiver {
     /**
-     * The {@link RabbitMqChannel} instance which will provide the message payloads
+     * The {@link ChannelSupervisor} instance which will provide the message payloads
      */
-    private final RabbitMqChannel rabbitMqChannel;
+    private final ChannelSupervisor channelSupervisor;
 
     /**
      * The raw message consumer
@@ -30,14 +30,14 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
     /**
      * Initializes a new instance of {@link RabbitMqMessageReceiver}
      *
-     * @param rabbitMqChannel a {@link RabbitMqChannel} instance which will provide the message payloads
+     * @param channelSupervisor a {@link ChannelSupervisor} instance which will provide the message payloads
      * @param channelMessageConsumer the raw message consumer
      */
     @Inject
-    RabbitMqMessageReceiver(RabbitMqChannel rabbitMqChannel, ChannelMessageConsumer channelMessageConsumer) {
-        Preconditions.checkNotNull(rabbitMqChannel);
+    RabbitMqMessageReceiver(ChannelSupervisor channelSupervisor, ChannelMessageConsumer channelMessageConsumer) {
+        Preconditions.checkNotNull(channelSupervisor);
 
-        this.rabbitMqChannel = rabbitMqChannel;
+        this.channelSupervisor = channelSupervisor;
         this.channelMessageConsumer = channelMessageConsumer;
     }
 
@@ -52,7 +52,7 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
     public void open(List<String> routingKeys, MessageConsumer messageConsumer) throws IOException {
         channelMessageConsumer.open(messageConsumer);
 
-        rabbitMqChannel.open(routingKeys, channelMessageConsumer, messageConsumer.getMessageInterest().toShortString());
+        channelSupervisor.openChannel(routingKeys, channelMessageConsumer, messageConsumer.getMessageInterest().toShortString());
     }
 
     /**
@@ -62,6 +62,6 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
      */
     @Override
     public void close() throws IOException {
-        rabbitMqChannel.close();
+        channelSupervisor.closeChannel();
     }
 }

@@ -6,10 +6,10 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.rabbitmq.client.RecoveryListener;
 import com.rabbitmq.client.ShutdownListener;
-import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.RabbitMqChannel;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OnDemandChannelSupervisor;
 
 /**
- * Defines methods invoked by the {@link RabbitMqChannel} regarding system events
+ * Defines methods invoked by the {@link OnDemandChannelSupervisor} regarding system events
  * (recovery handling, connection shutdown,...)
  */
 public interface RabbitMqSystemListener extends RecoveryListener, ShutdownListener {

@@ -129,7 +129,8 @@ public class GeneralModule implements Module {
         binder.bind(SingleInstanceAMQPConnectionFactory.class).in(Singleton.class);
 
         // other rabbit instances
-        binder.bind(RabbitMqChannel.class).to(RabbitMqChannelImpl.class);
+        binder.bind(OnDemandChannelSupervisor.class).to(RabbitMqChannelImpl.class);
+        binder.bind(ChannelSupervisor.class).to(ChannelSupervisionScheduler.class);
         binder.bind(MessageReceiver.class).to(RabbitMqMessageReceiver.class);
 
         // managers

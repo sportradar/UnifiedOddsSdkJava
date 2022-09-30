@@ -1,27 +1,30 @@
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.NEWLY_CLOSED;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class ChannelSupervisionSchedulerTest {
 
-    private final ScheduledExecutorService executorService = mock(ScheduledExecutorService.class);
+    private final RabbitMqMonitoringThreads rabbitMqMonitoringThreads = mock(RabbitMqMonitoringThreads.class);
 
     private final ScheduledFuture scheduledSupervision = mock(ScheduledFuture.class);
 
-    private final RabbitMqChannel rabbitMqChannel = mock(RabbitMqChannel.class);
+    private final OnDemandChannelSupervisor onDemandSupervisor = mock(OnDemandChannelSupervisor.class);
 
     private final List<String> routingKeys = Arrays.asList("routingKeys");
 
@@ -29,33 +32,30 @@ public class ChannelSupervisionSchedulerTest {
 
     private final String interest = "someMessageInterest";
 
-    private final ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(rabbitMqChannel, executorService);
-
-    @Before
-    public void setup() {
-        when(executorService.scheduleAtFixedRate(any(), anyLong(), anyLong(), any())).thenReturn(scheduledSupervision);
-    }
+    private final ChannelSupervisionScheduler supervisorScheduler = new ChannelSupervisionScheduler(onDemandSupervisor, rabbitMqMonitoringThreads);
 
     @Test
     public void shouldOpenRabbitMqChannel() throws IOException {
-        supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
+        OpeningResult openingResult = supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        verify(rabbitMqChannel).open(routingKeys, messageConsumer, interest);
+        verify(onDemandSupervisor).open(routingKeys, messageConsumer, interest);
+        assertEquals(NEWLY_OPENED, openingResult);
     }
 
     @Test
     public void openingChannelShouldAlsoScheduleSupervision() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        verify(executorService).scheduleAtFixedRate(any(), eq(20L), eq(20L), eq(TimeUnit.SECONDS));
+        verify(rabbitMqMonitoringThreads).startNew(any(), eq(interest), anyInt());
     }
 
     @Test
     public void openingChannelTwiceShouldScheduleSupervisionOnlyOnce() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
-        supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
+        OpeningResult openingResult = supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        verify(executorService, times(1)).scheduleAtFixedRate(any(), eq(20L), eq(20L), eq(TimeUnit.SECONDS));
+        verify(rabbitMqMonitoringThreads, times(1)).startNew(any(), eq(interest), anyInt());
+        assertEquals(OpeningResult.WAS_OPENED_ALREADY, openingResult);
     }
 
     @Test
@@ -63,50 +63,61 @@ public class ChannelSupervisionSchedulerTest {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        verify(rabbitMqChannel, times(1)).open(routingKeys, messageConsumer, interest);
+        verify(onDemandSupervisor, times(1)).open(routingKeys, messageConsumer, interest);
     }
 
     @Test
     public void shouldCloseRabbitMqChannel() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
-        supervisorScheduler.closeChannel();
+        ClosingResult closingResult = supervisorScheduler.closeChannel();
 
-        verify(rabbitMqChannel).close();
+        verify(onDemandSupervisor).close();
+        assertEquals(NEWLY_CLOSED, closingResult);
     }
 
     @Test
-    public void closingChannelShouldAlsoUnscheduleSupervision() throws IOException {
-        supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
-
-        supervisorScheduler.closeChannel();
-
-        verify(scheduledSupervision).cancel(false);
-    }
-    @Test
-    public void closingClosedChannelShouldUnscheduleSupervisionOnlyOnce() throws IOException {
+    public void closingClosedChannelShouldCloseRabbitMqChanngelOnlyOnce() throws IOException {
         supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
 
         supervisorScheduler.closeChannel();
         supervisorScheduler.closeChannel();
 
-        verify(scheduledSupervision, times(1)).cancel(false);
+        verify(onDemandSupervisor, times(1)).close();
     }
 
     @Test
-    public void closingClosedChannelShouldCloseRabbitMqChanngekOnlyOnce() throws IOException {
-        supervisorScheduler.openChannel(routingKeys, messageConsumer, interest);
-
-        supervisorScheduler.closeChannel();
-        supervisorScheduler.closeChannel();
-
-        verify(rabbitMqChannel, times(1)).close();
-    }
-
-    @Test
-    public void closingNotOpenedChannelShouldNotUnscheduleSupervision() throws IOException {
+    public void closingNotYetOpenedChannelShouldNotUnscheduleSupervision() throws IOException {
         supervisorScheduler.closeChannel();
 
         verify(scheduledSupervision, never()).cancel(false);
     }
+
+    @Test
+    public void openAndCloseOperationsShouldBeMutuallyExclusiveAndIntegralInMultithreadedContext() throws InterruptedException, IOException {
+        CountDownLatch startBarrier = new CountDownLatch(1);
+        List<ChannelSupervisorExerciser> exercisers = IntStream
+                .range(0, 20)
+                .mapToObj(i -> new ChannelSupervisorExerciser(1000, supervisorScheduler, startBarrier))
+                .collect(Collectors.toList());
+        List<Thread> threads = exercisers
+                .stream()
+                .map(e -> new Thread(e))
+                .collect(Collectors.toList());
+        threads.forEach(t -> t.start());
+        startBarrier.countDown();
+
+        for (int i = 0; i < 20; i++) {
+            threads.get(i).join(10000);
+        }
+
+        long countOfOpens = exercisers.stream().mapToLong(e -> e.getCountOfNonDuplicateOpeningCalls()).sum();
+        long countOfCloses = exercisers.stream().mapToLong(e -> e.getCountOfNonDuplicateOpeningCalls()).sum();
+        if (supervisorScheduler.closeChannel() == NEWLY_CLOSED) {
+            assertEquals(countOfOpens, countOfCloses - 1);
+        } else {
+            assertEquals(countOfOpens, countOfCloses);
+        }
+    }
+
 }

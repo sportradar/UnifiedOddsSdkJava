@@ -16,8 +16,12 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,6 +34,7 @@ public class RabbitMqChannelImplTest {
     private AMQPConnectionFactory connectionFactory;
 
     private RabbitMqChannelImpl rabbitMqChannel;
+    private ScheduledFuture<?> scheduledSupervision;
 
     //private Thread monitorThread;
 
@@ -59,10 +64,18 @@ public class RabbitMqChannelImplTest {
         rabbitMqChannel = new RabbitMqChannelImpl(rabbitMqSystemListener, whoAmIReader, sdkVersion, connectionFactory);
         ArrayList<String> routingKeys = new ArrayList<String>();
         routingKeys.add("-.-.-.snapshot_complete.-.-.-.-");
+        scheduledSupervision = new ScheduledThreadPoolExecutor(1).scheduleAtFixedRate(() -> rabbitMqChannel.checkStatus(), 20L, 20L, TimeUnit.SECONDS);
         rabbitMqChannel.open(routingKeys, channelMessageConsumer, "SystemMessages");
 
         //monitorThread = new Thread(rabbitMqChannel::checkChannelStatus);
         //monitorThread.setUncaughtExceptionHandler(myUncaughtExceptionHandler);
+    }
+
+    @After
+    public void tearDown() {
+        if (scheduledSupervision != null) {
+            scheduledSupervision.cancel(false);
+        }
     }
 
     private void assertContainsLogLine(final String text) {
