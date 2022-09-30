@@ -10,6 +10,7 @@ import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import org.apache.http.HttpStatus;
@@ -117,6 +118,8 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      * Can the feed connection be opened
      */
     private boolean canFeedBeOpened;
+    private FirewallChecker firewallChecker;
+    private TimeUtils timeUtils;
 
     /**
      * Initializes a new instance of the {@link SingleInstanceAMQPConnectionFactory} class
@@ -133,11 +136,17 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
                                                SDKConnectionStatusListener connectionStatusListener,
                                                @Named("version") String version,
                                                WhoAmIReader whoAmIReader,
-                                               @Named("DedicatedRabbitMqExecutor") ExecutorService dedicatedRabbitMqExecutor) {
+                                               @Named("DedicatedRabbitMqExecutor") ExecutorService dedicatedRabbitMqExecutor,
+                                               FirewallChecker firewallChecker,
+                                               TimeUtils timeUtils) {
+
+
         checkNotNull(rabbitConnectionFactory, "rabbitConnectionFactory cannot be a null reference");
         checkNotNull(config, "config cannot be a null reference");
         checkNotNull(connectionStatusListener, "connectionStatusListener cannot be a null reference");
         checkNotNull(dedicatedRabbitMqExecutor, "dedicatedRabbitMqExecutor cannot be a null reference");
+        checkNotNull(firewallChecker);
+        checkNotNull(timeUtils);
 
         this.rabbitConnectionFactory = rabbitConnectionFactory;
         this.config = config;
@@ -145,6 +154,8 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         this.version = version;
         this.whoAmIReader = whoAmIReader;
         this.dedicatedRabbitMqExecutor = dedicatedRabbitMqExecutor;
+        this.firewallChecker = firewallChecker;
+        this.timeUtils = timeUtils;
 
         this.messagingPassword = Strings.isNullOrEmpty(config.getMessagingPassword()) ? "" : config.getMessagingPassword();
         this.shutdownListener = new ShutdownListenerImpl(this);
@@ -218,7 +229,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         rabbitConnectionFactory.setExceptionHandler(new SDKExceptionHandler(connectionStatusListener, config.getAccessToken()));
 
         Connection con = rabbitConnectionFactory.newConnection(dedicatedRabbitMqExecutor);
-        connectionStarted = new TimeUtilsImpl().now();
+        connectionStarted = timeUtils.now();
         logger.info("Connection created successfully");
         return con;
     }
@@ -230,7 +241,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
      */
     private SDKConnection createSdkConnection()
                 throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
-        checkFirewall();
+        firewallChecker.checkFirewall(config.getAPIHost());
         logger.info("Creating new SDKConnection for {}", config.getMessagingHost());
         Connection actualConnection = null;
         if (config.getUseMessagingSsl()) {
@@ -264,45 +275,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         return sdkConnection;
     }
 
-    private void checkFirewall() throws IOException {
-        URI uri;
-        try {
-            uri = new URI(config.getAPIHost());
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid API host format", e);
-        }
-        try {
-            Socket s = new Socket(uri.getHost(), uri.getPort() < 0 ? 443 : uri.getPort());
-            s.close();
-        } catch (UnknownHostException uhe) {
-            logger.error("Unable to lookup " + config.getAPIHost() + ". Network down?");
-            System.exit(3);
-        } catch (SocketException e) {
-            boolean fwProblem = e.getMessage().toLowerCase().contains("permission denied");
-            if (!fwProblem)
-                return;
-            CloseableHttpClient httpClient = HttpClientBuilder.create()
-                    .useSystemProperties()
-                    .setRedirectStrategy(new LaxRedirectStrategy())
-                    .build();
-            try {
-                HttpGet httpGet = new HttpGet("http://ipecho.net/plain");
-                ResponseHandler<String> handler = resp -> {
-                    if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
-                        return EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8);
-                    else
-                        return "";
-                };
-                String resp = httpClient.execute(httpGet, handler);
-                throw new IOException(
-                            "Firewall problem? If you believe your firewall is ok, please contact Sportradar and check that your ip ("
-                                        + resp + ") is whitelisted ",
-                            e);
-            } catch (Exception exc) {
-                logger.warn("Error during firewall test, ex:", exc);
-            }
-        }
-    }
+
 
     /**
      * Returns a {@link Connection} instance representing connection to the AMQP broker
@@ -434,5 +407,47 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
         @Override
         public void handleUnblocked() throws IOException { this.parent.handleBlocked(null, false); }
+    }
+
+    static class FirewallChecker {
+        void checkFirewall(String apiHost) throws IOException {
+            URI uri;
+            try {
+                uri = new URI(apiHost);
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException("Invalid API host format", e);
+            }
+            try {
+                Socket s = new Socket(uri.getHost(), uri.getPort() < 0 ? 443 : uri.getPort());
+                s.close();
+            } catch (UnknownHostException uhe) {
+                logger.error("Unable to lookup " + apiHost + ". Network down?");
+                System.exit(3);
+            } catch (SocketException e) {
+                boolean fwProblem = e.getMessage().toLowerCase().contains("permission denied");
+                if (!fwProblem)
+                    return;
+                CloseableHttpClient httpClient = HttpClientBuilder.create()
+                        .useSystemProperties()
+                        .setRedirectStrategy(new LaxRedirectStrategy())
+                        .build();
+                try {
+                    HttpGet httpGet = new HttpGet("http://ipecho.net/plain");
+                    ResponseHandler<String> handler = resp -> {
+                        if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+                            return EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8);
+                        else
+                            return "";
+                    };
+                    String resp = httpClient.execute(httpGet, handler);
+                    throw new IOException(
+                            "Firewall problem? If you believe your firewall is ok, please contact Sportradar and check that your ip ("
+                                    + resp + ") is whitelisted ",
+                            e);
+                } catch (Exception exc) {
+                    logger.warn("Error during firewall test, ex:", exc);
+                }
+            }
+        }
     }
 }
