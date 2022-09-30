@@ -311,7 +311,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
                         logger.error(msg, e);
                         Thread.currentThread().interrupt();
                     }
-                    catch(Exception ex){
+                    catch(Throwable ex){
                         logger.error("Error closing connection", ex);
                     }
                     logger.info("Resetting connection finished for the channel with channelNumber: {}", channelNumber);

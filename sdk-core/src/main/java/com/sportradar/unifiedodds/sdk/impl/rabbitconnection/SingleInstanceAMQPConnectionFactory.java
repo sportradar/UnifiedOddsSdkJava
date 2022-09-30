@@ -321,6 +321,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         } finally {
             this.connection = null;
             connectionStarted = 0;
+            logger.info("Connection close executed");
         }
         logger.info("Connection closed");
     }
