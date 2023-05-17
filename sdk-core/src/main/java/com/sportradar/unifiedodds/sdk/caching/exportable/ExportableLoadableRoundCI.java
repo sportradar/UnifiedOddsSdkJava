@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableLoadableRoundCI implements Serializable {
+
     private Map<Locale, String> names;
     private Map<Locale, String> groupNames;
     private Map<Locale, String> phaseOrGroupLongNames;
@@ -23,22 +25,24 @@ public class ExportableLoadableRoundCI implements Serializable {
     private List<Locale> cachedSummaryLocales;
     private List<Locale> cachedFixtureLocales;
 
-    public ExportableLoadableRoundCI(Map<Locale, String> names,
-                                     Map<Locale, String> groupNames,
-                                     Map<Locale, String> phaseOrGroupLongNames,
-                                     Locale defaultLocale,
-                                     String type,
-                                     String group,
-                                     String groupId,
-                                     String otherMatchId,
-                                     Integer number,
-                                     Integer cupRoundMatches,
-                                     Integer cupRoundMatchNumber,
-                                     Integer betradarId,
-                                     String phase,
-                                     String betradarName,
-                                     List<Locale> cachedSummaryLocales,
-                                     List<Locale> cachedFixtureLocales) {
+    public ExportableLoadableRoundCI(
+        Map<Locale, String> names,
+        Map<Locale, String> groupNames,
+        Map<Locale, String> phaseOrGroupLongNames,
+        Locale defaultLocale,
+        String type,
+        String group,
+        String groupId,
+        String otherMatchId,
+        Integer number,
+        Integer cupRoundMatches,
+        Integer cupRoundMatchNumber,
+        Integer betradarId,
+        String phase,
+        String betradarName,
+        List<Locale> cachedSummaryLocales,
+        List<Locale> cachedFixtureLocales
+    ) {
         this.names = names;
         this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
@@ -161,7 +165,9 @@ public class ExportableLoadableRoundCI implements Serializable {
         this.phase = phase;
     }
 
-    public String getBetradarName() { return betradarName; }
+    public String getBetradarName() {
+        return betradarName;
+    }
 
     public void setBetradarName(String betradarName) {
         this.betradarName = betradarName;

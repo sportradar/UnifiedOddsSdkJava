@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.DrawResult;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -14,6 +13,7 @@ import java.util.Map;
  * A basic implementation of the {@link DrawResult}
  */
 public class DrawResultImpl implements DrawResult {
+
     private final Integer value;
     private final Map<Locale, String> names;
 

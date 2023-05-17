@@ -10,7 +10,6 @@ import java.util.Map;
  * Represents a mapping validator used to determine whether a specific mapping can be used with specific market
  */
 public interface MappingValidator {
-
     /**
      * Determines whether a specific mapping can be used to map market with provided specifiers
      * @param specifiers A {@link Map} containing market specifiers

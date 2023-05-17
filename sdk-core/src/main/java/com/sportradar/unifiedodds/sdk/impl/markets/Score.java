@@ -12,6 +12,7 @@ import com.google.common.base.Strings;
  * // TODO @eti: Javadoc
  */
 class Score {
+
     private final double homeScore;
     private final double awayScore;
 
@@ -20,32 +21,38 @@ class Score {
         this.awayScore = awayScore;
     }
 
-    static Score parse(String value){
+    static Score parse(String value) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(value));
 
         String[] split = value.split(":");
         if (split.length != 2) {
-            throw new IllegalArgumentException("The format of value=" + value + " is not correct. It must contain exactly one ':' character");
+            throw new IllegalArgumentException(
+                "The format of value=" + value + " is not correct. It must contain exactly one ':' character"
+            );
         }
 
         double homeScore;
         try {
             homeScore = Double.parseDouble(split[0]);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("The representation of home score=" + split[0] + " is not correct");
+            throw new IllegalArgumentException(
+                "The representation of home score=" + split[0] + " is not correct"
+            );
         }
 
         double awayScore;
         try {
             awayScore = Double.parseDouble(split[1]);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("The representation of away score=" + split[1] + " is not correct");
+            throw new IllegalArgumentException(
+                "The representation of away score=" + split[1] + " is not correct"
+            );
         }
 
         return new Score(homeScore, awayScore);
     }
 
-    public static Score sumScores(Score score1, Score score2){
+    public static Score sumScores(Score score1, Score score2) {
         Preconditions.checkNotNull(score1);
         Preconditions.checkNotNull(score2);
 
@@ -82,7 +89,7 @@ class Score {
     @Override
     public String toString() {
         if ((homeScore % 1) == 0 && (awayScore % 1) == 0) {
-            return (int)homeScore + ":" + (int)awayScore;
+            return (int) homeScore + ":" + (int) awayScore;
         }
 
         return homeScore + ":" + awayScore;

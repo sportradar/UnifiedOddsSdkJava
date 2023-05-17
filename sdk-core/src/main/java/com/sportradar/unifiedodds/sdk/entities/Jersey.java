@@ -71,5 +71,4 @@ public interface Jersey {
     default String getSleeveDetail() {
         return null;
     }
-
 }

@@ -18,20 +18,23 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides information about a tournament season
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "UnnecessaryParentheses" }
+)
 public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
-    private final static Logger logger = LoggerFactory.getLogger(CurrentSeasonInfoImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(CurrentSeasonInfoImpl.class);
 
     /**
      * An {@link URN} uniquely identifying the current season
@@ -94,12 +97,14 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      * @param locales a {@link List} of supported locales
      * @param exceptionHandlingStrategy - the exception handling policy
      */
-    CurrentSeasonInfoImpl(SeasonCI currentSeasonCi,
-                          TournamentCI seasonEndpointCI,
-                          SportEventCache sportEventCache,
-                          SportEntityFactory sportEntityFactory,
-                          List<Locale> locales,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    CurrentSeasonInfoImpl(
+        SeasonCI currentSeasonCi,
+        TournamentCI seasonEndpointCI,
+        SportEventCache sportEventCache,
+        SportEntityFactory sportEntityFactory,
+        List<Locale> locales,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(currentSeasonCi);
         Preconditions.checkNotNull(seasonEndpointCI);
         Preconditions.checkNotNull(sportEventCache);
@@ -112,7 +117,9 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
         this.year = currentSeasonCi.getYear();
         this.startDate = currentSeasonCi.getStartDate();
         this.endDate = currentSeasonCi.getEndDate();
-        this.names = locales.stream()
+        this.names =
+            locales
+                .stream()
                 .filter(l -> currentSeasonCi.getName(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, currentSeasonCi::getName));
 
@@ -183,7 +190,9 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public SeasonCoverage getCoverage() {
-        return seasonEndpointCI.getSeasonCoverage() == null ? null : new SeasonCoverageImpl(seasonEndpointCI.getSeasonCoverage());
+        return seasonEndpointCI.getSeasonCoverage() == null
+            ? null
+            : new SeasonCoverageImpl(seasonEndpointCI.getSeasonCoverage());
     }
 
     /**
@@ -195,8 +204,12 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     public List<Group> getGroups() {
         List<GroupCI> groups = seasonEndpointCI.getGroups(locales);
 
-        return groups == null ? null :
-                groups.stream().map(g -> new GroupImpl(g, locales, sportEntityFactory, exceptionHandlingStrategy)).collect(Collectors.toList());
+        return groups == null
+            ? null
+            : groups
+                .stream()
+                .map(g -> new GroupImpl(g, locales, sportEntityFactory, exceptionHandlingStrategy))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -206,7 +219,9 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public Round getCurrentRound() {
-        return seasonEndpointCI.getRound(locales) == null ? null : new RoundImpl(seasonEndpointCI.getRound(locales), locales);
+        return seasonEndpointCI.getRound(locales) == null
+            ? null
+            : new RoundImpl(seasonEndpointCI.getRound(locales), locales);
     }
 
     /**
@@ -219,8 +234,13 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     @Override
     public List<Competitor> getCompetitors() {
         try {
-            return seasonEndpointCI.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCI.getCompetitorIds(locales), seasonEndpointCI, locales);
+            return seasonEndpointCI.getCompetitorIds(locales) == null
+                ? null
+                : sportEntityFactory.buildStreamCompetitors(
+                    seasonEndpointCI.getCompetitorIds(locales),
+                    seasonEndpointCI,
+                    locales
+                );
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;
@@ -265,15 +285,28 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     private <T> T handleException(String request, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
-                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(this.getClass() + "[" + id + "], request(" + request + ")");
+                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                    this.getClass() + "[" + id + "], request(" + request + ")"
+                );
             } else {
                 throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(request, e);
             }
         } else {
             if (e == null) {
-                logger.warn("Error executing {}[{}] request({}), returning null", this.getClass(), id, request);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request
+                );
             } else {
-                logger.warn("Error executing {}[{}] request({}), returning null", this.getClass(), id, request, e);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request,
+                    e
+                );
             }
             return null;
         }
@@ -286,12 +319,20 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public String toString() {
-        return "CurrentSeasonInfoImpl{" +
-                "id=" + id +
-                ", names=" + names +
-                ", year='" + year + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                '}';
+        return (
+            "CurrentSeasonInfoImpl{" +
+            "id=" +
+            id +
+            ", names=" +
+            names +
+            ", year='" +
+            year +
+            '\'' +
+            ", startDate=" +
+            startDate +
+            ", endDate=" +
+            endDate +
+            '}'
+        );
     }
 }

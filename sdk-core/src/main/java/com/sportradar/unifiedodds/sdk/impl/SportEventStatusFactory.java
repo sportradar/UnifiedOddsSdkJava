@@ -20,5 +20,9 @@ public interface SportEventStatusFactory {
      * @param makeApiCall should the API call be made if necessary
      * @return a {@link CompetitionStatus} representing the status of the specified sport event
      */
-    <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass, boolean makeApiCall);
+    <T extends CompetitionStatus> T buildSportEventStatus(
+        URN eventId,
+        Class<T> targetClass,
+        boolean makeApiCall
+    );
 }

@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 
 /**
  * A round representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface RoundCI {
     /**
      * Returns the type of the round

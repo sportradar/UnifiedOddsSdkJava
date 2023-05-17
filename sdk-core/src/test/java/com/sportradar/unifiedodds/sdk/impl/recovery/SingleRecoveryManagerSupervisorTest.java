@@ -1,16 +1,7 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
 package com.sportradar.unifiedodds.sdk.impl.recovery;
-
-import com.sportradar.unifiedodds.sdk.*;
-import com.sportradar.unifiedodds.sdk.impl.*;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.time.Instant;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import static com.sportradar.unifiedodds.sdk.impl.recovery.ProducerDataBuilder.producerData;
 import static org.codehaus.groovy.runtime.InvokerHelper.asList;
@@ -21,6 +12,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.impl.*;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
+import java.time.Instant;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import org.junit.Before;
+import org.junit.Test;
+
+@SuppressWarnings({ "MagicNumber" })
 public class SingleRecoveryManagerSupervisorTest {
 
     private static final boolean SUBSCRIBED = true;
@@ -39,7 +43,10 @@ public class SingleRecoveryManagerSupervisorTest {
 
     private ProducerDataProvider producerDataProvider = mock(ProducerDataProvider.class);
 
-    private SDKProducerManager producerManager = new ProducerManagerImpl(mock(SDKInternalConfiguration.class), producerDataProvider);
+    private SDKProducerManager producerManager = new ProducerManagerImpl(
+        mock(SDKInternalConfiguration.class),
+        producerDataProvider
+    );
 
     private SingleRecoveryManagerSupervisor supervisor;
 
@@ -50,7 +57,8 @@ public class SingleRecoveryManagerSupervisorTest {
 
         producerManager = new ProducerManagerImpl(mock(SDKInternalConfiguration.class), producerDataProvider);
 
-        supervisor = new SingleRecoveryManagerSupervisor(
+        supervisor =
+            new SingleRecoveryManagerSupervisor(
                 mock(SDKInternalConfiguration.class),
                 producerManager,
                 mock(SDKProducerStatusListener.class),
@@ -62,7 +70,10 @@ public class SingleRecoveryManagerSupervisorTest {
                 mock(FeedMessageFactory.class),
                 mock(WhoAmIReader.class),
                 mock(SequenceGenerator.class),
-                TimeUtilsStub.withCurrentTime(Instant.ofEpochMilli(CURRENT_TIMESTAMP)));
+                TimeUtilsStub
+                    .threadSafe(new AtomicActionPerformer())
+                    .withCurrentTime(Instant.ofEpochMilli(CURRENT_TIMESTAMP))
+            );
     }
 
     @Test
@@ -95,7 +106,8 @@ public class SingleRecoveryManagerSupervisorTest {
 
     @Test
     public void supervisionJobShouldBeStoppedOnDemand() {
-        when(executorServices.scheduleAtFixedRate(any(), anyLong(), anyLong(), any())).thenReturn(supervisingJobFuture);
+        when(executorServices.scheduleAtFixedRate(any(), anyLong(), anyLong(), any()))
+            .thenReturn(supervisingJobFuture);
         supervisor.startSupervising();
 
         supervisor.stopSupervising();
@@ -105,7 +117,8 @@ public class SingleRecoveryManagerSupervisorTest {
 
     @Test
     public void soppingSupervisionJobShouldTakeEffectOnlyOnce() {
-        when(executorServices.scheduleAtFixedRate(any(), anyLong(), anyLong(), any())).thenReturn(supervisingJobFuture);
+        when(executorServices.scheduleAtFixedRate(any(), anyLong(), anyLong(), any()))
+            .thenReturn(supervisingJobFuture);
         supervisor.startSupervising();
 
         supervisor.stopSupervising();
@@ -118,16 +131,23 @@ public class SingleRecoveryManagerSupervisorTest {
     public void recoveriesShouldBeDisallowedBeforeSupervisionStarts() {
         final int recoveryNotAttempted = 0;
 
-        supervisor.getRecoveryManager().onAliveReceived(PRODUCER_ID, ANY_LONG, ANY_LONG, SUBSCRIBED, SYSTEM_SESSION);
+        supervisor
+            .getRecoveryManager()
+            .onAliveReceived(PRODUCER_ID, ANY_LONG, ANY_LONG, SUBSCRIBED, SYSTEM_SESSION);
 
-        assertEquals(recoveryNotAttempted, producerManager.getProducerLastRecoveryAttemptTimestamp(PRODUCER_ID));
+        assertEquals(
+            recoveryNotAttempted,
+            producerManager.getProducerLastRecoveryAttemptTimestamp(PRODUCER_ID)
+        );
     }
 
     @Test
     public void recoveriesShouldBeAllowedAfterSupervisionStarts() {
         supervisor.startSupervising();
 
-        supervisor.getRecoveryManager().onAliveReceived(PRODUCER_ID, ANY_LONG, ANY_LONG, SUBSCRIBED, SYSTEM_SESSION);
+        supervisor
+            .getRecoveryManager()
+            .onAliveReceived(PRODUCER_ID, ANY_LONG, ANY_LONG, SUBSCRIBED, SYSTEM_SESSION);
 
         assertEquals(CURRENT_TIMESTAMP, producerManager.getProducerLastRecoveryAttemptTimestamp(PRODUCER_ID));
     }

@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities.markets;
 
 import com.sportradar.utils.URN;
-
 import java.util.Map;
 import java.util.Set;
 

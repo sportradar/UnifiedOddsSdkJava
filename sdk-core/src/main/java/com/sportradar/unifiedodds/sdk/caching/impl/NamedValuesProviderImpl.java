@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
  * The default implementation of the {@link NamedValuesProvider}
  */
 public class NamedValuesProviderImpl implements NamedValuesProvider {
+
     /**
      * An implementation of {@link NamedValueCache} providing void reason descriptions
      */
@@ -35,7 +36,6 @@ public class NamedValuesProviderImpl implements NamedValuesProvider {
      */
     private final LocalizedNamedValueCache matchStatuses;
 
-
     /**
      * Initializes a new instance of {@link NamedValuesProviderImpl}
      *
@@ -45,10 +45,12 @@ public class NamedValuesProviderImpl implements NamedValuesProvider {
      * @param matchStatuses - The {@link LocalizedNamedValueCache} providing match status descriptions
      */
     @Inject
-    public NamedValuesProviderImpl(@Named("VoidReasonsCache") NamedValueCache voidReasons,
-                                   @Named("BetStopReasonCache") NamedValueCache betStopReasons,
-                                   @Named("BettingStatusCache") NamedValueCache bettingStatuses,
-                                   @Named("MatchStatusCache") LocalizedNamedValueCache matchStatuses) {
+    public NamedValuesProviderImpl(
+        @Named("VoidReasonsCache") NamedValueCache voidReasons,
+        @Named("BetStopReasonCache") NamedValueCache betStopReasons,
+        @Named("BettingStatusCache") NamedValueCache bettingStatuses,
+        @Named("MatchStatusCache") LocalizedNamedValueCache matchStatuses
+    ) {
         Preconditions.checkNotNull(voidReasons);
         Preconditions.checkNotNull(betStopReasons);
         Preconditions.checkNotNull(bettingStatuses);
@@ -59,7 +61,6 @@ public class NamedValuesProviderImpl implements NamedValuesProvider {
         this.bettingStatuses = bettingStatuses;
         this.matchStatuses = matchStatuses;
     }
-
 
     /**
      * Returns the {@link NamedValueCache} providing void reason descriptions

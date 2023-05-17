@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.markets;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -16,7 +15,8 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public interface MarketDescriptionCache {
-    MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException;
+    MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException;
 
     boolean loadMarketDescriptions();
 

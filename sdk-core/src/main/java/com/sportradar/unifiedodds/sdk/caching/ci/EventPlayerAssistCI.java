@@ -12,13 +12,13 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventPlayerAs
  * Created on 24/11/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class EventPlayerAssistCI extends EventPlayerCI {
 
     private final String type;
 
     EventPlayerAssistCI(SAPIEventPlayerAssist assistData) {
         super(assistData);
-
         Preconditions.checkNotNull(assistData);
 
         type = assistData.getType();
@@ -26,7 +26,6 @@ public class EventPlayerAssistCI extends EventPlayerCI {
 
     EventPlayerAssistCI(ExportableEventPlayerAssistCI exportable) {
         super(exportable);
-
         type = exportable.getType();
     }
 
@@ -35,10 +34,6 @@ public class EventPlayerAssistCI extends EventPlayerCI {
     }
 
     public ExportableEventPlayerAssistCI export() {
-        return new ExportableEventPlayerAssistCI(
-                getId().toString(),
-                getName(),
-                type
-        );
+        return new ExportableEventPlayerAssistCI(getId().toString(), getName(), type);
     }
 }

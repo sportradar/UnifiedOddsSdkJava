@@ -7,7 +7,8 @@ package com.sportradar.unifiedodds.sdk.exceptions.internal;
 /**
  * The following exception gets thrown when an invalid cache state is reached(market fetch &amp; cache failure,...)
  */
-public class IllegalCacheStateException extends CachingException{
+public class IllegalCacheStateException extends CachingException {
+
     public IllegalCacheStateException(String message) {
         super(message);
     }

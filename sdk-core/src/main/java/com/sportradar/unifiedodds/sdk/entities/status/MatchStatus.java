@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.entities.status;
 import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
@@ -86,5 +85,7 @@ public interface MatchStatus extends CompetitionStatus {
      * Returns an indication if the status is decided by fed
      * @return boolean value
      */
-    default Boolean isDecidedByFed() { throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+    default Boolean isDecidedByFed() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

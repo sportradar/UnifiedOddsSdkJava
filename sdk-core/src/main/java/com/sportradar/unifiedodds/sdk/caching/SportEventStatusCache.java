@@ -10,6 +10,7 @@ import com.sportradar.utils.URN;
 /**
  * Defines methods implemented by classes used to cache {@link SportEventStatusDTO} instances
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface SportEventStatusCache {
     /**
      * Returns the status of the event associated with the provided identifier. If the instance associated with

@@ -25,7 +25,6 @@ public enum CashOutStatus {
      */
     Closed(-2);
 
-
     /**
      * The integer value provided by the feed
      */
@@ -51,9 +50,10 @@ public enum CashOutStatus {
             return null;
         }
 
-        return Stream.of(CashOutStatus.values())
-                .filter(c -> c.feedValue == feedValue)
-                .findFirst()
-                .orElse(null);
+        return Stream
+            .of(CashOutStatus.values())
+            .filter(c -> c.feedValue == feedValue)
+            .findFirst()
+            .orElse(null);
     }
 }

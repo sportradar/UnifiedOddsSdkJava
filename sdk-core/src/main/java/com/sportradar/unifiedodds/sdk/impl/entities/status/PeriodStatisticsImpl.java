@@ -9,14 +9,15 @@ import com.sportradar.unifiedodds.sdk.entities.status.PeriodStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.TeamStatistics;
 import com.sportradar.unifiedodds.sdk.impl.dto.PeriodStatisticsDTO;
 import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Provides methods used to access period specifics statistics
  */
+@SuppressWarnings({ "MagicNumber", "UnnecessaryParentheses" })
 class PeriodStatisticsImpl implements PeriodStatistics {
+
     private final PeriodStatisticsDTO stats;
 
     PeriodStatisticsImpl(PeriodStatisticsDTO stats) {
@@ -54,27 +55,32 @@ class PeriodStatisticsImpl implements PeriodStatistics {
     @Override
     public List<TeamStatistics> getTeamStatistics() {
         return stats.getTeamStatisticDTOs() == null
-                ? null
-                : stats.getTeamStatisticDTOs().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
+            ? null
+            : stats.getTeamStatisticDTOs().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
-        if(stats == null){
+        if (stats == null) {
             return "PeriodStatisticsImpl{}";
         }
 
         String teamStatisticsResult = "";
-        for(TeamStatisticsDTO teamStatistics : stats.getTeamStatisticDTOs()){
+        for (TeamStatisticsDTO teamStatistics : stats.getTeamStatisticDTOs()) {
             teamStatisticsResult += " | " + teamStatistics.toString();
         }
-        if(teamStatisticsResult.length() > 3){
+        if (teamStatisticsResult.length() > 3) {
             teamStatisticsResult = teamStatisticsResult.substring(3);
         }
 
-        return "PeriodStatisticsImpl{" +
-                "periodName=" + stats.getPeriodName() +
-                ", teamStatistics=[" + teamStatisticsResult + "]" +
-                '}';
+        return (
+            "PeriodStatisticsImpl{" +
+            "periodName=" +
+            stats.getPeriodName() +
+            ", teamStatistics=[" +
+            teamStatisticsResult +
+            "]" +
+            '}'
+        );
     }
 }

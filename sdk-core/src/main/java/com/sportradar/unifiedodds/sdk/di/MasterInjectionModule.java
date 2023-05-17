@@ -15,13 +15,21 @@ import org.slf4j.LoggerFactory;
 /**
  * The master SDK {@link Module} implementation used to set-up the dependency injection container
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "ClassDataAbstractionCoupling", "ClassFanOutComplexity", "ConstantName" }
+)
 public class MasterInjectionModule extends AbstractModule {
-    private final static Logger logger = LoggerFactory.getLogger(MasterInjectionModule.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(MasterInjectionModule.class);
     private final SDKGlobalEventsListener sdkListener;
     private final SDKInternalConfiguration config;
     private final CustomisableSDKModule customisableSDKModule;
 
-    public MasterInjectionModule(SDKGlobalEventsListener sdkListener, SDKInternalConfiguration config, CustomisableSDKModule customisableSDKModule) {
+    public MasterInjectionModule(
+        SDKGlobalEventsListener sdkListener,
+        SDKInternalConfiguration config,
+        CustomisableSDKModule customisableSDKModule
+    ) {
         Preconditions.checkNotNull(sdkListener, "sdkListener cannot be a null reference");
         Preconditions.checkNotNull(config, "config cannot be a null reference");
 
@@ -52,7 +60,10 @@ public class MasterInjectionModule extends AbstractModule {
         if (customisableSDKModule == null) {
             install(new CustomisableSDKModule());
         } else {
-            logger.warn("Installing user customisable injection module: {}", customisableSDKModule.getClass());
+            logger.warn(
+                "Installing user customisable injection module: {}",
+                customisableSDKModule.getClass()
+            );
             install(customisableSDKModule);
         }
     }

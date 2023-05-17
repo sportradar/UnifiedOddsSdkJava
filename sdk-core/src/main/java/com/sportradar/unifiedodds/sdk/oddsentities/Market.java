@@ -11,8 +11,8 @@ import java.util.Map;
 /**
  * The basic Market interface
  */
+@SuppressWarnings({ "LineLength" })
 public interface Market {
-
     /**
      * @return the id of the market
      */

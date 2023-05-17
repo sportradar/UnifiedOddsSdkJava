@@ -10,7 +10,9 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfoLink;
 /**
  * A producer info link representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class ProducerInfoLinkCI {
+
     /**
      * The reference of the {@link ProducerInfoLinkCI}
      */

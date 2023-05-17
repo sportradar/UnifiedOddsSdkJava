@@ -18,19 +18,31 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a sport tournament
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LambdaBodyLength",
+        "LineLength",
+        "MultipleStringLiterals",
+        "NPathComplexity",
+        "ReturnCount",
+    }
+)
 public class TournamentImpl extends SportEventImpl implements Tournament {
-    private final static Logger logger = LoggerFactory.getLogger(TournamentImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(TournamentImpl.class);
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -62,14 +74,15 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      * @param sportEntityFactory a {@link SportEntityFactory} instance used to construct {@link Competition} instances
      * @param exceptionHandlingStrategy the desired exception handling strategy
      */
-    public TournamentImpl(URN id,
-                          URN sportId,
-                          List<Locale> locales,
-                          SportEventCache sportEventCache,
-                          SportEntityFactory sportEntityFactory,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public TournamentImpl(
+        URN id,
+        URN sportId,
+        List<Locale> locales,
+        SportEventCache sportEventCache,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         super(id, sportId);
-
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -233,7 +246,14 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
             return null;
         }
 
-        return new CurrentSeasonInfoImpl(currentSeason, seasonCi, sportEventCache, sportEntityFactory, locales, exceptionHandlingStrategy);
+        return new CurrentSeasonInfoImpl(
+            currentSeason,
+            seasonCi,
+            sportEventCache,
+            sportEntityFactory,
+            locales,
+            exceptionHandlingStrategy
+        );
     }
 
     /**
@@ -277,8 +297,9 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
             return null;
         }
 
-        return tournamentCi.getTournamentCoverage() == null ? null :
-                new TournamentCoverageImpl(tournamentCi.getTournamentCoverage());
+        return tournamentCi.getTournamentCoverage() == null
+            ? null
+            : new TournamentCoverageImpl(tournamentCi.getTournamentCoverage());
     }
 
     /**
@@ -306,7 +327,10 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
         }
 
         try {
-            SportSummary sportSummary = sportEntityFactory.buildSportForCategory(tournamentCi.getCategoryId(), locales);
+            SportSummary sportSummary = sportEntityFactory.buildSportForCategory(
+                tournamentCi.getCategoryId(),
+                locales
+            );
             return sportSummary.getId();
         } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
             handleException("getSportId", e);
@@ -330,21 +354,33 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
 
         List<URN> seasonIds = tournamentCi.getSeasonIds();
         try {
-            return seasonIds == null ? null :
-                    seasonIds.stream().map(sId -> {
+            return seasonIds == null
+                ? null
+                : seasonIds
+                    .stream()
+                    .map(sId -> {
                         try {
                             return sportEntityFactory.buildSportEvent(sId, locales, false);
-                        } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
+                        } catch (
+                            com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e
+                        ) {
                             throw new StreamWrapperException(e.getMessage(), e);
                         }
-                    }).filter(e -> {
+                    })
+                    .filter(e -> {
                         if (e instanceof Season) {
                             return true;
                         } else {
-                            logger.warn("Tournament.getSeasons found a non-season object[{}], instance: {}", e.getId(), e.getClass());
+                            logger.warn(
+                                "Tournament.getSeasons found a non-season object[{}], instance: {}",
+                                e.getId(),
+                                e.getClass()
+                            );
                             return false;
                         }
-                    }).map(e -> (Season) e).collect(Collectors.toList());
+                    })
+                    .map(e -> (Season) e)
+                    .collect(Collectors.toList());
         } catch (StreamWrapperException e) {
             handleException("getSeasons", e);
             return null;
@@ -387,7 +423,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
 
         if (eventIds == null || eventIds.size() == 0) {
             CurrentSeasonInfo season = getCurrentSeason();
-            if(season == null){
+            if (season == null) {
                 return null;
             }
             return season.getSchedule();
@@ -408,10 +444,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public String toString() {
-        return "TournamentImpl{" +
-                "id=" + id +
-                ", locales=" + locales +
-                "}";
+        return "TournamentImpl{" + "id=" + id + ", locales=" + locales + "}";
     }
 
     /**
@@ -429,9 +462,20 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
             }
         } else {
             if (e == null) {
-                logger.warn("Error executing {}[{}] request({}), returning null", this.getClass(), id, request);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request
+                );
             } else {
-                logger.warn("Error executing {}[{}] request({}), returning null", this.getClass(), id, request, e);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request,
+                    e
+                );
             }
         }
     }

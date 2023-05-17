@@ -2,7 +2,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.io.Serializable;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableProducerInfoLinkCI implements Serializable {
+
     private String reference;
     private String name;
 

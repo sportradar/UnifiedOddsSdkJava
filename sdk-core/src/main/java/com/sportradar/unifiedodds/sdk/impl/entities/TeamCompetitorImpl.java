@@ -11,14 +11,15 @@ import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Represents a competing team
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ParameterNumber", "UnnecessaryParentheses" })
 public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor {
+
     /**
      * Initializes a new instance of the {@link TeamCompetitorImpl} class
      *
@@ -31,17 +32,26 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public TeamCompetitorImpl(URN competitorId,
-                              ProfileCache profileCache,
-                              String qualifier,
-                              Integer division,
-                              Boolean isVirtual,
-                              SportEventCI parentSportEventCI,
-                              List<Locale> locales,
-                              SportEntityFactory sportEntityFactory,
-                              ExceptionHandlingStrategy exceptionHandlingStrategy) {
-        super(competitorId, profileCache, parentSportEventCI, locales, sportEntityFactory, exceptionHandlingStrategy, isVirtual);
-
+    public TeamCompetitorImpl(
+        URN competitorId,
+        ProfileCache profileCache,
+        String qualifier,
+        Integer division,
+        Boolean isVirtual,
+        SportEventCI parentSportEventCI,
+        List<Locale> locales,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
+        super(
+            competitorId,
+            profileCache,
+            parentSportEventCI,
+            locales,
+            sportEntityFactory,
+            exceptionHandlingStrategy,
+            isVirtual
+        );
         TeamQualifier = qualifier;
         TeamDivision = division;
     }
@@ -58,7 +68,7 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
     }
 
     @Override
-    public Integer getDivision(){
+    public Integer getDivision() {
         FetchEventCompetitorsDivisions();
         return TeamDivision;
     }
@@ -70,9 +80,16 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
      */
     @Override
     public String toString() {
-        return "TeamCompetitorImpl{" +
-                "qualifier='" + TeamQualifier + '\'' +
-                "division='" + TeamDivision + '\'' +
-                "} " + super.toString();
+        return (
+            "TeamCompetitorImpl{" +
+            "qualifier='" +
+            TeamQualifier +
+            '\'' +
+            "division='" +
+            TeamDivision +
+            '\'' +
+            "} " +
+            super.toString()
+        );
     }
 }

@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class DataReaderTests {
+
     @Test
     public void mockFeedMessageReader() throws DeserializationException {
         UFAlive alive = XmlMessageReader.readMessageFromResource("test/feed_xml/alive.xml");
@@ -16,13 +17,17 @@ public class DataReaderTests {
 
     @Test
     public void mockSportsApiMessageReader() throws DeserializationException {
-        SAPIFixturesEndpoint fixturesEndpoint = XmlMessageReader.readMessageFromResource("test/rest/fixtures.de.xml");
+        SAPIFixturesEndpoint fixturesEndpoint = XmlMessageReader.readMessageFromResource(
+            "test/rest/fixtures.de.xml"
+        );
         Assert.assertNotNull(fixturesEndpoint);
     }
 
     @Test
     public void mockDataProvider() throws DataProviderException {
-        TestingDataProvider<SAPIFixturesEndpoint> dataProvider = new TestingDataProvider<>("test/rest/fixtures.de.xml");
+        TestingDataProvider<SAPIFixturesEndpoint> dataProvider = new TestingDataProvider<>(
+            "test/rest/fixtures.de.xml"
+        );
         SAPIFixturesEndpoint data = dataProvider.getData();
         Assert.assertNotNull(data);
     }

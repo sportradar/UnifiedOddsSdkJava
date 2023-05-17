@@ -11,7 +11,9 @@ import com.sportradar.uf.sportsapi.datamodel.Attributes;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class MarketAttributeCI {
+
     private final String name;
     private final String description;
 

@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.Map;
 
 /**
@@ -13,5 +12,10 @@ import java.util.Map;
  * // TODO @eti: Javadoc
  */
 public interface NameProviderFactory {
-    NameProvider buildNameProvider(SportEvent sportEvent, int marketId, Map<String, String> specifiers, int producerId);
+    NameProvider buildNameProvider(
+        SportEvent sportEvent,
+        int marketId,
+        Map<String, String> specifiers,
+        int producerId
+    );
 }

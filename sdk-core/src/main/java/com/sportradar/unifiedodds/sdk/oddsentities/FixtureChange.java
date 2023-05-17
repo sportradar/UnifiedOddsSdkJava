@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.Date;
 
 /**
@@ -15,7 +14,6 @@ import java.util.Date;
  * etc etc.).
  */
 public interface FixtureChange<T extends SportEvent> extends EventMessage<T> {
-
     FixtureChangeType getChangeType();
 
     Date getNextLiveTime();

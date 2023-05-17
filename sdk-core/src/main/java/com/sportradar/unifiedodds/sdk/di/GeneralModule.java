@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.di;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Binder;
@@ -21,17 +23,10 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.FeedMessageFactoryImpl;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.*;
 import com.sportradar.unifiedodds.sdk.impl.recovery.RecoveryManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.recovery.SingleRecoveryManagerSupervisor;
 import com.sportradar.unifiedodds.sdk.impl.util.MdcScheduledExecutorService;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.management.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
@@ -39,14 +34,42 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.management.*;
+import javax.management.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.Unmarshaller;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.slf4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link Module} implementation used to set-up general SDK dependency injection settings
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassDataAbstractionCoupling",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "ExecutableStatementCount",
+        "HiddenField",
+        "LineLength",
+        "MagicNumber",
+        "MethodLength",
+    }
+)
 public class GeneralModule implements Module {
+
     private static final Logger logger = LoggerFactory.getLogger(GeneralModule.class);
     /**
      * A {@link com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener} implementation used to
@@ -79,8 +102,6 @@ public class GeneralModule implements Module {
      */
     private final HttpClientFactory httpClientFactory;
 
-    private ReentrantLock jabxReentrantLock;
-
     /**
      * Constructs a new instance of the {@link GeneralModule} class
      *
@@ -88,7 +109,11 @@ public class GeneralModule implements Module {
      *        implementation used to notify the outside world about global events
      * @param configuration The associated SDK configuration
      */
-    GeneralModule(SDKGlobalEventsListener sdkListener, SDKInternalConfiguration configuration, HttpClientFactory httpClientFactory) {
+    GeneralModule(
+        SDKGlobalEventsListener sdkListener,
+        SDKInternalConfiguration configuration,
+        HttpClientFactory httpClientFactory
+    ) {
         checkNotNull(sdkListener, "sdkListener cannot be a null reference");
         checkNotNull(configuration, "the SDKInternalConfiguration can not be null");
         checkNotNull(httpClientFactory, "the httpClientFactory can not be null");
@@ -98,7 +123,6 @@ public class GeneralModule implements Module {
         this.httpClientFactory = httpClientFactory;
 
         try {
-            jabxReentrantLock = new ReentrantLock();
             messagesJaxbContext = JAXBContext.newInstance("com.sportradar.uf.datamodel");
             sportsApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
             customBetApiJaxbContext = JAXBContext.newInstance("com.sportradar.uf.custombet.datamodel");
@@ -128,7 +152,8 @@ public class GeneralModule implements Module {
         binder.bind(SingleInstanceAMQPConnectionFactory.class).in(Singleton.class);
 
         // other rabbit instances
-        binder.bind(RabbitMqChannel.class).to(RabbitMqChannelImpl.class);
+        binder.bind(OnDemandChannelSupervisor.class).to(RabbitMqChannelImpl.class);
+        binder.bind(ChannelSupervisor.class).to(ChannelSupervisionScheduler.class);
         binder.bind(MessageReceiver.class).to(RabbitMqMessageReceiver.class);
 
         // managers
@@ -136,7 +161,10 @@ public class GeneralModule implements Module {
         binder.bind(SDKProducerManager.class).to(ProducerManagerImpl.class).in(Singleton.class);
         binder.bind(SportsInfoManager.class).to(SportsInfoManagerImpl.class).in(Singleton.class);
         binder.bind(MarketDescriptionManager.class).to(MarketManagerImpl.class).in(Singleton.class);
-        binder.bind(CashOutProbabilitiesManager.class).to(CashOutProbabilitiesManagerImpl.class).in(Singleton.class);
+        binder
+            .bind(CashOutProbabilitiesManager.class)
+            .to(CashOutProbabilitiesManagerImpl.class)
+            .in(Singleton.class);
         binder.bind(MappingTypeProvider.class).to(MappingTypeProviderImpl.class).in(Singleton.class);
         binder.bind(BookingManager.class).to(BookingManagerImpl.class).in(Singleton.class);
         binder.bind(CustomBetManager.class).to(CustomBetManagerImpl.class).in(Singleton.class);
@@ -163,17 +191,20 @@ public class GeneralModule implements Module {
         binder.bind(SportEventStatusFactory.class).to(SportEventStatusFactoryImpl.class);
         binder.bind(FeedMessageValidator.class).to(FeedMessageValidatorImpl.class);
         binder.bind(TimeUtils.class).to(TimeUtilsImpl.class);
-        binder.bind(ReentrantLock.class).toInstance(jabxReentrantLock);
     }
 
-    @Provides @Singleton
-    private RecoveryManagerImpl provideRecoveryManger(SingleRecoveryManagerSupervisor singleRecoveryManagerSupervisor) {
+    @Provides
+    @Singleton
+    private RecoveryManagerImpl provideRecoveryManger(
+        SingleRecoveryManagerSupervisor singleRecoveryManagerSupervisor
+    ) {
         return singleRecoveryManagerSupervisor.getRecoveryManager();
     }
 
     private String loadVersion() {
         try {
-            InputStream is = SingleInstanceAMQPConnectionFactory.class.getResourceAsStream("/sr-sdk-version.properties");
+            InputStream is =
+                SingleInstanceAMQPConnectionFactory.class.getResourceAsStream("/sr-sdk-version.properties");
             Properties props = new Properties();
             props.load(is);
             is.close();
@@ -188,7 +219,8 @@ public class GeneralModule implements Module {
      *
      * @return The {@link Unmarshaller} instance to be registered with the DI container
      */
-    @Provides @Named("MessageUnmarshaller")
+    @Provides
+    @Named("MessageUnmarshaller")
     private Unmarshaller provideMessageUnmarshaller() {
         try {
             return messagesJaxbContext.createUnmarshaller();
@@ -197,12 +229,19 @@ public class GeneralModule implements Module {
         }
     }
 
+    @Provides
+    @Named("MessageJAXBContext")
+    private JAXBContext provideMessageJAXBContext() {
+        return messagesJaxbContext;
+    }
+
     /**
      * Provides the {@link Deserializer} used to deserialize sports API xmls
      *
      * @return The {@link Deserializer} instance to be registered with the DI container
      */
-    @Provides @Named("SportsApiJaxbDeserializer")
+    @Provides
+    @Named("SportsApiJaxbDeserializer")
     private Deserializer provideSportsApiJaxbDeserializer() {
         return new DeserializerImpl(sportsApiJaxbContext);
     }
@@ -212,7 +251,8 @@ public class GeneralModule implements Module {
      *
      * @return The {@link Deserializer} instance to be registered with the DI container
      */
-    @Provides @Named("CustomBetApiJaxbDeserializer")
+    @Provides
+    @Named("CustomBetApiJaxbDeserializer")
     private Deserializer provideCustomBetApiJaxbDeserializer() {
         return new DeserializerImpl(customBetApiJaxbContext);
     }
@@ -222,7 +262,8 @@ public class GeneralModule implements Module {
      *
      * @return The {@link Deserializer} instance to be registered with the DI container
      */
-    @Provides @Named("MessageDeserializer")
+    @Provides
+    @Named("MessageDeserializer")
     private Deserializer provideMessageDeserializer() {
         return new DeserializerImpl(messagesJaxbContext);
     }
@@ -232,8 +273,9 @@ public class GeneralModule implements Module {
      *
      * @return the statistics collection object used by the sdk
      */
-    @Provides @Singleton
-    private UnifiedOddsStatistics provideUnifiedOddsStatistics(){
+    @Provides
+    @Singleton
+    private UnifiedOddsStatistics provideUnifiedOddsStatistics() {
         UnifiedOddsStatistics statsBean = null;
 
         MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -243,7 +285,12 @@ public class GeneralModule implements Module {
             if (!mbeanServer.isRegistered(name)) {
                 mbeanServer.registerMBean(statsBean, name);
             }
-        } catch (MalformedObjectNameException | NotCompliantMBeanException | MBeanRegistrationException | InstanceAlreadyExistsException e) {
+        } catch (
+            MalformedObjectNameException
+            | NotCompliantMBeanException
+            | MBeanRegistrationException
+            | InstanceAlreadyExistsException e
+        ) {
             logger.warn("UnifiedOddsStatistics initialization failed w/ ex.:", e);
         }
 
@@ -253,44 +300,70 @@ public class GeneralModule implements Module {
     /**
      * Provides the http client used to fetch data from the API
      */
-    @Provides @Singleton
-    CloseableHttpClient provideHttpClient(){
-        int maxTimeoutInMillis = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS));
+    @Provides
+    @Singleton
+    CloseableHttpClient provideHttpClient() {
+        int maxTimeoutInMillis = Math.toIntExact(
+            TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS)
+        );
         int connectionPoolSize = configuration.getHttpClientMaxConnTotal();
         int maxConcurrentConnectionsPerRoute = configuration.getHttpClientMaxConnPerRoute();
 
-        return httpClientFactory.create(maxTimeoutInMillis, connectionPoolSize, maxConcurrentConnectionsPerRoute);
+        return httpClientFactory.create(
+            maxTimeoutInMillis,
+            connectionPoolSize,
+            maxConcurrentConnectionsPerRoute
+        );
     }
 
     /**
      * Provides the http client used to fetch data from the API on feed queue thread (profiles, variant market or summary)
      */
-    @Provides @Singleton @Named("FastHttpClient")
-    CloseableHttpClient provideCriticalHttpClient(){
+    @Provides
+    @Singleton
+    @Named("FastHttpClient")
+    CloseableHttpClient provideCriticalHttpClient() {
         int maxTimeoutInMillis = (int) OperationManager.getFastHttpClientTimeout().toMillis();
         int connectionPoolSize = configuration.getHttpClientMaxConnTotal();
         int maxConcurrentConnectionsPerRoute = configuration.getHttpClientMaxConnPerRoute();
 
-        return httpClientFactory.create(maxTimeoutInMillis, connectionPoolSize, maxConcurrentConnectionsPerRoute);
+        return httpClientFactory.create(
+            maxTimeoutInMillis,
+            connectionPoolSize,
+            maxConcurrentConnectionsPerRoute
+        );
     }
 
     /**
      * Provides the http client used to fetch data from the API
      */
-    @Provides @Singleton @Named("RecoveryHttpClient")
-    CloseableHttpClient provideRecoveryHttpClient(){
-        int maxTimeoutInMillis = Math.toIntExact(TimeUnit.MILLISECONDS.convert(configuration.getRecoveryHttpClientTimeout(), TimeUnit.SECONDS));
+    @Provides
+    @Singleton
+    @Named("RecoveryHttpClient")
+    CloseableHttpClient provideRecoveryHttpClient() {
+        int maxTimeoutInMillis = Math.toIntExact(
+            TimeUnit.MILLISECONDS.convert(configuration.getRecoveryHttpClientTimeout(), TimeUnit.SECONDS)
+        );
         int connectionPoolSize = configuration.getRecoveryHttpClientMaxConnTotal();
         int maxConcurrentConnectionsPerRoute = configuration.getRecoveryHttpClientMaxConnPerRoute();
 
-        return httpClientFactory.create(maxTimeoutInMillis, connectionPoolSize, maxConcurrentConnectionsPerRoute);
+        return httpClientFactory.create(
+            maxTimeoutInMillis,
+            connectionPoolSize,
+            maxConcurrentConnectionsPerRoute
+        );
     }
 
     /**
      * Provides the http client used to fetch data from the API
      */
-    @Provides @Named("RecoveryHttpHelper")
-    private HttpHelper provideRecoveryHttpHelper(SDKInternalConfiguration config, @Named("RecoveryHttpClient") CloseableHttpClient httpClient, @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
+    @Provides
+    @Named("RecoveryHttpHelper")
+    private HttpHelper provideRecoveryHttpHelper(
+        SDKInternalConfiguration config,
+        @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
+        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+    ) {
         return new HttpHelper(config, httpClient, apiDeserializer);
     }
 
@@ -299,19 +372,31 @@ public class GeneralModule implements Module {
      *
      * @return a service class used to schedule repeating tasks
      */
-    @Provides @Singleton
-    private SDKTaskScheduler provideSDKTaskScheduler(SDKInternalConfiguration configuration, WhoAmIReader whoAmIReader) {
+    @Provides
+    @Singleton
+    private SDKTaskScheduler provideSDKTaskScheduler(
+        SDKInternalConfiguration configuration,
+        WhoAmIReader whoAmIReader
+    ) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(whoAmIReader);
 
         String sdkContextDescription = whoAmIReader.getSdkContextDescription();
 
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(sdkContextDescription + "-t-%d").build();
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1, namedThreadFactory);
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat(sdkContextDescription + "-t-%d")
+            .build();
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(
+            1,
+            namedThreadFactory
+        );
 
         Map<String, String> mdcContext = whoAmIReader.getAssociatedSdkMdcContextMap();
 
-        MdcScheduledExecutorService mdcScheduledExecutorService = new MdcScheduledExecutorService(scheduledExecutorService, mdcContext);
+        MdcScheduledExecutorService mdcScheduledExecutorService = new MdcScheduledExecutorService(
+            scheduledExecutorService,
+            mdcContext
+        );
 
         return new SDKTaskSchedulerImpl(mdcScheduledExecutorService, configuration);
     }
@@ -321,15 +406,25 @@ public class GeneralModule implements Module {
      *
      * @return the {@link ExecutorService} exclusive to the {@link RecoveryManager}
      */
-    @Provides @Singleton @Named("DedicatedRecoveryManagerExecutor")
-    private ScheduledExecutorService provideDedicatedRecoveryManagerExecutor(SDKInternalConfiguration configuration, WhoAmIReader whoAmIReader) {
+    @Provides
+    @Singleton
+    @Named("DedicatedRecoveryManagerExecutor")
+    private ScheduledExecutorService provideDedicatedRecoveryManagerExecutor(
+        SDKInternalConfiguration configuration,
+        WhoAmIReader whoAmIReader
+    ) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(whoAmIReader);
 
         String sdkContextDescription = whoAmIReader.getSdkContextDescription();
 
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(sdkContextDescription + "-rm-t-%d").build();
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1, namedThreadFactory);
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat(sdkContextDescription + "-rm-t-%d")
+            .build();
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(
+            1,
+            namedThreadFactory
+        );
 
         Map<String, String> mdcContext = whoAmIReader.getAssociatedSdkMdcContextMap();
 
@@ -341,14 +436,15 @@ public class GeneralModule implements Module {
      *
      * @return the {@link ExecutorService} exclusive to the {@link SingleInstanceAMQPConnectionFactory}
      */
-    @Provides @Singleton @Named("DedicatedRabbitMqExecutor")
+    @Provides
+    @Singleton
+    @Named("DedicatedRabbitMqExecutor")
     private ExecutorService providesDedicatedRabbitMqExecutor(WhoAmIReader whoAmIReader) {
         Preconditions.checkNotNull(whoAmIReader);
 
-        ThreadFactory namedThreadFactory =
-                new ThreadFactoryBuilder()
-                        .setNameFormat(whoAmIReader.getSdkContextDescription() + "-amqp-t-%d")
-                        .build();
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat(whoAmIReader.getSdkContextDescription() + "-amqp-t-%d")
+            .build();
 
         // current max channels is 4(Prematch + Live + Virtuals + System), so max 4 concurrent consumptions
         return Executors.newFixedThreadPool(5, namedThreadFactory);

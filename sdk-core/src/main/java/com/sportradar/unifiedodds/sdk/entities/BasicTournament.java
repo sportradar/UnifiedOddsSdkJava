@@ -40,8 +40,7 @@ public interface BasicTournament extends LongTermEvent {
      *
      * @return - a {@link List} of events that belong to the associated tournament
      */
-    default List<Competition> getSchedule()
-    {
+    default List<Competition> getSchedule() {
         return null;
     }
 }

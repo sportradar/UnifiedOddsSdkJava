@@ -14,7 +14,9 @@ import com.sportradar.utils.URN;
 /**
  * Represents a sport event pitcher
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class PitcherImpl implements Pitcher {
+
     /**
      *  A value used to uniquely identify the current {@link Pitcher} instance
      */
@@ -41,7 +43,6 @@ public class PitcherImpl implements Pitcher {
      * @param pitcherCI - a {@link PitcherCI} used to create a new instance
      */
     public PitcherImpl(PitcherCI pitcherCI) {
-
         this.id = pitcherCI.getId();
         this.name = pitcherCI.getName();
         this.competitor = pitcherCI.getCompetitor();
@@ -74,7 +75,9 @@ public class PitcherImpl implements Pitcher {
      * @return - indication if the {@link Pitcher} is home or away
      */
     @Override
-    public HomeAway getCompetitor() { return competitor; }
+    public HomeAway getCompetitor() {
+        return competitor;
+    }
 
     /**
      * Returns indication if the {@link Pitcher} is left or right handed
@@ -82,15 +85,24 @@ public class PitcherImpl implements Pitcher {
      * @return - indication if the {@link Pitcher} is left or right handed
      */
     @Override
-    public PitcherHand getHand() { return hand; }
+    public PitcherHand getHand() {
+        return hand;
+    }
 
     @Override
     public String toString() {
-        return "RefereeImpl{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", competitor=" + competitor +
-                ", hand=" + hand +
-                '}';
+        return (
+            "RefereeImpl{" +
+            "id=" +
+            id +
+            ", name='" +
+            name +
+            '\'' +
+            ", competitor=" +
+            competitor +
+            ", hand=" +
+            hand +
+            '}'
+        );
     }
 }

@@ -10,7 +10,9 @@ import com.sportradar.utils.URN;
 /**
  * A sport entity representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 class SportEntityCI {
+
     /**
      * The id of the represented sport entity
      */

@@ -4,18 +4,27 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import java.io.InputStream;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
-
-import java.io.InputStream;
-import java.util.*;
 
 /**
  * Created on 11/04/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "AvoidNoArgumentSuperConstructorCall",
+        "ConstantName",
+        "IllegalCatch",
+        "LambdaBodyLength",
+    }
+)
 public class SDKConfigurationYamlReader extends SDKConfigurationReader {
+
     private static final Logger logger = LoggerFactory.getLogger(SDKConfigurationYamlReader.class);
     private static final String SDK_YAML_FILENAME = "application.yml";
     private static final String ROOT_SPORTRADAR_TAG = "sportradar";
@@ -26,7 +35,6 @@ public class SDKConfigurationYamlReader extends SDKConfigurationReader {
 
     SDKConfigurationYamlReader() {
         super();
-
         this.filename = SDK_YAML_FILENAME;
     }
 
@@ -53,13 +61,20 @@ public class SDKConfigurationYamlReader extends SDKConfigurationReader {
         for (Object object : objects) {
             if (object instanceof Map) {
                 Map<String, Object> castedMap = (Map<String, Object>) object;
-                if (castedMap.containsKey(ROOT_SPORTRADAR_TAG) && castedMap.get(ROOT_SPORTRADAR_TAG) instanceof Map) {
+                if (
+                    castedMap.containsKey(ROOT_SPORTRADAR_TAG) &&
+                    castedMap.get(ROOT_SPORTRADAR_TAG) instanceof Map
+                ) {
                     return provideParsedMap((Map<String, Object>) castedMap.get(ROOT_SPORTRADAR_TAG));
                 }
             }
         }
 
-        logger.warn("Could not find valid UF SDK YAML root property({}) in the provided '{}'", ROOT_SPORTRADAR_TAG, filename);
+        logger.warn(
+            "Could not find valid UF SDK YAML root property({}) in the provided '{}'",
+            ROOT_SPORTRADAR_TAG,
+            filename
+        );
 
         return Collections.emptyMap();
     }
@@ -88,7 +103,7 @@ public class SDKConfigurationYamlReader extends SDKConfigurationReader {
             if (v instanceof String) {
                 result.put(prepKey(k), (String) v);
             } else if (v instanceof List) {
-                result.put(prepKey(k), prepListEntry((List) v) );
+                result.put(prepKey(k), prepListEntry((List) v));
             } else if (v instanceof Integer) {
                 result.put(prepKey(k), String.valueOf(v));
             } else if (v instanceof Boolean) {

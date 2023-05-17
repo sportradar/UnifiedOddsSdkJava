@@ -23,29 +23,31 @@ import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.entities.ReplaySportEventImpl;
 import com.sportradar.utils.URN;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * This class is used to manage the set of SportEvents whose messages to replay and to control the
  * Replay (play, stop, and in what speed to play).
  */
 @Singleton
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MultipleStringLiterals" })
 public class ReplayManager {
+
     /**
      * The client interaction log instance
      */
-    private final static Logger clientInteractionLog = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
+    private static final Logger clientInteractionLog = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkClientInteractionLog.class
+    );
 
     private static final Logger logger = LoggerFactory.getLogger(ReplayManager.class);
     private final SDKInternalConfiguration config;
@@ -56,9 +58,14 @@ public class ReplayManager {
     private final SportEntityFactory sportEntityFactory;
 
     @Inject
-    ReplayManager(SDKInternalConfiguration config, SportsInfoManager sportsInfoManager, HttpHelper httpHelper,
-                  @Named("SportsApiJaxbDeserializer") Deserializer deserializer, LogHttpDataFetcher logHttpDataFetcher,
-                  SportEntityFactory sportEntityFactory) {
+    ReplayManager(
+        SDKInternalConfiguration config,
+        SportsInfoManager sportsInfoManager,
+        HttpHelper httpHelper,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
+        LogHttpDataFetcher logHttpDataFetcher,
+        SportEntityFactory sportEntityFactory
+    ) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(sportsInfoManager);
         Preconditions.checkNotNull(httpHelper);
@@ -85,7 +92,10 @@ public class ReplayManager {
             return null;
         }
 
-        return replaySportEventsList.stream().map(r -> sportsInfoManager.getSportEvent(r.getId())).collect(Collectors.toList());
+        return replaySportEventsList
+            .stream()
+            .map(r -> sportsInfoManager.getSportEvent(r.getId()))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -100,14 +110,21 @@ public class ReplayManager {
         try {
             replaySetContent = dataProvider.getData();
         } catch (DataProviderException e) {
-            logger.warn("ReplayManager.getReplayList() request failed, ex:", e);
-            clientInteractionLog.info("ReplayManager.getReplayList() -> FAILED", events.size());
+            logger.warn("ReplayManager.getReplaySportEventsList() request failed, ex:", e);
+            clientInteractionLog.info(
+                "ReplayManager.getReplaySportEventsList() -> FAILED with {} events",
+                events.size()
+            );
             return null;
         }
 
         if (replaySetContent != null && replaySetContent.getEvent() != null) {
             for (ReplayEvent replayEvent : replaySetContent.getEvent()) {
-                ReplaySportEvent event = new ReplaySportEventImpl(URN.parse(replayEvent.getId()), replayEvent.getPosition(), replayEvent.getStartTime());
+                ReplaySportEvent event = new ReplaySportEventImpl(
+                    URN.parse(replayEvent.getId()),
+                    replayEvent.getPosition(),
+                    replayEvent.getStartTime()
+                );
                 events.add(event);
             }
         }
@@ -120,7 +137,7 @@ public class ReplayManager {
      * Add a SportEvent to the list of SportEvents whose recorded messages will be replayed. The
      * SportEvents to add have to be older than 48hours, there is no max time, but typically
      * Sportradar does not guarantee that SportEvents older than 30 days can be replayed.
-     * 
+     *
      * @param event the SportEvent to add
      * @return an indication of the request success
      */
@@ -159,23 +176,30 @@ public class ReplayManager {
      * Add a SportEvent to the list of SportEvents whose recorded messages will be replayed. The
      * SportEvents to add have to be older than 48hours, there is no max time, but typically
      * Sportradar does not guarantee that SportEvents older than 30 days can be replayed.
-     * 
+     *
      * @param id the id of the SportEvent to add
      * @param startTime minutes relative to event start time
      * @return an indication of the request success
      */
     public boolean addSportEventToReplay(URN id, Integer startTime) {
         Preconditions.checkNotNull(id);
-        Preconditions.checkArgument(startTime == null || startTime >= 0, "starTime can either be null or >= 0");
+        Preconditions.checkArgument(
+            startTime == null || startTime >= 0,
+            "starTime can either be null or >= 0"
+        );
 
         String responseMessage;
         boolean status = false;
         try {
-            HttpHelper.ResponseData responseData = httpHelper.put(String.format("https://%s/v1/replay/events/%s?%s%s",
-                                                                                config.getAPIHost(),
-                                                                                id,
-                                                                                startTime == null ? "" : "start_time=" + startTime,
-                                                                                buildNodeIdQuery("&")));
+            HttpHelper.ResponseData responseData = httpHelper.put(
+                String.format(
+                    "https://%s/v1/replay/events/%s?%s%s",
+                    config.getApiHostAndPort(),
+                    id,
+                    startTime == null ? "" : "start_time=" + startTime,
+                    buildNodeIdQuery("&")
+                )
+            );
             status = responseData.isSuccessful();
             responseMessage = responseData.getMessage();
         } catch (CommunicationException e) {
@@ -184,10 +208,21 @@ public class ReplayManager {
         }
 
         if (!status) {
-            logger.info("ReplayManager.addSportEventToReplay({}, {}) failed - message: {}", id, startTime, responseMessage == null ? "Error" : responseMessage);
+            logger.info(
+                "ReplayManager.addSportEventToReplay({}, {}) failed - message: {}",
+                id,
+                startTime,
+                responseMessage == null ? "Error" : responseMessage
+            );
         }
 
-        clientInteractionLog.info("ReplayManager.addSportEventToReplay({},{}) -> response status: {}, message: {}", id, startTime, responseStatusString(status), responseMessage == null ? "Unknown" : responseMessage);
+        clientInteractionLog.info(
+            "ReplayManager.addSportEventToReplay({},{}) -> response status: {}, message: {}",
+            id,
+            startTime,
+            responseStatusString(status),
+            responseMessage == null ? "Unknown" : responseMessage
+        );
         return status;
     }
 
@@ -203,10 +238,14 @@ public class ReplayManager {
         String responseMessage;
         boolean status = false;
         try {
-            HttpHelper.ResponseData responseData = httpHelper.delete(String.format("https://%s/v1/replay/events/%s%s",
-                                                                                   config.getAPIHost(),
-                                                                                    id,
-                                                                                    buildNodeIdQuery("?")));
+            HttpHelper.ResponseData responseData = httpHelper.delete(
+                String.format(
+                    "https://%s/v1/replay/events/%s%s",
+                    config.getApiHostAndPort(),
+                    id,
+                    buildNodeIdQuery("?")
+                )
+            );
             status = responseData.isSuccessful();
             responseMessage = responseData.getMessage();
         } catch (CommunicationException e) {
@@ -215,10 +254,19 @@ public class ReplayManager {
         }
 
         if (!status) {
-            logger.info("ReplayManager.removeSportEventFromReplay({}) failed - message: {}", id, responseMessage == null ? "Error" : responseMessage);
+            logger.info(
+                "ReplayManager.removeSportEventFromReplay({}) failed - message: {}",
+                id,
+                responseMessage == null ? "Error" : responseMessage
+            );
         }
 
-        clientInteractionLog.info("ReplayManager.removeSportEventFromReplay({}) -> response status: {}, message: {}", id, responseStatusString(status), responseMessage == null ? "Unknown" : responseMessage);
+        clientInteractionLog.info(
+            "ReplayManager.removeSportEventFromReplay({}) -> response status: {}, message: {}",
+            id,
+            responseStatusString(status),
+            responseMessage == null ? "Unknown" : responseMessage
+        );
         return status;
     }
 
@@ -230,15 +278,20 @@ public class ReplayManager {
      * @return an indication of the request success
      */
     public boolean play() {
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play%s", config.getAPIHost(), buildNodeIdQuery("?")));
+        boolean responseStatus = tryPerformRequest(
+            String.format("https://%s/v1/replay/play%s", config.getApiHostAndPort(), buildNodeIdQuery("?"))
+        );
 
-        clientInteractionLog.info("ReplayManager.play() -> response status: {}", responseStatusString(responseStatus));
+        clientInteractionLog.info(
+            "ReplayManager.play() -> response status: {}",
+            responseStatusString(responseStatus)
+        );
         return responseStatus;
     }
 
     /**
      * Starts playing the messages for the SportEvents in the play list.
-     * 
+     *
      * @param speedupFactor how much faster to replay the recorded events (by default this is 10x
      *        faster)
      * @param maxDelayInMs the longest delay between two messages, if the delay would have been longer
@@ -278,7 +331,12 @@ public class ReplayManager {
      * @param rewriteTimestamps an indication if the message timestamps should be rewritten with current timestamps
      * @return an indication of the request success
      */
-    public boolean play(double speedupFactor, int maxDelayInMs, Integer producerId, Boolean rewriteTimestamps) {
+    public boolean play(
+        double speedupFactor,
+        int maxDelayInMs,
+        Integer producerId,
+        Boolean rewriteTimestamps
+    ) {
         return play(speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, null);
     }
 
@@ -296,22 +354,47 @@ public class ReplayManager {
      *        delay will be applied for each event separately.
      * @return an indication of the request success
      */
-    public boolean play(double speedupFactor, int maxDelayInMs, Integer producerId, Boolean rewriteTimestamps, Boolean runParallel) {
-        List<NameValuePair> queryParams = Stream.of(
-                    new BasicNameValuePair("speed", String.valueOf((int) speedupFactor)),
-                    new BasicNameValuePair("max_delay", String.valueOf(maxDelayInMs)),
-                    new BasicNameValuePair("node_id", config.getSdkNodeId() != null ? config.getSdkNodeId().toString() : null),
-                    new BasicNameValuePair("product", producerId != null ? producerId.toString() : null),
-                    new BasicNameValuePair("use_replay_timestamp", rewriteTimestamps != null ? rewriteTimestamps.toString() : null),
-                    new BasicNameValuePair("run_parallel", runParallel != null ? runParallel.toString() : null))
-                .filter(v -> v.getValue() != null)
-                .collect(Collectors.toList());
+    public boolean play(
+        double speedupFactor,
+        int maxDelayInMs,
+        Integer producerId,
+        Boolean rewriteTimestamps,
+        Boolean runParallel
+    ) {
+        List<NameValuePair> queryParams = Stream
+            .of(
+                new BasicNameValuePair("speed", String.valueOf((int) speedupFactor)),
+                new BasicNameValuePair("max_delay", String.valueOf(maxDelayInMs)),
+                new BasicNameValuePair(
+                    "node_id",
+                    config.getSdkNodeId() != null ? config.getSdkNodeId().toString() : null
+                ),
+                new BasicNameValuePair("product", producerId != null ? producerId.toString() : null),
+                new BasicNameValuePair(
+                    "use_replay_timestamp",
+                    rewriteTimestamps != null ? rewriteTimestamps.toString() : null
+                ),
+                new BasicNameValuePair("run_parallel", runParallel != null ? runParallel.toString() : null)
+            )
+            .filter(v -> v.getValue() != null)
+            .collect(Collectors.toList());
 
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/play?%s",
-                                                                 config.getAPIHost(),
-                                                                 URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
+        boolean responseStatus = tryPerformRequest(
+            String.format(
+                "https://%s/v1/replay/play?%s",
+                config.getApiHostAndPort(),
+                URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)
+            )
+        );
 
-        clientInteractionLog.info("ReplayManager.play({},{},{},{}) -> response status: {}", speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, responseStatusString(responseStatus));
+        clientInteractionLog.info(
+            "ReplayManager.play({},{},{},{}) -> response status: {}",
+            speedupFactor,
+            maxDelayInMs,
+            producerId,
+            rewriteTimestamps,
+            responseStatusString(responseStatus)
+        );
         return responseStatus;
     }
 
@@ -321,9 +404,14 @@ public class ReplayManager {
      * @return an indication of the request success
      */
     public boolean stop() {
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/stop%s", config.getAPIHost(), buildNodeIdQuery("?")));
+        boolean responseStatus = tryPerformRequest(
+            String.format("https://%s/v1/replay/stop%s", config.getApiHostAndPort(), buildNodeIdQuery("?"))
+        );
 
-        clientInteractionLog.info("ReplayManager.stop() -> response status: {}", responseStatusString(responseStatus));
+        clientInteractionLog.info(
+            "ReplayManager.stop() -> response status: {}",
+            responseStatusString(responseStatus)
+        );
         return responseStatus;
     }
 
@@ -335,14 +423,17 @@ public class ReplayManager {
      */
     public boolean clear() {
         boolean responseStatus = internalClear();
-        clientInteractionLog.info("ReplayManager.clear() -> response status: {}", responseStatusString(responseStatus));
+        clientInteractionLog.info(
+            "ReplayManager.clear() -> response status: {}",
+            responseStatusString(responseStatus)
+        );
 
         return responseStatus;
     }
 
     /**
      * Get the current status of the replayer
-     * 
+     *
      * @return the current status of the replayer (Playing or Stopped)
      */
     public ReplayStatus getPlayStatus() {
@@ -374,7 +465,9 @@ public class ReplayManager {
      * @return a {@link List} of available replay scenarios
      */
     public List<ReplayScenario> getAvailableScenarios() {
-        DataProvider<ReplayScenariosType> dataProvider = getDataProvider("/replay/scenario" + buildNodeIdQuery("?"));
+        DataProvider<ReplayScenariosType> dataProvider = getDataProvider(
+            "/replay/scenario" + buildNodeIdQuery("?")
+        );
 
         ReplayScenariosType data;
         try {
@@ -387,8 +480,13 @@ public class ReplayManager {
 
         List<ReplayScenarioType> replayScenario = data.getReplayScenario();
 
-        return replayScenario == null ? null : replayScenario.stream()
-                .map(scenario -> new ReplayScenario(scenario, sportEntityFactory, config.getExceptionHandlingStrategy()))
+        return replayScenario == null
+            ? null
+            : replayScenario
+                .stream()
+                .map(scenario ->
+                    new ReplayScenario(scenario, sportEntityFactory, config.getExceptionHandlingStrategy())
+                )
                 .collect(Collectors.toList());
     }
 
@@ -399,9 +497,20 @@ public class ReplayManager {
      * @return <code>true</code> if the request executed successfully, otherwise <code>false</code>
      */
     public boolean playScenario(int id) {
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d%s", config.getAPIHost(), id, buildNodeIdQuery("?")));
+        boolean responseStatus = tryPerformRequest(
+            String.format(
+                "https://%s/v1/replay/scenario/play/%d%s",
+                config.getApiHostAndPort(),
+                id,
+                buildNodeIdQuery("?")
+            )
+        );
 
-        clientInteractionLog.info("ReplayManager.playScenario({}) -> response status: {}", id, responseStatusString(responseStatus));
+        clientInteractionLog.info(
+            "ReplayManager.playScenario({}) -> response status: {}",
+            id,
+            responseStatusString(responseStatus)
+        );
         return responseStatus;
     }
 
@@ -433,25 +542,55 @@ public class ReplayManager {
      * @param rewriteTimestamps an indication if the message timestamps should be rewritten with current timestamps
      * @return an indication of the request success
      */
-    public boolean playScenario(int id, double speedupFactor, int maxDelayInMs, Integer producerId, Boolean rewriteTimestamps) {
-        List<NameValuePair> queryParams = Stream.of(
+    public boolean playScenario(
+        int id,
+        double speedupFactor,
+        int maxDelayInMs,
+        Integer producerId,
+        Boolean rewriteTimestamps
+    ) {
+        List<NameValuePair> queryParams = Stream
+            .of(
                 new BasicNameValuePair("speed", String.valueOf((int) speedupFactor)),
                 new BasicNameValuePair("max_delay", String.valueOf(maxDelayInMs)),
-                new BasicNameValuePair("node_id", config.getSdkNodeId() != null ? config.getSdkNodeId().toString() : null),
+                new BasicNameValuePair(
+                    "node_id",
+                    config.getSdkNodeId() != null ? config.getSdkNodeId().toString() : null
+                ),
                 new BasicNameValuePair("product", producerId != null ? producerId.toString() : null),
-                new BasicNameValuePair("use_replay_timestamp", rewriteTimestamps != null ? rewriteTimestamps.toString() : null))
-                .filter(v -> v.getValue() != null)
-                .collect(Collectors.toList());
+                new BasicNameValuePair(
+                    "use_replay_timestamp",
+                    rewriteTimestamps != null ? rewriteTimestamps.toString() : null
+                )
+            )
+            .filter(v -> v.getValue() != null)
+            .collect(Collectors.toList());
 
-        boolean responseStatus = tryPerformRequest(String.format("https://%s/v1/replay/scenario/play/%d?%s", config.getAPIHost(), id,
-                URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)));
+        boolean responseStatus = tryPerformRequest(
+            String.format(
+                "https://%s/v1/replay/scenario/play/%d?%s",
+                config.getApiHostAndPort(),
+                id,
+                URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)
+            )
+        );
 
-        clientInteractionLog.info("ReplayManager.playScenario({},{},{},{},{}) -> response status: {}", id, speedupFactor, maxDelayInMs, producerId, rewriteTimestamps, responseStatusString(responseStatus));
+        clientInteractionLog.info(
+            "ReplayManager.playScenario({},{},{},{},{}) -> response status: {}",
+            id,
+            speedupFactor,
+            maxDelayInMs,
+            producerId,
+            rewriteTimestamps,
+            responseStatusString(responseStatus)
+        );
         return responseStatus;
     }
 
     private boolean internalClear() {
-        return tryPerformRequest(String.format("https://%s/v1/replay/reset%s", config.getAPIHost(), buildNodeIdQuery("?")));
+        return tryPerformRequest(
+            String.format("https://%s/v1/replay/reset%s", config.getApiHostAndPort(), buildNodeIdQuery("?"))
+        );
     }
 
     private boolean tryPerformRequest(String path) {
@@ -481,12 +620,12 @@ public class ReplayManager {
         Preconditions.checkNotNull(query);
 
         return new DataProvider<>(
-                query,
-                config.getAPIHost(),
-                true,
-                config.getDefaultLocale(),
-                logHttpDataFetcher,
-                deserializer
+            query,
+            config.getApiHostAndPort(),
+            true,
+            config.getDefaultLocale(),
+            logHttpDataFetcher,
+            deserializer
         );
     }
 }

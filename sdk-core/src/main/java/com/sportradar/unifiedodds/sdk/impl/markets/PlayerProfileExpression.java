@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.utils.URN;
-
 import java.util.Collections;
 import java.util.Locale;
 
@@ -20,6 +19,7 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public class PlayerProfileExpression implements NameExpression {
+
     private final Operand operand;
     private final ProfileCache profileCache;
 
@@ -38,13 +38,24 @@ public class PlayerProfileExpression implements NameExpression {
         try {
             playerProfile = profileCache.getPlayerProfile(playerId, Lists.newArrayList(locale), null);
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {
-            throw new IllegalStateException("Could not build the requested player profile expression, id:" + operand.getStringValue() + ", locale:" + locale, e);
+            throw new IllegalStateException(
+                "Could not build the requested player profile expression, id:" +
+                operand.getStringValue() +
+                ", locale:" +
+                locale,
+                e
+            );
         }
 
         if (playerProfile.getNames(Collections.singletonList(locale)).get(locale) != null) {
             return playerProfile.getNames(Collections.singletonList(locale)).get(locale);
         }
 
-        throw new IllegalStateException("Could not build the requested player profile expression with the provided locale, id:" + operand.getStringValue() + ", locale:" + locale);
+        throw new IllegalStateException(
+            "Could not build the requested player profile expression with the provided locale, id:" +
+            operand.getStringValue() +
+            ", locale:" +
+            locale
+        );
     }
 }

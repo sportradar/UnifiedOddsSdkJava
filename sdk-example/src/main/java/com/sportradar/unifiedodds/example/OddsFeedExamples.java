@@ -4,16 +4,25 @@
 
 package com.sportradar.unifiedodds.example;
 
-
 import com.sportradar.unifiedodds.example.examples.*;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-
 import java.io.IOException;
 import java.util.Scanner;
 
 /**
  * The SDK basic example selector
  */
+@SuppressWarnings(
+    {
+        "ClassDataAbstractionCoupling",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "HideUtilityClassConstructor",
+        "JavaNCSS",
+        "LineLength",
+        "MethodLength",
+    }
+)
 public class OddsFeedExamples {
 
     public static void main(String[] args) throws IOException, InitException, InterruptedException {
@@ -26,16 +35,32 @@ public class OddsFeedExamples {
     private static void doExampleSelection() throws IOException, InitException, InterruptedException {
         System.out.println("Available examples: (select the one you would like to run)");
         System.out.println("  1 - Sample setup: Basic \t\t\t\t\t\tSingle session (full odds recovery)");
-        System.out.println("  2 - Sample setup: Multi-session \t\t\t\tMultiple sessions: Prematch, Liveodds, Virtuals (full odds recovery)");
-        System.out.println("  3 - Sample setup: Basic (recovery timestamp) \tSingle session (recovery for the last 2 hours - on all active producers)");
-        System.out.println("  4 - Sample setup: Full message data \t\t\tSingle session (recovery for the last 2 hours - on all active producers)");
-        System.out.println("  5 - Extra: Print available markets \t\t\tList the full static market descriptions list");
-        System.out.println("  6 - Extra: Print available market mappings \tList the available static market description mappings");
+        System.out.println(
+            "  2 - Sample setup: Multi-session \t\t\t\tMultiple sessions: Prematch, Liveodds, Virtuals (full odds recovery)"
+        );
+        System.out.println(
+            "  3 - Sample setup: Basic (recovery timestamp) \tSingle session (recovery for the last 2 hours - on all active producers)"
+        );
+        System.out.println(
+            "  4 - Sample setup: Full message data \t\t\tSingle session (recovery for the last 2 hours - on all active producers)"
+        );
+        System.out.println(
+            "  5 - Extra: Print available markets \t\t\tList the full static market descriptions list"
+        );
+        System.out.println(
+            "  6 - Extra: Print available market mappings \tList the available static market description mappings"
+        );
         System.out.println("  7 - Extra: Replay Server \t\t\t\t\t\tA simple replay demonstration");
         System.out.println("  8 - Extra: Print sport event data \t\t\tPrints out static sport event data");
-        System.out.println("  9 - Extra: Advanced configuration setup \t\tA basic demonstration on how to do an advanced configuration setup");
-        System.out.println(" 10 - Extra: Cache export/import \t\t\t\tA basic demonstration on how to export/import current cache state");
-        System.out.println(" 11 - Extra: Advanced setup \t\t\t\t\tSingle session with multithreaded message parsing");
+        System.out.println(
+            "  9 - Extra: Advanced configuration setup \t\tA basic demonstration on how to do an advanced configuration setup"
+        );
+        System.out.println(
+            " 10 - Extra: Cache export/import \t\t\t\tA basic demonstration on how to export/import current cache state"
+        );
+        System.out.println(
+            " 11 - Extra: Advanced setup \t\t\t\t\tSingle session with multithreaded message parsing"
+        );
 
         String selection = getConsoleInput();
 

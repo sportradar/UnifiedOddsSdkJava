@@ -2,16 +2,17 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
-import org.mockito.Mockito;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.function.Supplier;
+import org.mockito.Mockito;
 
+@SuppressWarnings({ "IllegalCatch" })
 public class TestingDataProvider<T> extends DataProvider<T> {
+
     private final Supplier<InputStream> streamFactory;
 
     public TestingDataProvider(File file) {
@@ -29,7 +30,12 @@ public class TestingDataProvider<T> extends DataProvider<T> {
     }
 
     public TestingDataProvider(Supplier<InputStream> streamFactory) {
-        super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class), Mockito.mock(Deserializer.class));
+        super(
+            "",
+            Mockito.mock(SDKInternalConfiguration.class),
+            Mockito.mock(LogHttpDataFetcher.class),
+            Mockito.mock(Deserializer.class)
+        );
         this.streamFactory = streamFactory;
     }
 
@@ -39,7 +45,8 @@ public class TestingDataProvider<T> extends DataProvider<T> {
     }
 
     @Override
-    public DataWrapper<T> getDataWithAdditionalInfo(Locale locale, String... args) throws DataProviderException {
+    public DataWrapper<T> getDataWithAdditionalInfo(Locale locale, String... args)
+        throws DataProviderException {
         return new DataWrapper<>(readFromStream(), null);
     }
 

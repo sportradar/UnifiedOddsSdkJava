@@ -4,6 +4,7 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodStatus;
 import com.sportradar.uf.sportsapi.datamodel.SAPIStageResult;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class CompetitorResultImpl implements CompetitorResult {
 
     private final String type;
@@ -23,20 +24,34 @@ public class CompetitorResultImpl implements CompetitorResult {
     }
 
     @Override
-    public String getType() { return type; }
+    public String getType() {
+        return type;
+    }
 
     @Override
-    public String getValue() { return value; }
+    public String getValue() {
+        return value;
+    }
 
     @Override
-    public String getSpecifiers() { return specifiers; }
+    public String getSpecifiers() {
+        return specifiers;
+    }
 
     @Override
     public String toString() {
-        return "CompetitorResultImpl{" +
-                "type='" + type + '\'' +
-                ", value='" + value + '\'' +
-                ", specifiers='" + specifiers + '\'' +
-                '}';
+        return (
+            "CompetitorResultImpl{" +
+            "type='" +
+            type +
+            '\'' +
+            ", value='" +
+            value +
+            '\'' +
+            ", specifiers='" +
+            specifiers +
+            '\'' +
+            '}'
+        );
     }
 }

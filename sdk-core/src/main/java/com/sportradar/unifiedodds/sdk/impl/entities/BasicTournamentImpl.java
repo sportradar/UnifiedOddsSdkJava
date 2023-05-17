@@ -17,18 +17,27 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a sport tournament
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LineLength",
+        "MultipleStringLiterals",
+    }
+)
 public class BasicTournamentImpl extends SportEventImpl implements BasicTournament {
-    private final static Logger logger = LoggerFactory.getLogger(BasicTournamentImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(BasicTournamentImpl.class);
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -59,13 +68,15 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
      * @param sportEntityFactory a {@link SportEntityFactory} instance used to construct {@link Competition} instances
      * @param exceptionHandlingStrategy the desired exception handling strategy
      */
-    public BasicTournamentImpl(URN id,
-                               URN sportId, List<Locale> locales,
-                               SportEventCache sportEventCache,
-                               SportEntityFactory sportEntityFactory,
-                               ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public BasicTournamentImpl(
+        URN id,
+        URN sportId,
+        List<Locale> locales,
+        SportEventCache sportEventCache,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         super(id, sportId);
-
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -76,7 +87,6 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
-
 
     /**
      * Returns the name of the current long term event translated to the specified language
@@ -209,8 +219,13 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
         }
 
         try {
-            return tournamentCi.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(tournamentCi.getCompetitorIds(locales), tournamentCi, locales);
+            return tournamentCi.getCompetitorIds(locales) == null
+                ? null
+                : sportEntityFactory.buildStreamCompetitors(
+                    tournamentCi.getCompetitorIds(locales),
+                    tournamentCi,
+                    locales
+                );
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;
@@ -275,8 +290,9 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
             return null;
         }
 
-        return tournamentCi.getTournamentCoverage() == null ? null :
-                new TournamentCoverageImpl(tournamentCi.getTournamentCoverage());
+        return tournamentCi.getTournamentCoverage() == null
+            ? null
+            : new TournamentCoverageImpl(tournamentCi.getTournamentCoverage());
     }
 
     /**
@@ -336,10 +352,7 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
      */
     @Override
     public String toString() {
-        return "BasicTournamentImpl{" +
-                "id=" + id +
-                ", locales=" + locales +
-                "}";
+        return "BasicTournamentImpl{" + "id=" + id + ", locales=" + locales + "}";
     }
 
     /**
@@ -357,9 +370,20 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
             }
         } else {
             if (e == null) {
-                logger.warn("Tournament - Error executing {}[{}] request({}), returning null", this.getClass(), id, request);
+                logger.warn(
+                    "Tournament - Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request
+                );
             } else {
-                logger.warn("Tournament - Error executing {}[{}] request({}), returning null", this.getClass(), id, request, e);
+                logger.warn(
+                    "Tournament - Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request,
+                    e
+                );
             }
         }
     }

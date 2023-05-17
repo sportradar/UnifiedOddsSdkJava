@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +17,7 @@ import java.util.stream.Collectors;
  * // TODO @eti: Javadoc
  */
 public class OutcomeDescriptionImpl implements OutcomeDescription {
+
     private final String id;
     private final Map<Locale, String> names;
     private final Map<Locale, String> descriptions;
@@ -29,10 +29,16 @@ public class OutcomeDescriptionImpl implements OutcomeDescription {
 
         id = ci.getId();
 
-        names = locales.stream().filter(l -> ci.getName(l) != null)
+        names =
+            locales
+                .stream()
+                .filter(l -> ci.getName(l) != null)
                 .collect(Collectors.toMap(k -> k, ci::getName));
 
-        descriptions = locales.stream().filter(l -> ci.getDescription(l) != null)
+        descriptions =
+            locales
+                .stream()
+                .filter(l -> ci.getDescription(l) != null)
                 .collect(Collectors.toMap(k -> k, ci::getDescription));
     }
 

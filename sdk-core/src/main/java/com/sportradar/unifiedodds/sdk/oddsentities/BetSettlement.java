@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.List;
 
 /**
@@ -13,7 +12,6 @@ import java.util.List;
  * be cleared
  */
 public interface BetSettlement<T extends SportEvent> extends MarketMessage<T> {
-
     /**
      *
      * @return the certainty of the settlement

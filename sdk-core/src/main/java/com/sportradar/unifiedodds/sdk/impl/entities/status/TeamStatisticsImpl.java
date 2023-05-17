@@ -12,7 +12,9 @@ import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
 /**
  * Provides methods used to access team statistics
  */
+@SuppressWarnings({ "LineLength", "UnnecessaryParentheses" })
 class TeamStatisticsImpl implements TeamStatistics {
+
     private final TeamStatisticsDTO stats;
 
     TeamStatisticsImpl(TeamStatisticsDTO stats) {
@@ -87,7 +89,9 @@ class TeamStatisticsImpl implements TeamStatistics {
      * @return the received green cards number, could be null
      */
     @Override
-    public Integer getGreenCards(){ return stats.getGreenCards(); }
+    public Integer getGreenCards() {
+        return stats.getGreenCards();
+    }
 
     /**
      * Returns the name
@@ -101,16 +105,28 @@ class TeamStatisticsImpl implements TeamStatistics {
 
     @Override
     public String toString() {
-        return "TeamStatisticsImpl{" +
-                "teamId=" + stats.getTeamId() +
-                ", name='" + stats.getName() + '\'' +
-                ", homeAway=" + stats.getHomeAway() +
-                ", cards=" + stats.getCards() +
-                ", yellowCards=" + stats.getYellowCards() +
-                ", redCards=" + stats.getRedCards() +
-                ", yellowRedCards=" + stats.getYellowRedCards() +
-                ", cornerKicks=" + stats.getCornerKicks() +
-                ", greenCards=" + stats.getGreenCards() +
-                '}';
+        return (
+            "TeamStatisticsImpl{" +
+            "teamId=" +
+            stats.getTeamId() +
+            ", name='" +
+            stats.getName() +
+            '\'' +
+            ", homeAway=" +
+            stats.getHomeAway() +
+            ", cards=" +
+            stats.getCards() +
+            ", yellowCards=" +
+            stats.getYellowCards() +
+            ", redCards=" +
+            stats.getRedCards() +
+            ", yellowRedCards=" +
+            stats.getYellowRedCards() +
+            ", cornerKicks=" +
+            stats.getCornerKicks() +
+            ", greenCards=" +
+            stats.getGreenCards() +
+            '}'
+        );
     }
 }

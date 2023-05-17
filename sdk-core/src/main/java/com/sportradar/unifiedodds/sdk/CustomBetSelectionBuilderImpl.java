@@ -11,7 +11,9 @@ import com.sportradar.utils.URN;
 /**
  * The basic implementation of the {@link CustomBetSelectionBuilder}
  */
+@SuppressWarnings({ "HiddenField", "VariableDeclarationUsageDistance" })
 public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder {
+
     private URN eventId;
     private int marketId;
     private String outcomeId;

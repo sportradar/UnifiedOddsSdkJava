@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * An interface providing methods to access competitor data
  */
+@SuppressWarnings({ "MultipleStringLiterals" })
 public interface Competitor extends Player {
     /**
      * Returns an unmodifiable map of available translated competitor country names
@@ -95,7 +96,7 @@ public interface Competitor extends Player {
      *
      * @return the gender of the competitor if available; otherwise null
      */
-    default String getGender(){
+    default String getGender() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -113,7 +114,7 @@ public interface Competitor extends Player {
      *
      * @return the age group of the competitor if available; otherwise null
      */
-    default String getAgeGroup(){
+    default String getAgeGroup() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -132,13 +133,15 @@ public interface Competitor extends Player {
      * Returns associated sport
      * @return sport if available; otherwise null
      */
-    default Sport getSport(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+    default Sport getSport() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns associated category
      * @return category if available; otherwise null
      */
-    default CategorySummary getCategory(){
+    default CategorySummary getCategory() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -146,7 +149,7 @@ public interface Competitor extends Player {
      * Returns the short name
      * @return the short name if available; otherwise null
      */
-    default String getShortName(){
+    default String getShortName() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

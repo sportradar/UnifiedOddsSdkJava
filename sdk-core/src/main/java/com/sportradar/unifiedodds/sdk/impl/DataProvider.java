@@ -11,33 +11,35 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderStreamException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 /**
  * The generic class used to get various data from the Unified API endpoints
  *
  * @param <TOut> valid Unified API endpoint object generated from API xsd schemas
  */
+@SuppressWarnings({ "ClassFanOutComplexity", "ClassTypeParameterName", "LineLength" })
 public class DataProvider<TOut> {
 
     private final String uriFormat;
     private final HttpDataFetcher logHttpDataFetcher;
     private final Deserializer deserializer;
-    private final String apiHost;
+    private final String apiHostAndPort;
     private final boolean useApiSsl;
     private final Locale defaultLocale;
 
-    public DataProvider(String uriFormat,
-                        SDKInternalConfiguration config,
-                        HttpDataFetcher logHttpDataFetcher,
-                        Deserializer deserializer) {
+    public DataProvider(
+        String uriFormat,
+        SDKInternalConfiguration config,
+        HttpDataFetcher logHttpDataFetcher,
+        Deserializer deserializer
+    ) {
         Preconditions.checkNotNull(uriFormat);
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(logHttpDataFetcher);
@@ -48,18 +50,20 @@ public class DataProvider<TOut> {
         this.logHttpDataFetcher = logHttpDataFetcher;
 
         useApiSsl = config.getUseApiSsl();
-        apiHost = config.getAPIHost();
+        apiHostAndPort = config.getApiHostAndPort();
         defaultLocale = config.getDefaultLocale();
     }
 
-    public DataProvider(String uriFormat,
-                        String apiHost,
-                        boolean useApiSsl,
-                        Locale defaultLocale,
-                        LogHttpDataFetcher logHttpDataFetcher,
-                        Deserializer deserializer) {
+    public DataProvider(
+        String uriFormat,
+        String apiHostAndPort,
+        boolean useApiSsl,
+        Locale defaultLocale,
+        LogHttpDataFetcher logHttpDataFetcher,
+        Deserializer deserializer
+    ) {
         Preconditions.checkNotNull(uriFormat);
-        Preconditions.checkNotNull(apiHost);
+        Preconditions.checkNotNull(apiHostAndPort);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(logHttpDataFetcher);
         Preconditions.checkNotNull(deserializer);
@@ -67,7 +71,7 @@ public class DataProvider<TOut> {
         this.uriFormat = uriFormat;
         this.logHttpDataFetcher = logHttpDataFetcher;
         this.deserializer = deserializer;
-        this.apiHost = apiHost;
+        this.apiHostAndPort = apiHostAndPort;
         this.useApiSsl = useApiSsl;
         this.defaultLocale = defaultLocale;
     }
@@ -109,7 +113,8 @@ public class DataProvider<TOut> {
      * @param args   that are used with the supplied URI format
      * @return the requested API endpoint object and other related information wrapped in a {@link DataWrapper} instance
      */
-    public DataWrapper<TOut> getDataWithAdditionalInfo(Locale locale, String... args) throws DataProviderException {
+    public DataWrapper<TOut> getDataWithAdditionalInfo(Locale locale, String... args)
+        throws DataProviderException {
         HttpData fetchedContent = fetchData(null, locale, args);
 
         TOut deserializeData = deserializeData(fetchedContent);
@@ -125,7 +130,10 @@ public class DataProvider<TOut> {
      */
     public TOut postData(Object content) throws DataProviderException {
         try {
-            StringEntity entity = new StringEntity(deserializer.serialize(content), ContentType.APPLICATION_XML);
+            StringEntity entity = new StringEntity(
+                deserializer.serialize(content),
+                ContentType.APPLICATION_XML
+            );
             HttpData fetchedContent = fetchData(entity, null, null);
             return deserializeData(fetchedContent);
         } catch (DeserializationException e) {
@@ -136,19 +144,22 @@ public class DataProvider<TOut> {
     @SuppressWarnings("unchecked")
     private TOut deserializeData(HttpData fetchedContent) throws DataProviderException {
         try {
-            InputStream inputStream = new ByteArrayInputStream(fetchedContent.getResponse().getBytes(StandardCharsets.UTF_8));
+            InputStream inputStream = new ByteArrayInputStream(
+                fetchedContent.getResponse().getBytes(StandardCharsets.UTF_8)
+            );
             return (TOut) deserializer.deserialize(inputStream);
         } catch (DeserializationException e) {
             throw new DataProviderException("Data deserialization failed", e);
         }
     }
 
-    private HttpData fetchData(HttpEntity content, Locale locale, String[] args) throws DataProviderException {
-
+    private HttpData fetchData(HttpEntity content, Locale locale, String[] args)
+        throws DataProviderException {
         HttpData fetchedContent;
         try {
             String finalUrl = getFinalUrl(locale, args);
-            fetchedContent = content == null
+            fetchedContent =
+                content == null
                     ? logHttpDataFetcher.get(finalUrl)
                     : logHttpDataFetcher.post(finalUrl, content);
         } catch (CommunicationException e) {
@@ -164,8 +175,7 @@ public class DataProvider<TOut> {
 
     public String getFinalUrl(Locale locale, String arg) {
         String[] forwardArgs = new String[0];
-        if(arg != null && !arg.isEmpty())
-        {
+        if (arg != null && !arg.isEmpty()) {
             forwardArgs = new String[1];
             forwardArgs[0] = arg;
         }
@@ -187,15 +197,14 @@ public class DataProvider<TOut> {
         }
         String formattedPath = String.format(uriFormat, (Object[]) forwardArgs);
         String httpHttps = useApiSsl ? "https" : "http";
-        String finalUrl = uriFormat.contains("http") ? formattedPath : httpHttps + "://" + apiHost + "/v1" + formattedPath;
-        return finalUrl;
+        return uriFormat.contains("http")
+            ? formattedPath
+            : httpHttps + "://" + apiHostAndPort + "/v1" + formattedPath;
     }
 
     @Override
     public String toString() {
-        return "DataProvider{" +
-                "uriFormat='" + uriFormat + '\'' +
-                '}';
+        return "DataProvider{" + "uriFormat='" + uriFormat + '\'' + '}';
     }
 
     /**

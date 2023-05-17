@@ -7,5 +7,4 @@ package com.sportradar.unifiedodds.sdk.entities.status;
 /**
  * Defines methods to access competition specific statistics
  */
-public interface CompetitionStatistics {
-}
+public interface CompetitionStatistics {}

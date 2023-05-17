@@ -9,14 +9,15 @@ import com.sportradar.uf.sportsapi.datamodel.SAPISportEventChildren.SAPISportEve
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * A child race representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public class ChildRaceCI extends SportEntityCI {
+
     /**
      * The {@link SportEventType} specifying the type of the associated sport event
      */
@@ -45,14 +46,14 @@ public class ChildRaceCI extends SportEntityCI {
      */
     public ChildRaceCI(SAPISportEvent sportEvent, Locale locale) {
         super(URN.parse(sportEvent.getId()));
-
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(locale);
 
         type = tryGetSportEventType(sportEvent.getType());
         name = sportEvent.getName();
         schedule = sportEvent.getScheduled() == null ? null : SdkHelper.toDate(sportEvent.getScheduled());
-        scheduleEnd = sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
+        scheduleEnd =
+            sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
     }
 
     /**
@@ -68,7 +69,6 @@ public class ChildRaceCI extends SportEntityCI {
      */
     ChildRaceCI(String id, String type, String name, Date schedule, Date scheduleEnd, Locale locale) {
         super(URN.parse(id));
-
         Preconditions.checkNotNull(type);
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(locale);

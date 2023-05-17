@@ -5,7 +5,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableDelayedInfoCI implements Serializable {
+
     private int id;
     private Map<Locale, String> descriptions;
     private Set<Locale> cachedLocales;

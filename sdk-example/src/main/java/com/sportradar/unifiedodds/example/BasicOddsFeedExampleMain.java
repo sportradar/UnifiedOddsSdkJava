@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-
 import java.io.IOException;
 import java.util.Locale;
 
@@ -19,6 +18,7 @@ import java.util.Locale;
  * The following example is a very simple example that just connects to the Unified Odds Feed and
  * prints out some information about all the messages it receives.
  */
+@SuppressWarnings({ "HideUtilityClassConstructor", "MagicNumber", "MethodLength" })
 public class BasicOddsFeedExampleMain {
 
     public static void main(String[] args) throws InitException, IOException, InterruptedException {
@@ -27,12 +27,13 @@ public class BasicOddsFeedExampleMain {
         //      - as a system property(JVM argument -Duf.accesstoken=<your-access-token>)
         //        and than invoking setAccessTokenFromSystemVar on the builder
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
-        OddsFeedConfiguration config = OddsFeed.getOddsFeedConfigurationBuilder()
-                .setAccessToken("your-staging-token-here")
-                .selectEnvironment(Environment.GlobalIntegration)
-                .setSdkNodeId(SdkConstants.NODE_ID)
-                .setDefaultLocale(Locale.ENGLISH)
-                .build();
+        OddsFeedConfiguration config = OddsFeed
+            .getOddsFeedConfigurationBuilder()
+            .setAccessToken("your-staging-token-here")
+            .selectEnvironment(Environment.GlobalIntegration)
+            .setSdkNodeId(SdkConstants.NODE_ID)
+            .setDefaultLocale(Locale.ENGLISH)
+            .build();
 
         // create the new feed
         OddsFeed oddsFeed = new OddsFeed(new GlobalEventsListener(), config);

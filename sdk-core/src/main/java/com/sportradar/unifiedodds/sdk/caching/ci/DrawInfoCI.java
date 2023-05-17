@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.entities.TimeType;
 /**
  * A basic draw info cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class DrawInfoCI {
 
     private final DrawType drawType;
@@ -80,10 +81,6 @@ public class DrawInfoCI {
     }
 
     public ExportableDrawInfoCI export() {
-        return new ExportableDrawInfoCI(
-                drawType,
-                timeType,
-                gameType
-        );
+        return new ExportableDrawInfoCI(drawType, timeType, gameType);
     }
 }

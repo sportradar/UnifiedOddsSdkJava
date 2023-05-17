@@ -12,14 +12,25 @@ import com.sportradar.unifiedodds.sdk.caching.impl.ci.SportEventStatusCIImpl;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /**
  * Cache storing sport event statuses
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "EqualsAvoidNull",
+        "LineLength",
+        "MagicNumber",
+        "MethodLength",
+        "ReturnCount",
+    }
+)
 public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRouterListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SportEventStatusCacheImpl.class);
@@ -47,9 +58,11 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      *                          statuses if they are not yet cached
      * @param ignoreEventsTimelineCache - the {@link Cache} instance used to store event ids for which timeline SES should be ignored
      */
-    public SportEventStatusCacheImpl(Cache<String, SportEventStatusCI> sportEventStatusCache,
-                                     SportEventCache sportEventCache,
-                                     Cache<String, Date> ignoreEventsTimelineCache) {
+    public SportEventStatusCacheImpl(
+        Cache<String, SportEventStatusCI> sportEventStatusCache,
+        SportEventCache sportEventCache,
+        Cache<String, Date> ignoreEventsTimelineCache
+    ) {
         Preconditions.checkNotNull(sportEventStatusCache);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(ignoreEventsTimelineCache);
@@ -88,34 +101,49 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
     }
 
     /**
-    * Adds a new {@link #sportEventStatusCache} entry
-    *
-    * @param id - the unique identifier of the sport event to which the status belongs to
-    * @param data - a {@link SportEventStatusDTO} to store in the cache
-    * @param statusOnEvent - a status obtained directly on the sport event
-    * @param source - a source of the data
-    */
+     * Adds a new {@link #sportEventStatusCache} entry
+     *
+     * @param id - the unique identifier of the sport event to which the status belongs to
+     * @param data - a {@link SportEventStatusDTO} to store in the cache
+     * @param statusOnEvent - a status obtained directly on the sport event
+     * @param source - a source of the data
+     */
     @Override
-    public void onSportEventStatusFetched(URN id, SportEventStatusDTO data, String statusOnEvent, String source) {
+    public void onSportEventStatusFetched(
+        URN id,
+        SportEventStatusDTO data,
+        String statusOnEvent,
+        String source
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
 
         // sportEventStatus from oddsChange message has priority
-        if(source.equalsIgnoreCase("UFOddsChange") ||
-                source.contains("Summary") ||
-                sportEventStatusCache.getIfPresent(id.toString()) == null) {
-
+        if (
+            source.equalsIgnoreCase("UFOddsChange") ||
+            source.contains("Summary") ||
+            sportEventStatusCache.getIfPresent(id.toString()) == null
+        ) {
             Date d = ignoreEventsTimelineCache.getIfPresent(id.toString());
-            if (OperationManager.getIgnoreBetPalTimelineSportEventStatus() && source.contains("Timeline") && d != null)
-            {
-                logger.debug(String.format("Received SES for %s from %s with EventStatus:%s (timeline ignored)",
-                                                 id,
-                                                 source,
-                                                 data.getStatus()));
+            if (
+                OperationManager.getIgnoreBetPalTimelineSportEventStatus() &&
+                source.contains("Timeline") &&
+                d != null
+            ) {
+                logger.debug(
+                    String.format(
+                        "Received SES for %s from %s with EventStatus:%s (timeline ignored)",
+                        id,
+                        source,
+                        data.getStatus()
+                    )
+                );
                 return;
             }
 
-            logger.debug(String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus()));
+            logger.debug(
+                String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus())
+            );
 
             SportEventStatusCI cacheItem = sportEventStatusCache.getIfPresent(id.toString());
             SportEventStatusDTO feedDTO = (cacheItem != null) ? cacheItem.getFeedStatusDTO() : null;
@@ -123,22 +151,27 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
 
             if (source.equalsIgnoreCase("UFOddsChange")) {
                 feedDTO = data;
-            }
-            else {
+            } else {
                 sapiDTO = data;
             }
 
             if (cacheItem == null) {
                 cacheItem = new SportEventStatusCIImpl(feedDTO, sapiDTO);
-            }
-            else {
+            } else {
                 cacheItem.setFeedStatus(feedDTO);
                 cacheItem.setSapiStatus(sapiDTO);
             }
             sportEventStatusCache.put(id.toString(), cacheItem);
             return;
         }
-        logger.debug(String.format("Received SES for %s from %s with EventStatus:%s (ignored)", id, source, data.getStatus()));
+        logger.debug(
+            String.format(
+                "Received SES for %s from %s with EventStatus:%s (ignored)",
+                id,
+                source,
+                data.getStatus()
+            )
+        );
     }
 
     /**
@@ -161,12 +194,14 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      */
     @Override
     public void addEventIdForTimelineIgnore(URN eventId, int producerId, String messageType) {
-        if (producerId == 4) // BetPal
-        {
+        if (producerId == 4) { // BetPal
             Date d = ignoreEventsTimelineCache.getIfPresent(eventId.toString());
-            if (d == null)
-            {
-                String msg = String.format("Received %s - added %s to the ignore timeline list", messageType, eventId);
+            if (d == null) {
+                String msg = String.format(
+                    "Received %s - added %s to the ignore timeline list",
+                    messageType,
+                    eventId
+                );
                 logger.debug(msg);
                 ignoreEventsTimelineCache.put(eventId.toString(), new Date());
             }
@@ -187,10 +222,18 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
             if (eventCacheItem instanceof CompetitionCI) {
                 ((CompetitionCI) eventCacheItem).fetchSportEventStatus();
             } else {
-                logger.warn("Received sport event[{}] status fetch-cache request for unsupported entity type: {}", eventId, eventCacheItem.getClass().getSimpleName());
+                logger.warn(
+                    "Received sport event[{}] status fetch-cache request for unsupported entity type: {}",
+                    eventId,
+                    eventCacheItem.getClass().getSimpleName()
+                );
             }
         } catch (CacheItemNotFoundException e) {
-            logger.warn("Could not access a valid cache item for the requested event[{}] status, exc: ", eventId, e);
+            logger.warn(
+                "Could not access a valid cache item for the requested event[{}] status, exc: ",
+                eventId,
+                e
+            );
         }
     }
 }

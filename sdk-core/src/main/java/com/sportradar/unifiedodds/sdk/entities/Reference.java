@@ -36,7 +36,7 @@ public interface Reference {
      *
      * @return - the AAMS id for this instance if provided among reference ids, null otherwise
      */
-    default Integer getAamsId(){
+    default Integer getAamsId() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 

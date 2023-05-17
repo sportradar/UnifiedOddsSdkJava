@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * Describes an outcome for a particular market
  */
+@SuppressWarnings({ "LineLength" })
 public interface Outcome {
     /**
      * Returns the outcome id

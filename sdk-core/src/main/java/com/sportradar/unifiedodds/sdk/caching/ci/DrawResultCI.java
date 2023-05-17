@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIDrawResult;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawResultCI;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +17,7 @@ import java.util.stream.Collectors;
 /**
  * A basic draw result cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class DrawResultCI {
 
     private final Integer value;
@@ -33,8 +33,7 @@ public class DrawResultCI {
 
         if (dr.getName() != null) {
             names.put(dataLocale, dr.getName());
-        }
-        else{
+        } else {
             names.put(dataLocale, "");
         }
     }
@@ -51,11 +50,11 @@ public class DrawResultCI {
     }
 
     public Map<Locale, String> getName(List<Locale> locales) {
-        return names.entrySet().stream()
-                .filter(e -> locales.contains(e.getKey()))
-                .collect(
-                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)
-                );
+        return names
+            .entrySet()
+            .stream()
+            .filter(e -> locales.contains(e.getKey()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public void merge(SAPIDrawResult.SAPIDraws.SAPIDraw dr, Locale dataLocale) {
@@ -64,16 +63,12 @@ public class DrawResultCI {
 
         if (dr.getName() != null) {
             names.put(dataLocale, dr.getName());
-        }
-        else{
+        } else {
             this.names.put(dataLocale, "");
         }
     }
 
     public ExportableDrawResultCI export() {
-        return new ExportableDrawResultCI(
-                value,
-                new HashMap<>(names)
-        );
+        return new ExportableDrawResultCI(value, new HashMap<>(names));
     }
 }

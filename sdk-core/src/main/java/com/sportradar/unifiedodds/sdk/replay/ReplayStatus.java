@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.replay;
 /**
  * An indication of the replay status
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum ReplayStatus {
     /**
      * The replay server is currently playing the requested event messages
@@ -16,5 +17,5 @@ public enum ReplayStatus {
     /**
      * The replay server is currently stopped
      */
-    Stopped
+    Stopped,
 }

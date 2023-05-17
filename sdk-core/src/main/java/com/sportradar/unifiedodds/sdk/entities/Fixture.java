@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +14,8 @@ import java.util.Map;
  *
  * <i>A Fixture is a sport event that has been arranged for a particular time and place</i>
  */
+@SuppressWarnings({ "LineLength" })
 public interface Fixture {
-
     /**
      * Returns the {@link Date} instance specifying when the fixture is scheduled to start
      *
@@ -49,7 +48,7 @@ public interface Fixture {
 
     /**
      * Returns an unmodifiable {@link Map} containing additional information about the fixture
-     *
+     * (Note - the collection may contain deprecated key 'streaming')
      * @return - an unmodifiable {@link Map} containing additional information about the fixture
      */
     Map<String, String> getExtraInfo();
@@ -99,11 +98,15 @@ public interface Fixture {
      * Returns an id of the parent stage associated with the current instance
      * @return id of the parent stage associated with the current instance
      */
-    default URN getParentStageId() { return null; }
+    default URN getParentStageId() {
+        return null;
+    }
 
     /**
      * Returns the list specifying the additional parent ids associated with the current instance
      * @return the list specifying the additional parent ids associated with the current instance
      */
-    default List<URN> getAdditionalParentsIds() { return null; }
+    default List<URN> getAdditionalParentsIds() {
+        return null;
+    }
 }

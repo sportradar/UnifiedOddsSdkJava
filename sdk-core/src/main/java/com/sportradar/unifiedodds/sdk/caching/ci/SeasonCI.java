@@ -9,13 +9,14 @@ import com.sportradar.uf.sportsapi.datamodel.SAPISeasonExtended;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCI;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 
 /**
  * A season representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "IllegalType" })
 public class SeasonCI extends SportEntityCI {
+
     /**
      * A {@link HashMap} containing season names in different languages
      */
@@ -51,7 +52,6 @@ public class SeasonCI extends SportEntityCI {
      */
     public SeasonCI(SAPISeasonExtended season, Locale locale) {
         super(URN.parse(season.getId()));
-
         Preconditions.checkNotNull(season);
         Preconditions.checkNotNull(locale);
 
@@ -62,12 +62,12 @@ public class SeasonCI extends SportEntityCI {
 
     public SeasonCI(ExportableSeasonCI exportable) {
         super(URN.parse(exportable.getId()));
-
         this.name = new HashMap<>(exportable.getNames());
         this.startDate = exportable.getStartDate();
         this.endDate = exportable.getEndDate();
         this.year = exportable.getYear();
-        this.tournamentId = exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
+        this.tournamentId =
+            exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
         this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
@@ -98,11 +98,19 @@ public class SeasonCI extends SportEntityCI {
         }
 
         if (season.getStartTime() != null) {
-            startDate = SdkHelper.combineDateAndTime(SdkHelper.toDate(season.getStartDate()), SdkHelper.toDate(season.getStartTime()));
+            startDate =
+                SdkHelper.combineDateAndTime(
+                    SdkHelper.toDate(season.getStartDate()),
+                    SdkHelper.toDate(season.getStartTime())
+                );
         }
 
         if (season.getEndTime() != null) {
-            endDate = SdkHelper.combineDateAndTime(SdkHelper.toDate(season.getEndDate()), SdkHelper.toDate(season.getEndTime()));
+            endDate =
+                SdkHelper.combineDateAndTime(
+                    SdkHelper.toDate(season.getEndDate()),
+                    SdkHelper.toDate(season.getEndTime())
+                );
         }
 
         name.put(locale, season.getName());
@@ -188,13 +196,13 @@ public class SeasonCI extends SportEntityCI {
 
     public ExportableSeasonCI export() {
         return new ExportableSeasonCI(
-                getId().toString(),
-                new HashMap<>(name),
-                startDate,
-                endDate,
-                year,
-                tournamentId != null ? tournamentId.toString() : null,
-                new ArrayList<>(cachedLocales)
+            getId().toString(),
+            new HashMap<>(name),
+            startDate,
+            endDate,
+            year,
+            tournamentId != null ? tournamentId.toString() : null,
+            new ArrayList<>(cachedLocales)
         );
     }
 }

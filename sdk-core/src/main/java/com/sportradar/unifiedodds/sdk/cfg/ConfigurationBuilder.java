@@ -12,5 +12,4 @@ package com.sportradar.unifiedodds.sdk.cfg;
  *     and related instances cannot be removed in order not to introduce braking changes.
  * </p>
  */
-public interface ConfigurationBuilder extends RecoveryConfigurationBuilder<ConfigurationBuilder> {
-}
+public interface ConfigurationBuilder extends RecoveryConfigurationBuilder<ConfigurationBuilder> {}

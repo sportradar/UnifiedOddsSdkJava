@@ -11,18 +11,22 @@ import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.utils.SdkHelper;
-
 import java.util.ArrayList;
 
 /**
  * A basic implementation of the {@link CustomConfigurationBuilder}
  */
-class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<CustomConfigurationBuilder> implements CustomConfigurationBuilder {
+@SuppressWarnings({ "HiddenField", "MagicNumber", "ParameterNumber" })
+class CustomConfigurationBuilderImpl
+    extends RecoveryConfigurationBuilderImpl<CustomConfigurationBuilder>
+    implements CustomConfigurationBuilder {
+
     private final String accessToken;
     private final Environment environment;
 
     private String messagingHost;
     private String apiHost;
+    private int apiPort;
     private int messagingPort;
     private boolean useMessagingSsl;
     private boolean useApiSsl;
@@ -30,12 +34,23 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     private String password;
     private String messagingVirtualHost;
 
-    CustomConfigurationBuilderImpl(String accessToken, String messagingHost, String apiHost, int messagingPort, boolean useMessagingSsl, boolean useApiSsl, SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader, Environment environment) {
+    CustomConfigurationBuilderImpl(
+        String accessToken,
+        String messagingHost,
+        String apiHost,
+        int apiPort,
+        int messagingPort,
+        boolean useMessagingSsl,
+        boolean useApiSsl,
+        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SDKConfigurationYamlReader sdkConfigurationYamlReader,
+        Environment environment
+    ) {
         super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
-
         this.accessToken = accessToken;
         this.messagingHost = messagingHost;
         this.apiHost = apiHost;
+        this.apiPort = apiPort;
         this.messagingPort = messagingPort;
         this.useMessagingSsl = useMessagingSsl;
         this.useApiSsl = useApiSsl;
@@ -69,6 +84,19 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     }
 
     /**
+     * Set the port of the Sports API server
+     *
+     * @param apiPort the port of the Sports API server
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    @Override
+    public CustomConfigurationBuilder setApiPort(int apiPort) {
+        Preconditions.checkArgument(apiPort > 0, "API Port must be greater than 0!");
+        this.apiPort = apiPort;
+        return this;
+    }
+
+    /**
      * Sets the host name of the AMQP server
      *
      * @param messagingHost the host name of the AMQP server
@@ -76,7 +104,10 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      */
     @Override
     public CustomConfigurationBuilder setMessagingHost(String messagingHost) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(messagingHost), "MessagingHost can not be null/empty");
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(messagingHost),
+            "MessagingHost can not be null/empty"
+        );
 
         this.messagingHost = messagingHost;
         return this;
@@ -132,7 +163,10 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      */
     @Override
     public CustomConfigurationBuilder setMessagingVirtualHost(String vHost) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(vHost), "messaging virtual host can be null or not empty");
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(vHost),
+            "messaging virtual host can be null or not empty"
+        );
 
         this.messagingVirtualHost = vHost;
         return this;
@@ -160,7 +194,11 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
     public CustomConfigurationBuilder useMessagingSsl(boolean useMessagingSsl) {
         this.useMessagingSsl = useMessagingSsl;
 
-        if(messagingPort == 0 || messagingPort == EnvironmentManager.DEFAULT_MQ_HOST_PORT || messagingPort == 5672) {
+        if (
+            messagingPort == 0 ||
+            messagingPort == EnvironmentManager.DEFAULT_MQ_HOST_PORT ||
+            messagingPort == 5672
+        ) {
             this.messagingPort = useMessagingSsl ? EnvironmentManager.DEFAULT_MQ_HOST_PORT : 5672;
         }
         return this;
@@ -173,39 +211,44 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
      */
     @Override
     public OddsFeedConfiguration build() {
-
         defaultLocale = SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
 
-        if(messagingPort == 0)
-        {
-            if(useMessagingSsl){
+        if (messagingPort == 0) {
+            if (useMessagingSsl) {
                 messagingPort = 5671;
-            }
-            else{
+            } else {
                 messagingPort = 5672;
             }
         }
 
         return new OddsFeedConfiguration(
-                accessToken,
-                defaultLocale,
-                new ArrayList<>(getSupportedLocales()),
-                messagingHost,
-                apiHost,
-                maxInactivitySeconds,
-                maxRecoveryExecutionTimeMinutes,
-                minIntervalBetweenRecoveryRequests,
-                useMessagingSsl,
-                useApiSsl,
-                messagingPort,
-                username,
-                password,
-                nodeId,
-                environment == Environment.Integration || environment == Environment.Staging,
-                new ArrayList<>(disabledProducers),
-                exceptionHandlingStrategy,
-                environment,
-                messagingVirtualHost, httpClientTimeout, httpClientMaxConnTotal, httpClientMaxConnPerRoute, recoveryHttpClientTimeout, recoveryHttpClientMaxConnTotal, recoveryHttpClientMaxConnPerRoute);
+            accessToken,
+            defaultLocale,
+            new ArrayList<>(getSupportedLocales()),
+            messagingHost,
+            apiHost,
+            apiPort,
+            maxInactivitySeconds,
+            maxRecoveryExecutionTimeMinutes,
+            minIntervalBetweenRecoveryRequests,
+            useMessagingSsl,
+            useApiSsl,
+            messagingPort,
+            username,
+            password,
+            nodeId,
+            environment == Environment.Integration || environment == Environment.Staging,
+            new ArrayList<>(disabledProducers),
+            exceptionHandlingStrategy,
+            environment,
+            messagingVirtualHost,
+            httpClientTimeout,
+            httpClientMaxConnTotal,
+            httpClientMaxConnPerRoute,
+            recoveryHttpClientTimeout,
+            recoveryHttpClientMaxConnTotal,
+            recoveryHttpClientMaxConnPerRoute
+        );
     }
 
     /**
@@ -218,6 +261,7 @@ class CustomConfigurationBuilderImpl extends RecoveryConfigurationBuilderImpl<Cu
 
         sdkConfigurationReader.readMessagingHost().ifPresent(this::setMessagingHost);
         sdkConfigurationReader.readApiHost().ifPresent(this::setApiHost);
+        sdkConfigurationReader.readApiPort().ifPresent(this::setApiPort);
         sdkConfigurationReader.readUseApiSsl().ifPresent(this::useApiSsl);
         sdkConfigurationReader.readUseMessagingSsl().ifPresent(this::useMessagingSsl);
         sdkConfigurationReader.readMessagingPort().ifPresent(this::setMessagingPort);

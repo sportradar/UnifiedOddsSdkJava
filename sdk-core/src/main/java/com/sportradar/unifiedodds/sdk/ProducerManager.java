@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-
 import java.util.Map;
 
 /**
  * The {@link ProducerManager} is used to manage Sportradar message producers
  */
+@SuppressWarnings({ "LineLength" })
 public interface ProducerManager {
     /**
      * Returns a {@link Map} of all the available Sportradar producers

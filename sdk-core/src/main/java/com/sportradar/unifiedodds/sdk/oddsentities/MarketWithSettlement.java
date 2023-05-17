@@ -5,15 +5,12 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
-
 import java.util.List;
-
 
 /**
  * Information about how to clear bets for the outcomes of a particular market
  */
 public interface MarketWithSettlement extends Market {
-
     /**
      * @return a list of the settlements for the different outcomes
      */

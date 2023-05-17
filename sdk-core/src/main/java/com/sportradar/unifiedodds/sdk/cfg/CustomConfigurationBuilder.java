@@ -17,6 +17,14 @@ public interface CustomConfigurationBuilder extends RecoveryConfigurationBuilder
     CustomConfigurationBuilder setApiHost(String apiHost);
 
     /**
+     * Set the port of the Sports API server
+     *
+     * @param apiPort the port of the Sports API server
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    CustomConfigurationBuilder setApiPort(int apiPort);
+
+    /**
      * Sets the host name of the AMQP server
      *
      * @param messagingHost the host name of the AMQP server

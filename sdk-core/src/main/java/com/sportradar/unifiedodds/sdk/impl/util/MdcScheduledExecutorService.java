@@ -4,17 +4,16 @@
 
 package com.sportradar.unifiedodds.sdk.impl.util;
 
-
 import com.google.common.base.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "LambdaBodyLength", "LineLength" })
 public class MdcScheduledExecutorService implements ScheduledExecutorService {
 
     /**
@@ -37,7 +36,10 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      * @param scheduledExecutor A {@link ScheduledExecutorService} wrapped by the current {@link MdcScheduledExecutorService} instance
      * @param fixedContext The MDC fixed context used by current executor
      */
-    public MdcScheduledExecutorService(ScheduledExecutorService scheduledExecutor, Map<String, String> fixedContext){
+    public MdcScheduledExecutorService(
+        ScheduledExecutorService scheduledExecutor,
+        Map<String, String> fixedContext
+    ) {
         Preconditions.checkNotNull(scheduledExecutor, "scheduledExecutor cannot be a null reference");
         Preconditions.checkNotNull(fixedContext, "fixedContext cannot be a null reference");
 
@@ -112,9 +114,19 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      * @throws IllegalArgumentException if period less than or equal to zero
      */
     @Override
-    public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+    public ScheduledFuture<?> scheduleAtFixedRate(
+        Runnable command,
+        long initialDelay,
+        long period,
+        TimeUnit unit
+    ) {
         logger.info("schedule runnable at fixed rate");
-        return scheduledExecutor.scheduleWithFixedDelay(setMDCContext(command,  fixedContext), initialDelay, period, unit);
+        return scheduledExecutor.scheduleWithFixedDelay(
+            setMDCContext(command, fixedContext),
+            initialDelay,
+            period,
+            unit
+        );
     }
 
     /**
@@ -141,9 +153,19 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      * @throws IllegalArgumentException if delay less than or equal to zero
      */
     @Override
-    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+    public ScheduledFuture<?> scheduleWithFixedDelay(
+        Runnable command,
+        long initialDelay,
+        long delay,
+        TimeUnit unit
+    ) {
         logger.info("schedule runnable with fixed delay");
-        return scheduledExecutor.scheduleWithFixedDelay(setMDCContext(command,  fixedContext), initialDelay, delay,  unit);
+        return scheduledExecutor.scheduleWithFixedDelay(
+            setMDCContext(command, fixedContext),
+            initialDelay,
+            delay,
+            unit
+        );
     }
 
     /**
@@ -231,7 +253,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      */
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return scheduledExecutor.awaitTermination(timeout,  unit);
+        return scheduledExecutor.awaitTermination(timeout, unit);
     }
 
     /**
@@ -322,7 +344,8 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      *                              scheduled for execution
      */
     @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+        throws InterruptedException {
         logger.info("invoke all callables");
         return scheduledExecutor.invokeAll(tasks);
     }
@@ -356,9 +379,13 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      *                              for execution
      */
     @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(
+        Collection<? extends Callable<T>> tasks,
+        long timeout,
+        TimeUnit unit
+    ) throws InterruptedException {
         logger.info("invoke all callables with time-out");
-        return scheduledExecutor.invokeAll(tasks,  timeout,  unit);
+        return scheduledExecutor.invokeAll(tasks, timeout, unit);
     }
 
     /**
@@ -382,7 +409,8 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      *                                  for execution
      */
     @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
+    public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+        throws InterruptedException, ExecutionException {
         logger.info("invoke any callable");
         return scheduledExecutor.invokeAny(tasks);
     }
@@ -413,9 +441,10 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
      *                              for execution
      */
     @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutException {
         logger.info("invoke any with time-out");
-        return scheduledExecutor.invokeAny(tasks,  timeout,  unit);
+        return scheduledExecutor.invokeAny(tasks, timeout, unit);
     }
 
     /**
@@ -435,20 +464,20 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
         scheduledExecutor.execute(command);
     }
 
-    private static <V> Callable<V> setMDCContext(final Callable<V> callable, final Map context){
+    private static <V> Callable<V> setMDCContext(final Callable<V> callable, final Map context) {
         return () -> {
             Map oldContext = MDC.getCopyOfContextMap();
-            if(context == null){
+            if (context == null) {
                 MDC.clear();
-            }else{
+            } else {
                 MDC.setContextMap(context);
             }
             try {
                 return callable.call();
             } finally {
-                if(oldContext == null){
+                if (oldContext == null) {
                     MDC.clear();
-                }else{
+                } else {
                     MDC.setContextMap(oldContext);
                 }
             }
@@ -458,20 +487,20 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
     /**
      * Sets the MDC context on the thread executing the task and cleans the MDC when completed
      */
-    private static Runnable setMDCContext(final Runnable runnable, final Map context){
+    private static Runnable setMDCContext(final Runnable runnable, final Map context) {
         return () -> {
             Map oldContext = MDC.getCopyOfContextMap();
-            if(context == null){
+            if (context == null) {
                 MDC.clear();
-            }else{
+            } else {
                 MDC.setContextMap(context);
             }
             try {
                 runnable.run();
             } finally {
-                if(oldContext == null){
+                if (oldContext == null) {
                     MDC.clear();
-                }else{
+                } else {
                     MDC.setContextMap(oldContext);
                 }
             }

@@ -12,7 +12,6 @@ import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDTO;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatisticsDTO;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +19,8 @@ import java.util.Map;
 /**
  * A sport event status cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface SportEventStatusCI {
-
     /**
      * Returns the {@link SportEventStatusDTO} received from the feed
      *
@@ -146,7 +145,7 @@ public interface SportEventStatusCI {
      *
      * @return - a {@link Map} containing data of the sport event status ordered in key/value pairs
      */
-    Map<String,Object> toKeyValueStore();
+    Map<String, Object> toKeyValueStore();
 
     /**
      * Returns an indication if the status is decided by fed

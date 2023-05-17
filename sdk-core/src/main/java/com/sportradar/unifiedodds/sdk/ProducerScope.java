@@ -8,7 +8,8 @@ package com.sportradar.unifiedodds.sdk;
  * An indication of what type of event messages may be dispatched by a specific {@link com.sportradar.unifiedodds.sdk.oddsentities.Producer}
  *
  */
-@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
+// Constant names should comply with a naming convention
+@SuppressWarnings({ "java:S115", "NoEnumTrailingComma" })
 public enum ProducerScope {
     /**
      * Live event messages
@@ -23,5 +24,5 @@ public enum ProducerScope {
     /**
      * Virtuals messages
      */
-    Virtuals
+    Virtuals,
 }

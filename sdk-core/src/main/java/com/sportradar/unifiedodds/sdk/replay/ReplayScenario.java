@@ -12,18 +12,19 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A representation of a possible replay scenario provided by the feed
  */
+@SuppressWarnings({ "ConstantName" })
 public class ReplayScenario {
+
     /**
      * The logger instance used to log operations
      */
@@ -59,7 +60,6 @@ public class ReplayScenario {
      */
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-
     /**
      * Initializes a new {@link ReplayScenario} instance which represent an available replay scenario
      *
@@ -67,7 +67,11 @@ public class ReplayScenario {
      * @param entityFactory a {@link SportEntityFactory} instance which will be used to build associated sport events
      * @param handlingStrategy the {@link ExceptionHandlingStrategy} that is associated with the current SDK instance
      */
-    ReplayScenario(ReplayScenarioType scenario, SportEntityFactory entityFactory, ExceptionHandlingStrategy handlingStrategy) {
+    ReplayScenario(
+        ReplayScenarioType scenario,
+        SportEntityFactory entityFactory,
+        ExceptionHandlingStrategy handlingStrategy
+    ) {
         Preconditions.checkNotNull(scenario);
         Preconditions.checkNotNull(entityFactory);
         Preconditions.checkNotNull(handlingStrategy);
@@ -76,13 +80,18 @@ public class ReplayScenario {
         description = scenario.getDescription();
         runParallel = Boolean.valueOf(scenario.getRunParallel());
 
-        associatedEventIds = scenario.getEvent() == null ? null :
-                scenario.getEvent().stream().map(eId -> URN.parse(eId.getId())).collect(Collectors.toList());
+        associatedEventIds =
+            scenario.getEvent() == null
+                ? null
+                : scenario
+                    .getEvent()
+                    .stream()
+                    .map(eId -> URN.parse(eId.getId()))
+                    .collect(Collectors.toList());
 
         sportEntityFactory = entityFactory;
         exceptionHandlingStrategy = handlingStrategy;
     }
-
 
     /**
      * Returns the replay scenario identifier
@@ -122,18 +131,25 @@ public class ReplayScenario {
 
         List<Locale> locales = Collections.singletonList(locale);
         try {
-            return associatedEventIds == null ? null :
-                    associatedEventIds.stream().map(eId -> {
-                            try {
-                                return sportEntityFactory.buildSportEvent(eId, locales, false);
-                            } catch (ObjectNotFoundException e) {
-                                throw new StreamWrapperException(e.getMessage(), e);
-                            }
-                    }).collect(Collectors.toList());
+            return associatedEventIds == null
+                ? null
+                : associatedEventIds
+                    .stream()
+                    .map(eId -> {
+                        try {
+                            return sportEntityFactory.buildSportEvent(eId, locales, false);
+                        } catch (ObjectNotFoundException e) {
+                            throw new StreamWrapperException(e.getMessage(), e);
+                        }
+                    })
+                    .collect(Collectors.toList());
         } catch (StreamWrapperException e) {
             logger.warn("Error building the replay scenario associated event list", e);
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException("Error building the replay scenario associated event list", e);
+                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                    "Error building the replay scenario associated event list",
+                    e
+                );
             }
             return null;
         }

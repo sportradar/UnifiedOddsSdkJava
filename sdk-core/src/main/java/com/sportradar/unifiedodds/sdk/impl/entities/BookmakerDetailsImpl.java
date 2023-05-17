@@ -8,15 +8,16 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.utils.SdkHelper;
-import org.apache.http.HttpStatus;
-
 import java.time.Duration;
 import java.util.Date;
+import org.apache.http.HttpStatus;
 
 /**
  * Represents the current bookmaker details
  */
+@SuppressWarnings({ "HiddenField", "LineLength", "ReturnCount" })
 public class BookmakerDetailsImpl implements BookmakerDetails {
+
     /**
      * The bookmaker id
      */
@@ -54,12 +55,16 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
      * @param bookmakerDetails - a {@link com.sportradar.uf.sportsapi.datamodel.BookmakerDetails} containing the API response data
      *
      */
-    public BookmakerDetailsImpl(com.sportradar.uf.sportsapi.datamodel.BookmakerDetails bookmakerDetails, Duration period) {
+    public BookmakerDetailsImpl(
+        com.sportradar.uf.sportsapi.datamodel.BookmakerDetails bookmakerDetails,
+        Duration period
+    ) {
         Preconditions.checkNotNull(bookmakerDetails);
 
         this.bookmakerId = bookmakerDetails.getBookmakerId() == null ? 0 : bookmakerDetails.getBookmakerId();
         this.virtualHost = bookmakerDetails.getVirtualHost();
-        this.expireAt = bookmakerDetails.getExpireAt() == null ? null : SdkHelper.toDate(bookmakerDetails.getExpireAt());
+        this.expireAt =
+            bookmakerDetails.getExpireAt() == null ? null : SdkHelper.toDate(bookmakerDetails.getExpireAt());
         this.responseCode = bookmakerDetails.getResponseCode();
         this.message = bookmakerDetails.getMessage();
         this.serverTimeDifference = period;
@@ -69,8 +74,14 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
      * Initializes a new instance of {@link BookmakerDetailsImpl}
      *
      */
-    public BookmakerDetailsImpl(int bookmakerId, String virtualHost, Date expireAt, ResponseCode responseCode, String message, Duration period) {
-
+    public BookmakerDetailsImpl(
+        int bookmakerId,
+        String virtualHost,
+        Date expireAt,
+        ResponseCode responseCode,
+        String message,
+        Duration period
+    ) {
         this.bookmakerId = bookmakerId;
         this.virtualHost = virtualHost;
         this.expireAt = expireAt;

@@ -7,6 +7,7 @@ import com.sportradar.uf.datamodel.UFFixtureChange;
  *
  * @author e.roznik
  */
+@SuppressWarnings({ "LineLength" })
 public interface ProcessedFixtureChangesTracker {
     /**
      * Checks if the received fixture change was already processed and returns an indication about the processed state.

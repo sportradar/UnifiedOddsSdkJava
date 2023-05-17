@@ -9,6 +9,8 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,21 +22,35 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 /**
  * Class used to fetch content from the Unified API, the output of this.get() is usually
  * used in combination with a {@link Deserializer} to get a valid useful Java object.
  */
-class HttpDataFetcher {
+@SuppressWarnings(
+    {
+        "BooleanExpressionComplexity",
+        "ConstantName",
+        "LineLength",
+        "MethodLength",
+        "NPathComplexity",
+        "UnnecessaryParentheses",
+        "CyclomaticComplexity",
+    }
+)
+abstract class HttpDataFetcher {
+
     private static final Logger logger = LoggerFactory.getLogger(HttpDataFetcher.class);
     private final SDKInternalConfiguration config;
     private final CloseableHttpClient httpClient;
     private final UnifiedOddsStatistics statsBean;
     private final Deserializer apiDeserializer;
 
-    HttpDataFetcher(SDKInternalConfiguration config, CloseableHttpClient httpClient, UnifiedOddsStatistics statsBean, Deserializer apiDeserializer) {
+    HttpDataFetcher(
+        SDKInternalConfiguration config,
+        CloseableHttpClient httpClient,
+        UnifiedOddsStatistics statsBean,
+        Deserializer apiDeserializer
+    ) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(httpClient);
         Preconditions.checkNotNull(statsBean);
@@ -94,12 +110,28 @@ class HttpDataFetcher {
                 // the whoami endpoint is a special case since we are interested in the response even if the response code is forbidden
                 boolean isWhoAmI = path.endsWith("whoami.xml");
 
-                if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_ACCEPTED ||
-                        (isWhoAmI && statusCode == HttpStatus.SC_FORBIDDEN)) {
+                if (
+                    statusCode == HttpStatus.SC_OK ||
+                    statusCode == HttpStatus.SC_ACCEPTED ||
+                    (isWhoAmI && statusCode == HttpStatus.SC_FORBIDDEN)
+                ) {
                     respString = EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8);
                 } else {
-                    errorMessage = HttpHelper.tryDeserializeResponseMessage(apiDeserializer, resp.getEntity().getContent());
-                    logger.warn("Bad API response: " + resp.getStatusLine() + " " + statusCode + ", message: '" + errorMessage + "' " + path);
+                    errorMessage =
+                        HttpHelper.tryDeserializeResponseMessage(
+                            apiDeserializer,
+                            resp.getEntity().getContent()
+                        );
+                    logger.warn(
+                        "Bad API response: " +
+                        resp.getStatusLine() +
+                        " " +
+                        statusCode +
+                        ", message: '" +
+                        errorMessage +
+                        "' " +
+                        path
+                    );
                 }
             } finally {
                 if (resp != null) {
@@ -113,10 +145,16 @@ class HttpDataFetcher {
                 if (Strings.isNullOrEmpty(errorMessage)) {
                     errorMessage = "no message";
                 }
-                throw new CommunicationException("Invalid server response w/status code: " +  statusCode + ", message: " + errorMessage);
+                throw new CommunicationException(
+                    "Invalid server response. Message=" + errorMessage,
+                    path,
+                    statusCode
+                );
             }
-        } catch (IOException | CommunicationException e) {
-            throw new CommunicationException("There was a problem retrieving the requested data", e);
+        } catch (IOException e) {
+            throw new CommunicationException("There was a problem retrieving the requested data", path, e);
+        } catch (CommunicationException e) {
+            throw e;
         } finally {
             request.releaseConnection();
         }

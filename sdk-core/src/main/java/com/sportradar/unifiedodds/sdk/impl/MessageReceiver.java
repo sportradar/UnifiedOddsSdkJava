@@ -26,11 +26,4 @@ public interface MessageReceiver {
      * @throws IOException if the channel closure encountered a problem
      */
     void close() throws IOException;
-
-    /**
-     * Indicates if the current instance is opened and receiving messages
-     *
-     * @return - <code>true</code> if the instance is opeened; otherwise <code>false</code>
-     */
-    boolean isOpened();
 }

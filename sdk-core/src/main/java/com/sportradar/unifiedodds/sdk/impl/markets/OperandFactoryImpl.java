@@ -10,12 +10,20 @@ import java.util.Map;
  * Created on 22/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "BooleanExpressionComplexity", "ParameterAssignment", "UnnecessaryParentheses" })
 public class OperandFactoryImpl implements OperandFactory {
+
     @Override
     public Operand buildOperand(Map<String, String> specifiers, String operandExpression) {
-        if ((operandExpression.startsWith("(") && !operandExpression.endsWith(")")) ||
-                (!operandExpression.startsWith("(") && operandExpression.endsWith(")"))) {
-            throw new IllegalArgumentException("Format of the operand " + operandExpression + " is not correct. It contains un-closing parenthesis.");
+        if (
+            (operandExpression.startsWith("(") && !operandExpression.endsWith(")")) ||
+            (!operandExpression.startsWith("(") && operandExpression.endsWith(")"))
+        ) {
+            throw new IllegalArgumentException(
+                "Format of the operand " +
+                operandExpression +
+                " is not correct. It contains un-closing parenthesis."
+            );
         }
 
         if (operandExpression.startsWith("(") && operandExpression.endsWith(")")) {
@@ -30,11 +38,19 @@ public class OperandFactoryImpl implements OperandFactory {
                 operation = SimpleMathOperation.SUBTRACT;
                 parts = operandExpression.split("-");
             } else {
-                throw new IllegalArgumentException("Format of operand " + operandExpression + " is not correct. It does not contain an operation identifier");
+                throw new IllegalArgumentException(
+                    "Format of operand " +
+                    operandExpression +
+                    " is not correct. It does not contain an operation identifier"
+                );
             }
 
             if (parts.length != 2) {
-                throw new IllegalArgumentException("Format of operand " + operandExpression + " is not correct. It contains more than one operation identifier");
+                throw new IllegalArgumentException(
+                    "Format of operand " +
+                    operandExpression +
+                    " is not correct. It contains more than one operation identifier"
+                );
             }
 
             int staticValue = Integer.parseInt(parts[1]);

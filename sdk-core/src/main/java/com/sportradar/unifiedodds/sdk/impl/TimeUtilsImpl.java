@@ -11,6 +11,7 @@ import java.time.Instant;
  * // TODO @eti: Javadoc
  */
 public class TimeUtilsImpl implements TimeUtils {
+
     @Override
     public long now() {
         return Instant.now().toEpochMilli();

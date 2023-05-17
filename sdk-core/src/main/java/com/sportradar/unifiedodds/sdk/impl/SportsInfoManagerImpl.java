@@ -23,26 +23,42 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventTimelineImpl;
 import com.sportradar.utils.URN;
+import java.util.*;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.util.*;
-
 
 /**
  * Provides access to sport related data (sports, tournaments, sport events, ...)
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "IllegalCatch",
+        "LineLength",
+        "MagicNumber",
+        "MultipleStringLiterals",
+        "NeedBraces",
+        "OverloadMethodsDeclarationOrder",
+        "ParameterAssignment",
+        "ParameterNumber",
+    }
+)
 public class SportsInfoManagerImpl implements SportsInfoManager {
+
     /**
      * The client interaction log instance
      */
-    private final static Logger clientInteractionLog = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
+    private static final Logger clientInteractionLog = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkClientInteractionLog.class
+    );
 
     /**
      * The execution log instance
      */
-    private final static Logger logger = LoggerFactory.getLogger(SportsInfoManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SportsInfoManagerImpl.class);
 
     /**
      * A {@link SportEntityFactory} instance used to build sport related instances
@@ -100,7 +116,15 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      * @param dataRouterManager a {@link DataRouterManager} instance used to get sports info
      */
     @Inject
-    SportsInfoManagerImpl(SDKInternalConfiguration config, SportEntityFactory entityFactory, SportEventCache eventCache, ProfileCache profileCache, SportEventStatusCache sportEventStatusCache, SportsDataCache sportsDataCache, DataRouterManager dataRouterManager) {
+    SportsInfoManagerImpl(
+        SDKInternalConfiguration config,
+        SportEntityFactory entityFactory,
+        SportEventCache eventCache,
+        ProfileCache profileCache,
+        SportEventStatusCache sportEventStatusCache,
+        SportsDataCache sportsDataCache,
+        DataRouterManager dataRouterManager
+    ) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(config.getDesiredLocales());
         Preconditions.checkArgument(!config.getDesiredLocales().isEmpty());
@@ -133,11 +157,14 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Stopwatch timer = Stopwatch.createStarted();
         try {
             List<Sport> sports = internalGetSports(desiredLocales);
-            clientInteractionLog.info("SportsInfoManager.getSports() invoked. Execution time: {}", timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getSports() invoked. Execution time: {}",
+                timer.stop()
+            );
             return sports;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getSports", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -156,13 +183,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<Sport> sports = internalGetSports(Lists.newArrayList(locale));
-            clientInteractionLog.info("SportsInfoManager.getSports({}) invoked. Execution time: {}", locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getSports({}) invoked. Execution time: {}",
+                locale,
+                timer.stop()
+            );
             return sports;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getSports with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -179,13 +210,16 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     @Override
     public List<SportEvent> getActiveTournaments() {
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<SportEvent> tournaments = internalGetActiveTournaments(defaultLocale);
-            clientInteractionLog.info("SportsInfoManager.getActiveTournaments() invoked. Execution time: {}", timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getActiveTournaments() invoked. Execution time: {}",
+                timer.stop()
+            );
             return tournaments;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getActiveTournaments", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -205,13 +239,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<SportEvent> tournaments = internalGetActiveTournaments(locale);
-            clientInteractionLog.info("SportsInfoManager.getActiveTournaments({}) invoked. Execution time: {}", locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getActiveTournaments({}) invoked. Execution time: {}",
+                locale,
+                timer.stop()
+            );
             return tournaments;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getActiveTournaments with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -231,13 +269,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(sportName), "Sport name can not be null/empty");
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<SportEvent> tournaments = internalGetActiveTournaments(sportName, defaultLocale);
-            clientInteractionLog.info("SportsInfoManager.getActiveTournaments({}) invoked. Execution time: {}", sportName, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getActiveTournaments({}) invoked. Execution time: {}",
+                sportName,
+                timer.stop()
+            );
             return tournaments;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getActiveTournaments for sport", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -259,13 +301,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<SportEvent> tournaments = internalGetActiveTournaments(sportName, locale);
-            clientInteractionLog.info("SportsInfoManager.getActiveTournaments({},{}) invoked. Execution time: {}", sportName, locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getActiveTournaments({},{}) invoked. Execution time: {}",
+                sportName,
+                locale,
+                timer.stop()
+            );
             return tournaments;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getActiveTournaments for sport with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -285,13 +332,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
 
         // rest call
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<Competition> competitions = internalGetSportEventsFor(date, desiredLocales);
-            clientInteractionLog.info("SportsInfoManager.getCompetitionsFor({}) invoked. Execution time: {}", date, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getCompetitionsFor({}) invoked. Execution time: {}",
+                date,
+                timer.stop()
+            );
             return competitions;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getCompetitionFor date", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -313,13 +364,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<Competition> competitions = internalGetSportEventsFor(date, Lists.newArrayList(locale));
-            clientInteractionLog.info("SportsInfoManager.getCompetitionsFor({},{}) invoked. Execution time: {}", date, locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getCompetitionsFor({},{}) invoked. Execution time: {}",
+                date,
+                locale,
+                timer.stop()
+            );
             return competitions;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getCompetitionFor date with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -334,15 +390,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<Competition> getLiveCompetitions() {
-
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<Competition> competitions = internalGetLiveSportEvents(desiredLocales);
-            clientInteractionLog.info("SportsInfoManager.getLiveCompetitions() invoked. Execution time: {}", timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getLiveCompetitions() invoked. Execution time: {}",
+                timer.stop()
+            );
             return competitions;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getLiveCompetitions", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -362,13 +420,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
-        List<Competition> competitions = internalGetLiveSportEvents(Lists.newArrayList(locale));
-        clientInteractionLog.info("SportsInfoManager.getLiveCompetitions({}) invoked. Execution time: {}", locale, timer.stop());
-        return competitions;
-        } catch (Exception e){
+        try {
+            List<Competition> competitions = internalGetLiveSportEvents(Lists.newArrayList(locale));
+            clientInteractionLog.info(
+                "SportsInfoManager.getLiveCompetitions({}) invoked. Execution time: {}",
+                locale,
+                timer.stop()
+            );
+            return competitions;
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getLiveCompetitions with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -393,7 +455,11 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         } catch (ObjectNotFoundException e) {
             return handleException("getSportEvent[" + id + "]", e);
         }
-        clientInteractionLog.info("SportsInfoManager.getSportEvent({}) invoked. Execution time: {}", id, timer.stop());
+        clientInteractionLog.info(
+            "SportsInfoManager.getSportEvent({}) invoked. Execution time: {}",
+            id,
+            timer.stop()
+        );
         return sportEvent;
     }
 
@@ -429,7 +495,12 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         } catch (ObjectNotFoundException e) {
             return handleException("getSportEvent[" + id + ", " + locale + "]", e);
         }
-        clientInteractionLog.info("SportsInfoManager.getSportEvent({}, {}) invoked. Execution time: {}", id, locale, timer.stop());
+        clientInteractionLog.info(
+            "SportsInfoManager.getSportEvent({}, {}) invoked. Execution time: {}",
+            id,
+            locale,
+            timer.stop()
+        );
         return sportEvent;
     }
 
@@ -445,13 +516,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(id);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             LongTermEvent longTermEvent = internalGetLongTermEvent(id, desiredLocales);
-            clientInteractionLog.info("SportsInfoManager.getLongTermEvent({}) invoked. Execution time: {}", id, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getLongTermEvent({}) invoked. Execution time: {}",
+                id,
+                timer.stop()
+            );
             return longTermEvent;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getLongTermEvent", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -472,13 +547,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             LongTermEvent longTermEvent = internalGetLongTermEvent(id, Lists.newArrayList(locale));
-            clientInteractionLog.info("SportsInfoManager.getLongTermEvent({},{}) invoked. Execution time: {}", id, locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getLongTermEvent({},{}) invoked. Execution time: {}",
+                id,
+                locale,
+                timer.stop()
+            );
             return longTermEvent;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getLongTermEvent with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -497,13 +577,17 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(id);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             Competition competition = internalGetCompetition(id, desiredLocales);
-            clientInteractionLog.info("SportsInfoManager.getCompetition({}) invoked. Execution time: {}", id, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getCompetition({}) invoked. Execution time: {}",
+                id,
+                timer.stop()
+            );
             return competition;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getCompetition", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -524,13 +608,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
-            Competition competition =  internalGetCompetition(id, Lists.newArrayList(locale));
-            clientInteractionLog.info("SportsInfoManager.getCompetition({},{}) invoked. Execution time: {}", id, locale, timer.stop());
+        try {
+            Competition competition = internalGetCompetition(id, Lists.newArrayList(locale));
+            clientInteractionLog.info(
+                "SportsInfoManager.getCompetition({},{}) invoked. Execution time: {}",
+                id,
+                locale,
+                timer.stop()
+            );
             return competition;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getCompetition with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -549,14 +638,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(id);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             Competitor competitor = internalGetCompetitor(id, desiredLocales);
 
-            clientInteractionLog.info("sportsInfo.getCompetitor({}) invoked. Execution time: {}", id, timer.stop());
+            clientInteractionLog.info(
+                "sportsInfo.getCompetitor({}) invoked. Execution time: {}",
+                id,
+                timer.stop()
+            );
             return competitor;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getCompetitor", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -577,15 +670,20 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<Locale> builtLocales = Lists.newArrayList(locale);
             Competitor competitor = internalGetCompetitor(id, builtLocales);
 
-            clientInteractionLog.info("sportsInfo.getCompetitor({}, {}) invoked. Execution time: {}", id, builtLocales, timer.stop());
+            clientInteractionLog.info(
+                "sportsInfo.getCompetitor({}, {}) invoked. Execution time: {}",
+                id,
+                builtLocales,
+                timer.stop()
+            );
             return competitor;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getCompetitor with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -604,14 +702,18 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(id);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             PlayerProfile player = internalGetPlayerProfile(id, desiredLocales);
 
-            clientInteractionLog.info("sportsInfo.getPlayerProfile({}) invoked. Execution time: {}", id, timer.stop());
+            clientInteractionLog.info(
+                "sportsInfo.getPlayerProfile({}) invoked. Execution time: {}",
+                id,
+                timer.stop()
+            );
             return player;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getPlayerProfile", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -632,15 +734,20 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(locale);
 
         Stopwatch timer = Stopwatch.createStarted();
-        try{
+        try {
             List<Locale> builtLocales = Lists.newArrayList(locale);
             PlayerProfile player = internalGetPlayerProfile(id, builtLocales);
 
-            clientInteractionLog.info("sportsInfo.getPlayerProfile({}, {}) invoked. Execution time: {}", id, builtLocales, timer.stop());
+            clientInteractionLog.info(
+                "sportsInfo.getPlayerProfile({}, {}) invoked. Execution time: {}",
+                id,
+                builtLocales,
+                timer.stop()
+            );
             return player;
-        } catch (Exception e){
+        } catch (Exception e) {
             clientInteractionLog.error("Error executing getPlayerProfile with locale", e);
-            if(exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw){
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw e;
             }
             return null;
@@ -805,13 +912,10 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public List<Competition> getListOfSportEvents(int startIndex, int limit) {
-
-        if(startIndex < 0)
-        {
+        if (startIndex < 0) {
             throw new IllegalArgumentException("Wrong startIndex");
         }
-        if(limit < 1 || limit > 1000)
-        {
+        if (limit < 1 || limit > 1000) {
             throw new IllegalArgumentException("Wrong limit");
         }
 
@@ -824,12 +928,21 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
             for (Locale locale : desiredLocales) {
                 eventIds = this.dataRouterManager.requestListSportEvents(locale, startIndex, limit);
             }
-            if(eventIds != null && !eventIds.isEmpty()){
+            if (eventIds != null && !eventIds.isEmpty()) {
                 sportEvents = sportEntityFactory.buildSportEvents(eventIds, desiredLocales);
             }
-            clientInteractionLog.info("sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}", startIndex, limit, desiredLocales, timer.stop());
+            clientInteractionLog.info(
+                "sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}",
+                startIndex,
+                limit,
+                desiredLocales,
+                timer.stop()
+            );
         } catch (ObjectNotFoundException | CommunicationException e) {
-            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, desiredLocales), e);
+            return handleException(
+                String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, desiredLocales),
+                e
+            );
         }
         return sportEvents;
     }
@@ -845,12 +958,10 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
     public List<Competition> getListOfSportEvents(int startIndex, int limit, Locale locale) {
         Preconditions.checkNotNull(locale);
 
-        if(startIndex < 0)
-        {
+        if (startIndex < 0) {
             throw new IllegalArgumentException("Wrong startIndex");
         }
-        if(limit < 1 || limit > 1000)
-        {
+        if (limit < 1 || limit > 1000) {
             throw new IllegalArgumentException("Wrong limit");
         }
 
@@ -861,12 +972,21 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
 
         try {
             List<URN> eventIds = this.dataRouterManager.requestListSportEvents(locale, startIndex, limit);
-            if(eventIds != null && !eventIds.isEmpty()){
+            if (eventIds != null && !eventIds.isEmpty()) {
                 sportEvents = sportEntityFactory.buildSportEvents(eventIds, builtLocales);
             }
-            clientInteractionLog.info("sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}", startIndex, limit, builtLocales, timer.stop());
+            clientInteractionLog.info(
+                "sportsInfo.getListOfSportEvents({}, {}, {}) invoked. Execution time: {}",
+                startIndex,
+                limit,
+                builtLocales,
+                timer.stop()
+            );
         } catch (ObjectNotFoundException | CommunicationException e) {
-            return handleException(String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, locale), e);
+            return handleException(
+                String.format("getListOfSportEvents(%s, %s, %s)", startIndex, limit, locale),
+                e
+            );
         }
         return sportEvents;
     }
@@ -905,7 +1025,12 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         } catch (ObjectNotFoundException | CommunicationException e) {
             return handleException("getAvailableTournaments", e);
         }
-        clientInteractionLog.info("SportsInfoManager.getAvailableTournaments({},{}) invoked. Execution time: {}", sportId, locale, timer.stop());
+        clientInteractionLog.info(
+            "SportsInfoManager.getAvailableTournaments({},{}) invoked. Execution time: {}",
+            sportId,
+            locale,
+            timer.stop()
+        );
         return tournaments;
     }
 
@@ -916,7 +1041,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      */
     @Override
     public Integer deleteSportEventsFromCache(Date before) {
-        if(before == null){
+        if (before == null) {
             throw new IllegalArgumentException("Parameter before is not defined");
         }
         return sportEventCache.deleteSportEventsFromCache(before);
@@ -933,12 +1058,15 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(cacheType);
         List<ExportableCI> exportables = new ArrayList<>();
 
-        if (cacheType.contains(CacheType.SportData))
-            exportables.addAll(((ExportableSdkCache) sportsDataCache).exportItems());
-        if (cacheType.contains(CacheType.Profile))
-            exportables.addAll(((ExportableSdkCache) profileCache).exportItems());
-        if (cacheType.contains(CacheType.SportEvent))
-            exportables.addAll(((ExportableSdkCache) sportEventCache).exportItems());
+        if (cacheType.contains(CacheType.SportData)) exportables.addAll(
+            ((ExportableSdkCache) sportsDataCache).exportItems()
+        );
+        if (cacheType.contains(CacheType.Profile)) exportables.addAll(
+            ((ExportableSdkCache) profileCache).exportItems()
+        );
+        if (cacheType.contains(CacheType.SportEvent)) exportables.addAll(
+            ((ExportableSdkCache) sportEventCache).exportItems()
+        );
 
         return exportables;
     }
@@ -969,9 +1097,9 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Stopwatch timer = Stopwatch.createStarted();
         List<Lottery> lotteries = new ArrayList<>();
         try {
-            List<Locale> locales =  Lists.newArrayList(locale);
+            List<Locale> locales = Lists.newArrayList(locale);
             List<URN> lotteryIds = dataRouterManager.requestAllLotteriesEndpoint(locale, true);
-            if(lotteryIds != null){
+            if (lotteryIds != null) {
                 for (URN tId : lotteryIds) {
                     lotteries.add((Lottery) sportEntityFactory.buildSportEvent(tId, null, locales, false));
                 }
@@ -979,7 +1107,11 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         } catch (ObjectNotFoundException | CommunicationException e) {
             return handleException("getAllLotteries", e);
         }
-        clientInteractionLog.info("SportsInfoManager.getAllLotteries({}) invoked. Execution time: {}", locale, timer.stop());
+        clientInteractionLog.info(
+            "SportsInfoManager.getAllLotteries({}) invoked. Execution time: {}",
+            locale,
+            timer.stop()
+        );
         return lotteries;
     }
 
@@ -993,20 +1125,38 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
      * @return the list of {@link PeriodStatus} from the sport event period summary endpoint
      */
     @Override
-    public List<PeriodStatus> getPeriodStatuses(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) {
+    public List<PeriodStatus> getPeriodStatuses(
+        URN id,
+        Locale locale,
+        List<URN> competitorIds,
+        List<Integer> periods
+    ) {
         Preconditions.checkNotNull(id);
 
         Stopwatch timer = Stopwatch.createStarted();
         List<PeriodStatus> periodStatuses = new ArrayList<>();
         try {
             periodStatuses = dataRouterManager.requestPeriodSummary(id, locale, competitorIds, periods);
-            clientInteractionLog.info("SportsInfoManager.getPeriodStatuses({}, {}) invoked. Execution time: {}", id, locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getPeriodStatuses({}, {}) invoked. Execution time: {}",
+                id,
+                locale,
+                timer.stop()
+            );
         } catch (CommunicationException e) {
             Throwable initException = getInitialException(e);
-            if(initException.getMessage() != null && initException.getMessage().contains("not found") || initException.getMessage().contains("404")){
-                clientInteractionLog.warn("SportsInfoManager.getPeriodStatuses({}, {}) invoked. SportEvent not found. Execution time: {}", id, locale, timer.stop());
-            }
-            else{
+            if (
+                initException.getMessage() != null &&
+                initException.getMessage().contains("not found") ||
+                initException.getMessage().contains("404")
+            ) {
+                clientInteractionLog.warn(
+                    "SportsInfoManager.getPeriodStatuses({}, {}) invoked. SportEvent not found. Execution time: {}",
+                    id,
+                    locale,
+                    timer.stop()
+                );
+            } else {
                 return handleException("getPeriodStatuses", e);
             }
         }
@@ -1024,24 +1174,45 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         Preconditions.checkNotNull(id);
 
         Stopwatch timer = Stopwatch.createStarted();
-        if(locale == null){
+        if (locale == null) {
             locale = defaultLocale;
         }
         List<TimelineEvent> timelineEvents = new ArrayList<>();
         try {
-            SAPIMatchTimelineEndpoint matchTimelineEndpoint = dataRouterManager.requestEventTimelineEndpoint(locale, id, null);
-            if(matchTimelineEndpoint != null && matchTimelineEndpoint.getTimeline() != null){
-                EventTimelineCI eventTimelineCI = new EventTimelineCI(matchTimelineEndpoint.getTimeline(), locale, false);
+            SAPIMatchTimelineEndpoint matchTimelineEndpoint = dataRouterManager.requestEventTimelineEndpoint(
+                locale,
+                id,
+                null
+            );
+            if (matchTimelineEndpoint != null && matchTimelineEndpoint.getTimeline() != null) {
+                EventTimelineCI eventTimelineCI = new EventTimelineCI(
+                    matchTimelineEndpoint.getTimeline(),
+                    locale,
+                    false
+                );
                 EventTimeline eventTimeline = new EventTimelineImpl(eventTimelineCI);
                 timelineEvents = eventTimeline.getTimelineEvents();
             }
-            clientInteractionLog.info("SportsInfoManager.getTimelineEvents({}, {}) invoked. Execution time: {}", id, locale, timer.stop());
+            clientInteractionLog.info(
+                "SportsInfoManager.getTimelineEvents({}, {}) invoked. Execution time: {}",
+                id,
+                locale,
+                timer.stop()
+            );
         } catch (CommunicationException e) {
             Throwable initException = getInitialException(e);
-            if(initException.getMessage() != null && initException.getMessage().contains("not found") || initException.getMessage().contains("404")){
-                clientInteractionLog.warn("SportsInfoManager.getTimelineEvents({}, {}) invoked. MatchTimeline not found. Execution time: {}", id, locale, timer.stop());
-            }
-            else{
+            if (
+                initException.getMessage() != null &&
+                initException.getMessage().contains("not found") ||
+                initException.getMessage().contains("404")
+            ) {
+                clientInteractionLog.warn(
+                    "SportsInfoManager.getTimelineEvents({}, {}) invoked. MatchTimeline not found. Execution time: {}",
+                    id,
+                    locale,
+                    timer.stop()
+                );
+            } else {
                 return handleException("getTimelineEvents", e);
             }
         }
@@ -1081,11 +1252,11 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         return extractTournamentsFromSport(sport);
     }
 
-    private List<SportEvent> internalGetAvailableTournaments(URN sportId, Locale locale) throws ObjectNotFoundException, CommunicationException {
-
-        List<Locale> locales =  Lists.newArrayList(locale);
+    private List<SportEvent> internalGetAvailableTournaments(URN sportId, Locale locale)
+        throws ObjectNotFoundException, CommunicationException {
+        List<Locale> locales = Lists.newArrayList(locale);
         List<URN> tournamentIds = dataRouterManager.requestAvailableTournamentsFor(locale, sportId);
-        if(tournamentIds != null){
+        if (tournamentIds != null) {
             List<SportEvent> tournaments = new LinkedList<>();
             for (URN tId : tournamentIds) {
                 tournaments.add(sportEntityFactory.buildSportEvent(tId, sportId, locales, false));
@@ -1152,7 +1323,7 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         }
     }
 
-    private List<SportEvent> extractTournamentsFromSport(Sport sport){
+    private List<SportEvent> extractTournamentsFromSport(Sport sport) {
         if (sport == null) {
             return null;
         }
@@ -1164,9 +1335,9 @@ public class SportsInfoManagerImpl implements SportsInfoManager {
         return ls;
     }
 
-    private Throwable getInitialException(Exception e){
+    private Throwable getInitialException(Exception e) {
         Throwable init = e;
-        while(init.getCause() != null){
+        while (init.getCause() != null) {
             init = init.getCause();
         }
         return init;

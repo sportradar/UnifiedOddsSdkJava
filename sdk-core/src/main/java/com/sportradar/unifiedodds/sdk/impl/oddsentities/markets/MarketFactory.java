@@ -9,7 +9,6 @@ import com.sportradar.uf.datamodel.UFMarket;
 import com.sportradar.uf.datamodel.UFOddsChangeMarket;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-
 import java.util.Optional;
 
 /**
@@ -19,11 +18,23 @@ import java.util.Optional;
 public interface MarketFactory {
     Optional<Market> buildMarket(SportEvent sportEvent, UFMarket m, int producerId);
 
-    Optional<MarketWithOdds> buildMarketWithOdds(SportEvent sportEvent, UFOddsChangeMarket market, int producerId);
+    Optional<MarketWithOdds> buildMarketWithOdds(
+        SportEvent sportEvent,
+        UFOddsChangeMarket market,
+        int producerId
+    );
 
-    Optional<MarketWithSettlement> buildMarketWithSettlement(SportEvent sportEvent, UFBetSettlementMarket market, int producerId);
+    Optional<MarketWithSettlement> buildMarketWithSettlement(
+        SportEvent sportEvent,
+        UFBetSettlementMarket market,
+        int producerId
+    );
 
-    Optional<MarketWithProbabilities> buildMarketWithProbabilities(SportEvent sportEvent, UFOddsChangeMarket market, int producerId);
+    Optional<MarketWithProbabilities> buildMarketWithProbabilities(
+        SportEvent sportEvent,
+        UFOddsChangeMarket market,
+        int producerId
+    );
 
     Optional<MarketCancel> buildMarketCancel(SportEvent sportEvent, UFMarket market, int producerId);
 }

@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * Defines methods used to access timeline event properties
  */
+@SuppressWarnings({ "MultipleStringLiterals" })
 public interface TimelineEvent {
     /**
      * Returns the timeline event identifier

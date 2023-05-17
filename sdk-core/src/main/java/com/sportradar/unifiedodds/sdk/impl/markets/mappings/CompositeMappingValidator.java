@@ -6,12 +6,10 @@ package com.sportradar.unifiedodds.sdk.impl.markets.mappings;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidator;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 
 /**
  * Represents a {@link MappingValidator} wrapper around other mapping validators
@@ -21,11 +19,13 @@ public class CompositeMappingValidator implements MappingValidator {
     /**
      * A list of {@link MappingValidator} used for actual validation
      */
-    private List<MappingValidator> validators;
+    private final List<MappingValidator> validators;
 
-
-    CompositeMappingValidator(List<MappingValidator> validators){
-        Preconditions.checkArgument(validators != null && !validators.isEmpty(), "validators cannot be a null reference or an empty list");
+    CompositeMappingValidator(List<MappingValidator> validators) {
+        Preconditions.checkArgument(
+            validators != null && !validators.isEmpty(),
+            "validators cannot be a null reference or an empty list"
+        );
 
         this.validators = new ArrayList<>(validators);
     }

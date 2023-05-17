@@ -8,7 +8,20 @@ import com.sportradar.uf.datamodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings(
+    {
+        "ConstantName",
+        "CyclomaticComplexity",
+        "DeclarationOrder",
+        "MagicNumber",
+        "NPathComplexity",
+        "NeedBraces",
+        "OneStatementPerLine",
+        "UnnecessaryParentheses",
+    }
+)
 public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
+
     private static final int LONG_PROCESSING_TIME_THRESHOLD = 50; // ms
     private static final long start = System.currentTimeMillis();
 
@@ -26,7 +39,7 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
     private String lastUrl;
     private int purgesDone;
     private long totalPurgeTime;
-    private final static Logger logger = LoggerFactory.getLogger(UnifiedOddsStatistics.class);
+    private static final Logger logger = LoggerFactory.getLogger(UnifiedOddsStatistics.class);
     private long totalXmlDeserTime;
     private long totalLongProcTime;
     private int longProcessing;
@@ -80,28 +93,19 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
             totalLongProcTime += (finished - now);
         }
         //totalMsgSizeReceived += body.length;
-        if (o instanceof UFOddsChange)
-            oddsChanges++;
-        else if (o instanceof UFBetSettlement)
-            betSettlements++;
-        else if (o instanceof UFBetCancel)
-            betCancels++;
-        else if (o instanceof UFRollbackBetCancel)
-            betCancelRollbacks++;
-        else if (o instanceof UFRollbackBetSettlement)
-            betSettlementRollbacks++;
-        else if (o instanceof UFFixtureChange)
-            fixtureChanges++;
+        if (o instanceof UFOddsChange) oddsChanges++; else if (
+            o instanceof UFBetSettlement
+        ) betSettlements++; else if (o instanceof UFBetCancel) betCancels++; else if (
+            o instanceof UFRollbackBetCancel
+        ) betCancelRollbacks++; else if (
+            o instanceof UFRollbackBetSettlement
+        ) betSettlementRollbacks++; else if (o instanceof UFFixtureChange) fixtureChanges++;
         String msgExcerpt = new String(tmpBuf.get());
-        if (msgExcerpt.contains("request_id"))
-            recoveryMessages++;
+        if (msgExcerpt.contains("request_id")) recoveryMessages++;
         int pid = msgExcerpt.indexOf("product=\"");
         if (pid != -1) {
             int p = msgExcerpt.charAt(pid + 9) - '0';
-            if (p == 1)
-                liveMessages++;
-            else
-                prematchMessages++;
+            if (p == 1) liveMessages++; else prematchMessages++;
         }
     }
 

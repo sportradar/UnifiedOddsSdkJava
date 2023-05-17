@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketStatus;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,12 +20,18 @@ import java.util.stream.Collectors;
  * // TODO @eti: Javadoc
  */
 class BetStopImpl<T extends SportEvent> extends EventMessageImpl<T> implements BetStop<T> {
+
     private final MarketStatus marketStatus;
     private final List<String> groups;
 
-    BetStopImpl(T sportEvent, UFBetStop message, Producer producer, byte[] rawMessage, MessageTimestamp timestamp) {
+    BetStopImpl(
+        T sportEvent,
+        UFBetStop message,
+        Producer producer,
+        byte[] rawMessage,
+        MessageTimestamp timestamp
+    ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
-
         if (message.getMarketStatus() == null) {
             marketStatus = MarketStatus.Suspended;
         } else {
@@ -54,8 +59,12 @@ class BetStopImpl<T extends SportEvent> extends EventMessageImpl<T> implements B
             }
         }
 
-        groups = message.getGroups() == null ? null :
-                Arrays.stream(message.getGroups().split(UnifiedFeedConstants.MARKET_GROUPS_DELIMITER)).collect(Collectors.toList());
+        groups =
+            message.getGroups() == null
+                ? null
+                : Arrays
+                    .stream(message.getGroups().split(UnifiedFeedConstants.MARKET_GROUPS_DELIMITER))
+                    .collect(Collectors.toList());
     }
 
     /**

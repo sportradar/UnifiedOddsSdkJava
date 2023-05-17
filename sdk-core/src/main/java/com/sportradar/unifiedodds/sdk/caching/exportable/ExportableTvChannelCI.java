@@ -1,11 +1,12 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.TvChannel;
-
 import java.io.Serializable;
 import java.util.Date;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableTvChannelCI implements Serializable {
+
     private String name;
     private Date time;
     private String streamUrl;

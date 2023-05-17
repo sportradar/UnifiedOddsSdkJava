@@ -12,7 +12,6 @@ import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidator;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +20,17 @@ import java.util.stream.Stream;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "BooleanExpressionComplexity",
+        "LambdaBodyLength",
+        "NPathComplexity",
+        "UnnecessaryParentheses",
+    }
+)
 public class MarketMappingCI {
+
     private final int marketTypeId;
     private final Integer marketSubTypeId;
     private final int producerId;
@@ -52,17 +61,26 @@ public class MarketMappingCI {
 
         sovTemplate = mm.getSovTemplate();
         validFor = mm.getValidFor();
-        mappingValidator = Strings.isNullOrEmpty(mm.getValidFor()) ? null : mappingValidatorFactory.build(mm.getValidFor());
+        mappingValidator =
+            Strings.isNullOrEmpty(mm.getValidFor()) ? null : mappingValidatorFactory.build(mm.getValidFor());
 
-        outcomeMappings = mm.getMappingOutcome() == null ? null :
-                mm.getMappingOutcome().stream().map(om -> new OutcomeMappingCI(om, locale)).collect(Collectors.toList());
+        outcomeMappings =
+            mm.getMappingOutcome() == null
+                ? null
+                : mm
+                    .getMappingOutcome()
+                    .stream()
+                    .map(om -> new OutcomeMappingCI(om, locale))
+                    .collect(Collectors.toList());
     }
 
     private static Set<Integer> buildProducerIds(Mappings.Mapping mm) {
-        return mm.getProductIds() == null  ? null :
-                Stream.of(mm.getProductIds().split(UnifiedFeedConstants.MARKET_MAPPING_PRODUCTS_DELIMITER))
-                        .map(Integer::valueOf)
-                        .collect(Collectors.toSet());
+        return mm.getProductIds() == null
+            ? null
+            : Stream
+                .of(mm.getProductIds().split(UnifiedFeedConstants.MARKET_MAPPING_PRODUCTS_DELIMITER))
+                .map(Integer::valueOf)
+                .collect(Collectors.toSet());
     }
 
     public int getMarketTypeId() {
@@ -93,7 +111,9 @@ public class MarketMappingCI {
         return sovTemplate;
     }
 
-    public String getValidFor() { return validFor; }
+    public String getValidFor() {
+        return validFor;
+    }
 
     public MappingValidator getMappingValidator() {
         return mappingValidator;
@@ -108,17 +128,20 @@ public class MarketMappingCI {
         Preconditions.checkNotNull(locale);
 
         if (o.getMappingOutcome() != null) {
-            o.getMappingOutcome().forEach(om -> {
-                Optional<OutcomeMappingCI> optionalCI = outcomeMappings.stream()
+            o
+                .getMappingOutcome()
+                .forEach(om -> {
+                    Optional<OutcomeMappingCI> optionalCI = outcomeMappings
+                        .stream()
                         .filter(cachedMapping -> cachedMapping.getOutcomeId().equals(om.getOutcomeId()))
                         .findFirst();
 
-                if (optionalCI.isPresent()) {
-                    optionalCI.get().merge(om, locale);
-                } else {
-                    outcomeMappings.add(new OutcomeMappingCI(om, locale));
-                }
-            });
+                    if (optionalCI.isPresent()) {
+                        optionalCI.get().merge(om, locale);
+                    } else {
+                        outcomeMappings.add(new OutcomeMappingCI(om, locale));
+                    }
+                });
         }
     }
 
@@ -140,18 +163,27 @@ public class MarketMappingCI {
             return false;
         }
 
-        AbstractMap.SimpleImmutableEntry<Integer, Integer> marketIds = MarketMappingCI.parseMappingMarketId(o.getMarketId());
+        AbstractMap.SimpleImmutableEntry<Integer, Integer> marketIds = MarketMappingCI.parseMappingMarketId(
+            o.getMarketId()
+        );
 
-        return marketIds.getKey().equals(exm.getMarketTypeId())
-                && ((marketIds.getValue() == null && exm.getMarketSubTypeId() == null)
-                || (marketIds.getValue() != null && marketIds.getValue().equals(exm.getMarketSubTypeId())));
+        return (
+            marketIds.getKey().equals(exm.getMarketTypeId()) &&
+            (
+                (marketIds.getValue() == null && exm.getMarketSubTypeId() == null) ||
+                (marketIds.getValue() != null && marketIds.getValue().equals(exm.getMarketSubTypeId()))
+            )
+        );
     }
 
     // k -> id, v -> subTypeId
     private static AbstractMap.SimpleImmutableEntry<Integer, Integer> parseMappingMarketId(String id) {
         String[] split = id.split(":");
         if (split.length == 2) {
-            return new AbstractMap.SimpleImmutableEntry<>(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
+            return new AbstractMap.SimpleImmutableEntry<>(
+                Integer.valueOf(split[0]),
+                Integer.valueOf(split[1])
+            );
         } else {
             return new AbstractMap.SimpleImmutableEntry<>(Integer.valueOf(split[0]), null);
         }
@@ -173,13 +205,14 @@ public class MarketMappingCI {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("producerIds", producerIds)
-                .add("sportId", sportId)
-                .add("marketTypeId", marketTypeId)
-                .add("marketSubTypeId", marketSubTypeId)
-                .add("sovTemplate", sovTemplate)
-                .add("validFor", validFor)
-                .toString();
+        return MoreObjects
+            .toStringHelper(this)
+            .add("producerIds", producerIds)
+            .add("sportId", sportId)
+            .add("marketTypeId", marketTypeId)
+            .add("marketSubTypeId", marketSubTypeId)
+            .add("sovTemplate", sovTemplate)
+            .add("validFor", validFor)
+            .toString();
     }
 }

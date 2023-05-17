@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.entities.BonusDrumType;
 /**
  * A basic bonus info cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class BonusInfoCI {
 
     private final Integer bonusBalls;
@@ -63,10 +64,6 @@ public class BonusInfoCI {
     }
 
     public ExportableBonusInfoCI export() {
-        return new ExportableBonusInfoCI(
-                bonusBalls,
-                bonusDrumType,
-                bonusRange
-        );
+        return new ExportableBonusInfoCI(bonusBalls, bonusDrumType, bonusRange);
     }
 }

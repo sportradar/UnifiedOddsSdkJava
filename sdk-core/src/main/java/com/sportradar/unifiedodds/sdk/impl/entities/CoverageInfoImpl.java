@@ -10,14 +10,15 @@ import com.sportradar.unifiedodds.sdk.caching.ci.CoverageInfoCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Provides coverage information
  */
+@SuppressWarnings({ "LineLength", "NeedBraces", "UnnecessaryParentheses" })
 public class CoverageInfoImpl implements CoverageInfo {
+
     /**
      * The level of the available coverage
      */
@@ -37,7 +38,7 @@ public class CoverageInfoImpl implements CoverageInfo {
     /**
      * The coverage location field
      */
-    private CoveredFrom coveredFrom;
+    private final CoveredFrom coveredFrom;
 
     /**
      * Initializes a new instance of {@link CoverageInfoImpl}
@@ -50,7 +51,7 @@ public class CoverageInfoImpl implements CoverageInfo {
     CoverageInfoImpl(String level, boolean isLive, List<String> includes, String coveredFrom) {
         this.level = level;
         this.isLive = isLive;
-        this.includes = includes == null ?  null : ImmutableList.copyOf(includes);
+        this.includes = includes == null ? null : ImmutableList.copyOf(includes);
         this.coveredFrom = mapCoveredFrom(coveredFrom);
     }
 
@@ -66,7 +67,8 @@ public class CoverageInfoImpl implements CoverageInfo {
         Preconditions.checkNotNull(exportable);
         this.level = exportable.getLevel();
         this.isLive = exportable.isLive();
-        this.includes = exportable.getIncludes() != null ? ImmutableList.copyOf(exportable.getIncludes()) : null;
+        this.includes =
+            exportable.getIncludes() != null ? ImmutableList.copyOf(exportable.getIncludes()) : null;
         this.coveredFrom = exportable.getCoveredFrom();
     }
 
@@ -118,17 +120,23 @@ public class CoverageInfoImpl implements CoverageInfo {
      */
     @Override
     public String toString() {
-        return "CoverageInfoImpl{" +
-                "level='" + level + '\'' +
-                ", isLive=" + isLive +
-                ", includes=" + includes +
-                ", coveredFrom=" + coveredFrom +
-                '}';
+        return (
+            "CoverageInfoImpl{" +
+            "level='" +
+            level +
+            '\'' +
+            ", isLive=" +
+            isLive +
+            ", includes=" +
+            includes +
+            ", coveredFrom=" +
+            coveredFrom +
+            '}'
+        );
     }
 
     private static CoveredFrom mapCoveredFrom(String value) {
-        if(value == null || value.trim().isEmpty())
-            return null;
+        if (value == null || value.trim().isEmpty()) return null;
         switch (value) {
             case "tv":
                 return CoveredFrom.Tv;
@@ -141,10 +149,10 @@ public class CoverageInfoImpl implements CoverageInfo {
 
     public ExportableCoverageInfoCI export() {
         return new ExportableCoverageInfoCI(
-                level,
-                isLive,
-                includes != null ? new ArrayList<>(includes) : null,
-                coveredFrom
+            level,
+            isLive,
+            includes != null ? new ArrayList<>(includes) : null,
+            coveredFrom
         );
     }
 }

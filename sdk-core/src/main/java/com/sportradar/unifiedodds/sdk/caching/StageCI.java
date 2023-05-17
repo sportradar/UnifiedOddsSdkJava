@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.unifiedodds.sdk.entities.StageType;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +13,7 @@ import java.util.Map;
 /**
  * Defines methods used to access stage type properties
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface StageCI extends CompetitionCI {
     /**
      * Returns a {@link Map} of translated sport event names

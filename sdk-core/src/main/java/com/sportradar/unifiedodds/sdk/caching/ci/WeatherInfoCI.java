@@ -11,7 +11,9 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableWeatherInfoCI
 /**
  * A weather info representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class WeatherInfoCI {
+
     /**
      * The temperature in degrees celsius
      */
@@ -108,12 +110,6 @@ public class WeatherInfoCI {
     }
 
     public ExportableWeatherInfoCI export() {
-        return new ExportableWeatherInfoCI(
-                temperatureCelsius,
-                wind,
-                windAdvantage,
-                pitch,
-                weatherConditions
-        );
+        return new ExportableWeatherInfoCI(temperatureCelsius, wind, windAdvantage, pitch, weatherConditions);
     }
 }

@@ -2,18 +2,24 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableCoverageInfoCI implements Serializable {
+
     private String level;
     private boolean isLive;
     private List<String> includes;
     private CoveredFrom coveredFrom;
 
-    public ExportableCoverageInfoCI(String level, boolean isLive, List<String> includes, CoveredFrom coveredFrom) {
+    public ExportableCoverageInfoCI(
+        String level,
+        boolean isLive,
+        List<String> includes,
+        CoveredFrom coveredFrom
+    ) {
         this.level = level;
         this.isLive = isLive;
         this.includes = includes;

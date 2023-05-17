@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.ci.markets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
-
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class MarketOutcomeCI {
+
     private final String id;
     private final Map<Locale, String> names;
     private final Map<Locale, String> descriptions;

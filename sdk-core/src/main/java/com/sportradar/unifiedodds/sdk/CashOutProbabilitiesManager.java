@@ -7,13 +7,13 @@ package com.sportradar.unifiedodds.sdk;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * Defines methods used retrieve markets with probability information used for cash out
  */
+@SuppressWarnings({ "LineLength" })
 public interface CashOutProbabilitiesManager {
     /**
      * Returns a {@link CashOutProbabilities} instance providing the cashout probabilities for the specified event
@@ -45,7 +45,11 @@ public interface CashOutProbabilitiesManager {
      * @param <T> a SportEvent inherited instance
      * @return a {@link CashOutProbabilities} providing the probabilities of the associated event/market combination
      */
-    <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(URN eventId, int marketId, Map<String, String> specifiers);
+    <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(
+        URN eventId,
+        int marketId,
+        Map<String, String> specifiers
+    );
 
     /**
      * Returns a {@link CashOutProbabilities} instance providing the cashout probabilities for the specified market on the associated event
@@ -57,5 +61,10 @@ public interface CashOutProbabilitiesManager {
      * @param <T> a SportEvent inherited instance
      * @return a {@link CashOutProbabilities} providing the probabilities of the associated event/market combination
      */
-    <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(URN eventId, int marketId, Map<String, String> specifiers, Locale locale);
+    <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(
+        URN eventId,
+        int marketId,
+        Map<String, String> specifiers,
+        Locale locale
+    );
 }

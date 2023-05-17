@@ -8,6 +8,7 @@ package com.sportradar.unifiedodds.sdk.exceptions;
  * The base SDK exception class
  */
 public abstract class OddsFeedSdkException extends RuntimeException {
+
     public OddsFeedSdkException(String message) {
         super(message);
     }

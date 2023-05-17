@@ -8,12 +8,12 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCI;
 import com.sportradar.unifiedodds.sdk.entities.Manager;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 
 /**
  * An implementation of the {@link Manager} interface
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class ManagerImpl implements Manager {
 
     private final ManagerCI managerCI;

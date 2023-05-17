@@ -21,7 +21,12 @@ public interface MessageConsumer {
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
      * @param timestamp - all message timestamps
      */
-    void onMessageReceived(UnmarshalledMessage unmarshalledMessage, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp);
+    void onMessageReceived(
+        UnmarshalledMessage unmarshalledMessage,
+        byte[] body,
+        RoutingKeyInfo routingKeyInfo,
+        MessageTimestamp timestamp
+    );
 
     /**
      * Dispatches the "unparsable message received event"
@@ -54,5 +59,10 @@ public interface MessageConsumer {
      * @param timestamp the message timestamps
      * @param messageInterest the associated {@link MessageInterest}
      */
-    void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest);
+    void onRawFeedMessageReceived(
+        RoutingKeyInfo routingKey,
+        UnmarshalledMessage feedMessage,
+        MessageTimestamp timestamp,
+        MessageInterest messageInterest
+    );
 }

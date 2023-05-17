@@ -7,14 +7,15 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfo;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * A producer info representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class ProducerInfoCI {
+
     /**
      * The isInLiveScore property backing field
      */
@@ -64,15 +65,29 @@ public class ProducerInfoCI {
         isAutoTraded = pInfo.getIsAutoTraded() != null;
         isInLiveMatchTracker = pInfo.getIsInLiveMatchTracker() != null;
 
-        if (pInfo.getLinks() != null && pInfo.getLinks().getLink() != null && !pInfo.getLinks().getLink().isEmpty()) {
-            producerInfoLinks = pInfo.getLinks().getLink().stream().map(ProducerInfoLinkCI::new).collect(Collectors.toList());
+        if (
+            pInfo.getLinks() != null &&
+            pInfo.getLinks().getLink() != null &&
+            !pInfo.getLinks().getLink().isEmpty()
+        ) {
+            producerInfoLinks =
+                pInfo.getLinks().getLink().stream().map(ProducerInfoLinkCI::new).collect(Collectors.toList());
         } else {
             producerInfoLinks = null;
         }
 
-        if (pInfo.getStreaming() != null && pInfo.getStreaming().getChannel() != null && !pInfo.getStreaming().getChannel().isEmpty()) {
-            streamingChannels = pInfo.getStreaming().getChannel().stream().
-                    map(StreamingChannelCI::new).collect(Collectors.toList());
+        if (
+            pInfo.getStreaming() != null &&
+            pInfo.getStreaming().getChannel() != null &&
+            !pInfo.getStreaming().getChannel().isEmpty()
+        ) {
+            streamingChannels =
+                pInfo
+                    .getStreaming()
+                    .getChannel()
+                    .stream()
+                    .map(StreamingChannelCI::new)
+                    .collect(Collectors.toList());
         } else {
             streamingChannels = null;
         }

@@ -27,6 +27,8 @@ sportradar:
       useMessagingSsl:
       # the api host
       apiHost:
+      # the api port
+      apiPort:
       # an indication if the request to the API should use ssl (boolean)
       useApiSsl:
       # a list of producer identifiers that should be automatically disabled[3,4,...]

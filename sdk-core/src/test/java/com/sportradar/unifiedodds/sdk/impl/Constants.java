@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
+@SuppressWarnings({ "HideUtilityClassConstructor" })
 public class Constants {
+
     public static final String ODDS_CHANGE_KEY = "hi.-.live.odds_change.1.sr:match.10927088.-";
     public static final String ODDS_CHANGE_MSG_URI = "test/feed_xml/odds_change.xml";
     public static final String BET_STOP_KEY = "hi.-.live.bet_stop.1.sr:match.9578495.-";
@@ -21,7 +23,9 @@ public class Constants {
     public static final String SCHEDULE_MSG_URI = "test/rest/schedule.en.xml";
 
     // local rabbit data for tests
-    public static final String RABBIT_IP = "192.168.64.104";
+    public static final String ADMIN_USERNAME = "guest";
+    public static final String ADMIN_PASSWORD = "guest";
+    public static final String RABBIT_IP = "rabbit";
     public static final String SDK_USERNAME = "testuser";
     public static final String SDK_PASSWORD = "testpass";
     public static final String UF_EXCHANGE = "unifiedfeed";

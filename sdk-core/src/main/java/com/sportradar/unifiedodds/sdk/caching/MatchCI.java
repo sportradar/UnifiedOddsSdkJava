@@ -9,7 +9,6 @@ import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,6 +16,7 @@ import java.util.Map;
 /**
  * Defines methods used to access match type properties
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface MatchCI extends CompetitionCI {
     /**
      * Returns a {@link Map} of translated sport event names
@@ -75,7 +75,7 @@ public interface MatchCI extends CompetitionCI {
      * @param locales the {@link Locale}s in which the data should be provided
      * @return a {@link CoverageInfo} instance
      */
-     CoverageInfoCI getCoverageInfo(List<Locale> locales);
+    CoverageInfoCI getCoverageInfo(List<Locale> locales);
 
     /**
      * Returns the associated event timeline

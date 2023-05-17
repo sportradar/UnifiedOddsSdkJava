@@ -12,17 +12,27 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.entities.NamedValueImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The default implementation of the {@link NamedValueCache} used to cache {@link NamedValue} objects
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ConstantName",
+        "ExplicitInitialization",
+        "IllegalCatch",
+        "LineLength",
+        "MagicNumber",
+    }
+)
 public class NamedValueCacheImpl implements NamedValueCache {
+
     /**
      * The {@link Logger} instance used to log {@link NamedValueCache} events
      */
@@ -57,7 +67,6 @@ public class NamedValueCacheImpl implements NamedValueCache {
 
         scheduler.scheduleAtFixedRate("NamedValueRefreshTask", this::onTimerElapsed, 24, 24, TimeUnit.HOURS);
     }
-
 
     /**
      * Gets the {@link NamedValue} specified by the provided <code>id</code>
@@ -99,7 +108,7 @@ public class NamedValueCacheImpl implements NamedValueCache {
      *
      * @return - <code>true</code> if the operation was successful; otherwise false;
      */
-    private synchronized boolean fetchAndMerge(){
+    private synchronized boolean fetchAndMerge() {
         Object fetch;
         try {
             fetch = dataProvider.getData();
@@ -123,7 +132,11 @@ public class NamedValueCacheImpl implements NamedValueCache {
             namedValues.clear();
             fetchAndMerge();
         } catch (Exception ex) { // so timer does not die
-            cacheLog.warn("An exception occurred while attempting to retrieve named values with the scheduled timer. [{}] Exception was: {}", dataProvider, ex);
+            cacheLog.warn(
+                "An exception occurred while attempting to retrieve named values with the scheduled timer. [{}] Exception was: {}",
+                dataProvider,
+                ex
+            );
         }
     }
 }

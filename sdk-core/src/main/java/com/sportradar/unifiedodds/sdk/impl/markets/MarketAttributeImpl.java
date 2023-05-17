@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketAttribute;
  * // TODO @eti: Javadoc
  */
 public class MarketAttributeImpl implements MarketAttribute {
+
     private final MarketAttributeCI cacheItem;
 
     public MarketAttributeImpl(MarketAttributeCI att) {

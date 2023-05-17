@@ -8,7 +8,6 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
  * Interface used by cache items to export their properties
  */
 public interface ExportableCacheItem {
-
     /**
      * Export item's properties
      *

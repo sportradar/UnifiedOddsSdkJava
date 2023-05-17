@@ -12,7 +12,9 @@ import com.sportradar.utils.URN;
 /**
  * Provides information about season coverage
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength", "UnnecessaryParentheses" })
 public class SeasonCoverageImpl implements SeasonCoverage {
+
     /**
      * The unique identifier of the season
      */
@@ -43,7 +45,6 @@ public class SeasonCoverageImpl implements SeasonCoverage {
      */
     private final int scheduled;
 
-
     /**
      * Initializes a new instance of {@link SeasonCoverageImpl}
      *
@@ -59,7 +60,6 @@ public class SeasonCoverageImpl implements SeasonCoverage {
         this.played = seasonCoverageCI.getPlayed();
         this.scheduled = seasonCoverageCI.getScheduled();
     }
-
 
     /**
      * Returns the unique identifier of the season
@@ -128,13 +128,23 @@ public class SeasonCoverageImpl implements SeasonCoverage {
      */
     @Override
     public String toString() {
-        return "SeasonCoverageImpl{" +
-                "seasonId=" + seasonId +
-                ", maxCoverageLevel='" + maxCoverageLevel + '\'' +
-                ", minCoverageLevel='" + minCoverageLevel + '\'' +
-                ", maxCovered=" + maxCovered +
-                ", played=" + played +
-                ", scheduled=" + scheduled +
-                '}';
+        return (
+            "SeasonCoverageImpl{" +
+            "seasonId=" +
+            seasonId +
+            ", maxCoverageLevel='" +
+            maxCoverageLevel +
+            '\'' +
+            ", minCoverageLevel='" +
+            minCoverageLevel +
+            '\'' +
+            ", maxCovered=" +
+            maxCovered +
+            ", played=" +
+            played +
+            ", scheduled=" +
+            scheduled +
+            '}'
+        );
     }
 }

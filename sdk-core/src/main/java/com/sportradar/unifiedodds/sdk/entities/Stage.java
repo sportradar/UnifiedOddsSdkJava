@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
-
 import java.util.List;
 
 /**
  * Defines methods implemented by classes representing sport events of stage type
  */
+@SuppressWarnings({ "LineLength" })
 public interface Stage extends Competition {
     /**
      * Returns a {@link SportSummary} instance representing the sport associated with the current instance
@@ -52,7 +52,9 @@ public interface Stage extends Competition {
      * Returns a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
      * @return a list of additional ids of the parent stages of the current instance or a null reference if the represented stage does not have the parent stages
      */
-    default List<Stage> getAdditionalParentStages() { return null; }
+    default List<Stage> getAdditionalParentStages() {
+        return null;
+    }
 
     /**
      * Returns a {@link StageStatus} containing information about the progress of the stage
@@ -61,5 +63,7 @@ public interface Stage extends Competition {
      * @return - a {@link StageStatus} containing information about the progress of the stage
      * associated with the current instance
      */
-    default StageStatus getStatus() { return null; }
+    default StageStatus getStatus() {
+        return null;
+    }
 }

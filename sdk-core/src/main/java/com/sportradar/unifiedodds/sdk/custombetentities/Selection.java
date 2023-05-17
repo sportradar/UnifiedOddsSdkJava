@@ -10,7 +10,6 @@ import com.sportradar.utils.URN;
  * Provides an requested selection
  */
 public interface Selection {
-
     /**
      * Gets the event id
      *

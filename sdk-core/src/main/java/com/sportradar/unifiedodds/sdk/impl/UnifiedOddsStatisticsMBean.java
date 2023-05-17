@@ -4,8 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface UnifiedOddsStatisticsMBean {
-
     public int getNumberOfMessagesReceived();
 
     public long getTimeOfLastMessageReceived();
@@ -47,5 +47,4 @@ public interface UnifiedOddsStatisticsMBean {
     public int getNumberOfPrematchMessages();
 
     public long getBytesReceived();
-
 }

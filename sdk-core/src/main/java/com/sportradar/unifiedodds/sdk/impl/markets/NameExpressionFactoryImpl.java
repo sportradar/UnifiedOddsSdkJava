@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
-
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -18,7 +17,9 @@ import java.util.regex.Pattern;
  * Created on 21/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ClassDataAbstractionCoupling", "ClassFanOutComplexity", "ReturnCount" })
 public class NameExpressionFactoryImpl implements NameExpressionFactory {
+
     private static final Pattern SEQUENCED_COMPETITOR_REGEX_PATTERN = Pattern.compile("\\Acompetitor[12]");
     private static final String EVENT_OPERAND_PLACEHOLDER = "event";
     private final OperandFactory operandFactory;
@@ -34,7 +35,12 @@ public class NameExpressionFactoryImpl implements NameExpressionFactory {
     }
 
     @Override
-    public NameExpression buildExpression(SportEvent sportEvent, Map<String, String> specifiers, String operator, String operand) {
+    public NameExpression buildExpression(
+        SportEvent sportEvent,
+        Map<String, String> specifiers,
+        String operator,
+        String operand
+    ) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(operand));
 
@@ -59,7 +65,9 @@ public class NameExpressionFactoryImpl implements NameExpressionFactory {
                 ensureSpecifiersNotNullOrEmpty(specifiers);
                 return buildProfileExpression(operand, specifiers);
             default:
-                throw new IllegalArgumentException("Operator " + operator + " is not supported. Supported operators are: +,-,$,!,%");
+                throw new IllegalArgumentException(
+                    "Operator " + operator + " is not supported. Supported operators are: +,-,$,!,%"
+                );
         }
     }
 
@@ -73,7 +81,11 @@ public class NameExpressionFactoryImpl implements NameExpressionFactory {
             return new SportEventNameExpression(sportEvent);
         }
 
-        throw new IllegalArgumentException("operand:" + operand + " is not a valid operand for $ operator. Valid operators are: 'competitor1', 'competitor2'");
+        throw new IllegalArgumentException(
+            "operand:" +
+            operand +
+            " is not a valid operand for $ operator. Valid operators are: 'competitor1', 'competitor2'"
+        );
     }
 
     private NameExpression buildProfileExpression(String operand, Map<String, String> specifiers) {

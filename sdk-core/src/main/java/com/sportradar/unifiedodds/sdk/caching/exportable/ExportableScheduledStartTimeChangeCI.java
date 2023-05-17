@@ -3,7 +3,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import java.io.Serializable;
 import java.util.Date;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableScheduledStartTimeChangeCI implements Serializable {
+
     private Date oldTime;
     private Date newTime;
     private Date changedAt;

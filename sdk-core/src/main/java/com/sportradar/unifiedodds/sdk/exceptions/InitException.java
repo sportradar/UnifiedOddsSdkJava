@@ -8,6 +8,7 @@ package com.sportradar.unifiedodds.sdk.exceptions;
  * An exception indicating there was an error during SDK initialization
  */
 public class InitException extends Exception {
+
     public InitException(String message) {
         super(message);
     }

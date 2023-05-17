@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
 import com.sportradar.unifiedodds.sdk.entities.Round;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,7 +16,9 @@ import java.util.stream.Collectors;
 /**
  * Provides basic tournament round information
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class RoundImpl implements Round {
+
     private final RoundCI roundCI;
     private final List<Locale> locales;
 
@@ -76,9 +77,10 @@ public class RoundImpl implements Round {
      */
     @Override
     public Map<Locale, String> getNames() {
-        return locales.stream()
-                .filter(l -> roundCI.getName(l) != null)
-                .collect(Collectors.toMap(k -> k, roundCI::getName));
+        return locales
+            .stream()
+            .filter(l -> roundCI.getName(l) != null)
+            .collect(Collectors.toMap(k -> k, roundCI::getName));
     }
 
     /**
@@ -171,14 +173,18 @@ public class RoundImpl implements Round {
      * @return - the id of the group associated with the current round
      */
     @Override
-    public URN getGroupId() { return roundCI.getGroupId(); }
+    public URN getGroupId() {
+        return roundCI.getGroupId();
+    }
 
     /**
      * Returns the phase of the round
      * @return the phase of the round
      */
     @Override
-    public String getPhase() { return roundCI.getPhase(); }
+    public String getPhase() {
+        return roundCI.getPhase();
+    }
 
     /**
      * Returns the group of the group associated with the current round
@@ -196,7 +202,9 @@ public class RoundImpl implements Round {
      * @return - the betradar name
      */
     @Override
-    public String getBetradarName(){ return roundCI.getBetradarName(); }
+    public String getBetradarName() {
+        return roundCI.getBetradarName();
+    }
 
     /**
      * Returns a {@link String} describing the current {@link Round} instance
@@ -205,9 +213,6 @@ public class RoundImpl implements Round {
      */
     @Override
     public String toString() {
-        return "RoundImpl{" +
-                "roundCI=" + roundCI +
-                ", locales=" + locales +
-                '}';
+        return "RoundImpl{" + "roundCI=" + roundCI + ", locales=" + locales + '}';
     }
 }

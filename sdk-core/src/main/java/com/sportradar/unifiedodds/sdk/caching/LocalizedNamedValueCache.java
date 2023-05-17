@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -13,7 +12,6 @@ import java.util.Locale;
  * Defines methods used to retrieve {@link LocalizedNamedValue} objects
  */
 public interface LocalizedNamedValueCache {
-
     /**
      * Gets a {@link LocalizedNamedValue} with the specified translations
      *

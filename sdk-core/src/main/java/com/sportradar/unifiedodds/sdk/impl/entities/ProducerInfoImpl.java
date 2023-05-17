@@ -13,14 +13,15 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoC
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfo;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
 import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Contains information about a specific producer
  */
+@SuppressWarnings({ "HiddenField", "UnnecessaryParentheses" })
 public class ProducerInfoImpl implements ProducerInfo {
+
     /**
      * A value indicating whether the instance is being auto traded
      */
@@ -62,14 +63,12 @@ public class ProducerInfoImpl implements ProducerInfo {
      */
     private final List<StreamingChannel> streamingChannels;
 
-
     /**
      * Initializes a new instance of the {@link ProducerInfoImpl} class
      *
      * @param productInfo - a product info data
      */
     ProducerInfoImpl(SAPIProductInfo productInfo) {
-
         this.isAutoTraded = productInfo.getIsAutoTraded() != null;
         this.isInHostedStatistics = productInfo.getIsInHostedStatistics() != null;
         this.isInLiveCenterSoccer = productInfo.getIsInLiveCenterSoccer() != null;
@@ -90,8 +89,22 @@ public class ProducerInfoImpl implements ProducerInfo {
         this.isInLiveCenterSoccer = exportable.isInLiveCenterSoccer();
         this.isInLiveScore = exportable.isInLiveScore();
         this.isInLiveMatchTracker = exportable.isInLiveMatchTracker();
-        this.producerInfoLinks = exportable.getProducerInfoLinks() != null ? exportable.getProducerInfoLinks().stream().map(ProducerInfoLinkImpl::new).collect(ImmutableList.toImmutableList()) : null;
-        this.streamingChannels = exportable.getStreamingChannels() != null ? exportable.getStreamingChannels().stream().map(StreamingChannelImpl::new).collect(ImmutableList.toImmutableList()) : null;
+        this.producerInfoLinks =
+            exportable.getProducerInfoLinks() != null
+                ? exportable
+                    .getProducerInfoLinks()
+                    .stream()
+                    .map(ProducerInfoLinkImpl::new)
+                    .collect(ImmutableList.toImmutableList())
+                : null;
+        this.streamingChannels =
+            exportable.getStreamingChannels() != null
+                ? exportable
+                    .getStreamingChannels()
+                    .stream()
+                    .map(StreamingChannelImpl::new)
+                    .collect(ImmutableList.toImmutableList())
+                : null;
     }
 
     /**
@@ -101,10 +114,13 @@ public class ProducerInfoImpl implements ProducerInfo {
      * @return - a {@link List} of processed {@link ProducerInfoLink} entities
      */
     private List<ProducerInfoLink> prepareProductLinks(SAPIProductInfoLinks links) {
-        return links == null ? null :
-                links.getLink().stream()
-                        .map(link -> new ProducerInfoLinkImpl(link.getRef(), link.getName()))
-                        .collect(Collectors.toList());
+        return links == null
+            ? null
+            : links
+                .getLink()
+                .stream()
+                .map(link -> new ProducerInfoLinkImpl(link.getRef(), link.getName()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -114,10 +130,13 @@ public class ProducerInfoImpl implements ProducerInfo {
      * @return - a {@link List} of processed {@link StreamingChannel} entities
      */
     private List<StreamingChannel> prepareProductStreams(SAPIStreamingChannels streamingChannels) {
-        return streamingChannels == null ? null :
-                streamingChannels.getChannel().stream()
-                        .map(channel -> new StreamingChannelImpl(channel.getId(), channel.getName()))
-                        .collect(Collectors.toList());
+        return streamingChannels == null
+            ? null
+            : streamingChannels
+                .getChannel()
+                .stream()
+                .map(channel -> new StreamingChannelImpl(channel.getId(), channel.getName()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -162,7 +181,9 @@ public class ProducerInfoImpl implements ProducerInfo {
      * instance is available in the LiveScore solution
      */
     @Override
-    public boolean isInLiveScore() { return isInLiveScore; }
+    public boolean isInLiveScore() {
+        return isInLiveScore;
+    }
 
     /**
      * Returns an indication if the sport event associated with the current
@@ -204,26 +225,45 @@ public class ProducerInfoImpl implements ProducerInfo {
      */
     @Override
     public String toString() {
-        return "ProducerInfoImpl{" +
-                "isAutoTraded=" + isAutoTraded +
-                ", isInHostedStatistics=" + isInHostedStatistics +
-                ", isInLiveCenterSoccer=" + isInLiveCenterSoccer +
-                ", isInLiveScore=" + isInLiveScore +
-                ", isInLiveMatchTracker=" + isInLiveMatchTracker +
-                ", producerInfoLinks=" + producerInfoLinks +
-                ", streamingChannels=" + streamingChannels +
-                '}';
+        return (
+            "ProducerInfoImpl{" +
+            "isAutoTraded=" +
+            isAutoTraded +
+            ", isInHostedStatistics=" +
+            isInHostedStatistics +
+            ", isInLiveCenterSoccer=" +
+            isInLiveCenterSoccer +
+            ", isInLiveScore=" +
+            isInLiveScore +
+            ", isInLiveMatchTracker=" +
+            isInLiveMatchTracker +
+            ", producerInfoLinks=" +
+            producerInfoLinks +
+            ", streamingChannels=" +
+            streamingChannels +
+            '}'
+        );
     }
 
     public ExportableProducerInfoCI export() {
         return new ExportableProducerInfoCI(
-                isAutoTraded,
-                isInHostedStatistics,
-                isInLiveCenterSoccer,
-                isInLiveScore,
-                isInLiveMatchTracker,
-                producerInfoLinks != null ? producerInfoLinks.stream().map(p -> ((ProducerInfoLinkImpl)p).export()).collect(Collectors.toList()) : null,
-                streamingChannels != null ? streamingChannels.stream().map(s -> ((StreamingChannelImpl)s).export()).collect(Collectors.toList()) : null
+            isAutoTraded,
+            isInHostedStatistics,
+            isInLiveCenterSoccer,
+            isInLiveScore,
+            isInLiveMatchTracker,
+            producerInfoLinks != null
+                ? producerInfoLinks
+                    .stream()
+                    .map(p -> ((ProducerInfoLinkImpl) p).export())
+                    .collect(Collectors.toList())
+                : null,
+            streamingChannels != null
+                ? streamingChannels
+                    .stream()
+                    .map(s -> ((StreamingChannelImpl) s).export())
+                    .collect(Collectors.toList())
+                : null
         );
     }
 }

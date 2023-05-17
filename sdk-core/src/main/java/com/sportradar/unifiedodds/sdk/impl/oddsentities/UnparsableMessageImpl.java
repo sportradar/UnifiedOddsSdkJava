@@ -13,12 +13,12 @@ import com.sportradar.unifiedodds.sdk.oddsentities.UnparsableMessage;
  * The {@link UnparsableMessage} basic impl
  */
 class UnparsableMessageImpl<T extends SportEvent> extends MessageImpl implements UnparsableMessage<T> {
+
     private final T sportEvent;
     private final byte[] rawMessage;
 
     UnparsableMessageImpl(T sportEvent, byte[] rawMessage, Producer producer, MessageTimestamp timestamp) {
         super(producer, timestamp);
-
         this.sportEvent = sportEvent;
         this.rawMessage = rawMessage;
     }

@@ -4,13 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
-
 /**
  * Defines a contract for all message timestamps
  * Created and Sent are generated on rabbit server and Received and Dispatched on a local machine running sdk. If the system clocks are not in-sync it may happen that Received is before Created. Similar logic applies also to other properties.
  */
 public interface MessageTimestamp {
-
     /**
      * Gets the value specifying when the message was generated and put in queue on rabbit server (milliseconds since EPOCH UTC)
      * @return the value specifying when the message was generated

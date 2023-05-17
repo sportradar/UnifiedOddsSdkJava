@@ -11,15 +11,26 @@ import com.sportradar.unifiedodds.sdk.entities.LongTermEvent;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.unifiedodds.sdk.shared.Helper;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * A custom feed listener implementation which outputs the data to the provided logger
  */
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "DeclarationOrder",
+        "LineLength",
+        "MemberName",
+        "MultipleStringLiterals",
+        "ParameterName",
+        "VisibilityModifier",
+    }
+)
 public class SimpleMessageListener implements OddsFeedListener {
+
     private final Logger logger;
     private final Locale locale = Locale.ENGLISH;
     private final Date startDate;
@@ -49,8 +60,15 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onOddsChange(OddsFeedSession sender, OddsChange<SportEvent> oddsChanges) {
         logBaseMessageData(oddsChanges, oddsChanges.getEvent(), oddsChanges.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, oddsChanges.getEvent().getId(), Helper.provideCleanMsgForLog(oddsChanges.getRawMessage()));
-        FeedMessages.add(new FeedMessage(oddsChanges.getTimestamps().getCreated(), oddsChanges.getEvent(), "oddsChange"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            oddsChanges.getEvent().getId(),
+            Helper.provideCleanMsgForLog(oddsChanges.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(oddsChanges.getTimestamps().getCreated(), oddsChanges.getEvent(), "oddsChange")
+        );
         Helper.writeToOutput("Called event onOddsChange: " + message);
     }
 
@@ -68,8 +86,19 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onFixtureChange(OddsFeedSession sender, FixtureChange<SportEvent> fixtureChange) {
         logBaseMessageData(fixtureChange, fixtureChange.getEvent(), fixtureChange.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, fixtureChange.getEvent().getId(), Helper.provideCleanMsgForLog(fixtureChange.getRawMessage()));
-        FeedMessages.add(new FeedMessage(fixtureChange.getTimestamps().getCreated(), fixtureChange.getEvent(), "fixtureChange"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            fixtureChange.getEvent().getId(),
+            Helper.provideCleanMsgForLog(fixtureChange.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(
+                fixtureChange.getTimestamps().getCreated(),
+                fixtureChange.getEvent(),
+                "fixtureChange"
+            )
+        );
         Helper.writeToOutput("Called event onFixtureChange: " + message);
     }
 
@@ -82,8 +111,15 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onBetStop(OddsFeedSession sender, BetStop<SportEvent> betStop) {
         logBaseMessageData(betStop, betStop.getEvent(), betStop.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, betStop.getEvent().getId(), Helper.provideCleanMsgForLog(betStop.getRawMessage()));
-        FeedMessages.add(new FeedMessage(betStop.getTimestamps().getCreated(), betStop.getEvent(), "betStop"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            betStop.getEvent().getId(),
+            Helper.provideCleanMsgForLog(betStop.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(betStop.getTimestamps().getCreated(), betStop.getEvent(), "betStop")
+        );
         Helper.writeToOutput("Called event onBetStop: " + message);
     }
 
@@ -101,8 +137,19 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onBetSettlement(OddsFeedSession sender, BetSettlement<SportEvent> betSettlement) {
         logBaseMessageData(betSettlement, betSettlement.getEvent(), betSettlement.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, betSettlement.getEvent().getId(), Helper.provideCleanMsgForLog(betSettlement.getRawMessage()));
-        FeedMessages.add(new FeedMessage(betSettlement.getTimestamps().getCreated(), betSettlement.getEvent(), "betSettlement"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            betSettlement.getEvent().getId(),
+            Helper.provideCleanMsgForLog(betSettlement.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(
+                betSettlement.getTimestamps().getCreated(),
+                betSettlement.getEvent(),
+                "betSettlement"
+            )
+        );
         Helper.writeToOutput("Called event onBetSettlement: " + message);
     }
 
@@ -118,8 +165,15 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onBetCancel(OddsFeedSession sender, BetCancel<SportEvent> betCancel) {
         logBaseMessageData(betCancel, betCancel.getEvent(), betCancel.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, betCancel.getEvent().getId(), Helper.provideCleanMsgForLog(betCancel.getRawMessage()));
-        FeedMessages.add(new FeedMessage(betCancel.getTimestamps().getCreated(), betCancel.getEvent(), "betCancel"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            betCancel.getEvent().getId(),
+            Helper.provideCleanMsgForLog(betCancel.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(betCancel.getTimestamps().getCreated(), betCancel.getEvent(), "betCancel")
+        );
         Helper.writeToOutput("Called event onBetCancel: " + message);
     }
 
@@ -135,8 +189,19 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onRollbackBetCancel(OddsFeedSession sender, RollbackBetCancel<SportEvent> rollbackBetCancel) {
         logBaseMessageData(rollbackBetCancel, rollbackBetCancel.getEvent(), rollbackBetCancel.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, rollbackBetCancel.getEvent().getId(), Helper.provideCleanMsgForLog(rollbackBetCancel.getRawMessage()));
-        FeedMessages.add(new FeedMessage(rollbackBetCancel.getTimestamps().getCreated(), rollbackBetCancel.getEvent(), "rollbackBetCancel"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            rollbackBetCancel.getEvent().getId(),
+            Helper.provideCleanMsgForLog(rollbackBetCancel.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(
+                rollbackBetCancel.getTimestamps().getCreated(),
+                rollbackBetCancel.getEvent(),
+                "rollbackBetCancel"
+            )
+        );
         Helper.writeToOutput("Called event onRollbackBetCancel: " + message);
     }
 
@@ -149,10 +214,28 @@ public class SimpleMessageListener implements OddsFeedListener {
      *                              BetSettlement
      */
     @Override
-    public void onRollbackBetSettlement(OddsFeedSession sender, RollbackBetSettlement<SportEvent> rollbackBetSettlement) {
-        logBaseMessageData(rollbackBetSettlement, rollbackBetSettlement.getEvent(), rollbackBetSettlement.getProducer());
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, rollbackBetSettlement.getEvent().getId(), Helper.provideCleanMsgForLog(rollbackBetSettlement.getRawMessage()));
-        FeedMessages.add(new FeedMessage(rollbackBetSettlement.getTimestamps().getCreated(), rollbackBetSettlement.getEvent(), "rollbackBetSettlement"));
+    public void onRollbackBetSettlement(
+        OddsFeedSession sender,
+        RollbackBetSettlement<SportEvent> rollbackBetSettlement
+    ) {
+        logBaseMessageData(
+            rollbackBetSettlement,
+            rollbackBetSettlement.getEvent(),
+            rollbackBetSettlement.getProducer()
+        );
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            rollbackBetSettlement.getEvent().getId(),
+            Helper.provideCleanMsgForLog(rollbackBetSettlement.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(
+                rollbackBetSettlement.getTimestamps().getCreated(),
+                rollbackBetSettlement.getEvent(),
+                "rollbackBetSettlement"
+            )
+        );
         Helper.writeToOutput("Called event onRollbackBetSettlement: " + message);
     }
 
@@ -192,53 +275,97 @@ public class SimpleMessageListener implements OddsFeedListener {
     @Override
     public void onUnparsableMessage(OddsFeedSession sender, UnparsableMessage unparsableMessage) {
         Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
-        String message = String.format("[%s]: event=%s, data=%s", listenerVersion, unparsableMessage.getEvent().getId(), Helper.provideCleanMsgForLog(unparsableMessage.getRawMessage()));
-        FeedMessages.add(new FeedMessage(unparsableMessage.getTimestamps().getCreated(), unparsableMessage.getEvent(), "unparsableMessage"));
+        String message = String.format(
+            "[%s]: event=%s, data=%s",
+            listenerVersion,
+            unparsableMessage.getEvent().getId(),
+            Helper.provideCleanMsgForLog(unparsableMessage.getRawMessage())
+        );
+        FeedMessages.add(
+            new FeedMessage(
+                unparsableMessage.getTimestamps().getCreated(),
+                unparsableMessage.getEvent(),
+                "unparsableMessage"
+            )
+        );
         Helper.writeToOutput("Called event onUnparsableMessage: " + message);
 
         if (unparsableMessage.getEvent() != null) {
             String xml = new String(unparsableMessage.getRawMessage());
-            logger.info("Problems detected on received message for event " + unparsableMessage.getEvent().getId() + ". Message: " + xml);
-
+            logger.info(
+                "Problems detected on received message for event " +
+                unparsableMessage.getEvent().getId() +
+                ". Message: " +
+                xml
+            );
         } else {
             logger.info("Problems detected on received message"); // probably a system message deserialization failure
         }
     }
 
     private void logBaseMessageData(Message message, SportEvent event, Producer producer) {
-        logger.info("Received " + message.getClass().getSimpleName() + " for producer: " + producer.getId() + "-" + producer.getName() + " for sportEvent: " + event.getId());
+        logger.info(
+            "Received " +
+            message.getClass().getSimpleName() +
+            " for producer: " +
+            producer.getId() +
+            "-" +
+            producer.getName() +
+            " for sportEvent: " +
+            event.getId()
+        );
 
         String sb = new StringBuilder()
-        .append("Timestamps for ").append(message.getClass().getSimpleName())
-        .append(": [Timestamp=").append(message.getTimestamp()).append("=").append(new Date(message.getTimestamp()))
-        .append("; GeneratedAt=").append(message.getTimestamps().getCreated()).append("=").append(new Date(message.getTimestamps().getCreated()))
-        .append("; SentAt=").append(message.getTimestamps().getSent()).append("=").append(new Date(message.getTimestamps().getSent()))
-        .append("; ReceivedAt=").append(message.getTimestamps().getReceived()).append("=").append(new Date(message.getTimestamps().getReceived()))
-        .append("; Dispatched=").append(message.getTimestamps().getDispatched()).append("=").append(new Date(message.getTimestamps().getDispatched()))
-                .toString();
+            .append("Timestamps for ")
+            .append(message.getClass().getSimpleName())
+            .append(": [Timestamp=")
+            .append(message.getTimestamp())
+            .append("=")
+            .append(new Date(message.getTimestamp()))
+            .append("; GeneratedAt=")
+            .append(message.getTimestamps().getCreated())
+            .append("=")
+            .append(new Date(message.getTimestamps().getCreated()))
+            .append("; SentAt=")
+            .append(message.getTimestamps().getSent())
+            .append("=")
+            .append(new Date(message.getTimestamps().getSent()))
+            .append("; ReceivedAt=")
+            .append(message.getTimestamps().getReceived())
+            .append("=")
+            .append(new Date(message.getTimestamps().getReceived()))
+            .append("; Dispatched=")
+            .append(message.getTimestamps().getDispatched())
+            .append("=")
+            .append(new Date(message.getTimestamps().getDispatched()))
+            .toString();
 
-        if (message.getTimestamps().getSent() == 0)
-        {
-            logger.error("Message {} created {} on producer {}-{} does not have sent timestamp.", message.getClass().getSimpleName(), message.getTimestamps().getCreated(), message.getProducer().getId(), message.getProducer().getName());
+        if (message.getTimestamps().getSent() == 0) {
+            logger.error(
+                "Message {} created {} on producer {}-{} does not have sent timestamp.",
+                message.getClass().getSimpleName(),
+                message.getTimestamps().getCreated(),
+                message.getProducer().getId(),
+                message.getProducer().getName()
+            );
             String x = "break";
         }
 
         logger.info(sb);
     }
 
-
-    private boolean shouldContinue(SportEvent sportEvent)
-    {
-        if (sportEvent instanceof LongTermEvent)
-        {
+    private boolean shouldContinue(SportEvent sportEvent) {
+        if (sportEvent instanceof LongTermEvent) {
             LongTermEvent longTermEvent = (LongTermEvent) sportEvent;
-            logger.info("LongTermEvent {} {} - Name: {}",
-                        longTermEvent.getClass().getSimpleName(),
-                        longTermEvent.getId(),
-                        longTermEvent.getName(locale));
+            logger.info(
+                "LongTermEvent {} {} - Name: {}",
+                longTermEvent.getClass().getSimpleName(),
+                longTermEvent.getId(),
+                longTermEvent.getName(locale)
+            );
             return true;
         }
-        if(sportEvent.getSportId().getId() == 2){
+        if (sportEvent.getSportId().getId() == 2) {
             return true;
         }
 

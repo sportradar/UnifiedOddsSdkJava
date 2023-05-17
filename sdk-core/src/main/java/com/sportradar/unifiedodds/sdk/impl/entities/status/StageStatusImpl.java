@@ -10,22 +10,22 @@ import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Locale;
 
 /**
  * Provides methods used to access match status information
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
 public class StageStatusImpl extends CompetitionStatusImpl implements StageStatus {
-    private final static Logger logger = LoggerFactory.getLogger(StageStatusImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(StageStatusImpl.class);
     private final SportEventStatusCI statusCI;
     private final LocalizedNamedValueCache matchStatuses;
 
     public StageStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
         super(statusCI);
-
         Preconditions.checkNotNull(statusCI);
         Preconditions.checkNotNull(matchStatuses);
 

@@ -8,7 +8,6 @@ import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Map;
 
@@ -127,5 +126,7 @@ public interface CompetitionStatus {
      *
      * @return the period of ladder
      */
-    default Integer getPeriodOfLadder() { throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+    default Integer getPeriodOfLadder() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

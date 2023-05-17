@@ -12,15 +12,16 @@ import com.sportradar.unifiedodds.sdk.entities.PlayerProfile;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.utils.URN;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * Represents player's profile information
  */
+@SuppressWarnings({ "ConstantName", "LineLength" })
 public class PlayerProfileImpl implements PlayerProfile {
+
     private static final Logger logger = LoggerFactory.getLogger(PlayerProfileImpl.class);
     private final URN playerId;
     private final ProfileCache profileCache;
@@ -37,7 +38,13 @@ public class PlayerProfileImpl implements PlayerProfile {
      * @param locales the {@link Locale}s in which the data should be available
      * @param exceptionHandlingStrategy the preferred exception handling strategy
      */
-    public PlayerProfileImpl(URN playerId, ProfileCache profileCache, List<URN> possibleAssociatedCompetitorIds, List<Locale> locales, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public PlayerProfileImpl(
+        URN playerId,
+        ProfileCache profileCache,
+        List<URN> possibleAssociatedCompetitorIds,
+        List<Locale> locales,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
@@ -68,8 +75,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public Map<Locale, String> getNames() {
-        return loadCacheItem().map(ci -> ci.getNames(locales)).map(Collections::unmodifiableMap)
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getNames(locales)).map(Collections::unmodifiableMap).orElse(null);
     }
 
     /**
@@ -80,8 +86,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getName(Locale locale) {
-        return loadCacheItem().map(ci -> ci.getNames(locales).get(locale))
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getNames(locales).get(locale)).orElse(null);
     }
 
     /**
@@ -92,8 +97,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getFullName(Locale locale) {
-        return loadCacheItem().map(ci -> ci.getFullNames(locales).get(locale))
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getFullNames(locales).get(locale)).orElse(null);
     }
 
     /**
@@ -154,8 +158,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getNationality(Locale locale) {
-        return loadCacheItem().map(ci -> ci.getNationalities(locales).get(locale))
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getNationalities(locales).get(locale)).orElse(null);
     }
 
     /**
@@ -195,7 +198,9 @@ public class PlayerProfileImpl implements PlayerProfile {
      * @return the gender of the player if available; otherwise null
      */
     @Override
-    public String getGender() { return loadCacheItem().map(PlayerProfileCI::getGender).orElse(null);  }
+    public String getGender() {
+        return loadCacheItem().map(PlayerProfileCI::getGender).orElse(null);
+    }
 
     /**
      * Loads the associated entity cache item from the sport event cache
@@ -204,7 +209,9 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     private Optional<PlayerProfileCI> loadCacheItem() {
         try {
-            return Optional.ofNullable(profileCache.getPlayerProfile(playerId, locales, possibleAssociatedCompetitorIds));
+            return Optional.ofNullable(
+                profileCache.getPlayerProfile(playerId, locales, possibleAssociatedCompetitorIds)
+            );
         } catch (IllegalCacheStateException | CacheItemNotFoundException e) {
             handleException("loadCacheItem", e);
             return Optional.empty();
@@ -217,10 +224,12 @@ public class PlayerProfileImpl implements PlayerProfile {
      * @param request the requested object method
      * @param e the actual exception
      */
-    private void  handleException(String request, Exception e) {
+    private void handleException(String request, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
-                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException("PlayerProfileImpl[" + playerId + "], request(" + request + ")");
+                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                    "PlayerProfileImpl[" + playerId + "], request(" + request + ")"
+                );
             } else {
                 throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(request, e);
             }
@@ -240,9 +249,6 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String toString() {
-        return "PlayerProfileImpl{" +
-                "playerId=" + playerId +
-                ", locales=" + locales +
-                '}';
+        return "PlayerProfileImpl{" + "playerId=" + playerId + ", locales=" + locales + '}';
     }
 }

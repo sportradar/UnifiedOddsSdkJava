@@ -3,7 +3,9 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableHoleCI;
 
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class HoleCI {
+
     private final int number;
     private final int par;
 
@@ -18,10 +20,15 @@ public class HoleCI {
         this.par = exportable.getPar();
     }
 
-    public int getNumber(){ return number; }
+    public int getNumber() {
+        return number;
+    }
 
-    public int getPar(){ return par; }
+    public int getPar() {
+        return par;
+    }
 
-    public ExportableHoleCI export() { return new ExportableHoleCI(number, par); }
-
+    public ExportableHoleCI export() {
+        return new ExportableHoleCI(number, par);
+    }
 }

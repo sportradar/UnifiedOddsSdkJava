@@ -28,18 +28,37 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamExcept
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 19/10/2017.
  * RaceStage cache item
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "DeclarationOrder",
+        "ExecutableStatementCount",
+        "LambdaBodyLength",
+        "LineLength",
+        "MethodLength",
+        "NPathComplexity",
+        "NestedIfDepth",
+        "ParameterNumber",
+        "ReturnCount",
+        "UnnecessaryParentheses",
+        "VisibilityModifier",
+    }
+)
 class RaceStageCIImpl implements StageCI, ExportableCacheItem {
+
     private static final Logger logger = LoggerFactory.getLogger(RaceStageCIImpl.class);
 
     /**
@@ -188,13 +207,15 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     List<URN> additionalParentIds;
 
     @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
-    RaceStageCIImpl(URN id,
-                    DataRouterManager dataRouterManager,
-                    Locale defaultLocale,
-                    ExceptionHandlingStrategy exceptionHandlingStrategy,
-                    SAPISportEvent endpointData,
-                    Locale dataLocale,
-                    Cache<URN, Date> fixtureTimestampCache) {
+    RaceStageCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPISportEvent endpointData,
+        Locale dataLocale,
+        Cache<URN, Date> fixtureTimestampCache
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -209,36 +230,53 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
 
         this.bookingStatus = BookingStatus.getLiveBookingStatus(endpointData.getLiveodds());
-        this.scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.scheduled =
+            endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd =
+            endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
-        this.replacedBy = endpointData.getReplacedBy() == null
-                ? null
-                : URN.parse(endpointData.getReplacedBy());
+        this.replacedBy =
+            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
 
-        this.parentStageId = endpointData.getParent() != null
+        this.parentStageId =
+            endpointData.getParent() != null
                 ? URN.parse(endpointData.getParent().getId())
-                : (endpointData.getTournament() != null && !endpointData.getTournament().getId().equals(endpointData.getId())
-                    ? URN.parse(endpointData.getTournament().getId())
-                    : null);
+                : (
+                    endpointData.getTournament() != null &&
+                        !endpointData.getTournament().getId().equals(endpointData.getId())
+                        ? URN.parse(endpointData.getTournament().getId())
+                        : null
+                );
 
-        this.categoryId = endpointData.getTournament() != null && endpointData.getTournament().getCategory() != null ?
-                URN.parse(endpointData.getTournament().getCategory().getId()) :
-                null;
+        this.categoryId =
+            endpointData.getTournament() != null && endpointData.getTournament().getCategory() != null
+                ? URN.parse(endpointData.getTournament().getCategory().getId())
+                : null;
 
-        this.competitorIds = endpointData.getCompetitors() == null ? null :
-                endpointData.getCompetitors().getCompetitor().stream()
-                        .map(c -> URN.parse(c.getId())).collect(Collectors.toList());
+        this.competitorIds =
+            endpointData.getCompetitors() == null
+                ? null
+                : endpointData
+                    .getCompetitors()
+                    .getCompetitor()
+                    .stream()
+                    .map(c -> URN.parse(c.getId()))
+                    .collect(Collectors.toList());
         loadedCompetitorLocales.add(dataLocale);
 
-        this.childStagesIds = endpointData.getRaces() == null ? null :
-                endpointData.getRaces().getSportEvent().stream()
-                        .map(se -> URN.parse(se.getId())).collect(Collectors.toList());
+        this.childStagesIds =
+            endpointData.getRaces() == null
+                ? null
+                : endpointData
+                    .getRaces()
+                    .getSportEvent()
+                    .stream()
+                    .map(se -> URN.parse(se.getId()))
+                    .collect(Collectors.toList());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
-        }
-        else{
+        } else {
             this.sportEventNames.put(defaultLocale, "");
         }
 
@@ -249,48 +287,104 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.liveOdds = endpointData.getLiveodds();
 
         this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
-        if(this.sportEventType == null && endpointData.getTournament() != null && this.id.toString().equals(endpointData.getTournament().getId())){
+        if (
+            this.sportEventType == null &&
+            endpointData.getTournament() != null &&
+            this.id.toString().equals(endpointData.getTournament().getId())
+        ) {
             this.sportEventType = SportEventType.PARENT;
         }
 
-        if(endpointData.getAdditionalParents() != null && !endpointData.getAdditionalParents().getParent().isEmpty()){
+        if (
+            endpointData.getAdditionalParents() != null &&
+            !endpointData.getAdditionalParents().getParent().isEmpty()
+        ) {
             additionalParentIds = new ArrayList<>();
-            endpointData.getAdditionalParents().getParent().forEach(f-> additionalParentIds.add(URN.parse(f.getId())));
-        }
-        else{
+            endpointData
+                .getAdditionalParents()
+                .getParent()
+                .forEach(f -> additionalParentIds.add(URN.parse(f.getId())));
+        } else {
             additionalParentIds = null;
         }
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIStageSummaryEndpoint endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, endpointData.getSportEvent(), dataLocale, fixtureTimestampCache);
-
+    RaceStageCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIStageSummaryEndpoint endpointData,
+        Locale dataLocale,
+        Cache<URN, Date> fixtureTimestampCache
+    ) {
+        this(
+            id,
+            dataRouterManager,
+            defaultLocale,
+            exceptionHandlingStrategy,
+            endpointData.getSportEvent(),
+            dataLocale,
+            fixtureTimestampCache
+        );
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        this.venue =(endpointData.getSportEvent().getSportEventConditions() != null && endpointData.getSportEvent().getSportEventConditions().getVenue() != null) ?
-                new VenueCI(endpointData.getSportEvent().getSportEventConditions().getVenue(), dataLocale) :
-                null;
+        this.venue =
+            (
+                    endpointData.getSportEvent().getSportEventConditions() != null &&
+                    endpointData.getSportEvent().getSportEventConditions().getVenue() != null
+                )
+                ? new VenueCI(endpointData.getSportEvent().getSportEventConditions().getVenue(), dataLocale)
+                : null;
 
-        this.conditions = endpointData.getSportEvent().getSportEventConditions() == null ?
-                null :
-                new SportEventConditionsCI(endpointData.getSportEvent().getSportEventConditions(), dataLocale);
+        this.conditions =
+            endpointData.getSportEvent().getSportEventConditions() == null
+                ? null
+                : new SportEventConditionsCI(
+                    endpointData.getSportEvent().getSportEventConditions(),
+                    dataLocale
+                );
 
         loadedSummaryLocales.add(dataLocale);
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIFixture endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, (SAPISportEvent) endpointData, dataLocale, fixtureTimestampCache);
-
+    RaceStageCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIFixture endpointData,
+        Locale dataLocale,
+        Cache<URN, Date> fixtureTimestampCache
+    ) {
+        this(
+            id,
+            dataRouterManager,
+            defaultLocale,
+            exceptionHandlingStrategy,
+            (SAPISportEvent) endpointData,
+            dataLocale,
+            fixtureTimestampCache
+        );
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        this.venue = endpointData.getVenue() == null ? null : new VenueCI(endpointData.getVenue(), dataLocale);
+        this.venue =
+            endpointData.getVenue() == null ? null : new VenueCI(endpointData.getVenue(), dataLocale);
 
         loadedFixtureLocales.add(dataLocale);
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+    RaceStageCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPISportEventChildren.SAPISportEvent endpointData,
+        Locale dataLocale,
+        Cache<URN, Date> fixtureTimestampCache
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -306,17 +400,17 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
-        }
-        else{
+        } else {
             this.sportEventNames.put(defaultLocale, "");
         }
 
-        this.scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.scheduled =
+            endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd =
+            endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
-        this.replacedBy = endpointData.getReplacedBy() == null
-                ? null
-                : URN.parse(endpointData.getReplacedBy());
+        this.replacedBy =
+            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
 
         this.fixtureTimestampCache = fixtureTimestampCache;
 
@@ -326,10 +420,18 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
 
-         additionalParentIds = null;
+        additionalParentIds = null;
     }
 
-    RaceStageCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIParentStage endpointData, Locale dataLocale, Cache<URN, Date> fixtureTimestampCache) {
+    RaceStageCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIParentStage endpointData,
+        Locale dataLocale,
+        Cache<URN, Date> fixtureTimestampCache
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -343,15 +445,17 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
 
-        this.scheduled = endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.scheduled =
+            endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd =
+            endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
-        this.replacedBy = endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
+        this.replacedBy =
+            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
-        }
-        else{
+        } else {
             this.sportEventNames.put(defaultLocale, "");
         }
 
@@ -360,7 +464,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
     }
 
-    RaceStageCIImpl(ExportableRaceStageCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy, Cache<URN, Date> fixtureTimestampCache) {
+    RaceStageCIImpl(
+        ExportableRaceStageCI exportable,
+        DataRouterManager dataRouterManager,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        Cache<URN, Date> fixtureTimestampCache
+    ) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -375,13 +484,32 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.bookingStatus = exportable.getBookingStatus();
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
-        this.competitorIds = exportable.getCompetitorIds() != null ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
-        this.competitorsReferences = exportable.getCompetitorsReferences() != null ? exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))) : null;
-        this.parentStageId = exportable.getParentStageId() != null ? URN.parse(exportable.getParentStageId()) : null;
+        this.competitorIds =
+            exportable.getCompetitorIds() != null
+                ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
+        this.competitorsReferences =
+            exportable.getCompetitorsReferences() != null
+                ? exportable
+                    .getCompetitorsReferences()
+                    .entrySet()
+                    .stream()
+                    .collect(
+                        Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))
+                    )
+                : null;
+        this.parentStageId =
+            exportable.getParentStageId() != null ? URN.parse(exportable.getParentStageId()) : null;
         this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
         this.venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
-        this.conditions = exportable.getConditions() != null ? new SportEventConditionsCI(exportable.getConditions()) : null;
-        this.childStagesIds = exportable.getStagesIds() != null ? exportable.getStagesIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
+        this.conditions =
+            exportable.getConditions() != null
+                ? new SportEventConditionsCI(exportable.getConditions())
+                : null;
+        this.childStagesIds =
+            exportable.getStagesIds() != null
+                ? exportable.getStagesIds().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
         this.sportEventNames.putAll(exportable.getNames());
         this.stageType = exportable.getStageType();
         this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
@@ -391,9 +519,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
         this.liveOdds = exportable.getLiveOdds();
         this.sportEventType = exportable.getSportEventType();
-        this.additionalParentIds = exportable.getAdditionalParentsIds() != null ?
-                exportable.getAdditionalParentsIds().stream().map(URN::parse).collect(Collectors.toList()) : null;
-        this.competitorVirtual = exportable.getCompetitorVirtual() != null
+        this.additionalParentIds =
+            exportable.getAdditionalParentsIds() != null
+                ? exportable.getAdditionalParentsIds().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
+        this.competitorVirtual =
+            exportable.getCompetitorVirtual() != null
                 ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
                 : null;
     }
@@ -494,7 +625,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         if (!loadedSummaryLocales.isEmpty()) {
             return null;
-}
+        }
         requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
 
         return stageType;
@@ -546,7 +677,6 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      */
     @Override
     public List<URN> getCompetitorIds(List<Locale> locales) {
-
         if (loadedCompetitorLocales.containsAll(locales)) {
             return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
         }
@@ -742,13 +872,11 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      */
     @Override
     public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
-        if(competitorsReferences == null || loadedCompetitorLocales.isEmpty()) {
+        if (competitorsReferences == null || loadedCompetitorLocales.isEmpty()) {
             requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
         }
 
-        return competitorsReferences == null
-                ? null
-                : ImmutableMap.copyOf(competitorsReferences);
+        return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
     }
 
     /**
@@ -766,9 +894,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
         }
 
-        return competitorVirtual == null
-                ? null
-                : competitorVirtual;
+        return competitorVirtual == null ? null : competitorVirtual;
     }
 
     @Override
@@ -835,14 +961,25 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         if (endpointData.getSportEvent().getSportEventConditions() != null) {
             if (endpointData.getSportEvent().getSportEventConditions().getVenue() != null) {
                 if (venue == null) {
-                    venue = new VenueCI(endpointData.getSportEvent().getSportEventConditions().getVenue(), dataLocale);
+                    venue =
+                        new VenueCI(
+                            endpointData.getSportEvent().getSportEventConditions().getVenue(),
+                            dataLocale
+                        );
                 } else {
-                    venue.merge(endpointData.getSportEvent().getSportEventConditions().getVenue(), dataLocale);
+                    venue.merge(
+                        endpointData.getSportEvent().getSportEventConditions().getVenue(),
+                        dataLocale
+                    );
                 }
             }
 
             if (conditions == null) {
-                conditions = new SportEventConditionsCI(endpointData.getSportEvent().getSportEventConditions(), dataLocale);
+                conditions =
+                    new SportEventConditionsCI(
+                        endpointData.getSportEvent().getSportEventConditions(),
+                        dataLocale
+                    );
             } else {
                 conditions.merge(endpointData.getSportEvent().getSportEventConditions(), dataLocale);
             }
@@ -895,10 +1032,16 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             bookingStatus = BookingStatus.getLiveBookingStatus(sportEvent.getLiveodds());
         }
 
-        this.scheduled = sportEvent.getScheduled() == null ? this.scheduled : SdkHelper.toDate(sportEvent.getScheduled());
-        this.scheduledEnd = sportEvent.getScheduledEnd() == null ? this.scheduledEnd : SdkHelper.toDate(sportEvent.getScheduledEnd());
-        this.startTimeTbd = sportEvent.isStartTimeTbd() == null ? this.startTimeTbd : sportEvent.isStartTimeTbd();
-        this.replacedBy = sportEvent.getReplacedBy() == null ? this.replacedBy : URN.parse(sportEvent.getReplacedBy());
+        this.scheduled =
+            sportEvent.getScheduled() == null ? this.scheduled : SdkHelper.toDate(sportEvent.getScheduled());
+        this.scheduledEnd =
+            sportEvent.getScheduledEnd() == null
+                ? this.scheduledEnd
+                : SdkHelper.toDate(sportEvent.getScheduledEnd());
+        this.startTimeTbd =
+            sportEvent.isStartTimeTbd() == null ? this.startTimeTbd : sportEvent.isStartTimeTbd();
+        this.replacedBy =
+            sportEvent.getReplacedBy() == null ? this.replacedBy : URN.parse(sportEvent.getReplacedBy());
 
         if (sportEvent.getParent() != null) {
             parentStageId = URN.parse(sportEvent.getParent().getId());
@@ -911,12 +1054,22 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         if (sportEvent.getCompetitors() != null && sportEvent.getCompetitors().getCompetitor() != null) {
-            competitorIds = sportEvent.getCompetitors().getCompetitor().stream().map(c -> URN.parse(c.getId())).collect(Collectors.toList());
+            competitorIds =
+                sportEvent
+                    .getCompetitors()
+                    .getCompetitor()
+                    .stream()
+                    .map(c -> URN.parse(c.getId()))
+                    .collect(Collectors.toList());
             loadedCompetitorLocales.add(locale);
-            competitorsReferences = SdkHelper.parseTeamCompetitorsReferences(sportEvent.getCompetitors().getCompetitor(), competitorsReferences);
-            for (SAPITeamCompetitor teamCompetitor : sportEvent.getCompetitors().getCompetitor()){
-                if(teamCompetitor.isVirtual() != null && teamCompetitor.isVirtual()){
-                    if(competitorVirtual == null){
+            competitorsReferences =
+                SdkHelper.parseTeamCompetitorsReferences(
+                    sportEvent.getCompetitors().getCompetitor(),
+                    competitorsReferences
+                );
+            for (SAPITeamCompetitor teamCompetitor : sportEvent.getCompetitors().getCompetitor()) {
+                if (teamCompetitor.isVirtual() != null && teamCompetitor.isVirtual()) {
+                    if (competitorVirtual == null) {
                         competitorVirtual = new ArrayList<>();
                     }
                     competitorVirtual.add(URN.parse(teamCompetitor.getId()));
@@ -928,18 +1081,20 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             if (childStagesIds == null) {
                 childStagesIds = new ArrayList<>(sportEvent.getRaces().getSportEvent().size());
             }
-            sportEvent.getRaces().getSportEvent().forEach(se -> {
-                URN seId = URN.parse(se.getId());
-                if (!childStagesIds.contains(seId)) {
-                    childStagesIds.add(seId);
-                }
-            });
+            sportEvent
+                .getRaces()
+                .getSportEvent()
+                .forEach(se -> {
+                    URN seId = URN.parse(se.getId());
+                    if (!childStagesIds.contains(seId)) {
+                        childStagesIds.add(seId);
+                    }
+                });
         }
 
         if (sportEvent.getName() != null) {
             this.sportEventNames.put(locale, sportEvent.getName());
-        }
-        else{
+        } else {
             this.sportEventNames.put(locale, "");
         }
 
@@ -947,20 +1102,30 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             this.stageType = StageType.mapFromApiValue(sportEvent.getStageType());
         }
 
-        if(sportEvent.getLiveodds() != null){
+        if (sportEvent.getLiveodds() != null) {
             this.liveOdds = sportEvent.getLiveodds();
         }
 
         if (sportEvent.getType() != null) {
             this.sportEventType = SportEventType.mapFromApiValue(sportEvent.getType());
         }
-        if(this.sportEventType == null && sportEvent.getTournament() != null && this.id.toString().equals(sportEvent.getTournament().getId())){
+        if (
+            this.sportEventType == null &&
+            sportEvent.getTournament() != null &&
+            this.id.toString().equals(sportEvent.getTournament().getId())
+        ) {
             this.sportEventType = SportEventType.PARENT;
         }
 
-        if(sportEvent.getAdditionalParents() != null && !sportEvent.getAdditionalParents().getParent().isEmpty()) {
+        if (
+            sportEvent.getAdditionalParents() != null &&
+            !sportEvent.getAdditionalParents().getParent().isEmpty()
+        ) {
             additionalParentIds = new ArrayList<>();
-            sportEvent.getAdditionalParents().getParent().forEach(f-> additionalParentIds.add(URN.parse(f.getId())));
+            sportEvent
+                .getAdditionalParents()
+                .getParent()
+                .forEach(f -> additionalParentIds.add(URN.parse(f.getId())));
         }
     }
 
@@ -974,15 +1139,22 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         Preconditions.checkNotNull(parentStage);
         Preconditions.checkNotNull(locale);
 
-        this.scheduled = parentStage.getScheduled() == null ? this.scheduled : SdkHelper.toDate(parentStage.getScheduled());
-        this.scheduledEnd = parentStage.getScheduledEnd() == null ? this.scheduledEnd : SdkHelper.toDate(parentStage.getScheduledEnd());
-        this.startTimeTbd = parentStage.isStartTimeTbd() == null ? this.startTimeTbd : parentStage.isStartTimeTbd();
-        this.replacedBy = parentStage.getReplacedBy() == null ? this.replacedBy : URN.parse(parentStage.getReplacedBy());
+        this.scheduled =
+            parentStage.getScheduled() == null
+                ? this.scheduled
+                : SdkHelper.toDate(parentStage.getScheduled());
+        this.scheduledEnd =
+            parentStage.getScheduledEnd() == null
+                ? this.scheduledEnd
+                : SdkHelper.toDate(parentStage.getScheduledEnd());
+        this.startTimeTbd =
+            parentStage.isStartTimeTbd() == null ? this.startTimeTbd : parentStage.isStartTimeTbd();
+        this.replacedBy =
+            parentStage.getReplacedBy() == null ? this.replacedBy : URN.parse(parentStage.getReplacedBy());
 
         if (parentStage.getName() != null) {
             this.sportEventNames.put(locale, parentStage.getName());
-        }
-        else{
+        } else {
             this.sportEventNames.put(locale, "");
         }
 
@@ -1005,15 +1177,22 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        this.scheduled = endpointData.getScheduled() == null ? this.scheduled : SdkHelper.toDate(endpointData.getScheduled());
-        this.scheduledEnd = endpointData.getScheduledEnd() == null ? this.scheduledEnd : SdkHelper.toDate(endpointData.getScheduledEnd());
-        this.startTimeTbd = endpointData.isStartTimeTbd() == null ? this.startTimeTbd : endpointData.isStartTimeTbd();
-        this.replacedBy = endpointData.getReplacedBy() == null ? this.replacedBy : URN.parse(endpointData.getReplacedBy());
+        this.scheduled =
+            endpointData.getScheduled() == null
+                ? this.scheduled
+                : SdkHelper.toDate(endpointData.getScheduled());
+        this.scheduledEnd =
+            endpointData.getScheduledEnd() == null
+                ? this.scheduledEnd
+                : SdkHelper.toDate(endpointData.getScheduledEnd());
+        this.startTimeTbd =
+            endpointData.isStartTimeTbd() == null ? this.startTimeTbd : endpointData.isStartTimeTbd();
+        this.replacedBy =
+            endpointData.getReplacedBy() == null ? this.replacedBy : URN.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
-        }
-        else{
+        } else {
             this.sportEventNames.put(dataLocale, "");
         }
         if (endpointData.getStageType() != null) {
@@ -1046,12 +1225,20 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 return;
             }
 
-            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            String localesStr = missingLocales
+                .stream()
+                .map(Locale::getLanguage)
+                .collect(Collectors.joining(", "));
             logger.debug("Fetching stage fixtures for eventId='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestFixtureEndpoint(l, id, fixtureTimestampCache.getIfPresent(id) == null,this);
+                    dataRouterManager.requestFixtureEndpoint(
+                        l,
+                        id,
+                        fixtureTimestampCache.getIfPresent(id) == null,
+                        this
+                    );
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }
@@ -1079,12 +1266,18 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         summaryRequest.lock();
         try {
             // recheck missing locales after lock
-            missingLocales = forceFetch ? requiredLocales : SdkHelper.findMissingLocales(loadedSummaryLocales, requiredLocales);
+            missingLocales =
+                forceFetch
+                    ? requiredLocales
+                    : SdkHelper.findMissingLocales(loadedSummaryLocales, requiredLocales);
             if (missingLocales.isEmpty()) {
                 return;
             }
 
-            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            String localesStr = missingLocales
+                .stream()
+                .map(Locale::getLanguage)
+                .collect(Collectors.joining(", "));
             logger.debug("Fetching stage summary for eventId='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
@@ -1120,29 +1313,44 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     @Override
     public ExportableCI export() {
         return new ExportableRaceStageCI(
-                id.toString(),
-                new HashMap<>(sportEventNames),
-                scheduled,
-                scheduledEnd,
-                startTimeTbd,
-                replacedBy == null ? null : replacedBy.toString(),
-                bookingStatus,
-                competitorIds != null ? competitorIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
-                venue != null ? venue.export() : null,
-                conditions != null ? conditions.export() : null,
-                competitorsReferences != null ? competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())) : null,
-                parentStageId != null ? parentStageId.toString() : null,
-                childStagesIds != null ? childStagesIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
-                stageType,
-                categoryId != null ? categoryId.toString() : null,
-                defaultLocale,
-                new ArrayList<>(loadedSummaryLocales),
-                new ArrayList<>(loadedFixtureLocales),
-                new ArrayList<>(loadedCompetitorLocales),
-                liveOdds,
-                sportEventType,
-                additionalParentIds != null ? additionalParentIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
-                competitorVirtual == null ? null : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
+            id.toString(),
+            new HashMap<>(sportEventNames),
+            scheduled,
+            scheduledEnd,
+            startTimeTbd,
+            replacedBy == null ? null : replacedBy.toString(),
+            bookingStatus,
+            competitorIds != null
+                ? competitorIds.stream().map(URN::toString).collect(Collectors.toList())
+                : null,
+            venue != null ? venue.export() : null,
+            conditions != null ? conditions.export() : null,
+            competitorsReferences != null
+                ? competitorsReferences
+                    .entrySet()
+                    .stream()
+                    .collect(
+                        Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds())
+                    )
+                : null,
+            parentStageId != null ? parentStageId.toString() : null,
+            childStagesIds != null
+                ? childStagesIds.stream().map(URN::toString).collect(Collectors.toList())
+                : null,
+            stageType,
+            categoryId != null ? categoryId.toString() : null,
+            defaultLocale,
+            new ArrayList<>(loadedSummaryLocales),
+            new ArrayList<>(loadedFixtureLocales),
+            new ArrayList<>(loadedCompetitorLocales),
+            liveOdds,
+            sportEventType,
+            additionalParentIds != null
+                ? additionalParentIds.stream().map(URN::toString).collect(Collectors.toList())
+                : null,
+            competitorVirtual == null
+                ? null
+                : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
         );
     }
 }

@@ -12,13 +12,14 @@ import com.sportradar.uf.custombet.datamodel.CAPIMarketsType;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * Implements methods used to access available selections for the event
  */
+@SuppressWarnings({ "HiddenField" })
 public class AvailableSelectionsImpl implements AvailableSelections {
+
     /**
      * An {@link URN} specifying the id of the event
      */
@@ -37,11 +38,10 @@ public class AvailableSelectionsImpl implements AvailableSelections {
         this.event = URN.parse(availableSelections.getEvent().getId());
 
         CAPIMarketsType markets = availableSelections.getEvent().getMarkets();
-        this.markets = (markets != null) ?
-                markets.getMarkets().stream()
-                        .map(MarketImpl::new)
-                        .collect(ImmutableList.toImmutableList()) :
-                ImmutableList.of();
+        this.markets =
+            (markets != null)
+                ? markets.getMarkets().stream().map(MarketImpl::new).collect(ImmutableList.toImmutableList())
+                : ImmutableList.of();
 
         this.generatedAt = availableSelections.getGeneratedAt();
     }
@@ -52,11 +52,10 @@ public class AvailableSelectionsImpl implements AvailableSelections {
         this.event = URN.parse(eventType.getId());
 
         CAPIMarketsType markets = eventType.getMarkets();
-        this.markets = (markets != null) ?
-                markets.getMarkets().stream()
-                        .map(MarketImpl::new)
-                        .collect(ImmutableList.toImmutableList()) :
-                ImmutableList.of();
+        this.markets =
+            (markets != null)
+                ? markets.getMarkets().stream().map(MarketImpl::new).collect(ImmutableList.toImmutableList())
+                : ImmutableList.of();
 
         this.generatedAt = generatedAt;
     }

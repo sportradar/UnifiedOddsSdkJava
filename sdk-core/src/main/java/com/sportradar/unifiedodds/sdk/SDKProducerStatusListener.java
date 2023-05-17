@@ -9,17 +9,16 @@ import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
 import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInitiated;
 
-
 /**
  * Defines a contract used to observe instances which provide information about a producer ({@link ProducerUp}
  * and {@link ProducerDown} messages)
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface SDKProducerStatusListener {
-
     /**
      * Invoked when a producer serving messages via the feed is down
      * (the SDK detected an invalid producer state)
-     * 
+     *
      * @param producerDown A {@link ProducerDown} instance
      *        specifying the associated producer and reason
      *

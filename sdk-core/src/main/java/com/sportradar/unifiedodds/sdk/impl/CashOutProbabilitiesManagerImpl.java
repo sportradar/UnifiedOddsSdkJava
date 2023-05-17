@@ -18,19 +18,20 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities;
 import com.sportradar.utils.URN;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * Implements methods used to access sport event/market probabilities
  */
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "LineLength" })
 public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesManager {
+
     /**
      * The logger instance used to log possible execution problems
      */
-    private static Logger logger = LoggerFactory.getLogger(CashOutProbabilitiesManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CashOutProbabilitiesManagerImpl.class);
 
     /**
      * A {@link DataProvider} instance used to fetch various CashOut data
@@ -62,7 +63,6 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
      */
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-
     /**
      * Construct a new {@link CashOutProbabilitiesManagerImpl} instance with the provided data
      *
@@ -72,7 +72,12 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
      * @param configuration the SDK internal configuration
      */
     @Inject
-    CashOutProbabilitiesManagerImpl(DataProvider<UFCashout> cashoutDataProvider, FeedMessageFactory feedMessageFactory, SportEntityFactory sportEntityFactory, SDKInternalConfiguration configuration) {
+    CashOutProbabilitiesManagerImpl(
+        DataProvider<UFCashout> cashoutDataProvider,
+        FeedMessageFactory feedMessageFactory,
+        SportEntityFactory sportEntityFactory,
+        SDKInternalConfiguration configuration
+    ) {
         Preconditions.checkNotNull(cashoutDataProvider);
         Preconditions.checkNotNull(feedMessageFactory);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -108,7 +113,10 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
      * @return a {@link CashOutProbabilities} providing the probabilities of the associated event
      */
     @Override
-    public <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(URN eventId, Locale locale) {
+    public <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(
+        URN eventId,
+        Locale locale
+    ) {
         Preconditions.checkNotNull(eventId);
         Preconditions.checkNotNull(locale);
 
@@ -125,7 +133,11 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
      * @return a {@link CashOutProbabilities} providing the probabilities of the associated event/market combination
      */
     @Override
-    public <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(URN eventId, int marketId, Map<String, String> specifiers) {
+    public <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(
+        URN eventId,
+        int marketId,
+        Map<String, String> specifiers
+    ) {
         Preconditions.checkNotNull(eventId);
 
         return getCashOutProbabilities(eventId, marketId, specifiers, defaultLocale);
@@ -141,7 +153,12 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
      * @return a {@link CashOutProbabilities} providing the probabilities of the associated event/market combination
      */
     @Override
-    public <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(URN eventId, int marketId, Map<String, String> specifiers, Locale locale) {
+    public <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(
+        URN eventId,
+        int marketId,
+        Map<String, String> specifiers,
+        Locale locale
+    ) {
         Preconditions.checkNotNull(eventId);
         Preconditions.checkNotNull(locale);
 
@@ -164,7 +181,11 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
      * @param locale the locale in which the data should be provided
      * @return a {@link CashOutProbabilities} providing the probabilities for the provided param
      */
-    private <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(URN eventId, String param, Locale locale) {
+    private <T extends SportEvent> CashOutProbabilities<T> getCashOutProbabilities(
+        URN eventId,
+        String param,
+        Locale locale
+    ) {
         Preconditions.checkNotNull(eventId);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(param));
 
@@ -181,21 +202,25 @@ public class CashOutProbabilitiesManagerImpl implements CashOutProbabilitiesMana
 
         T sportEvent;
         try {
-            sportEvent = provideSportEvent(
+            sportEvent =
+                provideSportEvent(
                     eventId,
                     locale != null ? Collections.singletonList(locale) : defaultLocales
-            );
+                );
         } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
             return handleException("Sport event data could not be found - " + eventId, e);
         }
 
-        return feedMessageFactory.buildCashOutProbabilities(sportEvent,
-                                                            cashoutData,
-                                                            new MessageTimestampImpl(new TimeUtilsImpl().now()));
+        return feedMessageFactory.buildCashOutProbabilities(
+            sportEvent,
+            cashoutData,
+            new MessageTimestampImpl(new TimeUtilsImpl().now())
+        );
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends SportEvent> T provideSportEvent(URN eventId, List<Locale> dataLocales) throws com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException {
+    private <T extends SportEvent> T provideSportEvent(URN eventId, List<Locale> dataLocales)
+        throws com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException {
         Preconditions.checkNotNull(eventId);
 
         return (T) sportEntityFactory.buildSportEvent(eventId, dataLocales, true);

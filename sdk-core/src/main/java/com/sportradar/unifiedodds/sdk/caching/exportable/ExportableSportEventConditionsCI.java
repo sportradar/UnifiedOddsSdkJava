@@ -3,14 +3,22 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import java.io.Serializable;
 import java.util.List;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableSportEventConditionsCI implements Serializable {
+
     private String attendance;
     private String eventMode;
     private ExportableRefereeCI referee;
     private ExportableWeatherInfoCI weatherInfo;
     private List<ExportablePitcherCI> pitchers;
 
-    public ExportableSportEventConditionsCI(String attendance, String eventMode, ExportableRefereeCI referee, ExportableWeatherInfoCI weatherInfo, List<ExportablePitcherCI> pitchers) {
+    public ExportableSportEventConditionsCI(
+        String attendance,
+        String eventMode,
+        ExportableRefereeCI referee,
+        ExportableWeatherInfoCI weatherInfo,
+        List<ExportablePitcherCI> pitchers
+    ) {
         this.attendance = attendance;
         this.eventMode = eventMode;
         this.referee = referee;

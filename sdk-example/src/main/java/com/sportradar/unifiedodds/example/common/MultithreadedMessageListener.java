@@ -8,16 +8,17 @@ import com.sportradar.unifiedodds.sdk.OddsFeedListener;
 import com.sportradar.unifiedodds.sdk.OddsFeedSession;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Closeable;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A feed listener implementation which uses separate thread for message parsing
  */
+@SuppressWarnings({ "ClassFanOutComplexity", "LambdaBodyLength", "LineLength", "ParameterName" })
 public class MultithreadedMessageListener implements OddsFeedListener, Closeable {
+
     private final Logger logger;
     private final LinkedBlockingQueue<Message> messages = new LinkedBlockingQueue<>();
     private final Thread thread;
@@ -96,7 +97,10 @@ public class MultithreadedMessageListener implements OddsFeedListener, Closeable
      *        BetSettlement
      */
     @Override
-    public void onRollbackBetSettlement(OddsFeedSession sender, RollbackBetSettlement<SportEvent> rollbackBetSettlement) {
+    public void onRollbackBetSettlement(
+        OddsFeedSession sender,
+        RollbackBetSettlement<SportEvent> rollbackBetSettlement
+    ) {
         logger.info("Received rollback betsettlement for sport event " + rollbackBetSettlement.getEvent());
         queueMessage(rollbackBetSettlement);
     }
@@ -187,7 +191,9 @@ public class MultithreadedMessageListener implements OddsFeedListener, Closeable
         Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
 
         if (unparsableMessage.getEvent() != null) {
-            logger.info("Problems detected on received message for event " + unparsableMessage.getEvent().getId());
+            logger.info(
+                "Problems detected on received message for event " + unparsableMessage.getEvent().getId()
+            );
         } else {
             logger.info("Problems detected on received message"); // probably a system message deserialization failure
         }

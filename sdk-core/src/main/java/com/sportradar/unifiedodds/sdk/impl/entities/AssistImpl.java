@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.sportradar.unifiedodds.sdk.entities.Assist;
 import com.sportradar.unifiedodds.sdk.entities.Player;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -17,7 +16,8 @@ import java.util.Map;
  * @see PlayerImpl
  * @see Assist
  */
-public class AssistImpl extends PlayerImpl implements Assist{
+public class AssistImpl extends PlayerImpl implements Assist {
+
     /**
      *  A {@link String} specifying the type of the assist
      */
@@ -32,7 +32,6 @@ public class AssistImpl extends PlayerImpl implements Assist{
      */
     public AssistImpl(URN id, Map<Locale, String> names, String type) {
         super(id, names);
-
         this.type = type;
     }
 
@@ -53,8 +52,6 @@ public class AssistImpl extends PlayerImpl implements Assist{
      */
     @Override
     public String toString() {
-        return "AssistImpl{" +
-                "type='" + type + '\'' +
-                "} " + super.toString();
+        return "AssistImpl{" + "type='" + type + '\'' + "} " + super.toString();
     }
 }

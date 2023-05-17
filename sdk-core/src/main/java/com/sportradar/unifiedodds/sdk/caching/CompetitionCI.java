@@ -13,7 +13,6 @@ import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +20,7 @@ import java.util.Map;
 /**
  * Defines methods used to access competition type data
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface CompetitionCI extends SportEventCI {
     /**
      * Returns a {@link BookingStatus} enum member providing booking status of the current instance

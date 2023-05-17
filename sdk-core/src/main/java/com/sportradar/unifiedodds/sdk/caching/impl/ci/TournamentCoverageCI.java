@@ -12,7 +12,9 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCov
  * Created on 25/10/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class TournamentCoverageCI {
+
     private final String liveCoverage;
 
     TournamentCoverageCI(SAPITournamentLiveCoverageInfo coverageInfo) {
@@ -31,8 +33,6 @@ public class TournamentCoverageCI {
     }
 
     public ExportableTournamentCoverageCI export() {
-        return new ExportableTournamentCoverageCI(
-                liveCoverage
-        );
+        return new ExportableTournamentCoverageCI(liveCoverage);
     }
 }

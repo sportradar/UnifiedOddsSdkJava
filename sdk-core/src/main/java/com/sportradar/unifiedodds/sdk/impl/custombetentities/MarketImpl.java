@@ -9,13 +9,13 @@ import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.custombet.datamodel.CAPIMarketType;
 import com.sportradar.uf.custombet.datamodel.CAPIOutcomeType;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
-
 import java.util.List;
 
 /**
  * Implements methods used to access available selections for the market
  */
 public class MarketImpl implements Market {
+
     /**
      * the id of the market
      */
@@ -36,7 +36,10 @@ public class MarketImpl implements Market {
 
         this.id = market.getId();
         this.specifiers = market.getSpecifiers();
-        this.outcomes = market.getOutcomes().stream()
+        this.outcomes =
+            market
+                .getOutcomes()
+                .stream()
                 .map(CAPIOutcomeType::getId)
                 .collect(ImmutableList.toImmutableList());
     }

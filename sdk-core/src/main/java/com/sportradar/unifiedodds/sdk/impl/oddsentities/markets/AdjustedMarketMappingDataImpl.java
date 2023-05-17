@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import com.sportradar.utils.URN;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +15,7 @@ import java.util.Set;
  * An abstract class used as a base for mapping adjustments
  */
 abstract class AdjustedMarketMappingDataImpl implements MarketMappingData {
+
     private final MarketMappingData mapping;
 
     AdjustedMarketMappingDataImpl(MarketMappingData mapping) {

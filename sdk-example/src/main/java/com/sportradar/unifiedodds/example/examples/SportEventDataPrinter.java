@@ -13,13 +13,14 @@ import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 
 /**
  * A basic example which demonstrates how to access and print static spot event data
  */
+@SuppressWarnings({ "LineLength", "VariableDeclarationUsageDistance" })
 public class SportEventDataPrinter {
+
     private final OddsFeed oddsFeed;
     private final OddsFeedConfiguration configuration;
 
@@ -27,7 +28,9 @@ public class SportEventDataPrinter {
         logEntry("Running the OddsFeed SDK Basic example - multiple session");
 
         logEntry("Building the configuration using the provided token");
-        configuration = OddsFeed.getOddsFeedConfigurationBuilder()
+        configuration =
+            OddsFeed
+                .getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
                 .selectEnvironment(Environment.GlobalIntegration)
                 .setSdkNodeId(SdkConstants.NODE_ID)
@@ -47,13 +50,14 @@ public class SportEventDataPrinter {
         logEntry("Listing static sport event data");
         logEntry("");
 
-        URN sportEventId = URN.parse("sr:match:12089842");// the example is ID is a soccer event, so it will be exposed as a Match
+        URN sportEventId = URN.parse("sr:match:12089842"); // the example is ID is a soccer event, so it will be exposed as a Match
         SportEvent sportEvent = sportsInfoManager.getCompetition(sportEventId); // match, race, ...
         // for long term events(tournaments, seasons,..) -> sportsInfoManager.getLongTermEvent(tournamentId);
 
         String description = null;
         if (sportEvent != null) {
-            description = SportEntityWriter.writeSportEventData(sportEvent, false, configuration.getDesiredLocales());
+            description =
+                SportEntityWriter.writeSportEventData(sportEvent, false, configuration.getDesiredLocales());
         }
 
         if (description != null) {

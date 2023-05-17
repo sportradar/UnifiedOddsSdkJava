@@ -5,14 +5,12 @@
 package com.sportradar.unifiedodds.sdk.custombetentities;
 
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * Provides an available selections for a particular event
  */
 public interface AvailableSelectionsFilter {
-
     /**
      * Returns the {@link URN} of the event
      * @return the {@link URN} of the event

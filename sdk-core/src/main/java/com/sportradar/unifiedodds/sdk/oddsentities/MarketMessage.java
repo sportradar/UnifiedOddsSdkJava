@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.List;
 
 /**
@@ -18,5 +17,5 @@ public interface MarketMessage<T extends SportEvent> extends EventMessage<T> {
      *
      * @return the list of affected markets
      */
-    List <? extends Market> getMarkets();
+    List<? extends Market> getMarkets();
 }

@@ -11,7 +11,9 @@ import com.sportradar.utils.URN;
 /**
  * Represents all sport events(races, matches, tournaments, ....)
  */
+@SuppressWarnings({ "VisibilityModifier" })
 abstract class SportEventImpl implements SportEvent {
+
     /**
      * An {@link URN} uniquely identifying the tournament associated with the current instance
      */

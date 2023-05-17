@@ -4,21 +4,19 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
+import static java.util.Arrays.asList;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.*;
-import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
-import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactoryImpl;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProviderImpl;
 import com.sportradar.unifiedodds.sdk.cfg.*;
-import com.sportradar.unifiedodds.sdk.di.CachingModule;
 import com.sportradar.unifiedodds.sdk.di.CustomisableSDKModule;
 import com.sportradar.unifiedodds.sdk.di.InternalCachesProvider;
 import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
@@ -28,23 +26,45 @@ import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsExceptio
 import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.AMQPConnectionFactory;
 import com.sportradar.unifiedodds.sdk.impl.recovery.SingleRecoveryManagerSupervisor;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.URN;
+import java.io.IOException;
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
+import lombok.NonNull;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
-
 /**
  * The main SDK object, this is the starting point of the UF SDK.
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassDataAbstractionCoupling",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "ExplicitInitialization",
+        "HiddenField",
+        "IllegalCatch",
+        "IllegalType",
+        "LineLength",
+        "MethodLength",
+        "MultipleStringLiterals",
+        "NPathComplexity",
+        "NeedBraces",
+        "NestedIfDepth",
+        "VisibilityModifier",
+    }
+)
 public class OddsFeed {
 
     /**
@@ -55,7 +75,9 @@ public class OddsFeed {
     /**
      * The injector used by this feed instance
      */
-    protected final Injector injector;
+    //TODO must be final back eventually, but until the class is testable it cannot be.
+    //currently there is no way to test logic in the public constructor otherwise
+    protected Injector injector;
 
     /**
      * The OddsFeed main configuration file
@@ -135,27 +157,36 @@ public class OddsFeed {
      * @param config {@link OddsFeedConfiguration}, the configuration class used to configure the new feed,
      *                                            the configuration can be obtained using {@link #getOddsFeedConfigurationBuilder()}
      */
-    public OddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config) {
-        Preconditions.checkNotNull(listener);
-        Preconditions.checkNotNull(config);
-
+    public OddsFeed(
+        @NonNull final SDKGlobalEventsListener listener,
+        @NonNull final OddsFeedConfiguration config
+    ) {
         logger.info("OddsFeed instance created with: {}", config);
 
-        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, config.getEnvironment() == Environment.Replay, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        this.oddsFeedConfiguration =
+            new SDKInternalConfiguration(
+                config,
+                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
+                new SDKConfigurationPropertiesReader(),
+                new SDKConfigurationYamlReader()
+            );
         this.injector = createSdkInjector(listener, null);
         checkLocales();
         this.oddsFeedExtListener = null;
     }
 
     /**
-     * The following constructor is used to crate the OddsFeed instance directly with the internal configuration
+     * The following constructor is used to create the OddsFeed instance directly with the internal configuration
      *
      * @param listener {@link SDKGlobalEventsListener} that handles global feed events
      * @param config {@link SDKInternalConfiguration}, the configuration class used to configure the new feed
      * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    protected OddsFeed(SDKGlobalEventsListener listener, SDKInternalConfiguration config, OddsFeedExtListener oddsFeedExtListener) {
-        Preconditions.checkNotNull(listener);
+    protected OddsFeed(
+        @NonNull final SDKGlobalEventsListener listener,
+        SDKInternalConfiguration config,
+        OddsFeedExtListener oddsFeedExtListener
+    ) {
         Preconditions.checkNotNull(config);
 
         logger.info("OddsFeed instance created with \n{}", config);
@@ -173,13 +204,20 @@ public class OddsFeed {
      * @param customisableSDKModule the customised injection module
      * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    protected OddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config, CustomisableSDKModule customisableSDKModule, OddsFeedExtListener oddsFeedExtListener) {
-        Preconditions.checkNotNull(listener);
-        Preconditions.checkNotNull(config);
-
+    protected OddsFeed(
+        @NonNull final SDKGlobalEventsListener listener,
+        @NonNull final OddsFeedConfiguration config,
+        CustomisableSDKModule customisableSDKModule,
+        OddsFeedExtListener oddsFeedExtListener
+    ) {
         logger.info("OddsFeed instance created with \n{}", config);
 
-        this.oddsFeedConfiguration = new SDKInternalConfiguration(config, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader());
+        this.oddsFeedConfiguration =
+            new SDKInternalConfiguration(
+                config,
+                new SDKConfigurationPropertiesReader(),
+                new SDKConfigurationYamlReader()
+            );
         this.injector = createSdkInjector(listener, customisableSDKModule);
         this.oddsFeedExtListener = oddsFeedExtListener;
     }
@@ -193,8 +231,12 @@ public class OddsFeed {
      * @param customisableSDKModule the customised injection module
      * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    protected OddsFeed(SDKGlobalEventsListener listener, SDKInternalConfiguration config, CustomisableSDKModule customisableSDKModule, OddsFeedExtListener oddsFeedExtListener) {
-        Preconditions.checkNotNull(listener);
+    protected OddsFeed(
+        @NonNull final SDKGlobalEventsListener listener,
+        SDKInternalConfiguration config,
+        CustomisableSDKModule customisableSDKModule,
+        OddsFeedExtListener oddsFeedExtListener
+    ) {
         Preconditions.checkNotNull(config);
 
         logger.info("OddsFeed instance created with \n{}", config);
@@ -247,8 +289,8 @@ public class OddsFeed {
 
     public static TokenSetter getOddsFeedConfigurationBuilder(String propertiesUri, String yamlUri) {
         return new TokenSetterImpl(
-                new SDKConfigurationPropertiesReader(propertiesUri),
-                new SDKConfigurationYamlReader(yamlUri)
+            new SDKConfigurationPropertiesReader(propertiesUri),
+            new SDKConfigurationYamlReader(yamlUri)
         );
     }
 
@@ -267,7 +309,7 @@ public class OddsFeed {
      *
      * @return {@link MarketDescriptionManager} used to access markets data
      */
-    public MarketDescriptionManager getMarketDescriptionManager(){
+    public MarketDescriptionManager getMarketDescriptionManager() {
         this.initOddsFeedInstance();
         return this.marketDescriptionManager;
     }
@@ -277,7 +319,7 @@ public class OddsFeed {
      *
      * @return {@link SportsInfoManager} used to access various sports data
      */
-    public SportsInfoManager getSportsInfoManager(){
+    public SportsInfoManager getSportsInfoManager() {
         this.initOddsFeedInstance();
         return this.sportsInfoManager;
     }
@@ -366,49 +408,72 @@ public class OddsFeed {
                 // disable the producers that are not requested by specified message interests
                 Set<Integer> requestedProducers = new HashSet<>();
                 for (SessionData createdSession : createdSessionData) {
-                    requestedProducers.addAll(createdSession.messageInterest.getPossibleSourceProducers(producerManager.getAvailableProducers()));
+                    requestedProducers.addAll(
+                        createdSession.messageInterest.getPossibleSourceProducers(
+                            producerManager.getAvailableProducers()
+                        )
+                    );
                 }
 
-                producerManager.getAvailableProducers().keySet().forEach(id -> {
-                    if (!requestedProducers.contains(id)) {
-                        producerManager.disableProducer(id);
-                    }
-                });
+                producerManager
+                    .getAvailableProducers()
+                    .keySet()
+                    .forEach(id -> {
+                        if (!requestedProducers.contains(id)) {
+                            producerManager.disableProducer(id);
+                        }
+                    });
 
                 if (producerManager.getActiveProducers().isEmpty()) {
-                    String interests = createdSessionData.stream()
-                            .map(sessionData -> sessionData.messageInterest.toString())
-                            .collect(Collectors.joining(", "));
-                    throw new IllegalStateException(String.format("Message interests [%s] cannot be used. There are no suitable active producers.", interests));
+                    String interests = createdSessionData
+                        .stream()
+                        .map(sessionData -> sessionData.messageInterest.toString())
+                        .collect(Collectors.joining(", "));
+                    throw new IllegalStateException(
+                        String.format(
+                            "Message interests [%s] cannot be used. There are no suitable active producers.",
+                            interests
+                        )
+                    );
                 }
 
-                Map<Integer, List<String>> sessionRoutingKeys =
-                        OddsFeedRoutingKeyBuilder.generateKeys(createdSessionData.stream()
-                                .collect(Collectors.toMap(Object::hashCode, v -> new SimpleEntry<>(v.messageInterest, v.eventIds))), oddsFeedConfiguration);
+                Map<Integer, List<String>> sessionRoutingKeys = OddsFeedRoutingKeyBuilder.generateKeys(
+                    createdSessionData
+                        .stream()
+                        .collect(
+                            Collectors.toMap(
+                                Object::hashCode,
+                                v -> new SimpleEntry<>(v.messageInterest, v.eventIds)
+                            )
+                        ),
+                    oddsFeedConfiguration
+                );
 
                 try {
-                    boolean aliveRoutingKeySessionPresent = createdSessionData.stream()
-                            .anyMatch(cs -> cs.messageInterest == MessageInterest.SystemAliveMessages);
+                    boolean aliveRoutingKeySessionPresent = createdSessionData
+                        .stream()
+                        .anyMatch(cs -> cs.messageInterest == MessageInterest.SystemAliveMessages);
                     if (!aliveRoutingKeySessionPresent) {
                         systemMessagesSession = injector.getInstance(OddsFeedSessionImpl.class);
-                        SessionData firstCreatedSession = createdSessionData.stream()
-                                .findFirst()
-                                .orElseThrow(() -> new IllegalStateException("Feed created without sessions?"));
+                        SessionData firstCreatedSession = createdSessionData
+                            .stream()
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("Feed created without sessions?"));
 
                         systemMessagesSession.open(
-                                Lists.newArrayList(MessageInterest.SystemAliveMessages.getRoutingKeys()),
-                                MessageInterest.SystemAliveMessages,
-                                firstCreatedSession.oddsFeedListener,
-                                oddsFeedExtListener
+                            Lists.newArrayList(MessageInterest.SystemAliveMessages.getRoutingKeys()),
+                            MessageInterest.SystemAliveMessages,
+                            firstCreatedSession.oddsFeedListener,
+                            oddsFeedExtListener
                         );
                     }
 
                     for (SessionData sessionData : createdSessionData) {
                         sessionData.session.open(
-                                sessionRoutingKeys.get(sessionData.hashCode()),
-                                sessionData.messageInterest,
-                                sessionData.oddsFeedListener,
-                                oddsFeedExtListener
+                            sessionRoutingKeys.get(sessionData.hashCode()),
+                            sessionData.messageInterest,
+                            sessionData.oddsFeedListener,
+                            oddsFeedExtListener
                         );
                     }
 
@@ -448,81 +513,92 @@ public class OddsFeed {
 
         logger.warn("OddsFeed.close invoked - closing the feed instance");
 
-        try{
+        try {
             injector.getInstance(AMQPConnectionFactory.class).close(true);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - AMQPConnectionFactory", ex);
         }
-        try{
+        try {
             this.feedOpened = false;
-            if(systemMessagesSession != null){
+            if (systemMessagesSession != null) {
                 systemMessagesSession.close();
             }
             for (SessionData sessionData : createdSessionData) {
                 sessionData.session.close();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - Sessions", ex);
         }
-        try{
+        try {
             DataRouterManager dataRouterManager = injector.getInstance(Key.get(DataRouterManager.class));
             dataRouterManager.close();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - DataRouterManager", ex);
         }
-        try{
+        try {
             injector.getInstance(CloseableHttpClient.class).close();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - HttpClient", ex);
         }
-        try{
+        try {
             injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("FastHttpClient"))).close();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - FastHttpClient", ex);
         }
-        try{
-            injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("RecoveryHttpClient"))).close();
-        } catch(Exception ex) {
+        try {
+            injector
+                .getInstance(Key.get(CloseableHttpClient.class, Names.named("RecoveryHttpClient")))
+                .close();
+        } catch (Exception ex) {
             logger.warn("Error during close - RecoveryHttpClient", ex);
         }
-        try{
+        try {
             injector.getInstance(SDKTaskScheduler.class).shutdownNow();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - SDKTaskScheduler", ex);
         }
-        try{
-            injector.getInstance(Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))).shutdownNow();
-        } catch(Exception ex) {
+        try {
+            injector
+                .getInstance(
+                    Key.get(ScheduledExecutorService.class, Names.named("DedicatedRecoveryManagerExecutor"))
+                )
+                .shutdownNow();
+        } catch (Exception ex) {
             logger.warn("Error during close - ScheduledExecutorService", ex);
         }
-        try{
-            injector.getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor"))).shutdownNow();
-        } catch(Exception ex) {
+        try {
+            injector
+                .getInstance(Key.get(ExecutorService.class, Names.named("DedicatedRabbitMqExecutor")))
+                .shutdownNow();
+        } catch (Exception ex) {
             logger.warn("Error during close - ExecutorService", ex);
         }
-        try{
-            InternalCachesProvider internalCachesProvider = injector.getInstance(Key.get(InternalCachesProvider.class));
+        try {
+            InternalCachesProvider internalCachesProvider = injector.getInstance(
+                Key.get(InternalCachesProvider.class)
+            );
             internalCachesProvider.close();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("Error during close - InternalCachesProvider", ex);
         }
     }
 
     public List<Locale> getAvailableLanguages() {
-        String[] languages = "sqi,zht,heb,aze,kaz,srl,ukr,aa,bs,br,bg,my,zh,hr,cs,da,nl,en,et,fi,fr,ka,de,el,hi,hu,Id,ja,km,ko,lo,lv,lt,ml,ms,no,fa,pl,pt,ro,ru,sr,sk,sl,es,sw,se,th,tr,vi,it".split(",");
-        return Arrays.stream(languages)
-                .sorted()
-                .map(Locale::forLanguageTag)
-                .collect(Collectors.toList());
+        String[] languages =
+            "sqi,zht,heb,aze,kaz,srl,ukr,aa,bs,br,bg,my,zh,hr,cs,da,nl,en,et,fi,fr,ka,de,el,hi,hu,Id,ja,km,ko,lo,lv,lt,ml,ms,no,fa,pl,pt,ro,ru,sr,sk,sl,es,sw,se,th,tr,vi,it".split(
+                    ","
+                );
+        return Arrays.stream(languages).sorted().map(Locale::forLanguageTag).collect(Collectors.toList());
     }
 
     private void checkLocales() {
         List<Locale> availableLanguages = getAvailableLanguages();
-        List<Locale> unsupportedLocales = oddsFeedConfiguration.getDesiredLocales().stream()
-                .filter(l -> !availableLanguages.contains(l))
-                .collect(Collectors.toList());
-        if (!unsupportedLocales.isEmpty())
-            logger.warn("Unsupported locales: {}", unsupportedLocales);
+        List<Locale> unsupportedLocales = oddsFeedConfiguration
+            .getDesiredLocales()
+            .stream()
+            .filter(l -> !availableLanguages.contains(l))
+            .collect(Collectors.toList());
+        if (!unsupportedLocales.isEmpty()) logger.warn("Unsupported locales: {}", unsupportedLocales);
     }
 
     protected void initOddsFeedInstance() {
@@ -546,11 +622,12 @@ public class OddsFeed {
         if (dataRouter instanceof DataRouterImpl) {
             ((DataRouterImpl) dataRouter).setDataListeners(
                     Lists.newArrayList(
-                            (DataRouterListener) injector.getInstance(SportEventCache.class),
-                            (DataRouterListener) injector.getInstance(SportsDataCache.class),
-                            (DataRouterListener) injector.getInstance(ProfileCache.class),
-                            (DataRouterListener) injector.getInstance(SportEventStatusCache.class)
-                    ));
+                        (DataRouterListener) injector.getInstance(SportEventCache.class),
+                        (DataRouterListener) injector.getInstance(SportsDataCache.class),
+                        (DataRouterListener) injector.getInstance(ProfileCache.class),
+                        (DataRouterListener) injector.getInstance(SportEventStatusCache.class)
+                    )
+                );
         }
 
         this.sportsInfoManager = injector.getInstance(SportsInfoManager.class);
@@ -566,12 +643,22 @@ public class OddsFeed {
         feedInitialized = true;
     }
 
-    protected Injector createSdkInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
-        return Guice.createInjector(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule));
+    protected Injector createSdkInjector(
+        SDKGlobalEventsListener listener,
+        CustomisableSDKModule customisableSDKModule
+    ) {
+        return Guice.createInjector(
+            new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule)
+        );
     }
 
-    private void createSession(OddsFeedSessionImpl session, MessageInterest oddsInterest, Set<URN> eventIds, OddsFeedListener oddsFeedListener) {
-        if (this.feedOpened){
+    private void createSession(
+        OddsFeedSessionImpl session,
+        MessageInterest oddsInterest,
+        Set<URN> eventIds,
+        OddsFeedListener oddsFeedListener
+    ) {
+        if (this.feedOpened) {
             throw new IllegalStateException("Sessions can not be created once the feed has been opened");
         } else {
             SessionData sessionData = new SessionData(session, oddsInterest, eventIds, oddsFeedListener);
@@ -595,12 +682,18 @@ public class OddsFeed {
     }
 
     class SessionData {
+
         private final OddsFeedSessionImpl session;
         private final MessageInterest messageInterest;
         private final Set<URN> eventIds;
         private final OddsFeedListener oddsFeedListener;
 
-        SessionData(OddsFeedSessionImpl session, MessageInterest messageInterest, Set<URN> eventIds, OddsFeedListener oddsFeedListener) {
+        SessionData(
+            OddsFeedSessionImpl session,
+            MessageInterest messageInterest,
+            Set<URN> eventIds,
+            OddsFeedListener oddsFeedListener
+        ) {
             this.session = session;
             this.messageInterest = messageInterest;
             this.eventIds = eventIds;
@@ -609,6 +702,7 @@ public class OddsFeed {
     }
 
     class OddsFeedSessionBuilderImpl implements OddsFeedSessionBuilder {
+
         private OddsFeed oddsFeed;
         private OddsFeedListener mainOddsFeedListener;
         private MessageInterest msgInterestLevel;
@@ -632,9 +726,10 @@ public class OddsFeed {
         }
 
         @Override
-        public OddsFeedSessionBuilder setSpecificListeners(HashSet<GenericOddsFeedListener> specificOddsFeedListeners){
-            if (this.specificOddsFeedListeners == null)
-                this.specificOddsFeedListeners = new HashSet<>();
+        public OddsFeedSessionBuilder setSpecificListeners(
+            HashSet<GenericOddsFeedListener> specificOddsFeedListeners
+        ) {
+            if (this.specificOddsFeedListeners == null) this.specificOddsFeedListeners = new HashSet<>();
 
             this.specificOddsFeedListeners.addAll(specificOddsFeedListeners);
 
@@ -642,9 +737,8 @@ public class OddsFeed {
         }
 
         @Override
-        public OddsFeedSessionBuilder setSpecificListeners(GenericOddsFeedListener specificOddsFeedListener){
-            if (this.specificOddsFeedListeners == null)
-                this.specificOddsFeedListeners = new HashSet<>();
+        public OddsFeedSessionBuilder setSpecificListeners(GenericOddsFeedListener specificOddsFeedListener) {
+            if (this.specificOddsFeedListeners == null) this.specificOddsFeedListeners = new HashSet<>();
 
             this.specificOddsFeedListeners.add(specificOddsFeedListener);
 
@@ -655,8 +749,7 @@ public class OddsFeed {
         public OddsFeedSessionBuilder setSpecificEventsOnly(Set<URN> specificEventsOnly) {
             this.msgInterestLevel = MessageInterest.SpecifiedMatchesOnly;
 
-            if (this.eventIds == null)
-                this.eventIds = new HashSet<>();
+            if (this.eventIds == null) this.eventIds = new HashSet<>();
 
             this.eventIds.addAll(specificEventsOnly);
 

@@ -10,16 +10,16 @@ import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.utils.SdkHelper;
-import org.slf4j.IMarkerFactory;
-
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.IMarkerFactory;
 
 /**
  * Implements methods used to provide a probability calculation
  */
+@SuppressWarnings({ "EmptyCatchBlock" })
 public class CalculationImpl implements Calculation {
 
     private final double odds;
@@ -33,16 +33,20 @@ public class CalculationImpl implements Calculation {
 
         this.odds = calculation.getCalculation().getOdds();
         this.probability = calculation.getCalculation().getProbability();
-        this.availableSelectionsList = calculation.getAvailableSelections() != null
-                ? calculation.getAvailableSelections().getEvents().stream().map(m->new AvailableSelectionsImpl(m, calculation.getGeneratedAt())).collect(ImmutableList.toImmutableList())
+        this.availableSelectionsList =
+            calculation.getAvailableSelections() != null
+                ? calculation
+                    .getAvailableSelections()
+                    .getEvents()
+                    .stream()
+                    .map(m -> new AvailableSelectionsImpl(m, calculation.getGeneratedAt()))
+                    .collect(ImmutableList.toImmutableList())
                 : ImmutableList.of();
 
         Date date = new Date();
         try {
             date = SdkHelper.toDate(calculation.getGeneratedAt());
-        }
-        catch (ParseException e) {
-        }
+        } catch (ParseException e) {}
         this.generatedAt = date;
     }
 
@@ -72,7 +76,9 @@ public class CalculationImpl implements Calculation {
      * @return list of available selections
      */
     @Override
-    public List<AvailableSelections> getAvailableSelections() { return availableSelectionsList; }
+    public List<AvailableSelections> getAvailableSelections() {
+        return availableSelectionsList;
+    }
 
     /**
      * Returns the date when API response was generated
@@ -80,5 +86,7 @@ public class CalculationImpl implements Calculation {
      * @return the date when API response was generated
      */
     @Override
-    public Date getGeneratedAt() { return generatedAt; }
+    public Date getGeneratedAt() {
+        return generatedAt;
+    }
 }

@@ -7,5 +7,4 @@ package com.sportradar.unifiedodds.sdk.entities;
 /**
  * An interface providing methods to access parent race details(e.g. multi-stage race)
  */
-public interface ParentRace extends ChildRace {
-}
+public interface ParentRace extends ChildRace {}

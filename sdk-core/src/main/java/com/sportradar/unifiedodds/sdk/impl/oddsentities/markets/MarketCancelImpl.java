@@ -10,20 +10,29 @@ import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketCancel;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
-
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * A basic implementation of the {@link MarketCancel} interface
  */
+@SuppressWarnings({ "ParameterNumber" })
 class MarketCancelImpl extends MarketImpl implements MarketCancel {
+
     private final Integer voidReason;
     private final NamedValuesProvider namedValuesProvider;
 
-    MarketCancelImpl(int id, NameProvider nameProvider, Map<String, String> specifiersMap, Map<String, String> extendedSpecifiers, MarketDefinition marketDefinition, Locale defaultLocale, Integer voidReason, NamedValuesProvider namedValuesProvider) {
+    MarketCancelImpl(
+        int id,
+        NameProvider nameProvider,
+        Map<String, String> specifiersMap,
+        Map<String, String> extendedSpecifiers,
+        MarketDefinition marketDefinition,
+        Locale defaultLocale,
+        Integer voidReason,
+        NamedValuesProvider namedValuesProvider
+    ) {
         super(id, nameProvider, specifiersMap, extendedSpecifiers, marketDefinition, defaultLocale);
-
         Preconditions.checkNotNull(namedValuesProvider);
 
         this.voidReason = voidReason;

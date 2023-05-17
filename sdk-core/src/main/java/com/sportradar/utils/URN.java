@@ -4,22 +4,34 @@
 
 package com.sportradar.utils;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a Uniform Resource Name
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ConstantName",
+        "DeclarationOrder",
+        "EqualsAvoidNull",
+        "IllegalCatch",
+        "LineLength",
+        "MagicNumber",
+        "NeedBraces",
+    }
+)
 public class URN {
+
     /**
      * A {@link Logger} instance used to log data
      */
@@ -43,7 +55,14 @@ public class URN {
     /**
      * A regex string pattern used for parsing of URN strings
      */
-    private static final String REGEX_STRING = "\\A(?<" + PREFIX_GROUP_NAME + ">[a-zA-Z]+):(?<" + TYPE_GROUP_NAME + ">[a-zA-Z_2]+):(?<" + ID_GROUP_NAME + ">[-\\d]+)\\z";
+    private static final String REGEX_STRING =
+        "\\A(?<" +
+        PREFIX_GROUP_NAME +
+        ">[a-zA-Z]+):(?<" +
+        TYPE_GROUP_NAME +
+        ">[a-zA-Z_2]+):(?<" +
+        ID_GROUP_NAME +
+        ">[-\\d]+)\\z";
 
     /**
      * A regex compiled pattern that is used to parse input string ids
@@ -58,27 +77,28 @@ public class URN {
     /**
      * Defines supported resource types
      */
-    private static final ImmutableMap<String, ResourceTypeGroup> TYPES = new ImmutableMap.Builder<String, ResourceTypeGroup>().
-            put("sport_event", ResourceTypeGroup.MATCH).
-            put("race_event", ResourceTypeGroup.RACE).
-            put("season", ResourceTypeGroup.TOURNAMENT).
-            put("tournament", ResourceTypeGroup.TOURNAMENT).
-            put("race_tournament", ResourceTypeGroup.TOURNAMENT).
-            put("simple_tournament", ResourceTypeGroup.TOURNAMENT).
-            put("h2h_tournament", ResourceTypeGroup.TOURNAMENT).
-            put("outright", ResourceTypeGroup.TOURNAMENT).
-            put("sport", ResourceTypeGroup.OTHER).
-            put("category", ResourceTypeGroup.OTHER).
-            put("match", ResourceTypeGroup.MATCH).
-            put("team", ResourceTypeGroup.OTHER).
-            put("competitor", ResourceTypeGroup.OTHER).
-            put("simpleteam", ResourceTypeGroup.OTHER).
-            put("simple_team", ResourceTypeGroup.OTHER).
-            put("venue", ResourceTypeGroup.OTHER).
-            put("player", ResourceTypeGroup.OTHER).
-            put("referee", ResourceTypeGroup.OTHER).
-            put("market", ResourceTypeGroup.OTHER).
-            build();
+    private static final ImmutableMap<String, ResourceTypeGroup> TYPES = new ImmutableMap.Builder<String, ResourceTypeGroup>()
+        .put("sport_event", ResourceTypeGroup.MATCH)
+        .put("race_event", ResourceTypeGroup.RACE)
+        .put("season", ResourceTypeGroup.TOURNAMENT)
+        .put("tournament", ResourceTypeGroup.TOURNAMENT)
+        .put("race_tournament", ResourceTypeGroup.TOURNAMENT)
+        .put("simple_tournament", ResourceTypeGroup.TOURNAMENT)
+        .put("h2h_tournament", ResourceTypeGroup.TOURNAMENT)
+        .put("outright", ResourceTypeGroup.TOURNAMENT)
+        .put("sport", ResourceTypeGroup.OTHER)
+        .put("category", ResourceTypeGroup.OTHER)
+        .put("match", ResourceTypeGroup.MATCH)
+        .put("team", ResourceTypeGroup.OTHER)
+        .put("competitor", ResourceTypeGroup.OTHER)
+        .put("simpleteam", ResourceTypeGroup.OTHER)
+        .put("simple_team", ResourceTypeGroup.OTHER)
+        .put("venue", ResourceTypeGroup.OTHER)
+        .put("player", ResourceTypeGroup.OTHER)
+        .put("referee", ResourceTypeGroup.OTHER)
+        .put("market", ResourceTypeGroup.OTHER)
+        .put("group", ResourceTypeGroup.OTHER)
+        .build();
 
     /**
      * Prefix of the current instance
@@ -130,13 +150,15 @@ public class URN {
 
             Matcher matcher = REGEX_PATTERN.matcher(urnString);
 
-            checkArgument(!matcher.find() || matcher.groupCount() != 4,
-                    "Value " + urnString + " is not a valid string representation of the URN");
+            checkArgument(
+                !matcher.find() || matcher.groupCount() != 4,
+                "Value " + urnString + " is not a valid string representation of the URN"
+            );
 
             return new URN(
-                    matcher.group(PREFIX_GROUP_NAME),
-                    matcher.group(TYPE_GROUP_NAME),
-                    Long.valueOf(matcher.group(ID_GROUP_NAME))
+                matcher.group(PREFIX_GROUP_NAME),
+                matcher.group(TYPE_GROUP_NAME),
+                Long.valueOf(matcher.group(ID_GROUP_NAME))
             );
         } catch (Exception e) {
             throw new UnsupportedUrnFormatException("URN could not be parsed [" + urnString + "] ", e);
@@ -202,9 +224,7 @@ public class URN {
         if (obj instanceof URN) {
             URN other = (URN) obj;
 
-            return prefix.equals(other.getPrefix()) &&
-                    type.equals(other.getType()) &&
-                    id == other.getId();
+            return prefix.equals(other.getPrefix()) && type.equals(other.getType()) && id == other.getId();
         }
 
         return false;
@@ -215,8 +235,7 @@ public class URN {
      */
     @Override
     public String toString() {
-        if (toStringCache == null)
-            toStringCache = prefix + ":" + type + ":" + id;
+        if (toStringCache == null) toStringCache = prefix + ":" + type + ":" + id;
         return toStringCache;
     }
 
@@ -228,19 +247,15 @@ public class URN {
         return toString().hashCode();
     }
 
-    public boolean isSimpleTeam()
-    {
-        if(type != null && (type.equalsIgnoreCase("simpleteam") || type.equalsIgnoreCase("simple_team")))
-        {
+    public boolean isSimpleTeam() {
+        if (type != null && (type.equalsIgnoreCase("simpleteam") || type.equalsIgnoreCase("simple_team"))) {
             return true;
         }
         return false;
     }
 
-    public static boolean isSimpleTeam(String urn)
-    {
-        if(urn != null && (urn.contains("simpleteam") || urn.contains("simple_team")))
-        {
+    public static boolean isSimpleTeam(String urn) {
+        if (urn != null && (urn.contains("simpleteam") || urn.contains("simple_team"))) {
             return true;
         }
         return false;

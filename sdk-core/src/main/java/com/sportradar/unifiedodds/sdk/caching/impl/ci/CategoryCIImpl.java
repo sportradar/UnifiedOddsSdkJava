@@ -13,7 +13,6 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCategoryCI;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -22,7 +21,9 @@ import java.util.stream.Collectors;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
+
     private final URN id;
     private final URN associatedSportId;
     private final Map<Locale, String> names;
@@ -30,7 +31,13 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
     private final String countryCode;
     private final List<Locale> cachedLocales;
 
-    CategoryCIImpl(URN id, SAPICategory category, List<URN> tournamentIds, URN associatedSportId, Locale dataLocale) {
+    CategoryCIImpl(
+        URN id,
+        SAPICategory category,
+        List<URN> tournamentIds,
+        URN associatedSportId,
+        Locale dataLocale
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(category);
         Preconditions.checkNotNull(tournamentIds);
@@ -43,8 +50,7 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
         this.names = new ConcurrentHashMap<>();
         if (category.getName() != null) {
             this.names.put(dataLocale, category.getName());
-        }
-        else{
+        } else {
             this.names.put(dataLocale, "");
         }
 
@@ -145,17 +151,21 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
             SAPISportCategoriesEndpoint cData = (SAPISportCategoriesEndpoint) endpointData;
             SAPICategories categories = cData.getCategories();
             if (categories != null) {
-                categories.getCategory().stream()
-                        .filter(category -> id.toString().equals(category.getId()))
-                        .findFirst()
-                        .ifPresent(category -> mergeCategoryData(category, dataLocale));
+                categories
+                    .getCategory()
+                    .stream()
+                    .filter(category -> id.toString().equals(category.getId()))
+                    .findFirst()
+                    .ifPresent(category -> mergeCategoryData(category, dataLocale));
             }
         }
     }
 
     private void mergeCategoryData(ExportableCategoryCI endpointData) {
         names.putAll(endpointData.getNames());
-        associatedTournaments.addAll(endpointData.getAssociatedTournaments().stream().map(URN::parse).collect(Collectors.toList()));
+        associatedTournaments.addAll(
+            endpointData.getAssociatedTournaments().stream().map(URN::parse).collect(Collectors.toList())
+        );
         cachedLocales.addAll(endpointData.getCachedLocales());
     }
 
@@ -165,8 +175,7 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
 
         if (categoryData.getName() != null) {
             names.put(locale, categoryData.getName());
-        }
-        else{
+        } else {
             names.put(locale, "");
         }
 
@@ -186,12 +195,12 @@ class CategoryCIImpl implements CategoryCI, ExportableCacheItem {
     @Override
     public ExportableCI export() {
         return new ExportableCategoryCI(
-                id.toString(),
-                new HashMap<>(names),
-                associatedSportId.toString(),
-                new ArrayList<>(associatedTournaments.stream().map(URN::toString).collect(Collectors.toList())),
-                countryCode,
-                new ArrayList<>(cachedLocales)
+            id.toString(),
+            new HashMap<>(names),
+            associatedSportId.toString(),
+            new ArrayList<>(associatedTournaments.stream().map(URN::toString).collect(Collectors.toList())),
+            countryCode,
+            new ArrayList<>(cachedLocales)
         );
     }
 }

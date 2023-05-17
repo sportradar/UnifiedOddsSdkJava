@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.recovery;
 /**
  * An indication of the recovery state
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 enum RecoveryState {
     /**
      * Waiting for first recovery start
@@ -31,5 +32,5 @@ enum RecoveryState {
     /**
      * An error occurred during recovery request
      */
-    Error
+    Error,
 }

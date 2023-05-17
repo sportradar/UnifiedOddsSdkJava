@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.oddsentities.*;
  * Internally used generic interface used as a base for interfaces exposed to the SDK user
  */
 interface GenericOddsFeedListener<T extends SportEvent> {
-
     /**
      * Any kind of odds update, or betstop signal results in an OddsChanges Message.
      *
@@ -55,7 +54,7 @@ interface GenericOddsFeedListener<T extends SportEvent> {
      * If the markets were cancelled you may receive a
      * {@link BetCancel} describing which markets were
      * cancelled
-     * 
+     *
      * @param sender the session
      * @param betCancel A {@link BetCancel} instance
      *        specifying which markets were cancelled
@@ -66,7 +65,7 @@ interface GenericOddsFeedListener<T extends SportEvent> {
      * If the bet cancellations were send in error you may receive a
      * {@link RollbackBetCancel} describing the
      * erroneous cancellations
-     * 
+     *
      * @param sender the session
      * @param rbBetCancel A {@link RollbackBetCancel}
      *        specifying erroneous cancellations
@@ -94,7 +93,7 @@ interface GenericOddsFeedListener<T extends SportEvent> {
      * typical implementation can leave this handler empty.
      *
      * @deprecated in favour of {{@link #onUnparsableMessage(OddsFeedSession, UnparsableMessage)}} from v2.0.11
-     * 
+     *
      * @param sender the session
      * @param rawMessage the raw message received from Betradar
      * @param event if the SDK was able to extract the event this message is for it will be here
@@ -126,6 +125,5 @@ interface GenericOddsFeedListener<T extends SportEvent> {
      * @param sender the session
      * @param exception A {@link Exception} instance containing unhandled exception
      */
-    default void onUserUnhandledException(OddsFeedSession sender, Exception exception) {
-    }
+    default void onUserUnhandledException(OddsFeedSession sender, Exception exception) {}
 }

@@ -11,7 +11,8 @@ import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
-public class SpecifierImpl implements Specifier{
+public class SpecifierImpl implements Specifier {
+
     private final MarketSpecifierCI ci;
 
     public SpecifierImpl(MarketSpecifierCI s) {

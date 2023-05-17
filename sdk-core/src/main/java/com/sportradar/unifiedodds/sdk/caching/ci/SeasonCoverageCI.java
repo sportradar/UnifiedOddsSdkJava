@@ -12,7 +12,9 @@ import com.sportradar.utils.URN;
 /**
  * A season coverage representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class SeasonCoverageCI {
+
     /**
      * The identifier of the season
      */
@@ -132,12 +134,12 @@ public class SeasonCoverageCI {
 
     public ExportableSeasonCoverageCI export() {
         return new ExportableSeasonCoverageCI(
-                seasonId.toString(),
-                maxCoverageLevel,
-                minCoverageLevel,
-                maxCovered,
-                played,
-                scheduled
+            seasonId.toString(),
+            maxCoverageLevel,
+            minCoverageLevel,
+            maxCovered,
+            played,
+            scheduled
         );
     }
 }

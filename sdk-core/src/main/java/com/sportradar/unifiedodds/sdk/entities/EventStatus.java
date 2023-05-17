@@ -10,7 +10,8 @@ import com.sportradar.uf.datamodel.UFEventStatusStatus;
  * Possible competition statuses. This is a fixed set of states that are the same for any sport
  * Sportradar covers
  */
-@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
+// Constant names should comply with a naming convention
+@SuppressWarnings({ "java:S115", "NeedBraces", "ReturnCount" })
 public enum EventStatus {
     /**
      * NotStarted - the match as far as we know has not yet started
@@ -72,7 +73,6 @@ public enum EventStatus {
      */
     Interrupted("interrupted", 7);
 
-
     private String apiName;
     private int apiId;
 
@@ -83,16 +83,14 @@ public enum EventStatus {
 
     public static EventStatus valueOfApiStatusName(String status) {
         for (EventStatus ses : EventStatus.values()) {
-            if (ses.apiName.equals(status))
-                return ses;
+            if (ses.apiName.equals(status)) return ses;
         }
         return Unknown;
     }
 
     public static EventStatus valueOfApiStatusId(int status) {
         for (EventStatus ses : EventStatus.values()) {
-            if (ses.apiId == status)
-                return ses;
+            if (ses.apiId == status) return ses;
         }
         return Unknown;
     }

@@ -17,17 +17,31 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A round representation used by caching components. The cache item properties are loaded on demand.
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "JavaNCSS",
+        "MethodLength",
+        "NPathComplexity",
+        "ParameterNumber",
+        "ReturnCount",
+        "UnnecessaryParentheses",
+    }
+)
 public class LoadableRoundCIImpl implements LoadableRoundCI {
+
     private static final Logger logger = LoggerFactory.getLogger(LoadableRoundCIImpl.class);
 
     /**
@@ -140,11 +154,12 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
      */
     private final ReentrantLock fixtureRequest = new ReentrantLock();
 
-
-    public LoadableRoundCIImpl(CacheItem associatedEventCI,
-                               DataRouterManager dataRouterManager,
-                               Locale defaultLocale,
-                               ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public LoadableRoundCIImpl(
+        CacheItem associatedEventCI,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(associatedEventCI);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -157,13 +172,15 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    public LoadableRoundCIImpl(SAPIMatchRound roundData,
-                               boolean isFixtureEndpoint,
-                               Locale dataLocale,
-                               CacheItem associatedEventCI,
-                               DataRouterManager dataRouterManager,
-                               Locale defaultLocale,
-                               ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public LoadableRoundCIImpl(
+        SAPIMatchRound roundData,
+        boolean isFixtureEndpoint,
+        Locale dataLocale,
+        CacheItem associatedEventCI,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         this(associatedEventCI, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         Preconditions.checkNotNull(roundData);
         Preconditions.checkNotNull(dataLocale);
@@ -171,12 +188,13 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         merge(roundData, dataLocale, isFixtureEndpoint);
     }
 
-    public LoadableRoundCIImpl(CacheItem associatedEventCI,
-                               ExportableLoadableRoundCI exportable,
-                               DataRouterManager dataRouterManager,
-                               ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public LoadableRoundCIImpl(
+        CacheItem associatedEventCI,
+        ExportableLoadableRoundCI exportable,
+        DataRouterManager dataRouterManager,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         this(associatedEventCI, dataRouterManager, exportable.getDefaultLocale(), exceptionHandlingStrategy);
-
         this.names.putAll(exportable.getNames());
         this.groupNames.putAll(exportable.getGroupNames());
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
@@ -398,7 +416,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
      * @return the betradar name
      */
     @Override
-    public String getBetradarName(){
+    public String getBetradarName() {
         if (summaryLoadedCheck(betradarName, defaultLocale)) {
             return betradarName;
         }
@@ -458,40 +476,31 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
 
         if (round.getName() != null) {
             names.put(locale, round.getName());
-        }
-        else if (round.getGroupName() != null) {
+        } else if (round.getGroupName() != null) {
             names.put(locale, round.getGroupName());
-        }
-        else if(round.getGroupLongName() != null) {
+        } else if (round.getGroupLongName() != null) {
             names.put(locale, round.getGroupLongName());
-        }
-        else {
+        } else {
             names.put(locale, "");
         }
 
         if (round.getGroupName() != null) {
             groupNames.put(locale, round.getGroupName());
-        }
-        else if (round.getName() != null) {
+        } else if (round.getName() != null) {
             groupNames.put(locale, round.getName());
-        }
-        else if (round.getGroupLongName() != null) {
+        } else if (round.getGroupLongName() != null) {
             groupNames.put(locale, round.getGroupLongName());
-        }
-        else{
+        } else {
             groupNames.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
-        }
-        else if (round.getName() != null) {
+        } else if (round.getName() != null) {
             phaseOrGroupLongNames.put(locale, round.getName());
-        }
-        else if (round.getGroupName() != null) {
+        } else if (round.getGroupName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupName());
-        }
-        else{
+        } else {
             phaseOrGroupLongNames.put(locale, "");
         }
 
@@ -525,9 +534,11 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
                 return;
             }
 
-            logger.debug("Fetching summary for LoadableRoundCIImpl[EventId:'{}'] for languages '{}'",
-                         associatedEventId,
-                         missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            logger.debug(
+                "Fetching summary for LoadableRoundCIImpl[EventId:'{}'] for languages '{}'",
+                associatedEventId,
+                missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "))
+            );
 
             missingLocales.forEach(l -> {
                 try {
@@ -546,65 +557,104 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     private void handleException(String request, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
-                throw new ObjectNotFoundException("LoadableRoundCIImpl[SportEventId:'" + associatedEventId + "'], request(" + request + ")");
+                throw new ObjectNotFoundException(
+                    "LoadableRoundCIImpl[SportEventId:'" + associatedEventId + "'], request(" + request + ")"
+                );
             } else {
                 throw new ObjectNotFoundException(request, e);
             }
         } else {
             if (e == null) {
-                logger.warn("Error providing LoadableRoundCIImpl[SportEventId:'{}'] request({})", associatedEventId, request);
+                logger.warn(
+                    "Error providing LoadableRoundCIImpl[SportEventId:'{}'] request({})",
+                    associatedEventId,
+                    request
+                );
             } else {
-                logger.warn("Error providing LoadableRoundCIImpl[SportEventId:'{}'] request({}), ex:", associatedEventId, request, e);
+                logger.warn(
+                    "Error providing LoadableRoundCIImpl[SportEventId:'{}'] request({}), ex:",
+                    associatedEventId,
+                    request,
+                    e
+                );
             }
         }
     }
 
     @Override
     public String toString() {
-        return "LoadableRoundCIImpl{" +
-                "names=" + names +
-                ", groupNames=" + groupNames +
-                ", phaseOrGroupLongNames=" + phaseOrGroupLongNames +
-                ", defaultLocale=" + defaultLocale +
-                ", associatedEventCI=" + associatedEventCI +
-                ", associatedEventId=" + associatedEventId +
-                ", exceptionHandlingStrategy=" + exceptionHandlingStrategy +
-                ", dataRouterManager=" + dataRouterManager +
-                ", type='" + type + '\'' +
-                ", group='" + group + '\'' +
-                ", groupId='" + groupId + '\'' +
-                ", otherMatchId='" + otherMatchId + '\'' +
-                ", number=" + number +
-                ", cupRoundMatches=" + cupRoundMatches +
-                ", cupRoundMatchNumber=" + cupRoundMatchNumber +
-                ", betradarId=" + betradarId +
-                ", cachedSummaryLocales=" + cachedSummaryLocales +
-                ", cachedFixtureLocales=" + cachedFixtureLocales +
-                ", summaryRequest=" + summaryRequest +
-                ", fixtureRequest=" + fixtureRequest +
-                ", phase=" + phase +
-                ", betradarName=" + betradarName +
-                '}';
+        return (
+            "LoadableRoundCIImpl{" +
+            "names=" +
+            names +
+            ", groupNames=" +
+            groupNames +
+            ", phaseOrGroupLongNames=" +
+            phaseOrGroupLongNames +
+            ", defaultLocale=" +
+            defaultLocale +
+            ", associatedEventCI=" +
+            associatedEventCI +
+            ", associatedEventId=" +
+            associatedEventId +
+            ", exceptionHandlingStrategy=" +
+            exceptionHandlingStrategy +
+            ", dataRouterManager=" +
+            dataRouterManager +
+            ", type='" +
+            type +
+            '\'' +
+            ", group='" +
+            group +
+            '\'' +
+            ", groupId='" +
+            groupId +
+            '\'' +
+            ", otherMatchId='" +
+            otherMatchId +
+            '\'' +
+            ", number=" +
+            number +
+            ", cupRoundMatches=" +
+            cupRoundMatches +
+            ", cupRoundMatchNumber=" +
+            cupRoundMatchNumber +
+            ", betradarId=" +
+            betradarId +
+            ", cachedSummaryLocales=" +
+            cachedSummaryLocales +
+            ", cachedFixtureLocales=" +
+            cachedFixtureLocales +
+            ", summaryRequest=" +
+            summaryRequest +
+            ", fixtureRequest=" +
+            fixtureRequest +
+            ", phase=" +
+            phase +
+            ", betradarName=" +
+            betradarName +
+            '}'
+        );
     }
 
     public ExportableLoadableRoundCI export() {
         return new ExportableLoadableRoundCI(
-                new HashMap<>(names),
-                new HashMap<>(groupNames),
-                new HashMap<>(phaseOrGroupLongNames),
-                defaultLocale,
-                type,
-                group,
-                groupId != null ? groupId.toString() : null,
-                otherMatchId,
-                number,
-                cupRoundMatches,
-                cupRoundMatchNumber,
-                betradarId,
-                phase,
-                betradarName,
-                new ArrayList<>(cachedSummaryLocales),
-                new ArrayList<>(cachedFixtureLocales)
+            new HashMap<>(names),
+            new HashMap<>(groupNames),
+            new HashMap<>(phaseOrGroupLongNames),
+            defaultLocale,
+            type,
+            group,
+            groupId != null ? groupId.toString() : null,
+            otherMatchId,
+            number,
+            cupRoundMatches,
+            cupRoundMatchNumber,
+            betradarId,
+            phase,
+            betradarName,
+            new ArrayList<>(cachedSummaryLocales),
+            new ArrayList<>(cachedFixtureLocales)
         );
     }
 }

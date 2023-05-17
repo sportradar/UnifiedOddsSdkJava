@@ -13,14 +13,15 @@ import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A group representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class GroupCI {
+
     /**
      * The id of the group
      */
@@ -58,9 +59,11 @@ public class GroupCI {
         competitorIds = new ArrayList<>();
         competitorsReferences = new HashMap<>();
         if (group.getCompetitor() != null) {
-            competitorIds.addAll(group.getCompetitor().stream().
-                    map(cmp -> URN.parse(cmp.getId())).collect(Collectors.toList()));
-            competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
+            competitorIds.addAll(
+                group.getCompetitor().stream().map(cmp -> URN.parse(cmp.getId())).collect(Collectors.toList())
+            );
+            competitorsReferences =
+                SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
     }
 
@@ -70,7 +73,12 @@ public class GroupCI {
         id = exportable.getId();
         name = exportable.getName();
         competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
-        competitorsReferences = exportable.getCompetitorsReferences().entrySet().stream().collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+        competitorsReferences =
+            exportable
+                .getCompetitorsReferences()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
     }
 
     /**
@@ -84,23 +92,27 @@ public class GroupCI {
         Preconditions.checkNotNull(locale);
 
         if (group.getCompetitor() != null) {
-            if(competitorIds != null && (competitorIds.size() != group.getCompetitor().size())){
+            if (competitorIds != null && (competitorIds.size() != group.getCompetitor().size())) {
                 competitorIds.clear();
             }
-            group.getCompetitor().forEach(c -> {
-                if(!competitorIds.contains(URN.parse(c.getId()))){
-                    competitorIds.clear();
-                }
-            });
-            group.getCompetitor().forEach(mergeCompetitor -> {
-                URN cId = URN.parse(mergeCompetitor.getId());
-                if (!competitorIds.contains(cId)) {
-                    competitorIds.add(cId);
-                }
-            });
-            competitorsReferences = SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
-        }
-        else if (competitorIds.size() > 0){
+            group
+                .getCompetitor()
+                .forEach(c -> {
+                    if (!competitorIds.contains(URN.parse(c.getId()))) {
+                        competitorIds.clear();
+                    }
+                });
+            group
+                .getCompetitor()
+                .forEach(mergeCompetitor -> {
+                    URN cId = URN.parse(mergeCompetitor.getId());
+                    if (!competitorIds.contains(cId)) {
+                        competitorIds.add(cId);
+                    }
+                });
+            competitorsReferences =
+                SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
+        } else if (competitorIds.size() > 0) {
             competitorIds.clear();
             competitorsReferences.clear();
         }
@@ -144,10 +156,13 @@ public class GroupCI {
 
     public ExportableGroupCI export() {
         return new ExportableGroupCI(
-                id,
-                name,
-                competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
-                competitorsReferences.entrySet().stream().collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds()))
+            id,
+            name,
+            competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+            competitorsReferences
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(c -> c.getKey().toString(), c -> c.getValue().getReferenceIds()))
         );
     }
 }

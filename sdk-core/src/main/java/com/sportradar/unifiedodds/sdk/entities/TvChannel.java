@@ -30,7 +30,7 @@ public interface TvChannel {
      *
      * @return the stream url; otherwise null
      */
-    default String getStreamUrl(){
+    default String getStreamUrl() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

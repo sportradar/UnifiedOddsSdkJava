@@ -1,13 +1,14 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-
 import java.util.Date;
 
 /**
  * Class RabbitMessage
  */
+@SuppressWarnings({ "MemberName", "VisibilityModifier" })
 public class RabbitMessage {
+
     /**
      * Gets the message to be sent
      */

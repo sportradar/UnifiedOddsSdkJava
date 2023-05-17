@@ -9,15 +9,19 @@ public class HoleImpl implements Hole {
     private final int number;
     private final int par;
 
-    public HoleImpl(HoleCI ci){
+    public HoleImpl(HoleCI ci) {
         Preconditions.checkNotNull(ci);
         this.number = ci.getNumber();
         this.par = ci.getPar();
     }
 
     @Override
-    public int getNumber() { return number; }
+    public int getNumber() {
+        return number;
+    }
 
     @Override
-    public int getPar() { return par; }
+    public int getPar() {
+        return par;
+    }
 }

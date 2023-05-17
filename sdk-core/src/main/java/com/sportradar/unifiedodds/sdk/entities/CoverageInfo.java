@@ -39,5 +39,5 @@ public interface CoverageInfo {
      */
     default CoveredFrom getCoveredFrom() {
         return null;
-    };
+    }
 }

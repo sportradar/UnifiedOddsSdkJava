@@ -4,7 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 
 /**

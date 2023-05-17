@@ -6,21 +6,24 @@ package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.Optional;
-
 /**
  * Created on 26/03/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ConstantName" })
 public class TokenSetterTests {
+
     private static SDKConfigurationPropertiesReader propertiesWithToken;
     private static SDKConfigurationPropertiesReader propertiesWithoutToken;
-    private static final SDKConfigurationYamlReader yamlConfigMock = Mockito.mock(SDKConfigurationYamlReader.class);
+    private static final SDKConfigurationYamlReader yamlConfigMock = Mockito.mock(
+        SDKConfigurationYamlReader.class
+    );
 
     @BeforeClass
     public static void init() {
@@ -38,7 +41,10 @@ public class TokenSetterTests {
 
     @Test(expected = NullPointerException.class)
     public void tokenSetterConstructRequirementsFailTwo() {
-        TokenSetter tokenSetter = new TokenSetterImpl(Mockito.mock(SDKConfigurationPropertiesReader.class), null);
+        TokenSetter tokenSetter = new TokenSetterImpl(
+            Mockito.mock(SDKConfigurationPropertiesReader.class),
+            null
+        );
     }
 
     @Test

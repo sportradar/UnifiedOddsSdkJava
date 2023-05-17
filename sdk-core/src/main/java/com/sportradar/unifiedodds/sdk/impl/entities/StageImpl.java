@@ -20,15 +20,26 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
 import com.sportradar.utils.URN;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * Represents a race type of sport event (more than two competitors)
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LambdaBodyLength",
+        "LineLength",
+        "MultipleStringLiterals",
+        "ParameterNumber",
+    }
+)
 public class StageImpl extends SportEventImpl implements Stage {
+
     private static final Logger logger = LoggerFactory.getLogger(StageImpl.class);
 
     /**
@@ -72,10 +83,16 @@ public class StageImpl extends SportEventImpl implements Stage {
      * @param locales A {@link List} specifying languages the current instance supports
      * @param exceptionHandlingStrategy The exception handling strategy that should be followed by the instance
      */
-    public StageImpl(URN id, URN sportId, SportEventCache sportEventCache, SportEventStatusFactory statusFactory,
-                     SportEntityFactory sportEntityFactory, List<Locale> locales, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public StageImpl(
+        URN id,
+        URN sportId,
+        SportEventCache sportEventCache,
+        SportEventStatusFactory statusFactory,
+        SportEntityFactory sportEntityFactory,
+        List<Locale> locales,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         super(id, sportId);
-
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(statusFactory);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -195,7 +212,13 @@ public class StageImpl extends SportEventImpl implements Stage {
                 if (sportEvent instanceof Stage) {
                     result.add((Stage) sportEvent);
                 } else {
-                    handleException("getStages - built type is not a stage[" + sportEvent.getId() + "]: " + sportEvent.getClass(), null);
+                    handleException(
+                        "getStages - built type is not a stage[" +
+                        sportEvent.getId() +
+                        "]: " +
+                        sportEvent.getClass(),
+                        null
+                    );
                 }
             }
             return result;
@@ -254,11 +277,11 @@ public class StageImpl extends SportEventImpl implements Stage {
      * associated with the current instance if already cached (does not make API call)
      */
     @Override
-    public Optional<CompetitionStatus> getStatusIfPresent()  {
+    public Optional<CompetitionStatus> getStatusIfPresent() {
         if (status == null) {
             status = sportEventStatusFactory.buildSportEventStatus(id, StageStatus.class, false);
         }
-        if(status == null) {
+        if (status == null) {
             return Optional.empty();
         }
         return Optional.of(status);
@@ -288,7 +311,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public EventStatus getEventStatus() {
-        if(getStatus() == null){
+        if (getStatus() == null) {
             return null;
         }
         return getStatus().getStatus();
@@ -331,8 +354,7 @@ public class StageImpl extends SportEventImpl implements Stage {
 
         SportEventConditionsCI conditions = cacheItem.getConditions(locales);
 
-        return conditions == null ? null :
-                new SportEventConditionsImpl(conditions, locales);
+        return conditions == null ? null : new SportEventConditionsImpl(conditions, locales);
     }
 
     /**
@@ -482,7 +504,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      * @return the liveOdds
      */
     @Override
-    public String getLiveOdds(){
+    public String getLiveOdds() {
         StageCI cacheItem = loadStageCI();
 
         if (cacheItem == null) {
@@ -498,7 +520,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      * @return a {@link SportEventType} indicating the type of the associated event
      */
     @Override
-    public SportEventType getSportEventType(){
+    public SportEventType getSportEventType() {
         StageCI cacheItem = loadStageCI();
 
         if (cacheItem == null) {
@@ -523,15 +545,21 @@ public class StageImpl extends SportEventImpl implements Stage {
         }
 
         List<URN> stageIds = cacheItem.getAdditionalParentStages(locales);
-        if(stageIds != null && !stageIds.isEmpty()){
+        if (stageIds != null && !stageIds.isEmpty()) {
             List<Stage> results = new ArrayList<>();
-            stageIds.forEach(f->results.add(new StageImpl(f,
-                                                          sportId,
-                                                          sportEventCache,
-                                                          sportEventStatusFactory,
-                                                          sportEntityFactory,
-                                                          locales,
-                                                          exceptionHandlingStrategy)));
+            stageIds.forEach(f ->
+                results.add(
+                    new StageImpl(
+                        f,
+                        sportId,
+                        sportEventCache,
+                        sportEventStatusFactory,
+                        sportEntityFactory,
+                        locales,
+                        exceptionHandlingStrategy
+                    )
+                )
+            );
             return results;
         }
         return null;
@@ -544,10 +572,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public String toString() {
-        return "StageImpl{" +
-                "id=" + id +
-                ", locales=" + locales +
-                "} ";
+        return "StageImpl{" + "id=" + id + ", locales=" + locales + "} ";
     }
 
     /**

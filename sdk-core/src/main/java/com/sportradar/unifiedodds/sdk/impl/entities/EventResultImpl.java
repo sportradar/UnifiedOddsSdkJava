@@ -11,7 +11,6 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIStageResult;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.utils.SdkHelper;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,7 +19,9 @@ import java.util.List;
 /**
  * Represents an event result entry
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class EventResultImpl implements EventResult {
+
     private final String id;
     private final BigInteger position;
     private final BigInteger points;
@@ -73,11 +74,10 @@ public class EventResultImpl implements EventResult {
 
         distance = c.getDistance();
 
-        if(c.getResult() != null && !c.getResult().isEmpty()){
+        if (c.getResult() != null && !c.getResult().isEmpty()) {
             competitorResults = new ArrayList<>();
             c.getResult().forEach(result -> this.competitorResults.add(new CompetitorResultImpl(result)));
-        }
-        else{
+        } else {
             competitorResults = null;
         }
     }
@@ -244,14 +244,18 @@ public class EventResultImpl implements EventResult {
      * @return the distance
      */
     @Override
-    public Double getDistance() { return distance; }
+    public Double getDistance() {
+        return distance;
+    }
 
     /**
      * Returns the competitor results
      * @return the competitor results
      */
     @Override
-    public List<CompetitorResult> getCompetitorResults() { return competitorResults; }
+    public List<CompetitorResult> getCompetitorResults() {
+        return competitorResults;
+    }
 
     private static BigInteger assignIfFullNumber(Double value) {
         if (value != null && (value == Math.floor(value)) && !Double.isInfinite(value)) {

@@ -18,17 +18,33 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundExceptio
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.unifiedodds.sdk.impl.entities.*;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A factory used to construct {@link Competition} and {@link Tournament} instances
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "BooleanExpressionComplexity",
+        "ClassDataAbstractionCoupling",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LambdaBodyLength",
+        "LineLength",
+        "MethodLength",
+        "MultipleStringLiterals",
+        "ParameterAssignment",
+        "ReturnCount",
+        "UnnecessaryParentheses",
+    }
+)
 public class SportEntityFactoryImpl implements SportEntityFactory {
-    private final static Logger logger = LoggerFactory.getLogger(SportEntityFactoryImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(SportEntityFactoryImpl.class);
     /**
      * A {@link SportsDataCache} instance used to retrieve sport related info
      */
@@ -64,7 +80,9 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      */
     private final MappingTypeProvider mappingTypeProvider;
 
-    private final List<URN> soccerSportUrns = new ArrayList<URN>(Arrays.asList(URN.parse("sr:sport:1"), URN.parse("sr:sport:137")));
+    private final List<URN> soccerSportUrns = new ArrayList<URN>(
+        Arrays.asList(URN.parse("sr:sport:1"), URN.parse("sr:sport:137"))
+    );
 
     /**
      * Initializes a new instance of the {@link SportEntityFactoryImpl}
@@ -77,12 +95,14 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @param oddsFeedConfiguration the associated feed configuration
      */
     @Inject
-    public SportEntityFactoryImpl(SportsDataCache sportsDataCache,
-                                  SportEventCache sportEventCache,
-                                  ProfileCache profileCache,
-                                  SportEventStatusFactory sportEventStatusFactory,
-                                  MappingTypeProvider mappingTypeProvider,
-                                  SDKInternalConfiguration oddsFeedConfiguration) {
+    public SportEntityFactoryImpl(
+        SportsDataCache sportsDataCache,
+        SportEventCache sportEventCache,
+        ProfileCache profileCache,
+        SportEventStatusFactory sportEventStatusFactory,
+        MappingTypeProvider mappingTypeProvider,
+        SDKInternalConfiguration oddsFeedConfiguration
+    ) {
         Preconditions.checkNotNull(sportsDataCache);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(profileCache);
@@ -111,19 +131,24 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         Preconditions.checkNotNull(locales);
 
         try {
-            return sportsDataCache.getSports(locales).stream()
-                    .map(sp -> {
-                        try {
-                            return buildSportInternal(sp, locales);
-                        } catch (ObjectNotFoundException e) {
-                            throw new StreamWrapperException(e.getMessage(), e);
-                        }
-                    })
-                    .collect(Collectors.toList());
+            return sportsDataCache
+                .getSports(locales)
+                .stream()
+                .map(sp -> {
+                    try {
+                        return buildSportInternal(sp, locales);
+                    } catch (ObjectNotFoundException e) {
+                        throw new StreamWrapperException(e.getMessage(), e);
+                    }
+                })
+                .collect(Collectors.toList());
         } catch (StreamWrapperException e) {
             throw new ObjectNotFoundException(e.getMessage(), e);
         } catch (IllegalCacheStateException e) {
-            throw new ObjectNotFoundException("The requested sport list could not be built[" + locales + "]", e);
+            throw new ObjectNotFoundException(
+                "The requested sport list could not be built[" + locales + "]",
+                e
+            );
         }
     }
 
@@ -182,7 +207,8 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @throws ObjectNotFoundException if the category CI could not be found
      */
     @Override
-    public SportSummary buildSportForCategory(URN categoryId, List<Locale> locales) throws ObjectNotFoundException {
+    public SportSummary buildSportForCategory(URN categoryId, List<Locale> locales)
+        throws ObjectNotFoundException {
         Preconditions.checkNotNull(categoryId);
         Preconditions.checkNotNull(locales);
 
@@ -190,10 +216,13 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         try {
             categoryCI = sportsDataCache.getCategory(categoryId, locales);
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {
-            throw new ObjectNotFoundException("Could not provide the sport data - category CI missing[" + categoryId + "]", e);
+            throw new ObjectNotFoundException(
+                "Could not provide the sport data - category CI missing[" + categoryId + "]",
+                e
+            );
         }
 
-        if(categoryCI.getSportId()==null){
+        if (categoryCI.getSportId() == null) {
             return null;
         }
 
@@ -210,7 +239,8 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @throws ObjectNotFoundException if the requested sport event object could not be provided(failure built, api request errors,..)
      */
     @Override
-    public SportEvent buildSportEvent(URN id, List<Locale> locales, boolean buildBasicEventImpl) throws ObjectNotFoundException {
+    public SportEvent buildSportEvent(URN id, List<Locale> locales, boolean buildBasicEventImpl)
+        throws ObjectNotFoundException {
         return buildSportEventInternal(id, null, locales, buildBasicEventImpl);
     }
 
@@ -225,7 +255,8 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @throws ObjectNotFoundException if the requested sport event object could not be provided(failure built, api request errors,..)
      */
     @Override
-    public SportEvent buildSportEvent(URN id, URN sportId, List<Locale> locales, boolean buildBasicEventImpl) throws ObjectNotFoundException {
+    public SportEvent buildSportEvent(URN id, URN sportId, List<Locale> locales, boolean buildBasicEventImpl)
+        throws ObjectNotFoundException {
         return buildSportEventInternal(id, sportId, locales, buildBasicEventImpl);
     }
 
@@ -238,29 +269,37 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @throws ObjectNotFoundException if the requested sport event objects could not be provided(failure built, api request errors,..)
      */
     @Override
-    public List<Competition> buildSportEvents(List<URN> ids, List<Locale> locales) throws ObjectNotFoundException {
+    public List<Competition> buildSportEvents(List<URN> ids, List<Locale> locales)
+        throws ObjectNotFoundException {
         Preconditions.checkNotNull(ids);
         Preconditions.checkNotNull(locales);
 
         try {
-            return ids.stream()
-                    .map(eId -> {
-                        try {
-                            return this.buildSportEvent(eId, locales, true);
-                        } catch (ObjectNotFoundException e) {
-                            throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException("Error building scheduled event[" + eId + "]", e); // streams cant handle checked exceptions
-                        }
-                    })
-                    .filter(se -> {
-                        if (se instanceof Competition) {
-                            return true; // all ok, as expected
-                        } else {
-                            logger.warn("buildSportEvents() received event[{}] which is not derived from Competition(event filtered out)", se.getId());
-                            return false;
-                        }
-                    })
-                    .map(se -> (Competition) se)
-                    .collect(Collectors.toList());
+            return ids
+                .stream()
+                .map(eId -> {
+                    try {
+                        return this.buildSportEvent(eId, locales, true);
+                    } catch (ObjectNotFoundException e) {
+                        throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                            "Error building scheduled event[" + eId + "]",
+                            e
+                        ); // streams cant handle checked exceptions
+                    }
+                })
+                .filter(se -> {
+                    if (se instanceof Competition) {
+                        return true; // all ok, as expected
+                    } else {
+                        logger.warn(
+                            "buildSportEvents() received event[{}] which is not derived from Competition(event filtered out)",
+                            se.getId()
+                        );
+                        return false;
+                    }
+                })
+                .map(se -> (Competition) se)
+                .collect(Collectors.toList());
         } catch (com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException e) {
             throw new ObjectNotFoundException("There was an error building the schedule list", e);
         }
@@ -279,15 +318,40 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
     @Override
-    public Competitor buildCompetitor(URN id, String qualifier, Integer division, Boolean isVirtual, SportEventCI parentSportEventCI, List<Locale> locales) throws ObjectNotFoundException {
+    public Competitor buildCompetitor(
+        URN id,
+        String qualifier,
+        Integer division,
+        Boolean isVirtual,
+        SportEventCI parentSportEventCI,
+        List<Locale> locales
+    ) throws ObjectNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
 
-        if(qualifier != null) {
-            return new TeamCompetitorImpl(id, profileCache, qualifier, division, isVirtual, parentSportEventCI, locales, this, exceptionHandlingStrategy);
+        if (qualifier != null) {
+            return new TeamCompetitorImpl(
+                id,
+                profileCache,
+                qualifier,
+                division,
+                isVirtual,
+                parentSportEventCI,
+                locales,
+                this,
+                exceptionHandlingStrategy
+            );
         }
 
-        return new CompetitorImpl(id, profileCache, parentSportEventCI, locales, this, exceptionHandlingStrategy, isVirtual);
+        return new CompetitorImpl(
+            id,
+            profileCache,
+            parentSportEventCI,
+            locales,
+            this,
+            exceptionHandlingStrategy,
+            isVirtual
+        );
     }
 
     /**
@@ -300,19 +364,24 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @return the constructed objects
      */
     @Override
-    public List<Competitor> buildStreamCompetitors(List<URN> competitorIds, SportEventCI parentSportEventCI, List<Locale> locales) {
+    public List<Competitor> buildStreamCompetitors(
+        List<URN> competitorIds,
+        SportEventCI parentSportEventCI,
+        List<Locale> locales
+    ) {
         Preconditions.checkNotNull(competitorIds);
         Preconditions.checkNotNull(locales);
 
-        return competitorIds.stream()
-                .map(c -> {
-                    try {
-                        return this.buildCompetitor(c, null, null, null, parentSportEventCI, locales);
-                    } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
-                        throw new StreamWrapperException(e.getMessage(), e);
-                    }
-                })
-                .collect(Collectors.toList());
+        return competitorIds
+            .stream()
+            .map(c -> {
+                try {
+                    return this.buildCompetitor(c, null, null, null, parentSportEventCI, locales);
+                } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
+                    throw new StreamWrapperException(e.getMessage(), e);
+                }
+            })
+            .collect(Collectors.toList());
     }
 
     /**
@@ -323,11 +392,21 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @return the constructed object
      */
     @Override
-    public PlayerProfile buildPlayerProfile(URN id, List<Locale> locales, List<URN> possibleAssociatedCompetitorIds) {
+    public PlayerProfile buildPlayerProfile(
+        URN id,
+        List<Locale> locales,
+        List<URN> possibleAssociatedCompetitorIds
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
 
-        return new PlayerProfileImpl(id, profileCache, possibleAssociatedCompetitorIds, locales, exceptionHandlingStrategy);
+        return new PlayerProfileImpl(
+            id,
+            profileCache,
+            possibleAssociatedCompetitorIds,
+            locales,
+            exceptionHandlingStrategy
+        );
     }
 
     /**
@@ -339,7 +418,12 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @param buildBasicEventImpl - an indication if the basic event entity should be built if the mapping type is unknown
      * @return - the constructed object which is derived from the {@link SportEvent}
      */
-    private SportEvent buildSportEventInternal(URN id, URN sportId, List<Locale> locales, boolean buildBasicEventImpl) throws ObjectNotFoundException {
+    private SportEvent buildSportEventInternal(
+        URN id,
+        URN sportId,
+        List<Locale> locales,
+        boolean buildBasicEventImpl
+    ) throws ObjectNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
@@ -355,10 +439,13 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
             return new SportEventGenericImpl(id, sportId);
         }
 
-        throw new ObjectNotFoundException("The requested sport event[" + id + "] could not be built - unknown mapping type");
+        throw new ObjectNotFoundException(
+            "The requested sport event[" + id + "] could not be built - unknown mapping type"
+        );
     }
 
-    private SportEvent buildEntityWithType(Class type, URN id, URN sportId, List<Locale> locales) throws ObjectNotFoundException {
+    private SportEvent buildEntityWithType(Class type, URN id, URN sportId, List<Locale> locales)
+        throws ObjectNotFoundException {
         Preconditions.checkNotNull(type);
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
@@ -367,17 +454,46 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
             if (type.equals(Match.class)) {
                 return buildMatchEntity(id, sportId, locales);
             } else if (type.equals(Stage.class)) {
-                return new StageImpl(id, sportId, sportEventCache, sportEventStatusFactory, this, locales, exceptionHandlingStrategy);
+                return new StageImpl(
+                    id,
+                    sportId,
+                    sportEventCache,
+                    sportEventStatusFactory,
+                    this,
+                    locales,
+                    exceptionHandlingStrategy
+                );
             } else if (type.equals(BasicTournament.class)) {
-                return new BasicTournamentImpl(id, sportId, locales, sportEventCache, this, exceptionHandlingStrategy);
+                return new BasicTournamentImpl(
+                    id,
+                    sportId,
+                    locales,
+                    sportEventCache,
+                    this,
+                    exceptionHandlingStrategy
+                );
             } else if (type.equals(Season.class)) {
                 return new SeasonImpl(id, sportId, locales, sportEventCache, this, exceptionHandlingStrategy);
             } else if (type.equals(Tournament.class)) {
-                return new TournamentImpl(id, sportId, locales, sportEventCache,this, exceptionHandlingStrategy);
+                return new TournamentImpl(
+                    id,
+                    sportId,
+                    locales,
+                    sportEventCache,
+                    this,
+                    exceptionHandlingStrategy
+                );
             } else if (type.equals(Lottery.class)) {
-                return new LotteryImpl(id, sportId, locales, sportEventCache,this, exceptionHandlingStrategy);
+                return new LotteryImpl(
+                    id,
+                    sportId,
+                    locales,
+                    sportEventCache,
+                    this,
+                    exceptionHandlingStrategy
+                );
             } else if (type.equals(Draw.class)) {
-                return new DrawImpl(id, sportId, locales, sportEventCache,this, exceptionHandlingStrategy);
+                return new DrawImpl(id, sportId, locales, sportEventCache, this, exceptionHandlingStrategy);
             }
         } catch (CacheItemNotFoundException e) {
             throw new ObjectNotFoundException("Could not provide proper entity for:" + id, e);
@@ -386,11 +502,14 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         throw new ObjectNotFoundException("Unsupported mapping type: '" + type + "', eventId:'" + id + "'");
     }
 
-    private Match buildMatchEntity(URN id, URN sportId, List<Locale> locales) throws CacheItemNotFoundException {
+    private Match buildMatchEntity(URN id, URN sportId, List<Locale> locales)
+        throws CacheItemNotFoundException {
         SportEventCI eventCI = sportEventCache.getEventCacheItem(id);
 
         if (!(eventCI instanceof MatchCI)) {
-            throw new CacheItemNotFoundException("Match[" + id + "] entity can not be created from: " + eventCI.getClass());
+            throw new CacheItemNotFoundException(
+                "Match[" + id + "] entity can not be created from: " + eventCI.getClass()
+            );
         }
 
         if (sportId == null) {
@@ -402,10 +521,26 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         }
 
         if (sportId != null && soccerSportUrns.contains(sportId)) {
-            return new SoccerEventImpl(id, sportId, sportEventCache, sportEventStatusFactory, this, locales, exceptionHandlingStrategy);
+            return new SoccerEventImpl(
+                id,
+                sportId,
+                sportEventCache,
+                sportEventStatusFactory,
+                this,
+                locales,
+                exceptionHandlingStrategy
+            );
         }
 
-        return new MatchImpl(id, sportId, sportEventCache, sportEventStatusFactory, this, locales, exceptionHandlingStrategy);
+        return new MatchImpl(
+            id,
+            sportId,
+            sportEventCache,
+            sportEventStatusFactory,
+            this,
+            locales,
+            exceptionHandlingStrategy
+        );
     }
 
     private URN provideSportIdForMatch(SportEventCI ci) {
@@ -420,7 +555,11 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
             }
 
             try {
-                SportEvent sportEvent = buildSportEvent(tournamentId, Collections.singletonList(defaultLocale), false);
+                SportEvent sportEvent = buildSportEvent(
+                    tournamentId,
+                    Collections.singletonList(defaultLocale),
+                    false
+                );
                 return sportEvent.getSportId(); // the implementation handles sport id fetching by itself
             } catch (ObjectNotFoundException e) {
                 // highly unlikely to happen
@@ -438,36 +577,59 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
      * @param locales - a {@link List} of locales specifying the languages in which the data is translated
      * @return - the constructed {@link Sport} instance
      */
-    private Sport buildSportInternal(SportData sportData, List<Locale> locales) throws ObjectNotFoundException {
+    private Sport buildSportInternal(SportData sportData, List<Locale> locales)
+        throws ObjectNotFoundException {
         Preconditions.checkNotNull(sportData);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
         try {
-            return new SportImpl(sportData.getId(),
-                    sportData.getNames(),
-                    sportData.getCategories().stream()
-                            .map(c -> new CategoryImpl(c.getId(),
-                                    c.getNames(),
-                                    c.getTournaments().stream()
-                                            .map(t -> {
-                                                try {
-                                                    return buildSportEventInternal(t, sportData.getId(), locales, true);
-                                                } catch (ObjectNotFoundException e) {
-                                                    throw new StreamWrapperException("Error occurred while building associated tournament list", e);
-                                                }
-                                            })
-                                            .filter(t -> {
-                                                if ((t instanceof Tournament) || (t instanceof BasicTournament) || (t instanceof Stage) || (t instanceof Lottery)) {
-                                                    return true;
-                                                } else {
-                                                    logger.warn("buildSportInternal, category list received unsupported tournament[{}] type {}", t.getId(), t.getClass());
-                                                    return false;
-                                                }
-                                            })
-                                            .collect(Collectors.toList()),
-                                    c.getCountryCode()))
-                            .collect(Collectors.toList()));
+            return new SportImpl(
+                sportData.getId(),
+                sportData.getNames(),
+                sportData
+                    .getCategories()
+                    .stream()
+                    .map(c ->
+                        new CategoryImpl(
+                            c.getId(),
+                            c.getNames(),
+                            c
+                                .getTournaments()
+                                .stream()
+                                .map(t -> {
+                                    try {
+                                        return buildSportEventInternal(t, sportData.getId(), locales, true);
+                                    } catch (ObjectNotFoundException e) {
+                                        throw new StreamWrapperException(
+                                            "Error occurred while building associated tournament list",
+                                            e
+                                        );
+                                    }
+                                })
+                                .filter(t -> {
+                                    if (
+                                        (t instanceof Tournament) ||
+                                        (t instanceof BasicTournament) ||
+                                        (t instanceof Stage) ||
+                                        (t instanceof Lottery)
+                                    ) {
+                                        return true;
+                                    } else {
+                                        logger.warn(
+                                            "buildSportInternal, category list received unsupported tournament[{}] type {}",
+                                            t.getId(),
+                                            t.getClass()
+                                        );
+                                        return false;
+                                    }
+                                })
+                                .collect(Collectors.toList()),
+                            c.getCountryCode()
+                        )
+                    )
+                    .collect(Collectors.toList())
+            );
         } catch (StreamWrapperException e) {
             throw new ObjectNotFoundException(e.getMessage(), e);
         }
@@ -485,8 +647,9 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
         Preconditions.checkNotNull(locales);
 
         return new CategorySummaryImpl(
-                categoryCI.getId(),
-                categoryCI.getNames(locales),
-                categoryCI.getCountryCode());
+            categoryCI.getId(),
+            categoryCI.getNames(locales),
+            categoryCI.getCountryCode()
+        );
     }
 }

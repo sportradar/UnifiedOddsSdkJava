@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.utils.SdkHelper;
-
 import java.util.Locale;
 
 /**
@@ -14,6 +13,7 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public class PlusNameExpression implements NameExpression {
+
     private final Operand operand;
 
     PlusNameExpression(Operand operand) {

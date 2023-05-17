@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Defines methods implemented by classes used to set recovery related configuration properties
  */
+@SuppressWarnings({ "LineLength" })
 public interface RecoveryConfigurationBuilder<T> extends ConfigurationBuilderBase<T> {
     /**
      * Sets the max time window between two consecutive alive messages before the associated producer is marked as down

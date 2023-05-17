@@ -10,7 +10,9 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCarCI;
 /**
  * A cache representation of race car
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class CarCI {
+
     private final String name;
     private final String chassis;
     private final String engineName;
@@ -41,10 +43,6 @@ public class CarCI {
     }
 
     public ExportableCarCI export() {
-        return new ExportableCarCI(
-                name,
-                chassis,
-                engineName
-        );
+        return new ExportableCarCI(name, chassis, engineName);
     }
 }

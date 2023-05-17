@@ -6,13 +6,14 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableCompetitionCI extends ExportableSportEventCI {
+
     private BookingStatus bookingStatus;
     private List<String> competitorIds;
     private ExportableVenueCI venue;
@@ -22,20 +23,22 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
     private SportEventType sportEventType;
     private List<String> competitorVirtual;
 
-    ExportableCompetitionCI(String id,
-                            Map<Locale, String> names,
-                            Date scheduled,
-                            Date scheduledEnd,
-                            Boolean startTimeTbd,
-                            String replacedBy,
-                            BookingStatus bookingStatus,
-                            List<String> competitorIds,
-                            ExportableVenueCI venue,
-                            ExportableSportEventConditionsCI conditions,
-                            Map<String, Map<String, String>> competitorsReferences,
-                            String liveOdds,
-                            SportEventType sportEventType,
-                            List<String> competitorVirtual) {
+    ExportableCompetitionCI(
+        String id,
+        Map<Locale, String> names,
+        Date scheduled,
+        Date scheduledEnd,
+        Boolean startTimeTbd,
+        String replacedBy,
+        BookingStatus bookingStatus,
+        List<String> competitorIds,
+        ExportableVenueCI venue,
+        ExportableSportEventConditionsCI conditions,
+        Map<String, Map<String, String>> competitorsReferences,
+        String liveOdds,
+        SportEventType sportEventType,
+        List<String> competitorVirtual
+    ) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.bookingStatus = bookingStatus;
         this.competitorIds = competitorIds;
@@ -83,7 +86,9 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         return competitorsReferences;
     }
 
-    public void setCompetitorsReferences(Map<String, Map<String, String>> competitorsReferences) { this.competitorsReferences = competitorsReferences; }
+    public void setCompetitorsReferences(Map<String, Map<String, String>> competitorsReferences) {
+        this.competitorsReferences = competitorsReferences;
+    }
 
     public String getLiveOdds() {
         return liveOdds;
@@ -93,11 +98,19 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         this.liveOdds = liveOdds;
     }
 
-    public SportEventType getSportEventType() { return sportEventType; }
+    public SportEventType getSportEventType() {
+        return sportEventType;
+    }
 
-    public void setSportEventType(SportEventType sportEventType) { this.sportEventType = sportEventType; }
+    public void setSportEventType(SportEventType sportEventType) {
+        this.sportEventType = sportEventType;
+    }
 
-    public List<String> getCompetitorVirtual() { return competitorVirtual; }
+    public List<String> getCompetitorVirtual() {
+        return competitorVirtual;
+    }
 
-    public void setCompetitorVirtual(List<String> competitorVirtual) { this.competitorVirtual = competitorVirtual; }
+    public void setCompetitorVirtual(List<String> competitorVirtual) {
+        this.competitorVirtual = competitorVirtual;
+    }
 }

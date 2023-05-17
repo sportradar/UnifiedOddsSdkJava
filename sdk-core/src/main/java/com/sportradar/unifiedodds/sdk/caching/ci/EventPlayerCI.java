@@ -13,6 +13,7 @@ import com.sportradar.utils.URN;
  * Created on 24/11/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class EventPlayerCI {
 
     private final URN id;
@@ -55,11 +56,6 @@ public class EventPlayerCI {
     }
 
     public ExportableEventPlayerCI export() {
-        return new ExportableEventPlayerCI(
-                id.toString(),
-                name,
-                method,
-                bench
-        );
+        return new ExportableEventPlayerCI(id.toString(), name, method, bench);
     }
 }

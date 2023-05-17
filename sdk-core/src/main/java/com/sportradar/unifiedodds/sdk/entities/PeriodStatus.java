@@ -9,7 +9,6 @@ import java.util.List;
  * Defines methods used to access data of a period status
  */
 public interface PeriodStatus {
-
     /**
      * Returns the number of the specific lap
      * @return the number of the specific lap.

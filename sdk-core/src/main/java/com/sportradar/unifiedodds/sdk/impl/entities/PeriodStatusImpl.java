@@ -4,11 +4,11 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.PeriodCompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodStatusImpl implements PeriodStatus {
+
     private final Integer number;
     private final String type;
     private final String status;
@@ -22,8 +22,10 @@ public class PeriodStatusImpl implements PeriodStatus {
         this.status = periodStatus.getStatus();
 
         periodResults = new ArrayList<>();
-        if(periodStatus.getCompetitor() != null){
-            periodStatus.getCompetitor().forEach(sapiCompetitor -> periodResults.add(new PeriodCompetitorResultImpl(sapiCompetitor)));
+        if (periodStatus.getCompetitor() != null) {
+            periodStatus
+                .getCompetitor()
+                .forEach(sapiCompetitor -> periodResults.add(new PeriodCompetitorResultImpl(sapiCompetitor)));
         }
     }
 
@@ -33,7 +35,9 @@ public class PeriodStatusImpl implements PeriodStatus {
      * @return the number of the specific lap.
      */
     @Override
-    public Integer getNumber() { return number; }
+    public Integer getNumber() {
+        return number;
+    }
 
     /**
      * Returns the type
@@ -41,7 +45,9 @@ public class PeriodStatusImpl implements PeriodStatus {
      * @return the type (possible values: lap)
      */
     @Override
-    public String getType() { return type; }
+    public String getType() {
+        return type;
+    }
 
     /**
      * Returns the status
@@ -49,7 +55,9 @@ public class PeriodStatusImpl implements PeriodStatus {
      * @return the status (possible values: not_started, started, completed)
      */
     @Override
-    public String getStatus() { return status; }
+    public String getStatus() {
+        return status;
+    }
 
     /**
      * Returns the list of period results
@@ -57,5 +65,7 @@ public class PeriodStatusImpl implements PeriodStatus {
      * @return the list of period results
      */
     @Override
-    public List<PeriodCompetitorResult> getPeriodResults() { return periodResults; }
+    public List<PeriodCompetitorResult> getPeriodResults() {
+        return periodResults;
+    }
 }

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableCompleteRoundCI implements Serializable {
+
     private Map<Locale, String> names;
     private Map<Locale, String> groupNames;
     private Map<Locale, String> phaseOrGroupLongNames;
@@ -21,20 +23,22 @@ public class ExportableCompleteRoundCI implements Serializable {
     private String betradarName;
     private List<Locale> cachedLocales;
 
-    public ExportableCompleteRoundCI(Map<Locale, String> names,
-                                     Map<Locale, String> groupNames,
-                                     Map<Locale, String> phaseOrGroupLongNames,
-                                     String type,
-                                     String group,
-                                     String groupId,
-                                     String otherMatchId,
-                                     Integer number,
-                                     Integer cupRoundMatches,
-                                     Integer cupRoundMatchNumber,
-                                     Integer betradarId,
-                                     String phase,
-                                     String betradarName,
-                                     List<Locale> cachedLocales) {
+    public ExportableCompleteRoundCI(
+        Map<Locale, String> names,
+        Map<Locale, String> groupNames,
+        Map<Locale, String> phaseOrGroupLongNames,
+        String type,
+        String group,
+        String groupId,
+        String otherMatchId,
+        Integer number,
+        Integer cupRoundMatches,
+        Integer cupRoundMatchNumber,
+        Integer betradarId,
+        String phase,
+        String betradarName,
+        List<Locale> cachedLocales
+    ) {
         this.names = names;
         this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
@@ -147,7 +151,9 @@ public class ExportableCompleteRoundCI implements Serializable {
         this.phase = phase;
     }
 
-    public String getBetradarName() { return betradarName; }
+    public String getBetradarName() {
+        return betradarName;
+    }
 
     public void setBetradarName(String betradarName) {
         this.betradarName = betradarName;

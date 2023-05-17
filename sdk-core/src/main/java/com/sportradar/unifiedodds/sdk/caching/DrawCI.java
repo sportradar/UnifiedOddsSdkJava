@@ -7,13 +7,13 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCI;
 import com.sportradar.unifiedodds.sdk.entities.DrawStatus;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 
 /**
  * A draw cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface DrawCI extends SportEventCI {
     /**
      * Returns the status of the draw

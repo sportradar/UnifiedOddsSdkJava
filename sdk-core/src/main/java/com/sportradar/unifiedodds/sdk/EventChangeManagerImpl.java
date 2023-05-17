@@ -8,11 +8,6 @@ import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.SportsInfoManagerImpl;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
-import org.yaml.snakeyaml.error.Mark;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -22,10 +17,33 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+import org.yaml.snakeyaml.error.Mark;
 
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "IllegalCatch",
+        "InnerTypeLast",
+        "MagicNumber",
+        "MethodLength",
+        "NPathComplexity",
+        "NeedBraces",
+        "OneStatementPerLine",
+        "ParameterAssignment",
+        "ReturnCount",
+        "VisibilityModifier",
+    }
+)
 public class EventChangeManagerImpl implements EventChangeManager {
 
-    private class EventUpdate{
+    private class EventUpdate {
+
         URN id;
         Date updated;
         SportEvent sportEvent;
@@ -40,7 +58,9 @@ public class EventChangeManagerImpl implements EventChangeManager {
     }
 
     private static final Logger executionLogger = LoggerFactory.getLogger(EventChangeManagerImpl.class);
-    private static final Logger clientInteractionLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
+    private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkClientInteractionLog.class
+    );
     private final SDKInternalConfiguration configuration;
     private final SportEventCache sportEventCache;
     private final SportsInfoManagerImpl sportsInfoManager;
@@ -60,9 +80,11 @@ public class EventChangeManagerImpl implements EventChangeManager {
     private final ReentrantLock dispatchLock = new ReentrantLock();
 
     @Inject
-    EventChangeManagerImpl(SportsInfoManager sportsInfoManager,
-                           SportEventCache sportEventCache,
-                           SDKInternalConfiguration configuration) {
+    EventChangeManagerImpl(
+        SportsInfoManager sportsInfoManager,
+        SportEventCache sportEventCache,
+        SDKInternalConfiguration configuration
+    ) {
         Preconditions.checkNotNull(sportsInfoManager);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(configuration);
@@ -83,62 +105,83 @@ public class EventChangeManagerImpl implements EventChangeManager {
     }
 
     @Override
-    public void setListener(EventChangeListener listener) { eventChangeListener = listener; }
+    public void setListener(EventChangeListener listener) {
+        eventChangeListener = listener;
+    }
 
     @Override
-    public Date getLastFixtureChange() { return lastFixtureChange; }
+    public Date getLastFixtureChange() {
+        return lastFixtureChange;
+    }
 
     @Override
-    public Date getLastResultChange() { return lastResultChange; }
+    public Date getLastResultChange() {
+        return lastResultChange;
+    }
 
     @Override
-    public Duration getFixtureChangeInterval() { return fixtureUpdateInterval; }
+    public Duration getFixtureChangeInterval() {
+        return fixtureUpdateInterval;
+    }
 
     @Override
-    public Duration getResultChangeInterval() { return resultUpdateInterval; }
+    public Duration getResultChangeInterval() {
+        return resultUpdateInterval;
+    }
 
     @Override
-    public boolean isRunning() { return isRunning; }
+    public boolean isRunning() {
+        return isRunning;
+    }
 
     @Override
     public void setFixtureChangeInterval(Duration fixtureChangeInterval) {
-        if(fixtureChangeInterval.getSeconds() < 60 || fixtureChangeInterval.getSeconds() > Duration.ofHours(12).getSeconds())
-        {
+        if (
+            fixtureChangeInterval.getSeconds() < 60 ||
+            fixtureChangeInterval.getSeconds() > Duration.ofHours(12).getSeconds()
+        ) {
             throw new IllegalArgumentException("Interval must be between 1 minute and 12 hours");
         }
 
-        clientInteractionLogger.info("Setting new fixture change interval to {}s.", fixtureChangeInterval.getSeconds());
+        clientInteractionLogger.info(
+            "Setting new fixture change interval to {}s.",
+            fixtureChangeInterval.getSeconds()
+        );
         this.fixtureUpdateInterval = fixtureChangeInterval;
-        if (isRunning)
-        {
+        if (isRunning) {
             restartScheduler(fixtureTaskScheduler, true);
         }
     }
 
     @Override
     public void setResultChangeInterval(Duration resultChangeInterval) {
-        if(resultChangeInterval.getSeconds() < 60 || resultChangeInterval.getSeconds() > Duration.ofHours(12).getSeconds())
-        {
+        if (
+            resultChangeInterval.getSeconds() < 60 ||
+            resultChangeInterval.getSeconds() > Duration.ofHours(12).getSeconds()
+        ) {
             throw new IllegalArgumentException("Interval must be between 1 minute and 12 hours");
         }
 
-        clientInteractionLogger.info("Setting new result change interval to {}s.", resultChangeInterval.getSeconds());
+        clientInteractionLogger.info(
+            "Setting new result change interval to {}s.",
+            resultChangeInterval.getSeconds()
+        );
         this.resultUpdateInterval = resultChangeInterval;
-        if (isRunning)
-        {
+        if (isRunning) {
             restartScheduler(resultTaskScheduler, false);
         }
     }
 
     @Override
     public void setFixtureChangeTimestamp(Date fixtureChangeTimestamp) {
-        if (isRunning)
-        {
+        if (isRunning) {
             throw new IllegalArgumentException("Manager must first be stopped.");
         }
 
-        if(fixtureChangeTimestamp.before(Date.from(Instant.now().minus(Duration.ofDays(1)))) || fixtureChangeTimestamp.after(new Date()))
-        {
+        if (
+            fixtureChangeTimestamp.before(Date.from(Instant.now().minus(Duration.ofDays(1)))) ||
+            fixtureChangeTimestamp.after(new Date())
+        ) {
             throw new IllegalArgumentException("Timestamp must be in the last 24 hours.");
         }
 
@@ -148,13 +191,14 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
     @Override
     public void setResultChangeTimestamp(Date resultChangeTimestamp) {
-        if (isRunning)
-        {
+        if (isRunning) {
             throw new IllegalArgumentException("Manager must first be stopped.");
         }
 
-        if(resultChangeTimestamp.before(Date.from(Instant.now().minus(Duration.ofDays(1)))) || resultChangeTimestamp.after(new Date()))
-        {
+        if (
+            resultChangeTimestamp.before(Date.from(Instant.now().minus(Duration.ofDays(1)))) ||
+            resultChangeTimestamp.after(new Date())
+        ) {
             throw new IllegalArgumentException("Timestamp must be in the last 24 hours.");
         }
 
@@ -164,23 +208,19 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
     @Override
     public void start() {
-        if (!isRunning)
-        {
+        if (!isRunning) {
             clientInteractionLogger.info("Starting periodical fetching of fixture and result changes.");
             isRunning = true;
             restartScheduler(fixtureTaskScheduler, true);
             restartScheduler(resultTaskScheduler, false);
-        }
-        else
-        {
+        } else {
             clientInteractionLogger.info("Invoking Start of already started process.");
         }
     }
 
     @Override
     public void stop() {
-        if (isRunning)
-        {
+        if (isRunning) {
             clientInteractionLogger.info("Stopping periodical fetching of fixture and result changes.");
             isRunning = false;
         }
@@ -190,52 +230,68 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
     private void restartScheduler(ScheduledExecutorService service, boolean isFixture) {
         try {
-            if(service.isShutdown()){
-                if(isFixture) fixtureFuture = null; else resultFuture = null;
+            if (service.isShutdown()) {
+                if (isFixture) fixtureFuture = null; else resultFuture = null;
                 service = Executors.newScheduledThreadPool(1);
             }
-            if(isFixture) {
-                if(fixtureFuture == null) {
-                    fixtureFuture = service.scheduleAtFixedRate(() -> fetchFixtures(), 1, this.fixtureUpdateInterval.getSeconds(), TimeUnit.SECONDS);
-                }
-                else{
+            if (isFixture) {
+                if (fixtureFuture == null) {
+                    fixtureFuture =
+                        service.scheduleAtFixedRate(
+                            () -> fetchFixtures(),
+                            1,
+                            this.fixtureUpdateInterval.getSeconds(),
+                            TimeUnit.SECONDS
+                        );
+                } else {
                     fixtureFuture.cancel(false);
-//                    if(fixtureLock.isLocked()) {
-//                        fixtureLock.unlock();
-//                    }
-                    fixtureFuture = service.scheduleAtFixedRate(() -> fetchFixtures(), 1, this.fixtureUpdateInterval.getSeconds(), TimeUnit.SECONDS);
+                    //                    if(fixtureLock.isLocked()) {
+                    //                        fixtureLock.unlock();
+                    //                    }
+                    fixtureFuture =
+                        service.scheduleAtFixedRate(
+                            () -> fetchFixtures(),
+                            1,
+                            this.fixtureUpdateInterval.getSeconds(),
+                            TimeUnit.SECONDS
+                        );
                 }
-            } else{
-                if(resultFuture == null) {
-                    resultFuture = service.scheduleAtFixedRate(() -> fetchResults(), 1, this.resultUpdateInterval.getSeconds(), TimeUnit.SECONDS);
-                }
-                else{
+            } else {
+                if (resultFuture == null) {
+                    resultFuture =
+                        service.scheduleAtFixedRate(
+                            () -> fetchResults(),
+                            1,
+                            this.resultUpdateInterval.getSeconds(),
+                            TimeUnit.SECONDS
+                        );
+                } else {
                     resultFuture.cancel(false);
-//                    if(resultLock.isLocked()) {
-//                        resultLock.unlock();
-//                    }
-                    resultFuture = service.scheduleAtFixedRate(() -> fetchResults(), 1, this.resultUpdateInterval.getSeconds(), TimeUnit.SECONDS);
+                    //                    if(resultLock.isLocked()) {
+                    //                        resultLock.unlock();
+                    //                    }
+                    resultFuture =
+                        service.scheduleAtFixedRate(
+                            () -> fetchResults(),
+                            1,
+                            this.resultUpdateInterval.getSeconds(),
+                            TimeUnit.SECONDS
+                        );
                 }
-
             }
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             executionLogger.warn(ex.getMessage());
         }
     }
 
-    private void updateLastFixtureChange(Date newDate)
-    {
-        if (newDate.after(lastFixtureChange))
-        {
+    private void updateLastFixtureChange(Date newDate) {
+        if (newDate.after(lastFixtureChange)) {
             lastFixtureChange = newDate;
         }
     }
 
-    private void updateLastResultChange(Date newDate)
-    {
-        if (newDate.after(lastResultChange))
-        {
+    private void updateLastResultChange(Date newDate) {
+        if (newDate.after(lastResultChange)) {
             lastFixtureChange = newDate;
         }
     }
@@ -253,7 +309,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
         fixtureLock.lock();
 
-        if(!isRunning) {
+        if (!isRunning) {
             return;
         }
 
@@ -262,24 +318,36 @@ public class EventChangeManagerImpl implements EventChangeManager {
             if (lastFixtureChange == null) {
                 executionLogger.info("Invoking getFixtureChanges. After=null");
                 changes = sportsInfoManager.getFixtureChanges(configuration.getDefaultLocale());
-            }
-            else {
+            } else {
                 executionLogger.info("Invoking getFixtureChanges. After={}", lastFixtureChange);
-                changes = sportsInfoManager.getFixtureChanges(lastFixtureChange, null, configuration.getDefaultLocale());
+                changes =
+                    sportsInfoManager.getFixtureChanges(
+                        lastFixtureChange,
+                        null,
+                        configuration.getDefaultLocale()
+                    );
             }
 
-            if(changes != null){
-                changes = changes.stream().sorted(Comparator.comparing(c->c.getUpdateTime().getTime())).collect(Collectors.toList());
+            if (changes != null) {
+                changes =
+                    changes
+                        .stream()
+                        .sorted(Comparator.comparing(c -> c.getUpdateTime().getTime()))
+                        .collect(Collectors.toList());
             }
 
             for (FixtureChange fixtureChange : changes) {
-                if(!isRunning) {
+                if (!isRunning) {
                     break;
                 }
 
-                EventUpdate eventUpdate = eventUpdates.stream().filter(a -> a.id.equals(fixtureChange.getSportEventId())).findFirst().orElse(null);
+                EventUpdate eventUpdate = eventUpdates
+                    .stream()
+                    .filter(a -> a.id.equals(fixtureChange.getSportEventId()))
+                    .findFirst()
+                    .orElse(null);
                 if (eventUpdate != null) {
-                    if(fixtureChange.getUpdateTime().after(eventUpdate.updated)) {
+                    if (fixtureChange.getUpdateTime().after(eventUpdate.updated)) {
                         eventUpdates.remove(eventUpdate);
                     } else {
                         updateLastFixtureChange(fixtureChange.getUpdateTime());
@@ -287,16 +355,24 @@ public class EventChangeManagerImpl implements EventChangeManager {
                     }
                 }
                 sportEventCache.purgeCacheItem(fixtureChange.getSportEventId());
-                SportEvent sportEvent = sportsInfoManager.getSportEventForEventChange(fixtureChange.getSportEventId());
-                eventUpdates.add(new EventUpdate(fixtureChange.getSportEventId(), fixtureChange.getUpdateTime(), sportEvent, true));
+                SportEvent sportEvent = sportsInfoManager.getSportEventForEventChange(
+                    fixtureChange.getSportEventId()
+                );
+                eventUpdates.add(
+                    new EventUpdate(
+                        fixtureChange.getSportEventId(),
+                        fixtureChange.getUpdateTime(),
+                        sportEvent,
+                        true
+                    )
+                );
                 updateLastFixtureChange(fixtureChange.getUpdateTime());
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             executionLogger.error("Error fetching fixture changes. Exception={}", ex.getMessage());
         }
 
-        if(fixtureLock.isLocked()) {
+        if (fixtureLock.isLocked()) {
             fixtureLock.unlock();
         }
 
@@ -316,7 +392,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
         resultLock.lock();
 
-        if(!isRunning) {
+        if (!isRunning) {
             return;
         }
 
@@ -325,24 +401,36 @@ public class EventChangeManagerImpl implements EventChangeManager {
             if (lastResultChange == null) {
                 executionLogger.info("Invoking getResultChanges. After=null");
                 changes = sportsInfoManager.getResultChanges(configuration.getDefaultLocale());
-            }
-            else {
+            } else {
                 executionLogger.info("Invoking getResultChanges. After={}", lastFixtureChange);
-                changes = sportsInfoManager.getResultChanges(lastFixtureChange, null, configuration.getDefaultLocale());
+                changes =
+                    sportsInfoManager.getResultChanges(
+                        lastFixtureChange,
+                        null,
+                        configuration.getDefaultLocale()
+                    );
             }
 
-            if(changes != null){
-                changes = changes.stream().sorted(Comparator.comparing(c->c.getUpdateTime().getTime())).collect(Collectors.toList());
+            if (changes != null) {
+                changes =
+                    changes
+                        .stream()
+                        .sorted(Comparator.comparing(c -> c.getUpdateTime().getTime()))
+                        .collect(Collectors.toList());
             }
 
             for (ResultChange resultChange : changes) {
-                if(!isRunning) {
+                if (!isRunning) {
                     break;
                 }
 
-                EventUpdate eventUpdate = eventUpdates.stream().filter(a -> a.id.equals(resultChange.getSportEventId())).findFirst().orElse(null);
+                EventUpdate eventUpdate = eventUpdates
+                    .stream()
+                    .filter(a -> a.id.equals(resultChange.getSportEventId()))
+                    .findFirst()
+                    .orElse(null);
                 if (eventUpdate != null) {
-                    if(resultChange.getUpdateTime().after(eventUpdate.updated)) {
+                    if (resultChange.getUpdateTime().after(eventUpdate.updated)) {
                         eventUpdates.remove(eventUpdate);
                     } else {
                         updateLastResultChange(resultChange.getUpdateTime());
@@ -350,60 +438,71 @@ public class EventChangeManagerImpl implements EventChangeManager {
                     }
                 }
                 sportEventCache.purgeCacheItem(resultChange.getSportEventId());
-                SportEvent sportEvent = sportsInfoManager.getSportEventForEventChange(resultChange.getSportEventId());
-                eventUpdates.add(new EventUpdate(resultChange.getSportEventId(), resultChange.getUpdateTime(), sportEvent, false));
+                SportEvent sportEvent = sportsInfoManager.getSportEventForEventChange(
+                    resultChange.getSportEventId()
+                );
+                eventUpdates.add(
+                    new EventUpdate(
+                        resultChange.getSportEventId(),
+                        resultChange.getUpdateTime(),
+                        sportEvent,
+                        false
+                    )
+                );
                 updateLastResultChange(resultChange.getUpdateTime());
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             executionLogger.error("Error fetching result changes. Exception={}", ex.getMessage());
         }
 
-        if(resultLock.isLocked()) {
+        if (resultLock.isLocked()) {
             resultLock.unlock();
         }
 
         dispatchUpdateChangeMessages();
     }
 
-    private void dispatchUpdateChangeMessages()
-    {
-        if(eventChangeListener == null)
-        {
+    private void dispatchUpdateChangeMessages() {
+        if (eventChangeListener == null) {
             return;
         }
 
         dispatchLock.lock();
-        while(!eventUpdates.isEmpty())
-        {
+        while (!eventUpdates.isEmpty()) {
             EventUpdate eventUpdate = eventUpdates.get(0);
             String updateStr = eventUpdate.isFixture ? "fixture" : "result";
-            try
-            {
-                clientInteractionLogger.debug("Dispatching {} change [{}] for {}. Updated={}",
-                                              updateStr,
-                                              eventUpdates.size(),
-                                              eventUpdate.id,
-                                              eventUpdate.updated);
-                if (eventUpdate.isFixture)
-                {
-                    eventChangeListener.onFixtureChange(eventUpdate.id, eventUpdate.updated, eventUpdate.sportEvent);
-                }
-                else
-                {
-                    eventChangeListener.onResultChange(eventUpdate.id, eventUpdate.updated, eventUpdate.sportEvent);
+            try {
+                clientInteractionLogger.debug(
+                    "Dispatching {} change [{}] for {}. Updated={}",
+                    updateStr,
+                    eventUpdates.size(),
+                    eventUpdate.id,
+                    eventUpdate.updated
+                );
+                if (eventUpdate.isFixture) {
+                    eventChangeListener.onFixtureChange(
+                        eventUpdate.id,
+                        eventUpdate.updated,
+                        eventUpdate.sportEvent
+                    );
+                } else {
+                    eventChangeListener.onResultChange(
+                        eventUpdate.id,
+                        eventUpdate.updated,
+                        eventUpdate.sportEvent
+                    );
                 }
 
                 eventUpdates.remove(eventUpdate);
-            }
-            catch (Exception exception)
-            {
-                executionLogger.warn("Error during user processing of event {} change message: {}",
-                                     updateStr,
-                                     exception.getMessage());
+            } catch (Exception exception) {
+                executionLogger.warn(
+                    "Error during user processing of event {} change message: {}",
+                    updateStr,
+                    exception.getMessage()
+                );
             }
         }
-        if(dispatchLock.isLocked()){
+        if (dispatchLock.isLocked()) {
             dispatchLock.unlock();
         }
     }

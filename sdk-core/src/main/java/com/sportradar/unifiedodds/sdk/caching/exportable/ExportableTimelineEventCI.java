@@ -1,12 +1,13 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableTimelineEventCI implements Serializable {
+
     private int id;
     private Double awayScore;
     private Double homeScore;
@@ -27,7 +28,27 @@ public class ExportableTimelineEventCI implements Serializable {
     private Integer matchStatusCode;
     private String matchClock;
 
-    public ExportableTimelineEventCI(int id, Double awayScore, Double homeScore, Integer matchTime, String period, String periodName, String points, String stoppageTime, HomeAway team, String type, String value, Integer x, Integer y, Date time, List<ExportableEventPlayerAssistCI> assists, ExportableEventPlayerCI goalScorer, ExportableEventPlayerCI player, Integer matchStatusCode, String matchClock) {
+    public ExportableTimelineEventCI(
+        int id,
+        Double awayScore,
+        Double homeScore,
+        Integer matchTime,
+        String period,
+        String periodName,
+        String points,
+        String stoppageTime,
+        HomeAway team,
+        String type,
+        String value,
+        Integer x,
+        Integer y,
+        Date time,
+        List<ExportableEventPlayerAssistCI> assists,
+        ExportableEventPlayerCI goalScorer,
+        ExportableEventPlayerCI player,
+        Integer matchStatusCode,
+        String matchClock
+    ) {
         this.id = id;
         this.awayScore = awayScore;
         this.homeScore = homeScore;

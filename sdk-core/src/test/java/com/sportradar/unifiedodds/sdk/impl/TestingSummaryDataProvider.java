@@ -2,28 +2,38 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
-import org.mockito.Mockito;
-
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.mockito.Mockito;
 
+@SuppressWarnings({ "IllegalCatch" })
 public class TestingSummaryDataProvider<T> extends DataProvider<T> {
+
     private final Map<String, Supplier<InputStream>> streamFactories;
 
     public TestingSummaryDataProvider(Map<String, String> filePaths) {
-        super("", Mockito.mock(SDKInternalConfiguration.class), Mockito.mock(LogHttpDataFetcher.class),
-                Mockito.mock(Deserializer.class));
-
-        this.streamFactories = filePaths
+        super(
+            "",
+            Mockito.mock(SDKInternalConfiguration.class),
+            Mockito.mock(LogHttpDataFetcher.class),
+            Mockito.mock(Deserializer.class)
+        );
+        this.streamFactories =
+            filePaths
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(
+                .collect(
+                    Collectors.toMap(
                         entry -> entry.getKey(),
-                        entry -> () -> TestingSummaryDataProvider.class.getClassLoader().getResourceAsStream(entry.getValue())
-                ));
+                        entry ->
+                            () ->
+                                TestingSummaryDataProvider.class.getClassLoader()
+                                    .getResourceAsStream(entry.getValue())
+                    )
+                );
     }
 
     @Override
@@ -42,7 +52,8 @@ public class TestingSummaryDataProvider<T> extends DataProvider<T> {
     }
 
     @Override
-    public DataWrapper<T> getDataWithAdditionalInfo(Locale locale, String... args) throws DataProviderException {
+    public DataWrapper<T> getDataWithAdditionalInfo(Locale locale, String... args)
+        throws DataProviderException {
         throw new UnsupportedOperationException();
     }
 

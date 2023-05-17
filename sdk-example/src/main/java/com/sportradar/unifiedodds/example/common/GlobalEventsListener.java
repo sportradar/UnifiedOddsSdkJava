@@ -12,7 +12,9 @@ import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({ "LineLength" })
 public class GlobalEventsListener implements SDKGlobalEventsListener {
+
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /**
@@ -26,7 +28,11 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
      */
     @Override
     public void onProducerDown(ProducerDown producerDown) {
-        logger.warn("Received producer down, reason: {}. Need to deactivate markets on all sport events currently handled by {}", producerDown.getReason(), producerDown.getProducer());
+        logger.warn(
+            "Received producer down, reason: {}. Need to deactivate markets on all sport events currently handled by {}",
+            producerDown.getReason(),
+            producerDown.getProducer()
+        );
     }
 
     /**
@@ -38,7 +44,11 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
      */
     @Override
     public void onProducerUp(ProducerUp producerUp) {
-       logger.info("Received producer up, reason: {}. Need to activate/validate/check all available markets currently handled by {}", producerUp.getReason(), producerUp.getProducer());
+        logger.info(
+            "Received producer up, reason: {}. Need to activate/validate/check all available markets currently handled by {}",
+            producerUp.getReason(),
+            producerUp.getProducer()
+        );
     }
 
     /**
@@ -57,11 +67,13 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
      */
     @Override
     public void onProducerStatusChange(ProducerStatus producerStatus) {
-        logger.warn("Received a producer status change notification. Producer: {}, Reason: {}, isDown: {}, isDelayed: {}",
-                producerStatus.getProducer().getId(),
-                producerStatus.getProducerStatusReason(),
-                producerStatus.isDown(),
-                producerStatus.isDelayed());
+        logger.warn(
+            "Received a producer status change notification. Producer: {}, Reason: {}, isDown: {}, isDelayed: {}",
+            producerStatus.getProducer().getId(),
+            producerStatus.getProducerStatusReason(),
+            producerStatus.isDown(),
+            producerStatus.isDelayed()
+        );
     }
 
     /**

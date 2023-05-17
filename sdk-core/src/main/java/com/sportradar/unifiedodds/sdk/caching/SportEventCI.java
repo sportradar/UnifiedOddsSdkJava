@@ -5,13 +5,13 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.Optional;
 
 /**
  * Defines methods used to access sport event type properties
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface SportEventCI extends CacheItem {
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current

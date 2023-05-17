@@ -17,25 +17,31 @@ import com.sportradar.unifiedodds.sdk.entities.TournamentInfo;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods used to access tournament properties
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName" })
 class TournamentInfoImpl implements TournamentInfo {
-    private final static Logger logger = LoggerFactory.getLogger(TournamentInfoImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(TournamentInfoImpl.class);
     private final TournamentCI tournament;
     private final SportEventCache sportEventCache;
     private final SportEntityFactory sportEntityFactory;
     private final List<Locale> locales;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-
-    TournamentInfoImpl(TournamentCI tournamentCI, SportEventCache sportEventCache, SportEntityFactory sportEntityFactory, List<Locale> locales, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    TournamentInfoImpl(
+        TournamentCI tournamentCI,
+        SportEventCache sportEventCache,
+        SportEntityFactory sportEntityFactory,
+        List<Locale> locales,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(tournamentCI);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -120,7 +126,14 @@ class TournamentInfoImpl implements TournamentInfo {
             return null;
         }
 
-        return new CurrentSeasonInfoImpl(currentSeason, tournamentCI, sportEventCache, sportEntityFactory, locales, exceptionHandlingStrategy);
+        return new CurrentSeasonInfoImpl(
+            currentSeason,
+            tournamentCI,
+            sportEventCache,
+            sportEntityFactory,
+            locales,
+            exceptionHandlingStrategy
+        );
     }
 
     /**
@@ -130,10 +143,7 @@ class TournamentInfoImpl implements TournamentInfo {
      */
     @Override
     public String toString() {
-        return "TournamentInfoImpl{" +
-                "tournamentId=" + tournament.getId() +
-                ", locales=" + locales +
-                '}';
+        return "TournamentInfoImpl{" + "tournamentId=" + tournament.getId() + ", locales=" + locales + '}';
     }
 
     /**
@@ -145,15 +155,28 @@ class TournamentInfoImpl implements TournamentInfo {
     private void handleException(String request, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
-                throw new ObjectNotFoundException(this.getClass() + "[" + tournament.getId() + "], request(" + request + ")");
+                throw new ObjectNotFoundException(
+                    this.getClass() + "[" + tournament.getId() + "], request(" + request + ")"
+                );
             } else {
                 throw new ObjectNotFoundException(request, e);
             }
         } else {
             if (e == null) {
-                logger.warn("tInfo - Error executing {}[{}] request({}), returning null", this.getClass(), tournament.getId(), request);
+                logger.warn(
+                    "tInfo - Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    tournament.getId(),
+                    request
+                );
             } else {
-                logger.warn("tInfo - Error executing {}[{}] request({}), returning null", this.getClass(), tournament.getId(), request, e);
+                logger.warn(
+                    "tInfo - Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    tournament.getId(),
+                    request,
+                    e
+                );
             }
         }
     }

@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import java.util.Map;
  * An interface providing methods to access player details
  */
 public interface Player {
-
     /**
      * Returns the unique {@link URN} identifier representing the current {@link Player} instance
      *

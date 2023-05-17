@@ -19,62 +19,67 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings({ "MagicNumber" })
 public class GeneralModuleTest {
 
-  private GeneralModule module;
-  @Mock
-  private SDKGlobalEventsListener sdkListener;
-  @Mock
-  private SDKInternalConfiguration configuration;
-  @Mock
-  private HttpClientFactory httpClientFactory;
-  @Mock
-  private CloseableHttpClient httpClient;
+    private GeneralModule module;
 
-  @Before
-  public void setUp() throws Exception {
-    module = new GeneralModule(sdkListener, configuration, httpClientFactory);
+    @Mock
+    private SDKGlobalEventsListener sdkListener;
 
-    when(httpClientFactory.create(anyInt(), anyInt(), anyInt())).thenReturn(httpClient);
-  }
+    @Mock
+    private SDKInternalConfiguration configuration;
 
-  @Test
-  public void provideHttpClient() {
-    when(configuration.getHttpClientTimeout()).thenReturn(3);
-    when(configuration.getHttpClientMaxConnTotal()).thenReturn(10);
-    when(configuration.getHttpClientMaxConnPerRoute()).thenReturn(20);
+    @Mock
+    private HttpClientFactory httpClientFactory;
 
-    CloseableHttpClient client = module.provideHttpClient();
-    assertNotNull(client);
+    @Mock
+    private CloseableHttpClient httpClient;
 
-    verify(httpClientFactory).create(3000, 10, 20);
-  }
+    @Before
+    public void setUp() throws Exception {
+        module = new GeneralModule(sdkListener, configuration, httpClientFactory);
 
-  @Test
-  public void provideCriticalHttpClient() {
-    Duration timeout = Duration.ofSeconds(3);
-    when(configuration.getHttpClientMaxConnTotal()).thenReturn(10);
-    when(configuration.getHttpClientMaxConnPerRoute()).thenReturn(20);
-
-    try (MockedStatic<OperationManager> mockedStatic = Mockito.mockStatic(OperationManager.class)) {
-      mockedStatic.when(OperationManager::getFastHttpClientTimeout).thenReturn(timeout);
-
-      CloseableHttpClient client = module.provideCriticalHttpClient();
-      assertNotNull(client);
+        when(httpClientFactory.create(anyInt(), anyInt(), anyInt())).thenReturn(httpClient);
     }
 
-    verify(httpClientFactory).create(3000, 10, 20);
-  }
+    @Test
+    public void provideHttpClient() {
+        when(configuration.getHttpClientTimeout()).thenReturn(3);
+        when(configuration.getHttpClientMaxConnTotal()).thenReturn(10);
+        when(configuration.getHttpClientMaxConnPerRoute()).thenReturn(20);
 
-  @Test
-  public void provideRecoveryHttpClient() {
-    when(configuration.getRecoveryHttpClientTimeout()).thenReturn(3);
-    when(configuration.getRecoveryHttpClientMaxConnTotal()).thenReturn(10);
-    when(configuration.getRecoveryHttpClientMaxConnPerRoute()).thenReturn(20);
+        CloseableHttpClient client = module.provideHttpClient();
+        assertNotNull(client);
 
-    CloseableHttpClient client = module.provideRecoveryHttpClient();
-    assertNotNull(client);
+        verify(httpClientFactory).create(3000, 10, 20);
+    }
 
-    verify(httpClientFactory).create(3000, 10, 20);
-  }
+    @Test
+    public void provideCriticalHttpClient() {
+        Duration timeout = Duration.ofSeconds(3);
+        when(configuration.getHttpClientMaxConnTotal()).thenReturn(10);
+        when(configuration.getHttpClientMaxConnPerRoute()).thenReturn(20);
+
+        try (MockedStatic<OperationManager> mockedStatic = Mockito.mockStatic(OperationManager.class)) {
+            mockedStatic.when(OperationManager::getFastHttpClientTimeout).thenReturn(timeout);
+
+            CloseableHttpClient client = module.provideCriticalHttpClient();
+            assertNotNull(client);
+        }
+
+        verify(httpClientFactory).create(3000, 10, 20);
+    }
+
+    @Test
+    public void provideRecoveryHttpClient() {
+        when(configuration.getRecoveryHttpClientTimeout()).thenReturn(3);
+        when(configuration.getRecoveryHttpClientMaxConnTotal()).thenReturn(10);
+        when(configuration.getRecoveryHttpClientMaxConnPerRoute()).thenReturn(20);
+
+        CloseableHttpClient client = module.provideRecoveryHttpClient();
+        assertNotNull(client);
+
+        verify(httpClientFactory).create(3000, 10, 20);
+    }
 }

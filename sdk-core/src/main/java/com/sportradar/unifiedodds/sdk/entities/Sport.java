@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Defines methods implemented by classes representing a sport
  */
-public interface Sport extends SportSummary{
+public interface Sport extends SportSummary {
     /**
      * Returns an unmodifiable {@link List} representing categories
      * which belong to the sport represented by the current instance

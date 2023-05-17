@@ -5,9 +5,9 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
-
 import java.util.Date;
 
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class RecoveryInfoImpl implements RecoveryInfo {
 
     private final long after;
@@ -17,8 +17,14 @@ public class RecoveryInfoImpl implements RecoveryInfo {
     private final String responseMessage;
     private final int nodeId;
 
-    public RecoveryInfoImpl(long after, long timestamp, long requestId, int responseCode, String responseMessage, Integer nodeId)
-    {
+    public RecoveryInfoImpl(
+        long after,
+        long timestamp,
+        long requestId,
+        int responseCode,
+        String responseMessage,
+        Integer nodeId
+    ) {
         this.after = after;
         this.timestamp = timestamp;
         this.requestId = requestId;
@@ -33,7 +39,9 @@ public class RecoveryInfoImpl implements RecoveryInfo {
      * @return the after timestamp of the recovery or 0 if full recovery was done
      */
     @Override
-    public long getAfter() { return after; }
+    public long getAfter() {
+        return after;
+    }
 
     /**
      * Gets the timestamp specifying when the recovery was initiated
@@ -86,14 +94,26 @@ public class RecoveryInfoImpl implements RecoveryInfo {
     }
 
     @Override
-    public String toString(){
-        return "RecoveryInfoImpl{" +
-                "after=" + after + '/' + new Date(after) +
-                ", initiated='" + timestamp + '/' + new Date(timestamp) +
-                ", requestId=" + requestId +
-                ", nodeId=" + nodeId +
-                ", response code=" + responseCode +
-                ", msg=" + responseMessage +
-                '}';
+    public String toString() {
+        return (
+            "RecoveryInfoImpl{" +
+            "after=" +
+            after +
+            '/' +
+            new Date(after) +
+            ", initiated='" +
+            timestamp +
+            '/' +
+            new Date(timestamp) +
+            ", requestId=" +
+            requestId +
+            ", nodeId=" +
+            nodeId +
+            ", response code=" +
+            responseCode +
+            ", msg=" +
+            responseMessage +
+            '}'
+        );
     }
 }

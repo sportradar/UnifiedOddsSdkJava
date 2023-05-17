@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.SportSummary;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import java.util.Map;
  * Represents a basic sport summary
  */
 public class SportSummaryImpl implements SportSummary {
+
     /**
      * An {@link URN} uniquely identifying the sport represented by the current instance
      */
@@ -25,7 +25,6 @@ public class SportSummaryImpl implements SportSummary {
      * An unmodifiable {@link Map} containing translated sport names
      */
     private final Map<Locale, String> names;
-
 
     /**
      * Initializes a new instance of {@link SportImpl}
@@ -41,7 +40,6 @@ public class SportSummaryImpl implements SportSummary {
         this.id = id;
         this.names = ImmutableMap.copyOf(names);
     }
-
 
     /**
      * Returns an {@link URN} uniquely identifying the sport represented by the current instance
@@ -60,7 +58,7 @@ public class SportSummaryImpl implements SportSummary {
      * @return - the name of the current {@link SportSummary} instance in the specified language
      */
     @Override
-    public String getName(Locale l){
+    public String getName(Locale l) {
         return names.get(l);
     }
 
@@ -81,9 +79,6 @@ public class SportSummaryImpl implements SportSummary {
      */
     @Override
     public String toString() {
-        return "SportSummaryImpl{" +
-                "id=" + id +
-                ", names=" + names +
-                '}';
+        return "SportSummaryImpl{" + "id=" + id + ", names=" + names + '}';
     }
 }

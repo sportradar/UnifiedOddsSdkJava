@@ -36,5 +36,7 @@ public interface MarketWithProbabilities extends Market {
      *
      * @return a {@link MarketMetadata} instance which contains additional market information
      */
-    default MarketMetadata getMarketMetadata(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+    default MarketMetadata getMarketMetadata() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

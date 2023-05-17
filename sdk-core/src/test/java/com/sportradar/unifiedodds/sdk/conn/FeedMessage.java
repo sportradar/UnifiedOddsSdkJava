@@ -2,6 +2,7 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 
+@SuppressWarnings({ "MemberName", "VisibilityModifier" })
 public class FeedMessage {
 
     public long Timestamp;

@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableJerseyCI;
 /**
  * A cache representation of a jersey
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class JerseyCI {
 
     /**
@@ -52,7 +53,6 @@ public class JerseyCI {
      * The jersey sleeve detail
      */
     private final String sleeveDetail;
-
 
     /**
      * Initializes a new {@link JerseyCI}
@@ -159,14 +159,14 @@ public class JerseyCI {
 
     public ExportableJerseyCI export() {
         return new ExportableJerseyCI(
-                base,
-                number,
-                sleeve,
-                type,
-                stripesColor,
-                splitColor,
-                shirtType,
-                sleeveDetail
+            base,
+            number,
+            sleeve,
+            type,
+            stripesColor,
+            splitColor,
+            shirtType,
+            sleeveDetail
         );
     }
 }

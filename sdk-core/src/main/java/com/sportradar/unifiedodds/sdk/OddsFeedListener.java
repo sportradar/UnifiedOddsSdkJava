@@ -11,6 +11,4 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
  * handle received messages.
  *
  */
-public interface OddsFeedListener extends GenericOddsFeedListener<SportEvent> {
-
-}
+public interface OddsFeedListener extends GenericOddsFeedListener<SportEvent> {}

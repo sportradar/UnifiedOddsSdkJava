@@ -9,13 +9,24 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.utils.SdkHelper;
-
 import java.util.*;
+import lombok.NonNull;
 
 /**
  * The internal SDK configuration
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ExecutableStatementCount",
+        "HiddenField",
+        "MagicNumber",
+        "MultipleStringLiterals",
+        "NeedBraces",
+    }
+)
 public class SDKInternalConfiguration {
+
     private final String accessToken;
     private final Locale defaultLocale;
     private final List<Locale> desiredLocales;
@@ -39,28 +50,32 @@ public class SDKInternalConfiguration {
     private final Set<String> schedulerTasksToSkip;
     private final String messagingVirtualHost;
     private String apiHost;
+    private final int apiPort;
+    private String apiHostAndPort;
     private final Environment selectedEnvironment;
     private final int httpClientMaxConnTotal;
     private final int httpClientMaxConnPerRoute;
     private final int recoveryHttpClientMaxConnTotal;
     private final int recoveryHttpClientMaxConnPerRoute;
 
-    SDKInternalConfiguration(OddsFeedConfiguration cfg,
-                             SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-                             SDKConfigurationYamlReader sdkConfigurationYamlReader) {
+    SDKInternalConfiguration(
+        OddsFeedConfiguration cfg,
+        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SDKConfigurationYamlReader sdkConfigurationYamlReader
+    ) {
         this(cfg, false, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
     }
 
-    SDKInternalConfiguration(OddsFeedConfiguration cfg,
-                             boolean setReplaySession,
-                             SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-                             SDKConfigurationYamlReader sdkConfigurationYamlReader) {
-        Preconditions.checkNotNull(cfg);
-        Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
-        Preconditions.checkNotNull(sdkConfigurationYamlReader);
-
+    SDKInternalConfiguration(
+        @NonNull OddsFeedConfiguration cfg,
+        boolean setReplaySession,
+        @NonNull SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        @NonNull SDKConfigurationYamlReader sdkConfigurationYamlReader
+    ) {
         host = cfg.getMessagingHost();
         apiHost = cfg.getAPIHost();
+        apiPort = cfg.getAPIPort();
+        apiHostAndPort = hostAndPort(apiHost, apiPort);
         useApiSsl = cfg.getUseApiSsl();
         useMessagingSsl = cfg.getUseMessagingSsl();
         port = cfg.getPort();
@@ -86,12 +101,14 @@ public class SDKInternalConfiguration {
         recoveryHttpClientMaxConnTotal = cfg.getRecoveryHttpClientMaxConnTotal();
         recoveryHttpClientMaxConnPerRoute = cfg.getRecoveryHttpClientMaxConnPerRoute();
 
-        cleanTrafficLogEntries = sdkConfigurationPropertiesReader.readCleanTrafficLogEntries()
-                .orElse(sdkConfigurationYamlReader.readCleanTrafficLogEntries()
-                        .orElse(false));
-        simpleVariantCaching = sdkConfigurationPropertiesReader.readSimpleVariantCaching()
-                .orElse(sdkConfigurationYamlReader.readSimpleVariantCaching()
-                        .orElse(false));
+        cleanTrafficLogEntries =
+            sdkConfigurationPropertiesReader
+                .readCleanTrafficLogEntries()
+                .orElse(sdkConfigurationYamlReader.readCleanTrafficLogEntries().orElse(false));
+        simpleVariantCaching =
+            sdkConfigurationPropertiesReader
+                .readSimpleVariantCaching()
+                .orElse(sdkConfigurationYamlReader.readSimpleVariantCaching().orElse(false));
 
         schedulerTasksToSkip = new HashSet<>();
         schedulerTasksToSkip.addAll(sdkConfigurationPropertiesReader.readSchedulerTasksToSkip());
@@ -102,25 +119,37 @@ public class SDKInternalConfiguration {
      * @return Host / IP for connection as provided by Sportradar
      */
     public String getMessagingHost() {
-        if (isReplaySession) // && host.equals("mq.betradar.com"))
-            return "replaymq.betradar.com";
         return host;
     }
 
     /**
      * @return The Sportradar host used for API-access
      */
-    public String getAPIHost() { return apiHost; }
+    public String getAPIHost() {
+        return apiHost;
+    }
+
+    public int getAPIPort() {
+        return apiPort;
+    }
+
+    public String getApiHostAndPort() {
+        return apiHostAndPort;
+    }
 
     /**
      * @return The selected environment used for API-access
      */
-    public Environment getEnvironment() { return selectedEnvironment; }
+    public Environment getEnvironment() {
+        return selectedEnvironment;
+    }
 
     /**
      * @return The longest inactivity interval between producer alive messages(seconds)
      */
-    public int getLongestInactivityInterval() { return inactivitySeconds; }
+    public int getLongestInactivityInterval() {
+        return inactivitySeconds;
+    }
 
     /**
      * @return The max recovery execution time, after which the recovery request is repeated(minutes)
@@ -187,8 +216,7 @@ public class SDKInternalConfiguration {
      * @return - a {@link List} of locales in which the data should be prefetched
      */
     public List<Locale> getDesiredLocales() {
-        if (!desiredLocales.contains(defaultLocale))
-            desiredLocales.add(0, defaultLocale);
+        if (!desiredLocales.contains(defaultLocale)) desiredLocales.add(0, defaultLocale);
         return desiredLocales;
     }
 
@@ -348,44 +376,48 @@ public class SDKInternalConfiguration {
 
         if (isReplaySession) {
             apiHost = newApiHost;
+            apiHostAndPort = hostAndPort(apiHost, apiPort);
         }
     }
 
     @Override
     public String toString() {
-
         String obfuscatedToken = SdkHelper.obfuscate(accessToken);
 
         return new StringJoiner(", ", SDKInternalConfiguration.class.getSimpleName() + "[", "]")
-                .add("accessToken='" + obfuscatedToken + "'")
-                .add("defaultLocale=" + defaultLocale)
-                .add("desiredLocales=" + desiredLocales)
-                .add("host='" + host + "'")
-                .add("inactivitySeconds=" + inactivitySeconds)
-                .add("maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes)
-                .add("minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests)
-                .add("useMessagingSsl=" + useMessagingSsl)
-                .add("useApiSsl=" + useApiSsl)
-                .add("port=" + port)
-                .add("isReplaySession=" + isReplaySession)
-                .add("messagingUsername='" + messagingUsername + "'")
-                .add("messagingPassword='" + messagingPassword + "'")
-                .add("exceptionHandlingStrategy=" + exceptionHandlingStrategy)
-                .add("sdkNodeId=" + sdkNodeId)
-                .add("cleanTrafficLogEntries=" + cleanTrafficLogEntries)
-                .add("httpClientTimeout=" + httpClientTimeout)
-                .add("httpClientMaxConnTotal=" + httpClientMaxConnTotal)
-                .add("httpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute)
-                .add("recoveryHttpClientTimeout=" + recoveryHttpClientTimeout)
-                .add("recoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal)
-                .add("recoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute)
-                .add("disabledProducers=" + disabledProducers)
-                .add("simpleVariantCaching=" + simpleVariantCaching)
-                .add("schedulerTasksToSkip=" + schedulerTasksToSkip)
-                .add("messagingVirtualHost='" + messagingVirtualHost + "'")
-                .add("apiHost='" + apiHost + "'")
-                .add("selectedEnvironment=" + selectedEnvironment)
-                .toString();
+            .add("accessToken='" + obfuscatedToken + "'")
+            .add("defaultLocale=" + defaultLocale)
+            .add("desiredLocales=" + desiredLocales)
+            .add("host='" + host + "'")
+            .add("inactivitySeconds=" + inactivitySeconds)
+            .add("maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes)
+            .add("minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests)
+            .add("useMessagingSsl=" + useMessagingSsl)
+            .add("useApiSsl=" + useApiSsl)
+            .add("port=" + port)
+            .add("isReplaySession=" + isReplaySession)
+            .add("messagingUsername='" + messagingUsername + "'")
+            .add("messagingPassword='" + messagingPassword + "'")
+            .add("exceptionHandlingStrategy=" + exceptionHandlingStrategy)
+            .add("sdkNodeId=" + sdkNodeId)
+            .add("cleanTrafficLogEntries=" + cleanTrafficLogEntries)
+            .add("httpClientTimeout=" + httpClientTimeout)
+            .add("httpClientMaxConnTotal=" + httpClientMaxConnTotal)
+            .add("httpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute)
+            .add("recoveryHttpClientTimeout=" + recoveryHttpClientTimeout)
+            .add("recoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal)
+            .add("recoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute)
+            .add("disabledProducers=" + disabledProducers)
+            .add("simpleVariantCaching=" + simpleVariantCaching)
+            .add("schedulerTasksToSkip=" + schedulerTasksToSkip)
+            .add("messagingVirtualHost='" + messagingVirtualHost + "'")
+            .add("apiHost='" + apiHost + "'")
+            .add("apiPort=" + apiPort)
+            .add("selectedEnvironment=" + selectedEnvironment)
+            .toString();
     }
 
+    private String hostAndPort(String apiHost, int apiPort) {
+        return apiHost + (apiPort == 80 ? "" : ":" + apiPort);
+    }
 }

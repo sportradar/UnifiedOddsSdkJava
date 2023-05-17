@@ -14,13 +14,15 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
  * Created on 07/11/2018.
  * // TODO @eti: Javadoc
  */
-public final class DefaultAdditionalMarketMappingsProvider extends ObservableDataProvider<MarketDescriptions> {
+public final class DefaultAdditionalMarketMappingsProvider
+    extends ObservableDataProvider<MarketDescriptions> {
 
     @Inject
     DefaultAdditionalMarketMappingsProvider(
-            SDKInternalConfiguration config,
-            LogHttpDataFetcher logHttpDataFetcher,
-            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        SDKInternalConfiguration config,
+        LogHttpDataFetcher logHttpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
+    ) {
         super("no-op-uri", config, logHttpDataFetcher, deserializer);
     }
 

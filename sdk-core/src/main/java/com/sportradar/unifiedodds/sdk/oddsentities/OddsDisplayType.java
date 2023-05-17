@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * Possible options for displaying outcome odds
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum OddsDisplayType {
-
     /**
      * The Decimal format
      */
@@ -17,5 +17,5 @@ public enum OddsDisplayType {
     /**
      * The American format
      */
-    American
+    American,
 }

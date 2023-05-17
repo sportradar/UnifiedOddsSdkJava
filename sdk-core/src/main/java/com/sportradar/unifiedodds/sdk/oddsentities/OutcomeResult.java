@@ -7,8 +7,9 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * An indication of the outcome result
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum OutcomeResult {
     Lost,
     Won,
-    UndecidedYet
+    UndecidedYet,
 }

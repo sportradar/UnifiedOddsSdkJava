@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.cfg;
 /**
  * Defines methods implemented by classes taking care of the 1st step when building configuration - setting the token.
  */
+@SuppressWarnings({ "LineLength" })
 public interface TokenSetter {
     /**
      * Sets the access token used to access feed resources (AMQP broker, Sports API, ...)

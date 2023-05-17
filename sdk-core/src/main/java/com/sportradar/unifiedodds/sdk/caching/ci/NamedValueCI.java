@@ -8,16 +8,17 @@ import com.sportradar.uf.sportsapi.datamodel.BetstopReasonsDescriptions;
 import com.sportradar.uf.sportsapi.datamodel.BettingStatusDescriptions;
 import com.sportradar.uf.sportsapi.datamodel.MatchStatusDescriptions;
 import com.sportradar.uf.sportsapi.datamodel.VoidReasonsDescriptions;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple key-value representation used by the caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ReturnCount" })
 public class NamedValueCI {
+
     /**
      * The id of the current instance
      */
@@ -27,7 +28,6 @@ public class NamedValueCI {
      * The description of the current instance
      */
     private final String description;
-
 
     /**
      * Initializes a new instance of the {@link NamedValueCI}
@@ -39,7 +39,6 @@ public class NamedValueCI {
         this.id = id;
         this.description = description;
     }
-
 
     /**
      * The id of the current instance
@@ -68,23 +67,29 @@ public class NamedValueCI {
      */
     public static <T> List<NamedValueCI> mapToNamedValuesCI(T fetch) {
         if (fetch instanceof MatchStatusDescriptions) {
-            return ((MatchStatusDescriptions) fetch).getMatchStatus().stream()
-                    .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
-                    .collect(Collectors.toList());
-        } else if(fetch instanceof VoidReasonsDescriptions) {
-            return ((VoidReasonsDescriptions) fetch).getVoidReason().stream()
-                    .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
-                    .collect(Collectors.toList());
-        } else if(fetch instanceof BetstopReasonsDescriptions) {
-            return ((BetstopReasonsDescriptions) fetch).getBetstopReason().stream()
-                    .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
-                    .collect(Collectors.toList());
-        } else if(fetch instanceof BettingStatusDescriptions) {
-            return ((BettingStatusDescriptions) fetch).getBettingStatus().stream()
-                    .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
-                    .collect(Collectors.toList());
+            return ((MatchStatusDescriptions) fetch).getMatchStatus()
+                .stream()
+                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .collect(Collectors.toList());
+        } else if (fetch instanceof VoidReasonsDescriptions) {
+            return ((VoidReasonsDescriptions) fetch).getVoidReason()
+                .stream()
+                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .collect(Collectors.toList());
+        } else if (fetch instanceof BetstopReasonsDescriptions) {
+            return ((BetstopReasonsDescriptions) fetch).getBetstopReason()
+                .stream()
+                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .collect(Collectors.toList());
+        } else if (fetch instanceof BettingStatusDescriptions) {
+            return ((BettingStatusDescriptions) fetch).getBettingStatus()
+                .stream()
+                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .collect(Collectors.toList());
         }
-        LoggerFactory.getLogger(NamedValueCI.class).error("Mapping unknown fetched API object >>> " + fetch.getClass().getName());
+        LoggerFactory
+            .getLogger(NamedValueCI.class)
+            .error("Mapping unknown fetched API object >>> " + fetch.getClass().getName());
         return Collections.emptyList();
     }
 }

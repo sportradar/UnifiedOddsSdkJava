@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk-parent</artifactId>
-    <version>2.0.57</version>
+    <version>2.0.60</version>
     <packaging>pom</packaging>
     <name>Unified Odds Feed SDK - parent</name>
     <description>UnifiedFeed SDK is a client library that enables easier integration with the Betradar XML feeds. SDK exposes XML feed service interface in a more user-friendly way and isolates the client from having to do XML feed parsing, proper connection handling, error recovery, event queuing, data caching and dispatching. It also makes a client solution more stable and robust when it comes to feed handling, especially with the release of new and updated XML feed versions.</description>
@@ -18,12 +18,7 @@
         <url>https://github.com/sportradar/UnifiedOddsSdkJava</url>
     </scm>
 
-    <modules>
-        <module>sdk-core</module>
-        <module>sdk-example</module>
-        <module>sdk-distribution</module>
-        <module>sdk-log-replay</module>
-    </modules>
+
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -35,11 +30,14 @@
         <slf4j.version>1.7.13</slf4j.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
+        <junitparams.version>1.1.1</junitparams.version>
+        <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.5.1</mockito.version>
         <guava.version>21.0</guava.version>
         <guice.version>4.0</guice.version>
         <icu4j.version>57.1</icu4j.version>
         <snake.yaml.version>1.20</snake.yaml.version>
+        <org.springframework.spring-web.version>5.3.9</org.springframework.spring-web.version>
     </properties>
 
     <dependencyManagement>
@@ -66,13 +64,82 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-inline</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.24</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabbitMQ.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.pragmatists</groupId>
+                <artifactId>JUnitParams</artifactId>
+                <version>${junitparams.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -104,17 +171,101 @@
                 <version>2.5.3</version>
             </plugin>
             <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.2.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>9.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <configLocation>sdk-core/build-tools/checkstyle/checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <resourceIncludes>**/*.properties,**/*.xml</resourceIncludes>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <formats>
+                                <format>XML</format>
+                                <format>HTML</format>
+                            </formats>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.hubspot.maven.plugins</groupId>
+                <artifactId>prettier-maven-plugin</artifactId>
+                <version>0.18</version>
+                <configuration>
+                    <prettierJavaVersion>1.6.1</prettierJavaVersion>
+                    <printWidth>110</printWidth>
+                    <tabWidth>4</tabWidth>
+                    <useTabs>false</useTabs>
+                    <ignoreConfigFile>true</ignoreConfigFile>
+                    <ignoreEditorConfig>true</ignoreEditorConfig>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>write</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>customer-facing-library-only</id>
+            <modules>
+                <module>sdk-core</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>sdk-core</module>
+                <module>sdk-example</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

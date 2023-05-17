@@ -18,8 +18,14 @@ import com.sportradar.uf.datamodel.UFMarketStatus;
  * by another odds producer
  * </ul>
  */
+@SuppressWarnings({ "ReturnCount" })
 public enum MarketStatus {
-    Active, Suspended, Deactivated, Settled, Cancelled, HandedOver;
+    Active,
+    Suspended,
+    Deactivated,
+    Settled,
+    Cancelled,
+    HandedOver;
 
     public static MarketStatus fromFeedValue(UFMarketStatus status) {
         if (status == null) {

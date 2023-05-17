@@ -23,17 +23,32 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.MappingTypeProvider;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements methods used to access sport event data
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "LambdaBodyLength",
+        "LineLength",
+        "MethodLength",
+        "NPathComplexity",
+        "NeedBraces",
+        "OneStatementPerLine",
+        "ReturnCount",
+    }
+)
 public class SportEventCacheImpl implements SportEventCache, DataRouterListener, ExportableSdkCache {
+
     /**
      * The {@link Logger} instance used to log {@link SportEventCacheImpl} events
      */
@@ -65,11 +80,13 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     private final Locale defaultLocale;
 
     @Inject
-    SportEventCacheImpl(CacheItemFactory cacheItemFactory,
-                        MappingTypeProvider mappingTypeProvider,
-                        DataRouterManager dataRouterManager,
-                        SDKInternalConfiguration sdkInternalConfiguration,
-                        Cache<URN, SportEventCI> sportEventsCache) {
+    SportEventCacheImpl(
+        CacheItemFactory cacheItemFactory,
+        MappingTypeProvider mappingTypeProvider,
+        DataRouterManager dataRouterManager,
+        SDKInternalConfiguration sdkInternalConfiguration,
+        Cache<URN, SportEventCI> sportEventsCache
+    ) {
         Preconditions.checkNotNull(cacheItemFactory);
         Preconditions.checkNotNull(mappingTypeProvider);
         Preconditions.checkNotNull(dataRouterManager);
@@ -94,16 +111,25 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         Preconditions.checkNotNull(id);
 
         try {
-            return sportEventsCache.get(id, () -> {
-                logger.info("Cache miss for[{}], providing CI", id);
-                try {
-                    return provideEventCI(id);
-                } catch (IllegalCacheStateException e) {
-                    throw new CacheItemNotFoundException(String.format("An error occurred while loading a new cache item '%s', ex: ", id), e);
+            return sportEventsCache.get(
+                id,
+                () -> {
+                    logger.info("Cache miss for[{}], providing CI", id);
+                    try {
+                        return provideEventCI(id);
+                    } catch (IllegalCacheStateException e) {
+                        throw new CacheItemNotFoundException(
+                            String.format("An error occurred while loading a new cache item '%s', ex: ", id),
+                            e
+                        );
+                    }
                 }
-            });
+            );
         } catch (ExecutionException e) {
-            throw new CacheItemNotFoundException(String.format("Cache item could not be loaded[%s], ex: ", id), e);
+            throw new CacheItemNotFoundException(
+                String.format("Cache item could not be loaded[%s], ex: ", id),
+                e
+            );
         }
     }
 
@@ -118,14 +144,16 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     public List<URN> getEventIds(URN tournamentId, Locale locale) throws IllegalCacheStateException {
         logger.debug("Providing tournament[{}] event IDs", tournamentId);
         try {
-            if(locale == null) {
+            if (locale == null) {
                 return dataRouterManager.requestEventsFor(defaultLocale, tournamentId);
-            }
-            else{
+            } else {
                 return dataRouterManager.requestEventsFor(locale, tournamentId);
             }
         } catch (CommunicationException e) {
-            throw new IllegalCacheStateException("Error occurred while fetching tournament schedule[" + tournamentId + "]", e);
+            throw new IllegalCacheStateException(
+                "Error occurred while fetching tournament schedule[" + tournamentId + "]",
+                e
+            );
         }
     }
 
@@ -142,14 +170,16 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     public List<URN> getEventIds(Date date, Locale locale) throws IllegalCacheStateException {
         logger.debug("Providing event IDs for {}", date == null ? "live" : date);
         try {
-            if(locale == null) {
+            if (locale == null) {
                 return dataRouterManager.requestEventsFor(defaultLocale, date);
-            }
-            else{
+            } else {
                 return dataRouterManager.requestEventsFor(locale, date);
             }
         } catch (CommunicationException e) {
-            throw new IllegalCacheStateException("Error occurred while fetching date schedule for " + (date == null ? "live" : date), e);
+            throw new IllegalCacheStateException(
+                "Error occurred while fetching date schedule for " + (date == null ? "live" : date),
+                e
+            );
         }
     }
 
@@ -180,7 +210,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(id);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onSportEventFetched -> Failed to provide valid mapping type for id [{}]", id);
+                logger.warn(
+                    "SportEventCache.onSportEventFetched -> Failed to provide valid mapping type for id [{}]",
+                    id
+                );
                 return;
             }
 
@@ -192,13 +225,18 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         } else {
             ifPresent.merge(data, dataLocale);
         }
-        if(data.getParent() != null){
+        if (data.getParent() != null) {
             URN parentId = URN.parse(data.getParent().getId());
             saveParentStage(parentId, data.getParent(), data.getTournament(), dataLocale);
         }
-        if(data.getAdditionalParents() != null && !data.getAdditionalParents().getParent().isEmpty()){
+        if (data.getAdditionalParents() != null && !data.getAdditionalParents().getParent().isEmpty()) {
             for (SAPIParentStage parentStage : data.getAdditionalParents().getParent()) {
-                saveParentStage(URN.parse(parentStage.getId()), parentStage, data.getTournament(), dataLocale);
+                saveParentStage(
+                    URN.parse(parentStage.getId()),
+                    parentStage,
+                    data.getTournament(),
+                    dataLocale
+                );
             }
         }
     }
@@ -210,29 +248,39 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
      * @param tournament
      * @param dataLocale
      */
-    private void saveParentStage(URN parentId, SAPIParentStage parentStage, SAPITournament tournament, Locale dataLocale){
-        if(parentId == null || parentStage == null){
+    private void saveParentStage(
+        URN parentId,
+        SAPIParentStage parentStage,
+        SAPITournament tournament,
+        Locale dataLocale
+    ) {
+        if (parentId == null || parentStage == null) {
             return;
         }
         SportEventCI stagePresent = sportEventsCache.getIfPresent(parentId);
-        if(stagePresent == null){
+        if (stagePresent == null) {
             URN tournamentId = tournament == null ? null : URN.parse(tournament.getId());
-            if(parentId.equals(tournamentId)){
+            if (parentId.equals(tournamentId)) {
                 StageCI ci = cacheItemFactory.buildStageCI(parentId, tournament, dataLocale);
                 ci.merge(parentStage, dataLocale);
                 sportEventsCache.put(parentId, ci);
+            } else {
+                sportEventsCache.put(
+                    parentId,
+                    cacheItemFactory.buildStageCI(parentId, parentStage, dataLocale)
+                );
             }
-            else{
-                sportEventsCache.put(parentId, cacheItemFactory.buildStageCI(parentId, parentStage, dataLocale));
-            }
-        }
-        else{
+        } else {
             stagePresent.merge(parentStage, dataLocale);
         }
     }
 
     @Override
-    public void onChildSportEventFetched(URN id, SAPISportEventChildren.SAPISportEvent data, Locale dataLocale) {
+    public void onChildSportEventFetched(
+        URN id,
+        SAPISportEventChildren.SAPISportEvent data,
+        Locale dataLocale
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -243,7 +291,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(id);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onChildSportEventFetched -> Failed to provide valid mapping type for id [{}]", id);
+                logger.warn(
+                    "SportEventCache.onChildSportEventFetched -> Failed to provide valid mapping type for id [{}]",
+                    id
+                );
                 return;
             }
 
@@ -269,7 +320,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(id);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onTournamentExtendedFetched -> Failed to provide valid mapping type for id [{}]", id);
+                logger.warn(
+                    "SportEventCache.onTournamentExtendedFetched -> Failed to provide valid mapping type for id [{}]",
+                    id
+                );
                 return;
             }
 
@@ -278,7 +332,11 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             } else if (mappingType.equals(Stage.class)) {
                 sportEventsCache.put(id, cacheItemFactory.buildStageCI(id, data, dataLocale));
             } else {
-                logger.warn("SportEventCache.onTournamentExtendedFetched -> discarding data, mapping type not supported. id:{}, type:{}", id, mappingType);
+                logger.warn(
+                    "SportEventCache.onTournamentExtendedFetched -> discarding data, mapping type not supported. id:{}, type:{}",
+                    id,
+                    mappingType
+                );
             }
         } else {
             ifPresent.merge(data, dataLocale);
@@ -286,7 +344,14 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     @Override
-    public void onTournamentInfoEndpointFetched(URN requestedId, URN tournamentId, URN seasonId, SAPITournamentInfoEndpoint data, Locale dataLocale, CacheItem requester) {
+    public void onTournamentInfoEndpointFetched(
+        URN requestedId,
+        URN tournamentId,
+        URN seasonId,
+        SAPITournamentInfoEndpoint data,
+        Locale dataLocale,
+        CacheItem requester
+    ) {
         Preconditions.checkNotNull(tournamentId);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -305,7 +370,12 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     @Override
-    public void onStageSummaryEndpointFetched(URN id, SAPIStageSummaryEndpoint data, Locale dataLocale, CacheItem requester) {
+    public void onStageSummaryEndpointFetched(
+        URN id,
+        SAPIStageSummaryEndpoint data,
+        Locale dataLocale,
+        CacheItem requester
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -321,19 +391,37 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         } else {
             ifPresent.merge(data, dataLocale);
         }
-        if(data.getSportEvent().getParent() != null){
+        if (data.getSportEvent().getParent() != null) {
             URN parentId = URN.parse(data.getSportEvent().getParent().getId());
-            saveParentStage(parentId, data.getSportEvent().getParent(), data.getSportEvent().getTournament(), dataLocale);
+            saveParentStage(
+                parentId,
+                data.getSportEvent().getParent(),
+                data.getSportEvent().getTournament(),
+                dataLocale
+            );
         }
-        if(data.getSportEvent().getAdditionalParents() != null && !data.getSportEvent().getAdditionalParents().getParent().isEmpty()){
+        if (
+            data.getSportEvent().getAdditionalParents() != null &&
+            !data.getSportEvent().getAdditionalParents().getParent().isEmpty()
+        ) {
             for (SAPIParentStage parentStage : data.getSportEvent().getAdditionalParents().getParent()) {
-                saveParentStage(URN.parse(parentStage.getId()), parentStage, data.getSportEvent().getTournament(), dataLocale);
+                saveParentStage(
+                    URN.parse(parentStage.getId()),
+                    parentStage,
+                    data.getSportEvent().getTournament(),
+                    dataLocale
+                );
             }
         }
     }
 
     @Override
-    public void onMatchSummaryEndpointFetched(URN id, SAPIMatchSummaryEndpoint data, Locale dataLocale, CacheItem requester) {
+    public void onMatchSummaryEndpointFetched(
+        URN id,
+        SAPIMatchSummaryEndpoint data,
+        Locale dataLocale,
+        CacheItem requester
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -368,7 +456,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(id);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onFixtureFetched -> Failed to provide valid mapping type for id [{}]", id);
+                logger.warn(
+                    "SportEventCache.onFixtureFetched -> Failed to provide valid mapping type for id [{}]",
+                    id
+                );
                 return;
             }
 
@@ -377,18 +468,27 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             } else if (mappingType.equals(Stage.class)) {
                 sportEventsCache.put(id, cacheItemFactory.buildStageCI(id, data, dataLocale));
             } else {
-                logger.warn("SportEventCache.onFixtureFetched -> discarding data, mapping type not supported. id:{}, type:{}", id, mappingType);
+                logger.warn(
+                    "SportEventCache.onFixtureFetched -> discarding data, mapping type not supported. id:{}, type:{}",
+                    id,
+                    mappingType
+                );
             }
         } else {
             ifPresent.merge(data, dataLocale);
         }
-        if(data.getParent() != null){
+        if (data.getParent() != null) {
             URN parentId = URN.parse(data.getParent().getId());
             saveParentStage(parentId, data.getParent(), data.getTournament(), dataLocale);
         }
-        if(data.getAdditionalParents() != null && !data.getAdditionalParents().getParent().isEmpty()){
+        if (data.getAdditionalParents() != null && !data.getAdditionalParents().getParent().isEmpty()) {
             for (SAPIParentStage parentStage : data.getAdditionalParents().getParent()) {
-                saveParentStage(URN.parse(parentStage.getId()), parentStage, data.getTournament(), dataLocale);
+                saveParentStage(
+                    URN.parse(parentStage.getId()),
+                    parentStage,
+                    data.getTournament(),
+                    dataLocale
+                );
             }
         }
     }
@@ -405,7 +505,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(id);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onTournamentFetched -> Failed to provide valid mapping type for id [{}]", id);
+                logger.warn(
+                    "SportEventCache.onTournamentFetched -> Failed to provide valid mapping type for id [{}]",
+                    id
+                );
                 return;
             }
 
@@ -414,7 +517,11 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             } else if (mappingType == Stage.class) {
                 sportEventsCache.put(id, cacheItemFactory.buildStageCI(id, data, locale));
             } else {
-                logger.warn("SportEventCache.onTournamentFetched -> discarding data, mapping type not supported. id:{}, type:{}", id, mappingType);
+                logger.warn(
+                    "SportEventCache.onTournamentFetched -> discarding data, mapping type not supported. id:{}, type:{}",
+                    id,
+                    mappingType
+                );
             }
         } else {
             ifPresent.merge(data, locale);
@@ -422,7 +529,12 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     @Override
-    public void onMatchTimelineFetched(URN id, SAPIMatchTimelineEndpoint data, Locale dataLocale, CacheItem requester) {
+    public void onMatchTimelineFetched(
+        URN id,
+        SAPIMatchTimelineEndpoint data,
+        Locale dataLocale,
+        CacheItem requester
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -438,16 +550,23 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(id);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onMatchTimelineFetched -> Failed to provide valid mapping type for id [{}]", id);
+                logger.warn(
+                    "SportEventCache.onMatchTimelineFetched -> Failed to provide valid mapping type for id [{}]",
+                    id
+                );
                 return;
             }
 
             if (mappingType.equals(Match.class)) {
                 sportEventsCache.put(id, cacheItemFactory.buildMatchCI(id));
-//            } else if (mappingType.equals(Stage.class)) {
-//                sportEventsCache.put(id, cacheItemFactory.buildStageCI(id, data, dataLocale));
+                //            } else if (mappingType.equals(Stage.class)) {
+                //                sportEventsCache.put(id, cacheItemFactory.buildStageCI(id, data, dataLocale));
             } else {
-                logger.warn("SportEventCache.onMatchTimelineFetched -> discarding data, mapping type not supported. id:{}, type:{}", id, mappingType);
+                logger.warn(
+                    "SportEventCache.onMatchTimelineFetched -> discarding data, mapping type not supported. id:{}, type:{}",
+                    id,
+                    mappingType
+                );
             }
             ifPresent = sportEventsCache.getIfPresent(id);
         }
@@ -517,7 +636,12 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
 
     @Override
     @SuppressWarnings("Duplicates") // it is not a duplicate, different CI factory method
-    public void onDrawSummaryEndpointFetched(URN id, SAPIDrawSummary data, Locale dataLocale, CacheItem requester) {
+    public void onDrawSummaryEndpointFetched(
+        URN id,
+        SAPIDrawSummary data,
+        Locale dataLocale,
+        CacheItem requester
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -572,15 +696,18 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         Preconditions.checkNotNull(before);
 
         long startCount = sportEventsCache.size();
-        List<SportEventCI> cacheItems = sportEventsCache.asMap().values().stream().collect(Collectors.toList());
+        List<SportEventCI> cacheItems = sportEventsCache
+            .asMap()
+            .values()
+            .stream()
+            .collect(Collectors.toList());
         for (SportEventCI ci : cacheItems) {
-            if(ci.getScheduledRaw() != null){
-                if(ci.getScheduledRaw().before(before)){
+            if (ci.getScheduledRaw() != null) {
+                if (ci.getScheduledRaw().before(before)) {
                     sportEventsCache.invalidate(ci.getId());
                 }
-            }
-            else if (ci.getScheduledEndRaw() != null){
-                if(ci.getScheduledEndRaw().before(before)){
+            } else if (ci.getScheduledEndRaw() != null) {
+                if (ci.getScheduledEndRaw().before(before)) {
                     sportEventsCache.invalidate(ci.getId());
                 }
             }
@@ -588,10 +715,11 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         long endCount = sportEventsCache.size();
         long diff = startCount - endCount;
         logger.info("Deleted {} items from cache [before={}].", diff, before);
-        return (int)diff;
+        return (int) diff;
     }
 
-    private SportEventCI provideEventCI(URN id) throws CacheItemNotFoundException, IllegalCacheStateException {
+    private SportEventCI provideEventCI(URN id)
+        throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 
         Class mappedClazz = provideMappingType(id);
@@ -607,7 +735,9 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             return cacheItemFactory.buildDrawCI(id);
         }
 
-        throw new CacheItemNotFoundException(String.format("Unsupported caching URN identifier[%s] with clazz[%s]", id, mappedClazz.getName()));
+        throw new CacheItemNotFoundException(
+            String.format("Unsupported caching URN identifier[%s] with clazz[%s]", id, mappedClazz.getName())
+        );
     }
 
     private boolean isTournamentCIType(Class clazz) {
@@ -616,14 +746,18 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         return clazz == Tournament.class || clazz == BasicTournament.class || clazz == Season.class;
     }
 
-    private SportEventCI provideStageDerivedCI(URN id) throws CacheItemNotFoundException, IllegalCacheStateException {
+    private SportEventCI provideStageDerivedCI(URN id)
+        throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 
         logger.debug("Pre-fetching summary endpoint(stage type detection)[{}]", id);
         try {
             dataRouterManager.requestSummaryEndpoint(defaultLocale, id, null);
         } catch (CommunicationException e) {
-            throw new IllegalCacheStateException("An error occurred while performing StageCI summary request[" + id + "]", e);
+            throw new IllegalCacheStateException(
+                "An error occurred while performing StageCI summary request[" + id + "]",
+                e
+            );
         }
 
         SportEventCI ifPresent = sportEventsCache.getIfPresent(id);
@@ -634,7 +768,12 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         throw new CacheItemNotFoundException("StageCI[" + id + "] data could not be found");
     }
 
-    private void storeTournamentInfoEndpoint(URN tournamentId, SAPITournamentInfoEndpoint data, Locale dataLocale, CacheItem requester) {
+    private void storeTournamentInfoEndpoint(
+        URN tournamentId,
+        SAPITournamentInfoEndpoint data,
+        Locale dataLocale,
+        CacheItem requester
+    ) {
         Preconditions.checkNotNull(tournamentId);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -650,16 +789,29 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             try {
                 mappingType = provideMappingType(tournamentId);
             } catch (IllegalCacheStateException e) {
-                logger.warn("SportEventCache.onTournamentInfoEndpointFetched -> Failed to provide valid mapping type for id [{}]", tournamentId);
+                logger.warn(
+                    "SportEventCache.onTournamentInfoEndpointFetched -> Failed to provide valid mapping type for id [{}]",
+                    tournamentId
+                );
                 return;
             }
 
             if (isTournamentCIType(mappingType)) {
-                sportEventsCache.put(tournamentId, cacheItemFactory.buildTournamentCI(tournamentId, data, dataLocale));
+                sportEventsCache.put(
+                    tournamentId,
+                    cacheItemFactory.buildTournamentCI(tournamentId, data, dataLocale)
+                );
             } else if (mappingType.equals(Stage.class)) {
-                sportEventsCache.put(tournamentId, cacheItemFactory.buildStageCI(tournamentId, data, dataLocale));
+                sportEventsCache.put(
+                    tournamentId,
+                    cacheItemFactory.buildStageCI(tournamentId, data, dataLocale)
+                );
             } else {
-                logger.warn("SportEventCache.onTournamentInfoEndpointFetched -> discarding data, mapping type not supported. id:{}, type:{}", tournamentId, mappingType);
+                logger.warn(
+                    "SportEventCache.onTournamentInfoEndpointFetched -> discarding data, mapping type not supported. id:{}, type:{}",
+                    tournamentId,
+                    mappingType
+                );
             }
         } else {
             ifPresent.merge(data, dataLocale);
@@ -669,8 +821,11 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     private Class provideMappingType(URN id) throws IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 
-        return mappingTypeProvider.getMappingType(id)
-                .orElseThrow(() -> new IllegalCacheStateException(String.format("Error providing mapping type for [%s]", id)));
+        return mappingTypeProvider
+            .getMappingType(id)
+            .orElseThrow(() ->
+                new IllegalCacheStateException(String.format("Error providing mapping type for [%s]", id))
+            );
     }
 
     /**
@@ -680,10 +835,13 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
      */
     @Override
     public List<ExportableCI> exportItems() {
-        return sportEventsCache.asMap().values().stream()
-                .map(i -> (ExportableCacheItem) i)
-                .map(ExportableCacheItem::export)
-                .collect(Collectors.toList());
+        return sportEventsCache
+            .asMap()
+            .values()
+            .stream()
+            .map(i -> (ExportableCacheItem) i)
+            .map(ExportableCacheItem::export)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -702,10 +860,10 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
             URN id = URN.parse(exportable.getId());
             SportEventCI sportEvent = cacheItemFactory.buildSportEventCI(exportable);
             SportEventCI ifPresent = sportEventsCache.getIfPresent(id);
-            if (ifPresent == null)
-                sportEventsCache.put(id, sportEvent);
-            else
-                ifPresent.merge(exportable, null);
+            if (ifPresent == null) sportEventsCache.put(id, sportEvent); else ifPresent.merge(
+                exportable,
+                null
+            );
         });
     }
 
@@ -716,13 +874,24 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
      */
     @Override
     public Map<String, Long> cacheStatus() {
-        Map<String, Long> status = new HashMap<>(sportEventsCache.asMap().values().stream()
+        Map<String, Long> status = new HashMap<>(
+            sportEventsCache
+                .asMap()
+                .values()
+                .stream()
                 .map(c -> c.getClass().getSimpleName())
-                .collect(Collectors.groupingBy(s -> s, Collectors.counting())));
-        String[] classes = {"MatchCIImpl", "RaceStageCIImpl", "TournamentStageCIImpl", "TournamentCIImpl", "LotteryCIImpl", "DrawCIImpl"};
+                .collect(Collectors.groupingBy(s -> s, Collectors.counting()))
+        );
+        String[] classes = {
+            "MatchCIImpl",
+            "RaceStageCIImpl",
+            "TournamentStageCIImpl",
+            "TournamentCIImpl",
+            "LotteryCIImpl",
+            "DrawCIImpl",
+        };
         for (String clazz : classes) {
-            if (!status.containsKey(clazz))
-                status.put(clazz, 0L);
+            if (!status.containsKey(clazz)) status.put(clazz, 0L);
         }
         return status;
     }

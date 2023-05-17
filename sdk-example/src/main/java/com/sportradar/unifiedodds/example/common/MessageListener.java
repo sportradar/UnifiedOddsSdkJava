@@ -8,13 +8,18 @@ import com.sportradar.unifiedodds.sdk.OddsFeedListener;
 import com.sportradar.unifiedodds.sdk.OddsFeedSession;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A basic feed listener implementation which outputs the data to the provided logger
  */
+@SuppressWarnings(
+    { "ClassFanOutComplexity", "LineLength", "NeedBraces", "OneStatementPerLine", "ParameterName" }
+)
 public class MessageListener implements OddsFeedListener {
+
     private final Logger logger;
 
     public MessageListener(String listener_version) {
@@ -29,7 +34,14 @@ public class MessageListener implements OddsFeedListener {
      */
     @Override
     public void onOddsChange(OddsFeedSession sender, OddsChange<SportEvent> oddsChanges) {
-        logger.info("Received odds change for: " + oddsChanges.getEvent());
+        SportEvent event = oddsChanges.getEvent();
+        logger.info("Received odds change for: " + event);
+
+        event.getName(Locale.ENGLISH);
+        event.getId();
+        event.getSportId();
+        event.getScheduledTime();
+        event.getScheduledEndTime();
 
         // Now loop through the odds for each market
         for (MarketWithOdds marketOdds : oddsChanges.getMarkets()) {
@@ -42,11 +54,21 @@ public class MessageListener implements OddsFeedListener {
 
             // If the market is active printout odds for all outcomes
             if (marketOdds.getStatus() == MarketStatus.Active) {
+                marketOdds.getMarketMetadata();
+                marketOdds.getMarketDefinition();
                 for (OutcomeOdds outcomeOdds : marketOdds.getOutcomeOdds()) {
                     String outcomeDesc = outcomeOdds.getName();
+                    outcomeOdds.getAdditionalProbabilities();
+                    outcomeOdds.getOutcomeDefinition();
 
-                    logger.info("Outcome " + outcomeDesc + " has odds " + outcomeOdds.getOdds() + " "
-                                + outcomeOdds.getProbability());
+                    logger.info(
+                        "Outcome " +
+                        outcomeDesc +
+                        " has odds " +
+                        outcomeOdds.getOdds() +
+                        " " +
+                        outcomeOdds.getProbability()
+                    );
                 }
             }
         }
@@ -82,10 +104,9 @@ public class MessageListener implements OddsFeedListener {
         for (MarketWithSettlement marketSettlement : clearBets.getMarkets()) {
             // Then iterate through the result for each outcome (win or loss)
             for (OutcomeSettlement result : marketSettlement.getOutcomeSettlements()) {
-                if (result.isWinning())
-                    logger.info("Outcome " + result.getId() + " is a win");
-                else
-                    logger.info("Outcome " + result.getId() + " is a loss");
+                if (result.isWinning()) logger.info(
+                    "Outcome " + result.getId() + " is a win"
+                ); else logger.info("Outcome " + result.getId() + " is a loss");
             }
         }
     }
@@ -99,7 +120,10 @@ public class MessageListener implements OddsFeedListener {
      *        BetSettlement
      */
     @Override
-    public void onRollbackBetSettlement(OddsFeedSession sender, RollbackBetSettlement<SportEvent> rollbackBetSettlement) {
+    public void onRollbackBetSettlement(
+        OddsFeedSession sender,
+        RollbackBetSettlement<SportEvent> rollbackBetSettlement
+    ) {
         logger.info("Received rollback betsettlement for sport event " + rollbackBetSettlement.getEvent());
     }
 
@@ -186,7 +210,9 @@ public class MessageListener implements OddsFeedListener {
         Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
 
         if (unparsableMessage.getEvent() != null) {
-            logger.info("Problems detected on received message for event " + unparsableMessage.getEvent().getId());
+            logger.info(
+                "Problems detected on received message for event " + unparsableMessage.getEvent().getId()
+            );
         } else {
             logger.info("Problems detected on received message"); // probably a system message deserialization failure
         }

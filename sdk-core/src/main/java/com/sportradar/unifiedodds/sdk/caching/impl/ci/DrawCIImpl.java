@@ -21,17 +21,20 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A draw cache item implementation
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "LineLength", "ReturnCount" }
+)
 public class DrawCIImpl implements DrawCI, ExportableCacheItem {
+
     private static final Logger logger = LoggerFactory.getLogger(DrawCIImpl.class);
 
     private final URN id;
@@ -49,7 +52,12 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
     private List<DrawResultCI> results;
     private Integer displayId;
 
-    DrawCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    DrawCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -61,34 +69,56 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    DrawCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIDrawFixture data, Locale dataLocale) {
+    DrawCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIDrawFixture data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
         merge(data, dataLocale);
     }
 
-    DrawCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIDrawEvent data, Locale dataLocale) {
+    DrawCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIDrawEvent data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
         merge(data, dataLocale);
     }
 
-    DrawCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIDrawSummary data, Locale dataLocale) {
+    DrawCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIDrawSummary data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
         merge(data, dataLocale);
     }
 
-    DrawCIImpl(ExportableDrawCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    DrawCIImpl(
+        ExportableDrawCI exportable,
+        DataRouterManager dataRouterManager,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -101,7 +131,10 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         this.lotteryId = exportable.getLotteryId() != null ? URN.parse(exportable.getLotteryId()) : null;
         this.scheduled = exportable.getScheduled();
         this.status = exportable.getStatus();
-        this.results = exportable.getResults() != null ? exportable.getResults().stream().map(DrawResultCI::new).collect(Collectors.toList()) : null;
+        this.results =
+            exportable.getResults() != null
+                ? exportable.getResults().stream().map(DrawResultCI::new).collect(Collectors.toList())
+                : null;
         this.displayId = exportable.getDisplayId();
     }
 
@@ -218,7 +251,9 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      * instance was scheduled; otherwise null;
      */
     @Override
-    public Date getScheduledRaw() { return scheduled; }
+    public Date getScheduledRaw() {
+        return scheduled;
+    }
 
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current
@@ -228,7 +263,9 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      * instance was scheduled to end; otherwise null;
      */
     @Override
-    public Date getScheduledEndRaw() { return null; }
+    public Date getScheduledEndRaw() {
+        return null;
+    }
 
     /**
      * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
@@ -236,7 +273,9 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Optional<Boolean> isStartTimeTbd() { return Optional.empty(); }
+    public Optional<Boolean> isStartTimeTbd() {
+        return Optional.empty();
+    }
 
     /**
      * Returns the {@link URN} specifying the replacement sport event for the current instance
@@ -305,18 +344,13 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getDrawDate() == null
-                ? null
-                : SdkHelper.toDate(endpointData.getDrawDate());
+        scheduled = endpointData.getDrawDate() == null ? null : SdkHelper.toDate(endpointData.getDrawDate());
 
-        lotteryId = endpointData.getLottery() == null
-                ? null
-                : URN.parse(endpointData.getLottery().getId());
+        lotteryId = endpointData.getLottery() == null ? null : URN.parse(endpointData.getLottery().getId());
 
         status = map(endpointData.getStatus());
 
-        if(endpointData.getDisplayId() != null)
-        {
+        if (endpointData.getDisplayId() != null) {
             displayId = endpointData.getDisplayId();
         }
     }
@@ -325,14 +359,12 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        scheduled = endpointData.getScheduled() == null
-                ? null
-                : SdkHelper.toDate(endpointData.getScheduled());
+        scheduled =
+            endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
 
         status = map(endpointData.getStatus());
 
-        if(endpointData.getDisplayId() != null)
-        {
+        if (endpointData.getDisplayId() != null) {
             displayId = endpointData.getDisplayId();
         }
     }
@@ -344,13 +376,18 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         List<SAPIDrawResult.SAPIDraws.SAPIDraw> drawResults = endpointData.getDraw();
         if (drawResults != null && !drawResults.isEmpty()) {
             if (results == null) {
-                results = drawResults.stream().map(r -> new DrawResultCI(r, dataLocale)).collect(Collectors.toList());
+                results =
+                    drawResults
+                        .stream()
+                        .map(r -> new DrawResultCI(r, dataLocale))
+                        .collect(Collectors.toList());
             } else {
                 results.forEach(cachedResult ->
-                    drawResults.stream()
-                            .filter(newResult -> newResult.getValue().equals(cachedResult.getValue()))
-                            .findFirst()
-                            .ifPresent(newResult -> cachedResult.merge(newResult, dataLocale))
+                    drawResults
+                        .stream()
+                        .filter(newResult -> newResult.getValue().equals(cachedResult.getValue()))
+                        .findFirst()
+                        .ifPresent(newResult -> cachedResult.merge(newResult, dataLocale))
                 );
             }
         }
@@ -372,7 +409,10 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
                 return;
             }
 
-            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            String localesStr = missingLocales
+                .stream()
+                .map(Locale::getLanguage)
+                .collect(Collectors.joining(", "));
             logger.debug("Fetching missing draw data for id='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
@@ -427,18 +467,18 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
     @Override
     public ExportableCI export() {
         return new ExportableDrawCI(
-                id.toString(),
-                Collections.emptyMap(),
-                scheduled,
-                null,
-                null,
-                null,
-                defaultLocale,
-                lotteryId != null ? lotteryId.toString() : null,
-                status,
-                results != null ? results.stream().map(DrawResultCI::export).collect(Collectors.toList()) : null,
-                displayId,
-                new HashSet<>(cachedLocales)
+            id.toString(),
+            Collections.emptyMap(),
+            scheduled,
+            null,
+            null,
+            null,
+            defaultLocale,
+            lotteryId != null ? lotteryId.toString() : null,
+            status,
+            results != null ? results.stream().map(DrawResultCI::export).collect(Collectors.toList()) : null,
+            displayId,
+            new HashSet<>(cachedLocales)
         );
     }
 }

@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableDrawResultCI implements Serializable {
+
     private Integer value;
     private Map<Locale, String> names;
 

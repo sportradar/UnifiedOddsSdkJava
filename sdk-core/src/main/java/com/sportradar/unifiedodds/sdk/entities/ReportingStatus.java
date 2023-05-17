@@ -5,14 +5,14 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.uf.datamodel.UFReportingStatus;
-
 import java.util.Arrays;
 import java.util.Optional;
 
 /**
  * An enum describing the reporting status of a sport event
  */
-@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
+// Constant names should comply with a naming convention
+@SuppressWarnings({ "java:S115", "UnnecessaryParentheses" })
 public enum ReportingStatus {
     /**
      * The reporting status of the sport event is not available
@@ -52,10 +52,10 @@ public enum ReportingStatus {
      */
     public static ReportingStatus valueFromMessageStatus(UFReportingStatus status) {
         if (status != null) {
-            Optional<ReportingStatus> first =
-                    Arrays.stream(ReportingStatus.values())
-                            .filter(v -> (v.statusFromMessage != null && v.statusFromMessage == status.value()))
-                            .findFirst();
+            Optional<ReportingStatus> first = Arrays
+                .stream(ReportingStatus.values())
+                .filter(v -> (v.statusFromMessage != null && v.statusFromMessage == status.value()))
+                .findFirst();
             if (first.isPresent()) {
                 return first.get();
             }

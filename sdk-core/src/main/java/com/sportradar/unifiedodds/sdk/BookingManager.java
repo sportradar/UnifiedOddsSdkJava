@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk;
 
+import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.utils.URN;
 
 /**
@@ -16,5 +17,5 @@ public interface BookingManager {
      * @param eventId the {@link URN} identifier of the event which needs to be booked
      * @return <code>true</code> if the booking was successful; otherwise <code>false</code>
      */
-    boolean bookLiveOddsEvent(URN eventId);
+    boolean bookLiveOddsEvent(URN eventId) throws CommunicationException;
 }

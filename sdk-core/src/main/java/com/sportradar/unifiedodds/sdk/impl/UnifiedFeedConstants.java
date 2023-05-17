@@ -20,6 +20,7 @@ public final class UnifiedFeedConstants {
     public static final String PLAYER_PROPS_MARKET_GROUP = "player_props";
     public static final String FLEX_SCORE_MARKET_ATTRIBUTE_NAME = "is_flex_score";
     public static final String PLAYER_URN_TYPE = "player";
+
     //public static final String SIMPLETEAM_URN_TYPE = "simpleteam";
 
     private UnifiedFeedConstants() {}

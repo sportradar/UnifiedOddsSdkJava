@@ -10,24 +10,41 @@ import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import org.apache.http.client.utils.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.http.client.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An utility class that contains various methods which perform common language tasks
  */
+@SuppressWarnings(
+    {
+        "ConstantName",
+        "EmptyCatchBlock",
+        "HideUtilityClassConstructor",
+        "IllegalCatch",
+        "LineLength",
+        "MagicNumber",
+        "NeedBraces",
+        "NestedIfDepth",
+        "OneStatementPerLine",
+        "ParameterAssignment",
+        "StaticVariableName",
+        "VisibilityModifier",
+    }
+)
 public final class SdkHelper {
 
-    public final static Logger ExecutionLog = LoggerFactory.getLogger(SdkHelper.class);
+    public static final Logger ExecutionLog = LoggerFactory.getLogger(SdkHelper.class);
 
     public static int MarketDescriptionMinFetchInterval = 30;
     public static String InVariantMarketListCache = "InVariantMarketListCache";
@@ -36,6 +53,14 @@ public final class SdkHelper {
 
     public static final String ISO_8601_24H_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    /**
+     * The regex pattern to extract error message from failed API requests
+     */
+    public static final String ApiResponseErrorPattern = "<errors>([a-zA-Z0-9 -_:./'{}]*)</errors>";
+    /**
+     * The regex pattern to extract response message from failed API requests
+     */
+    public static final String ApiResponseMessagePattern = "<message>([a-zA-Z0-9 -_:.]*)</message>";
 
     /**
      * Calculates and returns the missing locales within the provided {@link List}
@@ -62,14 +87,11 @@ public final class SdkHelper {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(filterLocales);
 
-        return data.entrySet().stream()
-                .filter(entry ->
-                        filterLocales.contains(entry.getKey()))
-                .collect(
-                        Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue)
-                );
+        return data
+            .entrySet()
+            .stream()
+            .filter(entry -> filterLocales.contains(entry.getKey()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**
@@ -78,14 +100,11 @@ public final class SdkHelper {
      * @param length of the abbreviation
      * @return the abbreviated input string in upper case (it does not return null)
      */
-    public static String getAbbreviationFromName(String input, int length)
-    {
-        if (length < 1)
-        {
+    public static String getAbbreviationFromName(String input, int length) {
+        if (length < 1) {
             length = Integer.MAX_VALUE;
         }
-        if (input == null || input.isEmpty())
-        {
+        if (input == null || input.isEmpty()) {
             return "";
         }
         return input.length() > length ? input.substring(0, length).toUpperCase() : input.toUpperCase();
@@ -98,28 +117,38 @@ public final class SdkHelper {
      * @param currentCompetitorsReferences competitor references
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> parseCompetitorsReferences(List<SAPITeam> competitors, Map<URN, ReferenceIdCI> currentCompetitorsReferences)
-    {
-        if(competitors == null){
+    public static Map<URN, ReferenceIdCI> parseCompetitorsReferences(
+        List<SAPITeam> competitors,
+        Map<URN, ReferenceIdCI> currentCompetitorsReferences
+    ) {
+        if (competitors == null) {
             return currentCompetitorsReferences;
         }
 
         Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
-                ? new HashMap<>()
-                : new HashMap<>(currentCompetitorsReferences);
+            ? new HashMap<>()
+            : new HashMap<>(currentCompetitorsReferences);
         for (SAPITeam competitor : competitors) {
-            if(competitor.getReferenceIds() != null) {
-                ReferenceIdCI newReferenceId = new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
+            if (competitor.getReferenceIds() != null) {
+                ReferenceIdCI newReferenceId = new ReferenceIdCI(
+                    competitor
+                        .getReferenceIds()
+                        .getReferenceId()
+                        .stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
-                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+                        .collect(
+                            HashMap::new,
+                            (map, i) -> map.put(i.getName(), i.getValue()),
+                            HashMap::putAll
+                        )
+                );
 
                 URN competitorId = URN.parse(competitor.getId());
-                if(competitorsReferences.containsKey(competitorId)) {
+                if (competitorsReferences.containsKey(competitorId)) {
                     ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
                     oldReference.merge(newReferenceId.getReferenceIds());
                     competitorsReferences.put(competitorId, newReferenceId);
-                }
-                else {
+                } else {
                     competitorsReferences.put(competitorId, newReferenceId);
                 }
             }
@@ -135,28 +164,38 @@ public final class SdkHelper {
      * @param currentCompetitorsReferences competitor references
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> parseTeamCompetitorsReferences(List<SAPITeamCompetitor> competitors, Map<URN, ReferenceIdCI> currentCompetitorsReferences)
-    {
-        if(competitors == null){
+    public static Map<URN, ReferenceIdCI> parseTeamCompetitorsReferences(
+        List<SAPITeamCompetitor> competitors,
+        Map<URN, ReferenceIdCI> currentCompetitorsReferences
+    ) {
+        if (competitors == null) {
             return currentCompetitorsReferences;
         }
 
         Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
-                ? new HashMap<>()
-                : currentCompetitorsReferences;
+            ? new HashMap<>()
+            : currentCompetitorsReferences;
         for (SAPITeam competitor : competitors) {
-            if(competitor.getReferenceIds() != null) {
-                ReferenceIdCI newReferenceId = new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
+            if (competitor.getReferenceIds() != null) {
+                ReferenceIdCI newReferenceId = new ReferenceIdCI(
+                    competitor
+                        .getReferenceIds()
+                        .getReferenceId()
+                        .stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
-                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+                        .collect(
+                            HashMap::new,
+                            (map, i) -> map.put(i.getName(), i.getValue()),
+                            HashMap::putAll
+                        )
+                );
 
                 URN competitorId = URN.parse(competitor.getId());
-                if(competitorsReferences.containsKey(competitorId)) {
+                if (competitorsReferences.containsKey(competitorId)) {
                     ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
                     oldReference.merge(newReferenceId.getReferenceIds());
                     competitorsReferences.put(competitorId, newReferenceId);
-                }
-                else {
+                } else {
                     competitorsReferences.put(competitorId, newReferenceId);
                 }
             }
@@ -166,12 +205,12 @@ public final class SdkHelper {
     }
 
     public static Locale checkConfigurationLocales(Locale defaultLocale, Set<Locale> supportedLocales) {
-        if (defaultLocale == null && !supportedLocales.isEmpty())
-        {
+        if (defaultLocale == null && !supportedLocales.isEmpty()) {
             defaultLocale = supportedLocales.iterator().next();
         }
-        if (!supportedLocales.contains(defaultLocale) || supportedLocales.iterator().next() != defaultLocale)
-        {
+        if (
+            !supportedLocales.contains(defaultLocale) || supportedLocales.iterator().next() != defaultLocale
+        ) {
             List<Locale> locales = new ArrayList<>();
             locales.add(defaultLocale);
             locales.addAll(supportedLocales);
@@ -179,78 +218,64 @@ public final class SdkHelper {
             supportedLocales.addAll(locales);
         }
 
-        if (defaultLocale == null)
-        {
+        if (defaultLocale == null) {
             throw new InvalidParameterException("Missing default locale");
         }
-        if (supportedLocales.isEmpty())
-        {
+        if (supportedLocales.isEmpty()) {
             throw new InvalidParameterException("Missing supported locales");
         }
         return defaultLocale;
     }
 
     public static Date combineDateAndTime(Date date, Date time) {
-        if(date == null) {
+        if (date == null) {
             return time;
         }
-        if(time == null) {
+        if (time == null) {
             return date;
         }
         return new Date(date.getTime() + time.getTime());
     }
 
-    public static long getTimeDifferenceInSeconds(Date d1, Date d2)
-    {
-        return Math.abs(d1.getTime()-d2.getTime())/1000;
+    public static long getTimeDifferenceInSeconds(Date d1, Date d2) {
+        return Math.abs(d1.getTime() - d2.getTime()) / 1000;
     }
 
     public static Date toDate(XMLGregorianCalendar gregorianCalendar) {
-        if (gregorianCalendar.getTimezone() == DatatypeConstants.FIELD_UNDEFINED)
-            gregorianCalendar.setTimezone(0);
+        if (
+            gregorianCalendar.getTimezone() == DatatypeConstants.FIELD_UNDEFINED
+        ) gregorianCalendar.setTimezone(0);
         return gregorianCalendar.toGregorianCalendar().getTime();
     }
 
     public static Date toDate(String dateString) throws ParseException {
-
-        if(dateString.isEmpty())
-        {
+        if (dateString.isEmpty()) {
             return null;
         }
 
-        try{
+        try {
             Date date = DateUtils.parseDate(dateString);
-            if(date != null)
-            {
+            if (date != null) {
                 return date;
             }
-        }
-        catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
-        try{
+        try {
             SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
             return sdf.parse(dateString);
-        }
-        catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FORMAT);
         return sdf.parse(dateString);
     }
 
-    public static String dateToString(Date date){
+    public static String dateToString(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
         return sdf.format(date);
     }
 
     public static String doubleToStringWithSign(double value) {
-        if (value > 0)
-            return "+" + value;
-        else if (value < 0)
-            return String.valueOf(value);
-        else
-            return "0";
+        if (value > 0) return "+" + value; else if (value < 0) return String.valueOf(value); else return "0";
     }
 
     public static boolean isDataNotFound(Throwable e) {
@@ -258,14 +283,14 @@ public final class SdkHelper {
     }
 
     public static boolean isDataNotFound(Throwable e, int counter) {
-        if(e != null){
-            if(e instanceof CommunicationException){
-                if(e.getMessage().contains("404")){
+        if (e != null) {
+            if (e instanceof CommunicationException) {
+                if (e.getMessage().contains("404")) {
                     return true;
                 }
             }
-            if(e.getCause() != null){
-                if(counter < 10){
+            if (e.getCause() != null) {
+                if (counter < 10) {
                     return isDataNotFound(e.getCause(), counter + 1);
                 }
             }
@@ -273,85 +298,84 @@ public final class SdkHelper {
         return false;
     }
 
-    public static String stringSetToString(Set<String> set){
-        if(set == null || set.isEmpty()) {
+    public static String stringSetToString(Set<String> set) {
+        if (set == null || set.isEmpty()) {
             return null;
         }
         String result = "";
-        for(String key : set){
+        for (String key : set) {
             result += "," + key;
         }
-        if(result.length() > 1){
+        if (result.length() > 1) {
             result = result.substring(1);
         }
         return result;
     }
 
-    public static String integerSetToString(Set<Integer> set){
-        if(set == null || set.isEmpty()) {
+    public static String integerSetToString(Set<Integer> set) {
+        if (set == null || set.isEmpty()) {
             return null;
         }
         String result = "";
-        for(int key : set){
+        for (int key : set) {
             result += "," + key;
         }
-        if(result.length() > 1){
+        if (result.length() > 1) {
             result = result.substring(1);
         }
         return result;
     }
 
-    public static String dictionaryToString(Map<String, String> dict){
-        if(dict == null || dict.isEmpty()) {
+    public static String dictionaryToString(Map<String, String> dict) {
+        if (dict == null || dict.isEmpty()) {
             return null;
         }
         String result = null;
-        for(String key : dict.keySet()){
+        for (String key : dict.keySet()) {
             result += "," + key + "=" + dict.get(key);
         }
         return result;
     }
 
-    public static String specifierListToString(List<Specifier> specifiers){
-        if(specifiers == null || specifiers.isEmpty()) {
+    public static String specifierListToString(List<Specifier> specifiers) {
+        if (specifiers == null || specifiers.isEmpty()) {
             return null;
         }
-        String result = specifiers.stream()
-                .map(n -> String.valueOf(n))
-                .collect(Collectors.joining("|", "{", "}"));
+        String result = specifiers
+            .stream()
+            .map(n -> String.valueOf(n))
+            .collect(Collectors.joining("|", "{", "}"));
         return result;
     }
 
-    public static String specifierKeyListToString(List<Specifier> specifiers){
-        if(specifiers == null || specifiers.isEmpty()) {
+    public static String specifierKeyListToString(List<Specifier> specifiers) {
+        if (specifiers == null || specifiers.isEmpty()) {
             return null;
         }
-        String result = specifiers.stream()
-                .map(n -> n.getName())
-                .collect(Collectors.joining("|", "{", "}"));
+        String result = specifiers.stream().map(n -> n.getName()).collect(Collectors.joining("|", "{", "}"));
         return result;
     }
 
-    public static String localeListToString(List<Locale> locales){
-        if(locales == null || locales.isEmpty()) {
+    public static String localeListToString(List<Locale> locales) {
+        if (locales == null || locales.isEmpty()) {
             return null;
         }
         String result = locales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
         return result;
     }
 
-    public static boolean checkCauseReason(Throwable cause, String message){
-        if(cause == null || message == null){
+    public static boolean checkCauseReason(Throwable cause, String message) {
+        if (cause == null || message == null) {
             return false;
         }
 
         int i = 10;
-        while(i > 0){
+        while (i > 0) {
             i--;
-            if(cause.getMessage().contains(message)){
+            if (cause.getMessage().contains(message)) {
                 return true;
             }
-            if(cause.getCause() != null) {
+            if (cause.getCause() != null) {
                 cause = cause.getCause();
                 continue;
             }
@@ -374,11 +398,11 @@ public final class SdkHelper {
      * @param input text to be obfuscated
      * @return obfuscated string with only first and last 3 letters
      */
-    public static String obfuscate(String input){
-         if(!stringIsNullOrEmpty(input) && input.length() > 3)   {
-            return String.format("%s***%s", input.substring(0, 3), input.substring(input.length()-3));
-         }
-         return input;
+    public static String obfuscate(String input) {
+        if (!stringIsNullOrEmpty(input) && input.length() > 3) {
+            return String.format("%s***%s", input.substring(0, 3), input.substring(input.length() - 3));
+        }
+        return input;
     }
 
     /**
@@ -386,10 +410,10 @@ public final class SdkHelper {
      * @param size the substring size
      * @return the substring of uuid
      */
-    public static String getUuid(int size){
-        if(size < 3){
+    public static String getUuid(int size) {
+        if (size < 3) {
             size = 3;
-        } else if (size > 20){
+        } else if (size > 20) {
             size = 20;
         }
         String strUuid = UUID.randomUUID().toString();
@@ -397,4 +421,17 @@ public final class SdkHelper {
         return strUuid.substring(0, size);
     }
 
+    public static String extractHttpResponseMessage(String responseContent) {
+        if (responseContent == null || responseContent.isEmpty()) {
+            return "";
+        }
+        Matcher messageMatcher = Pattern.compile(ApiResponseMessagePattern).matcher(responseContent);
+        Matcher errorMatcher = Pattern.compile(ApiResponseErrorPattern).matcher(responseContent);
+        if (errorMatcher.find()) {
+            return messageMatcher.find()
+                ? String.format("%s (detail: %s)", errorMatcher.group(), messageMatcher.group())
+                : errorMatcher.group();
+        }
+        return responseContent;
+    }
 }

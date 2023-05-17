@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
  * // TODO @eti: Javadoc
  */
 abstract class MessageImpl implements Message {
+
     private final Producer producer;
     private final MessageTimestamp timestamps;
 

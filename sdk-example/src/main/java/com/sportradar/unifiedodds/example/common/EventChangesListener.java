@@ -3,10 +3,9 @@ package com.sportradar.unifiedodds.example.common;
 import com.sportradar.unifiedodds.sdk.EventChangeListener;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 public class EventChangesListener implements EventChangeListener {
 

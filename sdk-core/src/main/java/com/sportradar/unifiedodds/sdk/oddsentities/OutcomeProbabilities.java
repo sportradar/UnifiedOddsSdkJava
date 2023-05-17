@@ -26,8 +26,7 @@ public interface OutcomeProbabilities extends Outcome {
      * Additional probability attributes for markets which potentially will be (partly) refunded
      * @return additional probability attributes for markets which potentially will be (partly) refunded
      */
-    default AdditionalProbabilities getAdditionalProbabilities()
-    {
+    default AdditionalProbabilities getAdditionalProbabilities() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

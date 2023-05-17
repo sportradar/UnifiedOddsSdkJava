@@ -10,14 +10,15 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompleteRoundCI;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 
 /**
  * A round representation used by caching components. The cache item exists as a whole object,
  * there is no support for partial loading
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class CompleteRoundCIImpl implements CompleteRoundCI {
+
     /**
      * A {@link Map} containing round names in different languages
      */
@@ -148,22 +149,19 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
 
         if (round.getName() != null) {
             names.put(locale, round.getName());
-        }
-        else {
+        } else {
             names.put(locale, "");
         }
 
         if (round.getGroupName() != null) {
             groupNames.put(locale, round.getGroupName());
-        }
-        else{
+        } else {
             groupNames.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
             phaseOrGroupLongNames.put(locale, round.getGroupLongName());
-        }
-        else{
+        } else {
             phaseOrGroupLongNames.put(locale, "");
         }
 
@@ -261,7 +259,9 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      * @return - Return the name if exists, or null
      */
     @Override
-    public String getName(Locale locale) { return names.getOrDefault(locale, null); }
+    public String getName(Locale locale) {
+        return names.getOrDefault(locale, null);
+    }
 
     /**
      * Returns the group name for specific locale
@@ -270,7 +270,9 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      * @return - Return the group name if exists, or null
      */
     @Override
-    public String getGroupName(Locale locale) { return groupNames.getOrDefault(locale, null); }
+    public String getGroupName(Locale locale) {
+        return groupNames.getOrDefault(locale, null);
+    }
 
     /**
      * Returns the name or group long name for the specified locale
@@ -289,14 +291,18 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      * @return the phase of the round
      */
     @Override
-    public String getPhase() { return phase; }
+    public String getPhase() {
+        return phase;
+    }
 
     /**
      * Returns the betradar name
      * @return the betradar name
      */
     @Override
-    public String getBetradarName() { return betradarName; }
+    public String getBetradarName() {
+        return betradarName;
+    }
 
     /**
      * Checks if the associated cache item contains all the provided {@link Locale}s
@@ -311,40 +317,60 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
 
     @Override
     public String toString() {
-        return "CompleteRoundCIImpl{" +
-                "names=" + names +
-                ", groupNames=" + groupNames +
-                ", phaseOrGroupLongNames=" + phaseOrGroupLongNames +
-                ", type='" + type + '\'' +
-                ", group='" + group + '\'' +
-                ", groupId='" + groupId + '\'' +
-                ", otherMatchId='" + otherMatchId + '\'' +
-                ", number=" + number +
-                ", cupRoundMatches=" + cupRoundMatches +
-                ", cupRoundMatchNumber=" + cupRoundMatchNumber +
-                ", betradarId=" + betradarId +
-                ", phase=" + phase +
-                ", betradarName=" + betradarName +
-                ", cachedLocales=" + cachedLocales +
-                '}';
+        return (
+            "CompleteRoundCIImpl{" +
+            "names=" +
+            names +
+            ", groupNames=" +
+            groupNames +
+            ", phaseOrGroupLongNames=" +
+            phaseOrGroupLongNames +
+            ", type='" +
+            type +
+            '\'' +
+            ", group='" +
+            group +
+            '\'' +
+            ", groupId='" +
+            groupId +
+            '\'' +
+            ", otherMatchId='" +
+            otherMatchId +
+            '\'' +
+            ", number=" +
+            number +
+            ", cupRoundMatches=" +
+            cupRoundMatches +
+            ", cupRoundMatchNumber=" +
+            cupRoundMatchNumber +
+            ", betradarId=" +
+            betradarId +
+            ", phase=" +
+            phase +
+            ", betradarName=" +
+            betradarName +
+            ", cachedLocales=" +
+            cachedLocales +
+            '}'
+        );
     }
 
     public ExportableCompleteRoundCI export() {
         return new ExportableCompleteRoundCI(
-                new HashMap<>(names),
-                new HashMap<>(groupNames),
-                new HashMap<>(phaseOrGroupLongNames),
-                type,
-                group,
-                groupId != null ? groupId.toString() : null,
-                otherMatchId,
-                number,
-                cupRoundMatches,
-                cupRoundMatchNumber,
-                betradarId,
-                phase,
-                betradarName,
-                new ArrayList<>(cachedLocales)
+            new HashMap<>(names),
+            new HashMap<>(groupNames),
+            new HashMap<>(phaseOrGroupLongNames),
+            type,
+            group,
+            groupId != null ? groupId.toString() : null,
+            otherMatchId,
+            number,
+            cupRoundMatches,
+            cupRoundMatchNumber,
+            betradarId,
+            phase,
+            betradarName,
+            new ArrayList<>(cachedLocales)
         );
     }
 }

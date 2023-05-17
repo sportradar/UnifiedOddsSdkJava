@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.entities.Match;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.entities.Stage;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -20,7 +19,12 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public class EntityNameExpression implements NameExpression {
-    private final static List<String> SUPPORTED_OPERANDS = ImmutableList.<String>builder().add("competitor1").add("competitor2").build();
+
+    private static final List<String> SUPPORTED_OPERANDS = ImmutableList
+        .<String>builder()
+        .add("competitor1")
+        .add("competitor2")
+        .build();
     private final String propertyName;
     private final SportEvent sportEvent;
 
@@ -40,7 +44,9 @@ public class EntityNameExpression implements NameExpression {
             return handleRaceEvent(locale);
         }
 
-        throw new IllegalArgumentException("The type " + sportEvent.getClass().getName() + " is not supported");
+        throw new IllegalArgumentException(
+            "The type " + sportEvent.getClass().getName() + " is not supported"
+        );
     }
 
     private String handleMatchEvent(Locale locale) {
@@ -55,11 +61,24 @@ public class EntityNameExpression implements NameExpression {
                 competitor = match.getAwayCompetitor();
                 break;
             default:
-                throw new IllegalArgumentException("Operand " + propertyName + " is not supported. Supported operands are: " +  String.join("," ,SUPPORTED_OPERANDS));
+                throw new IllegalArgumentException(
+                    "Operand " +
+                    propertyName +
+                    " is not supported. Supported operands are: " +
+                    String.join(",", SUPPORTED_OPERANDS)
+                );
         }
 
         if (competitor == null) {
-            throw new IllegalStateException("Could not build the requested entity name, event:" + sportEvent + ", operand: " + propertyName + ", locale:" + locale + "(missing competitor data)");
+            throw new IllegalStateException(
+                "Could not build the requested entity name, event:" +
+                sportEvent +
+                ", operand: " +
+                propertyName +
+                ", locale:" +
+                locale +
+                "(missing competitor data)"
+            );
         }
 
         String name = competitor.getName(locale);
@@ -68,7 +87,14 @@ public class EntityNameExpression implements NameExpression {
             return name;
         }
 
-        throw new IllegalStateException("Could not build the requested entity name, event:" + sportEvent + ", operand: " + propertyName + ", locale:" + locale);
+        throw new IllegalStateException(
+            "Could not build the requested entity name, event:" +
+            sportEvent +
+            ", operand: " +
+            propertyName +
+            ", locale:" +
+            locale
+        );
     }
 
     private String handleRaceEvent(Locale locale) {
@@ -77,22 +103,42 @@ public class EntityNameExpression implements NameExpression {
         switch (SUPPORTED_OPERANDS.indexOf(propertyName)) {
             case 0:
                 if (stage.getCompetitors() != null) {
-                    name = stage.getCompetitors().stream().findFirst().map(f -> f.getName(locale)).orElse(null);
+                    name =
+                        stage.getCompetitors().stream().findFirst().map(f -> f.getName(locale)).orElse(null);
                 }
                 break;
             case 1:
-                if(stage.getCompetitors() != null) {
-                    name = stage.getCompetitors().stream().skip(1).findFirst().map(f -> f.getName(locale)).orElse(null);
+                if (stage.getCompetitors() != null) {
+                    name =
+                        stage
+                            .getCompetitors()
+                            .stream()
+                            .skip(1)
+                            .findFirst()
+                            .map(f -> f.getName(locale))
+                            .orElse(null);
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Operand " + propertyName + " is not supported. Supported operands are: " +  String.join("," ,SUPPORTED_OPERANDS));
+                throw new IllegalArgumentException(
+                    "Operand " +
+                    propertyName +
+                    " is not supported. Supported operands are: " +
+                    String.join(",", SUPPORTED_OPERANDS)
+                );
         }
 
         if (!Strings.isNullOrEmpty(name)) {
             return name;
         }
 
-        throw new IllegalStateException("Could not build the requested entity name, event:" + sportEvent + ", operand: " + propertyName + ", locale:" + locale);
+        throw new IllegalStateException(
+            "Could not build the requested entity name, event:" +
+            sportEvent +
+            ", operand: " +
+            propertyName +
+            ", locale:" +
+            locale
+        );
     }
 }

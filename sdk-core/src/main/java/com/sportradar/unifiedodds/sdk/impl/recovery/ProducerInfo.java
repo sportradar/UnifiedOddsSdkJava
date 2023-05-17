@@ -16,17 +16,18 @@ import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class used to access producer data & store additional recovery related information
  */
+@SuppressWarnings({ "ConstantName", "ExplicitInitialization", "HiddenField", "UnnecessaryParentheses" })
 class ProducerInfo {
+
     private static final Logger logger = LoggerFactory.getLogger(ProducerInfo.class);
     private final int producerId;
     private final SDKProducerManager producerManager;
@@ -81,7 +82,7 @@ class ProducerInfo {
         if (!isPerformingRecovery()) {
             return false;
         }
-        if (this.recoveryId != recoveryId){
+        if (this.recoveryId != recoveryId) {
             return false;
         }
 
@@ -108,7 +109,9 @@ class ProducerInfo {
             return true;
         }
 
-        Set<MessageInterest> receivedSnapshotCompletes = eventRecovery.onSnapshotCompleteReceived(messageInterest);
+        Set<MessageInterest> receivedSnapshotCompletes = eventRecovery.onSnapshotCompleteReceived(
+            messageInterest
+        );
 
         return validateProducerSnapshotCompletes(receivedSnapshotCompletes);
     }
@@ -117,19 +120,25 @@ class ProducerInfo {
         return recoveryId == requestId || eventRecoveries.containsKey(requestId);
     }
 
-    boolean isPerformingRecovery() { return recoveryState == RecoveryState.Started || recoveryState == RecoveryState.Interrupted; }
+    boolean isPerformingRecovery() {
+        return recoveryState == RecoveryState.Started || recoveryState == RecoveryState.Interrupted;
+    }
 
     boolean isDisabled() {
         return !producerManager.isProducerEnabled(producerId);
     }
 
-    boolean isFlaggedDown() { return producerManager.isProducerDown(producerId); }
+    boolean isFlaggedDown() {
+        return producerManager.isProducerDown(producerId);
+    }
 
     boolean isFirstRecoveryCompleted() {
         return firstRecoveryCompleted;
     }
 
-    int getProducerId() { return producerId; }
+    int getProducerId() {
+        return producerId;
+    }
 
     RecoveryState getRecoveryState() {
         return recoveryState;
@@ -139,15 +148,21 @@ class ProducerInfo {
         return recoveryId;
     }
 
-    long getLastRecoveryStartedAt() { return recoveryStartedAt; }
+    long getLastRecoveryStartedAt() {
+        return recoveryStartedAt;
+    }
 
-    long getLastRecoveryAttemptedAt() { return producerManager.getProducerLastRecoveryAttemptTimestamp(producerId); }
+    long getLastRecoveryAttemptedAt() {
+        return producerManager.getProducerLastRecoveryAttemptTimestamp(producerId);
+    }
 
     EventRecovery getEventRecoveryData(long recoveryId) {
         return eventRecoveries.get(recoveryId);
     }
 
-    long getTimestampForRecovery() { return producerManager.getProducer(producerId).getTimestampForRecovery(); }
+    long getTimestampForRecovery() {
+        return producerManager.getProducer(producerId).getTimestampForRecovery();
+    }
 
     long getLastSystemAliveReceivedTimestamp() {
         return lastSystemAliveReceivedTimestamp;
@@ -173,20 +188,34 @@ class ProducerInfo {
         return producerStatusReason;
     }
 
-    long getLastValidAliveGenTimestampInRecovery() { return lastValidAliveGenTimestampInRecovery; }
+    long getLastValidAliveGenTimestampInRecovery() {
+        return lastValidAliveGenTimestampInRecovery;
+    }
 
     long getLastUserSessionAliveReceivedTimestamp() {
         return lastUserSessionAliveReceivedTimestamp;
     }
 
-    int getStatefulRecoveryWindowInMinutes() { return producerManager.getProducer(producerId).getStatefulRecoveryWindowInMinutes(); }
+    int getStatefulRecoveryWindowInMinutes() {
+        return producerManager.getProducer(producerId).getStatefulRecoveryWindowInMinutes();
+    }
 
-    long getLastRecoveryMessageReceivedTimestamp() { return producerManager.getProducerLastRecoveryMessageTimestamp(producerId); }
+    long getLastRecoveryMessageReceivedTimestamp() {
+        return producerManager.getProducerLastRecoveryMessageTimestamp(producerId);
+    }
 
-    long getCreated() { return this.created; }
+    long getCreated() {
+        return this.created;
+    }
 
     void setProducerRecoveryState(int recoveryId, long recoveryStartedAt, RecoveryState recoveryState) {
-        logger.info("{} recovery state set to: recoveryId[{}], recoveryStartedAt[{}], recoveryState[{}]", this, recoveryId, recoveryStartedAt, recoveryState);
+        logger.info(
+            "{} recovery state set to: recoveryId[{}], recoveryStartedAt[{}], recoveryState[{}]",
+            this,
+            recoveryId,
+            recoveryStartedAt,
+            recoveryState
+        );
 
         this.recoveryState = recoveryState;
 
@@ -215,9 +244,13 @@ class ProducerInfo {
         producerManager.internalSetProducerLastMessageTimestamp(producerId, timestamp);
     }
 
-    void setLastRecoveryMessageReceivedTimestamp(long timestamp) { producerManager.internalSetProducerLastRecoveryMessageTimestamp(producerId, timestamp); }
+    void setLastRecoveryMessageReceivedTimestamp(long timestamp) {
+        producerManager.internalSetProducerLastRecoveryMessageTimestamp(producerId, timestamp);
+    }
 
-    void setLastRecoveryAttemptedTimestamp(long timestamp) { producerManager.internalSetProducerLastRecoveryAttemptTimestamp(producerId, timestamp); }
+    void setLastRecoveryAttemptedTimestamp(long timestamp) {
+        producerManager.internalSetProducerLastRecoveryAttemptTimestamp(producerId, timestamp);
+    }
 
     void setLastProcessedMessageGenTimestamp(long lastProcessedMessageGenTimestamp) {
         producerManager.setLastProcessedMessageGenTimestamp(producerId, lastProcessedMessageGenTimestamp);
@@ -227,9 +260,12 @@ class ProducerInfo {
         if (recoveryId == 0 && recoveryStartedAt == 0) {
             eventRecoveries.remove(recoveryId);
         } else {
-
             if (eventRecoveries.values().stream().anyMatch(r -> r.getEventId().equals(eventId))) {
-                logger.info("Requested event recovery, but the previous event recovery was still in progress(recovery restarted). Producer: {}, eventId: {}", this, eventId);
+                logger.info(
+                    "Requested event recovery, but the previous event recovery was still in progress(recovery restarted). Producer: {}, eventId: {}",
+                    this,
+                    eventId
+                );
             }
             eventRecoveries.put(recoveryId, new EventRecovery(eventId, recoveryId, recoveryStartedAt));
         }
@@ -238,22 +274,29 @@ class ProducerInfo {
     private boolean isSnapshotValidationNeeded(MessageInterest messageInterest) {
         // if the message interest is not from live || not from prematch it means its a ("high/low" or "AllMessages" setup),
         // both of which handle snapshots by themselves
-        return messageInterest == MessageInterest.LiveMessagesOnly ||
-                 messageInterest == MessageInterest.PrematchMessagesOnly ||
-                   messageInterest == MessageInterest.VirtualSports;
+        return (
+            messageInterest == MessageInterest.LiveMessagesOnly ||
+            messageInterest == MessageInterest.PrematchMessagesOnly ||
+            messageInterest == MessageInterest.VirtualSports
+        );
     }
 
     private boolean validateProducerSnapshotCompletes(Set<MessageInterest> receivedSnapshotCompletes) {
-        Map<ProducerScope, Boolean> validationMap =
-                producerManager.getProducer(producerId)
-                        .getProducerScopes()
-                        .stream()
-                        .collect(Collectors.toMap(k -> k, v -> this.msgInterest2scopeValidation(receivedSnapshotCompletes, v)));
+        Map<ProducerScope, Boolean> validationMap = producerManager
+            .getProducer(producerId)
+            .getProducerScopes()
+            .stream()
+            .collect(
+                Collectors.toMap(k -> k, v -> this.msgInterest2scopeValidation(receivedSnapshotCompletes, v))
+            );
 
         return !validationMap.containsValue(false);
     }
 
-    private boolean msgInterest2scopeValidation(Set<MessageInterest> interestsOfSnapshotComplete, ProducerScope scope) {
+    private boolean msgInterest2scopeValidation(
+        Set<MessageInterest> interestsOfSnapshotComplete,
+        ProducerScope scope
+    ) {
         Preconditions.checkNotNull(interestsOfSnapshotComplete);
         Preconditions.checkNotNull(scope);
 
@@ -266,7 +309,7 @@ class ProducerInfo {
                 return interestsOfSnapshotComplete.contains(MessageInterest.VirtualSports);
             default:
                 return interestsOfSnapshotComplete.containsAll(
-                        Lists.newArrayList(MessageInterest.LiveMessagesOnly, MessageInterest.PrematchMessagesOnly)
+                    Lists.newArrayList(MessageInterest.LiveMessagesOnly, MessageInterest.PrematchMessagesOnly)
                 );
         }
     }
@@ -281,6 +324,7 @@ class ProducerInfo {
      * A simple storage class used to cache the recovery requests state
      */
     class EventRecovery {
+
         private final URN eventId;
         private final long recoveryId;
         private final long recoveryStartedAt;

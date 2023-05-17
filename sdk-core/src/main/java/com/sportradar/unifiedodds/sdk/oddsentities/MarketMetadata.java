@@ -20,17 +20,23 @@ public interface MarketMetadata {
      * Returns the start time of the event (as epoch timestamp)
      * @return the start time of the event (as epoch timestamp)
      */
-    default Long getStartTime() { return null; }
+    default Long getStartTime() {
+        return null;
+    }
 
     /**
      * Returns the end time of the event (as epoch timestamp)
      * @return the end time of the event (as epoch timestamp)
      */
-    default Long getEndTime() { return null; }
+    default Long getEndTime() {
+        return null;
+    }
 
     /**
      * Returns the Italian AAMS id for this outright
      * @return the Italian AAMS id for this outright
      */
-    default Long getAamsId()  { return null; }
+    default Long getAamsId() {
+        return null;
+    }
 }

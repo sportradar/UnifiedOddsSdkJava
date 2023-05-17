@@ -5,11 +5,11 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.PeriodCompetitorResult;
 import com.sportradar.utils.URN;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodCompetitorResultImpl implements PeriodCompetitorResult {
+
     private final URN id;
     private final List<CompetitorResult> competitorResults;
 
@@ -18,8 +18,10 @@ public class PeriodCompetitorResultImpl implements PeriodCompetitorResult {
 
         id = URN.parse(sapiCompetitor.getId());
         competitorResults = new ArrayList<>();
-        if(sapiCompetitor.getResult() != null){
-            sapiCompetitor.getResult().forEach(sapiResult -> competitorResults.add(new CompetitorResultImpl(sapiResult)));
+        if (sapiCompetitor.getResult() != null) {
+            sapiCompetitor
+                .getResult()
+                .forEach(sapiResult -> competitorResults.add(new CompetitorResultImpl(sapiResult)));
         }
     }
 
@@ -29,7 +31,9 @@ public class PeriodCompetitorResultImpl implements PeriodCompetitorResult {
      * @return the competitor id
      */
     @Override
-    public URN getId() { return id; }
+    public URN getId() {
+        return id;
+    }
 
     /**
      * Returns the list of the competitor results
@@ -37,5 +41,7 @@ public class PeriodCompetitorResultImpl implements PeriodCompetitorResult {
      * @return the list of the competitor results
      */
     @Override
-    public List<CompetitorResult> getCompetitorResults() { return competitorResults; }
+    public List<CompetitorResult> getCompetitorResults() {
+        return competitorResults;
+    }
 }

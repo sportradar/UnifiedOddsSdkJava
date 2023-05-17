@@ -12,13 +12,20 @@ import com.sportradar.unifiedodds.sdk.SnapshotRequest;
  * // TODO @eti: Javadoc
  */
 class SnapshotRequestImpl implements SnapshotRequest {
+
     private final int bookmakerId;
     private final int producerId;
     private final long recoveryId;
     private final long fromTimestamp;
     private final ScheduleApproval approvalCallback;
 
-    SnapshotRequestImpl(int bookmakerId, int producerId, long recoveryId, long fromTimestamp, ScheduleApproval approvalCallback) {
+    SnapshotRequestImpl(
+        int bookmakerId,
+        int producerId,
+        long recoveryId,
+        long fromTimestamp,
+        ScheduleApproval approvalCallback
+    ) {
         Preconditions.checkNotNull(approvalCallback);
 
         this.bookmakerId = bookmakerId;

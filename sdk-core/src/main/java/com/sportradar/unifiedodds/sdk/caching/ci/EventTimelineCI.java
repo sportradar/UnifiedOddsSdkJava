@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPITimeline;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventTimelineCI;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -15,7 +14,9 @@ import java.util.stream.Collectors;
 /**
  * A cache representation of an event timeline
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class EventTimelineCI {
+
     private final Locale cachedLocale;
     private final List<TimelineEventCI> timelineEvents;
     private final boolean isFinalized;
@@ -24,9 +25,8 @@ public class EventTimelineCI {
         Preconditions.checkNotNull(timeline);
         Preconditions.checkNotNull(dataLocale);
 
-        this.timelineEvents = timeline.getEvent().stream()
-                .map(TimelineEventCI::new)
-                .collect(Collectors.toList());
+        this.timelineEvents =
+            timeline.getEvent().stream().map(TimelineEventCI::new).collect(Collectors.toList());
         this.cachedLocale = dataLocale;
         this.isFinalized = isFinalized;
     }
@@ -35,7 +35,8 @@ public class EventTimelineCI {
         Preconditions.checkNotNull(exportable);
 
         this.cachedLocale = exportable.getCachedLocale();
-        this.timelineEvents = exportable.getTimelineEvents().stream().map(TimelineEventCI::new).collect(Collectors.toList());
+        this.timelineEvents =
+            exportable.getTimelineEvents().stream().map(TimelineEventCI::new).collect(Collectors.toList());
         this.isFinalized = exportable.isFinalized();
     }
 
@@ -68,9 +69,9 @@ public class EventTimelineCI {
 
     public ExportableEventTimelineCI export() {
         return new ExportableEventTimelineCI(
-                cachedLocale,
-                timelineEvents.stream().map(TimelineEventCI::export).collect(Collectors.toList()),
-                isFinalized
+            cachedLocale,
+            timelineEvents.stream().map(TimelineEventCI::export).collect(Collectors.toList()),
+            isFinalized
         );
     }
 }

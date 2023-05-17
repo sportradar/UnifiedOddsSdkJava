@@ -19,9 +19,6 @@ import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
 import com.sportradar.utils.SdkHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,12 +26,27 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "IllegalCatch",
+        "LambdaBodyLength",
+        "LineLength",
+        "MagicNumber",
+        "MultipleStringLiterals",
+        "ReturnCount",
+    }
+)
 public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
+
     private static final Logger logger = LoggerFactory.getLogger(InvariantMarketDescriptionCache.class);
 
     private final Cache<String, MarketDescriptionCI> cache;
@@ -46,12 +58,14 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     private final ReentrantLock fetchLock = new ReentrantLock();
     private boolean hasTimerElapsedOnce;
 
-    public InvariantMarketDescriptionCache(Cache<String, MarketDescriptionCI> cache,
-                                           DataProvider<MarketDescriptions> dataProvider,
-                                           ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
-                                           MappingValidatorFactory mappingValidatorFactory,
-                                           SDKTaskScheduler scheduler,
-                                           List<Locale> prefetchLocales) {
+    public InvariantMarketDescriptionCache(
+        Cache<String, MarketDescriptionCI> cache,
+        DataProvider<MarketDescriptions> dataProvider,
+        ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
+        MappingValidatorFactory mappingValidatorFactory,
+        SDKTaskScheduler scheduler,
+        List<Locale> prefetchLocales
+    ) {
         Preconditions.checkNotNull(cache);
         Preconditions.checkNotNull(dataProvider);
         Preconditions.checkNotNull(additionalMappingsProvider);
@@ -66,13 +80,20 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         this.prefetchLocales = prefetchLocales;
         this.fetchedLocales = new ArrayList<>();
 
-        scheduler.scheduleAtFixedRate("InvariantMarketCacheRefreshTask", this::onTimerElapsed, 5, 60 * 60 * 6L, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(
+            "InvariantMarketCacheRefreshTask",
+            this::onTimerElapsed,
+            5,
+            60 * 60 * 6L,
+            TimeUnit.SECONDS
+        );
 
         additionalMappingsProvider.registerWatcher(this.getClass(), this::additionalMappingsChanged);
     }
 
     @Override
-    public MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
+    public MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkArgument(marketId > 0);
 
         String processingCacheId = String.valueOf(marketId);
@@ -83,15 +104,19 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
     @Override
     public boolean loadMarketDescriptions() {
-        try{
+        try {
             fetchedLocales.clear();
-            logger.debug("Loading invariant market descriptions for [{}] (user request).",
-                    prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
+            logger.debug(
+                "Loading invariant market descriptions for [{}] (user request).",
+                prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(","))
+            );
             fetchMissingData(prefetchLocales);
-        }
-        catch(Exception e){
-            logger.warn("An error occurred while fetching market description for languages [{}]",
-                    prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")), e);
+        } catch (Exception e) {
+            logger.warn(
+                "An error occurred while fetching market description for languages [{}]",
+                prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
+                e
+            );
             return false;
         }
         return true;
@@ -111,16 +136,20 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         }
     }
 
-    public List<MarketDescription> getAllInvariantMarketDescriptions(List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
+    public List<MarketDescription> getAllInvariantMarketDescriptions(List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
         // ensure all locales are present & fetch them if needed
         MarketDescriptionCI cachedItem = getMarketInternal("1", locales);
 
-        return cache.asMap().values().stream()
-                .map(ci -> new MarketDescriptionImpl(ci, locales))
-                .collect(Collectors.toList());
+        return cache
+            .asMap()
+            .values()
+            .stream()
+            .map(ci -> new MarketDescriptionImpl(ci, locales))
+            .collect(Collectors.toList());
     }
 
     private void onTimerElapsed() {
@@ -131,11 +160,16 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         if (hasTimerElapsedOnce) {
             locales2fetch = prefetchLocales;
         } else {
-            locales2fetch = prefetchLocales.stream()
-                    .filter(pLocale -> !fetchedLocales.contains(pLocale)).collect(Collectors.toList());
+            locales2fetch =
+                prefetchLocales
+                    .stream()
+                    .filter(pLocale -> !fetchedLocales.contains(pLocale))
+                    .collect(Collectors.toList());
         }
-        logger.debug("Loading invariant market descriptions for [{}] (timer).",
-                locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
+        logger.debug(
+            "Loading invariant market descriptions for [{}] (timer).",
+            locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(","))
+        );
         fetchLock.lock();
         try {
             if (hasTimerElapsedOnce) {
@@ -146,15 +180,18 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             }
             hasTimerElapsedOnce = true;
         } catch (Exception e) { // so the timer does not die
-            logger.warn("An error occurred while periodically fetching market description for languages [{}]",
-                    locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
-                    e);
+            logger.warn(
+                "An error occurred while periodically fetching market description for languages [{}]",
+                locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
+                e
+            );
         } finally {
             fetchLock.unlock();
         }
     }
 
-    private MarketDescriptionCI getMarketInternal(String id, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
+    private MarketDescriptionCI getMarketInternal(String id, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
@@ -182,7 +219,11 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
         description = cache.getIfPresent(id);
         if (description == null || !getMissingLocales(description, locales).isEmpty()) {
-            throw new CacheItemNotFoundException("After successful market fetch, the cache item should be complete[" + id + "], but its missing");
+            throw new CacheItemNotFoundException(
+                "After successful market fetch, the cache item should be complete[" +
+                id +
+                "], but its missing"
+            );
         }
 
         return description;
@@ -197,7 +238,10 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             }
             initStaticMappingsEnrichment();
         } catch (DataProviderException e) {
-            throw new IllegalCacheStateException("An error occurred while fetching invariant descriptors in [" + missingLocales + "]", e);
+            throw new IllegalCacheStateException(
+                "An error occurred while fetching invariant descriptors in [" + missingLocales + "]",
+                e
+            );
         }
     }
 
@@ -206,18 +250,25 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         Preconditions.checkNotNull(data);
         boolean createNew = fetchedLocales.isEmpty();
 
-        data.getMarket().forEach(market -> {
-            String processingCacheItemId = String.valueOf(market.getId());
-            MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
-            if (createNew || cachedItem == null) {
-                cachedItem = new MarketDescriptionCI(market, mappingValidatorFactory, locale, SdkHelper.InVariantMarketListCache);
-                cache.put(processingCacheItemId, cachedItem);
-            } else {
-                cachedItem.merge(market, locale);
-            }
-        });
-        if(!fetchedLocales.contains(locale))
-        {
+        data
+            .getMarket()
+            .forEach(market -> {
+                String processingCacheItemId = String.valueOf(market.getId());
+                MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
+                if (createNew || cachedItem == null) {
+                    cachedItem =
+                        new MarketDescriptionCI(
+                            market,
+                            mappingValidatorFactory,
+                            locale,
+                            SdkHelper.InVariantMarketListCache
+                        );
+                    cache.put(processingCacheItemId, cachedItem);
+                } else {
+                    cachedItem.merge(market, locale);
+                }
+            });
+        if (!fetchedLocales.contains(locale)) {
             fetchedLocales.add(locale);
         }
     }
@@ -235,7 +286,10 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             enrichStaticMappings(data.getMarket());
         } catch (Exception e) {
             if (additionalMappingsProvider.logErrors()) {
-                logger.warn("An exception occurred while enriching static mappings with additional mappings, exc:", e);
+                logger.warn(
+                    "An exception occurred while enriching static mappings with additional mappings, exc:",
+                    e
+                );
             }
         }
     }
@@ -253,7 +307,11 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
                 return;
             }
 
-            if (m.getMappings() == null || m.getMappings().getMapping() == null || m.getMappings().getMapping().isEmpty()) {
+            if (
+                m.getMappings() == null ||
+                m.getMappings().getMapping() == null ||
+                m.getMappings().getMapping().isEmpty()
+            ) {
                 if (additionalMappingsProvider.logErrors()) {
                     logger.warn("Handling empty/null additional mappings for market: {}", m.getId());
                 }

@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
-
 import java.util.Locale;
 import java.util.Optional;
 
@@ -85,7 +84,7 @@ public interface Match extends Competition {
      * @param locale the locale in which the timeline should be provided
      * @return - a associated {@link EventTimeline} if already cached (does not make API call)
      */
-    default Optional<EventTimeline> getEventTimelineIfPresent(Locale locale)  {
+    default Optional<EventTimeline> getEventTimelineIfPresent(Locale locale) {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -101,5 +100,7 @@ public interface Match extends Competition {
      *
      * @return a {@link CoverageInfo} instance
      */
-    default CoverageInfo getCoverageInfo(){ return null; }
+    default CoverageInfo getCoverageInfo() {
+        return null;
+    }
 }

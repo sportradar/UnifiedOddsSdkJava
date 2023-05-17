@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.entities.Pitcher;
 import com.sportradar.unifiedodds.sdk.entities.Referee;
 import com.sportradar.unifiedodds.sdk.entities.SportEventConditions;
 import com.sportradar.unifiedodds.sdk.entities.WeatherInfo;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +18,9 @@ import java.util.stream.Collectors;
 /**
  * Provides information about sport event conditions
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength", "UnnecessaryParentheses" })
 public class SportEventConditionsImpl implements SportEventConditions {
+
     /**
      * A {@link String} specifying the attendance of the associated sport event
      */
@@ -58,17 +59,20 @@ public class SportEventConditionsImpl implements SportEventConditions {
 
         this.attendance = sportEventConditionsCI.getAttendance();
         this.eventMode = sportEventConditionsCI.getEventMode();
-        this.referee = sportEventConditionsCI.getReferee() == null ? null :
-                new RefereeImpl(sportEventConditionsCI.getReferee(), locales);
-        this.weatherInfo = sportEventConditionsCI.getWeatherInfo() == null ? null :
-                new WeatherInfoImpl(sportEventConditionsCI.getWeatherInfo());
-        if(sportEventConditionsCI.getPitchers() != null && !sportEventConditionsCI.getPitchers().isEmpty())
-        {
+        this.referee =
+            sportEventConditionsCI.getReferee() == null
+                ? null
+                : new RefereeImpl(sportEventConditionsCI.getReferee(), locales);
+        this.weatherInfo =
+            sportEventConditionsCI.getWeatherInfo() == null
+                ? null
+                : new WeatherInfoImpl(sportEventConditionsCI.getWeatherInfo());
+        if (sportEventConditionsCI.getPitchers() != null && !sportEventConditionsCI.getPitchers().isEmpty()) {
             this.pitchers = new ArrayList<>();
-            sportEventConditionsCI.getPitchers().forEach(pitcherCI -> this.pitchers.add(new PitcherImpl(pitcherCI)));
-        }
-        else
-        {
+            sportEventConditionsCI
+                .getPitchers()
+                .forEach(pitcherCI -> this.pitchers.add(new PitcherImpl(pitcherCI)));
+        } else {
             this.pitchers = null;
         }
     }
@@ -133,17 +137,26 @@ public class SportEventConditionsImpl implements SportEventConditions {
     @Override
     public String toString() {
         String pitcherStr = null;
-        if(pitchers != null)
-        {
-            pitcherStr = pitchers.stream().map(pitcher -> pitcher.getId().toString()).collect(Collectors.joining(","));
+        if (pitchers != null) {
+            pitcherStr =
+                pitchers.stream().map(pitcher -> pitcher.getId().toString()).collect(Collectors.joining(","));
         }
 
-        return "SportEventConditions{" +
-                "attendance='" + attendance + '\'' +
-                ", eventMode='" + eventMode + '\'' +
-                ", referee=" + referee +
-                ", weatherInfo=" + weatherInfo +
-                ", pitchers=" + pitcherStr +
-                '}';
+        return (
+            "SportEventConditions{" +
+            "attendance='" +
+            attendance +
+            '\'' +
+            ", eventMode='" +
+            eventMode +
+            '\'' +
+            ", referee=" +
+            referee +
+            ", weatherInfo=" +
+            weatherInfo +
+            ", pitchers=" +
+            pitcherStr +
+            '}'
+        );
     }
 }

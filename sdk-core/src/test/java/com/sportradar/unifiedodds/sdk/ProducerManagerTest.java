@@ -1,4 +1,9 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
 package com.sportradar.unifiedodds.sdk;
+
+import static org.junit.Assert.*;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -7,19 +12,17 @@ import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-import org.junit.Test;
-
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
-
+@SuppressWarnings({ "ConstantName", "MagicNumber" })
 public class ProducerManagerTest {
+
     private static final int PID = 1;
 
-    private static final Injector injector = Guice.createInjector(Modules
-            .override(new MockedMasterModule())
-            .with(new TestingModule())
+    private static final Injector injector = Guice.createInjector(
+        Modules.override(new MockedMasterModule()).with(new TestingModule())
     );
 
     private static final SDKProducerManager producerManager = injector.getInstance(SDKProducerManager.class);
@@ -42,9 +45,7 @@ public class ProducerManagerTest {
     public void getActiveProducers() {
         Map<Integer, Producer> activeProducers = producerManager.getActiveProducers();
 
-        activeProducers
-                .values()
-                .forEach(producer -> assertTrue(producer.isAvailable()));
+        activeProducers.values().forEach(producer -> assertTrue(producer.isAvailable()));
     }
 
     @Test
@@ -76,10 +77,7 @@ public class ProducerManagerTest {
 
         producerManager.setProducerRecoveryFromTimestamp(PID, timestamp);
 
-        assertEquals(
-                timestamp,
-                producerManager.getProducer(PID).getTimestampForRecovery()
-        );
+        assertEquals(timestamp, producerManager.getProducer(PID).getTimestampForRecovery());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,10 +86,7 @@ public class ProducerManagerTest {
 
         producerManager.setProducerRecoveryFromTimestamp(PID, timestamp);
 
-        assertEquals(
-                timestamp,
-                producerManager.getProducer(PID).getTimestampForRecovery()
-        );
+        assertEquals(timestamp, producerManager.getProducer(PID).getTimestampForRecovery());
     }
 
     @Test

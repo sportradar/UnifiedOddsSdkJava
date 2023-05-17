@@ -16,20 +16,23 @@ import com.sportradar.unifiedodds.sdk.impl.*;
 /**
  * An injection module which is used to customise some of the SDK internal components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public class CustomisableSDKModule extends AbstractModule {
+
     /**
      * Configures a {@link Binder} via the exposed methods.
      */
     @Override
     protected final void configure() {
-
         bind(ChannelMessageConsumer.class).to(provideMessageConsumerImplementationClass());
-        bind(SnapshotRequestManager.class).to(provideSnapshotRequestSchedulerImplementationClass()).in(Singleton.class);
+        bind(SnapshotRequestManager.class)
+            .to(provideSnapshotRequestSchedulerImplementationClass())
+            .in(Singleton.class);
 
-        bind(new TypeLiteral<ObservableDataProvider<MarketDescriptions>>() { })
-                .annotatedWith(Names.named("AdditionalMarketMappingsProvider"))
-                .to(providesAdditionalMarketMappingsProviderClass())
-                .in(Singleton.class);
+        bind(new TypeLiteral<ObservableDataProvider<MarketDescriptions>>() {})
+            .annotatedWith(Names.named("AdditionalMarketMappingsProvider"))
+            .to(providesAdditionalMarketMappingsProviderClass())
+            .in(Singleton.class);
     }
 
     /**

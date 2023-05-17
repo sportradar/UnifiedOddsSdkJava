@@ -14,7 +14,6 @@ import com.sportradar.unifiedodds.sdk.oddsentities.CashOutProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +22,24 @@ import java.util.stream.Collectors;
 /**
  * Implements methods used to access event CashOut probabilities
  */
-public class CashOutProbabilitiesImpl<T extends SportEvent> extends EventMessageImpl<T> implements CashOutProbabilities<T> {
+public class CashOutProbabilitiesImpl<T extends SportEvent>
+    extends EventMessageImpl<T>
+    implements CashOutProbabilities<T> {
+
     private final Integer betstopReason;
     private final Integer bettingStatus;
     private final List<MarketWithProbabilities> marketList;
     private final NamedValuesProvider namedValuesProvider;
 
-    CashOutProbabilitiesImpl(T sportEvent, UFCashout cashoutData, Producer producer, MarketFactory marketFactory, NamedValuesProvider namedValuesProvider, MessageTimestamp timestamp) {
+    CashOutProbabilitiesImpl(
+        T sportEvent,
+        UFCashout cashoutData,
+        Producer producer,
+        MarketFactory marketFactory,
+        NamedValuesProvider namedValuesProvider,
+        MessageTimestamp timestamp
+    ) {
         super(sportEvent, new byte[0], producer, timestamp, cashoutData.getRequestId());
-
         Preconditions.checkNotNull(marketFactory);
         Preconditions.checkNotNull(namedValuesProvider);
 
@@ -42,8 +50,18 @@ public class CashOutProbabilitiesImpl<T extends SportEvent> extends EventMessage
             bettingStatus = cashoutData.getOdds().getBettingStatus();
 
             if (cashoutData.getOdds().getMarket() != null) {
-                marketList = cashoutData.getOdds().getMarket().stream()
-                        .map(m -> marketFactory.buildMarketWithProbabilities(sportEvent, m, cashoutData.getProduct()))
+                marketList =
+                    cashoutData
+                        .getOdds()
+                        .getMarket()
+                        .stream()
+                        .map(m ->
+                            marketFactory.buildMarketWithProbabilities(
+                                sportEvent,
+                                m,
+                                cashoutData.getProduct()
+                            )
+                        )
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toList());

@@ -3,7 +3,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import java.io.Serializable;
 import java.util.List;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableProducerInfoCI implements Serializable {
+
     private boolean isAutoTraded;
     private boolean isInHostedStatistics;
     private boolean isInLiveCenterSoccer;
@@ -12,13 +14,15 @@ public class ExportableProducerInfoCI implements Serializable {
     private List<ExportableProducerInfoLinkCI> producerInfoLinks;
     private List<ExportableStreamingChannelCI> streamingChannels;
 
-    public ExportableProducerInfoCI(boolean isAutoTraded,
-                                    boolean isInHostedStatistics,
-                                    boolean isInLiveCenterSoccer,
-                                    boolean isInLiveScore,
-                                    boolean isInLiveMatchTracker,
-                                    List<ExportableProducerInfoLinkCI> producerInfoLinks,
-                                    List<ExportableStreamingChannelCI> streamingChannels) {
+    public ExportableProducerInfoCI(
+        boolean isAutoTraded,
+        boolean isInHostedStatistics,
+        boolean isInLiveCenterSoccer,
+        boolean isInLiveScore,
+        boolean isInLiveMatchTracker,
+        List<ExportableProducerInfoLinkCI> producerInfoLinks,
+        List<ExportableStreamingChannelCI> streamingChannels
+    ) {
         this.isAutoTraded = isAutoTraded;
         this.isInHostedStatistics = isInHostedStatistics;
         this.isInLiveCenterSoccer = isInLiveCenterSoccer;

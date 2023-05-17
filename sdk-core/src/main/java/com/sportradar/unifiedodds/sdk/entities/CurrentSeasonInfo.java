@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;

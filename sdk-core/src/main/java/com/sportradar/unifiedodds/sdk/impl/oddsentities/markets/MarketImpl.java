@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,7 +16,9 @@ import java.util.Map;
  * Created on 23/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "LineLength" })
 class MarketImpl implements Market {
+
     private final int id;
     private final NameProvider nameProvider;
     private final Map<String, String> specifiersMap;
@@ -25,7 +26,14 @@ class MarketImpl implements Market {
     private final MarketDefinition marketDefinition;
     private final Locale defaultLocale;
 
-    MarketImpl(int id, NameProvider nameProvider, Map<String, String> specifiersMap, Map<String, String> extendedSpecifiers, MarketDefinition marketDefinition, Locale defaultLocale) {
+    MarketImpl(
+        int id,
+        NameProvider nameProvider,
+        Map<String, String> specifiersMap,
+        Map<String, String> extendedSpecifiers,
+        MarketDefinition marketDefinition,
+        Locale defaultLocale
+    ) {
         Preconditions.checkArgument(id > 0);
         Preconditions.checkNotNull(nameProvider);
         Preconditions.checkNotNull(marketDefinition);
@@ -90,7 +98,7 @@ class MarketImpl implements Market {
      * @return additional market information(extended market specifiers)
      */
     @Override
-    public Map<String, String> getAdditionalMarketInfo(){
+    public Map<String, String> getAdditionalMarketInfo() {
         return extendedSpecifiers;
     }
 

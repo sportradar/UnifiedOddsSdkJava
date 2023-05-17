@@ -9,24 +9,27 @@ import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple demo entity utility which extracts data from the provided entities
  */
+@SuppressWarnings(
+    { "ClassFanOutComplexity", "CyclomaticComplexity", "NestedIfDepth", "UnnecessaryParentheses" }
+)
 public class SportEntityWriter {
+
     private List<Locale> locales;
     private Locale defaultLocale;
     private boolean writeNonCacheableData;
     private boolean writeLog;
     private final Logger logger;
 
-    public SportEntityWriter(List<Locale> locales, boolean writeNonCacheableData, boolean writeLog){
+    public SportEntityWriter(List<Locale> locales, boolean writeNonCacheableData, boolean writeLog) {
         logger = LoggerFactory.getLogger(this.getClass().getName());
         this.locales = locales;
         this.writeNonCacheableData = writeNonCacheableData;
@@ -41,12 +44,14 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link SportEvent}
      */
     public String writeBaseEventData(SportEvent event) {
-        return String.format("Id:'%s', SportId:'%s', Name:'%s', ScheduledTime:'%s', ScheduledEndTime:'%s'",
-                event.getId(),
-                event.getSportId(),
-                event.getName(defaultLocale),
-                event.getScheduledTime(),
-                event.getScheduledEndTime());
+        return String.format(
+            "Id:'%s', SportId:'%s', Name:'%s', ScheduledTime:'%s', ScheduledEndTime:'%s'",
+            event.getId(),
+            event.getSportId(),
+            event.getName(defaultLocale),
+            event.getScheduledTime(),
+            event.getScheduledEndTime()
+        );
     }
 
     /**
@@ -58,27 +63,47 @@ public class SportEntityWriter {
     public String writeData(Competition event) {
         String baselineDescription = writeBaseEventData(event);
 
-        if(event.getStatus() != null)
-        {
+        if (event.getStatus() != null) {
             EventStatus sesStatus = event.getStatus().getStatus();
 
-            if(event.getEventStatus() != sesStatus) {
-                logger.warn(String.format("%s: status mismatch: ES:%s != SES:%s ", event.getId(), event.getEventStatus(), sesStatus));
+            if (event.getEventStatus() != sesStatus) {
+                logger.warn(
+                    String.format(
+                        "%s: status mismatch: ES:%s != SES:%s ",
+                        event.getId(),
+                        event.getEventStatus(),
+                        sesStatus
+                    )
+                );
             }
-            if(event.getStatus() instanceof MatchStatus) {
+            if (event.getStatus() instanceof MatchStatus) {
                 MatchStatus matchStatus = (MatchStatus) event.getStatus();
-                if(matchStatus != null && matchStatus.getMatchStatus()!=null) {
-                    logger.debug(String.format("%s: status: ES:%s || SES:%s || MS:%s-%s ", event.getId(), event.getEventStatus(), sesStatus, matchStatus.getMatchStatus().getId(), matchStatus.getMatchStatus().getDescription()));
+                if (matchStatus != null && matchStatus.getMatchStatus() != null) {
+                    logger.debug(
+                        String.format(
+                            "%s: status: ES:%s || SES:%s || MS:%s-%s ",
+                            event.getId(),
+                            event.getEventStatus(),
+                            sesStatus,
+                            matchStatus.getMatchStatus().getId(),
+                            matchStatus.getMatchStatus().getDescription()
+                        )
+                    );
                 }
             }
         }
 
-        return baselineDescription + String.format(", Status:[%s], EventStatus:%s, BookingStatus:%s, %s, %s",
+        return (
+            baselineDescription +
+            String.format(
+                ", Status:[%s], EventStatus:%s, BookingStatus:%s, %s, %s",
                 writeData(event.getStatus()),
                 event.getEventStatus(),
                 event.getBookingStatus(),
                 event.getVenue(),
-                event.getConditions());
+                event.getConditions()
+            )
+        );
     }
 
     /**
@@ -95,14 +120,16 @@ public class SportEntityWriter {
             event.getStages().forEach(s -> stages.add(s.getId().toString()));
         }
 
-        return String.format("Stage[%s, Category:[%s], Sport:[%s], Parent:'%s', StageType:%s, Stages:[%s]]",
-                baselineDescription,
-                event.getCategory(),
-                event.getSport(),
-//                event.getParentStage() != null ? writeData(event.getParentStage()) : "no parent event",
-                event.getParentStage() != null ? event.getParentStage().getId() : "no parent event",
-                event.getStageType(),
-                stages.toString());
+        return String.format(
+            "Stage[%s, Category:[%s], Sport:[%s], Parent:'%s', StageType:%s, Stages:[%s]]",
+            baselineDescription,
+            event.getCategory(),
+            event.getSport(),
+            //                event.getParentStage() != null ? writeData(event.getParentStage()) : "no parent event",
+            event.getParentStage() != null ? event.getParentStage().getId() : "no parent event",
+            event.getStageType(),
+            stages.toString()
+        );
     }
 
     /**
@@ -114,13 +141,15 @@ public class SportEntityWriter {
     public String writeData(Match event) {
         String baselineDescription = writeData((Competition) event);
 
-        return String.format("Match[%s, HomeCompetitor:[%s], AwayCompetitor:[%s], Season:[%s], TournamentRound:[%s], Status:[%s]]",
-                baselineDescription,
-                writeData(event.getHomeCompetitor()),
-                writeData(event.getAwayCompetitor()),
-                writeData(event.getSeason()),
-                writeData(event.getTournamentRound()),
-                writeData(event.getStatus()));
+        return String.format(
+            "Match[%s, HomeCompetitor:[%s], AwayCompetitor:[%s], Season:[%s], TournamentRound:[%s], Status:[%s]]",
+            baselineDescription,
+            writeData(event.getHomeCompetitor()),
+            writeData(event.getAwayCompetitor()),
+            writeData(event.getSeason()),
+            writeData(event.getTournamentRound()),
+            writeData(event.getStatus())
+        );
     }
 
     /**
@@ -132,9 +161,11 @@ public class SportEntityWriter {
     public String writeData(SoccerEvent event) {
         String baselineDescription = writeData((Match) event);
 
-        return String.format("SoccerEvent-%s, Status:'%s']",
-                baselineDescription,
-                writeData(event.getStatus()));
+        return String.format(
+            "SoccerEvent-%s, Status:'%s']",
+            baselineDescription,
+            writeData(event.getStatus())
+        );
     }
 
     /**
@@ -154,16 +185,17 @@ public class SportEntityWriter {
         }
 
         String competitorsStr = "";
-        if(tournament.getCurrentSeason() != null)
-        {
+        if (tournament.getCurrentSeason() != null) {
             competitorsStr = writeData(tournament.getCurrentSeason().getCompetitors(), true);
         }
 
-        return String.format("Tournament[%s, Category:'%s', CurrentSeasonInfo:'%s', %s]",
-                baseline,
-                tournament.getCategory(),
-                tournament.getCurrentSeason(),
-                competitorsStr);
+        return String.format(
+            "Tournament[%s, Category:'%s', CurrentSeasonInfo:'%s', %s]",
+            baseline,
+            tournament.getCategory(),
+            tournament.getCurrentSeason(),
+            competitorsStr
+        );
     }
 
     /**
@@ -178,19 +210,29 @@ public class SportEntityWriter {
         String groups = null;
         if (season.getGroups() != null) {
             StringJoiner sj = new StringJoiner(",");
-            season.getGroups().forEach(g -> sj.add(String.format("Name:'%s', CompetitorsCount:'%s'",
-                    g.getName(),
-                    g.getCompetitors() == null ? 0 : g.getCompetitors().size())));
+            season
+                .getGroups()
+                .forEach(g ->
+                    sj.add(
+                        String.format(
+                            "Name:'%s', CompetitorsCount:'%s'",
+                            g.getName(),
+                            g.getCompetitors() == null ? 0 : g.getCompetitors().size()
+                        )
+                    )
+                );
             groups = sj.toString();
         }
 
-        return String.format("Season[%s, id:'%s', name:'%s', year:'%s', groups:'%s', coverage:'%s']",
-                baselineDescription,
-                season.getId(),
-                season.getName(defaultLocale),
-                season.getYear(),
-                groups == null ? "no groups" : groups,
-                season.getSeasonCoverage());
+        return String.format(
+            "Season[%s, id:'%s', name:'%s', year:'%s', groups:'%s', coverage:'%s']",
+            baselineDescription,
+            season.getId(),
+            season.getName(defaultLocale),
+            season.getYear(),
+            groups == null ? "no groups" : groups,
+            season.getSeasonCoverage()
+        );
     }
 
     /**
@@ -202,12 +244,14 @@ public class SportEntityWriter {
     public String writeData(BasicTournament tournament) {
         String baselineDescription = writeBaseEventData(tournament);
 
-        return String.format("BasicTournament[%s, Sport:[%s], Category:[%s], %s, Coverage:[%s]]",
-                baselineDescription,
-                tournament.getSport(),
-                tournament.getCategory(),
-                writeData(tournament.getCompetitors(), true),
-                tournament.getTournamentCoverage());
+        return String.format(
+            "BasicTournament[%s, Sport:[%s], Category:[%s], %s, Coverage:[%s]]",
+            baselineDescription,
+            tournament.getSport(),
+            tournament.getCategory(),
+            writeData(tournament.getCompetitors(), true),
+            tournament.getTournamentCoverage()
+        );
     }
 
     /**
@@ -219,11 +263,17 @@ public class SportEntityWriter {
     public String writeData(Draw draw) {
         String baselineDescription = writeBaseEventData(draw);
 
-        return baselineDescription + "\n\t" + String.format("Draw{id:''}",
+        return (
+            baselineDescription +
+            "\n\t" +
+            String.format(
+                "Draw{id:''}",
                 draw.getLottery(),
                 draw.getId(),
                 draw.getStatus(),
-                draw.getResults() == null ? "unknown" : draw.getResults().size());
+                draw.getResults() == null ? "unknown" : draw.getResults().size()
+            )
+        );
     }
 
     /**
@@ -235,12 +285,18 @@ public class SportEntityWriter {
     public String writeData(Lottery lottery) {
         String baselineDescription = writeBaseEventData(lottery);
 
-        return baselineDescription + "\n\t" + String.format("Lottery{id:''}",
+        return (
+            baselineDescription +
+            "\n\t" +
+            String.format(
+                "Lottery{id:''}",
                 lottery.getBonusInfo(),
                 lottery.getId(),
                 lottery.getCategory(),
                 lottery.getDrawInfo(),
-                lottery.getScheduledDraws() == null ? "unknown" : lottery.getScheduledDraws().size());
+                lottery.getScheduledDraws() == null ? "unknown" : lottery.getScheduledDraws().size()
+            )
+        );
     }
 
     /**
@@ -254,7 +310,14 @@ public class SportEntityWriter {
             return "No tournament round info available";
         }
 
-        return String.format("Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s", tournamentRound.getName(defaultLocale), tournamentRound.getGroupName(), tournamentRound.getGroupId(), tournamentRound.getType(), tournamentRound.getNumber());
+        return String.format(
+            "Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s",
+            tournamentRound.getName(defaultLocale),
+            tournamentRound.getGroupName(),
+            tournamentRound.getGroupId(),
+            tournamentRound.getType(),
+            tournamentRound.getNumber()
+        );
     }
 
     /**
@@ -268,7 +331,13 @@ public class SportEntityWriter {
             return "null";
         }
 
-        return String.format("%s[%s]  %s - s%", season.getName(defaultLocale), season.getId(), season.getStartDate(), season.getEndDate());
+        return String.format(
+            "%s[%s]  %s - s%",
+            season.getName(defaultLocale),
+            season.getId(),
+            season.getStartDate(),
+            season.getEndDate()
+        );
     }
 
     /**
@@ -278,14 +347,16 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link Competitor}
      */
     private String writeData(Competitor competitor) {
-        return String.format("Id:%s, Name:%s, Abr:%s, Country:%s, CountryCode:%s, IsVirtual:%s, References:[%s]",
-                competitor.getId(),
-                competitor.getName(defaultLocale),
-                competitor.getAbbreviation(defaultLocale),
-                competitor.getCountry(defaultLocale),
-                competitor.getCountryCode(),
-                competitor.isVirtual(),
-                writeData(competitor.getReferences()));
+        return String.format(
+            "Id:%s, Name:%s, Abr:%s, Country:%s, CountryCode:%s, IsVirtual:%s, References:[%s]",
+            competitor.getId(),
+            competitor.getName(defaultLocale),
+            competitor.getAbbreviation(defaultLocale),
+            competitor.getCountry(defaultLocale),
+            competitor.getCountryCode(),
+            competitor.isVirtual(),
+            writeData(competitor.getReferences())
+        );
     }
 
     /**
@@ -295,7 +366,11 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link TeamCompetitor}
      */
     private String writeData(TeamCompetitor competitor) {
-        return String.format("%s, Qualifier:'%s'", writeData((Competitor) competitor), competitor.getQualifier());
+        return String.format(
+            "%s, Qualifier:'%s'",
+            writeData((Competitor) competitor),
+            competitor.getQualifier()
+        );
     }
 
     /**
@@ -305,30 +380,29 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link Reference}
      */
     private String writeData(Reference reference) {
-        if(reference == null) {
+        if (reference == null) {
             return "";
         }
-        return String.format("BetfairId:%s, BetradarId:%s, RN:%s",
-                reference.getBetfairId(),
-                reference.getBetradarId(),
-                reference.getRotationNumber());
+        return String.format(
+            "BetfairId:%s, BetradarId:%s, RN:%s",
+            reference.getBetfairId(),
+            reference.getBetradarId(),
+            reference.getRotationNumber()
+        );
     }
 
-    private String writeData(List<Competitor> competitors, boolean full)
-    {
-        if(competitors == null)
-        {
+    private String writeData(List<Competitor> competitors, boolean full) {
+        if (competitors == null) {
             return "Competitors:[]";
         }
         StringJoiner sj = new StringJoiner(" | ");
-        competitors.forEach(competitor ->
-        {
-            if(full) {
+        competitors.forEach(competitor -> {
+            if (full) {
                 sj.add(writeData(competitor));
-            }
-            else
-            {
-                sj.add(String.format("Id:%s, Name:%s", competitor.getId(), competitor.getName(defaultLocale)));
+            } else {
+                sj.add(
+                    String.format("Id:%s, Name:%s", competitor.getId(), competitor.getName(defaultLocale))
+                );
             }
         });
         return String.format("Competitors:[%s]", sj.toString());
@@ -341,10 +415,15 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link CompetitionStatus}
      */
     private String writeData(CompetitionStatus status) {
-        if(status == null){
+        if (status == null) {
             return null;
         }
-        return String.format("Status:%s, ReportingStatus:%s, WinnerId:%s", status.getStatus(), status.getReportingStatus(), status.getWinnerId());
+        return String.format(
+            "Status:%s, ReportingStatus:%s, WinnerId:%s",
+            status.getStatus(),
+            status.getReportingStatus(),
+            status.getWinnerId()
+        );
     }
 
     /**
@@ -354,10 +433,14 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link MatchStatus}
      */
     private String writeData(MatchStatus status) {
-        if(status == null){
+        if (status == null) {
             return null;
         }
-        return writeData((CompetitionStatus) status) + ", " + String.format("HomeScore:%s, AwayScore:%s", status.getHomeScore(), status.getAwayScore());
+        return (
+            writeData((CompetitionStatus) status) +
+            ", " +
+            String.format("HomeScore:%s, AwayScore:%s", status.getHomeScore(), status.getAwayScore())
+        );
     }
 
     /**
@@ -367,10 +450,14 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link SoccerStatus}
      */
     private String writeData(SoccerStatus status) {
-        if(status == null){
+        if (status == null) {
             return "";
         }
-        return writeData((MatchStatus) status) + ", " + String.format("Statistics:'%s'", writeData(status.getStatistics()));
+        return (
+            writeData((MatchStatus) status) +
+            ", " +
+            String.format("Statistics:'%s'", writeData(status.getStatistics()))
+        );
     }
 
     /**
@@ -380,22 +467,38 @@ public class SportEntityWriter {
      * @return a {@link String} describing the provided {@link SoccerStatistics}
      */
     private String writeData(SoccerStatistics statistics) {
-        if(statistics == null) {
+        if (statistics == null) {
             return "No statistics";
         }
 
         String totalStats = null;
         if (statistics.getTotalStatistics() != null) {
             StringJoiner sj = new StringJoiner(",");
-            statistics.getTotalStatistics().forEach(s -> sj.add(String.format("[HomeAway:'%s', YellowCards:'%s', RedCards:'%s', CornerKicks:'%s']", s.getHomeAway(), s.getYellowCards(), s.getRedCards(), s.getCornerKicks())));
+            statistics
+                .getTotalStatistics()
+                .forEach(s ->
+                    sj.add(
+                        String.format(
+                            "[HomeAway:'%s', YellowCards:'%s', RedCards:'%s', CornerKicks:'%s']",
+                            s.getHomeAway(),
+                            s.getYellowCards(),
+                            s.getRedCards(),
+                            s.getCornerKicks()
+                        )
+                    )
+                );
             totalStats = sj.toString();
         }
 
-        return String.format("TotalStatistics:'%s', PeriodStatistics:'%s'",
-                totalStats == null ? "No total statistics" : totalStats,
-                statistics.getPeriodStatistics() == null ? "No period statistics" : statistics.getPeriodStatistics().size() + " periods available");
+        return String.format(
+            "TotalStatistics:'%s', PeriodStatistics:'%s'",
+            totalStats == null ? "No total statistics" : totalStats,
+            statistics.getPeriodStatistics() == null
+                ? "No period statistics"
+                : statistics.getPeriodStatistics().size() + " periods available"
+        );
     }
-    
+
     public void writeData(SportEvent sportEvent) {
         String description = null;
         if (sportEvent != null) {
@@ -404,7 +507,7 @@ public class SportEntityWriter {
                 description = writeData((Tournament) sportEvent, false);
             } else if (sportEvent instanceof BasicTournament) {
                 description = writeData((BasicTournament) sportEvent);
-            }  else if (sportEvent instanceof Season) {
+            } else if (sportEvent instanceof Season) {
                 description = writeData((Season) sportEvent);
             } else if (sportEvent instanceof SoccerEvent) {
                 description = writeData((SoccerEvent) sportEvent);
@@ -421,15 +524,18 @@ public class SportEntityWriter {
             }
         }
 
-        if(description == null)
-        {
+        if (description == null) {
             description = "Sport event data was not found for id: " + sportEvent;
         }
 
         writeMessage(description);
     }
 
-    public static String writeSportEventData(SportEvent sportEvent, boolean writeLog, List<Locale> desiredLocales) {
+    public static String writeSportEventData(
+        SportEvent sportEvent,
+        boolean writeLog,
+        List<Locale> desiredLocales
+    ) {
         String description = null;
         if (sportEvent != null) {
             SportEntityWriter sportEntityWriter = new SportEntityWriter(desiredLocales, false, writeLog);
@@ -438,7 +544,7 @@ public class SportEntityWriter {
                 description = sportEntityWriter.writeData((Tournament) sportEvent, false);
             } else if (sportEvent instanceof BasicTournament) {
                 description = sportEntityWriter.writeData((BasicTournament) sportEvent);
-            }  else if (sportEvent instanceof Season) {
+            } else if (sportEvent instanceof Season) {
                 description = sportEntityWriter.writeData((Season) sportEvent);
             } else if (sportEvent instanceof SoccerEvent) {
                 description = sportEntityWriter.writeData((SoccerEvent) sportEvent);
@@ -459,8 +565,7 @@ public class SportEntityWriter {
         return description;
     }
 
-    public void writeMessage(String message)
-    {
+    public void writeMessage(String message) {
         if (writeLog) {
             logger.info(message);
         } else {

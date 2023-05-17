@@ -19,7 +19,7 @@ public enum SportEventType {
     CHILD;
 
     public static SportEventType mapFromApiValue(String str) {
-        if(str == null) {
+        if (str == null) {
             return null;
         }
 

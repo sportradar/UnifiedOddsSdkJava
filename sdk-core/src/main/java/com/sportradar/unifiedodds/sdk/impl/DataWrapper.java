@@ -5,25 +5,29 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.collect.Maps;
-import org.apache.http.Header;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.http.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 10/04/2018.
  * // TODO @eti: Javadoc
  */
-public class DataWrapper <T> {
+@SuppressWarnings({ "ConstantName" })
+public class DataWrapper<T> {
+
     private static final Logger logger = LoggerFactory.getLogger(DataWrapper.class);
 
     private static final String DATE_HEADER_KEY = "Date";
-    private static final DateTimeFormatter SERVER_RESPONSE_DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+    private static final DateTimeFormatter SERVER_RESPONSE_DATE_FORMAT = DateTimeFormatter.ofPattern(
+        "EEE, d MMM yyyy HH:mm:ss z",
+        Locale.ENGLISH
+    );
 
     private final T data;
     private final Map<String, String> headers;

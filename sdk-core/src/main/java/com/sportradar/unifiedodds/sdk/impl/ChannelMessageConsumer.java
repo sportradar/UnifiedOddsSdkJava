@@ -10,7 +10,6 @@ import com.rabbitmq.client.AMQP;
  * Defines methods implemented by classes that can handle message payloads
  */
 public interface ChannelMessageConsumer {
-
     /**
      * Opens the channel message consumer and prepares the required instances
      *

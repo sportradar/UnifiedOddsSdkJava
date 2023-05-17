@@ -1,12 +1,14 @@
 package com.sportradar.unifiedodds.sdk.impl.recovery;
 
-import com.sportradar.unifiedodds.sdk.impl.ProducerData;
-import org.junit.Test;
-
 import static com.sportradar.unifiedodds.sdk.impl.recovery.ProducerDataBuilder.producerData;
 import static org.junit.Assert.*;
 
+import com.sportradar.unifiedodds.sdk.impl.ProducerData;
+import org.junit.Test;
+
+@SuppressWarnings({ "MagicNumber" })
 public class ProducerDataBuilderTest {
+
     @Test
     public void shouldCreateProducerDataWithId() {
         ProducerData producerData = producerData().withId(5);

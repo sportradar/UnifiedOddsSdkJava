@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableTournamentCI extends ExportableSportEventCI {
+
     private Locale defaultLocale;
     private String categoryId;
     private ExportableSeasonCI currentSeason;
@@ -25,7 +27,28 @@ public class ExportableTournamentCI extends ExportableSportEventCI {
     private List<Locale> cachedLocales;
     private Boolean exhibitionGames;
 
-    public ExportableTournamentCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy, Locale defaultLocale, String categoryId, ExportableSeasonCI currentSeason, ExportableSeasonCI season, ExportableSeasonCoverageCI seasonCoverage, ExportableTournamentCoverageCI tournamentCoverage, List<ExportableGroupCI> groups, ExportableCompleteRoundCI round, List<String> competitorIds, Map<String, Map<String, String>> competitorsReferences, boolean associatedSeasonIdsLoaded, List<String> associatedSeasonIds, List<Locale> cachedLocales, Boolean exhibitionGames) {
+    public ExportableTournamentCI(
+        String id,
+        Map<Locale, String> names,
+        Date scheduled,
+        Date scheduledEnd,
+        Boolean startTimeTbd,
+        String replacedBy,
+        Locale defaultLocale,
+        String categoryId,
+        ExportableSeasonCI currentSeason,
+        ExportableSeasonCI season,
+        ExportableSeasonCoverageCI seasonCoverage,
+        ExportableTournamentCoverageCI tournamentCoverage,
+        List<ExportableGroupCI> groups,
+        ExportableCompleteRoundCI round,
+        List<String> competitorIds,
+        Map<String, Map<String, String>> competitorsReferences,
+        boolean associatedSeasonIdsLoaded,
+        List<String> associatedSeasonIds,
+        List<Locale> cachedLocales,
+        Boolean exhibitionGames
+    ) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.defaultLocale = defaultLocale;
         this.categoryId = categoryId;

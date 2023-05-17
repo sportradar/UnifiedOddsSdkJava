@@ -5,10 +5,10 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.utils.URN;
-
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings({ "IllegalType" })
 public interface OddsFeedSessionBuilder {
     /**
      *

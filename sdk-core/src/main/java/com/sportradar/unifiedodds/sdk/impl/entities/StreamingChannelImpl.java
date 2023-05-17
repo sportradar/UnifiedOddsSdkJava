@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
  * Represents a streaming channel
  */
 public class StreamingChannelImpl implements StreamingChannel {
+
     /**
      * The identifier of the chanel
      */
@@ -21,7 +22,6 @@ public class StreamingChannelImpl implements StreamingChannel {
      * The name of the channel
      */
     private final String name;
-
 
     /**
      * Initializes a new {@link StreamingChannelImpl} instance
@@ -67,16 +67,10 @@ public class StreamingChannelImpl implements StreamingChannel {
      */
     @Override
     public String toString() {
-        return "StreamingChannelImpl{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "StreamingChannelImpl{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 
     public ExportableStreamingChannelCI export() {
-        return new ExportableStreamingChannelCI(
-                id,
-                name
-        );
+        return new ExportableStreamingChannelCI(id, name);
     }
 }

@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.List;
 
 /**

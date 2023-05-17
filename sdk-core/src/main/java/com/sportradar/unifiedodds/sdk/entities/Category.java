@@ -9,7 +9,8 @@ import java.util.List;
 /**
  * Defines methods implemented by classes representing sport category
  */
-public interface Category extends CategorySummary{
+@SuppressWarnings({ "LineLength" })
+public interface Category extends CategorySummary {
     /**
      * Returns an unmodifiable {@link List} of tournaments which belong to the category represented by the current instance
      * (possible types: {@link com.sportradar.unifiedodds.sdk.entities.BasicTournament}, {@link Tournament}, {@link com.sportradar.unifiedodds.sdk.entities.Stage})

@@ -9,6 +9,7 @@ import com.sportradar.utils.URN;
 /**
  * Enumerates groups of resources represented by the {@link URN}
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum ResourceTypeGroup {
     /**
      * The resource represents a sport event of race type
@@ -28,5 +29,5 @@ public enum ResourceTypeGroup {
     /**
      * The non-specific URN type specifier
      */
-    OTHER
+    OTHER,
 }

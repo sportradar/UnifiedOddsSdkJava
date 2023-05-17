@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.Map;
  * Contains basic information about a sport (soccer, basketball, ...)
  */
 public class SportData extends SportEntityData {
+
     /**
      * A {@link List} representing the categories, which belong to the sport
      * represented by the current instance
@@ -31,7 +31,6 @@ public class SportData extends SportEntityData {
      */
     SportData(URN id, Map<Locale, String> names, List<CategoryData> categories) {
         super(id, names);
-
         Preconditions.checkNotNull(categories);
 
         this.categories = ImmutableList.copyOf(categories);

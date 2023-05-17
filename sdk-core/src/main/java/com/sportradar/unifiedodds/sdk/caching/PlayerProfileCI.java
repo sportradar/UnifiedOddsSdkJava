@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -14,7 +13,8 @@ import java.util.Map;
 /**
  * Defines methods used to access cached player data
  */
-public interface PlayerProfileCI extends CacheItem  {
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
+public interface PlayerProfileCI extends CacheItem {
     /**
      * Returns the {@link Map} containing translated full names of the player
      *

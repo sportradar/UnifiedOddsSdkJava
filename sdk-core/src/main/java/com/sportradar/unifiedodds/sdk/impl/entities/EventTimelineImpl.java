@@ -9,7 +9,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCI;
 import com.sportradar.unifiedodds.sdk.entities.EventTimeline;
 import com.sportradar.unifiedodds.sdk.entities.TimelineEvent;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +16,7 @@ import java.util.stream.Collectors;
  * An implementation of the {@link EventTimeline} interface
  */
 public class EventTimelineImpl implements EventTimeline {
+
     private final EventTimelineCI eventTimeline;
 
     public EventTimelineImpl(EventTimelineCI eventTimeline) {
@@ -32,7 +32,12 @@ public class EventTimelineImpl implements EventTimeline {
      */
     @Override
     public List<TimelineEvent> getTimelineEvents() {
-        return eventTimeline.getTimelineEvents() == null ? null :
-                eventTimeline.getTimelineEvents().stream().map(cacheItem -> new TimelineEventImpl(cacheItem, eventTimeline.getCachedLocale())).collect(Collectors.toList());
+        return eventTimeline.getTimelineEvents() == null
+            ? null
+            : eventTimeline
+                .getTimelineEvents()
+                .stream()
+                .map(cacheItem -> new TimelineEventImpl(cacheItem, eventTimeline.getCachedLocale()))
+                .collect(Collectors.toList());
     }
 }

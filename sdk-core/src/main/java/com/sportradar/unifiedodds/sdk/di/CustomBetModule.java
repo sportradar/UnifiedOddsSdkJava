@@ -22,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
  * The DI module in charge of custom bet API readers
  */
 public class CustomBetModule extends AbstractModule {
+
     /**
      * Configures a {@link Binder} via the exposed methods.
      */
@@ -31,35 +32,29 @@ public class CustomBetModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<CAPIAvailableSelections> providesAvailableSelectionsDataProvider(SDKInternalConfiguration cfg,
-                                                                                  LogHttpDataFetcher httpDataFetcher,
-                                                                                  @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer) {
-        return new DataProvider<>(
-                "/custombet/%2$s/available_selections",
-                cfg,
-                httpDataFetcher,
-                deserializer);
+    private DataProvider<CAPIAvailableSelections> providesAvailableSelectionsDataProvider(
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
+    ) {
+        return new DataProvider<>("/custombet/%2$s/available_selections", cfg, httpDataFetcher, deserializer);
     }
 
     @Provides
-    private DataProvider<CAPICalculationResponse> providesCalculateProbabilityDataProvider(SDKInternalConfiguration cfg,
-                                                                                              LogHttpDataFetcher httpDataFetcher,
-                                                                                              @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer) {
-        return new DataProvider<>(
-                "/custombet/calculate",
-                cfg,
-                httpDataFetcher,
-                deserializer);
+    private DataProvider<CAPICalculationResponse> providesCalculateProbabilityDataProvider(
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
+    ) {
+        return new DataProvider<>("/custombet/calculate", cfg, httpDataFetcher, deserializer);
     }
 
     @Provides
-    private DataProvider<CAPIFilteredCalculationResponse> providesCalculateProbabilityFilterDataProvider(SDKInternalConfiguration cfg,
-                                                                                                         LogHttpDataFetcher httpDataFetcher,
-                                                                                                         @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer) {
-        return new DataProvider<>(
-                "/custombet/calculate-filter",
-                cfg,
-                httpDataFetcher,
-                deserializer);
+    private DataProvider<CAPIFilteredCalculationResponse> providesCalculateProbabilityFilterDataProvider(
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
+    ) {
+        return new DataProvider<>("/custombet/calculate-filter", cfg, httpDataFetcher, deserializer);
     }
 }
