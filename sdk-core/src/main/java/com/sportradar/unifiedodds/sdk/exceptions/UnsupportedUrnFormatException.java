@@ -8,6 +8,7 @@ package com.sportradar.unifiedodds.sdk.exceptions;
  * The following exception gets thrown when a URN object fails to initialize
  */
 public class UnsupportedUrnFormatException extends OddsFeedSdkException {
+
     public UnsupportedUrnFormatException(String message) {
         super(message);
     }

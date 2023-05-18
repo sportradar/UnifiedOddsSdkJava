@@ -8,13 +8,13 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.EventPlayerCI;
 import com.sportradar.unifiedodds.sdk.entities.GoalScorer;
 import com.sportradar.unifiedodds.sdk.entities.Player;
-
 import java.util.HashMap;
 import java.util.Locale;
 
 /**
  * Represents a player or driver in a sport event
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class GoalScorerImpl extends PlayerImpl implements GoalScorer {
 
     /**
@@ -42,13 +42,11 @@ public class GoalScorerImpl extends PlayerImpl implements GoalScorer {
      */
     @Override
     public String toString() {
-        return "GoalScorerImpl{" +
-                "id=" + super.getId() +
-                ", names=" + names +
-                ", method=" + method +
-                '}';
+        return "GoalScorerImpl{" + "id=" + super.getId() + ", names=" + names + ", method=" + method + '}';
     }
 
     @Override
-    public String getMethod() { return method; }
+    public String getMethod() {
+        return method;
+    }
 }

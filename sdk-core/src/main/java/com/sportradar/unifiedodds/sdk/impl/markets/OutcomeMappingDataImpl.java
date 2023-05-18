@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.OutcomeMappingCI;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -17,6 +16,7 @@ import java.util.Map;
  * // TODO @eti: Javadoc
  */
 public class OutcomeMappingDataImpl implements OutcomeMappingData {
+
     private final OutcomeMappingCI outcomeMapping;
     private final Map<Locale, String> names;
     private final String outcomeId;

@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableCompetitorCI extends ExportableCI {
+
     private Locale defaultLocale;
     private Map<Locale, String> countryNames;
     private Map<Locale, String> abbreviations;
@@ -28,12 +30,28 @@ public class ExportableCompetitorCI extends ExportableCI {
     private String categoryId;
     private String shortName;
 
-    public ExportableCompetitorCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> countryNames,
-                                  Map<Locale, String> abbreviations, boolean isVirtual, String countryCode,
-                                  Map<String, String> referenceId, List<String> associatedPlayerIds, List<ExportableJerseyCI> jerseys,
-                                  ExportableManagerCI manager, ExportableVenueCI venue, String gender, String ageGroup,
-                                  ExportableRaceDriverProfileCI raceDriverProfile, List<Locale> cachedLocales, String state,
-                                  String sportId, String categoryId, String shortName) {
+    public ExportableCompetitorCI(
+        String id,
+        Map<Locale, String> names,
+        Locale defaultLocale,
+        Map<Locale, String> countryNames,
+        Map<Locale, String> abbreviations,
+        boolean isVirtual,
+        String countryCode,
+        Map<String, String> referenceId,
+        List<String> associatedPlayerIds,
+        List<ExportableJerseyCI> jerseys,
+        ExportableManagerCI manager,
+        ExportableVenueCI venue,
+        String gender,
+        String ageGroup,
+        ExportableRaceDriverProfileCI raceDriverProfile,
+        List<Locale> cachedLocales,
+        String state,
+        String sportId,
+        String categoryId,
+        String shortName
+    ) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.countryNames = countryNames;
@@ -191,7 +209,9 @@ public class ExportableCompetitorCI extends ExportableCI {
         this.categoryId = categoryId;
     }
 
-    public String getShortName() { return shortName; }
+    public String getShortName() {
+        return shortName;
+    }
 
     public void setShortName(String shortName) {
         this.shortName = shortName;

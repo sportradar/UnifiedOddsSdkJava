@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 
 /**
  * An interface providing methods to access stage details of a multi-staged race
  */
+@SuppressWarnings({ "LineLength" })
 public interface ChildRace {
     /**
      * Returns a {@link URN} instance representing the id uniquely identifying the race represented by the current instance

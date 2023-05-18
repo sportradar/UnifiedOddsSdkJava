@@ -14,7 +14,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -22,7 +21,9 @@ import java.util.Map;
  * Created on 26/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ParameterNumber" })
 class OutcomeDefinitionImpl implements OutcomeDefinition {
+
     private final MarketDescription marketDescription;
     private final String outcomeId;
     private final URN sportId;
@@ -32,9 +33,16 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
     private final MarketDescriptionProvider descriptorProvider;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-    OutcomeDefinitionImpl(MarketDescription md, String outcomeId, URN sportId, int producerId,
-                          Map<String, String> specifiersMap, MarketDescriptionProvider descriptorProvider,
-                          Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    OutcomeDefinitionImpl(
+        MarketDescription md,
+        String outcomeId,
+        URN sportId,
+        int producerId,
+        Map<String, String> specifiersMap,
+        MarketDescriptionProvider descriptorProvider,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(md);
         Preconditions.checkNotNull(sportId);
         Preconditions.checkNotNull(defaultLocale);
@@ -76,14 +84,21 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
             return null;
         }
 
-        return translatedDescriptor.getOutcomes().stream()
-                .filter(o -> o.getId().equals(outcomeId))
-                .findFirst()
-                .map(o -> o.getName(locale))
-                .orElse(null);
+        return translatedDescriptor
+            .getOutcomes()
+            .stream()
+            .filter(o -> o.getId().equals(outcomeId))
+            .findFirst()
+            .map(o -> o.getName(locale))
+            .orElse(null);
     }
 
     private MarketDescription provideDynamicVariantMarket(Locale locale) throws CacheItemNotFoundException {
-        return descriptorProvider.getMarketDescription(this.marketDescription.getId(), specifiersMap, Lists.newArrayList(locale), true);
+        return descriptorProvider.getMarketDescription(
+            this.marketDescription.getId(),
+            specifiersMap,
+            Lists.newArrayList(locale),
+            true
+        );
     }
 }

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.cfg;
 /**
  * The first configuration builder step in which you need to provide/set the access token provided by Sportradar
  */
+@SuppressWarnings({ "LineLength" })
 public interface ConfigurationAccessTokenSetter {
     /**
      * Set your access token, provided by Sportradar (without this set you will not be able to

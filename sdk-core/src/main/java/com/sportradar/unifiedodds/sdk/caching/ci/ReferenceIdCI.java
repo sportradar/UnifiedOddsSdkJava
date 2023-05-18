@@ -5,14 +5,25 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.collect.ImmutableMap;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * The reference id representation used by caching components
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "HiddenField",
+        "MethodLength",
+        "NPathComplexity",
+        "NestedIfDepth",
+    }
+)
 public class ReferenceIdCI {
+
     /**
      * The betradarId property backing field
      */
@@ -61,7 +72,7 @@ public class ReferenceIdCI {
             } else {
                 Map<String, String> refs = new HashMap<>(this.referenceIds);
                 for (Map.Entry<String, String> e : newReferenceIds.entrySet()) {
-                    if(!refs.containsKey(e.getKey())) {
+                    if (!refs.containsKey(e.getKey())) {
                         refs.put(e.getKey(), e.getValue());
                     }
                 }
@@ -145,7 +156,7 @@ public class ReferenceIdCI {
      *
      * @return - the rotation number for this instance if provided amount reference ids, null otherwise
      */
-    public Integer getRotationNumber()  {
+    public Integer getRotationNumber() {
         return rotationNumber;
     }
 

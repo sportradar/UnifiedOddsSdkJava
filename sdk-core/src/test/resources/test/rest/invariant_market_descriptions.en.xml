@@ -12091,7 +12091,7 @@
       <mapping market_id="80" sport_id="sr:sport:21" product_id="5"/>
     </mappings>
   </market>
-  <market groups="all" name="Player assists" id="770">
+  <market groups="all|player_props" name="Player assists" id="770">
     <specifiers>
       <specifier type="variable_text" name="variant"/>
     </specifiers>
@@ -19648,5 +19648,10 @@
         <mapping_outcome product_outcome_name="Even" product_outcome_id="10" outcome_id="72"/>
       </mapping>
     </mappings>
+  </market>
+  <market id="906" name="Championship free text market" groups="all" includes_outcomes_of_type="pre:outcometext">
+      <specifiers>
+          <specifier name="variant" type="variable_text"/>
+      </specifiers>
   </market>
 </market_descriptions>

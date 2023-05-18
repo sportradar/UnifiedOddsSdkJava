@@ -6,11 +6,11 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
+// Constant names should comply with a naming convention
+@SuppressWarnings({ "java:S115", "EqualsAvoidNull", "ReturnCount" })
 public enum MessageInterest {
     // hi.-.live.odds_change.5.sr:match.12329150
     /**
@@ -26,7 +26,7 @@ public enum MessageInterest {
     /**
      * Interested in virtual sports messages only
      */
-    VirtualSports(true, Arrays.asList("*.virt.*.*.*.*.*","*.*.virt.*.*.*.*")),
+    VirtualSports(true, Arrays.asList("*.virt.*.*.*.*.*", "*.*.virt.*.*.*.*")),
 
     /**
      * Interested in hi priority messages only
@@ -68,7 +68,7 @@ public enum MessageInterest {
 
     /**
      * Initializes a new member of the {@link MessageInterest} enum
-     * 
+     *
      * @param routingKeyStatic value indicating whether the routing key for current
      *        {@link MessageInterest} instance is static (does not change)
      * @param routingKey The routing key for the current {@link MessageInterest} instance or a null
@@ -76,10 +76,9 @@ public enum MessageInterest {
      */
     MessageInterest(boolean routingKeyStatic, String routingKey) {
         this.routingKeyStatic = routingKeyStatic;
-        if(!routingKey.equals("")) {
+        if (!routingKey.equals("")) {
             this.routingKeys = Collections.singletonList(routingKey);
-        }
-        else{
+        } else {
             this.routingKeys = null;
         }
     }
@@ -100,7 +99,7 @@ public enum MessageInterest {
     /**
      * Gets a value indicating whether the routing key for current {@link MessageInterest} instance
      * is static (does not change)
-     * 
+     *
      * @return a value indicating whether the routing key for current {@link MessageInterest}
      *         instance is static (does not change)
      */
@@ -111,7 +110,7 @@ public enum MessageInterest {
     /**
      * Gets the routing key(s) for the current {@link MessageInterest} instance or a null reference if
      * routing key is not static
-     * 
+     *
      * @return the routing key(s) for the current {@link MessageInterest} instance or a null reference
      *         if routing key is not static
      */
@@ -125,31 +124,40 @@ public enum MessageInterest {
      * @return a lis of possible producers
      * @param availableProducers a list of available producers
      */
-    public Set<Integer> getPossibleSourceProducers(Map<Integer, Producer> availableProducers){
+    public Set<Integer> getPossibleSourceProducers(Map<Integer, Producer> availableProducers) {
         Preconditions.checkNotNull(availableProducers);
 
         Set<Integer> possibleProducers = new HashSet<>();
-        switch (this){
+        switch (this) {
             case LiveMessagesOnly:
                 possibleProducers.addAll(
-                        availableProducers.values().stream()
-                                .filter(p -> p.getProducerScopes().contains(ProducerScope.Live))
-                                .map(Producer::getId)
-                                .collect(Collectors.toSet()));
+                    availableProducers
+                        .values()
+                        .stream()
+                        .filter(p -> p.getProducerScopes().contains(ProducerScope.Live))
+                        .map(Producer::getId)
+                        .collect(Collectors.toSet())
+                );
                 break;
             case PrematchMessagesOnly:
                 possibleProducers.addAll(
-                        availableProducers.values().stream()
-                                .filter(p -> p.getProducerScopes().contains(ProducerScope.Prematch))
-                                .map(Producer::getId)
-                                .collect(Collectors.toSet()));
+                    availableProducers
+                        .values()
+                        .stream()
+                        .filter(p -> p.getProducerScopes().contains(ProducerScope.Prematch))
+                        .map(Producer::getId)
+                        .collect(Collectors.toSet())
+                );
                 break;
             case VirtualSports:
                 possibleProducers.addAll(
-                        availableProducers.values().stream()
-                                .filter(p -> p.getProducerScopes().contains(ProducerScope.Virtuals))
-                                .map(Producer::getId)
-                                .collect(Collectors.toSet()));
+                    availableProducers
+                        .values()
+                        .stream()
+                        .filter(p -> p.getProducerScopes().contains(ProducerScope.Virtuals))
+                        .map(Producer::getId)
+                        .collect(Collectors.toSet())
+                );
                 break;
             case AllMessages:
             case HiPrioMessagesOnly:
@@ -157,9 +165,8 @@ public enum MessageInterest {
             case SpecifiedMatchesOnly:
             default:
                 possibleProducers.addAll(
-                        availableProducers.values().stream()
-                                .map(Producer::getId)
-                                .collect(Collectors.toSet()));
+                    availableProducers.values().stream().map(Producer::getId).collect(Collectors.toSet())
+                );
                 break;
         }
 
@@ -175,7 +182,7 @@ public enum MessageInterest {
     public boolean isProducerInScope(Producer producer) {
         Preconditions.checkNotNull(producer);
 
-        switch (this){
+        switch (this) {
             case LiveMessagesOnly:
                 return producer.getProducerScopes().contains(ProducerScope.Live);
             case PrematchMessagesOnly:
@@ -191,8 +198,8 @@ public enum MessageInterest {
         }
     }
 
-    public String toShortString(){
-        switch (this){
+    public String toShortString() {
+        switch (this) {
             case LiveMessagesOnly:
                 return "live";
             case PrematchMessagesOnly:

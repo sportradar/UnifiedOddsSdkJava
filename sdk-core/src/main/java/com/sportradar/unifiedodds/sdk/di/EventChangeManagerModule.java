@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilderImpl;
  * The DI module in charge of EventChangeManager
  */
 public class EventChangeManagerModule extends AbstractModule {
+
     /**
      * Configures a {@link Binder} via the exposed methods.
      */
@@ -20,5 +21,4 @@ public class EventChangeManagerModule extends AbstractModule {
     protected void configure() {
         bind(CustomBetSelectionBuilder.class).to(CustomBetSelectionBuilderImpl.class);
     }
-
 }

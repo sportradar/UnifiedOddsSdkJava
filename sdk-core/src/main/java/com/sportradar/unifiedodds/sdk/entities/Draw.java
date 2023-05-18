@@ -35,5 +35,7 @@ public interface Draw extends SportEvent {
      * Returns the display id
      * @return the display id
      */
-    default Integer getDisplayId(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+    default Integer getDisplayId() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

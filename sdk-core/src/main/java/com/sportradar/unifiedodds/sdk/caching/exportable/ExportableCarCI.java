@@ -6,7 +6,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.io.Serializable;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableCarCI implements Serializable {
+
     private String name;
     private String chassis;
     private String engineName;

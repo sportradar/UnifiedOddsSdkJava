@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.datamodel.UFStatisticsType;
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchStatistics;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,11 @@ import java.util.stream.Collectors;
  * A data-transfer-object representation for sport event status statistics. The status can be receiver trough messages or fetched
  * from the API
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "BooleanExpressionComplexity", "CyclomaticComplexity", "NPathComplexity" }
+)
 public class SportEventStatisticsDTO {
+
     private final List<TeamStatisticsDTO> totalStatisticsDTOs;
     private final List<PeriodStatisticsDTO> periodStatisticDTOs;
 
@@ -32,18 +35,33 @@ public class SportEventStatisticsDTO {
     SportEventStatisticsDTO(SAPIMatchStatistics statistics, Map<HomeAway, String> homeAwayMap) {
         Preconditions.checkNotNull(statistics);
 
-        totalStatisticsDTOs = (statistics.getTotals() != null &&
-                                statistics.getTotals().getTeams() != null &&
-                                statistics.getTotals().getTeams().size() == 1 &&
-                                statistics.getTotals().getTeams().get(0).getTeam() != null &&
-                                statistics.getTotals().getTeams().get(0).getTeam().size() == 2) ?
-                statistics.getTotals().getTeams().get(0).getTeam().stream().map(t -> new TeamStatisticsDTO(t, homeAwayMap)).collect(Collectors.toList()) :
-                null;
+        totalStatisticsDTOs =
+            (
+                    statistics.getTotals() != null &&
+                    statistics.getTotals().getTeams() != null &&
+                    statistics.getTotals().getTeams().size() == 1 &&
+                    statistics.getTotals().getTeams().get(0).getTeam() != null &&
+                    statistics.getTotals().getTeams().get(0).getTeam().size() == 2
+                )
+                ? statistics
+                    .getTotals()
+                    .getTeams()
+                    .get(0)
+                    .getTeam()
+                    .stream()
+                    .map(t -> new TeamStatisticsDTO(t, homeAwayMap))
+                    .collect(Collectors.toList())
+                : null;
 
-        periodStatisticDTOs = (statistics.getPeriods() != null &&
-                                statistics.getPeriods().getPeriod() != null) ?
-                statistics.getPeriods().getPeriod().stream().map(p -> new PeriodStatisticsDTO(p, homeAwayMap)).collect(Collectors.toList()) :
-                null;
+        periodStatisticDTOs =
+            (statistics.getPeriods() != null && statistics.getPeriods().getPeriod() != null)
+                ? statistics
+                    .getPeriods()
+                    .getPeriod()
+                    .stream()
+                    .map(p -> new PeriodStatisticsDTO(p, homeAwayMap))
+                    .collect(Collectors.toList())
+                : null;
     }
 
     /**
@@ -55,7 +73,8 @@ public class SportEventStatisticsDTO {
         Preconditions.checkNotNull(statistics);
 
         totalStatisticsDTOs = new ArrayList<>();
-        totalStatisticsDTOs.add(new TeamStatisticsDTO(
+        totalStatisticsDTOs.add(
+            new TeamStatisticsDTO(
                 null,
                 null,
                 HomeAway.Home,
@@ -64,8 +83,10 @@ public class SportEventStatisticsDTO {
                 statistics.getYellowRedCards() == null ? null : statistics.getYellowRedCards().getHome(),
                 statistics.getCorners() == null ? null : statistics.getCorners().getHome(),
                 statistics.getGreenCards() == null ? null : statistics.getGreenCards().getHome()
-        ));
-        totalStatisticsDTOs.add(new TeamStatisticsDTO(
+            )
+        );
+        totalStatisticsDTOs.add(
+            new TeamStatisticsDTO(
                 null,
                 null,
                 HomeAway.Away,
@@ -74,12 +95,16 @@ public class SportEventStatisticsDTO {
                 statistics.getYellowRedCards() == null ? null : statistics.getYellowRedCards().getAway(),
                 statistics.getCorners() == null ? null : statistics.getCorners().getAway(),
                 statistics.getGreenCards() == null ? null : statistics.getGreenCards().getAway()
-        ));
+            )
+        );
 
         periodStatisticDTOs = null;
     }
 
-    public SportEventStatisticsDTO(List<TeamStatisticsDTO> totalStatisticsDTOs, List<PeriodStatisticsDTO> periodStatisticDTOs) {
+    public SportEventStatisticsDTO(
+        List<TeamStatisticsDTO> totalStatisticsDTOs,
+        List<PeriodStatisticsDTO> periodStatisticDTOs
+    ) {
         this.totalStatisticsDTOs = totalStatisticsDTOs;
         this.periodStatisticDTOs = periodStatisticDTOs;
     }

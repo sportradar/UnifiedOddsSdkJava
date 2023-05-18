@@ -20,6 +20,7 @@ sportradar:
         virtualHost: msg-vhost
       useMessagingSsl: true
       apiHost: api-host
+      apiPort: 80
       useApiSsl: true
       disabledProducers:
         - 5
@@ -39,3 +40,7 @@ sportradar:
         - task1
         - task2
         - task3
+      concurrentListenerEnabled: true
+      concurrentListenerThreads: 25
+      concurrentListenerQueueSize: 1000
+      concurrentListenerHandleErrorsAsync: false

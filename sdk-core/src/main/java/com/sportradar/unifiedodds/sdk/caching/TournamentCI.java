@@ -9,7 +9,6 @@ import com.sportradar.unifiedodds.sdk.caching.impl.ci.TournamentCoverageCI;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,6 +16,7 @@ import java.util.Map;
 /**
  * Defines methods used to access cached tournament data
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public interface TournamentCI extends SportEventCI {
     /**
      * Returns the {@link URN} specifying the id of the parent category

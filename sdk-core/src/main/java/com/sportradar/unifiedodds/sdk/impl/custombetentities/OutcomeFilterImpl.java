@@ -11,13 +11,13 @@ import com.sportradar.uf.custombet.datamodel.CAPIMarketType;
 import com.sportradar.uf.custombet.datamodel.CAPIOutcomeType;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.unifiedodds.sdk.custombetentities.OutcomeFilter;
-
 import java.util.List;
 
 /**
  * Implements methods used to access available selections for the market
  */
 public class OutcomeFilterImpl implements OutcomeFilter {
+
     /**
      * the id of the outcome
      */
@@ -41,5 +41,7 @@ public class OutcomeFilterImpl implements OutcomeFilter {
     }
 
     @Override
-    public Boolean isConflict() { return isConflict; }
+    public Boolean isConflict() {
+        return isConflict;
+    }
 }

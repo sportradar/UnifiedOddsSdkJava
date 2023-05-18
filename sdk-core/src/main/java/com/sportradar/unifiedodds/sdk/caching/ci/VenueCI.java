@@ -8,13 +8,14 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCI;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 
 /**
  * A venue representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "IllegalType" })
 public class VenueCI extends SportEntityCI {
+
     /**
      * A {@link HashMap} containing venue name in different languages
      */
@@ -59,7 +60,6 @@ public class VenueCI extends SportEntityCI {
      */
     public VenueCI(SAPIVenue venue, Locale locale) {
         super(URN.parse(venue.getId()));
-
         Preconditions.checkNotNull(venue);
         Preconditions.checkNotNull(locale);
 
@@ -83,11 +83,10 @@ public class VenueCI extends SportEntityCI {
         countryCode = exportable.getCountryCode();
         coordinates = exportable.getCoordinates();
         state = exportable.getState();
-        if(exportable.getCourse() != null){
+        if (exportable.getCourse() != null) {
             this.course = new ArrayList<>();
             exportable.getCourse().forEach(ci -> this.course.add(new HoleCI(ci)));
-        }
-        else{
+        } else {
             this.course = null;
         }
 
@@ -111,10 +110,12 @@ public class VenueCI extends SportEntityCI {
         countryNames.put(locale, venue.getCountryName());
         countryCode = venue.getCountryCode();
         state = venue.getState();
-        if(venue.getCourse() != null){
-            venue.getCourse().getHole().forEach(ci -> this.course.add(new HoleCI(ci.getNumber(), ci.getPar())));
-        }
-        else{
+        if (venue.getCourse() != null) {
+            venue
+                .getCourse()
+                .getHole()
+                .forEach(ci -> this.course.add(new HoleCI(ci.getNumber(), ci.getPar())));
+        } else {
             this.course = null;
         }
         cachedLocales.add(locale);
@@ -126,7 +127,9 @@ public class VenueCI extends SportEntityCI {
      * @param locale - {@link Locale} specifying the language of the returned name
      * @return - The name of the venue in the specified language if it exists. Null otherwise.
      */
-    public String getName(Locale locale) { return names.getOrDefault(locale, null); }
+    public String getName(Locale locale) {
+        return names.getOrDefault(locale, null);
+    }
 
     /**
      * Returns the city name of the venue in the specified language
@@ -192,7 +195,7 @@ public class VenueCI extends SportEntityCI {
      * @return state
      */
     public List<HoleCI> getCourse() {
-        if(course == null || course.isEmpty()){
+        if (course == null || course.isEmpty()) {
             return null;
         }
         return course;
@@ -206,16 +209,16 @@ public class VenueCI extends SportEntityCI {
 
     public ExportableVenueCI export() {
         return new ExportableVenueCI(
-                getId().toString(),
-                new HashMap<>(names),
-                new HashMap<>(cityNames),
-                new HashMap<>(countryNames),
-                capacity,
-                countryCode,
-                coordinates,
-                new ArrayList<>(cachedLocales),
-                state,
-                course
+            getId().toString(),
+            new HashMap<>(names),
+            new HashMap<>(cityNames),
+            new HashMap<>(countryNames),
+            capacity,
+            countryCode,
+            coordinates,
+            new ArrayList<>(cachedLocales),
+            state,
+            course
         );
     }
 }

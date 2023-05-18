@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
-
 import java.util.Locale;
 
 /**
  * A round representation used by caching components. The cache item properties are loaded on demand.
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface LoadableRoundCI extends RoundCI {
     /**
      * Merges the information from the provided {@link SAPIMatchRound} into the current instance

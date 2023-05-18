@@ -15,13 +15,13 @@ import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelectionsFilte
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.unifiedodds.sdk.custombetentities.MarketFilter;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * Implements methods used to access available selections for the event
  */
 public class AvailableSelectionsFilterImpl implements AvailableSelectionsFilter {
+
     /**
      * An {@link URN} specifying the id of the event
      */
@@ -39,11 +39,15 @@ public class AvailableSelectionsFilterImpl implements AvailableSelectionsFilter 
 
         this.event = URN.parse(eventType.getId());
 
-        this.markets = (eventType.getMarkets() != null) ?
-                eventType.getMarkets().getMarkets().stream()
-                        .map(MarketFilterImpl::new)
-                        .collect(ImmutableList.toImmutableList()) :
-                ImmutableList.of();
+        this.markets =
+            (eventType.getMarkets() != null)
+                ? eventType
+                    .getMarkets()
+                    .getMarkets()
+                    .stream()
+                    .map(MarketFilterImpl::new)
+                    .collect(ImmutableList.toImmutableList())
+                : ImmutableList.of();
 
         this.generatedAt = generatedAt;
     }

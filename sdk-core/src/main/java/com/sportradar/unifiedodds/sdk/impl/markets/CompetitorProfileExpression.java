@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.utils.URN;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +20,7 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public class CompetitorProfileExpression implements NameExpression {
+
     private final Operand operand;
     private final ProfileCache profileCache;
 
@@ -39,7 +39,13 @@ public class CompetitorProfileExpression implements NameExpression {
         try {
             competitorProfile = profileCache.getCompetitorProfile(competitorId, Lists.newArrayList(locale));
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {
-            throw new IllegalStateException("Could not build the requested competitor profile expression, id:" + operand.getStringValue() + ", locale:" + locale, e);
+            throw new IllegalStateException(
+                "Could not build the requested competitor profile expression, id:" +
+                operand.getStringValue() +
+                ", locale:" +
+                locale,
+                e
+            );
         }
 
         List<Locale> locales = Collections.singletonList(locale);
@@ -47,6 +53,11 @@ public class CompetitorProfileExpression implements NameExpression {
             return competitorProfile.getNames(locales).get(locale);
         }
 
-        throw new IllegalStateException("Could not build the requested competitor profile expression with the provided locale, id:" + operand.getStringValue() + ", locale:" + locale);
+        throw new IllegalStateException(
+            "Could not build the requested competitor profile expression with the provided locale, id:" +
+            operand.getStringValue() +
+            ", locale:" +
+            locale
+        );
     }
 }

@@ -4,31 +4,33 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /**
  * Created on 11/04/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "MagicNumber" })
 public class SDKConfigurationYamlReaderTests {
+
     @Test
     public void basicLoadTest() {
         SDKConfigurationYamlReader sdkConfigurationYamlReader = new SDKConfigurationYamlReader();
         Map<String, String> stringStringMap = sdkConfigurationYamlReader.readConfiguration();
 
-        assertEquals(26, stringStringMap.size());
+        assertEquals(31, stringStringMap.size());
     }
 
     @Test
-    public void properParametersLoadedTest(){
+    public void properParametersLoadedTest() {
         SDKConfigurationYamlReader reader = new SDKConfigurationYamlReader();
 
         assertEquals("test-token-yaml", reader.readAccessToken().get());
@@ -45,6 +47,7 @@ public class SDKConfigurationYamlReaderTests {
         assertEquals("msg-vhost", reader.readMessagingVirtualHost().get());
         assertTrue(reader.readUseMessagingSsl().get());
         assertEquals("api-host", reader.readApiHost().get());
+        assertEquals(80, (int) reader.readApiPort().get());
         assertTrue(reader.readUseApiSsl().get());
         assertTrue(reader.readDisabledProducers().containsAll(getExpectedDisabledProducers()));
         assertEquals(ExceptionHandlingStrategy.Throw, reader.readExceptionHandlingStrategy().get());
@@ -59,7 +62,7 @@ public class SDKConfigurationYamlReaderTests {
         assertTrue(reader.readSchedulerTasksToSkip().containsAll(getExpectedTasksToSkip()));
     }
 
-    private static List<Locale> getExpectedDesiredLocales(){
+    private static List<Locale> getExpectedDesiredLocales() {
         return Arrays.asList(Locale.FRENCH, Locale.GERMAN, Locale.ENGLISH);
     }
 

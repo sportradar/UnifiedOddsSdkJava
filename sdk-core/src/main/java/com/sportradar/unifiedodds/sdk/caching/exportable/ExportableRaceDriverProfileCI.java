@@ -4,7 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableRaceDriverProfileCI extends ExportableCI {
+
     private String raceDriverId;
     private String raceTeamId;
     private ExportableCarCI car;

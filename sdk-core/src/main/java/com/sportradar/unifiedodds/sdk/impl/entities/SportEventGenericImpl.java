@@ -6,13 +6,13 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * The generic sport event entity, built if the event type could not be
  */
+@SuppressWarnings({ "LineLength" })
 public class SportEventGenericImpl extends SportEventImpl implements SportEvent {
 
     /**
@@ -24,7 +24,6 @@ public class SportEventGenericImpl extends SportEventImpl implements SportEvent 
     public SportEventGenericImpl(URN id, URN sportId) {
         super(id, sportId);
     }
-
 
     /**
      * Returns the sport event name

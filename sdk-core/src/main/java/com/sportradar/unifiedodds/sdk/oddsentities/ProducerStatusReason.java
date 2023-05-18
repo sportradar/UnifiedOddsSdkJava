@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * Describes reasons why the {@link ProducerStatusReason} message was dispatched
  */
+@SuppressWarnings({ "LineLength", "NoEnumTrailingComma" })
 public enum ProducerStatusReason {
     /**
      * Indicates that the {@link ProducerStatusReason} messages was dispatched because the first recovery request completed successfully
@@ -46,5 +47,5 @@ public enum ProducerStatusReason {
      * Indicates that the {@link ProducerDown} message was dispatched due to the loss of connection
      * to the server.
      */
-    ConnectionDown;
+    ConnectionDown,
 }

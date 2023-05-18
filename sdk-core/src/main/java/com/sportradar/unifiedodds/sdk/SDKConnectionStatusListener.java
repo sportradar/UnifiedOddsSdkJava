@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk;
 /**
  * Defines a listener used no notify outside world when the connection to the feed is closed
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface SDKConnectionStatusListener {
-
     /**
      * Invoked when a connection to the feed is closed
      */
@@ -19,6 +19,5 @@ public interface SDKConnectionStatusListener {
      *
      * @param throwable that caused connection loop to fail
      */
-    default void onConnectionException(Throwable throwable) {
-    }
+    default void onConnectionException(Throwable throwable) {}
 }

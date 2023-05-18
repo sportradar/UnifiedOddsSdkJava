@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.entities.NamedValue;
  * An implementation of the {@link NamedValue}
  */
 public class NamedValueImpl implements NamedValue {
+
     /**
      * The identifier of the current instance
      */
@@ -30,7 +31,6 @@ public class NamedValueImpl implements NamedValue {
         this(id, null);
     }
 
-
     /**
      * Initializes a new instance of {@link NamedValueImpl}
      *
@@ -43,7 +43,6 @@ public class NamedValueImpl implements NamedValue {
         this.id = id;
         this.description = description;
     }
-
 
     /**
      * Returns the identifier of the current instance

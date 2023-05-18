@@ -17,15 +17,14 @@ import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A representation of a fixture
@@ -34,8 +33,19 @@ import java.util.stream.Collectors;
  *
  * @see Fixture
  */
-public class
-FixtureImpl implements Fixture {
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "LineLength",
+        "MethodLength",
+        "NPathComplexity",
+        "UnnecessaryParentheses",
+    }
+)
+public class FixtureImpl implements Fixture {
+
     private static final Logger logger = LoggerFactory.getLogger(FixtureImpl.class);
 
     /**
@@ -106,15 +116,22 @@ FixtureImpl implements Fixture {
     public FixtureImpl(SAPIFixture fixture) {
         Preconditions.checkNotNull(fixture);
 
-        this.startTime = fixture.getStartTime() == null ? null :
-                SdkHelper.toDate(fixture.getStartTime());
-        this.startTimeConfirmed = fixture.isStartTimeConfirmed() == null ? false : fixture.isStartTimeConfirmed();
+        this.startTime = fixture.getStartTime() == null ? null : SdkHelper.toDate(fixture.getStartTime());
+        this.startTimeConfirmed =
+            fixture.isStartTimeConfirmed() == null ? false : fixture.isStartTimeConfirmed();
 
         Date nextLiveTime1;
         try {
-            nextLiveTime1 = fixture.getNextLiveTime() == null ? null : SdkHelper.toDate(fixture.getNextLiveTime());
+            nextLiveTime1 =
+                fixture.getNextLiveTime() == null ? null : SdkHelper.toDate(fixture.getNextLiveTime());
         } catch (ParseException e) {
-            logger.warn("Fixture[{}] date of next live time is malformed -> {} ::: expected format -> '{}'", fixture.getId(), fixture.getNextLiveTime(), SdkHelper.ISO_8601_24H_FULL_FORMAT,e);
+            logger.warn(
+                "Fixture[{}] date of next live time is malformed -> {} ::: expected format -> '{}'",
+                fixture.getId(),
+                fixture.getNextLiveTime(),
+                SdkHelper.ISO_8601_24H_FULL_FORMAT,
+                e
+            );
             nextLiveTime1 = null;
         }
         nextLiveTime = nextLiveTime1;
@@ -125,46 +142,96 @@ FixtureImpl implements Fixture {
         try {
             urnReplacedBy = fixture.getReplacedBy() == null ? null : URN.parse(fixture.getReplacedBy());
         } catch (UnsupportedUrnFormatException e) {
-            logger.warn("Fixture[{}] 'replaced by' is malformed -> {}", fixture.getId(), fixture.getReplacedBy());
+            logger.warn(
+                "Fixture[{}] 'replaced by' is malformed -> {}",
+                fixture.getId(),
+                fixture.getReplacedBy()
+            );
             urnReplacedBy = null;
         }
 
         replacedBy = urnReplacedBy;
 
-        this.extraInfo = fixture.getExtraInfo() == null ? null :
-                fixture.getExtraInfo().getInfo().stream()
-                        .collect(ImmutableMap.toImmutableMap(SAPIInfo::getKey, SAPIInfo::getValue));
-        this.tvChannels = fixture.getTvChannels() == null ? null :
-                fixture.getTvChannels().getTvChannel().stream()
-                        .map(ch -> new TvChannelImpl(
-                                ch.getName(),
-                                ch.getStartTime() == null ? null : SdkHelper.toDate(ch.getStartTime()),
-                                ch.getStreamUrl()))
-                        .collect(ImmutableList.toImmutableList());
-        this.coverageInfo = fixture.getCoverageInfo() == null ? null :
-                new CoverageInfoImpl(
-                        fixture.getCoverageInfo().getLevel(),
-                        fixture.getCoverageInfo().isLiveCoverage(),
-                        fixture.getCoverageInfo().getCoverage()
-                                .stream().map(SAPICoverage::getIncludes)
-                                .collect(Collectors.toList()),
-                        fixture.getCoverageInfo().getCoveredFrom());
-        this.producerInfo = fixture.getProductInfo() == null ? null : new ProducerInfoImpl(fixture.getProductInfo());
-        this.references = fixture.getReferenceIds() == null ? null :
-                new ReferenceImpl(
-                        new ReferenceIdCI(
-                                fixture.getReferenceIds().getReferenceId()
-                                        .stream().collect(Collectors.toMap(SAPIReferenceIds.SAPIReferenceId::getName, SAPIReferenceIds.SAPIReferenceId::getValue))));
-        this.scheduledStartTimeChanges = fixture.getScheduledStartTimeChanges() == null ? null :
-                fixture.getScheduledStartTimeChanges().getScheduledStartTimeChange().stream()
-                        .map(ch -> new ScheduledStartTimeChangeImpl(
-                                ch.getOldTime() == null ? null : SdkHelper.toDate(ch.getOldTime()),
-                                ch.getNewTime() == null ? null : SdkHelper.toDate(ch.getNewTime()),
-                                ch.getChangedAt() == null ? null : SdkHelper.toDate(ch.getChangedAt())))
-                        .collect(ImmutableList.toImmutableList());
+        this.extraInfo =
+            fixture.getExtraInfo() == null
+                ? null
+                : fixture
+                    .getExtraInfo()
+                    .getInfo()
+                    .stream()
+                    .collect(ImmutableMap.toImmutableMap(SAPIInfo::getKey, SAPIInfo::getValue));
+        this.tvChannels =
+            fixture.getTvChannels() == null
+                ? null
+                : fixture
+                    .getTvChannels()
+                    .getTvChannel()
+                    .stream()
+                    .map(ch ->
+                        new TvChannelImpl(
+                            ch.getName(),
+                            ch.getStartTime() == null ? null : SdkHelper.toDate(ch.getStartTime()),
+                            ch.getStreamUrl()
+                        )
+                    )
+                    .collect(ImmutableList.toImmutableList());
+        this.coverageInfo =
+            fixture.getCoverageInfo() == null
+                ? null
+                : new CoverageInfoImpl(
+                    fixture.getCoverageInfo().getLevel(),
+                    fixture.getCoverageInfo().isLiveCoverage(),
+                    fixture
+                        .getCoverageInfo()
+                        .getCoverage()
+                        .stream()
+                        .map(SAPICoverage::getIncludes)
+                        .collect(Collectors.toList()),
+                    fixture.getCoverageInfo().getCoveredFrom()
+                );
+        this.producerInfo =
+            fixture.getProductInfo() == null ? null : new ProducerInfoImpl(fixture.getProductInfo());
+        this.references =
+            fixture.getReferenceIds() == null
+                ? null
+                : new ReferenceImpl(
+                    new ReferenceIdCI(
+                        fixture
+                            .getReferenceIds()
+                            .getReferenceId()
+                            .stream()
+                            .collect(
+                                Collectors.toMap(
+                                    SAPIReferenceIds.SAPIReferenceId::getName,
+                                    SAPIReferenceIds.SAPIReferenceId::getValue
+                                )
+                            )
+                    )
+                );
+        this.scheduledStartTimeChanges =
+            fixture.getScheduledStartTimeChanges() == null
+                ? null
+                : fixture
+                    .getScheduledStartTimeChanges()
+                    .getScheduledStartTimeChange()
+                    .stream()
+                    .map(ch ->
+                        new ScheduledStartTimeChangeImpl(
+                            ch.getOldTime() == null ? null : SdkHelper.toDate(ch.getOldTime()),
+                            ch.getNewTime() == null ? null : SdkHelper.toDate(ch.getNewTime()),
+                            ch.getChangedAt() == null ? null : SdkHelper.toDate(ch.getChangedAt())
+                        )
+                    )
+                    .collect(ImmutableList.toImmutableList());
         this.parentId = fixture.getParent() == null ? null : URN.parse(fixture.getParent().getId());
-        this.additionalParentsIds = fixture.getAdditionalParents() != null && !fixture.getAdditionalParents().getParent().isEmpty()
-                ? fixture.getAdditionalParents().getParent().stream().map(m -> URN.parse(m.getId())).collect(ImmutableList.toImmutableList())
+        this.additionalParentsIds =
+            fixture.getAdditionalParents() != null && !fixture.getAdditionalParents().getParent().isEmpty()
+                ? fixture
+                    .getAdditionalParents()
+                    .getParent()
+                    .stream()
+                    .map(m -> URN.parse(m.getId()))
+                    .collect(ImmutableList.toImmutableList())
                 : null;
     }
 
@@ -173,20 +240,46 @@ FixtureImpl implements Fixture {
         this.startTime = exportable.getStartTime();
         this.startTimeConfirmed = exportable.isStartTimeConfirmed();
         this.nextLiveTime = exportable.getNextLiveTime();
-        this.extraInfo = exportable.getExtraInfo() != null ? ImmutableMap.copyOf(exportable.getExtraInfo()) : null;
-        this.tvChannels = exportable.getTvChannels() != null ? exportable.getTvChannels().stream().map(TvChannelImpl::new).collect(ImmutableList.toImmutableList()) : null;
-        this.coverageInfo = exportable.getCoverageInfo() != null ? new CoverageInfoImpl(exportable.getCoverageInfo()) : null;
-        this.producerInfo = exportable.getProducerInfo() != null ? new ProducerInfoImpl(exportable.getProducerInfo()) : null;
-        this.references = exportable.getReferences() != null ? new ReferenceImpl(new ReferenceIdCI(exportable.getReferences())) : null;
+        this.extraInfo =
+            exportable.getExtraInfo() != null ? ImmutableMap.copyOf(exportable.getExtraInfo()) : null;
+        this.tvChannels =
+            exportable.getTvChannels() != null
+                ? exportable
+                    .getTvChannels()
+                    .stream()
+                    .map(TvChannelImpl::new)
+                    .collect(ImmutableList.toImmutableList())
+                : null;
+        this.coverageInfo =
+            exportable.getCoverageInfo() != null ? new CoverageInfoImpl(exportable.getCoverageInfo()) : null;
+        this.producerInfo =
+            exportable.getProducerInfo() != null ? new ProducerInfoImpl(exportable.getProducerInfo()) : null;
+        this.references =
+            exportable.getReferences() != null
+                ? new ReferenceImpl(new ReferenceIdCI(exportable.getReferences()))
+                : null;
         this.startTimeTbd = exportable.getStartTimeTbd();
         this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
-        this.scheduledStartTimeChanges = exportable.getScheduledStartTimeChanges() != null ? exportable.getScheduledStartTimeChanges().stream().map(ScheduledStartTimeChangeImpl::new).collect(ImmutableList.toImmutableList()) : null;
-        this.parentId = exportable.getParentId() == null || exportable.getParentId().isEmpty()
+        this.scheduledStartTimeChanges =
+            exportable.getScheduledStartTimeChanges() != null
+                ? exportable
+                    .getScheduledStartTimeChanges()
+                    .stream()
+                    .map(ScheduledStartTimeChangeImpl::new)
+                    .collect(ImmutableList.toImmutableList())
+                : null;
+        this.parentId =
+            exportable.getParentId() == null || exportable.getParentId().isEmpty()
                 ? null
                 : URN.parse(exportable.getParentId());
-        this.additionalParentsIds = exportable.getAdditionalParentsIds() == null || exportable.getAdditionalParentsIds().isEmpty()
+        this.additionalParentsIds =
+            exportable.getAdditionalParentsIds() == null || exportable.getAdditionalParentsIds().isEmpty()
                 ? null
-                : exportable.getAdditionalParentsIds().stream().map(m-> URN.parse(m)).collect(ImmutableList.toImmutableList());
+                : exportable
+                    .getAdditionalParentsIds()
+                    .stream()
+                    .map(m -> URN.parse(m))
+                    .collect(ImmutableList.toImmutableList());
     }
 
     /**
@@ -289,7 +382,9 @@ FixtureImpl implements Fixture {
      * @return the {@link URN} identifier of the replacement event
      */
     @Override
-    public URN getReplacedBy() { return replacedBy; }
+    public URN getReplacedBy() {
+        return replacedBy;
+    }
 
     /**
      * Returns the list of all {@link ScheduledStartTimeChange} to start time
@@ -306,14 +401,18 @@ FixtureImpl implements Fixture {
      * @return id of the parent stage associated with the current instance
      */
     @Override
-    public URN getParentStageId() { return parentId; }
+    public URN getParentStageId() {
+        return parentId;
+    }
 
     /**
      * Returns the list specifying the additional parent ids associated with the current instance
      * @return the list specifying the additional parent ids associated with the current instance
      */
     @Override
-    public List<URN> getAdditionalParentsIds() { return additionalParentsIds; }
+    public List<URN> getAdditionalParentsIds() {
+        return additionalParentsIds;
+    }
 
     /**
      * Returns a {@link String} describing the current {@link Fixture} instance
@@ -322,36 +421,54 @@ FixtureImpl implements Fixture {
      */
     @Override
     public String toString() {
-        return "FixtureImpl{" +
-                "startTime=" + startTime +
-                ", startTimeConfirmed=" + startTimeConfirmed +
-                ", nextLiveTime=" + nextLiveTime +
-                ", extraInfo=" + extraInfo +
-                ", tvChannels=" + tvChannels +
-                ", coverageInfo=" + coverageInfo +
-                ", producerInfo=" + producerInfo +
-                ", references=" + references +
-                ", scheduledStartTimeChange=" + scheduledStartTimeChanges +
-                '}';
+        return (
+            "FixtureImpl{" +
+            "startTime=" +
+            startTime +
+            ", startTimeConfirmed=" +
+            startTimeConfirmed +
+            ", nextLiveTime=" +
+            nextLiveTime +
+            ", extraInfo=" +
+            extraInfo +
+            ", tvChannels=" +
+            tvChannels +
+            ", coverageInfo=" +
+            coverageInfo +
+            ", producerInfo=" +
+            producerInfo +
+            ", references=" +
+            references +
+            ", scheduledStartTimeChange=" +
+            scheduledStartTimeChanges +
+            '}'
+        );
     }
 
     public ExportableFixtureCI export() {
         return new ExportableFixtureCI(
-                startTime,
-                startTimeConfirmed,
-                nextLiveTime,
-                extraInfo != null ? new HashMap<>(extraInfo) : null,
-                tvChannels != null ? tvChannels.stream().map(t -> ((TvChannelImpl) t).export()).collect(Collectors.toList()) : null,
-                coverageInfo != null ? ((CoverageInfoImpl) coverageInfo).export() : null,
-                producerInfo != null ? ((ProducerInfoImpl) producerInfo).export() : null,
-                references != null ? new HashMap<>(references.getReferences()) : null,
-                startTimeTbd,
-                replacedBy != null ? replacedBy.toString() : null,
-                scheduledStartTimeChanges != null ? scheduledStartTimeChanges.stream().map(s -> ((ScheduledStartTimeChangeImpl) s).export()).collect(Collectors.toList()) : null,
-                parentId == null ? null : parentId.toString(),
-                additionalParentsIds == null || additionalParentsIds.isEmpty()
-                        ? null
-                        : additionalParentsIds.stream().map(m->m.toString()).collect(Collectors.toList())
+            startTime,
+            startTimeConfirmed,
+            nextLiveTime,
+            extraInfo != null ? new HashMap<>(extraInfo) : null,
+            tvChannels != null
+                ? tvChannels.stream().map(t -> ((TvChannelImpl) t).export()).collect(Collectors.toList())
+                : null,
+            coverageInfo != null ? ((CoverageInfoImpl) coverageInfo).export() : null,
+            producerInfo != null ? ((ProducerInfoImpl) producerInfo).export() : null,
+            references != null ? new HashMap<>(references.getReferences()) : null,
+            startTimeTbd,
+            replacedBy != null ? replacedBy.toString() : null,
+            scheduledStartTimeChanges != null
+                ? scheduledStartTimeChanges
+                    .stream()
+                    .map(s -> ((ScheduledStartTimeChangeImpl) s).export())
+                    .collect(Collectors.toList())
+                : null,
+            parentId == null ? null : parentId.toString(),
+            additionalParentsIds == null || additionalParentsIds.isEmpty()
+                ? null
+                : additionalParentsIds.stream().map(m -> m.toString()).collect(Collectors.toList())
         );
     }
 }

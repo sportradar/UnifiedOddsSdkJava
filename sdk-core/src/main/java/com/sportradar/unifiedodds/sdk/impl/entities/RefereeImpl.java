@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.RefereeCI;
 import com.sportradar.unifiedodds.sdk.entities.Referee;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,7 +15,9 @@ import java.util.Map;
 /**
  * Represents a sport event referee
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class RefereeImpl implements Referee {
+
     /**
      *  A value used to uniquely identify the current {@link Referee} instance
      */
@@ -33,7 +34,6 @@ public class RefereeImpl implements Referee {
      */
     private final Map<Locale, String> nationalities;
 
-
     /**
      * Initializes a new instance of {@link RefereeImpl} class
      *
@@ -41,10 +41,11 @@ public class RefereeImpl implements Referee {
      * @param locales - a {@link List} of locales supported by the new instance
      */
     RefereeImpl(RefereeCI refereeCI, List<Locale> locales) {
-
         this.id = refereeCI.getId();
         this.name = refereeCI.getName();
-        this.nationalities = locales.stream()
+        this.nationalities =
+            locales
+                .stream()
                 .filter(l -> refereeCI.getNationality(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, refereeCI::getNationality));
     }
@@ -98,10 +99,8 @@ public class RefereeImpl implements Referee {
      */
     @Override
     public String toString() {
-        return "RefereeImpl{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", nationalities=" + nationalities +
-                '}';
+        return (
+            "RefereeImpl{" + "id=" + id + ", name='" + name + '\'' + ", nationalities=" + nationalities + '}'
+        );
     }
 }

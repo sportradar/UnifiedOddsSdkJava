@@ -143,8 +143,7 @@ public interface EventResult {
      *
      * @return the grid value
      */
-    default Integer getGrid()
-    {
+    default Integer getGrid() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -152,11 +151,15 @@ public interface EventResult {
      * Returns the distance
      * @return the distance
      */
-    default Double getDistance() { return null; }
+    default Double getDistance() {
+        return null;
+    }
 
     /**
      * Returns the competitor results
      * @return the competitor results
      */
-    default List<CompetitorResult> getCompetitorResults() { return null; }
+    default List<CompetitorResult> getCompetitorResults() {
+        return null;
+    }
 }

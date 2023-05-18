@@ -10,25 +10,30 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import java.util.concurrent.TimeUnit;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Wrapper class for the {@link HttpDataFetcher} with the sole purpose of API request logging
  */
+@SuppressWarnings({ "ConstantName" })
 public class LogFastHttpDataFetcher extends HttpDataFetcher {
-    private final static Logger logger = LoggerFactory.getLogger(LogFastHttpDataFetcher.class);
-    private final static Logger trafficLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkRestTrafficLog.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(LogFastHttpDataFetcher.class);
+    private static final Logger trafficLogger = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkRestTrafficLog.class
+    );
 
     @Inject
-    public LogFastHttpDataFetcher(SDKInternalConfiguration config,
-                                  @Named("FastHttpClient") CloseableHttpClient httpClient,
-                                  UnifiedOddsStatistics statsBean,
-                                  @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
+    public LogFastHttpDataFetcher(
+        SDKInternalConfiguration config,
+        @Named("FastHttpClient") CloseableHttpClient httpClient,
+        UnifiedOddsStatistics statsBean,
+        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+    ) {
         super(config, httpClient, statsBean, apiDeserializer);
     }
 
@@ -42,13 +47,25 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
         try {
             result = super.send(request);
         } catch (CommunicationException e) {
-            trafficLogger.info("Request[DataFetcher]: {}, response - FAILED({} ms), ex:", path, timer.stop().elapsed(TimeUnit.MILLISECONDS), e);
-            throw new CommunicationException("HTTP request failed(" + path + ")", e);
+            trafficLogger.info(
+                "Request[DataFetcher]: {}, response - FAILED({} ms), ex:",
+                path,
+                timer.stop().elapsed(TimeUnit.MILLISECONDS),
+                e
+            );
+            throw e;
         }
 
         if (trafficLogger.isInfoEnabled()) {
-            String cleanResponse = result.getResponse() == null ? null : result.getResponse().replace("\n", "");
-            trafficLogger.info("Request[DataFetcher]: {}, response - OK({} ms): {}", path, timer.stop().elapsed(TimeUnit.MILLISECONDS), cleanResponse);
+            String cleanResponse = result.getResponse() == null
+                ? null
+                : result.getResponse().replace("\n", "");
+            trafficLogger.info(
+                "Request[DataFetcher]: {}, response - OK({} ms): {}",
+                path,
+                timer.stop().elapsed(TimeUnit.MILLISECONDS),
+                cleanResponse
+            );
         }
 
         return result;

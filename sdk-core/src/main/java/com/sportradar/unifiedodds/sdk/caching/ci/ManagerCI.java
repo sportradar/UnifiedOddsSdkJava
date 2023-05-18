@@ -9,12 +9,12 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.SAPIManager;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableManagerCI;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 
 /**
  * A cache representation of a competitor manager
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class ManagerCI {
 
     /**
@@ -92,7 +92,9 @@ public class ManagerCI {
      * @param locale the locale in which the nationality should be provided
      * @return the translated nationality
      */
-    public String getNationality(Locale locale) { return nationalities.get(locale); }
+    public String getNationality(Locale locale) {
+        return nationalities.get(locale);
+    }
 
     /**
      * Returns the country code
@@ -134,11 +136,11 @@ public class ManagerCI {
 
     public ExportableManagerCI export() {
         return new ExportableManagerCI(
-                id.toString(),
-                new HashMap<>(names),
-                new HashMap<>(nationalities),
-                countryCode,
-                new ArrayList<>(cachedLocales)
+            id.toString(),
+            new HashMap<>(names),
+            new HashMap<>(nationalities),
+            countryCode,
+            new ArrayList<>(cachedLocales)
         );
     }
 }

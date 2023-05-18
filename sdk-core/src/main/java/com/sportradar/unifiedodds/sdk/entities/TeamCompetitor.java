@@ -20,7 +20,7 @@ public interface TeamCompetitor extends Competitor {
      *
      * @return the division of the competitor if available; otherwise null
      */
-    default Integer getDivision(){
+    default Integer getDivision() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

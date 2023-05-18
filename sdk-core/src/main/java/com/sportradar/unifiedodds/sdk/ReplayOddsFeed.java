@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
  * An extension of the OddsFeed that has the ability to perform replay server actions. {@link #getReplayManager} will return a
  * replay manager that can be used to add SportEvents and create test-scenarios to replay.
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
 public class ReplayOddsFeed extends OddsFeed {
+
     private static final Logger logger = LoggerFactory.getLogger(ReplayOddsFeed.class);
 
     /**
@@ -25,8 +27,16 @@ public class ReplayOddsFeed extends OddsFeed {
      * @param config {@link OddsFeedConfiguration}, the configuration class used to configure the new feed
      */
     public ReplayOddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config) {
-        super(listener, new SDKInternalConfiguration(config, true, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader()), null);
-
+        super(
+            listener,
+            new SDKInternalConfiguration(
+                config,
+                true,
+                new SDKConfigurationPropertiesReader(),
+                new SDKConfigurationYamlReader()
+            ),
+            null
+        );
         logger.info("ReplayOddsFeed instance created with \n{}", config);
     }
 
@@ -38,9 +48,22 @@ public class ReplayOddsFeed extends OddsFeed {
      * @param config {@link OddsFeedConfiguration}, the configuration class used to configure the new feed
      * @param customisableSDKModule the customised injection module
      */
-    public ReplayOddsFeed(SDKGlobalEventsListener listener, OddsFeedConfiguration config, CustomisableSDKModule customisableSDKModule) {
-        super(listener, new SDKInternalConfiguration(config, true, new SDKConfigurationPropertiesReader(), new SDKConfigurationYamlReader()), customisableSDKModule, null);
-
+    public ReplayOddsFeed(
+        SDKGlobalEventsListener listener,
+        OddsFeedConfiguration config,
+        CustomisableSDKModule customisableSDKModule
+    ) {
+        super(
+            listener,
+            new SDKInternalConfiguration(
+                config,
+                true,
+                new SDKConfigurationPropertiesReader(),
+                new SDKConfigurationYamlReader()
+            ),
+            customisableSDKModule,
+            null
+        );
         logger.info("ReplayOddsFeed instance created with \n{}", config);
     }
 
@@ -54,5 +77,4 @@ public class ReplayOddsFeed extends OddsFeed {
     public ReplayManager getReplayManager() {
         return super.getReplayManager();
     }
-
 }

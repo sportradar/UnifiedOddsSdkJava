@@ -5,15 +5,24 @@
 package com.sportradar.unifiedodds.example.common;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@SuppressWarnings(
+    {
+        "BooleanExpressionComplexity",
+        "ClassFanOutComplexity",
+        "HiddenField",
+        "MethodLength",
+        "MultipleStringLiterals",
+        "UnnecessaryParentheses",
+    }
+)
 public class MarketWriter {
 
     private List<Locale> locales;
@@ -22,7 +31,7 @@ public class MarketWriter {
     private boolean writeLog;
     private final Logger logger;
 
-    public MarketWriter(List<Locale> locales, boolean includeMappings, boolean writeLog){
+    public MarketWriter(List<Locale> locales, boolean includeMappings, boolean writeLog) {
         logger = LoggerFactory.getLogger(this.getClass().getName());
         this.locales = locales;
         this.includeMappings = includeMappings;
@@ -31,68 +40,64 @@ public class MarketWriter {
     }
 
     public void writeMarketNames(List<? extends Market> markets) {
-        if (markets == null)
-        {
+        if (markets == null) {
             writeMessage("No markets for this sportEvent.");
             return;
         }
 
-        for (Market market:markets) {
-            if(market instanceof MarketWithOdds)
-            {
+        for (Market market : markets) {
+            if (market instanceof MarketWithOdds) {
                 writeMarket((MarketWithOdds) market);
-            }
-            else if(market instanceof MarketCancel)
-            {
-                writeMarket((MarketCancel)market);
-            }
-            else if(market instanceof MarketWithSettlement)
-            {
+            } else if (market instanceof MarketCancel) {
+                writeMarket((MarketCancel) market);
+            } else if (market instanceof MarketWithSettlement) {
                 writeMarket((MarketWithSettlement) market);
-            }
-            else if(market instanceof MarketWithProbabilities)
-            {
+            } else if (market instanceof MarketWithProbabilities) {
                 writeMarket((MarketWithProbabilities) market);
-            }
-            else
-            {
+            } else {
                 writeMarket(market);
             }
         }
     }
 
-    public void writeMarket(Market market)
-    {
+    public void writeMarket(Market market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
         sb.append(", Name:").append(market.getName());
         sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
+        sb
+            .append(", AdditionalInfo:'")
+            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
+            .append("'");
         writeMessage(sb.toString());
 
         writeMarketMappings(market);
     }
 
-    public void writeMarket(MarketCancel market)
-    {
+    public void writeMarket(MarketCancel market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
         sb.append(", Name:").append(market.getName());
         sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
+        sb
+            .append(", AdditionalInfo:'")
+            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
+            .append("'");
         sb.append(", VoidReason:").append(market.getVoidReason());
         writeMessage(sb.toString());
 
         writeMarketMappings(market);
     }
 
-    public void writeMarket(MarketWithProbabilities market)
-    {
+    public void writeMarket(MarketWithProbabilities market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
         sb.append(", Name:").append(market.getName());
         sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
+        sb
+            .append(", AdditionalInfo:'")
+            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
+            .append("'");
         sb.append(", MarketMetaData:").append(getMarketMetaData(market.getMarketMetadata()));
         writeMessage(sb.toString());
 
@@ -104,16 +109,22 @@ public class MarketWriter {
         sb.append("MarketId:").append(market.getId());
         sb.append(", Names:[");
         StringBuilder finalSb = sb;
-        locales.forEach(l->{
+        locales.forEach(l -> {
             finalSb.append(l.getLanguage()).append(": ").append(market.getName(l)).append("; ");
         });
         sb = finalSb;
         sb.append("]");
         sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
+        sb
+            .append(", AdditionalInfo:'")
+            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
+            .append("'");
         sb.append(", MarketStatus:").append(market.getStatus());
         sb.append(", IsFavourite:").append(market.isFavourite());
-        sb.append(", MarketDefinition:[").append(writeMarketDefinition(market.getMarketDefinition(), locales)).append("]");
+        sb
+            .append(", MarketDefinition:[")
+            .append(writeMarketDefinition(market.getMarketDefinition(), locales))
+            .append("]");
         sb.append(", MarketMetaData:").append(getMarketMetaData(market.getMarketMetadata()));
         writeMessage(sb.toString());
 
@@ -124,7 +135,7 @@ public class MarketWriter {
             return;
         }
 
-        for (OutcomeOdds outcome:outcomes) {
+        for (OutcomeOdds outcome : outcomes) {
             sb = new StringBuilder();
             sb.append("OutcomeId:").append(outcome.getId());
             sb.append(", Name:").append(outcome.getName());
@@ -133,20 +144,28 @@ public class MarketWriter {
             sb.append(", IsActive:").append(outcome.isActive());
             sb.append(", IsPlayerOutcome:").append(outcome.isPlayerOutcome());
             sb.append(", Probabilities:").append(outcome.getProbability());
-            sb.append(", OutcomeDefinition:[").append(writeOutcomeDefinition(outcome.getOutcomeDefinition(), locales)).append("]");
-            sb.append(", AdditionalProbabilities:[").append(getAdditionalProbabilities(outcome.getAdditionalProbabilities())).append("]");
+            sb
+                .append(", OutcomeDefinition:[")
+                .append(writeOutcomeDefinition(outcome.getOutcomeDefinition(), locales))
+                .append("]");
+            sb
+                .append(", AdditionalProbabilities:[")
+                .append(getAdditionalProbabilities(outcome.getAdditionalProbabilities()))
+                .append("]");
             writeMessage(sb.toString());
         }
         writeMarketOutcomeMappings(market);
     }
 
-    public void writeMarket(MarketWithSettlement market)
-    {
+    public void writeMarket(MarketWithSettlement market) {
         StringBuilder sb = new StringBuilder();
         sb.append("MarketId:").append(market.getId());
         sb.append(", Name:").append(market.getName());
         sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb.append(", AdditionalInfo:'").append(writeAdditionalInfo(market.getAdditionalMarketInfo())).append("'");
+        sb
+            .append(", AdditionalInfo:'")
+            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
+            .append("'");
         sb.append(", VoidReason:").append(market.getVoidReason());
         writeMessage(sb.toString());
 
@@ -157,7 +176,7 @@ public class MarketWriter {
             return;
         }
 
-        for (OutcomeSettlement outcome:outcomes) {
+        for (OutcomeSettlement outcome : outcomes) {
             sb = new StringBuilder();
             sb.append("OutcomeId:").append(outcome.getId());
             sb.append(", Name:").append(outcome.getName());
@@ -169,10 +188,8 @@ public class MarketWriter {
         writeMarketOutcomeMappings(market);
     }
 
-    private static String writeSpecifiers(Map<String, String> specifiers)
-    {
-        if(specifiers == null || specifiers.isEmpty())
-        {
+    private static String writeSpecifiers(Map<String, String> specifiers) {
+        if (specifiers == null || specifiers.isEmpty()) {
             return "";
         }
         StringJoiner sj = new StringJoiner(",");
@@ -180,10 +197,8 @@ public class MarketWriter {
         return sj.toString();
     }
 
-    private String writeAdditionalInfo(Map<String, String> additionalInfo)
-    {
-        if(additionalInfo == null || additionalInfo.isEmpty())
-        {
+    private String writeAdditionalInfo(Map<String, String> additionalInfo) {
+        if (additionalInfo == null || additionalInfo.isEmpty()) {
             return "";
         }
         StringJoiner sj = new StringJoiner(",");
@@ -191,10 +206,8 @@ public class MarketWriter {
         return sj.toString();
     }
 
-    private String writeMarketDefinition(MarketDefinition definition, List<Locale> locales)
-    {
-        if(definition == null)
-        {
+    private String writeMarketDefinition(MarketDefinition definition, List<Locale> locales) {
+        if (definition == null) {
             return "";
         }
         StringJoiner sj = new StringJoiner(", ");
@@ -203,22 +216,23 @@ public class MarketWriter {
             sj.add(l.getLanguage() + ":" + definition.getNameTemplate(l));
         });
         sj.add("], OutcomeType=" + definition.getOutcomeType());
-        if(definition.getGroups() != null && !definition.getGroups().isEmpty()) {
+        if (definition.getGroups() != null && !definition.getGroups().isEmpty()) {
             sj.add(String.format("Groups=%s", String.join(",", definition.getGroups())));
         }
-        if(definition.getAttributes() != null && !definition.getAttributes().isEmpty()) {
-            String mapAsString = definition.getAttributes().keySet().stream()
-                    .map(key -> key + "=" + definition.getAttributes().get(key))
-                    .collect(Collectors.joining(", ", "{", "}"));
+        if (definition.getAttributes() != null && !definition.getAttributes().isEmpty()) {
+            String mapAsString = definition
+                .getAttributes()
+                .keySet()
+                .stream()
+                .map(key -> key + "=" + definition.getAttributes().get(key))
+                .collect(Collectors.joining(", ", "{", "}"));
             sj.add(String.format("Groups=%s", mapAsString));
         }
         return sj.toString();
     }
 
-    private String writeOutcomeDefinition(OutcomeDefinition definition, List<Locale> locales)
-    {
-        if(definition == null)
-        {
+    private String writeOutcomeDefinition(OutcomeDefinition definition, List<Locale> locales) {
+        if (definition == null) {
             return "";
         }
         StringJoiner sj = new StringJoiner(", ");
@@ -251,32 +265,37 @@ public class MarketWriter {
         }
     }
 
-    private String getAdditionalProbabilities(AdditionalProbabilities probabilities){
-        if(probabilities == null ||
-                (probabilities.getWin() == null
-                && probabilities.getLose() == null
-                && probabilities.getHalfWin() == null
-                && probabilities.getHalfLose() == null
-                && probabilities.getRefund() == null)){
+    private String getAdditionalProbabilities(AdditionalProbabilities probabilities) {
+        if (
+            probabilities == null ||
+            (
+                probabilities.getWin() == null &&
+                probabilities.getLose() == null &&
+                probabilities.getHalfWin() == null &&
+                probabilities.getHalfLose() == null &&
+                probabilities.getRefund() == null
+            )
+        ) {
             return "";
         }
-        return String.format("Win={}, Lose={}, HalfWin={}, HalfLose={}, Refund={}",
-                             probabilities.getWin(),
-                             probabilities.getLose(),
-                             probabilities.getHalfWin(),
-                             probabilities.getHalfLose(),
-                             probabilities.getRefund());
+        return String.format(
+            "Win={}, Lose={}, HalfWin={}, HalfLose={}, Refund={}",
+            probabilities.getWin(),
+            probabilities.getLose(),
+            probabilities.getHalfWin(),
+            probabilities.getHalfLose(),
+            probabilities.getRefund()
+        );
     }
 
-    private String getMarketMetaData(MarketMetadata metadata){
-        if(metadata == null){
+    private String getMarketMetaData(MarketMetadata metadata) {
+        if (metadata == null) {
             return "";
         }
         return metadata.toString();
     }
 
-    private void writeMessage(String message)
-    {
+    private void writeMessage(String message) {
         if (writeLog) {
             logger.info(message);
         } else {

@@ -1,8 +1,9 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.google.inject.Guice;
+import static com.sportradar.unifiedodds.sdk.caching.DateConverterToCentralEurope.convertFrom;
+import static org.junit.Assert.*;
+
 import com.google.inject.Injector;
-import com.google.inject.util.Modules;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentGroup;
 import com.sportradar.uf.sportsapi.datamodel.SAPITournamentInfoEndpoint;
@@ -10,22 +11,29 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
-import com.sportradar.unifiedodds.sdk.di.TestingModule;
+import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
 import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
 import com.sportradar.utils.URN;
+import java.time.ZoneId;
+import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import static org.junit.Assert.*;
-
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "BooleanExpressionComplexity",
+        "ClassFanOutComplexity",
+        "CyclomaticComplexity",
+        "IllegalCatch",
+        "MagicNumber",
+        "MultipleStringLiterals",
+        "UnnecessaryParentheses",
+    }
+)
 public class TournamentCITest {
+
     private static final Locale LOCALE = Locale.ENGLISH;
     private static final List<Locale> LOCALES = Arrays.asList(LOCALE);
     private static final URN TOURNAMENT_EVENT_ID_1030 = URN.parse("sr:tournament:1030");
@@ -36,10 +44,7 @@ public class TournamentCITest {
     //The cache item is obtained from the cache
     private SportEventCache cache;
 
-    private Injector injector = Guice.createInjector(Modules
-            .override(new MockedMasterModule(config))
-            .with(new TestingModule())
-    );
+    private Injector injector = new TestInjectorFactory(config).create();
 
     @Before
     public void setup() {
@@ -50,15 +55,22 @@ public class TournamentCITest {
         cache = injector.getInstance(SportEventCache.class);
 
         //cache is the callback object (for a http response):
-        ((DataRouterImpl) injector.getInstance(DataRouter.class)).setDataListeners(Arrays.asList((DataRouterListener) cache));
+        ((DataRouterImpl) injector.getInstance(DataRouter.class)).setDataListeners(
+                Arrays.asList((DataRouterListener) cache)
+            );
     }
 
     @Test
-    public void getsScheduledDateForTournament() { verifyDate(TOURNAMENT_EVENT_ID_1030, new Date(118, 4, 15, 9, 30)); }
+    public void getsScheduledDateForTournament() {
+        verifyDate(TOURNAMENT_EVENT_ID_1030, new Date(118, 4, 15, 9, 30));
+    }
 
     @Test
     public void mergeTournamentGroupBase() throws Exception {
-        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>("test/rest/tournament_info.xml").getData();
+        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>(
+            "test/rest/tournament_info.xml"
+        )
+            .getData();
         SportEventCI cacheItem = cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
 
         TournamentCI tour40 = ((TournamentCI) cacheItem);
@@ -75,8 +87,11 @@ public class TournamentCITest {
 
     @Test
     public void mergeTournamentGroupRemoveById() throws Exception {
-        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>("test/rest/tournament_info.xml").getData();
-        TournamentCI tour40 = (TournamentCI)cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
+        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>(
+            "test/rest/tournament_info.xml"
+        )
+            .getData();
+        TournamentCI tour40 = (TournamentCI) cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
 
         // set group id
         sapiTournament.getGroups().getGroup().get(0).setId("1");
@@ -96,8 +111,11 @@ public class TournamentCITest {
 
     @Test
     public void mergeTournamentGroupRemoveByName() throws Exception {
-        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>("test/rest/tournament_info.xml").getData();
-        TournamentCI tour40 = (TournamentCI)cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
+        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>(
+            "test/rest/tournament_info.xml"
+        )
+            .getData();
+        TournamentCI tour40 = (TournamentCI) cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
 
         // set group name
         sapiTournament.getGroups().getGroup().get(0).setName("Name1");
@@ -117,8 +135,11 @@ public class TournamentCITest {
 
     @Test
     public void mergeTournamentGroupSplit() throws Exception {
-        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>("test/rest/tournament_info.xml").getData();
-        TournamentCI tour40 = (TournamentCI)cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
+        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>(
+            "test/rest/tournament_info.xml"
+        )
+            .getData();
+        TournamentCI tour40 = (TournamentCI) cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
 
         // default
         tour40.merge(sapiTournament, LOCALE);
@@ -136,7 +157,7 @@ public class TournamentCITest {
         newGroup.setName("Name2");
         newGroup.getCompetitor();
         int i = sapiTournament.getGroups().getGroup().get(0).getCompetitor().size() / 2;
-        while(i > 0){
+        while (i > 0) {
             newGroup.getCompetitor().add(sapiTournament.getGroups().getGroup().get(0).getCompetitor().get(i));
             sapiTournament.getGroups().getGroup().get(0).getCompetitor().remove(i);
             i--;
@@ -153,8 +174,11 @@ public class TournamentCITest {
 
     @Test
     public void mergeTournamentGroupChangeCompetitor() throws Exception {
-        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>("test/rest/tournament_info.xml").getData();
-        TournamentCI tour40 = (TournamentCI)cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
+        SAPITournamentInfoEndpoint sapiTournament = new TestingDataProvider<SAPITournamentInfoEndpoint>(
+            "test/rest/tournament_info.xml"
+        )
+            .getData();
+        TournamentCI tour40 = (TournamentCI) cache.getEventCacheItem(TOURNAMENT_EVENT_ID_40);
 
         tour40.merge(sapiTournament, LOCALE);
         verifyTournamentGroups(sapiTournament.getGroups().getGroup(), tour40.getGroups(LOCALES));
@@ -176,41 +200,50 @@ public class TournamentCITest {
 
             Date actual = cacheItem.getScheduled();
 
-            assertEquals(expected, actual);
+            assertEquals(expected, convertFrom(actual, ZoneId.systemDefault()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void verifyTournamentGroups(List<SAPITournamentGroup> sapiGroups, List<GroupCI> ciGroups){
-        if(sapiGroups == null || sapiGroups.isEmpty()){
+    private void verifyTournamentGroups(List<SAPITournamentGroup> sapiGroups, List<GroupCI> ciGroups) {
+        if (sapiGroups == null || sapiGroups.isEmpty()) {
             assertTrue(ciGroups.isEmpty());
             return;
         }
 
         assertEquals(sapiGroups.size(), ciGroups.size());
-        for(SAPITournamentGroup sapiGroup : sapiGroups){
-            if(!isNullOrEmpty(sapiGroup.getId())){
+        for (SAPITournamentGroup sapiGroup : sapiGroups) {
+            if (!isNullOrEmpty(sapiGroup.getId())) {
                 assertTrue(ciGroups.stream().anyMatch(m -> m.getId().equals(sapiGroup.getId())));
             }
-            if(!isNullOrEmpty(sapiGroup.getName())){
+            if (!isNullOrEmpty(sapiGroup.getName())) {
                 assertTrue(ciGroups.stream().anyMatch(m -> m.getName().equals(sapiGroup.getName())));
             }
-            GroupCI matchingGroup = ciGroups.stream()
-                    .filter(f -> (!isNullOrEmpty(sapiGroup.getId()) && f.getId().equals(sapiGroup.getId()))
-                            || (!isNullOrEmpty(sapiGroup.getName()) && f.getName().equals(sapiGroup.getName()))
-                            || (isNullOrEmpty(sapiGroup.getId()) && isNullOrEmpty(sapiGroup.getName()) && isNullOrEmpty(f.getId()) && isNullOrEmpty(f.getName()))).findFirst().get();
+            GroupCI matchingGroup = ciGroups
+                .stream()
+                .filter(f ->
+                    (!isNullOrEmpty(sapiGroup.getId()) && f.getId().equals(sapiGroup.getId())) ||
+                    (!isNullOrEmpty(sapiGroup.getName()) && f.getName().equals(sapiGroup.getName())) ||
+                    (
+                        isNullOrEmpty(sapiGroup.getId()) &&
+                        isNullOrEmpty(sapiGroup.getName()) &&
+                        isNullOrEmpty(f.getId()) &&
+                        isNullOrEmpty(f.getName())
+                    )
+                )
+                .findFirst()
+                .get();
 
             assertEquals(sapiGroup.getCompetitor().size(), matchingGroup.getCompetitorIds().size());
 
-            for(SAPITeam sapiCompetitor : sapiGroup.getCompetitor()){
+            for (SAPITeam sapiCompetitor : sapiGroup.getCompetitor()) {
                 assertTrue(matchingGroup.getCompetitorIds().contains(URN.parse(sapiCompetitor.getId())));
             }
         }
     }
 
-    private boolean isNullOrEmpty(String input)
-    {
+    private boolean isNullOrEmpty(String input) {
         return input == null || input.isEmpty();
     }
 }

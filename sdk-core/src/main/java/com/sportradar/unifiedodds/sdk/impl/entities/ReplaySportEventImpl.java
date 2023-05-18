@@ -12,6 +12,7 @@ import com.sportradar.utils.URN;
  * Represents the replay sport event
  */
 public class ReplaySportEventImpl implements ReplaySportEvent {
+
     private final URN id;
     private final Integer position;
     private final Integer startTime;

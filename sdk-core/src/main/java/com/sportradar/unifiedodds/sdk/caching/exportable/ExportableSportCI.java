@@ -8,12 +8,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableSportCI extends ExportableCI {
+
     private List<String> associatedCategories;
     private List<Locale> cachedLocales;
     private boolean shouldFetchCategories;
 
-    public ExportableSportCI(String id, Map<Locale, String> names, List<String> associatedCategories, List<Locale> cachedLocales, boolean shouldFetchCategories) {
+    public ExportableSportCI(
+        String id,
+        Map<Locale, String> names,
+        List<String> associatedCategories,
+        List<Locale> cachedLocales,
+        boolean shouldFetchCategories
+    ) {
         super(id, names);
         this.associatedCategories = associatedCategories;
         this.cachedLocales = cachedLocales;

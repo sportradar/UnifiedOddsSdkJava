@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,16 +17,23 @@ import org.slf4j.LoggerFactory;
 /**
  * The basic implementation of the {@link BookingManager}
  */
+@SuppressWarnings({ "ConstantName" })
 public class BookingManagerImpl implements BookingManager {
+
     private static final Logger executionLogger = LoggerFactory.getLogger(BookingManagerImpl.class);
-    private static final Logger clientInteractionLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
+    private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkClientInteractionLog.class
+    );
     private final HttpHelper httpHelper;
     private final SDKInternalConfiguration configuration;
     private final SportEventCache sportEventCache;
 
-
     @Inject
-    BookingManagerImpl(SportEventCache sportEventCache, SDKInternalConfiguration configuration, HttpHelper httpHelper) {
+    BookingManagerImpl(
+        SportEventCache sportEventCache,
+        SDKInternalConfiguration configuration,
+        HttpHelper httpHelper
+    ) {
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(httpHelper);
@@ -35,7 +43,6 @@ public class BookingManagerImpl implements BookingManager {
         this.httpHelper = httpHelper;
     }
 
-
     /**
      * Performs a request on the API which books the event associated with the provided {@link URN} identifier
      *
@@ -43,24 +50,47 @@ public class BookingManagerImpl implements BookingManager {
      * @return <code>true</code> if the booking was successful; otherwise <code>false</code>
      */
     @Override
-    public boolean bookLiveOddsEvent(URN eventId) {
+    public boolean bookLiveOddsEvent(URN eventId) throws CommunicationException {
         Preconditions.checkNotNull(eventId);
 
         clientInteractionLogger.info("BookingManager.bookLiveOddsEvent({})", eventId);
 
-        String requestUri = String.format("https://%s/v1/liveodds/booking-calendar/events/%s/book", configuration.getAPIHost(), eventId);
+        String requestUri = String.format(
+            "https://%s/v1/liveodds/booking-calendar/events/%s/book",
+            configuration.getApiHostAndPort(),
+            eventId
+        );
 
         try {
             HttpHelper.ResponseData post = httpHelper.post(requestUri);
-            clientInteractionLogger.info("BookingManager.bookLiveOddsEvent({}) - completed, status: {}, message: {}", eventId, post.getStatusCode(), post.getMessage());
+            clientInteractionLogger.info(
+                "BookingManager.bookLiveOddsEvent({}) - completed, status: {}, message: {}",
+                eventId,
+                post.getStatusCode(),
+                post.getMessage()
+            );
             if (post.isSuccessful()) {
                 sportEventCache.onEventBooked(eventId);
                 return true;
-            } else {
-                executionLogger.warn("Event[{}] booking failed. API response code: '{}', message: '{}'", eventId, post.getStatusCode(), post.getMessage());
             }
+            String filteredResponse = SdkHelper.extractHttpResponseMessage(post.getMessage());
+            executionLogger.warn(
+                "Event[{}] booking failed. API response code: '{}', message: '{}'",
+                eventId,
+                post.getStatusCode(),
+                filteredResponse
+            );
+            throw new CommunicationException(
+                String.format("Event[%s] booking failed.", eventId),
+                requestUri,
+                post.getStatusCode()
+            );
         } catch (CommunicationException e) {
-            executionLogger.warn("Event[{}] booking failed, ex: ", eventId, e);
+            String msg = String.format("Event[%s] booking failed, ex: %s", eventId, e.getMessage());
+            executionLogger.warn(msg, e);
+            if (configuration.getExceptionHandlingStrategy() == ExceptionHandlingStrategy.Throw) {
+                throw e;
+            }
         }
 
         return false;

@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
 import com.sportradar.unifiedodds.sdk.entities.SeasonInfo;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +17,9 @@ import java.util.Map;
 /**
  * Provides season information about an entity (sport, category, season, ...)
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class SeasonInfoImpl implements SeasonInfo {
+
     /**
      * The unique {@link URN} identifier
      */
@@ -50,7 +51,6 @@ public class SeasonInfoImpl implements SeasonInfo {
      */
     private URN tournamentId;
 
-
     /**
      * Initializes a new instance of {@link SeasonInfoImpl}
      *
@@ -63,7 +63,9 @@ public class SeasonInfoImpl implements SeasonInfo {
         Preconditions.checkArgument(!locales.isEmpty());
 
         this.id = seasonCI.getId();
-        this.names = locales.stream()
+        this.names =
+            locales
+                .stream()
                 .filter(l -> seasonCI.getName(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, seasonCI::getName));
         this.startDate = seasonCI.getStartDate();
@@ -147,13 +149,21 @@ public class SeasonInfoImpl implements SeasonInfo {
      */
     @Override
     public String toString() {
-        return "SeasonInfoImpl{" +
-                "id=" + id +
-                ", names=" + names +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", year=" + year +
-                ", tournamentId=" + tournamentId +
-                '}';
+        return (
+            "SeasonInfoImpl{" +
+            "id=" +
+            id +
+            ", names=" +
+            names +
+            ", startDate=" +
+            startDate +
+            ", endDate=" +
+            endDate +
+            ", year=" +
+            year +
+            ", tournamentId=" +
+            tournamentId +
+            '}'
+        );
     }
 }

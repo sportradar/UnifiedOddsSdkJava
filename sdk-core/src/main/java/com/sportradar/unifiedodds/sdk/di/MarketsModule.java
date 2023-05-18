@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImp
  * The DI module in charge of market related classes
  */
 public class MarketsModule extends AbstractModule {
+
     /**
      * Configures a {@link Binder} via the exposed methods.
      */

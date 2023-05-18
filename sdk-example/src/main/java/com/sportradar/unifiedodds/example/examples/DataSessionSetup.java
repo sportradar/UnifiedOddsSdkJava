@@ -13,7 +13,6 @@ import com.sportradar.unifiedodds.sdk.ProducerManager;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-
 import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +20,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * A basic example demonstrating on how to start the SDK with a single session
  */
+@SuppressWarnings({ "MagicNumber" })
 public class DataSessionSetup {
+
     private final OddsFeed oddsFeed;
     private final OddsFeedConfiguration configuration;
 
@@ -29,7 +30,9 @@ public class DataSessionSetup {
         logEntry("Running the OddsFeed SDK data example - single session");
 
         logEntry("Building the configuration using the provided token");
-        configuration = OddsFeed.getOddsFeedConfigurationBuilder()
+        configuration =
+            OddsFeed
+                .getOddsFeedConfigurationBuilder()
                 .setAccessToken(token)
                 .selectEnvironment(Environment.GlobalIntegration)
                 .setSdkNodeId(SdkConstants.NODE_ID)
@@ -46,10 +49,13 @@ public class DataSessionSetup {
         }
 
         logEntry("Building a simple session which will receive all messages");
-        oddsFeed.getSessionBuilder()
-                .setMessageInterest(MessageInterest.AllMessages)
-                .setListener(new DataMessageListener("SingleSessionSetup", configuration.getDesiredLocales(), true, true))
-                .build();
+        oddsFeed
+            .getSessionBuilder()
+            .setMessageInterest(MessageInterest.AllMessages)
+            .setListener(
+                new DataMessageListener("SingleSessionSetup", configuration.getDesiredLocales(), true, true)
+            )
+            .build();
 
         logEntry("Opening the feed instance");
         logEntry("Feed instance will remain open for 30 minutes");
@@ -67,15 +73,21 @@ public class DataSessionSetup {
     }
 
     private void setProducersRecoveryTimestamp() {
-        logEntry("Setting last message timestamp (used for recovery) for all the active producers to two hours back");
+        logEntry(
+            "Setting last message timestamp (used for recovery) for all the active producers to two hours back"
+        );
 
         // using the timestamp from 2 hours back, in real case scenarios you need to monitor the timestamp for recovery
         // with the producerManager.getProducer(producerId).getTimestampForRecovery(); method
-        long recoveryFromTimestamp = System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(2, TimeUnit.HOURS);
+        long recoveryFromTimestamp =
+            System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(2, TimeUnit.HOURS);
 
         ProducerManager producerManager = oddsFeed.getProducerManager();
 
-        producerManager.getActiveProducers().values().forEach(p -> producerManager.setProducerRecoveryFromTimestamp(p.getId(), recoveryFromTimestamp));
+        producerManager
+            .getActiveProducers()
+            .values()
+            .forEach(p -> producerManager.setProducerRecoveryFromTimestamp(p.getId(), recoveryFromTimestamp));
     }
 
     private static void logEntry(String s) {

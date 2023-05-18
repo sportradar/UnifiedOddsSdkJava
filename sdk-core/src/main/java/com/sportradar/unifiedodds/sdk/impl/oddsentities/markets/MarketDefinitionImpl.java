@@ -16,7 +16,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
 import com.sportradar.utils.URN;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +26,9 @@ import java.util.stream.Collectors;
  * Created on 23/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "MagicNumber", "NPathComplexity", "ParameterNumber", "ReturnCount" })
 class MarketDefinitionImpl implements MarketDefinition {
+
     private final SportEvent sportEvent;
     private final MarketDescription marketDescriptor;
     private final URN sportId;
@@ -37,9 +38,16 @@ class MarketDefinitionImpl implements MarketDefinition {
     private final Locale defaultLocale;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-    MarketDefinitionImpl(SportEvent sportEvent, MarketDescription marketDescriptor, URN sportId, int producerId,
-                         Map<String, String> specifiersMap, MarketDescriptionProvider descriptorProvider, Locale defaultLocale,
-                         ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    MarketDefinitionImpl(
+        SportEvent sportEvent,
+        MarketDescription marketDescriptor,
+        URN sportId,
+        int producerId,
+        Map<String, String> specifiersMap,
+        MarketDescriptionProvider descriptorProvider,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(marketDescriptor);
         Preconditions.checkNotNull(sportId);
@@ -78,10 +86,19 @@ class MarketDefinitionImpl implements MarketDefinition {
     public String getNameTemplate(Locale locale) {
         MarketDescription translatedDescriptor = null;
         try {
-            translatedDescriptor = descriptorProvider.getMarketDescription(this.marketDescriptor.getId(), specifiersMap, Collections.singletonList(locale), false);
+            translatedDescriptor =
+                descriptorProvider.getMarketDescription(
+                    this.marketDescriptor.getId(),
+                    specifiersMap,
+                    Collections.singletonList(locale),
+                    false
+                );
         } catch (CacheItemNotFoundException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new ObjectNotFoundException("The requested translated name template could not be found", e);
+                throw new ObjectNotFoundException(
+                    "The requested translated name template could not be found",
+                    e
+                );
             }
         }
 
@@ -99,7 +116,10 @@ class MarketDefinitionImpl implements MarketDefinition {
             return null;
         }
 
-        return marketDescriptor.getAttributes().stream().collect(Collectors.toMap(MarketAttribute::getName, MarketAttribute::getDescription));
+        return marketDescriptor
+            .getAttributes()
+            .stream()
+            .collect(Collectors.toMap(MarketAttribute::getName, MarketAttribute::getDescription));
     }
 
     @Override
@@ -119,10 +139,19 @@ class MarketDefinitionImpl implements MarketDefinition {
 
         MarketDescription completeDescriptor = null;
         try {
-            completeDescriptor = descriptorProvider.getMarketDescription(this.marketDescriptor.getId(), specifiersMap, Collections.singletonList(locale), false);
+            completeDescriptor =
+                descriptorProvider.getMarketDescription(
+                    this.marketDescriptor.getId(),
+                    specifiersMap,
+                    Collections.singletonList(locale),
+                    false
+                );
         } catch (CacheItemNotFoundException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new ObjectNotFoundException("The mappings in the provided locale could not be provided", e);
+                throw new ObjectNotFoundException(
+                    "The mappings in the provided locale could not be provided",
+                    e
+                );
             }
         }
 
@@ -134,25 +163,34 @@ class MarketDefinitionImpl implements MarketDefinition {
             return Collections.emptyList();
         }
 
-        List<MarketMappingData> collect = completeDescriptor.getMappings().stream()
-                .filter(m -> m.canMap(producerId, sportEvent.getSportId(), specifiersMap))
-                .collect(Collectors.toList());
+        List<MarketMappingData> collect = completeDescriptor
+            .getMappings()
+            .stream()
+            .filter(m -> m.canMap(producerId, sportEvent.getSportId(), specifiersMap))
+            .collect(Collectors.toList());
 
-        if(!adjustMappingsWithMessageData) {
+        if (!adjustMappingsWithMessageData) {
             return collect;
         }
 
         Map<String, String> attributes = getAttributes();
-        return collect.stream()
-                .map(m -> mapToAdjustedMappingData(m, attributes, specifiersMap))
-                .collect(Collectors.toList());
+        return collect
+            .stream()
+            .map(m -> mapToAdjustedMappingData(m, attributes, specifiersMap))
+            .collect(Collectors.toList());
     }
 
-    private static MarketMappingData mapToAdjustedMappingData(MarketMappingData mapping, Map<String, String> attributes, Map<String, String> specifiersMap) {
+    private static MarketMappingData mapToAdjustedMappingData(
+        MarketMappingData mapping,
+        Map<String, String> attributes,
+        Map<String, String> specifiersMap
+    ) {
         Preconditions.checkNotNull(mapping);
 
-        if (attributes != null
-                && attributes.containsKey(UnifiedFeedConstants.FLEX_SCORE_MARKET_ATTRIBUTE_NAME)) {
+        if (
+            attributes != null &&
+            attributes.containsKey(UnifiedFeedConstants.FLEX_SCORE_MARKET_ATTRIBUTE_NAME)
+        ) {
             return new FlexAdjustedMarketMappingDataImpl(mapping, specifiersMap);
         }
 

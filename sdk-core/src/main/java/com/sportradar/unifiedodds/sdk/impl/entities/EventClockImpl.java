@@ -9,7 +9,9 @@ import com.sportradar.unifiedodds.sdk.entities.EventClock;
 /**
  * Represents an event clock
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class EventClockImpl implements EventClock {
+
     /**
      * The current event time
      */
@@ -50,7 +52,14 @@ public class EventClockImpl implements EventClock {
      * @param remainingTimeInPeriod - a {@link String} description of the remaining period time
      * @param stopped - an indication if the event clock is currently stopped
      */
-    public EventClockImpl(String eventTime, String stoppageTime, String stoppageTimeAnnounced, String remainingTime, String remainingTimeInPeriod, Boolean stopped) {
+    public EventClockImpl(
+        String eventTime,
+        String stoppageTime,
+        String stoppageTimeAnnounced,
+        String remainingTime,
+        String remainingTimeInPeriod,
+        Boolean stopped
+    ) {
         this.eventTime = eventTime;
         this.stoppageTime = stoppageTime;
         this.stoppageTimeAnnounced = stoppageTimeAnnounced;
@@ -136,13 +145,21 @@ public class EventClockImpl implements EventClock {
      */
     @Override
     public String toString() {
-        return "EventClockImpl{" +
-                "eventTime=" + eventTime +
-                ", stoppageTime=" + stoppageTime +
-                ", stoppageTimeAnnounced=" + stoppageTimeAnnounced +
-                ", remainingTime=" + remainingTime +
-                ", remainingTimeInPeriod=" + remainingTimeInPeriod +
-                ", stopped=" + stopped +
-                '}';
+        return (
+            "EventClockImpl{" +
+            "eventTime=" +
+            eventTime +
+            ", stoppageTime=" +
+            stoppageTime +
+            ", stoppageTimeAnnounced=" +
+            stoppageTimeAnnounced +
+            ", remainingTime=" +
+            remainingTime +
+            ", remainingTimeInPeriod=" +
+            remainingTimeInPeriod +
+            ", stopped=" +
+            stopped +
+            '}'
+        );
     }
 }

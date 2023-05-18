@@ -5,13 +5,13 @@
 package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Base method definitions for custom and general configuration builders
  */
+@SuppressWarnings({ "LineLength" })
 public interface ConfigurationBuilderBase<T> {
     /**
      * Sets the general configuration properties to values read from configuration file. Only value which can be set

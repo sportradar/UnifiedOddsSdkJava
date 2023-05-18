@@ -4,26 +4,25 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
-
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 
+@SuppressWarnings({ "LineLength" })
 public class MessageTimestampImpl implements MessageTimestamp {
+
     private final long created;
     private final long sent;
     private final long received;
     private final long dispatched;
 
-    public MessageTimestampImpl(long created, long sent, long received, long dispatched)
-    {
+    public MessageTimestampImpl(long created, long sent, long received, long dispatched) {
         this.created = created;
         this.sent = sent;
         this.received = received;
         this.dispatched = dispatched;
     }
 
-    public MessageTimestampImpl(long timestamp)
-    {
+    public MessageTimestampImpl(long timestamp) {
         Preconditions.checkArgument(timestamp > 0);
 
         this.created = timestamp;

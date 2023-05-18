@@ -7,17 +7,20 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The main SDK task scheduler
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "ConstantName", "LineLength", "ReturnCount", "UnnecessaryParentheses" }
+)
 public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
+
     private static final Logger logger = LoggerFactory.getLogger(SDKTaskSchedulerImpl.class);
 
     /**
@@ -46,7 +49,10 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
      * @param scheduler the actual {@link ScheduledExecutorService} instance which will be used to schedule tasks
      * @param sdkInternalConfiguration the internal SDK configuration
      */
-    public SDKTaskSchedulerImpl(ScheduledExecutorService scheduler, SDKInternalConfiguration sdkInternalConfiguration) {
+    public SDKTaskSchedulerImpl(
+        ScheduledExecutorService scheduler,
+        SDKInternalConfiguration sdkInternalConfiguration
+    ) {
         Preconditions.checkNotNull(scheduler);
         Preconditions.checkNotNull(sdkInternalConfiguration);
 
@@ -90,7 +96,13 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
      * @param unit see {@link ScheduledExecutorService#scheduleAtFixedRate(Runnable, long, long, TimeUnit)}
      */
     @Override
-    public void scheduleAtFixedRate(String name, Runnable command, long initialDelay, long period, TimeUnit unit) {
+    public void scheduleAtFixedRate(
+        String name,
+        Runnable command,
+        long initialDelay,
+        long period,
+        TimeUnit unit
+    ) {
         if (schedulerTasksToSkip.contains(name)) {
             logger.info("Skipping task scheduling -> {}", name);
             return;
@@ -136,6 +148,7 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
      * A wrapper class used for storing the tasks waiting for the {@link #open()}
      */
     private static class SDKTask {
+
         private final String name;
         private final Runnable command;
         private final long initialDelay;
@@ -158,12 +171,19 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
 
         @Override
         public String toString() {
-            return "SDKTask{" +
-                    "name='" + name + '\'' +
-                    ", initialDelay=" + initialDelay +
-                    ", period=" + period +
-                    ", unit=" + unit +
-                    '}';
+            return (
+                "SDKTask{" +
+                "name='" +
+                name +
+                '\'' +
+                ", initialDelay=" +
+                initialDelay +
+                ", period=" +
+                period +
+                ", unit=" +
+                unit +
+                '}'
+            );
         }
     }
 }

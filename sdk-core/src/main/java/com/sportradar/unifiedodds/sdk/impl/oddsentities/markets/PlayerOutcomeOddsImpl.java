@@ -13,13 +13,14 @@ import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.AdditionalProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.PlayerOutcomeOdds;
-
 import java.util.Locale;
 
 /**
  * Describes a player outcome. A player outcome is an outcome that is related to a player profile.
  */
+@SuppressWarnings({ "ParameterNumber" })
 public class PlayerOutcomeOddsImpl extends OutcomeOddsImpl implements PlayerOutcomeOdds {
+
     /**
      * The associated match instance
      */
@@ -30,18 +31,28 @@ public class PlayerOutcomeOddsImpl extends OutcomeOddsImpl implements PlayerOutc
      */
     private final Integer teamIndication;
 
-    PlayerOutcomeOddsImpl(String id,
-                          NameProvider nameProvider,
-                          OutcomeDefinition outcomeDefinition,
-                          Locale defaultLocale,
-                          UFOutcomeActive active,
-                          Double odds,
-                          Double probability,
-                          Match match,
-                          Integer teamIndication,
-                          AdditionalProbabilities additionalProbabilities) {
-        super(id, nameProvider, outcomeDefinition, defaultLocale, active, odds, probability, additionalProbabilities);
-
+    PlayerOutcomeOddsImpl(
+        String id,
+        NameProvider nameProvider,
+        OutcomeDefinition outcomeDefinition,
+        Locale defaultLocale,
+        UFOutcomeActive active,
+        Double odds,
+        Double probability,
+        Match match,
+        Integer teamIndication,
+        AdditionalProbabilities additionalProbabilities
+    ) {
+        super(
+            id,
+            nameProvider,
+            outcomeDefinition,
+            defaultLocale,
+            active,
+            odds,
+            probability,
+            additionalProbabilities
+        );
         Preconditions.checkNotNull(match);
         Preconditions.checkNotNull(teamIndication);
         Preconditions.checkArgument(teamIndication == 1 || teamIndication == 2);

@@ -8,7 +8,6 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,11 +16,11 @@ import java.util.Map;
  * Used to obtain information about available markets and get translations for markets and outcomes
  * including outrights
  */
+@SuppressWarnings({ "LineLength", "MagicNumber" })
 public interface MarketDescriptionManager {
-
     /**
      * Returns the list of all available static market descriptions.
-     * 
+     *
      * @return a list of available static market descriptions
      */
     List<MarketDescription> getMarketDescriptions();
@@ -58,7 +57,7 @@ public interface MarketDescriptionManager {
      * Loads the invariant and variant list of market descriptions from the Sports API
      * @return true if the action succeeded
      */
-    default boolean loadMarketDescriptions(){
+    default boolean loadMarketDescriptions() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -67,7 +66,7 @@ public interface MarketDescriptionManager {
      * @param marketId the market id used to delete variant market description from the cache
      * @param variantValue the variant value used to delete variant market description from the cache
      */
-    default void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue){
+    default void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue) {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
@@ -79,7 +78,7 @@ public interface MarketDescriptionManager {
      * @param markets the list of markets to be checked and fetched
      * @return the time needed for processing in ms
      */
-    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets){
+    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets) {
         return parallelPrefetchVariantMarketDescriptions(markets, true, 100);
     }
 
@@ -92,7 +91,10 @@ public interface MarketDescriptionManager {
      * @param onlyVariantMarkets prefetch only variant markets or all markets in the list (default: true)
      * @return the time needed for processing in ms
      */
-    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets, boolean onlyVariantMarkets){
+    default long parallelPrefetchVariantMarketDescriptions(
+        List<? extends Market> markets,
+        boolean onlyVariantMarkets
+    ) {
         return parallelPrefetchVariantMarketDescriptions(markets, onlyVariantMarkets, 100);
     }
 
@@ -106,7 +108,11 @@ public interface MarketDescriptionManager {
      * @param threadPoolSize the size of the fixed thread pool (default: 100)
      * @return the time needed for processing in ms
      */
-    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets, boolean onlyVariantMarkets, int threadPoolSize){
+    default long parallelPrefetchVariantMarketDescriptions(
+        List<? extends Market> markets,
+        boolean onlyVariantMarkets,
+        int threadPoolSize
+    ) {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

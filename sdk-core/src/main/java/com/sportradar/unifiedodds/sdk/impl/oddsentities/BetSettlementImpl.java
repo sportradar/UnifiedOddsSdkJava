@@ -9,24 +9,32 @@ import com.sportradar.uf.datamodel.UFBetSettlement;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 23/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ConstantName" })
 class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implements BetSettlement<T> {
-    private final static Logger logger = LoggerFactory.getLogger(BetSettlementImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(BetSettlementImpl.class);
     private final BetSettlementCertainty certainty;
     private final List<MarketWithSettlement> affectedMarkets;
 
-    BetSettlementImpl(T sportEvent, UFBetSettlement message, Producer producer, byte[] rawMessage, MarketFactory marketFactory, MessageTimestamp timestamp) {
+    BetSettlementImpl(
+        T sportEvent,
+        UFBetSettlement message,
+        Producer producer,
+        byte[] rawMessage,
+        MarketFactory marketFactory,
+        MessageTimestamp timestamp
+    ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
         Preconditions.checkNotNull(marketFactory);
 
@@ -39,7 +47,11 @@ class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implem
         }
 
         if (message.getOutcomes().getMarket() != null) {
-            affectedMarkets = message.getOutcomes().getMarket().stream()
+            affectedMarkets =
+                message
+                    .getOutcomes()
+                    .getMarket()
+                    .stream()
                     .map(m -> marketFactory.buildMarketWithSettlement(sportEvent, m, message.getProduct()))
                     .filter(Optional::isPresent)
                     .map(Optional::get)

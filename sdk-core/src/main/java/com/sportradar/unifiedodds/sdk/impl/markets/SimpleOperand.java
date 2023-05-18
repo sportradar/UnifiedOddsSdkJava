@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
-
 import java.util.Map;
 
 /**
@@ -13,6 +12,7 @@ import java.util.Map;
  * // TODO @eti: Javadoc
  */
 public class SimpleOperand extends OperandBase implements Operand {
+
     private final Map<String, String> specifiers;
     private final String operandExpression;
 

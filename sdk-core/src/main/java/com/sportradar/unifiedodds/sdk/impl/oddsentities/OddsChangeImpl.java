@@ -4,29 +4,29 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
-import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFOddsChange;
-import com.sportradar.uf.datamodel.UFOddsGenerationProperties;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.entities.OddsGenerationImpl;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 23/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MethodLength", "ParameterNumber" })
 class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implements OddsChange<T> {
-    private final static Logger logger = LoggerFactory.getLogger(OddsChangeImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(OddsChangeImpl.class);
     private final OddsChangeReason oddsChangeReason;
     private final Integer betstopReason;
     private final Integer bettingStatus;
@@ -34,11 +34,16 @@ class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implement
     private final NamedValuesProvider namedValuesProvider;
     private final OddsGeneration oddsGeneration;
 
-    OddsChangeImpl(T sportEvent, UFOddsChange message, Producer producer, byte[] rawMessage, MarketFactory marketFactory, NamedValuesProvider namedValuesProvider, UFOddsGenerationProperties oddsGenerationProperties, MessageTimestamp timestamp) {
+    OddsChangeImpl(
+        T sportEvent,
+        UFOddsChange message,
+        Producer producer,
+        byte[] rawMessage,
+        @NonNull final MarketFactory marketFactory,
+        @NonNull final NamedValuesProvider namedValuesProvider,
+        MessageTimestamp timestamp
+    ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
-        Preconditions.checkNotNull(marketFactory);
-        Preconditions.checkNotNull(namedValuesProvider);
-
         this.namedValuesProvider = namedValuesProvider;
 
         // TODO update schemas to get more odds change reasons?
@@ -59,23 +64,38 @@ class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implement
             bettingStatus = message.getOdds().getBettingStatus();
 
             if (message.getOdds().getMarket() != null) {
-                affectedMarkets = message.getOdds().getMarket().stream()
+                affectedMarkets =
+                    message
+                        .getOdds()
+                        .getMarket()
+                        .stream()
                         .map(m -> marketFactory.buildMarketWithOdds(sportEvent, m, message.getProduct()))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toList());
             } else {
-                logger.info("Processing oddsChange message with empty odds list. sportEvent:{}, producer:{}", sportEvent.getId(), producer);
+                logger.info(
+                    "Processing oddsChange message with empty odds list. sportEvent:{}, producer:{}",
+                    sportEvent.getId(),
+                    producer
+                );
                 affectedMarkets = Collections.emptyList();
             }
         } else {
             betstopReason = null;
             bettingStatus = null;
             affectedMarkets = Collections.emptyList();
-            logger.info("Processing oddsChange message without odds info. sportEvent:{}, producer:{}", sportEvent.getId(), producer);
+            logger.info(
+                "Processing oddsChange message without odds info. sportEvent:{}, producer:{}",
+                sportEvent.getId(),
+                producer
+            );
         }
 
-        oddsGeneration = oddsGenerationProperties == null ? null : new OddsGenerationImpl(message.getOddsGenerationProperties());
+        oddsGeneration =
+            message.getOddsGenerationProperties() == null
+                ? null
+                : new OddsGenerationImpl(message.getOddsGenerationProperties());
     }
 
     /**
@@ -155,12 +175,18 @@ class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implement
      * @return a list of {@link MarketWithOdds} associated with the message
      */
     @Override
-    public List<MarketWithOdds> getMarkets() { return affectedMarkets; }
+    public List<MarketWithOdds> getMarkets() {
+        return affectedMarkets;
+    }
 
     /**
-     * Gets the odds generation properties (contains a few key-parameters that can be used in a client’s own special odds model, or even offer spread betting bets based on it)
+     * Gets the odds generation properties (contains a few key-parameters
+     * that can be used in a client’s own special odds model,
+     * or even offer spread betting bets based on it)
      * @return the odds generation properties
      */
     @Override
-    public OddsGeneration getOddsGenerationProperties(){ return oddsGeneration; }
+    public OddsGeneration getOddsGenerationProperties() {
+        return oddsGeneration;
+    }
 }

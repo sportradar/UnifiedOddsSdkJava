@@ -11,7 +11,6 @@ import java.util.Map;
  * Defines a contract for classes implementing cache export/import functionally
  */
 public interface ExportableSdkCache {
-
     /**
      * Exports current items in the cache
      *

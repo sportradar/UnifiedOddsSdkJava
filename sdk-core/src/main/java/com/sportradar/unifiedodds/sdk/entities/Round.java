@@ -5,13 +5,13 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * Defines methods implemented by classes providing basic tournament round information
  */
+@SuppressWarnings({ "OverloadMethodsDeclarationOrder" })
 public interface Round {
     /**
      * Returns the type of the round
@@ -98,30 +98,38 @@ public interface Round {
         return null;
     }
 
-     /**
+    /**
      * Returns the phase of the round
      * @return the phase of the round
      */
-     default String getPhase(){ throw new UnsupportedOperationException("Method not implemented. Use derived type."); }
+    default String getPhase() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns the group name of the group associated with the current round
      *
      * @return - the group name of the group associated with the current round
      */
-    default String getGroupName(Locale locale){ return getGroupName(); }
+    default String getGroupName(Locale locale) {
+        return getGroupName();
+    }
 
     /**
      * Returns the group name of the group associated with the current round
      *
      * @return - the group name of the group associated with the current round
      */
-    default String getGroup(){ return null; }
+    default String getGroup() {
+        return null;
+    }
 
     /**
      * Returns the betradar name
      *
      * @return - the betradar name
      */
-    default String getBetradarName(){ return null; }
+    default String getBetradarName() {
+        return null;
+    }
 }

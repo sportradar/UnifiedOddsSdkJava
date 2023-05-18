@@ -4,7 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableJerseyCI extends ExportableCI {
+
     private String base;
     private String number;
     private String sleeve;
@@ -14,7 +16,16 @@ public class ExportableJerseyCI extends ExportableCI {
     private String shirtType;
     private String sleeveDetail;
 
-    public ExportableJerseyCI(String base, String number, String sleeve, String type, String stripesColor, String splitColor, String shirtType, String sleeveDetail) {
+    public ExportableJerseyCI(
+        String base,
+        String number,
+        String sleeve,
+        String type,
+        String stripesColor,
+        String splitColor,
+        String shirtType,
+        String sleeveDetail
+    ) {
         super(null, null);
         this.base = base;
         this.number = number;

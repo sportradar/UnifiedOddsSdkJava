@@ -8,13 +8,13 @@ import com.sportradar.unifiedodds.sdk.caching.impl.SportData;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Defines methods used to access sports data cache items
  */
+@SuppressWarnings({ "LineLength" })
 public interface SportsDataCache {
     /**
      * Returns a {@link List} sports supported by the feed.
@@ -31,7 +31,8 @@ public interface SportsDataCache {
      * @param locales a {@link List} of {@link Locale} specifying the languages in which the data is returned
      * @return a {@link SportData} containing information about the requested sport
      */
-    SportData getSport(URN sportId, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException;
+    SportData getSport(URN sportId, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException;
 
     /**
      * Returns the associated category cache item
@@ -42,5 +43,6 @@ public interface SportsDataCache {
      * @throws IllegalCacheStateException if the cache load failed
      * @throws CacheItemNotFoundException if the cache item could not be found - category does not exists in the cache/api
      */
-    CategoryCI getCategory(URN categoryId, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException;
+    CategoryCI getCategory(URN categoryId, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException;
 }

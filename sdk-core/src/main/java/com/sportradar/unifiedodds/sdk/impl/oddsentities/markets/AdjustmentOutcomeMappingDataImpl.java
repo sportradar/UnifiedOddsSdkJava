@@ -6,13 +6,13 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
-
 import java.util.Locale;
 
 /**
  * An abstract class used as a base for outcome mapping adjustments
  */
 abstract class AdjustmentOutcomeMappingDataImpl implements OutcomeMappingData {
+
     private final OutcomeMappingData outcomeMappingData;
 
     AdjustmentOutcomeMappingDataImpl(OutcomeMappingData outcomeMappingData) {

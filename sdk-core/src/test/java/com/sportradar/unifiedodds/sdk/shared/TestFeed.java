@@ -3,7 +3,6 @@ package com.sportradar.unifiedodds.sdk.shared;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.google.inject.util.Modules;
 import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
@@ -17,7 +16,11 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "ConstantName", "LineLength", "MemberName", "VisibilityModifier" }
+)
 public class TestFeed extends OddsFeedExt {
+
     /**
      * The logger instance used for the OddsFeed logs
      */
@@ -33,14 +36,28 @@ public class TestFeed extends OddsFeedExt {
      *                             the configuration can be obtained using {@link #getOddsFeedConfigurationBuilder()}
      * @param oddsFeedExtListener  {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    public TestFeed(SDKGlobalEventsListener globalEventsListener, OddsFeedConfiguration config, OddsFeedExtListener oddsFeedExtListener) {
+    public TestFeed(
+        SDKGlobalEventsListener globalEventsListener,
+        OddsFeedConfiguration config,
+        OddsFeedExtListener oddsFeedExtListener
+    ) {
         super(globalEventsListener, config, oddsFeedExtListener);
-
-        this.TestHttpHelper = (TestHttpHelper) injector.getInstance(Key.get(HttpHelper.class, Names.named("RecoveryHttpHelper")));
+        this.TestHttpHelper =
+            (TestHttpHelper) injector.getInstance(
+                Key.get(HttpHelper.class, Names.named("RecoveryHttpHelper"))
+            );
     }
 
-    protected Injector createSdkInjector(SDKGlobalEventsListener listener, CustomisableSDKModule customisableSDKModule) {
-        return Guice.createInjector(Modules.override(new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule))
-                .with(new SdkTestModule()));
+    protected Injector createSdkInjector(
+        SDKGlobalEventsListener listener,
+        CustomisableSDKModule customisableSDKModule
+    ) {
+        return Guice.createInjector(
+            Modules
+                .override(
+                    new MasterInjectionModule(listener, this.oddsFeedConfiguration, customisableSDKModule)
+                )
+                .with(new SdkTestModule())
+        );
     }
 }

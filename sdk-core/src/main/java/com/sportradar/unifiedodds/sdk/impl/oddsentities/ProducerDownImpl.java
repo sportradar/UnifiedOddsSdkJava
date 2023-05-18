@@ -4,23 +4,23 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusChange;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A {@link ProducerStatusChange} implementation used to inform that a feed-based producer is down
  */
 class ProducerDownImpl extends MessageImpl implements ProducerDown {
+
     /**
      * A {@link ProducerDownReason} instance indicating why the {@link ProducerDown} message was
      * dispatched
      */
     private final ProducerDownReason reason;
-
 
     /**
      * Initializes a new instance of the
@@ -37,7 +37,6 @@ class ProducerDownImpl extends MessageImpl implements ProducerDown {
 
         this.reason = reason;
     }
-
 
     /**
      * Gets a {@link ProducerDownReason} instance indicating why the {@link ProducerDown} message

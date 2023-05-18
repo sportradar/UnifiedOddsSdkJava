@@ -10,12 +10,12 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportablePitcherCI;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.PitcherHand;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 
 /**
  * A pitcher representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class PitcherCI extends SportEntityCI {
 
     /**
@@ -41,7 +41,6 @@ public class PitcherCI extends SportEntityCI {
      */
     PitcherCI(SAPIPitcher pitcher, Locale locale) {
         super(URN.parse(pitcher.getId()));
-
         Preconditions.checkNotNull(pitcher);
         Preconditions.checkNotNull(locale);
 
@@ -50,7 +49,6 @@ public class PitcherCI extends SportEntityCI {
 
     PitcherCI(ExportablePitcherCI exportable) {
         super(URN.parse(exportable.getId()));
-
         name = exportable.getName();
         competitor = exportable.getCompetitor();
         hand = exportable.getHand();
@@ -99,11 +97,6 @@ public class PitcherCI extends SportEntityCI {
     }
 
     public ExportablePitcherCI export() {
-        return new ExportablePitcherCI(
-                getId().toString(),
-                name,
-                competitor,
-                hand
-        );
+        return new ExportablePitcherCI(getId().toString(), name, competitor, hand);
     }
 }

@@ -8,13 +8,13 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.EventPlayerCI;
 import com.sportradar.unifiedodds.sdk.entities.EventPlayer;
 import com.sportradar.unifiedodds.sdk.entities.Player;
-
 import java.util.HashMap;
 import java.util.Locale;
 
 /**
  * Represents a player or driver in a sport event
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class EventPlayerImpl extends PlayerImpl implements EventPlayer {
 
     /**
@@ -42,11 +42,7 @@ public class EventPlayerImpl extends PlayerImpl implements EventPlayer {
      */
     @Override
     public String toString() {
-        return "EventPlayerImpl{" +
-                "id=" + super.getId() +
-                ", names=" + names +
-                ", bench=" + bench +
-                '}';
+        return "EventPlayerImpl{" + "id=" + super.getId() + ", names=" + names + ", bench=" + bench + '}';
     }
 
     @Override

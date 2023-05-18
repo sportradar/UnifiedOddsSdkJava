@@ -10,7 +10,6 @@ import java.util.Date;
  * An interface providing methods to access {@link ScheduledStartTimeChange} implementations properties
  */
 public interface ScheduledStartTimeChange {
-
     /**
      * Returns a {@link Date} specifying the old date
      *

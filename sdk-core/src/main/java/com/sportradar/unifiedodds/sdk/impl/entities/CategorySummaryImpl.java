@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.CategorySummary;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +15,9 @@ import java.util.Optional;
 /**
  * Represents a category summary
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class CategorySummaryImpl implements CategorySummary {
+
     /**
      * An {@link URN} uniquely identifying the current {@link CategorySummary} instance
      */
@@ -49,7 +50,6 @@ public class CategorySummaryImpl implements CategorySummary {
         this.countryCode = countryCode;
     }
 
-
     /**
      * Returns an {@link URN} uniquely identifying the current {@link CategorySummary} instance
      *
@@ -68,7 +68,7 @@ public class CategorySummaryImpl implements CategorySummary {
      * @return - the translated name
      */
     @Override
-    public String getName(Locale l){
+    public String getName(Locale l) {
         return names.get(l);
     }
 
@@ -99,10 +99,8 @@ public class CategorySummaryImpl implements CategorySummary {
      */
     @Override
     public String toString() {
-        return "CategorySummaryImpl{" +
-                "id=" + id +
-                ", names=" + names +
-                ", countryCode=" + countryCode +
-                '}';
+        return (
+            "CategorySummaryImpl{" + "id=" + id + ", names=" + names + ", countryCode=" + countryCode + '}'
+        );
     }
 }

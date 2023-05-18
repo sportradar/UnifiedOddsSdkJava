@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * What is the reason for a SDKFixtureChange message. *
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum FixtureChangeType {
     New,
     TimeUpdate,
@@ -15,5 +16,5 @@ public enum FixtureChangeType {
     Coverage,
     Pitcher,
     OtherChange,
-    NotAvailable
+    NotAvailable,
 }

@@ -4,9 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
-
 public interface RecoveryInfo {
-
     /**
      * Gets the after timestamp of the recovery or 0 if full recovery was done
      * @return the after timestamp of the recovery or 0 if full recovery was done

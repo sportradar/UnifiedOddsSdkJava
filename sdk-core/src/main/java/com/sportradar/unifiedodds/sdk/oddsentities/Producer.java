@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.ProducerScope;
-
 import java.util.Set;
 
 /**
  * Represents a Sportradar message producer(Live Odds, Betradar Ctrl, Premium Cricket,...)
  */
+@SuppressWarnings({ "LineLength" })
 public interface Producer {
     /**
      * Returns the unique producer identifier
@@ -117,7 +117,7 @@ public interface Producer {
      * Gets the recovery info about last recovery attempt
      * @return the recovery info about last recovery attempt
      */
-    default RecoveryInfo getRecoveryInfo(){
+    default RecoveryInfo getRecoveryInfo() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

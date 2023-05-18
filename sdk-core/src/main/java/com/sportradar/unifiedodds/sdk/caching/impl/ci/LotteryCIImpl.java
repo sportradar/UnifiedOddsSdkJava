@@ -23,18 +23,21 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 18/01/2018.
  * Lottery cache item
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "LineLength", "ReturnCount" }
+)
 public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
+
     private static final Logger logger = LoggerFactory.getLogger(LotteryCIImpl.class);
 
     private final URN id;
@@ -52,7 +55,12 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
     private DrawInfoCI drawInfo;
     private List<URN> scheduledDraws;
 
-    LotteryCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    LotteryCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -64,16 +72,26 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    LotteryCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPILottery data, Locale dataLocale) {
+    LotteryCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPILottery data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
         merge(data, dataLocale);
     }
 
-    LotteryCIImpl(ExportableLotteryCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    LotteryCIImpl(
+        ExportableLotteryCI exportable,
+        DataRouterManager dataRouterManager,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -86,9 +104,13 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
         this.names.putAll(exportable.getNames());
         this.cachedLocales.addAll(exportable.getCachedLocales());
         this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
-        this.bonusInfo = exportable.getBonusInfo() != null ? new BonusInfoCI(exportable.getBonusInfo()) : null;
+        this.bonusInfo =
+            exportable.getBonusInfo() != null ? new BonusInfoCI(exportable.getBonusInfo()) : null;
         this.drawInfo = exportable.getDrawInfo() != null ? new DrawInfoCI(exportable.getDrawInfo()) : null;
-        this.scheduledDraws = exportable.getScheduledDraws() != null ? exportable.getScheduledDraws().stream().map(URN::parse).collect(Collectors.toList()) : null;
+        this.scheduledDraws =
+            exportable.getScheduledDraws() != null
+                ? exportable.getScheduledDraws().stream().map(URN::parse).collect(Collectors.toList())
+                : null;
     }
 
     /**
@@ -214,7 +236,9 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      * instance was scheduled; otherwise null;
      */
     @Override
-    public Date getScheduledRaw() { return null; }
+    public Date getScheduledRaw() {
+        return null;
+    }
 
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current
@@ -224,14 +248,19 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      * instance was scheduled to end; otherwise null;
      */
     @Override
-    public Date getScheduledEndRaw() { return null; }
+    public Date getScheduledEndRaw() {
+        return null;
+    }
+
     /**
      * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
      *
      * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
      */
     @Override
-    public Optional<Boolean> isStartTimeTbd() { return Optional.empty(); }
+    public Optional<Boolean> isStartTimeTbd() {
+        return Optional.empty();
+    }
 
     /**
      * Returns the {@link URN} specifying the replacement sport event for the current instance
@@ -283,8 +312,7 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
 
         if (lottery.getName() != null) {
             names.put(dataLocale, lottery.getName());
-        }
-        else{
+        } else {
             names.put(dataLocale, "");
         }
     }
@@ -305,7 +333,10 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
                 return;
             }
 
-            String localesStr = missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
+            String localesStr = missingLocales
+                .stream()
+                .map(Locale::getLanguage)
+                .collect(Collectors.joining(", "));
             logger.debug("Fetching missing lottery data for id='{}' for languages '{}'", id, localesStr);
 
             missingLocales.forEach(l -> {
@@ -342,18 +373,20 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
     @Override
     public ExportableCI export() {
         return new ExportableLotteryCI(
-                id.toString(),
-                new HashMap<>(names),
-                null,
-                null,
-                null,
-                null,
-                defaultLocale,
-                categoryId != null ? categoryId.toString() : null,
-                bonusInfo != null ? bonusInfo.export() : null,
-                drawInfo != null ? drawInfo.export() : null,
-                scheduledDraws != null ? scheduledDraws.stream().map(URN::toString).collect(Collectors.toList()) : null,
-                new HashSet<>(cachedLocales)
+            id.toString(),
+            new HashMap<>(names),
+            null,
+            null,
+            null,
+            null,
+            defaultLocale,
+            categoryId != null ? categoryId.toString() : null,
+            bonusInfo != null ? bonusInfo.export() : null,
+            drawInfo != null ? drawInfo.export() : null,
+            scheduledDraws != null
+                ? scheduledDraws.stream().map(URN::toString).collect(Collectors.toList())
+                : null,
+            new HashSet<>(cachedLocales)
         );
     }
 }

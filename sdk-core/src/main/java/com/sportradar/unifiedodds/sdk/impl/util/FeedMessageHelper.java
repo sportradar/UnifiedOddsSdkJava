@@ -4,6 +4,7 @@ import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 
+@SuppressWarnings({ "HideUtilityClassConstructor", "UnnecessaryParentheses" })
 public class FeedMessageHelper {
 
     /**
@@ -46,7 +47,9 @@ public class FeedMessageHelper {
      * @return a built cache key for the provided {@link UFFixtureChange}
      */
     public static String generateFixtureChangeCacheKey(UFFixtureChange fixtureChange) {
-        return fixtureChange.getProduct() + "_" + fixtureChange.getEventId() + "_" + fixtureChange.getTimestamp();
+        return (
+            fixtureChange.getProduct() + "_" + fixtureChange.getEventId() + "_" + fixtureChange.getTimestamp()
+        );
     }
 
     /**
@@ -157,8 +160,8 @@ public class FeedMessageHelper {
             requestId = ((UFRollbackBetCancel) o).getRequestId();
         } else if (o instanceof UFSnapshotComplete) {
             requestId = ((UFSnapshotComplete) o).getRequestId();
-//        } else if (o instanceof UFAlive) {
-//            requestId = ((UFAlive) o).getRequestId();
+            //        } else if (o instanceof UFAlive) {
+            //            requestId = ((UFAlive) o).getRequestId();
         } else {
             requestId = null;
         }

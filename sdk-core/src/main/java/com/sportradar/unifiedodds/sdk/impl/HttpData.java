@@ -11,6 +11,7 @@ import org.apache.http.Header;
  * // TODO @eti: Javadoc
  */
 public class HttpData {
+
     private final String response;
     private final Header[] headers;
 

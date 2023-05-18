@@ -7,5 +7,4 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * Generated if any of the available producers status gets updated
  */
-public interface ProducerStatusChange extends Message {
-}
+public interface ProducerStatusChange extends Message {}

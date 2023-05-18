@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Defines methods implemented by classes representing sport event conditions
  */
+@SuppressWarnings({ "LineLength" })
 public interface SportEventConditions {
     /**
      * Returns a {@link String} specifying the attendance of the associated sport event

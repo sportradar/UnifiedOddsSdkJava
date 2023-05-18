@@ -8,7 +8,6 @@ package com.sportradar.unifiedodds.sdk.custombetentities;
  * Provides an outcome
  */
 public interface OutcomeFilter {
-
     /**
      * Returns the id of the outcome
      *

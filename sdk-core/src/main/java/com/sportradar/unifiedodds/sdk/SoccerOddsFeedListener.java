@@ -9,6 +9,4 @@ import com.sportradar.unifiedodds.sdk.entities.SoccerEvent;
 /**
  * An interface used to handle messages associated with soccer sport-events
  */
-public interface SoccerOddsFeedListener extends GenericOddsFeedListener<SoccerEvent> {
-
-}
+public interface SoccerOddsFeedListener extends GenericOddsFeedListener<SoccerEvent> {}

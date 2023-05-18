@@ -11,7 +11,9 @@ import com.sportradar.utils.URN;
 /**
  * A cache representation of race driver profile
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class RaceDriverProfileCI {
+
     private final URN raceDriverId;
     private final URN raceTeamId;
     private final CarCI car;
@@ -25,7 +27,8 @@ public class RaceDriverProfileCI {
     public RaceDriverProfileCI(ExportableRaceDriverProfileCI exportable) {
         Preconditions.checkNotNull(exportable);
 
-        this.raceDriverId = exportable.getRaceDriverId() != null ? URN.parse(exportable.getRaceDriverId()) : null;
+        this.raceDriverId =
+            exportable.getRaceDriverId() != null ? URN.parse(exportable.getRaceDriverId()) : null;
         this.raceTeamId = exportable.getRaceTeamId() != null ? URN.parse(exportable.getRaceTeamId()) : null;
         this.car = exportable.getCar() != null ? new CarCI(exportable.getCar()) : null;
     }
@@ -44,9 +47,9 @@ public class RaceDriverProfileCI {
 
     public ExportableRaceDriverProfileCI export() {
         return new ExportableRaceDriverProfileCI(
-                raceDriverId != null ? raceDriverId.toString() : null,
-                raceTeamId != null ? raceTeamId.toString() : null,
-                car != null ? car.export() : null
+            raceDriverId != null ? raceDriverId.toString() : null,
+            raceTeamId != null ? raceTeamId.toString() : null,
+            car != null ? car.export() : null
         );
     }
 }

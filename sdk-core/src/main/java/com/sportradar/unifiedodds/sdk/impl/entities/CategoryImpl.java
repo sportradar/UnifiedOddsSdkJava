@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.entities.Category;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.entities.Tournament;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,7 +17,9 @@ import java.util.Map;
 /**
  * Represents a sport category
  */
+@SuppressWarnings({ "LineLength" })
 public class CategoryImpl extends CategorySummaryImpl implements Category {
+
     /**
      * An unmodifiable {@link List} of tournaments which belong to the category represented by the current instance
      */
@@ -34,7 +35,6 @@ public class CategoryImpl extends CategorySummaryImpl implements Category {
      */
     public CategoryImpl(URN id, Map<Locale, String> names, List<SportEvent> tournaments, String countryCode) {
         super(id, names, countryCode);
-
         Preconditions.checkNotNull(tournaments);
 
         this.tournaments = ImmutableList.copyOf(tournaments);
@@ -58,8 +58,6 @@ public class CategoryImpl extends CategorySummaryImpl implements Category {
      */
     @Override
     public String toString() {
-        return "CategoryImpl{" +
-                "tournaments=" + tournaments +
-                "} " + super.toString();
+        return "CategoryImpl{" + "tournaments=" + tournaments + "} " + super.toString();
     }
 }

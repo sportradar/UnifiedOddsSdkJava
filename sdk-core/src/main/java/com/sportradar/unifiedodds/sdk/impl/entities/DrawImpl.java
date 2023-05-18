@@ -15,18 +15,27 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.SportEntityFactoryImpl;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The basic implementation of a lottery
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LineLength",
+        "MultipleStringLiterals",
+    }
+)
 public class DrawImpl extends SportEventImpl implements Draw {
+
     private static final Logger logger = LoggerFactory.getLogger(DrawImpl.class);
 
     private final List<Locale> locales;
@@ -34,9 +43,15 @@ public class DrawImpl extends SportEventImpl implements Draw {
     private final SportEntityFactoryImpl sportEntityFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-    public DrawImpl(URN id, URN sportId, List<Locale> locales, SportEventCache sportEventCache, SportEntityFactoryImpl sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public DrawImpl(
+        URN id,
+        URN sportId,
+        List<Locale> locales,
+        SportEventCache sportEventCache,
+        SportEntityFactoryImpl sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         super(id, sportId);
-
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -81,11 +96,11 @@ public class DrawImpl extends SportEventImpl implements Draw {
 
         List<DrawResultCI> results = drawCI.getResults(locales);
 
-        return results == null ? null : results.stream()
-                .map(i -> new DrawResultImpl(
-                        i.getValue(),
-                        i.getName(locales)
-                ))
+        return results == null
+            ? null
+            : results
+                .stream()
+                .map(i -> new DrawResultImpl(i.getValue(), i.getName(locales)))
                 .collect(Collectors.toList());
     }
 
@@ -114,7 +129,10 @@ public class DrawImpl extends SportEventImpl implements Draw {
             if (sportEvent instanceof Lottery) {
                 return (Lottery) sportEvent;
             }
-            handleException("getLottery - invalid type[" + sportEvent.getId() + "]: " + sportEvent.getClass(), null);
+            handleException(
+                "getLottery - invalid type[" + sportEvent.getId() + "]: " + sportEvent.getClass(),
+                null
+            );
         } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
             handleException("getLottery - not found", e);
         }
@@ -243,7 +261,7 @@ public class DrawImpl extends SportEventImpl implements Draw {
      * @return the display id
      */
     @Override
-    public Integer getDisplayId(){
+    public Integer getDisplayId() {
         DrawCI drawCI = loadDrawCI();
 
         if (drawCI == null) {
@@ -287,9 +305,20 @@ public class DrawImpl extends SportEventImpl implements Draw {
             }
         } else {
             if (e == null) {
-                logger.warn("Error executing {}[{}] request({}), returning null value", this.getClass(), id, request);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null value",
+                    this.getClass(),
+                    id,
+                    request
+                );
             } else {
-                logger.warn("Error executing {}[{}] request({}), returning null value", this.getClass(), id, request, e);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null value",
+                    this.getClass(),
+                    id,
+                    request,
+                    e
+                );
             }
         }
     }

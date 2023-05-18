@@ -161,7 +161,6 @@
     <!-- traffic log config assigned to the traffic logger -->
     <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkTrafficLogFileAppender" />
-        <appender-ref ref="STDOUT" />
     </logger>
 
     <!-- traffic failure log config assigned to the traffic failure logger -->
@@ -181,4 +180,7 @@
         <appender-ref ref="SdkClientInteractionLogFileAppender" />
         <appender-ref ref="STDOUT" />
     </logger>
+
+    <logger name="org.testcontainers" level="INFO"/>
+    <logger name="com.github.dockerjava" level="WARN"/>
 </configuration>

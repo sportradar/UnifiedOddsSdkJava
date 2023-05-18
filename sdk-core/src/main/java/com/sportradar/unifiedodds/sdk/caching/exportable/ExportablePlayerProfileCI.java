@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportablePlayerProfileCI extends ExportableCI {
+
     private Locale defaultLocale;
     private Map<Locale, String> fullNames;
     private Map<Locale, String> nationalities;
@@ -25,9 +27,24 @@ public class ExportablePlayerProfileCI extends ExportableCI {
     private List<Locale> cachedLocales;
     private String competitorId;
 
-    public ExportablePlayerProfileCI(String id, Map<Locale, String> names, Locale defaultLocale, Map<Locale, String> fullNames, Map<Locale, String> nationalities, Map<Locale, String> abbreviations,
-                                     String type, Date dateOfBirth, Integer height, Integer weight, String countryCode, Integer jerseyNumber, String nickname, String gender,
-                                     List<Locale> cachedLocales, String competitorId) {
+    public ExportablePlayerProfileCI(
+        String id,
+        Map<Locale, String> names,
+        Locale defaultLocale,
+        Map<Locale, String> fullNames,
+        Map<Locale, String> nationalities,
+        Map<Locale, String> abbreviations,
+        String type,
+        Date dateOfBirth,
+        Integer height,
+        Integer weight,
+        String countryCode,
+        Integer jerseyNumber,
+        String nickname,
+        String gender,
+        List<Locale> cachedLocales,
+        String competitorId
+    ) {
         super(id, names);
         this.defaultLocale = defaultLocale;
         this.fullNames = fullNames;
@@ -149,7 +166,11 @@ public class ExportablePlayerProfileCI extends ExportableCI {
         this.cachedLocales = cachedLocales;
     }
 
-    public void setCompetitorId(String competitorId) { this.competitorId = competitorId; }
+    public void setCompetitorId(String competitorId) {
+        this.competitorId = competitorId;
+    }
 
-    public String getCompetitorId(){ return competitorId; }
+    public String getCompetitorId() {
+        return competitorId;
+    }
 }

@@ -6,7 +6,9 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.util.*;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableLotteryCI extends ExportableSportEventCI {
+
     private Locale defaultLocale;
     private String categoryId;
     private ExportableBonusInfoCI bonusInfo;
@@ -14,7 +16,20 @@ public class ExportableLotteryCI extends ExportableSportEventCI {
     private List<String> scheduledDraws;
     private Set<Locale> cachedLocales;
 
-    public ExportableLotteryCI(String id, Map<Locale, String> names, Date scheduled, Date scheduledEnd, Boolean startTimeTbd, String replacedBy, Locale defaultLocale, String categoryId, ExportableBonusInfoCI bonusInfo, ExportableDrawInfoCI drawInfo, List<String> scheduledDraws, Set<Locale> cachedLocales) {
+    public ExportableLotteryCI(
+        String id,
+        Map<Locale, String> names,
+        Date scheduled,
+        Date scheduledEnd,
+        Boolean startTimeTbd,
+        String replacedBy,
+        Locale defaultLocale,
+        String categoryId,
+        ExportableBonusInfoCI bonusInfo,
+        ExportableDrawInfoCI drawInfo,
+        List<String> scheduledDraws,
+        Set<Locale> cachedLocales
+    ) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.defaultLocale = defaultLocale;
         this.categoryId = categoryId;

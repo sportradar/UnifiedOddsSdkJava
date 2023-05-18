@@ -7,9 +7,9 @@ package com.sportradar.unifiedodds.sdk.entities;
 /**
  * Possible coverage locations
  */
-@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
+@SuppressWarnings({ "java:S115", "NoEnumTrailingComma" })
 public enum CoveredFrom {
     Tv,
 
-    Venue
+    Venue,
 }

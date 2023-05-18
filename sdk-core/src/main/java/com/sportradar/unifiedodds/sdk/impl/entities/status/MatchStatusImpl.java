@@ -14,24 +14,24 @@ import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.impl.entities.PeriodScoreImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods used to access match status information
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
 public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatus {
-    private final static Logger logger = LoggerFactory.getLogger(MatchStatusImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(MatchStatusImpl.class);
     private final SportEventStatusCI statusCI;
     private final LocalizedNamedValueCache matchStatuses;
 
     public MatchStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
         super(statusCI);
-
         Preconditions.checkNotNull(statusCI);
         Preconditions.checkNotNull(matchStatuses);
 
@@ -56,10 +56,13 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public List<PeriodScore> getPeriodScores() {
-        return statusCI.getPeriodScores() == null ? null :
-                statusCI.getPeriodScores().stream()
-                        .map(ps -> new PeriodScoreImpl(ps, matchStatuses))
-                        .collect(ImmutableList.toImmutableList());
+        return statusCI.getPeriodScores() == null
+            ? null
+            : statusCI
+                .getPeriodScores()
+                .stream()
+                .map(ps -> new PeriodScoreImpl(ps, matchStatuses))
+                .collect(ImmutableList.toImmutableList());
     }
 
     /**
@@ -133,11 +136,15 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      * Get the penalty score of the away competitor competing on the associated sport event (for Ice Hockey)
      */
     @Override
-    public Integer getAwayPenaltyScore() { return statusCI.getAwayPenaltyScore(); }
+    public Integer getAwayPenaltyScore() {
+        return statusCI.getAwayPenaltyScore();
+    }
 
     /**
      * Returns an indication if the status is decided by fed
      */
     @Override
-    public Boolean isDecidedByFed() { return statusCI.isDecidedByFed(); }
+    public Boolean isDecidedByFed() {
+        return statusCI.isDecidedByFed();
+    }
 }

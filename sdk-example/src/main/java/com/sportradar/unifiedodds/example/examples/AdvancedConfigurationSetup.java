@@ -12,7 +12,6 @@ import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
@@ -21,17 +20,20 @@ import java.util.concurrent.TimeUnit;
 /**
  * A basic example demonstrating on how to start the SDK with an advanced configuration setup
  */
+@SuppressWarnings({ "MagicNumber" })
 public class AdvancedConfigurationSetup {
+
     private final OddsFeed oddsFeed;
 
     public AdvancedConfigurationSetup(String token) {
         logEntry("Running the OddsFeed SDK Basic example - advanced configuration setup");
 
         logEntry("Building the configuration using the provided token");
-        ConfigurationBuilder cfgBuilder = OddsFeed.getOddsFeedConfigurationBuilder()
-                .setAccessToken(token)
-                .selectEnvironment(Environment.GlobalIntegration)
-                .setSdkNodeId(SdkConstants.NODE_ID);
+        ConfigurationBuilder cfgBuilder = OddsFeed
+            .getOddsFeedConfigurationBuilder()
+            .setAccessToken(token)
+            .selectEnvironment(Environment.GlobalIntegration)
+            .setSdkNodeId(SdkConstants.NODE_ID);
 
         logEntry("Setting the max recovery execution time to 3 hours");
         cfgBuilder.setMaxRecoveryExecutionTime(3, TimeUnit.HOURS);
@@ -42,7 +44,9 @@ public class AdvancedConfigurationSetup {
         logEntry("Setting the max inactivity to 30 seconds (max interval between alive messages)");
         cfgBuilder.setMaxInactivitySeconds(30);
 
-        logEntry("Adding additional desired locales - these locales will be directly available on the exposed entities");
+        logEntry(
+            "Adding additional desired locales - these locales will be directly available on the exposed entities"
+        );
         cfgBuilder.setDesiredLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
 
         logEntry("Creating a new OddsFeed instance with the advanced config");
@@ -51,10 +55,11 @@ public class AdvancedConfigurationSetup {
 
     public void run() throws IOException, InitException, InterruptedException {
         logEntry("Building a simple session which will receive all messages");
-        oddsFeed.getSessionBuilder()
-                .setMessageInterest(MessageInterest.AllMessages)
-                .setListener(new MessageListener("AdvancedConfigurationSetup"))
-                .build();
+        oddsFeed
+            .getSessionBuilder()
+            .setMessageInterest(MessageInterest.AllMessages)
+            .setListener(new MessageListener("AdvancedConfigurationSetup"))
+            .build();
 
         logEntry("Opening the feed instance");
         logEntry("Feed instance will remain open for 30 minutes");

@@ -10,29 +10,31 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
 import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * This contains the data from a /producers.xml API call
  * Created on 03/07/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ConstantName", "ExplicitInitialization", "HiddenField", "ParameterNumber" })
 public class ProducerData {
-    final static int DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES = 4320;
 
-    private final static Logger logger = LoggerFactory.getLogger(ProducerData.class);
-    private final static Map<String, ProducerScope> scopeMappings =
-            ImmutableMap.<String, ProducerScope>builder()
-                    .put("prematch", ProducerScope.Prematch)
-                    .put("live", ProducerScope.Live)
-                    .put("virtual", ProducerScope.Virtuals)
-                    .build();
+    static final int DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES = 4320;
+
+    private static final Logger logger = LoggerFactory.getLogger(ProducerData.class);
+    private static final Map<String, ProducerScope> scopeMappings = ImmutableMap
+        .<String, ProducerScope>builder()
+        .put("prematch", ProducerScope.Prematch)
+        .put("live", ProducerScope.Live)
+        .put("virtual", ProducerScope.Virtuals)
+        .build();
 
     private final int id;
     private final String name;
@@ -51,7 +53,15 @@ public class ProducerData {
     private long recoveryFromTimestamp;
     private RecoveryInfo lastRecoveryInfo;
 
-    public ProducerData(int id, String name, String description, boolean active, String apiUrl, String producerScopes, Integer statefulRecoveryWindowInMinutes) {
+    public ProducerData(
+        int id,
+        String name,
+        String description,
+        boolean active,
+        String apiUrl,
+        String producerScopes,
+        Integer statefulRecoveryWindowInMinutes
+    ) {
         Preconditions.checkArgument(id > 0);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name));
         Preconditions.checkArgument(!Strings.isNullOrEmpty(description));
@@ -74,7 +84,11 @@ public class ProducerData {
                     builder.add(scopeMappings.get(s));
                 }
             } else {
-                logger.warn("Handling producer[{}] with unknown ProducerScope values: '{}'", id, producerScopes);
+                logger.warn(
+                    "Handling producer[{}] with unknown ProducerScope values: '{}'",
+                    id,
+                    producerScopes
+                );
                 builder.addAll(Arrays.stream(ProducerScope.values()).collect(Collectors.toList()));
             }
         } else {
@@ -82,7 +96,8 @@ public class ProducerData {
             builder.addAll(Arrays.stream(ProducerScope.values()).collect(Collectors.toList()));
         }
         this.producerScopes = builder.build();
-        this.statefulRecoveryWindowInMinutes = statefulRecoveryWindowInMinutes == null
+        this.statefulRecoveryWindowInMinutes =
+            statefulRecoveryWindowInMinutes == null
                 ? DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES
                 : statefulRecoveryWindowInMinutes;
         this.lastRecoveryInfo = null;
@@ -125,9 +140,13 @@ public class ProducerData {
         return lastProcessedMessageGenTimestamp;
     }
 
-    public long getLastRecoveryMessageTimestamp() { return lastRecoveryMessageTimestamp; }
+    public long getLastRecoveryMessageTimestamp() {
+        return lastRecoveryMessageTimestamp;
+    }
 
-    public long getLastRecoveryAttemptTimestamp() { return lastRecoveryAttemptTimestamp; }
+    public long getLastRecoveryAttemptTimestamp() {
+        return lastRecoveryAttemptTimestamp;
+    }
 
     public long getTimestampForRecovery() {
         if (lastAliveReceivedGenTimestamp == 0) {
@@ -165,7 +184,9 @@ public class ProducerData {
         this.lastProcessedMessageGenTimestamp = lastProcessedMessageGenTimestamp;
     }
 
-    public void setLastRecoveryMessageReceivedTimestamp(long lastRecoveryMessageTimestamp) { this.lastRecoveryMessageTimestamp = lastRecoveryMessageTimestamp; }
+    public void setLastRecoveryMessageReceivedTimestamp(long lastRecoveryMessageTimestamp) {
+        this.lastRecoveryMessageTimestamp = lastRecoveryMessageTimestamp;
+    }
 
     public void setLastAliveReceivedGenTimestamp(long lastAliveReceivedGenTimestamp) {
         this.lastAliveReceivedGenTimestamp = lastAliveReceivedGenTimestamp;
@@ -175,9 +196,15 @@ public class ProducerData {
         this.recoveryFromTimestamp = recoveryFromTimestamp;
     }
 
-    public RecoveryInfo getRecoveryInfo() { return lastRecoveryInfo; }
+    public RecoveryInfo getRecoveryInfo() {
+        return lastRecoveryInfo;
+    }
 
-    public void setRecoveryInfo(RecoveryInfo recoveryInfo){ this.lastRecoveryInfo = recoveryInfo; }
+    public void setRecoveryInfo(RecoveryInfo recoveryInfo) {
+        this.lastRecoveryInfo = recoveryInfo;
+    }
 
-    public void setLastRecoveryAttemptTimestamp(long lastRecoveryAttemptTimestamp) { this.lastRecoveryAttemptTimestamp = lastRecoveryAttemptTimestamp; }
+    public void setLastRecoveryAttemptTimestamp(long lastRecoveryAttemptTimestamp) {
+        this.lastRecoveryAttemptTimestamp = lastRecoveryAttemptTimestamp;
+    }
 }

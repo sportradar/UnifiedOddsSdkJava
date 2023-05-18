@@ -12,7 +12,7 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 public interface ProducerDown extends ProducerStatusChange {
     /**
      * Returns a {@link ProducerDownReason} indicating the reason of the event dispatch
-     * 
+     *
      * @return a {@link ProducerDownReason} indicating the reason of the event dispatch
      */
     ProducerDownReason getReason();

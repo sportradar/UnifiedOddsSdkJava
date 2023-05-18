@@ -13,7 +13,6 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportCI;
 import com.sportradar.utils.URN;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -22,7 +21,9 @@ import java.util.stream.Collectors;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength", "NeedBraces" })
 class SportCIImpl implements SportCI, ExportableCacheItem {
+
     private final URN id;
     private final Map<Locale, String> names;
     private final List<URN> associatedCategories;
@@ -40,8 +41,7 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
         this.names = new ConcurrentHashMap<>();
         if (sportData.getName() != null) {
             this.names.put(dataLocale, sportData.getName());
-        }
-        else{
+        } else {
             this.names.put(dataLocale, "");
         }
 
@@ -133,10 +133,11 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
             }
         } else if (endpointData instanceof SAPISportCategoriesEndpoint) {
             SAPISportCategoriesEndpoint cData = (SAPISportCategoriesEndpoint) endpointData;
-            if (cData.getCategories() != null)
-                for (SAPICategory category : cData.getCategories().getCategory()) {
-                    mergeData(cData.getSport(), category, dataLocale);
-                }
+            if (cData.getCategories() != null) for (SAPICategory category : cData
+                .getCategories()
+                .getCategory()) {
+                mergeData(cData.getSport(), category, dataLocale);
+            }
         } else if (endpointData instanceof ExportableSportCI) {
             mergeData((ExportableSportCI) endpointData);
         }
@@ -146,13 +147,14 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
 
         names.putAll(endpointData.getNames());
-        associatedCategories.addAll(endpointData.getAssociatedCategories().stream()
-                .map(URN::parse).collect(Collectors.toList()));
+        associatedCategories.addAll(
+            endpointData.getAssociatedCategories().stream().map(URN::parse).collect(Collectors.toList())
+        );
         cachedLocales.addAll(endpointData.getCachedLocales());
         shouldFetchCategories = shouldFetchCategories && endpointData.isShouldFetchCategories();
     }
 
-    private void  mergeData(SAPISport sData, SAPICategory associatedCategory, Locale dataLocale) {
+    private void mergeData(SAPISport sData, SAPICategory associatedCategory, Locale dataLocale) {
         Preconditions.checkNotNull(sData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -172,8 +174,7 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
 
         if (sData.getName() != null) {
             names.put(dataLocale, sData.getName());
-        }
-        else{
+        } else {
             names.put(dataLocale, "");
         }
 
@@ -183,10 +184,11 @@ class SportCIImpl implements SportCI, ExportableCacheItem {
     @Override
     public ExportableCI export() {
         return new ExportableSportCI(
-                id.toString(),
-                new HashMap<>(names),
-                associatedCategories.stream().map(URN::toString).collect(Collectors.toList()),
-                new ArrayList<>(cachedLocales),
-                shouldFetchCategories);
+            id.toString(),
+            new HashMap<>(names),
+            associatedCategories.stream().map(URN::toString).collect(Collectors.toList()),
+            new ArrayList<>(cachedLocales),
+            shouldFetchCategories
+        );
     }
 }

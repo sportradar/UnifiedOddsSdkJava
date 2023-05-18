@@ -16,20 +16,34 @@ import com.sportradar.unifiedodds.sdk.impl.util.FeedMessageHelper;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.ByteArrayInputStream;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.ByteArrayInputStream;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.locks.ReentrantLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A basic implementation of the {@link ChannelMessageConsumer} interface
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "ExplicitInitialization",
+        "HiddenField",
+        "IllegalCatch",
+        "MethodLength",
+        "MultipleStringLiterals",
+        "NPathComplexity",
+        "ReturnCount",
+    }
+)
 public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
+
     /**
      * The main sdk logger instance used to log sdk events
      */
@@ -38,22 +52,21 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     /**
      * A {@link Logger} instance used to log received payloads
      */
-    private static final Logger loggerTraffic = LoggerFactory.getLogger(LoggerDefinitions.UFSdkTrafficLog.class);
+    private static final Logger loggerTraffic = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkTrafficLog.class
+    );
 
     /**
      * A {@link Logger} instance used to log received payloads which are problematic
      */
-    private static final Logger loggerTrafficFailure = LoggerFactory.getLogger(LoggerDefinitions.UFSdkTrafficFailureLog.class);
+    private static final Logger loggerTrafficFailure = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkTrafficFailureLog.class
+    );
 
     /**
      * The delimiter used to split log data into parts
      */
     private static final String trafficLogDelimiter = "<~>";
-
-    /**
-     * The {@link Unmarshaller} instance used to deserialize received payloads
-     */
-    private final Unmarshaller unmarshaller;
 
     /**
      * A {@link RoutingKeyParser} used to parse the rabbit's routing key
@@ -78,41 +91,35 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     /**
      * The producer manager
      */
-    private ProducerManager producerManager;
+    private final ProducerManager producerManager;
 
     /**
-     * ReentrantLock for jabx unmarshaller because it is not thread safe by itself
+     * JAXBContext for threads to create own jabx unmarshaller because it is not thread safe by itself
      */
-    private ReentrantLock jabxLock;
+    private final JAXBContext messageJAXBContext;
 
-    private final int consumerName;
+    private final ThreadLocal<Unmarshaller> messageJAXBUnmarshaller = new ThreadLocal<>();
 
     /**
-     * @param unmarshaller an {@link Unmarshaller} instance used to deserialize the payloads
      * @param routingKeyParser a {@link RoutingKeyParser} used to parse the rabbit's routing key
-     * @param configuration the associated feed configuration
-     * @param producerManager the producer manager
-     * @param jabxReentrantLock lock for jabx unmarshaller
+     * @param configuration    the associated feed configuration
+     * @param producerManager  the producer manager
      */
     @Inject
-    public ChannelMessageConsumerImpl(@Named("MessageUnmarshaller") Unmarshaller unmarshaller,
-                                      RoutingKeyParser routingKeyParser,
-                                      SDKInternalConfiguration configuration,
-                                      SDKProducerManager producerManager,
-                                      ReentrantLock jabxReentrantLock) {
-
-        Preconditions.checkNotNull(unmarshaller);
+    public ChannelMessageConsumerImpl(
+        RoutingKeyParser routingKeyParser,
+        SDKInternalConfiguration configuration,
+        SDKProducerManager producerManager,
+        @Named("MessageJAXBContext") JAXBContext messageJAXBContext
+    ) {
         Preconditions.checkNotNull(routingKeyParser);
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
-        Preconditions.checkNotNull(jabxReentrantLock);
 
-        this.unmarshaller = unmarshaller;
         this.routingKeyParser = routingKeyParser;
         this.configuration = configuration;
         this.producerManager = producerManager;
-        this.jabxLock = jabxReentrantLock;
-        this.consumerName = UUID.randomUUID().hashCode();
+        this.messageJAXBContext = messageJAXBContext;
     }
 
     /**
@@ -136,21 +143,29 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
      * @param receivedAt - the time when message was received (in milliseconds since EPOCH UTC)
      */
     @Override
-    public void onMessageReceived(String routingKey, byte[] body, AMQP.BasicProperties properties, long receivedAt) {
+    public void onMessageReceived(
+        String routingKey,
+        byte[] body,
+        AMQP.BasicProperties properties,
+        long receivedAt
+    ) {
         if (!isOpened || messageConsumer == null) {
             throw new IllegalStateException("Received message on an un-opened message consumer");
         }
 
         if (body == null || body.length == 0) {
-            logger.warn("A message with {} body received. Aborting message processing", body == null ? "null" : "empty");
+            logger.warn(
+                "A message with {} body received. Aborting message processing",
+                body == null ? "null" : "empty"
+            );
         }
 
         long createAt = 0;
         long sentAt = 0;
 
-        if (properties != null && properties.getHeaders() != null)
-        {
-            sentAt = properties.getHeaders().containsKey("timestamp_in_ms")
+        if (properties != null && properties.getHeaders() != null) {
+            sentAt =
+                properties.getHeaders().containsKey("timestamp_in_ms")
                     ? Long.parseLong(properties.getHeaders().get("timestamp_in_ms").toString())
                     : createAt;
         }
@@ -160,69 +175,110 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         RoutingKeyInfo routingKeyInfo = routingKeyParser.getRoutingKeyInfo(routingKey);
 
         if (body == null) {
-            loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, "Message payload is a null reference");
-            dispatchUnparsableMessage(String.format("Received a null message from routingKey:%s", routingKey), null, routingKeyInfo.getEventId(), timestamp);
+            loggerTrafficFailure.warn(
+                "{} {} {} {} {}",
+                messageConsumer.getConsumerDescription(),
+                trafficLogDelimiter,
+                routingKey,
+                trafficLogDelimiter,
+                "Message payload is a null reference"
+            );
+            dispatchUnparsableMessage(
+                String.format("Received a null message from routingKey:%s", routingKey),
+                null,
+                routingKeyInfo.getEventId(),
+                timestamp
+            );
             return;
         }
 
         UnmarshalledMessage unmarshalledMessage;
         int producerId;
         try {
-            jabxLock.lock();
-            unmarshalledMessage = (UnmarshalledMessage) unmarshaller.unmarshal(new ByteArrayInputStream(body));
-            jabxLock.unlock();
+            long time = System.currentTimeMillis();
+
+            Unmarshaller unmarshallerTLS = getMessageJAXBUnmarshaller();
+            unmarshalledMessage =
+                (UnmarshalledMessage) unmarshallerTLS.unmarshal(new ByteArrayInputStream(body));
+
             producerId = FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage);
 
-            if(producerManager.isProducerEnabled(producerId))
-            {
-                loggerTraffic.info("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
-            }
-            else
-            {
-                if(loggerTraffic.isDebugEnabled())
-                {
-                    loggerTraffic.debug("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, producerId);
+            if (producerManager.isProducerEnabled(producerId)) {
+                loggerTraffic.info(
+                    "{} {} {} {} {}",
+                    messageConsumer.getConsumerDescription(),
+                    trafficLogDelimiter,
+                    routingKey,
+                    trafficLogDelimiter,
+                    provideCleanMsgForLog(body)
+                );
+            } else {
+                if (loggerTraffic.isDebugEnabled()) {
+                    loggerTraffic.debug(
+                        "{} {} {} {} {}",
+                        messageConsumer.getConsumerDescription(),
+                        trafficLogDelimiter,
+                        routingKey,
+                        trafficLogDelimiter,
+                        producerId
+                    );
                 }
             }
         } catch (JAXBException jaxbException) {
-            if(jabxLock.isLocked()){
-                jabxLock.unlock();
-            }
-            loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
+            loggerTrafficFailure.warn(
+                "{} {} {} {} {}",
+                messageConsumer.getConsumerDescription(),
+                trafficLogDelimiter,
+                routingKey,
+                trafficLogDelimiter,
+                provideCleanMsgForLog(body)
+            );
             dispatchUnparsableMessage(
-                            String.format("Problem deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
-                                          routingKey,
-                                          new String(body),
-                                          jaxbException),
-                            body,
-                            routingKeyInfo.getEventId(),
-                            timestamp);
+                String.format(
+                    "Problem deserializing received message. RoutingKey:%s, Message:%s, ex: %s",
+                    routingKey,
+                    new String(body),
+                    jaxbException
+                ),
+                body,
+                routingKeyInfo.getEventId(),
+                timestamp
+            );
             return;
-        } catch (Exception e){
-            if(jabxLock.isLocked()){
-                jabxLock.unlock();
-            }
-            loggerTrafficFailure.warn("{} {} {} {} {}", messageConsumer.getConsumerDescription(), trafficLogDelimiter, routingKey, trafficLogDelimiter, provideCleanMsgForLog(body));
+        } catch (Exception e) {
+            loggerTrafficFailure.warn(
+                "{} {} {} {} {}",
+                messageConsumer.getConsumerDescription(),
+                trafficLogDelimiter,
+                routingKey,
+                trafficLogDelimiter,
+                provideCleanMsgForLog(body)
+            );
             dispatchUnparsableMessage(
-                    String.format("Problem consuming received message. RoutingKey:%s, Message:%s, ex: %s",
-                                  routingKey,
-                                  body == null || body.length == 0 ? "null" : new String(body),
-                                  e),
-                    body,
-                    routingKeyInfo.getEventId(),
-                    timestamp);
+                String.format(
+                    "Problem consuming received message. RoutingKey:%s, Message:%s, ex: %s",
+                    routingKey,
+                    body == null || body.length == 0 ? "null" : new String(body),
+                    e
+                ),
+                body,
+                routingKeyInfo.getEventId(),
+                timestamp
+            );
             return;
         }
 
         // send RawFeedMessage if needed
-        try
-        {
-            if(producerManager.isProducerEnabled(producerId)) {
-                messageConsumer.onRawFeedMessageReceived(routingKeyInfo, unmarshalledMessage, timestamp, messageConsumer.getMessageInterest());
+        try {
+            if (producerManager.isProducerEnabled(producerId)) {
+                messageConsumer.onRawFeedMessageReceived(
+                    routingKeyInfo,
+                    unmarshalledMessage,
+                    timestamp,
+                    messageConsumer.getMessageInterest()
+                );
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Error dispatching raw message for {}", routingKey, e);
         }
         // continue normal processing
@@ -240,5 +296,17 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         String s = new String(body);
 
         return configuration.isCleanTrafficLogEntriesEnabled() ? s.replace("\n", "") : s;
+    }
+
+    private Unmarshaller getMessageJAXBUnmarshaller() {
+        if (messageJAXBUnmarshaller.get() == null) {
+            try {
+                messageJAXBUnmarshaller.set(messageJAXBContext.createUnmarshaller());
+            } catch (JAXBException e) {
+                throw new IllegalStateException("Failed to create unmarshaller for 'AMQP messages', ex: ", e);
+            }
+        }
+
+        return messageJAXBUnmarshaller.get();
     }
 }

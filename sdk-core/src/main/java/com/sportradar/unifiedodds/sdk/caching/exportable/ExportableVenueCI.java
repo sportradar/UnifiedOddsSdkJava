@@ -6,12 +6,13 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.caching.ci.HoleCI;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableVenueCI extends ExportableCI {
+
     private Map<Locale, String> cityNames;
     private Map<Locale, String> countryNames;
     private Integer capacity;
@@ -22,9 +23,18 @@ public class ExportableVenueCI extends ExportableCI {
 
     private List<Locale> cachedLocales;
 
-    public ExportableVenueCI(String id, Map<Locale, String> names, Map<Locale, String> cityNames,
-                             Map<Locale, String> countryNames, Integer capacity, String countryCode, String coordinates,
-                             List<Locale> cachedLocales, String state, List<HoleCI> course) {
+    public ExportableVenueCI(
+        String id,
+        Map<Locale, String> names,
+        Map<Locale, String> cityNames,
+        Map<Locale, String> countryNames,
+        Integer capacity,
+        String countryCode,
+        String coordinates,
+        List<Locale> cachedLocales,
+        String state,
+        List<HoleCI> course
+    ) {
         super(id, names);
         this.cityNames = cityNames;
         this.countryNames = countryNames;
@@ -33,11 +43,10 @@ public class ExportableVenueCI extends ExportableCI {
         this.coordinates = coordinates;
         this.cachedLocales = cachedLocales;
         this.state = state;
-        if(course != null && !course.isEmpty()){
+        if (course != null && !course.isEmpty()) {
             this.course = Lists.newArrayList();
             course.forEach(ci -> this.course.add(new ExportableHoleCI(ci.getNumber(), ci.getPar())));
-        }
-        else{
+        } else {
             this.course = null;
         }
     }
@@ -98,7 +107,11 @@ public class ExportableVenueCI extends ExportableCI {
         this.state = state;
     }
 
-    public List<ExportableHoleCI> getCourse() { return course; }
+    public List<ExportableHoleCI> getCourse() {
+        return course;
+    }
 
-    public void setCourse(List<ExportableHoleCI> course) { this.course = course; }
+    public void setCourse(List<ExportableHoleCI> course) {
+        this.course = course;
+    }
 }

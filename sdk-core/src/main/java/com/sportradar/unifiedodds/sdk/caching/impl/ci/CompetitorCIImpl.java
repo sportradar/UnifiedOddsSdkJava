@@ -22,17 +22,32 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamExcept
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link CompetitorCI}
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassDataAbstractionCoupling",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "LambdaBodyLength",
+        "LineLength",
+        "MagicNumber",
+        "MethodLength",
+        "NPathComplexity",
+        "ReturnCount",
+    }
+)
 class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
+
     private static final Logger logger = LoggerFactory.getLogger(CompetitorCIImpl.class);
     /**
      * An {@link URN} specifying the id of the associated sport event
@@ -146,7 +161,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     private Date lastTimeCompetitorProfileIsFetched;
     private List<Locale> cultureCompetitorProfileFetched;
 
-    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    CompetitorCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
@@ -160,10 +180,16 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
     }
 
-    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPICompetitorProfileEndpoint data, Locale dataLocale) {
+    CompetitorCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPICompetitorProfileEndpoint data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
-        if(data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
+        if (data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
             this.lastTimeCompetitorProfileIsFetched = Calendar.getInstance().getTime();
             if (cultureCompetitorProfileFetched == null) {
                 this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
@@ -174,10 +200,16 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPITeam data, Locale dataLocale) {
+    CompetitorCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPITeam data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
-        if(data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
+        if (data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
             this.lastTimeCompetitorProfileIsFetched = Calendar.getInstance().getTime();
             if (cultureCompetitorProfileFetched == null) {
                 this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
@@ -188,19 +220,35 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPIPlayerCompetitor data, Locale dataLocale) {
+    CompetitorCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPIPlayerCompetitor data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(URN id, DataRouterManager dataRouterManager, Locale defaultLocale, ExceptionHandlingStrategy exceptionHandlingStrategy, SAPISimpleTeamProfileEndpoint data, Locale dataLocale) {
+    CompetitorCIImpl(
+        URN id,
+        DataRouterManager dataRouterManager,
+        Locale defaultLocale,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        SAPISimpleTeamProfileEndpoint data,
+        Locale dataLocale
+    ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(ExportableCompetitorCI exportable, DataRouterManager dataRouterManager, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    CompetitorCIImpl(
+        ExportableCompetitorCI exportable,
+        DataRouterManager dataRouterManager,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -461,10 +509,14 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     }
 
     @Override
-    public Date getLastTimeCompetitorProfileIsFetched() { return lastTimeCompetitorProfileIsFetched; }
+    public Date getLastTimeCompetitorProfileIsFetched() {
+        return lastTimeCompetitorProfileIsFetched;
+    }
 
     @Override
-    public List<Locale> getCultureCompetitorProfileFetched() { return cultureCompetitorProfileFetched; }
+    public List<Locale> getCultureCompetitorProfileFetched() {
+        return cultureCompetitorProfileFetched;
+    }
 
     /**
      * Determines whether the current instance has translations for the specified languages
@@ -502,23 +554,33 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         abbreviations.putAll(exportable.getAbbreviations());
         isVirtual = exportable.isVirtual();
         countryCode = exportable.getCountryCode();
-        referenceId = exportable.getReferenceId() != null ? new ReferenceIdCI(exportable.getReferenceId()) : null;
-        List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds() != null ? exportable.getAssociatedPlayerIds().stream()
+        referenceId =
+            exportable.getReferenceId() != null ? new ReferenceIdCI(exportable.getReferenceId()) : null;
+        List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds() != null
+            ? exportable
+                .getAssociatedPlayerIds()
+                .stream()
                 .map(URN::parse)
                 .filter(i -> associatedPlayerIds == null || !associatedPlayerIds.contains(i))
-                .collect(Collectors.toList()) : new ArrayList<>();
+                .collect(Collectors.toList())
+            : new ArrayList<>();
         if (associatedPlayerIds == null) {
             associatedPlayerIds = new ArrayList<>(missingAssociatedPlayerIds);
-        }
-        else {
+        } else {
             associatedPlayerIds.addAll(missingAssociatedPlayerIds);
         }
-        jerseys = exportable.getJerseys() != null ? exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList()) : null;
+        jerseys =
+            exportable.getJerseys() != null
+                ? exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList())
+                : null;
         manager = exportable.getManager() != null ? new ManagerCI(exportable.getManager()) : null;
         venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
         gender = exportable.getGender();
         ageGroup = exportable.getAgeGroup();
-        raceDriverProfile = exportable.getRaceDriverProfile() != null ? new RaceDriverProfileCI(exportable.getRaceDriverProfile()) : null;
+        raceDriverProfile =
+            exportable.getRaceDriverProfile() != null
+                ? new RaceDriverProfileCI(exportable.getRaceDriverProfile())
+                : null;
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
         state = exportable.getState();
         sportId = Optional.ofNullable(exportable.getSportId()).map(URN::parse).orElse(null);
@@ -539,12 +601,18 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
         internalMerge(data.getCompetitor(), dataLocale);
 
-        if(data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
-            associatedPlayerIds = Optional.ofNullable(data.getPlayers())
-                    .map(p -> p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList()))
+        if (data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
+            associatedPlayerIds =
+                Optional
+                    .ofNullable(data.getPlayers())
+                    .map(p ->
+                        p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList())
+                    )
                     .orElse(null);
         }
-        jerseys = Optional.ofNullable(data.getJerseys())
+        jerseys =
+            Optional
+                .ofNullable(data.getJerseys())
                 .map(j -> j.getJersey().stream().map(JerseyCI::new).collect(Collectors.toList()))
                 .orElse(null);
 
@@ -556,7 +624,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
             }
         }
 
-        if (data.getVenue() != null){
+        if (data.getVenue() != null) {
             if (venue == null) {
                 venue = new VenueCI(data.getVenue(), dataLocale);
             } else {
@@ -565,10 +633,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
 
         if (!abbreviations.containsKey(dataLocale)) {
-            if(data.getCompetitor().getAbbreviation() == null) {
-                abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(data.getCompetitor().getName(), 3));
-            }
-            else {
+            if (data.getCompetitor().getAbbreviation() == null) {
+                abbreviations.put(
+                    dataLocale,
+                    SdkHelper.getAbbreviationFromName(data.getCompetitor().getName(), 3)
+                );
+            } else {
                 abbreviations.put(dataLocale, data.getCompetitor().getAbbreviation());
             }
         }
@@ -580,7 +650,9 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
             URN raceDriverId = raceDriver != null ? URN.parse(raceDriver.getId()) : null;
             URN raceTeamId = raceTeam != null ? URN.parse(raceTeam.getId()) : null;
-            CarCI carCI = car != null ? new CarCI(car.getName(), car.getChassis(), car.getEngineName()) : null;
+            CarCI carCI = car != null
+                ? new CarCI(car.getName(), car.getChassis(), car.getEngineName())
+                : null;
             raceDriverProfile = new RaceDriverProfileCI(raceDriverId, raceTeamId, carCI);
         }
     }
@@ -606,36 +678,50 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         Optional.ofNullable(competitor.getCountry()).ifPresent(s -> countryNames.put(dataLocale, s));
         Optional.ofNullable(competitor.getAbbreviation()).ifPresent(s -> abbreviations.put(dataLocale, s));
 
-        referenceId = competitor.getReferenceIds() == null ? null :
-                new ReferenceIdCI(competitor.getReferenceIds().getReferenceId().stream()
+        referenceId =
+            competitor.getReferenceIds() == null
+                ? null
+                : new ReferenceIdCI(
+                    competitor
+                        .getReferenceIds()
+                        .getReferenceId()
+                        .stream()
                         .filter(r -> r.getName() != null && r.getValue() != null)
-                        .collect(HashMap::new, (map, i) -> map.put(i.getName(), i.getValue()), HashMap::putAll));
+                        .collect(
+                            HashMap::new,
+                            (map, i) -> map.put(i.getName(), i.getValue()),
+                            HashMap::putAll
+                        )
+                );
         if (id.isSimpleTeam() || id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
             handleSimpleTeamReference();
         }
 
-        if(competitor.getAbbreviation() == null) {
+        if (competitor.getAbbreviation() == null) {
             abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
-        }
-        else {
+        } else {
             abbreviations.put(dataLocale, competitor.getAbbreviation());
         }
-        if(competitor.getGender() != null) {
+        if (competitor.getGender() != null) {
             gender = competitor.getGender();
         }
-        if(competitor.getAgeGroup() != null) {
+        if (competitor.getAgeGroup() != null) {
             ageGroup = competitor.getAgeGroup();
         }
 
         if (competitor.getState() != null) {
             state = competitor.getState();
         }
-        if(competitor.getShortName() != null){
+        if (competitor.getShortName() != null) {
             shortName = competitor.getShortName();
         }
-        if(competitor.getPlayers() != null && !competitor.getPlayers().getPlayer().isEmpty()) {
-            associatedPlayerIds = Optional.ofNullable(competitor.getPlayers())
-                    .map(p -> p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList()))
+        if (competitor.getPlayers() != null && !competitor.getPlayers().getPlayer().isEmpty()) {
+            associatedPlayerIds =
+                Optional
+                    .ofNullable(competitor.getPlayers())
+                    .map(p ->
+                        p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList())
+                    )
                     .orElse(null);
         }
     }
@@ -645,13 +731,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         Preconditions.checkNotNull(dataLocale);
 
         Optional.ofNullable(competitor.getName()).ifPresent(s -> names.put(dataLocale, s));
-//        Optional.ofNullable(competitor.getNationality()).ifPresent(s -> nat.put(dataLocale, s));
+        //        Optional.ofNullable(competitor.getNationality()).ifPresent(s -> nat.put(dataLocale, s));
         Optional.ofNullable(competitor.getAbbreviation()).ifPresent(s -> abbreviations.put(dataLocale, s));
 
-        if(competitor.getAbbreviation() == null) {
+        if (competitor.getAbbreviation() == null) {
             abbreviations.put(dataLocale, SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
-        }
-        else {
+        } else {
             abbreviations.put(dataLocale, competitor.getAbbreviation());
         }
     }
@@ -679,13 +764,18 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 return;
             }
 
-            logger.debug("Fetching competitor data for id='{}' for languages '{}'",
-                    id, missingLocales.stream()
-                            .map(Locale::getLanguage).collect(Collectors.joining(", ")));
+            logger.debug(
+                "Fetching competitor data for id='{}' for languages '{}'",
+                id,
+                missingLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "))
+            );
 
             missingLocales.forEach(l -> {
                 try {
-                    if (id.isSimpleTeam() || id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
+                    if (
+                        id.isSimpleTeam() ||
+                        id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)
+                    ) {
                         dataRouterManager.requestSimpleTeamEndpoint(l, id, this);
                     } else {
                         dataRouterManager.requestCompetitorEndpoint(l, id, this);
@@ -706,12 +796,14 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
             return;
         }
 
-        referenceId = new ReferenceIdCI(
-                ImmutableMap.<String, String>builder()
-                        .put("betradar", String.valueOf(id.getId()))
-                        .putAll(referenceId != null ? referenceId.getReferenceIds() : ImmutableMap.of())
-                        .build()
-        );
+        referenceId =
+            new ReferenceIdCI(
+                ImmutableMap
+                    .<String, String>builder()
+                    .put("betradar", String.valueOf(id.getId()))
+                    .putAll(referenceId != null ? referenceId.getReferenceIds() : ImmutableMap.of())
+                    .build()
+            );
     }
 
     private void ensureDataLoaded(Object object) {
@@ -741,26 +833,28 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     @Override
     public ExportableCI export() {
         return new ExportableCompetitorCI(
-                id.toString(),
-                new HashMap<>(names),
-                defaultLocale,
-                new HashMap<>(countryNames),
-                new HashMap<>(abbreviations),
-                isVirtual,
-                countryCode,
-                referenceId != null ? new HashMap<>(referenceId.getReferenceIds()) : null,
-                associatedPlayerIds != null ? associatedPlayerIds.stream().map(URN::toString).collect(Collectors.toList()) : null,
-                jerseys != null ? jerseys.stream().map(JerseyCI::export).collect(Collectors.toList()) : null,
-                manager != null ? manager.export() : null,
-                venue != null ? venue.export() : null,
-                gender,
-                ageGroup,
-                raceDriverProfile != null ? raceDriverProfile.export() : null,
-                new ArrayList<>(cachedLocales),
-                state,
-                Optional.ofNullable(sportId).map(URN::toString).orElse(null),
-                Optional.ofNullable(categoryId).map(URN::toString).orElse(null),
-                shortName
+            id.toString(),
+            new HashMap<>(names),
+            defaultLocale,
+            new HashMap<>(countryNames),
+            new HashMap<>(abbreviations),
+            isVirtual,
+            countryCode,
+            referenceId != null ? new HashMap<>(referenceId.getReferenceIds()) : null,
+            associatedPlayerIds != null
+                ? associatedPlayerIds.stream().map(URN::toString).collect(Collectors.toList())
+                : null,
+            jerseys != null ? jerseys.stream().map(JerseyCI::export).collect(Collectors.toList()) : null,
+            manager != null ? manager.export() : null,
+            venue != null ? venue.export() : null,
+            gender,
+            ageGroup,
+            raceDriverProfile != null ? raceDriverProfile.export() : null,
+            new ArrayList<>(cachedLocales),
+            state,
+            Optional.ofNullable(sportId).map(URN::toString).orElse(null),
+            Optional.ofNullable(categoryId).map(URN::toString).orElse(null),
+            shortName
         );
     }
 }

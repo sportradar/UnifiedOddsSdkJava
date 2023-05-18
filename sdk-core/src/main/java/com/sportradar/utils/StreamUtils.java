@@ -13,6 +13,7 @@ import java.util.function.Predicate;
  * Generic stream utility methods
  */
 public class StreamUtils {
+
     private StreamUtils() {}
 
     /**
@@ -23,7 +24,7 @@ public class StreamUtils {
      * @return <code>true</code> if the object was already filtered, otherwise <code>false</code>
      */
     public static <T> Predicate<T> distinctObjects(Function<? super T, ?> keyExtractor) {
-        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }

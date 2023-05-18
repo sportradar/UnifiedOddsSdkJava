@@ -7,14 +7,15 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.Player;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * Represents a player or driver in a sport event
  */
+@SuppressWarnings({ "DeclarationOrder", "VisibilityModifier" })
 public class PlayerImpl implements Player {
+
     /**
      * The unique {@link URN} identifier representing the current {@link Player} instance
      */
@@ -79,9 +80,6 @@ public class PlayerImpl implements Player {
      */
     @Override
     public String toString() {
-        return "PlayerImpl{" +
-                "id=" + id +
-                ", names=" + names +
-                '}';
+        return "PlayerImpl{" + "id=" + id + ", names=" + names + '}';
     }
 }

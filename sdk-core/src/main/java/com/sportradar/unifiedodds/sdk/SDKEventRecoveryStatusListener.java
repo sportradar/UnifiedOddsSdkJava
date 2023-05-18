@@ -9,6 +9,7 @@ import com.sportradar.utils.URN;
 /**
  * Defines methods used as callbacks to notify the client about event recovery updates
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface SDKEventRecoveryStatusListener {
     /**
      * Method invoked when a requested event recovery completes

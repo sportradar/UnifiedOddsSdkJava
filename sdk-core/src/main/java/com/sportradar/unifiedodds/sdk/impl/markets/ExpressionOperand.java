@@ -6,20 +6,26 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-
 import java.util.Map;
 
 /**
  * Created on 22/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "MissingSwitchDefault" })
 public class ExpressionOperand extends OperandBase implements Operand {
+
     private final Map<String, String> specifiers;
     private final String operandString;
     private final SimpleMathOperation operation;
     private final int staticValue;
 
-    ExpressionOperand(Map<String, String> specifiers, String operandString, SimpleMathOperation operation, int staticValue) {
+    ExpressionOperand(
+        Map<String, String> specifiers,
+        String operandString,
+        SimpleMathOperation operation,
+        int staticValue
+    ) {
         Preconditions.checkNotNull(specifiers);
         Preconditions.checkNotNull(operation);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(operandString));

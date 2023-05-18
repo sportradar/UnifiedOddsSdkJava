@@ -10,13 +10,13 @@ import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
 import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.URN;
+import java.net.URI;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.util.concurrent.TimeUnit;
-
 public class OddsFeedExtendedListener implements OddsFeedExtListener {
+
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /**
@@ -28,12 +28,19 @@ public class OddsFeedExtendedListener implements OddsFeedExtListener {
      * @param messageInterest the associated {@link MessageInterest}
      */
     @Override
-    public void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest) {
-        logger.info("Received raw feed message [{}]: {} for event {} and timestamp={}",
-                    messageInterest,
-                    feedMessage.getClass().getSimpleName(),
-                    routingKey,
-                    timestamp.getCreated());
+    public void onRawFeedMessageReceived(
+        RoutingKeyInfo routingKey,
+        UnmarshalledMessage feedMessage,
+        MessageTimestamp timestamp,
+        MessageInterest messageInterest
+    ) {
+        logger.info(
+            "Received raw feed message [{}]: {} for event {} and timestamp={}",
+            messageInterest,
+            feedMessage.getClass().getSimpleName(),
+            routingKey,
+            timestamp.getCreated()
+        );
     }
 
     /**

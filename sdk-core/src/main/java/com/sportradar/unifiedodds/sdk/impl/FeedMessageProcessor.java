@@ -28,7 +28,12 @@ public interface FeedMessageProcessor {
      * @param routingKeyInfo - a {@link RoutingKeyInfo} instance describing the message routing key
      * @param timestamp - all message timestamps
      */
-    void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp);
+    void processMessage(
+        UnmarshalledMessage message,
+        byte[] body,
+        RoutingKeyInfo routingKeyInfo,
+        MessageTimestamp timestamp
+    );
 
     /**
      * Sets the next message processor that should be invoked after the message processing is finished

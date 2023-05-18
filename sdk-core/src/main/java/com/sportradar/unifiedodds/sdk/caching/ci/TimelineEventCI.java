@@ -9,7 +9,6 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIBasicEvent;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTimelineEventCI;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.utils.SdkHelper;
-
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +17,7 @@ import java.util.stream.Collectors;
  * Created on 24/11/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class TimelineEventCI {
 
     private final int id;
@@ -56,11 +56,12 @@ public class TimelineEventCI {
         value = event.getValue();
         x = event.getX();
         y = event.getY();
-        time = event.getTime() == null ? null :
-                SdkHelper.toDate(event.getTime());
+        time = event.getTime() == null ? null : SdkHelper.toDate(event.getTime());
 
-        assists = event.getAssist() == null ? null :
-                event.getAssist().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList());
+        assists =
+            event.getAssist() == null
+                ? null
+                : event.getAssist().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList());
 
         goalScorer = event.getGoalScorer() == null ? null : new EventPlayerCI(event.getGoalScorer());
         player = event.getPlayer() == null ? null : new EventPlayerCI(event.getPlayer());
@@ -85,14 +86,20 @@ public class TimelineEventCI {
         x = exportable.getX();
         y = exportable.getY();
         time = exportable.getTime();
-        assists = exportable.getAssists() != null ? exportable.getAssists().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList()) : null;
-        goalScorer = exportable.getGoalScorer() != null ? new EventPlayerCI(exportable.getGoalScorer()) : null;
+        assists =
+            exportable.getAssists() != null
+                ? exportable.getAssists().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList())
+                : null;
+        goalScorer =
+            exportable.getGoalScorer() != null ? new EventPlayerCI(exportable.getGoalScorer()) : null;
         player = exportable.getPlayer() != null ? new EventPlayerCI(exportable.getPlayer()) : null;
         matchStatusCode = exportable.getMatchStatusCode();
         matchClock = exportable.getMatchClock();
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     public Double getAwayScore() {
         return awayScore;
@@ -146,9 +153,13 @@ public class TimelineEventCI {
         return time;
     }
 
-    public List<EventPlayerAssistCI> getAssists() { return assists; }
+    public List<EventPlayerAssistCI> getAssists() {
+        return assists;
+    }
 
-    public EventPlayerCI getGoalScorer() { return goalScorer; }
+    public EventPlayerCI getGoalScorer() {
+        return goalScorer;
+    }
 
     public EventPlayerCI getPlayer() {
         return player;
@@ -164,25 +175,27 @@ public class TimelineEventCI {
 
     public ExportableTimelineEventCI export() {
         return new ExportableTimelineEventCI(
-                id,
-                awayScore,
-                homeScore,
-                matchTime,
-                period,
-                periodName,
-                points,
-                stoppageTime,
-                team,
-                type,
-                value,
-                x,
-                y,
-                time,
-                assists != null ? assists.stream().map(EventPlayerAssistCI::export).collect(Collectors.toList()) : null,
-                goalScorer != null ? goalScorer.export() : null,
-                player != null ? player.export() : null,
-                matchStatusCode,
-                matchClock
+            id,
+            awayScore,
+            homeScore,
+            matchTime,
+            period,
+            periodName,
+            points,
+            stoppageTime,
+            team,
+            type,
+            value,
+            x,
+            y,
+            time,
+            assists != null
+                ? assists.stream().map(EventPlayerAssistCI::export).collect(Collectors.toList())
+                : null,
+            goalScorer != null ? goalScorer.export() : null,
+            player != null ? player.export() : null,
+            matchStatusCode,
+            matchClock
         );
     }
 }

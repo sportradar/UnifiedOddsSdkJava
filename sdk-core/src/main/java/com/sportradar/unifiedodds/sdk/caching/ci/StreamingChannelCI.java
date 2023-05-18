@@ -10,7 +10,9 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIStreamingChannel;
 /**
  * A streaming channel representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class StreamingChannelCI {
+
     /**
      * The id of the channel
      */

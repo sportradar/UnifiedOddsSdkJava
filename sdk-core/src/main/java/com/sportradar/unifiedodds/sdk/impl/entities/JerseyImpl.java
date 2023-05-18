@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.entities.Jersey;
 /**
  * A base implementation describing a jersey
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class JerseyImpl implements Jersey {
 
     /**
@@ -153,15 +154,33 @@ public class JerseyImpl implements Jersey {
 
     @Override
     public String toString() {
-        return "JerseyImpl{" +
-                "base='" + base + '\'' +
-                ", number='" + number + '\'' +
-                ", sleeve='" + sleeve + '\'' +
-                ", type='" + type + '\'' +
-                ", stripesColor='" + stripesColor + '\'' +
-                ", splitColor='" + splitColor + '\'' +
-                ", shirtType='" + shirtType + '\'' +
-                ", sleeveDetail='" + sleeveDetail + '\'' +
-                '}';
+        return (
+            "JerseyImpl{" +
+            "base='" +
+            base +
+            '\'' +
+            ", number='" +
+            number +
+            '\'' +
+            ", sleeve='" +
+            sleeve +
+            '\'' +
+            ", type='" +
+            type +
+            '\'' +
+            ", stripesColor='" +
+            stripesColor +
+            '\'' +
+            ", splitColor='" +
+            splitColor +
+            '\'' +
+            ", shirtType='" +
+            shirtType +
+            '\'' +
+            ", sleeveDetail='" +
+            sleeveDetail +
+            '\'' +
+            '}'
+        );
     }
 }

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.utils.URN;
+
 /**
  * Defines methods used to build selections
  */

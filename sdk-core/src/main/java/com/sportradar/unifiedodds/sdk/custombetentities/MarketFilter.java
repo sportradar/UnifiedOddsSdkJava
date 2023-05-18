@@ -10,7 +10,6 @@ import java.util.List;
  * Provides a market
  */
 public interface MarketFilter {
-
     /**
      * Returns the id of the market
      *

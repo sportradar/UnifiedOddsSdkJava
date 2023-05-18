@@ -9,7 +9,6 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.Locale;
 /**
  * Defines methods implemented by classes used to provide sport related data (sports, tournaments, competitions, ...)
  */
+@SuppressWarnings({ "LineLength" })
 public interface SportsInfoManager {
     /**
      * Returns all the available sports
@@ -240,7 +240,7 @@ public interface SportsInfoManager {
 
     /**
      * Returns the list of all fixtures that have changed in the last 24 hours
-     * @retun list of {@FixtureChange}
+     * @return list of {@link FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges() {
         return null;
@@ -250,7 +250,7 @@ public interface SportsInfoManager {
      * Returns the list of all fixtures that have changed in the last 24 hours
      *
      * @param locale - the {@link Locale} in which to provide the data
-     * @retun list of {@FixtureChange}
+     * @return list of {@link FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges(Locale locale) {
         return null;
@@ -261,7 +261,7 @@ public interface SportsInfoManager {
      *
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
-     * @retun list of {@FixtureChange}
+     * @return list of {@link FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges(Date after, URN sportId) {
         return null;
@@ -273,7 +273,7 @@ public interface SportsInfoManager {
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
      * @param locale - the {@link Locale} in which to provide the data
-     * @retun list of {@FixtureChange}
+     * @return list of {@link FixtureChange}
      */
     default List<FixtureChange> getFixtureChanges(Date after, URN sportId, Locale locale) {
         return null;
@@ -281,7 +281,7 @@ public interface SportsInfoManager {
 
     /**
      * Returns the list of all fixtures that have changed in the last 24 hours
-     * @retun list of {@ResultChange}
+     * @return list of {@link ResultChange}
      */
     default List<ResultChange> getResultChanges() {
         return null;
@@ -291,7 +291,7 @@ public interface SportsInfoManager {
      * Returns the list of all fixtures that have changed in the last 24 hours
      *
      * @param locale - the {@link Locale} in which to provide the data
-     * @retun list of {@ResultChange}
+     * @return list of {@link ResultChange}
      */
     default List<ResultChange> getResultChanges(Locale locale) {
         return null;
@@ -302,7 +302,7 @@ public interface SportsInfoManager {
      *
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
-     * @retun list of {@ResultChange}
+     * @return list of {@link ResultChange}
      */
     default List<ResultChange> getResultChanges(Date after, URN sportId) {
         return null;
@@ -314,7 +314,7 @@ public interface SportsInfoManager {
      * @param after specifies the starting date and time for filtering
      * @param sportId specifies the sport for which the fixtures should be returned
      * @param locale - the {@link Locale} in which to provide the data
-     * @retun list of {@ResultChange}
+     * @return list of {@link ResultChange}
      */
     default List<ResultChange> getResultChanges(Date after, URN sportId, Locale locale) {
         return null;
@@ -327,7 +327,9 @@ public interface SportsInfoManager {
      * @param limit      how many records to return (max: 1000)
      * @return a list of sport events
      */
-    default List<Competition> getListOfSportEvents(int startIndex, int limit) { return null; }
+    default List<Competition> getListOfSportEvents(int startIndex, int limit) {
+        return null;
+    }
 
     /**
      * Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination.
@@ -391,7 +393,7 @@ public interface SportsInfoManager {
      *
      * @param items List of {@link ExportableCI} containing the items to be imported
      */
-    default void cacheImport(List<ExportableCI> items) { }
+    default void cacheImport(List<ExportableCI> items) {}
 
     /**
      * Returns all the available lotteries
@@ -412,7 +414,14 @@ public interface SportsInfoManager {
      * @param periods the list of period ids to fetch the results for (can be null)
      * @return the list of {@link PeriodStatus} from the sport event period summary endpoint
      */
-    default List<PeriodStatus> getPeriodStatuses(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) { return null; }
+    default List<PeriodStatus> getPeriodStatuses(
+        URN id,
+        Locale locale,
+        List<URN> competitorIds,
+        List<Integer> periods
+    ) {
+        return null;
+    }
 
     /**
      * Returns the list of {@link TimelineEvent} for the sport event
@@ -420,5 +429,7 @@ public interface SportsInfoManager {
      * @param locale the {@link Locale} in which to provide the data (can be null)
      * @return the list of {@link TimelineEvent} for the sport event
      */
-    default List<TimelineEvent> getTimelineEvents(URN id, Locale locale) { return null; }
+    default List<TimelineEvent> getTimelineEvents(URN id, Locale locale) {
+        return null;
+    }
 }

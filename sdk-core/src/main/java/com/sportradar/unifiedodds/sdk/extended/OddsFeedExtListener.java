@@ -8,7 +8,6 @@ import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-
 import java.net.URI;
 
 /**
@@ -16,7 +15,6 @@ import java.net.URI;
  *
  */
 public interface OddsFeedExtListener {
-
     /**
      * Occurs when any feed message arrives
      *
@@ -25,7 +23,12 @@ public interface OddsFeedExtListener {
      * @param timestamp the message timestamps
      * @param messageInterest the associated {@link MessageInterest}
      */
-    void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest);
+    void onRawFeedMessageReceived(
+        RoutingKeyInfo routingKey,
+        UnmarshalledMessage feedMessage,
+        MessageTimestamp timestamp,
+        MessageInterest messageInterest
+    );
 
     /**
      * Occurs when data from Sports API arrives

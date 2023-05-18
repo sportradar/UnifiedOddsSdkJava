@@ -22,12 +22,17 @@ import com.sportradar.utils.URN;
 /**
  * Factory used to build various sport event status instances such as {@link MatchStatus}, {@link SoccerStatus},...
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ReturnCount" })
 public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
+
     private final SportEventStatusCache sportEventStatusCache;
     private final NamedValuesProvider namedValuesProvider;
 
     @Inject
-    SportEventStatusFactoryImpl(SportEventStatusCache sportEventStatusCache, NamedValuesProvider namedValuesProvider) {
+    SportEventStatusFactoryImpl(
+        SportEventStatusCache sportEventStatusCache,
+        NamedValuesProvider namedValuesProvider
+    ) {
         Preconditions.checkNotNull(sportEventStatusCache);
         Preconditions.checkNotNull(namedValuesProvider);
 
@@ -45,12 +50,16 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends CompetitionStatus> T buildSportEventStatus(URN eventId, Class<T> targetClass, boolean makeApiCall) {
+    public <T extends CompetitionStatus> T buildSportEventStatus(
+        URN eventId,
+        Class<T> targetClass,
+        boolean makeApiCall
+    ) {
         Preconditions.checkNotNull(eventId);
 
         SportEventStatusCI statusCI = provideSportEventStatusCI(eventId, makeApiCall);
 
-        if(statusCI == null) {
+        if (statusCI == null) {
             return (T) null;
         }
 
@@ -60,7 +69,7 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
             return (T) new MatchStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
         } else if (targetClass == StageStatus.class) {
             return (T) new StageStatusImpl(statusCI, namedValuesProvider.getMatchStatuses());
-        }else {
+        } else {
             return (T) new CompetitionStatusImpl(statusCI);
         }
     }

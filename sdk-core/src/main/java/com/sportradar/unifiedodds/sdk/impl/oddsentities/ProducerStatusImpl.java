@@ -14,13 +14,20 @@ import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
  * A basic implementation of the {@link ProducerStatus}
  */
 class ProducerStatusImpl implements ProducerStatus {
+
     private final Producer producer;
     private final ProducerStatusReason reason;
     private final boolean isDown;
     private final boolean isDelayed;
     private final long timestamp;
 
-    ProducerStatusImpl(Producer producer, ProducerStatusReason reason, boolean isDown, boolean isDelayed, long timestamp) {
+    ProducerStatusImpl(
+        Producer producer,
+        ProducerStatusReason reason,
+        boolean isDown,
+        boolean isDelayed,
+        long timestamp
+    ) {
         Preconditions.checkNotNull(producer);
         Preconditions.checkNotNull(reason);
 

@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +12,7 @@ import java.util.Map;
 /**
  * Base interface of cached entities
  */
+@SuppressWarnings({ "LineLength" })
 public interface CacheItem {
     /**
      * Returns the {@link URN} representing id of the related entity

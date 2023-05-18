@@ -6,17 +6,26 @@ package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.utils.SdkHelper;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to specify various configuration parameters for a session to the Sportradar
  * system(s)
  *
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "MethodLength",
+        "NPathComplexity",
+        "ParameterNumber",
+        "UnnecessaryParentheses",
+    }
+)
 public class OddsFeedConfiguration {
+
     private static final int HTTP_CLIENT_TIMEOUT = 30;
     private static final int HTTP_CLIENT_MAX_CONN_TOTAL = 20;
     private static final int HTTP_CLIENT_MAX_CONN_PER_ROUTE = 15;
@@ -29,6 +38,7 @@ public class OddsFeedConfiguration {
     private final List<Locale> desiredLocales;
     private final String host;
     private final String apiHost;
+    private final int apiPort;
     private final int inactivitySeconds;
     private final int maxRecoveryExecutionMinutes;
     private final int minIntervalBetweenRecoveryRequests;
@@ -50,37 +60,41 @@ public class OddsFeedConfiguration {
     private final int recoveryHttpClientMaxConnTotal;
     private final int recoveryHttpClientMaxConnPerRoute;
 
-    OddsFeedConfiguration(String accessToken,
-                          Locale defaultLocale,
-                          List<Locale> desiredLocales,
-                          String host,
-                          String apiHost,
-                          int inactivitySeconds,
-                          int maxRecoveryExecutionMinutes,
-                          int minIntervalBetweenRecoveryRequests,
-                          boolean useMessagingSsl,
-                          boolean useApiSsl,
-                          int port,
-                          String messagingUsername,
-                          String messagingPassword,
-                          Integer sdkNodeId,
-                          boolean useIntegrationEnvironment,
-                          List<Integer> disabledProducers,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy,
-                          Environment selectedEnvironment,
-                          String messagingVirtualHost,
-                          Integer httpClientTimeout,
-                          Integer httpClientMaxConnTotal,
-                          Integer httpClientMaxConnPerRoute,
-                          Integer recoveryHttpClientTimeout,
-                          Integer recoveryHttpClientMaxConnTotal,
-                          Integer recoveryHttpClientMaxConnPerRoute) {
+    OddsFeedConfiguration(
+        String accessToken,
+        Locale defaultLocale,
+        List<Locale> desiredLocales,
+        String host,
+        String apiHost,
+        int apiPort,
+        int inactivitySeconds,
+        int maxRecoveryExecutionMinutes,
+        int minIntervalBetweenRecoveryRequests,
+        boolean useMessagingSsl,
+        boolean useApiSsl,
+        int port,
+        String messagingUsername,
+        String messagingPassword,
+        Integer sdkNodeId,
+        boolean useIntegrationEnvironment,
+        List<Integer> disabledProducers,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        Environment selectedEnvironment,
+        String messagingVirtualHost,
+        Integer httpClientTimeout,
+        Integer httpClientMaxConnTotal,
+        Integer httpClientMaxConnPerRoute,
+        Integer recoveryHttpClientTimeout,
+        Integer recoveryHttpClientMaxConnTotal,
+        Integer recoveryHttpClientMaxConnPerRoute
+    ) {
         // ctor parameters are validated in the cfg builder instance
         this.accessToken = accessToken;
         this.defaultLocale = defaultLocale;
         this.desiredLocales = desiredLocales;
         this.host = host;
         this.apiHost = apiHost;
+        this.apiPort = apiPort;
         this.inactivitySeconds = inactivitySeconds;
         this.maxRecoveryExecutionMinutes = maxRecoveryExecutionMinutes;
         this.minIntervalBetweenRecoveryRequests = minIntervalBetweenRecoveryRequests;
@@ -91,14 +105,29 @@ public class OddsFeedConfiguration {
         this.messagingPassword = messagingPassword;
         this.sdkNodeId = sdkNodeId;
         this.httpClientTimeout = httpClientTimeout != null ? httpClientTimeout : HTTP_CLIENT_TIMEOUT;
-        this.httpClientMaxConnTotal = httpClientMaxConnTotal != null ? httpClientMaxConnTotal : HTTP_CLIENT_MAX_CONN_TOTAL;
-        this.httpClientMaxConnPerRoute = httpClientMaxConnPerRoute != null ? httpClientMaxConnPerRoute : HTTP_CLIENT_MAX_CONN_PER_ROUTE;
-        this.recoveryHttpClientTimeout = recoveryHttpClientTimeout != null ? recoveryHttpClientTimeout : RECOVERY_HTTP_CLIENT_TIMEOUT;
-        this.recoveryHttpClientMaxConnTotal = recoveryHttpClientMaxConnTotal != null ? recoveryHttpClientMaxConnTotal : RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL;
-        this.recoveryHttpClientMaxConnPerRoute = recoveryHttpClientMaxConnPerRoute != null ? recoveryHttpClientMaxConnPerRoute : RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE;
-        if (sdkNodeId != null && sdkNodeId < 0)
-        {
-            LoggerFactory.getLogger(OddsFeedConfiguration.class).warn(String.format("Setting nodeId to %s. Use only positive numbers; negative are reserved for internal use.", sdkNodeId));
+        this.httpClientMaxConnTotal =
+            httpClientMaxConnTotal != null ? httpClientMaxConnTotal : HTTP_CLIENT_MAX_CONN_TOTAL;
+        this.httpClientMaxConnPerRoute =
+            httpClientMaxConnPerRoute != null ? httpClientMaxConnPerRoute : HTTP_CLIENT_MAX_CONN_PER_ROUTE;
+        this.recoveryHttpClientTimeout =
+            recoveryHttpClientTimeout != null ? recoveryHttpClientTimeout : RECOVERY_HTTP_CLIENT_TIMEOUT;
+        this.recoveryHttpClientMaxConnTotal =
+            recoveryHttpClientMaxConnTotal != null
+                ? recoveryHttpClientMaxConnTotal
+                : RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL;
+        this.recoveryHttpClientMaxConnPerRoute =
+            recoveryHttpClientMaxConnPerRoute != null
+                ? recoveryHttpClientMaxConnPerRoute
+                : RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE;
+        if (sdkNodeId != null && sdkNodeId < 0) {
+            LoggerFactory
+                .getLogger(OddsFeedConfiguration.class)
+                .warn(
+                    String.format(
+                        "Setting nodeId to %s. Use only positive numbers; negative are reserved for internal use.",
+                        sdkNodeId
+                    )
+                );
         }
         this.useIntegrationEnvironment = useIntegrationEnvironment;
         this.disabledProducers = disabledProducers;
@@ -122,14 +151,25 @@ public class OddsFeedConfiguration {
     }
 
     /**
+     * @return The port of Sportradar host used for API-access
+     */
+    public int getAPIPort() {
+        return apiPort;
+    }
+
+    /**
      * @return The selected environment used for API-access
      */
-    public Environment getEnvironment() { return selectedEnvironment; }
+    public Environment getEnvironment() {
+        return selectedEnvironment;
+    }
 
     /**
      * @return The longest inactivity interval between producer alive messages(seconds)
      */
-    public int getLongestInactivityInterval() { return inactivitySeconds; }
+    public int getLongestInactivityInterval() {
+        return inactivitySeconds;
+    }
 
     /**
      * @return The max recovery execution time, after which the recovery request is repeated(minutes)
@@ -141,10 +181,12 @@ public class OddsFeedConfiguration {
     /**
      * @return The minimal interval between recovery requests initiated by alive messages(seconds)
      */
-    public int getMinIntervalBetweenRecoveryRequests() { return minIntervalBetweenRecoveryRequests; }
+    public int getMinIntervalBetweenRecoveryRequests() {
+        return minIntervalBetweenRecoveryRequests;
+    }
 
     /**
-     * 
+     *
      * @return your access token that is used to identify and verify your identity
      */
     public String getAccessToken() {
@@ -171,7 +213,7 @@ public class OddsFeedConfiguration {
 
     /**
      * Gets the port used to connect to AMQP broker
-     * 
+     *
      * @return the port used to connect to AMQP broker
      */
     public int getPort() {
@@ -181,7 +223,7 @@ public class OddsFeedConfiguration {
     /**
      * The default locale used for any getter that returns localized Strings. (i.e. Sport name,
      * Tournament name, Team name, Player name etc). The default locale is English if not specified.
-     * 
+     *
      * @return the default locale
      */
     public Locale getDefaultLocale() {
@@ -331,36 +373,68 @@ public class OddsFeedConfiguration {
 
     @Override
     public String toString() {
-
         String obfuscatedToken = SdkHelper.obfuscate(accessToken);
 
-        return "OddsFeedConfiguration{" +
-                " accessToken='" + obfuscatedToken + '\'' +
-                ", defaultLocale=" + defaultLocale +
-                ", desiredLocales=" + desiredLocales +
-                ", host='" + host + '\'' +
-                ", apiHost='" + apiHost + '\'' +
-                ", inactivitySeconds=" + inactivitySeconds +
-                ", maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes +
-                ", minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests +
-                ", useMessagingSsl=" + useMessagingSsl +
-                ", useApiSsl=" + useApiSsl +
-                ", port=" + port +
-                ", messagingUsername='" + messagingUsername + '\'' +
-                ", messagingPassword='" + messagingPassword + '\'' +
-                ", sdkNodeId=" + sdkNodeId +
-                ", useIntegrationEnvironment=" + useIntegrationEnvironment +
-                ", disabledProducers=" + disabledProducers +
-                ", exceptionHandlingStrategy=" + exceptionHandlingStrategy +
-                ", selectedEnvironment=" + selectedEnvironment +
-                ", messagingVirtualHost=" + messagingVirtualHost +
-                ", httpClientTimeout=" + httpClientTimeout +
-                ", httpClientMaxConnTotal=" + httpClientMaxConnTotal +
-                ", httpClientMaxConnPerRoute=" + httpClientMaxConnPerRoute +
-                ", recoveryHttpClientTimeout=" + recoveryHttpClientTimeout +
-                ", recoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal +
-                ", recoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute +
-                "}";
+        return (
+            "OddsFeedConfiguration{" +
+            " accessToken='" +
+            obfuscatedToken +
+            '\'' +
+            ", defaultLocale=" +
+            defaultLocale +
+            ", desiredLocales=" +
+            desiredLocales +
+            ", host='" +
+            host +
+            '\'' +
+            ", apiHost='" +
+            apiHost +
+            '\'' +
+            ", apiPort=" +
+            apiPort +
+            ", inactivitySeconds=" +
+            inactivitySeconds +
+            ", maxRecoveryExecutionMinutes=" +
+            maxRecoveryExecutionMinutes +
+            ", minIntervalBetweenRecoveryRequests=" +
+            minIntervalBetweenRecoveryRequests +
+            ", useMessagingSsl=" +
+            useMessagingSsl +
+            ", useApiSsl=" +
+            useApiSsl +
+            ", port=" +
+            port +
+            ", messagingUsername='" +
+            messagingUsername +
+            '\'' +
+            ", messagingPassword='" +
+            messagingPassword +
+            '\'' +
+            ", sdkNodeId=" +
+            sdkNodeId +
+            ", useIntegrationEnvironment=" +
+            useIntegrationEnvironment +
+            ", disabledProducers=" +
+            disabledProducers +
+            ", exceptionHandlingStrategy=" +
+            exceptionHandlingStrategy +
+            ", selectedEnvironment=" +
+            selectedEnvironment +
+            ", messagingVirtualHost=" +
+            messagingVirtualHost +
+            ", httpClientTimeout=" +
+            httpClientTimeout +
+            ", httpClientMaxConnTotal=" +
+            httpClientMaxConnTotal +
+            ", httpClientMaxConnPerRoute=" +
+            httpClientMaxConnPerRoute +
+            ", recoveryHttpClientTimeout=" +
+            recoveryHttpClientTimeout +
+            ", recoveryHttpClientMaxConnTotal=" +
+            recoveryHttpClientMaxConnTotal +
+            ", recoveryHttpClientMaxConnPerRoute=" +
+            recoveryHttpClientMaxConnPerRoute +
+            "}"
+        );
     }
-
 }

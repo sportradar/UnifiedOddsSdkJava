@@ -1,5 +1,8 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import static com.sportradar.unifiedodds.sdk.impl.Constants.SCHEDULE_MSG_URI;
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.SAPIScheduleEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
@@ -9,17 +12,15 @@ import com.sportradar.unifiedodds.sdk.entities.Venue;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
 import com.sportradar.unifiedodds.sdk.impl.XmlMessageReader;
 import com.sportradar.utils.URN;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import org.junit.Before;
+import org.junit.Test;
 
-import static com.sportradar.unifiedodds.sdk.impl.Constants.SCHEDULE_MSG_URI;
-import static org.junit.Assert.assertEquals;
-
+@SuppressWarnings({ "AbbreviationAsWordInName", "MultipleStringLiterals" })
 public class VenueTest {
+
     private static final Locale LOCALE = Locale.ENGLISH;
     private static final List<Locale> LOCALES = Arrays.asList(LOCALE);
     private static final String VENUE_ID = "sr:venue:26791";
@@ -54,8 +55,8 @@ public class VenueTest {
         ExportableVenueCI exportableVenueCI = venueCI.export(); //export to cache
 
         Venue actual = new VenueImpl(
-                new VenueCI(exportableVenueCI), //import from cache
-                LOCALES
+            new VenueCI(exportableVenueCI), //import from cache
+            LOCALES
         );
 
         assertEquals(actual.getId(), URN.parse(VENUE_ID));

@@ -7,13 +7,14 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.unifiedodds.sdk.entities.StageType;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "HiddenField", "ParameterNumber" })
 public class ExportableMatchCI extends ExportableCompetitionCI {
+
     private Locale defaultLocale;
     private ExportableFixtureCI fixture;
     private Map<String, String> competitorQualifiers;
@@ -29,35 +30,52 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
     private Map<Locale, ExportableEventTimelineCI> eventTimelines;
     private StageType stageType;
 
-    public ExportableMatchCI(String id,
-                             Map<Locale, String> names,
-                             Date scheduled,
-                             Date scheduledEnd,
-                             Boolean startTimeTbd,
-                             String replacedBy,
-                             BookingStatus bookingStatus,
-                             List<String> competitorIds,
-                             ExportableVenueCI venue,
-                             ExportableSportEventConditionsCI conditions,
-                             Map<String, Map<String, String>> competitorsReferences,
-                             Locale defaultLocale, ExportableFixtureCI fixture,
-                             Map<String, String> competitorQualifiers,
-                             Map<String, Integer> competitorDivisions,
-                             String tournamentId,
-                             ExportableLoadableRoundCI tournamentRound,
-                             ExportableSeasonCI season,
-                             ExportableDelayedInfoCI delayedInfo,
-                             ExportableCoverageInfoCI coverageInfo,
-                             List<Locale> loadedFixtureLocales,
-                             List<Locale> loadedSummaryLocales,
-                             List<Locale> loadedCompetitorLocales,
-                             Map<Locale, ExportableEventTimelineCI> eventTimelines,
-                             String liveOdds,
-                             SportEventType sportEventType,
-                             StageType stageType,
-                             List<String> competitorVirtual) {
-        super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy, bookingStatus, competitorIds, venue,
-              conditions, competitorsReferences, liveOdds, sportEventType, competitorVirtual);
+    public ExportableMatchCI(
+        String id,
+        Map<Locale, String> names,
+        Date scheduled,
+        Date scheduledEnd,
+        Boolean startTimeTbd,
+        String replacedBy,
+        BookingStatus bookingStatus,
+        List<String> competitorIds,
+        ExportableVenueCI venue,
+        ExportableSportEventConditionsCI conditions,
+        Map<String, Map<String, String>> competitorsReferences,
+        Locale defaultLocale,
+        ExportableFixtureCI fixture,
+        Map<String, String> competitorQualifiers,
+        Map<String, Integer> competitorDivisions,
+        String tournamentId,
+        ExportableLoadableRoundCI tournamentRound,
+        ExportableSeasonCI season,
+        ExportableDelayedInfoCI delayedInfo,
+        ExportableCoverageInfoCI coverageInfo,
+        List<Locale> loadedFixtureLocales,
+        List<Locale> loadedSummaryLocales,
+        List<Locale> loadedCompetitorLocales,
+        Map<Locale, ExportableEventTimelineCI> eventTimelines,
+        String liveOdds,
+        SportEventType sportEventType,
+        StageType stageType,
+        List<String> competitorVirtual
+    ) {
+        super(
+            id,
+            names,
+            scheduled,
+            scheduledEnd,
+            startTimeTbd,
+            replacedBy,
+            bookingStatus,
+            competitorIds,
+            venue,
+            conditions,
+            competitorsReferences,
+            liveOdds,
+            sportEventType,
+            competitorVirtual
+        );
         this.defaultLocale = defaultLocale;
         this.fixture = fixture;
         this.competitorQualifiers = competitorQualifiers;
@@ -94,13 +112,17 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         return competitorQualifiers;
     }
 
-    public void setCompetitorQualifiers(Map<String, String> competitorQualifiers) { this.competitorQualifiers = competitorQualifiers; }
+    public void setCompetitorQualifiers(Map<String, String> competitorQualifiers) {
+        this.competitorQualifiers = competitorQualifiers;
+    }
 
     public Map<String, Integer> getCompetitorDivisions() {
         return competitorDivisions;
     }
 
-    public void setCompetitorDivisions(Map<String, Integer> competitorDivisions) { this.competitorDivisions = competitorDivisions; }
+    public void setCompetitorDivisions(Map<String, Integer> competitorDivisions) {
+        this.competitorDivisions = competitorDivisions;
+    }
 
     public String getTournamentId() {
         return tournamentId;
@@ -114,7 +136,9 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         return tournamentRound;
     }
 
-    public void setTournamentRound(ExportableLoadableRoundCI tournamentRound) { this.tournamentRound = tournamentRound; }
+    public void setTournamentRound(ExportableLoadableRoundCI tournamentRound) {
+        this.tournamentRound = tournamentRound;
+    }
 
     public ExportableSeasonCI getSeason() {
         return season;
@@ -144,25 +168,33 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         return loadedFixtureLocales;
     }
 
-    public void setLoadedFixtureLocales(List<Locale> loadedFixtureLocales) { this.loadedFixtureLocales = loadedFixtureLocales; }
+    public void setLoadedFixtureLocales(List<Locale> loadedFixtureLocales) {
+        this.loadedFixtureLocales = loadedFixtureLocales;
+    }
 
     public List<Locale> getLoadedSummaryLocales() {
         return loadedSummaryLocales;
     }
 
-    public void setLoadedSummaryLocales(List<Locale> loadedSummaryLocales) { this.loadedSummaryLocales = loadedSummaryLocales; }
+    public void setLoadedSummaryLocales(List<Locale> loadedSummaryLocales) {
+        this.loadedSummaryLocales = loadedSummaryLocales;
+    }
 
     public List<Locale> getLoadedCompetitorLocales() {
         return loadedCompetitorLocales;
     }
 
-    public void setLoadedCompetitorLocales(List<Locale> loadedCompetitorLocales) { this.loadedCompetitorLocales = loadedCompetitorLocales; }
+    public void setLoadedCompetitorLocales(List<Locale> loadedCompetitorLocales) {
+        this.loadedCompetitorLocales = loadedCompetitorLocales;
+    }
 
     public Map<Locale, ExportableEventTimelineCI> getEventTimelines() {
         return eventTimelines;
     }
 
-    public void setEventTimelines(Map<Locale, ExportableEventTimelineCI> eventTimelines) { this.eventTimelines = eventTimelines; }
+    public void setEventTimelines(Map<Locale, ExportableEventTimelineCI> eventTimelines) {
+        this.eventTimelines = eventTimelines;
+    }
 
     public StageType getStageType() {
         return stageType;

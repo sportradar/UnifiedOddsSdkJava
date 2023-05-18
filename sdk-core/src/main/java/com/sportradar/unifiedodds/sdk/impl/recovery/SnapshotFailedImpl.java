@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.SnapshotFailed;
  * // TODO @eti: Javadoc
  */
 public class SnapshotFailedImpl implements SnapshotFailed {
+
     private final int bookmakerId;
     private final int producerId;
     private final long recoveryId;

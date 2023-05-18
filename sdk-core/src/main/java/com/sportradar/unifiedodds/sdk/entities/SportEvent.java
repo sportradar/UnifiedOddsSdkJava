@@ -5,13 +5,13 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * Defines methods implemented by classes representing the target(tournament, match, race) of feed messages
  */
+@SuppressWarnings({ "LineLength" })
 public interface SportEvent {
     /**
      * Returns an {@link URN} uniquely identifying the tournament associated with the current instance

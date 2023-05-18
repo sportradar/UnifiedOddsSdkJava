@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,13 +17,20 @@ import java.util.Map;
  * Created on 24/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "LineLength" })
 abstract class OutcomeImpl implements Outcome {
+
     private final String id;
     private final NameProvider nameProvider;
     private final OutcomeDefinition outcomeDefinition;
     private final Locale defaultLocale;
 
-    OutcomeImpl(String id, NameProvider nameProvider, OutcomeDefinition outcomeDefinition, Locale defaultLocale) {
+    OutcomeImpl(
+        String id,
+        NameProvider nameProvider,
+        OutcomeDefinition outcomeDefinition,
+        Locale defaultLocale
+    ) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(id));
         Preconditions.checkNotNull(nameProvider);
         Preconditions.checkNotNull(outcomeDefinition);
@@ -42,7 +48,9 @@ abstract class OutcomeImpl implements Outcome {
      * @return - the outcome id
      */
     @Override
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
 
     /**
      * Returns the outcome name

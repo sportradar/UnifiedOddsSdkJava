@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +12,7 @@ import java.util.Map;
 /**
  * Represents a market definition which is related to an event message
  */
+@SuppressWarnings({ "LineLength" })
 public interface MarketDefinition {
     /**
      * Returns the market attribute "includes_outcomes_of_type"

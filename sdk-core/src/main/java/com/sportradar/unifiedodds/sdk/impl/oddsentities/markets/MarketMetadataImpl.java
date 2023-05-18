@@ -11,7 +11,9 @@ import com.sportradar.unifiedodds.sdk.oddsentities.MarketMetadata;
 /**
  * An implementation of the {@link MarketMetadata} instance which uses data provided by the feed to define metadata information
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class MarketMetadataImpl implements MarketMetadata {
+
     private final Long nextBetStop;
     private final Long startTime;
     private final Long endTime;
@@ -38,21 +40,33 @@ public class MarketMetadataImpl implements MarketMetadata {
     }
 
     @Override
-    public Long getStartTime() { return startTime; }
+    public Long getStartTime() {
+        return startTime;
+    }
 
     @Override
-    public Long getEndTime() { return endTime; }
+    public Long getEndTime() {
+        return endTime;
+    }
 
     @Override
-    public Long getAamsId() { return aamsId; }
+    public Long getAamsId() {
+        return aamsId;
+    }
 
     @Override
     public String toString() {
-        return "MarketMetadataImpl{" +
-                "nextBetStop=" + nextBetStop +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", aamsId=" + aamsId +
-                '}';
+        return (
+            "MarketMetadataImpl{" +
+            "nextBetStop=" +
+            nextBetStop +
+            ", startTime=" +
+            startTime +
+            ", endTime=" +
+            endTime +
+            ", aamsId=" +
+            aamsId +
+            '}'
+        );
     }
 }

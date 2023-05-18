@@ -10,25 +10,35 @@ import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.EventMessage;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import lombok.NonNull;
 
 /**
  * Created on 22/06/2017.
  * // TODO @eti: Javadoc
  */
 abstract class EventMessageImpl<T extends SportEvent> implements EventMessage<T> {
+
     private final Producer producer;
     private final MessageTimestamp timestamp;
     private final T sportEvent;
-    private final byte[] rawMessage;// TODO unmodifiable collection
+    private final byte[] rawMessage; // TODO unmodifiable collection
     private final Long requestId;
 
-    EventMessageImpl(T sportEvent, byte[] rawMessage, Producer producer, MessageTimestamp timestamp, Long requestId) {
-        Preconditions.checkNotNull(sportEvent);
-        Preconditions.checkNotNull(rawMessage);
-        Preconditions.checkNotNull(timestamp);
-
+    EventMessageImpl(
+        @NonNull final T sportEvent,
+        @NonNull final byte[] rawMessage,
+        Producer producer,
+        @NonNull final MessageTimestamp timestamp,
+        Long requestId
+    ) {
         this.producer = producer;
-        this.timestamp = new MessageTimestampImpl(timestamp.getCreated(), timestamp.getSent(), timestamp.getReceived(), new TimeUtilsImpl().now());
+        this.timestamp =
+            new MessageTimestampImpl(
+                timestamp.getCreated(),
+                timestamp.getSent(),
+                timestamp.getReceived(),
+                new TimeUtilsImpl().now()
+            );
         this.sportEvent = sportEvent;
         this.rawMessage = rawMessage;
         this.requestId = requestId;

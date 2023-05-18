@@ -6,13 +6,14 @@ package com.sportradar.unifiedodds.sdk.impl.dto;
 
 import com.sportradar.uf.datamodel.UFPeriodScoreType;
 import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodScore;
-
 import java.math.BigDecimal;
 
 /**
  * A data transfer object containing period score information
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class PeriodScoreDTO {
+
     /**
      * The score of the home team in the period represented by the current instance
      */
@@ -116,12 +117,19 @@ public class PeriodScoreDTO {
      */
     @Override
     public String toString() {
-        return "PeriodScoreImpl{" +
-                "homeScore=" + homeScore +
-                ", awayScore=" + awayScore +
-                ", number=" + number +
-                ", matchStatusCode=" + matchStatusCode +
-                ", type=" + periodType +
-                '}';
+        return (
+            "PeriodScoreImpl{" +
+            "homeScore=" +
+            homeScore +
+            ", awayScore=" +
+            awayScore +
+            ", number=" +
+            number +
+            ", matchStatusCode=" +
+            matchStatusCode +
+            ", type=" +
+            periodType +
+            '}'
+        );
     }
 }

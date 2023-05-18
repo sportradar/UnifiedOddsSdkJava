@@ -7,12 +7,12 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCI;
 import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * A lottery cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface LotteryCI extends SportEventCI {
     /**
      * Returns the associated category id

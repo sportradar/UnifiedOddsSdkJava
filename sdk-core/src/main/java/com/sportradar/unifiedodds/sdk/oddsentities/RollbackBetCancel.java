@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.Date;
 
 /**
@@ -25,5 +24,4 @@ public interface RollbackBetCancel<T extends SportEvent> extends MarketMessage<T
      *         bets). This should correspond to the endtime in a previous betcancel
      */
     Date getEndTime();
-
 }

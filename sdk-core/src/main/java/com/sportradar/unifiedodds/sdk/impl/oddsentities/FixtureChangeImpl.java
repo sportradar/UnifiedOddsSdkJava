@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChangeType;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-
 import java.util.Date;
 
 /**
@@ -19,18 +18,23 @@ import java.util.Date;
  * // TODO @eti: Javadoc
  */
 class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implements FixtureChange<T> {
+
     private final FixtureChangeType changeType;
     private final Date nextLiveTime;
     private final Date startTime;
 
-    FixtureChangeImpl(T sportEvent, UFFixtureChange message, Producer producer, byte[] rawMessage, MessageTimestamp timestamp) {
+    FixtureChangeImpl(
+        T sportEvent,
+        UFFixtureChange message,
+        Producer producer,
+        byte[] rawMessage,
+        MessageTimestamp timestamp
+    ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
-
         UFChangeType type = message.getChangeType();
         if (type == null) {
             changeType = FixtureChangeType.NotAvailable;
-        }
-        else {
+        } else {
             switch (type) {
                 case NEW:
                     changeType = FixtureChangeType.New;
@@ -61,11 +65,17 @@ class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implem
     }
 
     @Override
-    public FixtureChangeType getChangeType() { return changeType; }
+    public FixtureChangeType getChangeType() {
+        return changeType;
+    }
 
     @Override
-    public Date getNextLiveTime() { return nextLiveTime; }
+    public Date getNextLiveTime() {
+        return nextLiveTime;
+    }
 
     @Override
-    public Date getStartTime() { return startTime; }
+    public Date getStartTime() {
+        return startTime;
+    }
 }

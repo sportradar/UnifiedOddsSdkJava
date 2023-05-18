@@ -10,7 +10,6 @@ import java.util.List;
  * Defines methods to access soccer match specific statistics
  */
 public interface SoccerStatistics extends MatchStatistics {
-
     /**
      * Returns a list of complete team statistics data
      *

@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.impl.FeedMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +17,9 @@ import java.util.UUID;
  * The master {@link FeedMessageProcessor} implementation that handles the flow
  * trough the message processing pipeline
  */
+@SuppressWarnings({ "ExplicitInitialization" })
 public class CompositeMessageProcessor implements CompositeFeedMessageProcessor {
+
     /**
      * The processor identifier
      */
@@ -39,7 +40,6 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
      */
     private boolean initialized = false;
 
-
     /**
      * Constructs a new {@link CompositeMessageProcessor} instance
      *
@@ -54,7 +54,6 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
 
         FeedMessageProcessor prevProc = firstProcessor;
         for (FeedMessageProcessor nextProc : processors) {
-
             if (prevProc.getProcessorId().equals(nextProc.getProcessorId())) {
                 continue;
             }
@@ -64,7 +63,6 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
         }
         this.finalProcessor = prevProc;
     }
-
 
     /**
      * Initializes and prepares the composite processor instance
@@ -96,7 +94,12 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
      * @param timestamp - all message timestamps
      */
     @Override
-    public void processMessage(UnmarshalledMessage message, byte[] body, RoutingKeyInfo routingKeyInfo, MessageTimestamp timestamp) {
+    public void processMessage(
+        UnmarshalledMessage message,
+        byte[] body,
+        RoutingKeyInfo routingKeyInfo,
+        MessageTimestamp timestamp
+    ) {
         if (!initialized) {
             throw new IllegalStateException("The composite message processor needs to be initialized");
         }
@@ -111,6 +114,8 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
      */
     @Override
     public void setNextMessageProcessor(FeedMessageProcessor nextMessageProcessor) {
-        throw new UnsupportedOperationException("The composite message processor can't have successor processor");
+        throw new UnsupportedOperationException(
+            "The composite message processor can't have successor processor"
+        );
     }
 }

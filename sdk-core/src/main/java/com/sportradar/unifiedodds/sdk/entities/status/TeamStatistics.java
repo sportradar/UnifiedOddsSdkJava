@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 /**
  * Defines methods used to access team statistics
  */
+@SuppressWarnings({ "LineLength" })
 public interface TeamStatistics {
     /**
      * Returns an indication if the statistics are for the home or away team
@@ -57,7 +58,9 @@ public interface TeamStatistics {
      *
      * @return the received green cards number, could be null
      */
-    default Integer getGreenCards(){ return null; }
+    default Integer getGreenCards() {
+        return null;
+    }
 
     /**
      * Returns the name

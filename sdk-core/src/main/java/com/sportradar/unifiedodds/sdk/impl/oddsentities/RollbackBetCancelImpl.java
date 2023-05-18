@@ -12,26 +12,36 @@ import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetCancel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 23/06/2017.
  * // TODO @eti: Javadoc
  */
-class RollbackBetCancelImpl<T extends SportEvent>  extends EventMessageImpl<T> implements RollbackBetCancel<T> {
-    private final static Logger logger = LoggerFactory.getLogger(RollbackBetCancelImpl.class);
+@SuppressWarnings({ "ConstantName" })
+class RollbackBetCancelImpl<T extends SportEvent>
+    extends EventMessageImpl<T>
+    implements RollbackBetCancel<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(RollbackBetCancelImpl.class);
     private final Date startTime;
     private final Date endTime;
     private final List<Market> affectedMarkets;
 
-    RollbackBetCancelImpl(T sportEvent, UFRollbackBetCancel message, Producer producer, byte[] rawMessage, MarketFactory factory, MessageTimestamp timestamp) {
+    RollbackBetCancelImpl(
+        T sportEvent,
+        UFRollbackBetCancel message,
+        Producer producer,
+        byte[] rawMessage,
+        MarketFactory factory,
+        MessageTimestamp timestamp
+    ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
         Preconditions.checkNotNull(factory);
 
@@ -39,13 +49,20 @@ class RollbackBetCancelImpl<T extends SportEvent>  extends EventMessageImpl<T> i
         endTime = message.getEndTime() == null ? null : new Date(message.getEndTime());
 
         if (message.getMarket() != null) {
-            affectedMarkets = message.getMarket().stream()
+            affectedMarkets =
+                message
+                    .getMarket()
+                    .stream()
                     .map(m -> factory.buildMarket(sportEvent, m, message.getProduct()))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
         } else {
-            logger.warn("Processing RollbackBetCancel with empty market list. [sportEvent:{}, producer:{}]", sportEvent.getId(), producer);
+            logger.warn(
+                "Processing RollbackBetCancel with empty market list. [sportEvent:{}, producer:{}]",
+                sportEvent.getId(),
+                producer
+            );
             affectedMarkets = Collections.emptyList();
         }
     }

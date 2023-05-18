@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableEventPlayerAssistCI extends ExportableEventPlayerCI {
+
     private String type;
 
     public ExportableEventPlayerAssistCI(String id, String name, String type) {

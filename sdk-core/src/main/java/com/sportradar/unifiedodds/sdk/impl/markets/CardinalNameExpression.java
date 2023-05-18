@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
-
 import java.util.Locale;
 
 /**
@@ -13,6 +12,7 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public class CardinalNameExpression implements NameExpression {
+
     private final Operand operand;
 
     CardinalNameExpression(Operand operand) {

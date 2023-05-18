@@ -1,13 +1,13 @@
 package com.sportradar.unifiedodds.sdk.caching.ci.markets;
 
-import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
-import org.junit.Test;
-
-import java.util.Locale;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
+import java.util.Locale;
+import org.junit.Test;
+
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class MarketOutcomeCITest {
 
     private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;

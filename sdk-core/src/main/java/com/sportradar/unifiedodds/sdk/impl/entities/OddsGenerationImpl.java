@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UFOddsGenerationProperties;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsGeneration;
+import lombok.NonNull;
 
 /**
  * Represents odds generation properties
@@ -16,10 +17,7 @@ public class OddsGenerationImpl implements OddsGeneration {
     private final Double expectedTotals;
     private final Double expectedSupremacy;
 
-    public OddsGenerationImpl(UFOddsGenerationProperties oddsGenerationProperties)
-    {
-        Preconditions.checkNotNull(oddsGenerationProperties);
-
+    public OddsGenerationImpl(@NonNull final UFOddsGenerationProperties oddsGenerationProperties) {
         expectedTotals = oddsGenerationProperties.getExpectedTotals();
         expectedSupremacy = oddsGenerationProperties.getExpectedSupremacy();
     }

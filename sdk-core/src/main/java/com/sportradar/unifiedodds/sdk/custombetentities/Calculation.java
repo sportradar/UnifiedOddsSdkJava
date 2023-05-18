@@ -11,7 +11,6 @@ import java.util.List;
  * Provides a probability calculation
  */
 public interface Calculation {
-
     /**
      * Gets the odds
      *

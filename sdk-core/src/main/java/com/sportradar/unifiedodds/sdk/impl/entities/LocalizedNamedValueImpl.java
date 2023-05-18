@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
-
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * An implementation of the {@link LocalizedNamedValue}
  */
 public class LocalizedNamedValueImpl extends NamedValueImpl implements LocalizedNamedValue {
+
     /**
      * A {@link ConcurrentHashMap} containing the various description translations
      */
@@ -31,9 +31,12 @@ public class LocalizedNamedValueImpl extends NamedValueImpl implements Localized
      * @param descriptions - a {@link ConcurrentHashMap} containing various description translations
      * @param defaultLocale - the {@link Locale} which is used as default
      */
-    public LocalizedNamedValueImpl(int id, ConcurrentHashMap<Locale, String> descriptions, Locale defaultLocale) {
+    public LocalizedNamedValueImpl(
+        int id,
+        ConcurrentHashMap<Locale, String> descriptions,
+        Locale defaultLocale
+    ) {
         super(id);
-
         Preconditions.checkArgument(id >= 0);
 
         this.descriptions = descriptions;
@@ -58,5 +61,7 @@ public class LocalizedNamedValueImpl extends NamedValueImpl implements Localized
      *           otherwise null
      */
     @Override
-    public String getDescription(Locale locale) { return descriptions == null ? null : descriptions.getOrDefault(locale, null); }
+    public String getDescription(Locale locale) {
+        return descriptions == null ? null : descriptions.getOrDefault(locale, null);
+    }
 }

@@ -4,51 +4,52 @@
 
 package com.sportradar.unifiedodds.sdk.cfg;
 
+import static java.util.Locale.ENGLISH;
+import static org.mockito.Mockito.*;
+
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import java.util.Arrays;
 import java.util.Locale;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created on 27/03/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
 public class EnvironmentSelectorTests {
-    private static SDKConfigurationPropertiesReader samplePropertiesReader;
-    private static SDKConfigurationYamlReader sampleYamlReader;
 
-    @BeforeClass
-    public static void init() {
-        samplePropertiesReader = Mockito.mock(SDKConfigurationPropertiesReader.class);
-        sampleYamlReader = Mockito.mock(SDKConfigurationYamlReader.class);
-    }
+    private final String token = "sample-token";
+    private SDKConfigurationPropertiesReader samplePropertiesReader = mock(
+        SDKConfigurationPropertiesReader.class
+    );
+    private SDKConfigurationYamlReader sampleYamlReader = mock(SDKConfigurationYamlReader.class);
+    private final EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl(
+        token,
+        samplePropertiesReader,
+        sampleYamlReader
+    );
 
     @Test(expected = IllegalArgumentException.class)
     public void environmentSelectorConstructFailure() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl(null, samplePropertiesReader, sampleYamlReader);
+        new EnvironmentSelectorImpl(null, samplePropertiesReader, sampleYamlReader);
     }
 
     @Test(expected = NullPointerException.class)
     public void environmentSelectorConstructFailure2() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", null, sampleYamlReader);
+        new EnvironmentSelectorImpl("sample-token", null, sampleYamlReader);
     }
 
     @Test(expected = NullPointerException.class)
     public void environmentSelectorConstructFailure3() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, null);
+        new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, null);
     }
 
     @Test
     public void selectIntegrationEnvironmentReturnTest() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
         ConfigurationBuilder configurationBuilder = environmentSelector.selectIntegration();
 
         Assert.assertNotNull(configurationBuilder);
@@ -56,8 +57,6 @@ public class EnvironmentSelectorTests {
 
     @Test
     public void selectProductionEnvironmentReturnTest() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
         ConfigurationBuilder configurationBuilder = environmentSelector.selectProduction();
 
         Assert.assertNotNull(configurationBuilder);
@@ -65,8 +64,6 @@ public class EnvironmentSelectorTests {
 
     @Test
     public void selectReplayEnvironmentReturnTest() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
         ReplayConfigurationBuilder configurationBuilder = environmentSelector.selectReplay();
 
         Assert.assertNotNull(configurationBuilder);
@@ -74,8 +71,6 @@ public class EnvironmentSelectorTests {
 
     @Test
     public void selectCustomEnvironmentReturnTest() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
         CustomConfigurationBuilder configurationBuilder = environmentSelector.selectCustom();
 
         Assert.assertNotNull(configurationBuilder);
@@ -83,14 +78,15 @@ public class EnvironmentSelectorTests {
 
     @Test
     public void integrationEnvironmentResultValidation() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
-        OddsFeedConfiguration cfg = environmentSelector.selectIntegration().setDefaultLocale(Locale.CHINESE).build();
+        OddsFeedConfiguration cfg = environmentSelector
+            .selectIntegration()
+            .setDefaultLocale(Locale.CHINESE)
+            .build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
         Assert.assertEquals(cfg.getMessagingHost(), EnvironmentManager.getMqHost(Environment.Integration));
-        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Replay));
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
@@ -104,9 +100,10 @@ public class EnvironmentSelectorTests {
 
     @Test
     public void productionEnvironmentResultValidation() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
-        OddsFeedConfiguration cfg = environmentSelector.selectProduction().setDefaultLocale(Locale.CHINESE).build();
+        OddsFeedConfiguration cfg = environmentSelector
+            .selectProduction()
+            .setDefaultLocale(Locale.CHINESE)
+            .build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
@@ -125,14 +122,17 @@ public class EnvironmentSelectorTests {
 
     @Test
     public void replayEnvironmentResultValidation() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
-
-        OddsFeedConfiguration cfg = environmentSelector.selectReplay().setDesiredLocales(Arrays.asList(Locale.CHINESE)).build();
+        OddsFeedConfiguration cfg = environmentSelector
+            .selectReplay()
+            .setDesiredLocales(Arrays.asList(Locale.CHINESE))
+            .build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");
+        Assert.assertEquals(cfg.getEnvironment(), Environment.Replay);
         Assert.assertEquals(cfg.getMessagingHost(), EnvironmentManager.getMqHost(Environment.Replay));
         Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Replay));
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(cfg.getMessagingVirtualHost(), null);
         Assert.assertEquals(cfg.getMessagingUsername(), null);
         Assert.assertEquals(cfg.getMessagingPassword(), null);
@@ -145,10 +145,39 @@ public class EnvironmentSelectorTests {
     }
 
     @Test
-    public void customEnvironmentDefaultResultValidation() {
-        EnvironmentSelector environmentSelector = new EnvironmentSelectorImpl("sample-token", samplePropertiesReader, sampleYamlReader);
+    public void replayShouldTargetIntegrationApiBecauseReplayButWeNeedAnExplanationWhy() {
+        OddsFeedConfiguration cfg = environmentSelector.selectReplay().setDefaultLocale(ENGLISH).build();
 
-        OddsFeedConfiguration cfg = environmentSelector.selectCustom().setDesiredLocales(Arrays.asList(Locale.CHINESE)).build();
+        Assert.assertEquals(cfg.getAPIHost(), EnvironmentManager.getApiHost(Environment.Integration));
+    }
+
+    @Test
+    public void globalAndNonGlobalStgApisSitUnderSameIpsHoweverReplayShouldPointToNonGlobalAsItIsLongTermStrategy() {
+        OddsFeedConfiguration cfg = environmentSelector.selectReplay().setDefaultLocale(ENGLISH).build();
+
+        Assert.assertEquals(cfg.getAPIHost(), "stgapi.betradar.com");
+    }
+
+    @Test
+    public void replayShouldPointToNonGlobalMessagingHostAsItIsLongTermStrategy() {
+        OddsFeedConfiguration cfg = environmentSelector.selectReplay().setDefaultLocale(ENGLISH).build();
+
+        Assert.assertEquals(cfg.getMessagingHost(), "replaymq.betradar.com");
+    }
+
+    @Test
+    public void replayConfigurationShouldBeCreatedForReplayEnvironment() {
+        OddsFeedConfiguration cfg = environmentSelector.selectReplay().setDefaultLocale(ENGLISH).build();
+
+        Assert.assertEquals(cfg.getEnvironment(), Environment.Replay);
+    }
+
+    @Test
+    public void customEnvironmentDefaultResultValidation() {
+        OddsFeedConfiguration cfg = environmentSelector
+            .selectCustom()
+            .setDesiredLocales(Arrays.asList(Locale.CHINESE))
+            .build();
 
         Assert.assertNotNull(cfg);
         Assert.assertEquals(cfg.getAccessToken(), "sample-token");

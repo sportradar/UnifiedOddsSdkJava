@@ -5,10 +5,9 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
-import org.apache.http.HttpStatus;
-
 import java.time.Duration;
 import java.util.Date;
+import org.apache.http.HttpStatus;
 
 /**
  * An interface providing methods to access bookmaker details

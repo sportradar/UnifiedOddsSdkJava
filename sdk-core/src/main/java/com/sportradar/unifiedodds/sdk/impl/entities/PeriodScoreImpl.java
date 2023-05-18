@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
 import com.sportradar.unifiedodds.sdk.entities.PeriodType;
 import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDTO;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Locale;
@@ -24,7 +23,11 @@ import java.util.Locale;
  *                  awayScore:0
  *                  number:2 (as in 2nd half time)</i>
  */
+@SuppressWarnings(
+    { "BooleanExpressionComplexity", "CyclomaticComplexity", "MagicNumber", "UnnecessaryParentheses" }
+)
 public class PeriodScoreImpl implements PeriodScore {
+
     /**
      * The score of the home team in the period represented by the current instance
      */
@@ -72,7 +75,7 @@ public class PeriodScoreImpl implements PeriodScore {
         this.matchStatuses = matchStatuses;
 
         PeriodType tempPeriodType = null;
-        if(ps.getPeriodType() != null) {
+        if (ps.getPeriodType() != null) {
             if (ps.getPeriodType().equalsIgnoreCase("overtime")) {
                 tempPeriodType = PeriodType.Overtime;
             } else if (ps.getPeriodType().equalsIgnoreCase("penalties")) {
@@ -86,7 +89,12 @@ public class PeriodScoreImpl implements PeriodScore {
             if (matchStatusCode == 40) {
                 // <match_status description="Overtime" id="40"/>
                 tempPeriodType = PeriodType.Overtime;
-            } else if (matchStatusCode == 50 || matchStatusCode == 51 || matchStatusCode == 52 || matchStatusCode == 120) {
+            } else if (
+                matchStatusCode == 50 ||
+                matchStatusCode == 51 ||
+                matchStatusCode == 52 ||
+                matchStatusCode == 120
+            ) {
                 // <match_status description="Penalties" id="50"/>
                 // <match_status description="Penalties" id="51"/>
                 // <match_status description="Penalties" id="52"/>
@@ -187,12 +195,19 @@ public class PeriodScoreImpl implements PeriodScore {
      */
     @Override
     public String toString() {
-        return "PeriodScoreImpl{" +
-                "homeScore=" + homeScore +
-                ", awayScore=" + awayScore +
-                ", number=" + number +
-                ", matchStatusCode=" + matchStatusCode +
-                ", type=" + periodType +
-                '}';
+        return (
+            "PeriodScoreImpl{" +
+            "homeScore=" +
+            homeScore +
+            ", awayScore=" +
+            awayScore +
+            ", number=" +
+            number +
+            ", matchStatusCode=" +
+            matchStatusCode +
+            ", type=" +
+            periodType +
+            '}'
+        );
     }
 }

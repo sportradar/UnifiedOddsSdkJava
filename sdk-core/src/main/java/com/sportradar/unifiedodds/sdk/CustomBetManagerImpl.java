@@ -6,6 +6,8 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CAPICalculationResultType;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
@@ -13,25 +15,29 @@ import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.utils.URN;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * The basic implementation of the {@link CustomBetManager}
  */
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName" })
 public class CustomBetManagerImpl implements CustomBetManager {
+
     private static final Logger executionLogger = LoggerFactory.getLogger(CustomBetManagerImpl.class);
-    private static final Logger clientInteractionLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
+    private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkClientInteractionLog.class
+    );
     private final DataRouterManager dataRouterManager;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     @Inject
     CustomBetManagerImpl(DataRouterManager dataRouterManager, SDKInternalConfiguration configuration) {
-        Preconditions.checkNotNull(dataRouterManager);
-        Preconditions.checkNotNull(configuration);
+        Preconditions.checkNotNull(dataRouterManager, "dataRouterManager");
+        Preconditions.checkNotNull(configuration, "configuration");
 
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = configuration.getExceptionHandlingStrategy();
@@ -43,20 +49,23 @@ public class CustomBetManagerImpl implements CustomBetManager {
     }
 
     @Override
-    public AvailableSelections getAvailableSelections(URN eventId) {
+    @SuppressWarnings("IllegalCatch")
+    public AvailableSelections getAvailableSelections(URN eventId) throws CommunicationException {
         Preconditions.checkNotNull(eventId);
-
         clientInteractionLogger.info("CustomBetManager.getAvailableSelections({})", eventId);
 
         try {
             return dataRouterManager.requestAvailableSelections(eventId);
+        } catch (RuntimeException e) {
+            return handleException("Event[" + eventId.toString() + "] get available selections failed", e);
         } catch (CommunicationException e) {
             return handleException("Event[" + eventId.toString() + "] get available selections failed", e);
         }
     }
 
     @Override
-    public Calculation calculateProbability(List<Selection> selections) {
+    @SuppressWarnings("IllegalCatch")
+    public Calculation calculateProbability(List<Selection> selections) throws CommunicationException {
         Preconditions.checkNotNull(selections);
 
         clientInteractionLogger.info("CustomBetManager.calculateProbability()");
@@ -65,11 +74,15 @@ public class CustomBetManagerImpl implements CustomBetManager {
             return dataRouterManager.requestCalculateProbability(selections);
         } catch (CommunicationException e) {
             return handleException("Calculating probabilities failed", e);
+        } catch (RuntimeException e) {
+            return handleException("Calculating probabilities failed", e);
         }
     }
 
     @Override
-    public CalculationFilter calculateProbabilityFilter(List<Selection> selections) {
+    @SuppressWarnings("IllegalCatch")
+    public CalculationFilter calculateProbabilityFilter(List<Selection> selections)
+        throws CommunicationException {
         Preconditions.checkNotNull(selections);
 
         clientInteractionLogger.info("CustomBetManager.calculateProbabilityFilter()");
@@ -78,15 +91,26 @@ public class CustomBetManagerImpl implements CustomBetManager {
             return dataRouterManager.requestCalculateProbabilityFilter(selections);
         } catch (CommunicationException e) {
             return handleException("Calculating probabilities (filtered) failed", e);
+        } catch (RuntimeException e) {
+            return handleException("Calculating probabilities (filtered) failed", e);
         }
     }
 
-
-    private <T> T handleException(String message, Exception e) {
+    private <T> T handleException(String message, CommunicationException e) throws CommunicationException {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Catch) {
             executionLogger.warn(message, e);
             return null;
+        } else {
+            throw e;
         }
-        throw new ObjectNotFoundException(message, e);
+    }
+
+    private <T> T handleException(String message, RuntimeException e) {
+        if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Catch) {
+            executionLogger.warn(message, e);
+            return null;
+        } else {
+            throw e;
+        }
     }
 }

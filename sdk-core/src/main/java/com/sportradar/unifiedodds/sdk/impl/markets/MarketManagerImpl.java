@@ -25,19 +25,32 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.utils.SdkHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "IllegalCatch",
+        "LineLength",
+        "MethodLength",
+        "VariableDeclarationUsageDistance",
+    }
+)
 public class MarketManagerImpl implements MarketDescriptionManager {
+
     private static final Logger logger = LoggerFactory.getLogger(MarketManagerImpl.class);
-    private static final Logger interactionLogger = LoggerFactory.getLogger(LoggerDefinitions.UFSdkClientInteractionLog.class);
+    private static final Logger interactionLogger = LoggerFactory.getLogger(
+        LoggerDefinitions.UFSdkClientInteractionLog.class
+    );
     private final SDKInternalConfiguration config;
     private final MarketDescriptionProvider marketDescriptionProvider;
     private final InvariantMarketDescriptionCache invariantMarketDescriptionCache;
@@ -46,11 +59,13 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     @Inject
-    public MarketManagerImpl(SDKInternalConfiguration config,
-                             MarketDescriptionProvider marketDescriptionProvider,
-                             @Named("InvariantMarketCache") InvariantMarketDescriptionCache invariantMarketDescriptionCache,
-                             VariantDescriptionCache variantMarketDescriptionListCache,
-                             @Named("VariantMarketCache") MarketDescriptionCache variantMarketDescriptionCache) {
+    public MarketManagerImpl(
+        SDKInternalConfiguration config,
+        MarketDescriptionProvider marketDescriptionProvider,
+        @Named("InvariantMarketCache") InvariantMarketDescriptionCache invariantMarketDescriptionCache,
+        VariantDescriptionCache variantMarketDescriptionListCache,
+        @Named("VariantMarketCache") MarketDescriptionCache variantMarketDescriptionCache
+    ) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(marketDescriptionProvider);
         Preconditions.checkNotNull(invariantMarketDescriptionCache);
@@ -72,7 +87,9 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     @Override
     public List<MarketDescription> getMarketDescriptions() {
         try {
-            return invariantMarketDescriptionCache.getAllInvariantMarketDescriptions(Lists.newArrayList(config.getDefaultLocale()));
+            return invariantMarketDescriptionCache.getAllInvariantMarketDescriptions(
+                Lists.newArrayList(config.getDefaultLocale())
+            );
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
                 throw new ObjectNotFoundException("Market descriptions could not be provided", e);
@@ -86,10 +103,15 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     @Override
     public List<MarketDescription> getMarketDescriptions(Locale locale) {
         try {
-            return invariantMarketDescriptionCache.getAllInvariantMarketDescriptions(Lists.newArrayList(locale));
+            return invariantMarketDescriptionCache.getAllInvariantMarketDescriptions(
+                Lists.newArrayList(locale)
+            );
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new ObjectNotFoundException("Market descriptions(" + locale+ ") could not be provided", e);
+                throw new ObjectNotFoundException(
+                    "Market descriptions(" + locale + ") could not be provided",
+                    e
+                );
             } else {
                 logger.warn("Market descriptions with the {} locale could not be provided, ex:", locale, e);
                 return null;
@@ -101,13 +123,20 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     public List<MarketMappingData> getMarketMapping(int marketId, Producer producer) {
         MarketDescription marketDescriptor;
         try {
-            marketDescriptor = marketDescriptionProvider.getMarketDescription(marketId, null, Lists.newArrayList(config.getDefaultLocale()), false);
-        }
-        catch (CacheItemNotFoundException e) {
+            marketDescriptor =
+                marketDescriptionProvider.getMarketDescription(
+                    marketId,
+                    null,
+                    Lists.newArrayList(config.getDefaultLocale()),
+                    false
+                );
+        } catch (CacheItemNotFoundException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new ObjectNotFoundException("Market mappings for " + marketId + " could not be provided", e);
-            }
-            else {
+                throw new ObjectNotFoundException(
+                    "Market mappings for " + marketId + " could not be provided",
+                    e
+                );
+            } else {
                 logger.warn("Market mappings for the marketId: {} could not be provided, ex:", marketId, e);
                 return null;
             }
@@ -117,9 +146,11 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             return Collections.emptyList();
         }
 
-        List<MarketMappingData> mappings = marketDescriptor.getMappings().stream()
-                .filter(m -> m.getProducerIds().contains(producer.getId()))
-                .collect(Collectors.toList());
+        List<MarketMappingData> mappings = marketDescriptor
+            .getMappings()
+            .stream()
+            .filter(m -> m.getProducerIds().contains(producer.getId()))
+            .collect(Collectors.toList());
 
         if (mappings.size() > 1) {
             for (MarketMappingData mapping : mappings) {
@@ -127,21 +158,25 @@ public class MarketManagerImpl implements MarketDescriptionManager {
                     return Arrays.asList(mapping);
                 }
             }
-            logger.warn("MarketId:{}, producer:{}, sportId:{}, specifiers={} has too many mappings [{}].",
-                        marketDescriptor.getId(),
-                        producer.getId(),
-                        0,
-                        SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
-                        mappings.size());
+            logger.warn(
+                "MarketId:{}, producer:{}, sportId:{}, specifiers={} has too many mappings [{}].",
+                marketDescriptor.getId(),
+                producer.getId(),
+                0,
+                SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                mappings.size()
+            );
             int i = 0;
             for (MarketMappingData mapping : mappings) {
-                logger.debug("MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
-                             marketDescriptor.getId(),
-                             producer.getId(),
-                             0,
-                             SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
-                             i,
-                             mapping);
+                logger.debug(
+                    "MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
+                    marketDescriptor.getId(),
+                    producer.getId(),
+                    0,
+                    SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                    i,
+                    mapping
+                );
                 i++;
             }
         }
@@ -150,15 +185,33 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     }
 
     @Override
-    public List<MarketMappingData> getMarketMapping(int marketId, Map<String, String> specifiers, Producer producer) {
+    public List<MarketMappingData> getMarketMapping(
+        int marketId,
+        Map<String, String> specifiers,
+        Producer producer
+    ) {
         MarketDescription marketDescriptor;
         try {
-            marketDescriptor = marketDescriptionProvider.getMarketDescription(marketId, specifiers, Lists.newArrayList(config.getDefaultLocale()), false);
+            marketDescriptor =
+                marketDescriptionProvider.getMarketDescription(
+                    marketId,
+                    specifiers,
+                    Lists.newArrayList(config.getDefaultLocale()),
+                    false
+                );
         } catch (CacheItemNotFoundException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new ObjectNotFoundException("Market mappings for " + marketId+ " could not be provided, specifiers: " + specifiers, e);
+                throw new ObjectNotFoundException(
+                    "Market mappings for " + marketId + " could not be provided, specifiers: " + specifiers,
+                    e
+                );
             } else {
-                logger.warn("Market mappings for the marketId: {} could not be provided, specifiers: [{}]. ex:", marketId, specifiers, e);
+                logger.warn(
+                    "Market mappings for the marketId: {} could not be provided, specifiers: [{}]. ex:",
+                    marketId,
+                    specifiers,
+                    e
+                );
                 return null;
             }
         }
@@ -167,9 +220,11 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             return Collections.emptyList();
         }
 
-        List<MarketMappingData> mappings = marketDescriptor.getMappings().stream()
-                .filter(m -> m.getProducerIds().contains(producer.getId()))
-                .collect(Collectors.toList());
+        List<MarketMappingData> mappings = marketDescriptor
+            .getMappings()
+            .stream()
+            .filter(m -> m.getProducerIds().contains(producer.getId()))
+            .collect(Collectors.toList());
 
         if (mappings.size() > 1) {
             for (MarketMappingData mapping : mappings) {
@@ -177,21 +232,25 @@ public class MarketManagerImpl implements MarketDescriptionManager {
                     return Arrays.asList(mapping);
                 }
             }
-            logger.warn("MarketId:{}, producer:{}, sportId:{}, specifiers={} has too many mappings [{}].",
-                        marketDescriptor.getId(),
-                        producer.getId(),
-                        0,
-                        SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
-                        mappings.size());
+            logger.warn(
+                "MarketId:{}, producer:{}, sportId:{}, specifiers={} has too many mappings [{}].",
+                marketDescriptor.getId(),
+                producer.getId(),
+                0,
+                SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                mappings.size()
+            );
             int i = 0;
             for (MarketMappingData mapping : mappings) {
-                logger.debug("MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
-                             marketDescriptor.getId(),
-                             producer.getId(),
-                             0,
-                             SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
-                             i,
-                             mapping);
+                logger.debug(
+                    "MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
+                    marketDescriptor.getId(),
+                    producer.getId(),
+                    0,
+                    SdkHelper.specifierKeyListToString(marketDescriptor.getSpecifiers()),
+                    i,
+                    mapping
+                );
                 i++;
             }
         }
@@ -217,7 +276,7 @@ public class MarketManagerImpl implements MarketDescriptionManager {
      * @param variantValue the variant value used to delete variant market description from the cache
      */
     @Override
-    public void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue){
+    public void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue) {
         variantMarketDescriptionCache.deleteCacheItem(marketId, variantValue);
     }
 
@@ -231,7 +290,11 @@ public class MarketManagerImpl implements MarketDescriptionManager {
      * @return the time needed for processing in ms
      */
     @Override
-    public long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets, boolean onlyVariantMarkets, int threadPoolSize) {
+    public long parallelPrefetchVariantMarketDescriptions(
+        List<? extends Market> markets,
+        boolean onlyVariantMarkets,
+        int threadPoolSize
+    ) {
         if (markets == null || markets.isEmpty()) {
             interactionLogger.info("Prefetching variant market description called for 0 markets");
             return 0;
@@ -241,9 +304,9 @@ public class MarketManagerImpl implements MarketDescriptionManager {
         ExecutorService threadPool = Executors.newFixedThreadPool(threadPoolSize);
         List<Callable<String>> tasks = new ArrayList<>();
         for (Market market : markets) {
-            if(onlyVariantMarkets) {
+            if (onlyVariantMarkets) {
                 if (market.getSpecifiers() != null && market.getSpecifiers().containsKey("variant")) {
-                    for(Locale l : config.getDesiredLocales()) {
+                    for (Locale l : config.getDesiredLocales()) {
                         tasks.add(() -> market.getName(l));
                     }
                 }
@@ -254,20 +317,27 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             }
         }
         try {
-            interactionLogger.info("Prefetching variant market descriptions called for {} markets. Tasks: {}.", markets.size(), tasks.size());
+            interactionLogger.info(
+                "Prefetching variant market descriptions called for {} markets. Tasks: {}.",
+                markets.size(),
+                tasks.size()
+            );
             threadPool.invokeAll(tasks);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             interactionLogger.error("Error prefetching variant market descriptions.", ex);
         }
 
         threadPool.shutdown();
         stopwatch.stop();
-        interactionLogger.info("Prefetching variant market descriptions for {} markets. Tasks: {}. Took {} ms.", markets.size(), tasks.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        interactionLogger.info(
+            "Prefetching variant market descriptions for {} markets. Tasks: {}. Took {} ms.",
+            markets.size(),
+            tasks.size(),
+            stopwatch.elapsed(TimeUnit.MILLISECONDS)
+        );
         return stopwatch.elapsed(TimeUnit.MILLISECONDS);
     }
 }

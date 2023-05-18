@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
 public class ExportableFixtureCI implements Serializable {
+
     private Date startTime;
     private boolean startTimeConfirmed;
     private Date nextLiveTime;
@@ -20,9 +22,21 @@ public class ExportableFixtureCI implements Serializable {
     private String parentId;
     private List<String> additionalParentsIds;
 
-    public ExportableFixtureCI(Date startTime, boolean startTimeConfirmed, Date nextLiveTime, Map<String, String> extraInfo, List<ExportableTvChannelCI> tvChannels,
-                               ExportableCoverageInfoCI coverageInfo, ExportableProducerInfoCI producerInfo, Map<String, String> references, Boolean startTimeTbd, String replacedBy,
-                               List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges, String parentId, List<String> additionalParentsIds) {
+    public ExportableFixtureCI(
+        Date startTime,
+        boolean startTimeConfirmed,
+        Date nextLiveTime,
+        Map<String, String> extraInfo,
+        List<ExportableTvChannelCI> tvChannels,
+        ExportableCoverageInfoCI coverageInfo,
+        ExportableProducerInfoCI producerInfo,
+        Map<String, String> references,
+        Boolean startTimeTbd,
+        String replacedBy,
+        List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges,
+        String parentId,
+        List<String> additionalParentsIds
+    ) {
         this.startTime = startTime;
         this.startTimeConfirmed = startTimeConfirmed;
         this.nextLiveTime = nextLiveTime;
@@ -122,17 +136,25 @@ public class ExportableFixtureCI implements Serializable {
         return scheduledStartTimeChanges;
     }
 
-    public void setScheduledStartTimeChanges(List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges) {
+    public void setScheduledStartTimeChanges(
+        List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges
+    ) {
         this.scheduledStartTimeChanges = scheduledStartTimeChanges;
     }
 
-    public String getParentId() { return parentId; }
+    public String getParentId() {
+        return parentId;
+    }
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
-    public List<String> getAdditionalParentsIds() { return additionalParentsIds; }
+    public List<String> getAdditionalParentsIds() {
+        return additionalParentsIds;
+    }
 
-    public void setAdditionalParentsIds(List<String> additionalParentsIds) { this.additionalParentsIds = additionalParentsIds; }
+    public void setAdditionalParentsIds(List<String> additionalParentsIds) {
+        this.additionalParentsIds = additionalParentsIds;
+    }
 }

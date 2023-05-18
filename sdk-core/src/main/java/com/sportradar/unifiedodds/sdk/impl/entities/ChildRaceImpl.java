@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
 import com.sportradar.unifiedodds.sdk.entities.ChildRace;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -16,7 +15,9 @@ import java.util.Locale;
 /**
  * Represents a stage in a multi-staged race
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public class ChildRaceImpl implements ChildRace {
+
     /**
      * A {@link URN} representing the id uniquely identifying the race represented by the current instance
      */
@@ -36,7 +37,6 @@ public class ChildRaceImpl implements ChildRace {
      * A {@link Date} specifying the scheduled end time of the race represented by the current instance
      */
     private final Date scheduleEndTime;
-
 
     /**
      * Initializes a new instance of the {@link ChildRaceImpl}

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 /**
  * Defines possible validation results
  */
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum ValidationResult {
     /**
      * The validation was successful, the validated object is valid
@@ -21,5 +22,5 @@ public enum ValidationResult {
     /**
      * The validation failed, the validated object is not valid
      */
-    Failure
+    Failure,
 }

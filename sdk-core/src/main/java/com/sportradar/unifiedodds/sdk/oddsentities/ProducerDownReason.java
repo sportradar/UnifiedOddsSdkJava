@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * Describes reasons why the {@link ProducerDown} message was dispatched
  */
+@SuppressWarnings({ "LineLength", "MissingSwitchDefault" })
 public enum ProducerDownReason {
-
     /**
      * Indicates that the {@link ProducerDown} messages was dispatched because the interval
      * between alive messages was greater than allowed.

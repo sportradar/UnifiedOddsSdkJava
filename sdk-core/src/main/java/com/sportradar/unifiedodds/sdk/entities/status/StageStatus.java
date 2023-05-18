@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities.status;
 
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
-
 import java.util.Locale;
 
 /**

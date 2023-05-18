@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.entities.Category;
 import com.sportradar.unifiedodds.sdk.entities.Sport;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,12 +17,12 @@ import java.util.Map;
  * Represents a sport
  */
 public class SportImpl extends SportSummaryImpl implements Sport {
+
     /**
      * An unmodifiable {@link List} representing categories
      * which belong to the sport represented by the current instance
      */
     private final List<Category> categories;
-
 
     /**
      * Initializes a new instance of {@link SportImpl}
@@ -35,12 +34,10 @@ public class SportImpl extends SportSummaryImpl implements Sport {
      */
     public SportImpl(URN id, Map<Locale, String> names, List<Category> categories) {
         super(id, names);
-
         Preconditions.checkNotNull(categories);
 
         this.categories = ImmutableList.copyOf(categories);
     }
-
 
     /**
      * Returns an unmodifiable {@link List} representing categories
@@ -61,8 +58,6 @@ public class SportImpl extends SportSummaryImpl implements Sport {
      */
     @Override
     public String toString() {
-        return "SportImpl{" +
-                "categories=" + categories +
-                "} " + super.toString();
+        return "SportImpl{" + "categories=" + categories + "} " + super.toString();
     }
 }

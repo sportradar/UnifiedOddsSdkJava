@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.ibm.icu.text.RuleBasedNumberFormat;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +15,7 @@ import java.util.Locale;
  * // TODO @eti: Javadoc
  */
 public class OrdinalNameExpression implements NameExpression {
+
     private final Operand operand;
 
     OrdinalNameExpression(Operand operand) {
@@ -32,13 +32,12 @@ public class OrdinalNameExpression implements NameExpression {
         // first check Ordinal, then Spellout
         RuleBasedNumberFormat nf = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.ORDINAL);
         String ordinalRule = getOrdinalRuleName(nf);
-        if(ordinalRule == null)
-        {
+        if (ordinalRule == null) {
             nf = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
             ordinalRule = getSpelloutRuleName(nf);
 
             // if the ordinal rule cannot be found, we return the int value in 'ordinal format: 3. instead of 3rd
-            if(ordinalRule == null) {
+            if (ordinalRule == null) {
                 return intValue + ".";
             }
         }

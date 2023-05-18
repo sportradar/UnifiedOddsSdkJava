@@ -13,12 +13,15 @@ import com.sportradar.unifiedodds.sdk.entities.TournamentCoverage;
  * // TODO @eti: Javadoc
  */
 class TournamentCoverageImpl implements TournamentCoverage {
+
     private final boolean isLiveCoverage;
 
     TournamentCoverageImpl(TournamentCoverageCI tournamentCoverage) {
         Preconditions.checkNotNull(tournamentCoverage);
 
-        isLiveCoverage = tournamentCoverage.getLiveCoverage() != null && tournamentCoverage.getLiveCoverage().equals("true");
+        isLiveCoverage =
+            tournamentCoverage.getLiveCoverage() != null &&
+            tournamentCoverage.getLiveCoverage().equals("true");
     }
 
     /**

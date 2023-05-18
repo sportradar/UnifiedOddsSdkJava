@@ -7,7 +7,8 @@ package com.sportradar.unifiedodds.sdk.entities;
 /**
  * An enumeration of possible stage types
  */
-@SuppressWarnings("java:S115") // Constant names should comply with a naming convention
+// Constant names should comply with a naming convention
+@SuppressWarnings({ "java:S115", "CyclomaticComplexity", "ReturnCount" })
 public enum StageType {
     Parent,
     Child,
@@ -23,11 +24,10 @@ public enum StageType {
     Qualifying,
     QualifyingPart,
     Lap,
-    Run
-    ;
+    Run;
 
     public static StageType mapFromApiValue(String str) {
-        if(str == null) {
+        if (str == null) {
             return null;
         }
 

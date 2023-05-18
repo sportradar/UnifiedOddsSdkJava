@@ -8,15 +8,14 @@ import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * Defines methods used to perform various custom bet operations
  */
 public interface CustomBetManager {
-
     /**
      * Returns an {@link CustomBetSelectionBuilder} instance used to build selections
      *
@@ -31,7 +30,7 @@ public interface CustomBetManager {
      * @param eventId the {@link URN} identifier of the event for which the available selections should be returned
      * @return an {@link AvailableSelections} providing the the available selections of the associated event
      */
-    AvailableSelections getAvailableSelections(URN eventId);
+    AvailableSelections getAvailableSelections(URN eventId) throws CommunicationException;
 
     /**
      * Returns an {@link Calculation} instance providing the probability for the specified selections
@@ -39,7 +38,7 @@ public interface CustomBetManager {
      * @param selections the {@link List} containing selections for which the probability should be calculated
      * @return an {@link Calculation} providing the probability for the specified selections
      */
-    Calculation calculateProbability(List<Selection> selections);
+    Calculation calculateProbability(List<Selection> selections) throws CommunicationException;
 
     /**
      * Returns an {@link CalculationFilter} instance providing the probability for the specified selections (filtered)
@@ -47,5 +46,5 @@ public interface CustomBetManager {
      * @param selections the {@link List} containing selections for which the probability should be calculated
      * @return an {@link CalculationFilter} providing the probability for the specified selections
      */
-    CalculationFilter calculateProbabilityFilter(List<Selection> selections);
+    CalculationFilter calculateProbabilityFilter(List<Selection> selections) throws CommunicationException;
 }

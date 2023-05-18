@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-
 import java.util.Map;
 
 /**
@@ -14,6 +13,7 @@ import java.util.Map;
  * // TODO @eti: Javadoc
  */
 abstract class OperandBase {
+
     int parseSpecifierInt(String specifierName, Map<String, String> specifiers) {
         Preconditions.checkNotNull(specifiers);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(specifierName));
@@ -48,7 +48,9 @@ abstract class OperandBase {
         Preconditions.checkArgument(!specifiers.isEmpty());
 
         if (!specifiers.containsKey(specifierName)) {
-            throw new IllegalArgumentException("Specifier with name " + specifierName + " does not exist on the provided market specifiers");
+            throw new IllegalArgumentException(
+                "Specifier with name " + specifierName + " does not exist on the provided market specifiers"
+            );
         }
 
         return specifiers.get(specifierName);

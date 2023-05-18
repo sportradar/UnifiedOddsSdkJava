@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCI;
 import com.sportradar.unifiedodds.sdk.entities.*;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +16,7 @@ import java.util.stream.Collectors;
 /**
  * An implementation of the {@link TimelineEvent} which uses a cache item for data access
  */
+@SuppressWarnings({ "IllegalType", "NeedBraces", "UnnecessaryParentheses" })
 class TimelineEventImpl implements TimelineEvent {
 
     private TimelineEventCI cacheItem;
@@ -197,8 +197,7 @@ class TimelineEventImpl implements TimelineEvent {
      */
     @Override
     public GoalScorer getGoalScorer() {
-        if(cacheItem.getGoalScorer() == null)
-            return null;
+        if (cacheItem.getGoalScorer() == null) return null;
 
         return new GoalScorerImpl(cacheItem.getGoalScorer(), dataLocale);
     }
@@ -210,8 +209,7 @@ class TimelineEventImpl implements TimelineEvent {
      */
     @Override
     public EventPlayer getPlayer() {
-        if(cacheItem.getPlayer() == null)
-            return null;
+        if (cacheItem.getPlayer() == null) return null;
 
         return new EventPlayerImpl(cacheItem.getPlayer(), dataLocale);
     }
@@ -223,14 +221,17 @@ class TimelineEventImpl implements TimelineEvent {
      */
     @Override
     public List<Assist> getAssists() {
-        if(cacheItem.getAssists() == null || cacheItem.getAssists().isEmpty())
-            return null;
+        if (cacheItem.getAssists() == null || cacheItem.getAssists().isEmpty()) return null;
 
-        return cacheItem.getAssists().stream().map(m-> {
-            HashMap<Locale, String> names = new HashMap<>();
-            names.put(dataLocale, m.getName());
-            return new AssistImpl(m.getId(), names, m.getType());
-        }).collect(Collectors.toList());
+        return cacheItem
+            .getAssists()
+            .stream()
+            .map(m -> {
+                HashMap<Locale, String> names = new HashMap<>();
+                names.put(dataLocale, m.getName());
+                return new AssistImpl(m.getId(), names, m.getType());
+            })
+            .collect(Collectors.toList());
     }
 
     /**
@@ -240,26 +241,45 @@ class TimelineEventImpl implements TimelineEvent {
      */
     @Override
     public String toString() {
-        Integer assistsCount = getAssists() == null ? 0 : getAssists().size();
+        int assistsCount = getAssists() == null ? 0 : getAssists().size();
 
-        return "TimelineEventImpl{" +
-                "id=" + getId() +
-                ", homeScore=" + getHomeScore() +
-                ", awayScore=" + getAwayScore() +
-                ", matchTime=" + getMatchTime() +
-                ", period=" + getPeriod() +
-                ", periodName=" + getPeriodName() +
-                ", point=" + getPoints() +
-                ", x=" + getX() +
-                ", y=" + getY() +
-                ", type=" + getType() +
-                ", team=" + getTeam() +
-                ", matchStatusCode=" + getMatchStatusCode() +
-                ", matchClock=" + getMatchClock() +
-                ", goalScorer=" + getGoalScorer() +
-                ", player=" + getPlayer() +
-                ", assists=" + assistsCount +
-                ", value=" + getValue() +
-                '}';
+        return (
+            "TimelineEventImpl{" +
+            "id=" +
+            getId() +
+            ", homeScore=" +
+            getHomeScore() +
+            ", awayScore=" +
+            getAwayScore() +
+            ", matchTime=" +
+            getMatchTime() +
+            ", period=" +
+            getPeriod() +
+            ", periodName=" +
+            getPeriodName() +
+            ", point=" +
+            getPoints() +
+            ", x=" +
+            getX() +
+            ", y=" +
+            getY() +
+            ", type=" +
+            getType() +
+            ", team=" +
+            getTeam() +
+            ", matchStatusCode=" +
+            getMatchStatusCode() +
+            ", matchClock=" +
+            getMatchClock() +
+            ", goalScorer=" +
+            getGoalScorer() +
+            ", player=" +
+            getPlayer() +
+            ", assists=" +
+            assistsCount +
+            ", value=" +
+            getValue() +
+            '}'
+        );
     }
 }

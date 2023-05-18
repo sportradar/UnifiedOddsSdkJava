@@ -1,20 +1,23 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
+@SuppressWarnings({ "ConstantName", "HideUtilityClassConstructor", "LineLength" })
 public class XmlMessageReader {
+
     private static final Deserializer deserializer;
 
     static {
         try {
-            JAXBContext context = JAXBContext.newInstance("com.sportradar.uf.datamodel:com.sportradar.uf.sportsapi.datamodel:com.sportradar.uf.custombet.datamodel");
+            JAXBContext context = JAXBContext.newInstance(
+                "com.sportradar.uf.datamodel:com.sportradar.uf.sportsapi.datamodel:com.sportradar.uf.custombet.datamodel"
+            );
             deserializer = new DeserializerImpl(context);
         } catch (JAXBException e) {
             throw new RuntimeException("Failed to create JAXBContext", e);

@@ -15,20 +15,32 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Defines methods used to validate received messages
  */
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "LineLength",
+        "MethodLength",
+        "MultipleStringLiterals",
+        "NPathComplexity",
+        "ReturnCount",
+    }
+)
 public class FeedMessageValidatorImpl implements FeedMessageValidator {
+
     private static final Logger logger = LoggerFactory.getLogger(FeedMessageValidatorImpl.class);
 
     private final MarketDescriptionProvider marketDescriptionProvider;
@@ -36,7 +48,11 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     private final NamedValuesProvider namedValuesProvider;
 
     @Inject
-    FeedMessageValidatorImpl(MarketDescriptionProvider marketDescriptionProvider, SDKInternalConfiguration configuration, NamedValuesProvider namedValuesProvider) {
+    FeedMessageValidatorImpl(
+        MarketDescriptionProvider marketDescriptionProvider,
+        SDKInternalConfiguration configuration,
+        NamedValuesProvider namedValuesProvider
+    ) {
         Preconditions.checkNotNull(marketDescriptionProvider);
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(namedValuesProvider);
@@ -78,7 +94,9 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             return validateRollbackBetCancel((UFRollbackBetCancel) message, rkInfo);
         }
 
-        throw new IllegalArgumentException("Validation of " + message.getClass().getName() + " message is not supported.");
+        throw new IllegalArgumentException(
+            "Validation of " + message.getClass().getName() + " message is not supported."
+        );
     }
 
     /**
@@ -103,12 +121,18 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             return result;
         }
 
-        if (message.getOdds().getBetstopReason() != null && !namedValuesProvider.getBetStopReasons().isValueDefined(message.getOdds().getBetstopReason())) {
+        if (
+            message.getOdds().getBetstopReason() != null &&
+            !namedValuesProvider.getBetStopReasons().isValueDefined(message.getOdds().getBetstopReason())
+        ) {
             logWarning(message, "betstop_reason", message.getOdds().getBetstopReason());
             result = ValidationResult.ProblemsDetected;
         }
 
-        if (message.getOdds().getBettingStatus() != null && !namedValuesProvider.getBettingStatuses().isValueDefined(message.getOdds().getBettingStatus())) {
+        if (
+            message.getOdds().getBettingStatus() != null &&
+            !namedValuesProvider.getBettingStatuses().isValueDefined(message.getOdds().getBettingStatus())
+        ) {
             logWarning(message, "betting_status", message.getOdds().getBettingStatus());
             result = ValidationResult.ProblemsDetected;
         }
@@ -118,7 +142,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         }
 
         for (UFOddsChangeMarket market : message.getOdds().getMarket()) {
-            if(!checkSpecifiers(market.getId(), message.getProduct(), market.getSpecifiers())) {
+            if (!checkSpecifiers(market.getId(), message.getProduct(), market.getSpecifiers())) {
                 result = ValidationResult.ProblemsDetected;
             }
 
@@ -127,8 +151,16 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             }
 
             for (UFOddsChangeMarket.UFOutcome outcome : market.getOutcome()) {
-                if (outcome.getActive() != null && outcome.getActive().value() != 1 && outcome.getActive().value() != 0) {
-                    logWarning(message, String.format("Markets[%s].outcomes[%s].active", market.getId(), outcome.getId()), outcome.getActive());
+                if (
+                    outcome.getActive() != null &&
+                    outcome.getActive().value() != 1 &&
+                    outcome.getActive().value() != 0
+                ) {
+                    logWarning(
+                        message,
+                        String.format("Markets[%s].outcomes[%s].active", market.getId(), outcome.getId()),
+                        outcome.getActive()
+                    );
                     result = ValidationResult.ProblemsDetected;
                 }
             }
@@ -176,13 +208,23 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             return ValidationResult.Failure;
         }
 
-        if (message.getOutcomes() == null || message.getOutcomes().getMarket() == null || message.getOutcomes().getMarket().isEmpty()) {
+        if (
+            message.getOutcomes() == null ||
+            message.getOutcomes().getMarket() == null ||
+            message.getOutcomes().getMarket().isEmpty()
+        ) {
             return ValidationResult.Success;
         }
 
         ValidationResult result = ValidationResult.Success;
         for (UFBetSettlementMarket ufBetSettlementMarket : message.getOutcomes().getMarket()) {
-            if (!checkSpecifiers(ufBetSettlementMarket.getId(), message.getProduct(), ufBetSettlementMarket.getSpecifiers())) {
+            if (
+                !checkSpecifiers(
+                    ufBetSettlementMarket.getId(),
+                    message.getProduct(),
+                    ufBetSettlementMarket.getSpecifiers()
+                )
+            ) {
                 result = ValidationResult.ProblemsDetected;
             }
         }
@@ -216,7 +258,10 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateRollbackBetSettlement(UFRollbackBetSettlement message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateRollbackBetSettlement(
+        UFRollbackBetSettlement message,
+        RoutingKeyInfo rkInfo
+    ) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -328,7 +373,6 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
      */
     private boolean validateEventRoutingKeyInfo(RoutingKeyInfo rkInfo) {
         return rkInfo != null && rkInfo.getSportId() != null && rkInfo.getEventId() != null;
-
     }
 
     /**
@@ -346,14 +390,23 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
 
         MarketDescription descriptor;
         try {
-            descriptor = marketDescriptionProvider.getMarketDescription(marketId, null, defaultLocales, false);
+            descriptor =
+                marketDescriptionProvider.getMarketDescription(marketId, null, defaultLocales, false);
         } catch (CacheItemNotFoundException e) {
-            logger.info("Market validation failed. Failed to retrieve market descriptor market[id={}]", marketId, e);
+            logger.info(
+                "Market validation failed. Failed to retrieve market descriptor market[id={}]",
+                marketId,
+                e
+            );
             return false;
         }
 
         if (descriptor.getId() != marketId) {
-            logger.info("Market validation failed. Retrieved market descriptor has different market id. RequestedId={}, RetrievedId={}", marketId, descriptor.getId());
+            logger.info(
+                "Market validation failed. Retrieved market descriptor has different market id. RequestedId={}, RetrievedId={}",
+                marketId,
+                descriptor.getId()
+            );
             return false;
         }
 
@@ -362,25 +415,49 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             try {
                 specifiers = extractSpecifierKeys(receivedSpecifiers);
             } catch (ParseException e) {
-                logger.info("Specifiers validation failed. Could not extract specifier keys from: {}, marketId:{}, producerId:{}. Ex:", receivedSpecifiers, marketId, producerId, e);
+                logger.info(
+                    "Specifiers validation failed. Could not extract specifier keys from: {}, marketId:{}, producerId:{}. Ex:",
+                    receivedSpecifiers,
+                    marketId,
+                    producerId,
+                    e
+                );
                 return false;
             }
 
             if (descriptor.getSpecifiers().size() != specifiers.size()) {
-                String requiredSpecifiers = descriptor.getSpecifiers().stream()
-                        .map(Specifier::getName)
-                        .collect(Collectors.joining(","));
-                logger.info("Specifiers validation failed. ProducerId={}, MarketId={}, Required={}, Actual={}", producerId, marketId, requiredSpecifiers, receivedSpecifiers);
+                String requiredSpecifiers = descriptor
+                    .getSpecifiers()
+                    .stream()
+                    .map(Specifier::getName)
+                    .collect(Collectors.joining(","));
+                logger.info(
+                    "Specifiers validation failed. ProducerId={}, MarketId={}, Required={}, Actual={}",
+                    producerId,
+                    marketId,
+                    requiredSpecifiers,
+                    receivedSpecifiers
+                );
                 return false;
             }
 
-            long matchCounter = specifiers.stream().filter(s -> descriptor.getSpecifiers().stream().anyMatch(spec -> spec.getName().equals(s))).count();
+            long matchCounter = specifiers
+                .stream()
+                .filter(s -> descriptor.getSpecifiers().stream().anyMatch(spec -> spec.getName().equals(s)))
+                .count();
 
             if (matchCounter != descriptor.getSpecifiers().size()) {
-                String requiredSpecifiers = descriptor.getSpecifiers().stream()
-                        .map(Specifier::getName)
-                        .collect(Collectors.joining(","));
-                logger.info("Specifiers validation for market[id={}] failed. Required={}, Actual={}", marketId, requiredSpecifiers, receivedSpecifiers);
+                String requiredSpecifiers = descriptor
+                    .getSpecifiers()
+                    .stream()
+                    .map(Specifier::getName)
+                    .collect(Collectors.joining(","));
+                logger.info(
+                    "Specifiers validation for market[id={}] failed. Required={}, Actual={}",
+                    marketId,
+                    requiredSpecifiers,
+                    receivedSpecifiers
+                );
                 return false;
             }
         }
@@ -404,7 +481,11 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         for (String s : split) {
             String[] exp = s.split("=");
             if (exp.length != 2) {
-                throw new ParseException("The specifiers message String is invalid, expected format: 'k=v|k1=v1|,...', input: " + receivedSpecifiers, receivedSpecifiers.indexOf(s));
+                throw new ParseException(
+                    "The specifiers message String is invalid, expected format: 'k=v|k1=v1|,...', input: " +
+                    receivedSpecifiers,
+                    receivedSpecifiers.indexOf(s)
+                );
             }
 
             result.add(exp[0]);
@@ -424,7 +505,12 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         Preconditions.checkNotNull(msg);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(propertyName));
 
-        logger.warn("AMQP Message validation failure: message={}, property={}, propertyValue={} is not expected", msg.getClass().getName(), propertyName, propertyValue);
+        logger.warn(
+            "AMQP Message validation failure: message={}, property={}, propertyValue={} is not expected",
+            msg.getClass().getName(),
+            propertyName,
+            propertyValue
+        );
     }
 
     /**
@@ -438,6 +524,11 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         Preconditions.checkNotNull(msg);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(propertyName));
 
-        logger.error("AMQP Message validation error: message={}, property={}, propertyValue={} is not supported", msg.getClass().getName(), propertyName, propertyValue);
+        logger.error(
+            "AMQP Message validation error: message={}, property={}, propertyValue={} is not supported",
+            msg.getClass().getName(),
+            propertyName,
+            propertyValue
+        );
     }
 }

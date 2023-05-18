@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 
 /**

@@ -9,14 +9,16 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-
 import java.util.*;
 
 /**
  * The base class for configuration builders
  */
+@SuppressWarnings(
+    { "DeclarationOrder", "ExplicitInitialization", "HiddenField", "LineLength", "VisibilityModifier" }
+)
 abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBase<T> {
+
     final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
     final SDKConfigurationYamlReader sdkConfigurationYamlReader;
 
@@ -33,7 +35,10 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     Integer recoveryHttpClientMaxConnPerRoute = null;
     Environment environment;
 
-    ConfigurationBuilderBaseImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
+    ConfigurationBuilderBaseImpl(
+        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SDKConfigurationYamlReader sdkConfigurationYamlReader
+    ) {
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
         Preconditions.checkNotNull(sdkConfigurationYamlReader);
 
@@ -128,7 +133,6 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
     @Override
     @SuppressWarnings("unchecked")
     public T setSdkNodeId(int nodeId) {
-
         this.nodeId = nodeId;
         return (T) this;
     }
@@ -266,8 +270,12 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         sdkConfigurationReader.readHttpClientMaxConnTotal().ifPresent(this::setHttpClientMaxConnTotal);
         sdkConfigurationReader.readHttpClientMaxConnPerRoute().ifPresent(this::setHttpClientMaxConnPerRoute);
         sdkConfigurationReader.readHttpClientTimeout().ifPresent(this::setRecoveryHttpClientTimeout);
-        sdkConfigurationReader.readRecoveryHttpClientMaxConnTotal().ifPresent(this::setRecoveryHttpClientMaxConnTotal);
-        sdkConfigurationReader.readRecoveryHttpClientMaxConnPerRoute().ifPresent(this::setRecoveryHttpClientMaxConnPerRoute);
+        sdkConfigurationReader
+            .readRecoveryHttpClientMaxConnTotal()
+            .ifPresent(this::setRecoveryHttpClientMaxConnTotal);
+        sdkConfigurationReader
+            .readRecoveryHttpClientMaxConnPerRoute()
+            .ifPresent(this::setRecoveryHttpClientMaxConnPerRoute);
         this.environment = sdkConfigurationReader.readUfEnvironment();
     }
 }

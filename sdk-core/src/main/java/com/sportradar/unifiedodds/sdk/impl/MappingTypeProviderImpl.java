@@ -8,15 +8,16 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.utils.URN;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 /**
  * Implements methods used find the proper associated mapping type
  */
+@SuppressWarnings({ "CyclomaticComplexity", "ReturnCount" })
 public class MappingTypeProviderImpl implements MappingTypeProvider {
+
     private static Logger logger = LoggerFactory.getLogger(MappingTypeProviderImpl.class);
 
     @Inject

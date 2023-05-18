@@ -7,28 +7,28 @@ package com.sportradar.unifiedodds.sdk.cfg;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import java.util.Arrays;
+import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.util.Arrays;
-import java.util.Locale;
 
 /**
  * Created on 27/03/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
 public class ReplayConfigurationBuilderTests {
 
     @Test
     public void testSetValues() {
         OddsFeedConfiguration cfg = getSampleBuilderWithEmptyProperties()
-                .setExceptionHandlingStrategy(ExceptionHandlingStrategy.Throw)
-                .setDefaultLocale(Locale.ITALIAN)
-                .setSdkNodeId(-99)
-                .setDisabledProducers(Arrays.asList(5, 6, 7))
-                .setDesiredLocales(Arrays.asList(Locale.CHINESE, Locale.FRENCH))
-                .build();
+            .setExceptionHandlingStrategy(ExceptionHandlingStrategy.Throw)
+            .setDefaultLocale(Locale.ITALIAN)
+            .setSdkNodeId(-99)
+            .setDisabledProducers(Arrays.asList(5, 6, 7))
+            .setDesiredLocales(Arrays.asList(Locale.CHINESE, Locale.FRENCH))
+            .build();
 
         Assert.assertEquals(cfg.getAccessToken(), "access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
@@ -45,15 +45,21 @@ public class ReplayConfigurationBuilderTests {
         Assert.assertEquals(cfg.getExceptionHandlingStrategy(), ExceptionHandlingStrategy.Throw);
         Assert.assertEquals(cfg.getDefaultLocale(), Locale.ITALIAN);
         Assert.assertTrue(cfg.getSdkNodeId() == -99);
-        Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(Arrays.asList(5, 6, 7)));
-        Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(Arrays.asList(Locale.CHINESE, Locale.FRENCH, Locale.ITALIAN)));
+        Assert.assertTrue(
+            cfg.getDisabledProducers().size() == 3 &&
+            cfg.getDisabledProducers().containsAll(Arrays.asList(5, 6, 7))
+        );
+        Assert.assertTrue(
+            cfg.getDesiredLocales().size() == 3 &&
+            cfg.getDesiredLocales().containsAll(Arrays.asList(Locale.CHINESE, Locale.FRENCH, Locale.ITALIAN))
+        );
     }
 
     @Test
     public void testLoadValuesFromProperties() {
         OddsFeedConfiguration cfg = getSampleBuilderWithFullProperties()
-                .loadConfigFromSdkProperties()
-                .build();
+            .loadConfigFromSdkProperties()
+            .build();
 
         Assert.assertEquals(cfg.getAccessToken(), "access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
@@ -70,15 +76,21 @@ public class ReplayConfigurationBuilderTests {
         Assert.assertEquals(cfg.getExceptionHandlingStrategy(), SDKPropertiesReaderUtil.EXCEPTION_HANDLING);
         Assert.assertEquals(cfg.getDefaultLocale(), SDKPropertiesReaderUtil.DEFAULT_LOCALE);
         Assert.assertTrue(cfg.getSdkNodeId() == SDKPropertiesReaderUtil.SDK_NODE_ID);
-        Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS));
-        Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES));
+        Assert.assertTrue(
+            cfg.getDisabledProducers().size() == 3 &&
+            cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS)
+        );
+        Assert.assertTrue(
+            cfg.getDesiredLocales().size() == 3 &&
+            cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES)
+        );
     }
 
     @Test
     public void testLoadValuesFromYaml() {
         OddsFeedConfiguration cfg = getSampleBuilderWithFullProperties()
-                .loadConfigFromApplicationYml()
-                .build();
+            .loadConfigFromApplicationYml()
+            .build();
 
         Assert.assertEquals(cfg.getAccessToken(), "access-token");
         Assert.assertEquals(cfg.getMessagingHost(), "msg-host");
@@ -95,35 +107,41 @@ public class ReplayConfigurationBuilderTests {
         Assert.assertEquals(cfg.getExceptionHandlingStrategy(), SDKPropertiesReaderUtil.EXCEPTION_HANDLING);
         Assert.assertEquals(cfg.getDefaultLocale(), SDKPropertiesReaderUtil.DEFAULT_LOCALE);
         Assert.assertTrue(cfg.getSdkNodeId() == SDKPropertiesReaderUtil.SDK_NODE_ID);
-        Assert.assertTrue(cfg.getDisabledProducers().size() == 3 && cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS));
-        Assert.assertTrue(cfg.getDesiredLocales().size() == 3 && cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES));
+        Assert.assertTrue(
+            cfg.getDisabledProducers().size() == 3 &&
+            cfg.getDisabledProducers().containsAll(SDKPropertiesReaderUtil.DISABLED_PRODUCERS)
+        );
+        Assert.assertTrue(
+            cfg.getDesiredLocales().size() == 3 &&
+            cfg.getDesiredLocales().containsAll(SDKPropertiesReaderUtil.DESIRED_LOCALES)
+        );
     }
 
     private static ReplayConfigurationBuilder getSampleBuilderWithEmptyProperties() {
         return new ReplayConfigurationBuilderImpl(
-                "access-token",
-                "msg-host",
-                "api-host",
-                7878,
-                true,
-                true,
-                Mockito.mock(SDKConfigurationPropertiesReader.class),
-                Mockito.mock(SDKConfigurationYamlReader.class),
-                Environment.Replay
+            "access-token",
+            "msg-host",
+            "api-host",
+            7878,
+            true,
+            true,
+            Mockito.mock(SDKConfigurationPropertiesReader.class),
+            Mockito.mock(SDKConfigurationYamlReader.class),
+            Environment.Replay
         );
     }
 
     private static ReplayConfigurationBuilder getSampleBuilderWithFullProperties() {
         return new ReplayConfigurationBuilderImpl(
-                "access-token",
-                "msg-host",
-                "api-host",
-                7878,
-                true,
-                true,
-                SDKPropertiesReaderUtil.getReaderWithFullData(),
-                SDKPropertiesReaderUtil.getYamlReaderWithFullData(),
-                Environment.Replay
+            "access-token",
+            "msg-host",
+            "api-host",
+            7878,
+            true,
+            true,
+            SDKPropertiesReaderUtil.getReaderWithFullData(),
+            SDKPropertiesReaderUtil.getYamlReaderWithFullData(),
+            Environment.Replay
         );
     }
 }

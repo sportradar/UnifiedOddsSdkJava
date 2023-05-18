@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,14 +17,17 @@ import java.util.Optional;
  * An implementation of all the SDK builder interfaces which is used to build the {@link OddsFeedConfiguration} used to
  * initialize the {@link com.sportradar.unifiedodds.sdk.OddsFeed} object
  */
-public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessTokenSetter, OddsFeedConfigurationBuilder {
-    private final static int MIN_INACTIVITY_SECONDS = 20;
-    private final static int MAX_INACTIVITY_SECONDS = 180;
-    private final static int MIN_RECOVERY_EXECUTION_MINUTES = 15;
-    private final static int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
-    private final static int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
-    private final static int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
-    private final static int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
+@SuppressWarnings({ "HiddenField", "LineLength", "MagicNumber" })
+public class OddsFeedConfigurationBuilderImpl
+    implements ConfigurationAccessTokenSetter, OddsFeedConfigurationBuilder {
+
+    private static final int MIN_INACTIVITY_SECONDS = 20;
+    private static final int MAX_INACTIVITY_SECONDS = 180;
+    private static final int MIN_RECOVERY_EXECUTION_MINUTES = 15;
+    private static final int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
+    private static final int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
+    private static final int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
+    private static final int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
     private static final int HTTP_CLIENT_TIMEOUT = 30;
     private static final int HTTP_CLIENT_MAX_CONN_TOTAL = 20;
     private static final int HTTP_CLIENT_MAX_CONN_PER_ROUTE = 15;
@@ -42,6 +44,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private boolean useApiSsl;
     private String host;
     private String apiHost;
+    private int apiPort;
     private int port;
     private int inactivitySeconds;
     private int maxRecoveryExecutionMinutes;
@@ -51,7 +54,9 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     private boolean useIntegrationEnvironment;
     private List<Integer> disabledProducers;
 
-    public OddsFeedConfigurationBuilderImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader) {
+    public OddsFeedConfigurationBuilderImpl(
+        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader
+    ) {
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
 
         this.sdkConfigurationPropertiesReader = sdkConfigurationPropertiesReader;
@@ -68,7 +73,10 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
      */
     @Override
     public OddsFeedConfigurationBuilder setAccessToken(String accessToken) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(accessToken), "Invalid access token format: " + accessToken);
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(accessToken),
+            "Invalid access token format: " + accessToken
+        );
 
         this.accessToken = accessToken;
         return this;
@@ -86,7 +94,10 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         if (token == null) {
             token = System.getenv("uf.accesstoken");
         }
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Token system variable uf.accesstoken not found");
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(token),
+            "Token system variable uf.accesstoken not found"
+        );
 
         this.setAccessToken(token);
         return this;
@@ -101,7 +112,11 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     public OddsFeedConfigurationBuilder setAccessTokenFromSdkProperties() {
         Optional<String> ifPresent = sdkConfigurationPropertiesReader.readAccessToken();
 
-        String token = ifPresent.orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK properties(uf.sdk.accessToken)"));
+        String token = ifPresent.orElseThrow(() ->
+            new IllegalArgumentException(
+                "Could not read the access token from the SDK properties(uf.sdk.accessToken)"
+            )
+        );
 
         this.setAccessToken(token);
         return this;
@@ -192,6 +207,20 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     }
 
     /**
+     * Specify the Sportradar port used for API access (if not specified this defaults to 80)
+     *
+     * @param apiPort the port used for API access
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    @Override
+    public OddsFeedConfigurationBuilder setApiPort(int apiPort) {
+        Preconditions.checkArgument(apiPort > 0, "Invalid API port value");
+
+        this.apiPort = apiPort;
+        return this;
+    }
+
+    /**
      * Sets the port used to connect to AMQP broker
      *
      * @param port the port used to connect to AMQP broker
@@ -213,8 +242,14 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
      */
     @Override
     public OddsFeedConfigurationBuilder setInactivitySeconds(int inactivitySeconds) {
-        Preconditions.checkArgument(inactivitySeconds >= MIN_INACTIVITY_SECONDS, "Inactivity seconds value must be more than " + MIN_INACTIVITY_SECONDS);
-        Preconditions.checkArgument(inactivitySeconds <= MAX_INACTIVITY_SECONDS, "Inactivity seconds value must be less than " + MAX_INACTIVITY_SECONDS);
+        Preconditions.checkArgument(
+            inactivitySeconds >= MIN_INACTIVITY_SECONDS,
+            "Inactivity seconds value must be more than " + MIN_INACTIVITY_SECONDS
+        );
+        Preconditions.checkArgument(
+            inactivitySeconds <= MAX_INACTIVITY_SECONDS,
+            "Inactivity seconds value must be less than " + MAX_INACTIVITY_SECONDS
+        );
 
         this.inactivitySeconds = inactivitySeconds;
         return this;
@@ -228,8 +263,14 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
      */
     @Override
     public OddsFeedConfigurationBuilder setMaxRecoveryExecutionMinutes(int executionMinutes) {
-        Preconditions.checkArgument(executionMinutes >= MIN_RECOVERY_EXECUTION_MINUTES, "Recovery execution minutes must be more than " + MIN_RECOVERY_EXECUTION_MINUTES);
-        Preconditions.checkArgument(executionMinutes <= MAX_RECOVERY_EXECUTION_MINUTES, "Recovery execution minutes must be less than " + MAX_RECOVERY_EXECUTION_MINUTES);
+        Preconditions.checkArgument(
+            executionMinutes >= MIN_RECOVERY_EXECUTION_MINUTES,
+            "Recovery execution minutes must be more than " + MIN_RECOVERY_EXECUTION_MINUTES
+        );
+        Preconditions.checkArgument(
+            executionMinutes <= MAX_RECOVERY_EXECUTION_MINUTES,
+            "Recovery execution minutes must be less than " + MAX_RECOVERY_EXECUTION_MINUTES
+        );
 
         this.maxRecoveryExecutionMinutes = executionMinutes;
         return this;
@@ -243,8 +284,16 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
      */
     @Override
     public OddsFeedConfigurationBuilder setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
-        Preconditions.checkArgument(intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be greater than " + MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
-        Preconditions.checkArgument(intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be leaser than " + MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
+        Preconditions.checkArgument(
+            intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS,
+            "Minimal time between two successive recovery requests must be greater than " +
+            MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS
+        );
+        Preconditions.checkArgument(
+            intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS,
+            "Minimal time between two successive recovery requests must be leaser than " +
+            MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS
+        );
 
         this.minIntervalBetweenRecoveryRequests = intervalSeconds;
         return this;
@@ -313,12 +362,19 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
     public OddsFeedConfigurationBuilder loadConfigFromSdkProperties() {
         sdkConfigurationPropertiesReader.readMaxInactivitySeconds().ifPresent(val -> inactivitySeconds = val);
         sdkConfigurationPropertiesReader.readApiHost().ifPresent(val -> apiHost = val);
+        sdkConfigurationPropertiesReader.readApiPort().ifPresent(val -> apiPort = val);
         sdkConfigurationPropertiesReader.readMessagingHost().ifPresent(val -> host = val);
         sdkConfigurationPropertiesReader.readUseApiSsl().ifPresent(val -> useApiSsl = val);
         sdkConfigurationPropertiesReader.readUseMessagingSsl().ifPresent(val -> useMessagingSsl = val);
-        sdkConfigurationPropertiesReader.readMaxRecoveryTime().ifPresent(val -> maxRecoveryExecutionMinutes = val);
-        sdkConfigurationPropertiesReader.readMinIntervalBetweenRecoveryRequests().ifPresent(val -> minIntervalBetweenRecoveryRequests = val);
-        sdkConfigurationPropertiesReader.readUseIntegration().ifPresent(val -> useIntegrationEnvironment = val);
+        sdkConfigurationPropertiesReader
+            .readMaxRecoveryTime()
+            .ifPresent(val -> maxRecoveryExecutionMinutes = val);
+        sdkConfigurationPropertiesReader
+            .readMinIntervalBetweenRecoveryRequests()
+            .ifPresent(val -> minIntervalBetweenRecoveryRequests = val);
+        sdkConfigurationPropertiesReader
+            .readUseIntegration()
+            .ifPresent(val -> useIntegrationEnvironment = val);
         sdkConfigurationPropertiesReader.readSdkNodeId().ifPresent(val -> sdkNodeId = val);
         sdkConfigurationPropertiesReader.readDefaultLocale().ifPresent(val -> defaultLocale = val);
 
@@ -343,35 +399,38 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
             port = 5671;
         }
 
-        ExceptionHandlingStrategy exceptionHandlingStrategy = sdkConfigurationPropertiesReader.readExceptionHandlingStrategy()
-                .orElse(ExceptionHandlingStrategy.Catch);
+        ExceptionHandlingStrategy exceptionHandlingStrategy = sdkConfigurationPropertiesReader
+            .readExceptionHandlingStrategy()
+            .orElse(ExceptionHandlingStrategy.Catch);
 
         OddsFeedConfiguration oddsFeedConfiguration = new OddsFeedConfiguration(
-                accessToken,
-                defaultLocale,
-                desiredLocales,
-                host,
-                apiHost,
-                inactivitySeconds,
-                maxRecoveryExecutionMinutes,
-                minIntervalBetweenRecoveryRequests,
-                useMessagingSsl,
-                useApiSsl,
-                port,
-                null,
-                messagingPassword,
-                sdkNodeId,
-                useIntegrationEnvironment,
-                disabledProducers,
-                exceptionHandlingStrategy,
-                null,
-                null,
-                HTTP_CLIENT_TIMEOUT,
-                HTTP_CLIENT_MAX_CONN_TOTAL,
-                HTTP_CLIENT_MAX_CONN_PER_ROUTE,
-                RECOVERY_HTTP_CLIENT_TIMEOUT,
-                RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL,
-                RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE);
+            accessToken,
+            defaultLocale,
+            desiredLocales,
+            host,
+            apiHost,
+            apiPort,
+            inactivitySeconds,
+            maxRecoveryExecutionMinutes,
+            minIntervalBetweenRecoveryRequests,
+            useMessagingSsl,
+            useApiSsl,
+            port,
+            null,
+            messagingPassword,
+            sdkNodeId,
+            useIntegrationEnvironment,
+            disabledProducers,
+            exceptionHandlingStrategy,
+            null,
+            null,
+            HTTP_CLIENT_TIMEOUT,
+            HTTP_CLIENT_MAX_CONN_TOTAL,
+            HTTP_CLIENT_MAX_CONN_PER_ROUTE,
+            RECOVERY_HTTP_CLIENT_TIMEOUT,
+            RECOVERY_HTTP_CLIENT_MAX_CONN_TOTAL,
+            RECOVERY_HTTP_CLIENT_MAX_CONN_PER_ROUTE
+        );
 
         setDefaultValues();
         return oddsFeedConfiguration;
@@ -385,6 +444,7 @@ public class OddsFeedConfigurationBuilderImpl implements ConfigurationAccessToke
         useApiSsl = true;
         host = "mq.betradar.com";
         apiHost = "api.betradar.com";
+        apiPort = 80;
         port = 5671;
         inactivitySeconds = 20;
         maxRecoveryExecutionMinutes = MAX_RECOVERY_EXECUTION_MINUTES;

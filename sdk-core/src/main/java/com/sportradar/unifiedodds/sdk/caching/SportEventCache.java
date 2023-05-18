@@ -8,7 +8,6 @@ import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +16,7 @@ import java.util.Locale;
  * Created on 20/10/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "LineLength" })
 public interface SportEventCache {
     /**
      * Returns a {@link SportEventCI} instance representing a cached sport event data

@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 /**
  * Represents reasons why the {@link ProducerUp} message was dispatched
  */
+@SuppressWarnings({ "LineLength", "MissingSwitchDefault" })
 public enum ProducerUpReason {
-
     /**
      * Indicates that the {@link ProducerUp} messages was dispatched because the first recovery request completed successfully
      */

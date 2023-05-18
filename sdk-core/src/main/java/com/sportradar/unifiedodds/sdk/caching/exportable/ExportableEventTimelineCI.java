@@ -4,12 +4,18 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableEventTimelineCI implements Serializable {
+
     private Locale cachedLocale;
     private List<ExportableTimelineEventCI> timelineEvents;
     private boolean isFinalized;
 
-    public ExportableEventTimelineCI(Locale cachedLocale, List<ExportableTimelineEventCI> timelineEvents, boolean isFinalized) {
+    public ExportableEventTimelineCI(
+        Locale cachedLocale,
+        List<ExportableTimelineEventCI> timelineEvents,
+        boolean isFinalized
+    ) {
         this.cachedLocale = cachedLocale;
         this.timelineEvents = timelineEvents;
         this.isFinalized = isFinalized;

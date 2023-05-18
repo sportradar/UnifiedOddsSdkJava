@@ -15,7 +15,6 @@ import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -23,7 +22,9 @@ import java.util.Optional;
 /**
  * Provides methods used to access specific soccer event information
  */
+@SuppressWarnings({ "ParameterNumber" })
 public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
+
     /**
      * A {@link SportEventStatusFactory} instance used to build event status entities
      */
@@ -45,9 +46,24 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
      * @param locales            A {@link List} specifying languages the current instance supports
      * @param exceptionHandlingStrategy The desired exception handling strategy
      */
-    public SoccerEventImpl(URN id, URN sportId, SportEventCache sportEventCache, SportEventStatusFactory statusFactory, SportEntityFactory sportEntityFactory, List<Locale> locales, ExceptionHandlingStrategy exceptionHandlingStrategy) {
-        super(id, sportId, sportEventCache, statusFactory, sportEntityFactory, locales, exceptionHandlingStrategy);
-
+    public SoccerEventImpl(
+        URN id,
+        URN sportId,
+        SportEventCache sportEventCache,
+        SportEventStatusFactory statusFactory,
+        SportEntityFactory sportEntityFactory,
+        List<Locale> locales,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
+        super(
+            id,
+            sportId,
+            sportEventCache,
+            statusFactory,
+            sportEntityFactory,
+            locales,
+            exceptionHandlingStrategy
+        );
         Preconditions.checkNotNull(statusFactory);
 
         this.sportEventStatusFactory = statusFactory;
@@ -77,11 +93,11 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
      * associated with the current instance if already cached (does not make API call)
      */
     @Override
-    public Optional<CompetitionStatus> getStatusIfPresent()  {
+    public Optional<CompetitionStatus> getStatusIfPresent() {
         if (status == null) {
             status = sportEventStatusFactory.buildSportEventStatus(id, SoccerStatus.class, false);
         }
-        if(status == null) {
+        if (status == null) {
             return Optional.empty();
         }
         return Optional.of(status);

@@ -8,17 +8,21 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-
 import java.util.Optional;
 
 /**
  * The default implementation of the {@link TokenSetter}
  */
+@SuppressWarnings({ "LineLength" })
 public class TokenSetterImpl implements TokenSetter {
+
     private final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
     private final SDKConfigurationYamlReader sdkConfigurationYamlReader;
 
-    public TokenSetterImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
+    public TokenSetterImpl(
+        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SDKConfigurationYamlReader sdkConfigurationYamlReader
+    ) {
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
         Preconditions.checkNotNull(sdkConfigurationYamlReader);
 
@@ -36,7 +40,11 @@ public class TokenSetterImpl implements TokenSetter {
     public EnvironmentSelector setAccessToken(String token) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Access token can not be null/empty");
 
-        return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+        return new EnvironmentSelectorImpl(
+            token,
+            sdkConfigurationPropertiesReader,
+            sdkConfigurationYamlReader
+        );
     }
 
     /**
@@ -50,9 +58,17 @@ public class TokenSetterImpl implements TokenSetter {
     public EnvironmentSelector setAccessTokenFromSdkProperties() {
         Optional<String> ifPresent = sdkConfigurationPropertiesReader.readAccessToken();
 
-        String token = ifPresent.orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK properties(uf.sdk.accessToken)"));
+        String token = ifPresent.orElseThrow(() ->
+            new IllegalArgumentException(
+                "Could not read the access token from the SDK properties(uf.sdk.accessToken)"
+            )
+        );
 
-        return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+        return new EnvironmentSelectorImpl(
+            token,
+            sdkConfigurationPropertiesReader,
+            sdkConfigurationYamlReader
+        );
     }
 
     /**
@@ -66,9 +82,17 @@ public class TokenSetterImpl implements TokenSetter {
     public EnvironmentSelector setAccessTokenFromApplicationYaml() {
         Optional<String> ifPresent = sdkConfigurationYamlReader.readAccessToken();
 
-        String token = ifPresent.orElseThrow(() -> new IllegalArgumentException("Could not read the access token from the SDK YAML file(sportradar.sdk.uf.accessToken)"));
+        String token = ifPresent.orElseThrow(() ->
+            new IllegalArgumentException(
+                "Could not read the access token from the SDK YAML file(sportradar.sdk.uf.accessToken)"
+            )
+        );
 
-        return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+        return new EnvironmentSelectorImpl(
+            token,
+            sdkConfigurationPropertiesReader,
+            sdkConfigurationYamlReader
+        );
     }
 
     /**
@@ -83,9 +107,16 @@ public class TokenSetterImpl implements TokenSetter {
         if (token == null) {
             token = System.getenv("uf.accesstoken");
         }
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Token system variable uf.accesstoken not found");
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(token),
+            "Token system variable uf.accesstoken not found"
+        );
 
-        return new EnvironmentSelectorImpl(token, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+        return new EnvironmentSelectorImpl(
+            token,
+            sdkConfigurationPropertiesReader,
+            sdkConfigurationYamlReader
+        );
     }
 
     /**
@@ -100,10 +131,13 @@ public class TokenSetterImpl implements TokenSetter {
     @Override
     public OddsFeedConfiguration buildConfigFromSdkProperties() {
         Environment ufEnvironment = sdkConfigurationPropertiesReader.readUfEnvironment();
-        if(ufEnvironment.equals(Environment.Custom)){
+        if (ufEnvironment.equals(Environment.Custom)) {
             return setAccessTokenFromSdkProperties().selectCustom().loadConfigFromSdkProperties().build();
         }
-        return setAccessTokenFromSdkProperties().selectEnvironment(ufEnvironment).loadConfigFromSdkProperties().build();
+        return setAccessTokenFromSdkProperties()
+            .selectEnvironment(ufEnvironment)
+            .loadConfigFromSdkProperties()
+            .build();
     }
 
     /**
@@ -118,6 +152,9 @@ public class TokenSetterImpl implements TokenSetter {
     @Override
     public OddsFeedConfiguration buildConfigFromApplicationYml() {
         Environment ufEnvironment = sdkConfigurationYamlReader.readUfEnvironment();
-        return setAccessTokenFromApplicationYaml().selectEnvironment(ufEnvironment).loadConfigFromApplicationYml().build();
+        return setAccessTokenFromApplicationYaml()
+            .selectEnvironment(ufEnvironment)
+            .loadConfigFromApplicationYml()
+            .build();
     }
 }

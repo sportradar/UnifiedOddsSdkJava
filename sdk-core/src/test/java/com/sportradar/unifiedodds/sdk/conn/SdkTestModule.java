@@ -16,15 +16,16 @@ import com.sportradar.unifiedodds.sdk.impl.TestingSummaryDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.shared.TestHttpHelper;
+import java.util.Optional;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.mockito.Mockito;
 
-import java.util.Optional;
-
+@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity" })
 public class SdkTestModule implements Module {
+
     private Optional<SportsInfoManager> sportsInfoManager;
 
-    public SdkTestModule() {    }
+    public SdkTestModule() {}
 
     public SdkTestModule(Optional<SportsInfoManager> sportsInfoManager) {
         this.sportsInfoManager = sportsInfoManager;
@@ -40,58 +41,90 @@ public class SdkTestModule implements Module {
     /**
      * Provides the http client used to fetch data from the API
      */
-    @Provides @Singleton @Named("RecoveryHttpHelper")
-    private HttpHelper provideRecoveryHttpHelper(SDKInternalConfiguration config, @Named("RecoveryHttpClient") CloseableHttpClient httpClient, @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
+    @Provides
+    @Singleton
+    @Named("RecoveryHttpHelper")
+    private HttpHelper provideRecoveryHttpHelper(
+        SDKInternalConfiguration config,
+        @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
+        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+    ) {
         return new TestHttpHelper(config, httpClient, apiDeserializer);
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     public DataProvider<Producers> providesProducersDataProvider() {
         return new TestingDataProvider("test/rest/producers_conn.xml");
     }
 
-    @Provides @Singleton
-    public DataProvider<MarketDescriptions> providesMarketsDataProvider() { return new TestingDataProvider("test/rest/invariant_market_descriptions.en.xml"); }
+    @Provides
+    @Singleton
+    public DataProvider<MarketDescriptions> providesMarketsDataProvider() {
+        return new TestingDataProvider("test/rest/invariant_market_descriptions.en.xml");
+    }
 
-    @Provides @Singleton @Named("BettingStatusDataProvider")
+    @Provides
+    @Singleton
+    @Named("BettingStatusDataProvider")
     protected DataProvider providesBettingStatusDataProvider() {
         return new TestingDataProvider("test/rest/betting_status.xml");
     }
 
-    @Provides @Singleton @Named("BetStopReasonDataProvider")
-    protected DataProvider providesBetStopReasonDataProvider() { return new TestingDataProvider("test/rest/betstop_reasons.xml"); }
+    @Provides
+    @Singleton
+    @Named("BetStopReasonDataProvider")
+    protected DataProvider providesBetStopReasonDataProvider() {
+        return new TestingDataProvider("test/rest/betstop_reasons.xml");
+    }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected DataProvider<SAPICompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {
         return new TestingDataProvider<>("test/rest/profiles/en.competitor.3700.xml");
     }
 
-    @Provides @Singleton @Named("ListSportEventsDataProvider")
+    @Provides
+    @Singleton
+    @Named("ListSportEventsDataProvider")
     protected DataProvider<SAPIScheduleEndpoint> providesScheduleEndpointProvider() {
         return new TestingDataProvider<>("test/rest/events.xml");
     }
 
-    @Provides @Singleton @Named("TournamentScheduleProvider")
+    @Provides
+    @Singleton
+    @Named("TournamentScheduleProvider")
     protected DataProvider<Object> providesTournamentScheduleProvider() {
         return new TestingDataProvider<>("test/rest/tournament_schedule.en.xml");
     }
 
-    @Provides @Singleton @Named("DateScheduleEndpointDataProvider")
+    @Provides
+    @Singleton
+    @Named("DateScheduleEndpointDataProvider")
     protected DataProvider<SAPIScheduleEndpoint> providesDateScheduleProvider() {
         return new TestingDataProvider<>("test/rest/schedule.en.xml");
     }
 
-    @Provides @Singleton @Named("SummaryEndpointDataProvider")
+    @Provides
+    @Singleton
+    @Named("SummaryEndpointDataProvider")
     protected DataProvider<Object> providesSummaryEndpointProvider() {
-        return new TestingSummaryDataProvider<>(ImmutableMap.of(
-                "match", "test/rest/match_summary.xml",
-                "stage", "test/rest/race_summary.xml",
-                "tournament", "test/rest/summaries/summary_sr_tournament_1030.en.xml",
-                "tournament40", "test/rest/tournament_info.xml"
-        ));
+        return new TestingSummaryDataProvider<>(
+            ImmutableMap.of(
+                "match",
+                "test/rest/match_summary.xml",
+                "stage",
+                "test/rest/race_summary.xml",
+                "tournament",
+                "test/rest/summaries/summary_sr_tournament_1030.en.xml",
+                "tournament40",
+                "test/rest/tournament_info.xml"
+            )
+        );
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected DataProvider<SAPILotterySchedule> providesLotteryScheduleProvider() {
         return new TestingDataProvider<>("test/rest/wns/lottery_schedule.en.xml");
     }

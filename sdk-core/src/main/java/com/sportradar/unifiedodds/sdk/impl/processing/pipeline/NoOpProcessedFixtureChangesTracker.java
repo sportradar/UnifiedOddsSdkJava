@@ -8,6 +8,7 @@ import com.sportradar.uf.datamodel.UFFixtureChange;
  *
  * @author e.roznik
  */
+@SuppressWarnings({ "LineLength" })
 public class NoOpProcessedFixtureChangesTracker implements ProcessedFixtureChangesTracker {
 
     @Inject

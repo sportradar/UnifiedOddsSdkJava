@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SAPISportEventConditions;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSportEventConditionsCI;
 import com.sportradar.unifiedodds.sdk.entities.Pitcher;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +16,9 @@ import java.util.stream.Collectors;
 /**
  * A sport event conditions representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class SportEventConditionsCI {
+
     /**
      * A {@link String} specifying the attendance of the associated sport event
      */
@@ -62,8 +63,12 @@ public class SportEventConditionsCI {
         this.attendance = exportable.getAttendance();
         this.eventMode = exportable.getEventMode();
         this.referee = exportable.getReferee() != null ? new RefereeCI(exportable.getReferee()) : null;
-        this.weatherInfo = exportable.getWeatherInfo() != null ? new WeatherInfoCI(exportable.getWeatherInfo()) : null;
-        this.pitchers = exportable.getPitchers() != null ? exportable.getPitchers().stream().map(PitcherCI::new).collect(Collectors.toList()) : null;
+        this.weatherInfo =
+            exportable.getWeatherInfo() != null ? new WeatherInfoCI(exportable.getWeatherInfo()) : null;
+        this.pitchers =
+            exportable.getPitchers() != null
+                ? exportable.getPitchers().stream().map(PitcherCI::new).collect(Collectors.toList())
+                : null;
     }
 
     /**
@@ -91,10 +96,12 @@ public class SportEventConditionsCI {
             weatherInfo = new WeatherInfoCI(seConditions.getWeatherInfo());
         }
 
-        if(seConditions.getPitchers() != null && !seConditions.getPitchers().getPitcher().isEmpty())
-        {
+        if (seConditions.getPitchers() != null && !seConditions.getPitchers().getPitcher().isEmpty()) {
             pitchers = new ArrayList<>();
-            seConditions.getPitchers().getPitcher().forEach(pitcher -> pitchers.add(new PitcherCI(pitcher, locale)));
+            seConditions
+                .getPitchers()
+                .getPitcher()
+                .forEach(pitcher -> pitchers.add(new PitcherCI(pitcher, locale)));
         }
     }
 
@@ -138,15 +145,17 @@ public class SportEventConditionsCI {
      * Returns the list of associated {@link Pitcher}
      * @return the list of assocaited {@link Pitcher}
      */
-    public List<PitcherCI> getPitchers() { return pitchers; }
+    public List<PitcherCI> getPitchers() {
+        return pitchers;
+    }
 
     public ExportableSportEventConditionsCI export() {
         return new ExportableSportEventConditionsCI(
-                attendance,
-                eventMode,
-                referee != null ? referee.export() : null,
-                weatherInfo != null ? weatherInfo.export() : null,
-                pitchers != null ? pitchers.stream().map(PitcherCI::export).collect(Collectors.toList()) : null
+            attendance,
+            eventMode,
+            referee != null ? referee.export() : null,
+            weatherInfo != null ? weatherInfo.export() : null,
+            pitchers != null ? pitchers.stream().map(PitcherCI::export).collect(Collectors.toList()) : null
         );
     }
 }

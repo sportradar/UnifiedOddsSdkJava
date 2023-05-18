@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableRefereeCI implements Serializable {
+
     private String id;
     private Map<Locale, String> nationalities;
     private String name;

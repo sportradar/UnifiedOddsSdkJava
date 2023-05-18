@@ -5,12 +5,12 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * Defines methods used to access cached category entity data
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface CategoryCI extends CacheItem {
     /**
      * Returns the {@link URN} specifying the id of the associated sport

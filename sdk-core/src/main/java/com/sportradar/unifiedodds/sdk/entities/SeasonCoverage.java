@@ -9,6 +9,7 @@ import com.sportradar.utils.URN;
 /**
  * Defines methods representing season coverage info
  */
+@SuppressWarnings({ "LineLength" })
 public interface SeasonCoverage {
     /**
      * Returns the unique identifier of the season

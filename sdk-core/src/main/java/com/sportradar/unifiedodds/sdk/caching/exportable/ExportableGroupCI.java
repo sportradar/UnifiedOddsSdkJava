@@ -4,13 +4,20 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableGroupCI implements Serializable {
+
     private String id;
     private String name;
     private List<String> competitorIds;
     private Map<String, Map<String, String>> competitorsReferences;
 
-    public ExportableGroupCI(String id, String name, List<String> competitorIds, Map<String, Map<String, String>> competitorsReferences) {
+    public ExportableGroupCI(
+        String id,
+        String name,
+        List<String> competitorIds,
+        Map<String, Map<String, String>> competitorsReferences
+    ) {
         this.id = id;
         this.name = name;
         this.competitorIds = competitorIds;

@@ -8,13 +8,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
-
 import java.util.Map;
 
 /**
  * A representation of the various references
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
 public class ReferenceImpl implements Reference {
+
     /**
      * The Betradar id for this instance
      */
@@ -73,7 +74,9 @@ public class ReferenceImpl implements Reference {
      * @return - the Betfair id for this instance if provided amount reference ids, null otherwise
      */
     @Override
-    public Integer getBetfairId() { return betfairId; }
+    public Integer getBetfairId() {
+        return betfairId;
+    }
 
     /**
      * Returns the rotation number for this instance if provided amount reference ids, null otherwise
@@ -81,7 +84,9 @@ public class ReferenceImpl implements Reference {
      * @return - the rotation number for this instance if provided amount reference ids, null otherwise
      */
     @Override
-    public Integer getRotationNumber() { return rotationNumber; }
+    public Integer getRotationNumber() {
+        return rotationNumber;
+    }
 
     /**
      * Returns the AAMS id for this instance if provided amount reference ids, null otherwise
@@ -111,11 +116,17 @@ public class ReferenceImpl implements Reference {
      */
     @Override
     public String toString() {
-        return "ReferenceImpl{" +
-                "betradarId=" + betradarId +
-                ", betfairId=" + betfairId +
-                ", rotationNumber=" + rotationNumber +
-                ", references=" + references +
-                '}';
+        return (
+            "ReferenceImpl{" +
+            "betradarId=" +
+            betradarId +
+            ", betfairId=" +
+            betfairId +
+            ", rotationNumber=" +
+            rotationNumber +
+            ", references=" +
+            references +
+            '}'
+        );
     }
 }

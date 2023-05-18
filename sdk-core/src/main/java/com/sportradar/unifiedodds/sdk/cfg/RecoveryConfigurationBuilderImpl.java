@@ -8,13 +8,16 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
 import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-
 import java.util.concurrent.TimeUnit;
 
 /**
  * A base implementation of the {@link RecoveryConfigurationBuilder}
  */
-abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderBaseImpl<T> implements RecoveryConfigurationBuilder<T> {
+@SuppressWarnings({ "LineLength", "MagicNumber", "VisibilityModifier" })
+abstract class RecoveryConfigurationBuilderImpl<T>
+    extends ConfigurationBuilderBaseImpl<T>
+    implements RecoveryConfigurationBuilder<T> {
+
     private static final int MIN_INACTIVITY_SECONDS = 20;
     private static final int MAX_INACTIVITY_SECONDS = 180;
     private static final int MIN_RECOVERY_EXECUTION_MINUTES = 10;
@@ -27,7 +30,10 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     int maxRecoveryExecutionTimeMinutes = 60;
     int minIntervalBetweenRecoveryRequests = DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS;
 
-    RecoveryConfigurationBuilderImpl(SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader, SDKConfigurationYamlReader sdkConfigurationYamlReader) {
+    RecoveryConfigurationBuilderImpl(
+        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SDKConfigurationYamlReader sdkConfigurationYamlReader
+    ) {
         super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
     }
 
@@ -52,8 +58,14 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     @Override
     @SuppressWarnings("unchecked")
     public T setMaxInactivitySeconds(int inactivitySeconds) {
-        Preconditions.checkArgument(inactivitySeconds >= MIN_INACTIVITY_SECONDS, "Inactivity seconds value must be more than " + MIN_INACTIVITY_SECONDS);
-        Preconditions.checkArgument(inactivitySeconds <= MAX_INACTIVITY_SECONDS, "Inactivity seconds value must be less than " + MAX_INACTIVITY_SECONDS);
+        Preconditions.checkArgument(
+            inactivitySeconds >= MIN_INACTIVITY_SECONDS,
+            "Inactivity seconds value must be more than " + MIN_INACTIVITY_SECONDS
+        );
+        Preconditions.checkArgument(
+            inactivitySeconds <= MAX_INACTIVITY_SECONDS,
+            "Inactivity seconds value must be less than " + MAX_INACTIVITY_SECONDS
+        );
 
         this.maxInactivitySeconds = inactivitySeconds;
         return (T) this;
@@ -73,8 +85,14 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
 
         long executionMinutes = TimeUnit.MINUTES.convert(value, timeUnit);
 
-        Preconditions.checkArgument(executionMinutes >= MIN_RECOVERY_EXECUTION_MINUTES, "Recovery execution minutes must be more than " + MIN_RECOVERY_EXECUTION_MINUTES);
-        Preconditions.checkArgument(executionMinutes <= MAX_RECOVERY_EXECUTION_MINUTES, "Recovery execution minutes must be less than " + MAX_RECOVERY_EXECUTION_MINUTES);
+        Preconditions.checkArgument(
+            executionMinutes >= MIN_RECOVERY_EXECUTION_MINUTES,
+            "Recovery execution minutes must be more than " + MIN_RECOVERY_EXECUTION_MINUTES
+        );
+        Preconditions.checkArgument(
+            executionMinutes <= MAX_RECOVERY_EXECUTION_MINUTES,
+            "Recovery execution minutes must be less than " + MAX_RECOVERY_EXECUTION_MINUTES
+        );
 
         maxRecoveryExecutionTimeMinutes = Math.toIntExact(executionMinutes);
         return (T) this;
@@ -89,8 +107,16 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     @Override
     @SuppressWarnings("unchecked")
     public T setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
-        Preconditions.checkArgument(intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be greater than " + MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
-        Preconditions.checkArgument(intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS, "Minimal time between two successive recovery requests must be leaser than " + MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS);
+        Preconditions.checkArgument(
+            intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS,
+            "Minimal time between two successive recovery requests must be greater than " +
+            MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS
+        );
+        Preconditions.checkArgument(
+            intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS,
+            "Minimal time between two successive recovery requests must be leaser than " +
+            MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS
+        );
 
         minIntervalBetweenRecoveryRequests = intervalSeconds;
         return (T) this;
@@ -104,8 +130,12 @@ abstract class RecoveryConfigurationBuilderImpl<T> extends ConfigurationBuilderB
     private void loadRecoveryConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
         Preconditions.checkNotNull(sdkConfigurationReader);
 
-        sdkConfigurationReader.readMaxRecoveryTime().ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));
+        sdkConfigurationReader
+            .readMaxRecoveryTime()
+            .ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));
         sdkConfigurationReader.readMaxInactivitySeconds().ifPresent(this::setMaxInactivitySeconds);
-        sdkConfigurationReader.readMinIntervalBetweenRecoveryRequests().ifPresent(this::setMinIntervalBetweenRecoveryRequests);
+        sdkConfigurationReader
+            .readMinIntervalBetweenRecoveryRequests()
+            .ifPresent(this::setMinIntervalBetweenRecoveryRequests);
     }
 }

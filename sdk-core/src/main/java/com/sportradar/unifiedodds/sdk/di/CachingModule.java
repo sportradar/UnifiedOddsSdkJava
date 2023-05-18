@@ -20,7 +20,6 @@ import com.sportradar.unifiedodds.sdk.caching.markets.*;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.URN;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Date;
@@ -28,13 +27,20 @@ import java.util.Date;
 /**
  * A derived injection module managing SDK caches
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "AvoidNoArgumentSuperConstructorCall",
+        "ClassDataAbstractionCoupling",
+        "ClassFanOutComplexity",
+    }
+)
 public class CachingModule extends AbstractModule {
 
     private final InternalCachesProvider internalCachesProvider;
 
     CachingModule(InternalCachesProvider internalCachesProvider) {
         super();
-
         Preconditions.checkNotNull(internalCachesProvider, "Internal caches provider can't be null");
 
         this.internalCachesProvider = internalCachesProvider;
@@ -51,158 +57,214 @@ public class CachingModule extends AbstractModule {
 
         bind(NamedValuesProvider.class).to(NamedValuesProviderImpl.class);
         bind(MarketDescriptionProvider.class).to(MarketDescriptionProviderImpl.class);
-        bind(new TypeLiteral<Cache<String, String>>(){}).annotatedWith(Names.named("DispatchedFixturesChangesCache")).toInstance(internalCachesProvider.getDispatchedFixtureChanges());
+        bind(new TypeLiteral<Cache<String, String>>() {})
+            .annotatedWith(Names.named("DispatchedFixturesChangesCache"))
+            .toInstance(internalCachesProvider.getDispatchedFixtureChanges());
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected Cache<URN, SportEventCI> provideSportEventCICache() {
         return internalCachesProvider.getSportEventCache();
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected Cache<URN, SportCI> provideSportDataCICache() {
         return internalCachesProvider.getSportDataCache();
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected Cache<URN, CategoryCI> provideCategoryCICache() {
         return internalCachesProvider.getCategoryDataCache();
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected Cache<URN, Date> provideFixtureTimestampCache() {
         return internalCachesProvider.getFixtureTimestampCache();
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected SportEventStatusCache providesSportEventStatusCache(SportEventCache sportEventCache) {
         return new SportEventStatusCacheImpl(
-                internalCachesProvider.getSportEventStatusCache(),
-                sportEventCache,
-                internalCachesProvider.getIgnoreEventsTimelineCache()
+            internalCachesProvider.getSportEventStatusCache(),
+            sportEventCache,
+            internalCachesProvider.getIgnoreEventsTimelineCache()
         );
     }
 
-    @Provides @Singleton
-    protected ProfileCache provideProfileCache(CacheItemFactory cacheItemFactory,
-                                               DataRouterManager dataRouterManager) {
+    @Provides
+    @Singleton
+    protected ProfileCache provideProfileCache(
+        CacheItemFactory cacheItemFactory,
+        DataRouterManager dataRouterManager
+    ) {
         return new ProfileCacheImpl(
-                cacheItemFactory,
-                dataRouterManager,
-                internalCachesProvider.getPlayerProfileCache(),
-                internalCachesProvider.getCompetitorCache(),
-                internalCachesProvider.getSimpleTeamCompetitorCache()
+            cacheItemFactory,
+            dataRouterManager,
+            internalCachesProvider.getPlayerProfileCache(),
+            internalCachesProvider.getCompetitorCache(),
+            internalCachesProvider.getSimpleTeamCompetitorCache()
         );
     }
 
-    @Provides @Singleton @Named("MatchStatusCache")
-    protected LocalizedNamedValueCache provideMatchStatusCache(SDKInternalConfiguration cfg,
-                                                             LogHttpDataFetcher httpDataFetcher,
-                                                             @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                             SDKTaskScheduler sdkTaskScheduler) {
+    @Provides
+    @Singleton
+    @Named("MatchStatusCache")
+    protected LocalizedNamedValueCache provideMatchStatusCache(
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
+        SDKTaskScheduler sdkTaskScheduler
+    ) {
         return new LocalizedNamedValueCacheImpl(
-                new DataProvider("/descriptions/%s/match_status.xml", cfg, httpDataFetcher, deserializer),
-                sdkTaskScheduler,
-                cfg.getDesiredLocales()
+            new DataProvider("/descriptions/%s/match_status.xml", cfg, httpDataFetcher, deserializer),
+            sdkTaskScheduler,
+            cfg.getDesiredLocales()
         );
     }
 
-    @Provides @Singleton @Named("VoidReasonsCache")
-    protected NamedValueCache provideVoidReasonCache(SDKInternalConfiguration cfg,
-                                                   LogHttpDataFetcher httpDataFetcher,
-                                                   @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                   SDKTaskScheduler sdkTaskScheduler) {
+    @Provides
+    @Singleton
+    @Named("VoidReasonsCache")
+    protected NamedValueCache provideVoidReasonCache(
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
+        SDKTaskScheduler sdkTaskScheduler
+    ) {
         return new NamedValueCacheImpl(
-                new DataProvider("/descriptions/void_reasons.xml", cfg, httpDataFetcher, deserializer),
-                sdkTaskScheduler
+            new DataProvider("/descriptions/void_reasons.xml", cfg, httpDataFetcher, deserializer),
+            sdkTaskScheduler
         );
     }
 
-    @Provides @Singleton @Named("BetStopReasonCache")
+    @Provides
+    @Singleton
+    @Named("BetStopReasonCache")
     protected NamedValueCache provideBetStopReasonCache(
-            @Named("BetStopReasonDataProvider") DataProvider dataProvider,
-            SDKTaskScheduler sdkTaskScheduler) {
+        @Named("BetStopReasonDataProvider") DataProvider dataProvider,
+        SDKTaskScheduler sdkTaskScheduler
+    ) {
         return new NamedValueCacheImpl(dataProvider, sdkTaskScheduler);
     }
 
-    @Provides @Singleton @Named("BettingStatusCache")
+    @Provides
+    @Singleton
+    @Named("BettingStatusCache")
     protected NamedValueCache provideBettingStatusCache(
-            @Named("BettingStatusDataProvider") DataProvider dataProvider,
-            SDKTaskScheduler sdkTaskScheduler) {
+        @Named("BettingStatusDataProvider") DataProvider dataProvider,
+        SDKTaskScheduler sdkTaskScheduler
+    ) {
         return new NamedValueCacheImpl(dataProvider, sdkTaskScheduler);
     }
 
-    @Provides @Singleton @Named("InvariantMarketCache")
+    @Provides
+    @Singleton
+    @Named("InvariantMarketCache")
     protected InvariantMarketDescriptionCache provideInvariantMarketDescriptionCache(
-            SDKInternalConfiguration cfg,
-            @Named("AdditionalMarketMappingsProvider") ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
-            MappingValidatorFactory mappingFactory,
-            SDKTaskScheduler sdkTaskScheduler,
-            DataProvider<MarketDescriptions> dataProvider
+        SDKInternalConfiguration cfg,
+        @Named(
+            "AdditionalMarketMappingsProvider"
+        ) ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
+        MappingValidatorFactory mappingFactory,
+        SDKTaskScheduler sdkTaskScheduler,
+        DataProvider<MarketDescriptions> dataProvider
     ) {
         return new InvariantMarketDescriptionCache(
-                internalCachesProvider.getInvariantMarketCache(),
-                dataProvider,
-                additionalMappingsProvider,
-                mappingFactory,
-                sdkTaskScheduler,
-                cfg.getDesiredLocales()
+            internalCachesProvider.getInvariantMarketCache(),
+            dataProvider,
+            additionalMappingsProvider,
+            mappingFactory,
+            sdkTaskScheduler,
+            cfg.getDesiredLocales()
         );
     }
 
     //Data Providers:
 
-    @Provides @Singleton @Named("BettingStatusDataProvider")
+    @Provides
+    @Singleton
+    @Named("BettingStatusDataProvider")
     protected DataProvider providesBettingStatusDataProvider(
-            SDKInternalConfiguration cfg,
-            LogHttpDataFetcher httpDataFetcher,
-            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
+    ) {
         return new DataProvider("/descriptions/betting_status.xml", cfg, httpDataFetcher, deserializer);
     }
 
-    @Provides @Singleton @Named("BetStopReasonDataProvider")
+    @Provides
+    @Singleton
+    @Named("BetStopReasonDataProvider")
     protected DataProvider providesBetStopReasonDataProvider(
-            SDKInternalConfiguration cfg,
-            LogHttpDataFetcher httpDataFetcher,
-            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
+    ) {
         return new DataProvider("/descriptions/betstop_reasons.xml", cfg, httpDataFetcher, deserializer);
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     protected DataProvider<MarketDescriptions> providesMarketDescriptionsProvider(
-            SDKInternalConfiguration cfg,
-            LogHttpDataFetcher httpDataFetcher,
-            @Named("SportsApiJaxbDeserializer") Deserializer deserializer) {
-        return new DataProvider<>("/descriptions/%s/markets.xml?include_mappings=true", cfg, httpDataFetcher, deserializer);
-    }
-
-
-
-    @Provides @Singleton @Named("VariantMarketCache")
-    protected MarketDescriptionCache provideVariantMarketDescriptionCache(SDKInternalConfiguration cfg,
-                                                                          LogFastHttpDataFetcher httpDataFetcher,
-                                                                          @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                                          MappingValidatorFactory mappingFactory) {
-        return new VariantMarketDescriptionCache(
-                internalCachesProvider.getVariantMarketCache(),
-                new DataProvider<>("/descriptions/%s/markets/%s/variants/%s?include_mappings=true", cfg, httpDataFetcher, deserializer),
-                mappingFactory,
-                cfg.getSimpleVariantCaching()
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
+    ) {
+        return new DataProvider<>(
+            "/descriptions/%s/markets.xml?include_mappings=true",
+            cfg,
+            httpDataFetcher,
+            deserializer
         );
     }
 
-    @Provides @Singleton
-    protected VariantDescriptionCache provideVariantDescriptionCache(SDKInternalConfiguration cfg,
-                                                                         LogHttpDataFetcher httpDataFetcher,
-                                                                         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-                                                                         MappingValidatorFactory mappingFactory,
-                                                                         SDKTaskScheduler sdkTaskScheduler) {
+    @Provides
+    @Singleton
+    @Named("VariantMarketCache")
+    protected MarketDescriptionCache provideVariantMarketDescriptionCache(
+        SDKInternalConfiguration cfg,
+        LogFastHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
+        MappingValidatorFactory mappingFactory
+    ) {
+        return new VariantMarketDescriptionCache(
+            internalCachesProvider.getVariantMarketCache(),
+            new DataProvider<>(
+                "/descriptions/%s/markets/%s/variants/%s?include_mappings=true",
+                cfg,
+                httpDataFetcher,
+                deserializer
+            ),
+            mappingFactory,
+            cfg.getSimpleVariantCaching()
+        );
+    }
+
+    @Provides
+    @Singleton
+    protected VariantDescriptionCache provideVariantDescriptionCache(
+        SDKInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
+        MappingValidatorFactory mappingFactory,
+        SDKTaskScheduler sdkTaskScheduler
+    ) {
         return new VariantDescriptionCacheImpl(
-                internalCachesProvider.getVariantDescriptionCache(),
-                new DataProvider<>("/descriptions/%s/variants.xml?include_mappings=true", cfg, httpDataFetcher, deserializer),
-                mappingFactory,
-                sdkTaskScheduler,
-                cfg.getDesiredLocales()
+            internalCachesProvider.getVariantDescriptionCache(),
+            new DataProvider<>(
+                "/descriptions/%s/variants.xml?include_mappings=true",
+                cfg,
+                httpDataFetcher,
+                deserializer
+            ),
+            mappingFactory,
+            sdkTaskScheduler,
+            cfg.getDesiredLocales()
         );
     }
 }

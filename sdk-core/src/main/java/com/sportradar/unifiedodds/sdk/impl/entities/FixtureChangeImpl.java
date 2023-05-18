@@ -9,7 +9,6 @@ import com.sportradar.uf.sportsapi.datamodel.SAPIFixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 
 /**

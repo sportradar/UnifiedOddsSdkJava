@@ -15,18 +15,30 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.unifiedodds.sdk.impl.SportEntityFactoryImpl;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The basic implementation of a lottery
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LambdaBodyLength",
+        "LineLength",
+        "MultipleStringLiterals",
+        "ReturnCount",
+        "UnnecessaryParentheses",
+    }
+)
 public class LotteryImpl extends SportEventImpl implements Lottery {
+
     private static final Logger logger = LoggerFactory.getLogger(LotteryImpl.class);
 
     private final List<Locale> locales;
@@ -34,14 +46,15 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
     private final SportEntityFactoryImpl sportEntityFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-    public LotteryImpl(URN id,
-                       URN sportId,
-                       List<Locale> locales,
-                       SportEventCache sportEventCache,
-                       SportEntityFactoryImpl sportEntityFactory,
-                       ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public LotteryImpl(
+        URN id,
+        URN sportId,
+        List<Locale> locales,
+        SportEventCache sportEventCache,
+        SportEntityFactoryImpl sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         super(id, sportId);
-
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -126,21 +139,33 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
 
         List<URN> scheduledDraws = lotteryCI.getScheduledDraws();
         try {
-            return scheduledDraws == null ? null :
-                    scheduledDraws.stream().map(sId -> {
+            return scheduledDraws == null
+                ? null
+                : scheduledDraws
+                    .stream()
+                    .map(sId -> {
                         try {
                             return sportEntityFactory.buildSportEvent(sId, locales, false);
-                        } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
+                        } catch (
+                            com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e
+                        ) {
                             throw new StreamWrapperException(e.getMessage(), e);
                         }
-                    }).filter(e -> {
+                    })
+                    .filter(e -> {
                         if (e instanceof Draw) {
                             return true;
                         } else {
-                            logger.warn("Lottery.getScheduledDraws found a non-draw object[{}], instance: {}", e.getId(), e.getClass());
+                            logger.warn(
+                                "Lottery.getScheduledDraws found a non-draw object[{}], instance: {}",
+                                e.getId(),
+                                e.getClass()
+                            );
                             return false;
                         }
-                    }).map(e -> (Draw) e).collect(Collectors.toList());
+                    })
+                    .map(e -> (Draw) e)
+                    .collect(Collectors.toList());
         } catch (StreamWrapperException e) {
             handleException("getScheduledDraws", e);
             return null;
@@ -227,7 +252,10 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
         }
 
         try {
-            SportSummary sportSummary = sportEntityFactory.buildSportForCategory(lotteryCi.getCategoryId(), locales);
+            SportSummary sportSummary = sportEntityFactory.buildSportForCategory(
+                lotteryCi.getCategoryId(),
+                locales
+            );
             return sportSummary.getId();
         } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
             handleException("getSportId failed", e);
@@ -309,12 +337,18 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
 
     @Override
     public String toString() {
-        return "LotteryImpl{" +
-                "id=" + id +
-                ", sportId=" + sportId +
-                ", locales=" + locales +
-                ", exceptionHandlingStrategy=" + exceptionHandlingStrategy +
-                "} ";
+        return (
+            "LotteryImpl{" +
+            "id=" +
+            id +
+            ", sportId=" +
+            sportId +
+            ", locales=" +
+            locales +
+            ", exceptionHandlingStrategy=" +
+            exceptionHandlingStrategy +
+            "} "
+        );
     }
 
     /**
@@ -350,9 +384,20 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
             }
         } else {
             if (e == null) {
-                logger.warn("Error executing {}[{}] request({}), returning null value", this.getClass(), id, request);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null value",
+                    this.getClass(),
+                    id,
+                    request
+                );
             } else {
-                logger.warn("Error executing {}[{}] request({}), returning null value", this.getClass(), id, request, e);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null value",
+                    this.getClass(),
+                    id,
+                    request,
+                    e
+                );
             }
         }
     }

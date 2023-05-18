@@ -1,5 +1,27 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.60.0 (2023-05-17)**
+* CustomBetManager respects ExceptionHandlingStrategy for all non-argument-validating exceptions
+* CustomBetManager now throws CommunicationException on API failures
+* API failures across the board carry to the client: url used and http code returned 
+* BookingManager respects ExceptionHandlingStrategy for CommunicationExceptions
+
+**2.0.59.0 (2023-01-26)**
+* Added support for group urn type
+* Fix ignore fixture_change_fixture endpoint for virtual producers
+
+**2.0.58.3 (2023-01-12)**
+* Fix: GlobalReplay environment not discards messages from disabled packages for the customer
+
+**2.0.58.2 (2023-01-09)**
+* Fix: TLS version selection for RabbitMq connection no longer causes a crash in certain JVMs
+
+**2.0.58.1 (2022-12-27)**
+* Fix: Artifact descriptor in maven central is fixed, so that SDK is usable in maven projects again
+
+**2.0.58.0 (2022-12-23)**
+* Added GlobalReplay environment
+
 **2.0.57.0 (2022-09-20)**
 * CustomBet - added support for calculate-filter endpoint
 * Fix: http request logged twice

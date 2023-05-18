@@ -10,6 +10,7 @@ import com.sportradar.utils.URN;
 /**
  * Defines utility methods used to handle specific event recovery requests
  */
+@SuppressWarnings({ "LineLength" })
 public interface EventRecoveryRequestIssuer {
     /**
      * Initiates a odds recovery procedure for the event associated with the provided {@link URN} identifier on the requested {@link Producer}

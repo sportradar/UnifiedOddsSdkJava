@@ -7,13 +7,14 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTvChannelCI;
 import com.sportradar.unifiedodds.sdk.entities.TvChannel;
-
 import java.util.Date;
 
 /**
  * Represents a TV channel
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class TvChannelImpl implements TvChannel {
+
     /**
      * The name of the channel represented by the current instance
      */
@@ -89,18 +90,21 @@ public class TvChannelImpl implements TvChannel {
      */
     @Override
     public String toString() {
-        return "TvChannelImpl{" +
-                "name='" + name + '\'' +
-                ", time=" + time + '\'' +
-                ", streamUrl=" + streamUrl +
-                '}';
+        return (
+            "TvChannelImpl{" +
+            "name='" +
+            name +
+            '\'' +
+            ", time=" +
+            time +
+            '\'' +
+            ", streamUrl=" +
+            streamUrl +
+            '}'
+        );
     }
 
     public ExportableTvChannelCI export() {
-        return new ExportableTvChannelCI(
-                name,
-                time,
-                streamUrl
-        );
+        return new ExportableTvChannelCI(name, time, streamUrl);
     }
 }

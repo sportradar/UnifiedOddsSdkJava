@@ -6,9 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.markets.mappings;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidator;
-
 import java.util.Map;
-
 
 /**
  * A {@link MappingValidator} which checks the value of the specifier against a specific value
@@ -31,8 +29,14 @@ public class SpecificValueMappingValidator implements MappingValidator {
      * @param specifierValue The required value of the specifier
      */
     SpecificValueMappingValidator(String specifierName, String specifierValue) {
-        Preconditions.checkArgument(specifierName != null && !specifierName.isEmpty(), "specifierName cannot be a null reference or empty string");
-        Preconditions.checkArgument(specifierValue != null && !specifierValue.isEmpty(), "specifierValue cannot be a null reference or empty string");
+        Preconditions.checkArgument(
+            specifierName != null && !specifierName.isEmpty(),
+            "specifierName cannot be a null reference or empty string"
+        );
+        Preconditions.checkArgument(
+            specifierValue != null && !specifierValue.isEmpty(),
+            "specifierValue cannot be a null reference or empty string"
+        );
 
         this.specifierName = specifierName;
         this.specifierValue = specifierValue;
@@ -46,10 +50,15 @@ public class SpecificValueMappingValidator implements MappingValidator {
      */
     @Override
     public boolean validate(Map<String, String> specifiers) {
-        Preconditions.checkArgument(specifiers != null && !specifiers.isEmpty(), "specifier cannot be an empty map or a null reference");
+        Preconditions.checkArgument(
+            specifiers != null && !specifiers.isEmpty(),
+            "specifier cannot be an empty map or a null reference"
+        );
 
-        if(!specifiers.containsKey(specifierName)){
-            throw new IllegalArgumentException(String.format("The provided specifiers do not contain a specifier named %s", specifierName));
+        if (!specifiers.containsKey(specifierName)) {
+            throw new IllegalArgumentException(
+                String.format("The provided specifiers do not contain a specifier named %s", specifierName)
+            );
         }
         return specifierValue.equals(specifiers.get(specifierName));
     }
@@ -60,6 +69,6 @@ public class SpecificValueMappingValidator implements MappingValidator {
      */
     @Override
     public String toString() {
-        return String.format("%s=%s", specifierName,  specifierValue);
+        return String.format("%s=%s", specifierName, specifierValue);
     }
 }

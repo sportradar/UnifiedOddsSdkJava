@@ -7,18 +7,17 @@ import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.unifiedodds.sdk.shared.Helper;
 import com.sportradar.utils.URN;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings({ "MemberName", "VisibilityModifier" })
 public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsListener {
 
     public List<String> CalledEvents;
 
-    public SdkConnListener(){
-
+    public SdkConnListener() {
         CalledEvents = Collections.synchronizedList(new ArrayList());
     }
 
@@ -31,8 +30,18 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
      * @param messageInterest the associated {@link MessageInterest}
      */
     @Override
-    public void onRawFeedMessageReceived(RoutingKeyInfo routingKey, UnmarshalledMessage feedMessage, MessageTimestamp timestamp, MessageInterest messageInterest) {
-        String message = String.format("Raw feed data [%s]: key=%s, data=%s", messageInterest, routingKey, feedMessage.getClass().getName());
+    public void onRawFeedMessageReceived(
+        RoutingKeyInfo routingKey,
+        UnmarshalledMessage feedMessage,
+        MessageTimestamp timestamp,
+        MessageInterest messageInterest
+    ) {
+        String message = String.format(
+            "Raw feed data [%s]: key=%s, data=%s",
+            messageInterest,
+            routingKey,
+            feedMessage.getClass().getName()
+        );
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onRawFeedMessageReceived: " + message);
     }
@@ -55,7 +64,7 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
      */
     @Override
     public void onConnectionDown() {
-        String message = String.format("Connection to the feed lost");
+        String message = "Connection to the feed lost";
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onConnectionDown: " + message);
     }
@@ -81,7 +90,11 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
      */
     @Override
     public void onProducerDown(ProducerDown producerDown) {
-        String message = String.format("onProducerDown: Producer %s is down: %s", producerDown.getProducer().getName(), producerDown.getReason());
+        String message = String.format(
+            "onProducerDown: Producer %s is down: %s",
+            producerDown.getProducer().getName(),
+            producerDown.getReason()
+        );
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onProducerDown: " + message);
     }
@@ -101,7 +114,12 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
     @Override
     public void onProducerStatusChange(ProducerStatus producerStatus) {
         String upDown = producerStatus.isDown() ? "down" : "up";
-        String message = String.format("onProducerStatusChange: Producer %s is %s: %s", producerStatus.getProducer().getName(), upDown, producerStatus.getProducerStatusReason());
+        String message = String.format(
+            "onProducerStatusChange: Producer %s is %s: %s",
+            producerStatus.getProducer().getName(),
+            upDown,
+            producerStatus.getProducerStatusReason()
+        );
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onProducerStatusChange: " + message);
     }
@@ -115,12 +133,14 @@ public class SdkConnListener implements OddsFeedExtListener, SDKGlobalEventsList
 
     @Override
     public void onRecoveryInitiated(RecoveryInitiated recoveryInitiated) {
-        String message = String.format("Recovery initiated. RequestId=%s, Producer=%s, After=%s, EventId=%s, Message=(%s)",
-                                       recoveryInitiated.getRequestId(),
-                                       recoveryInitiated.getProducer().getId(),
-                                       recoveryInitiated.getAfterTimestamp(),
-                                       recoveryInitiated.getEventId(),
-                                       recoveryInitiated.getMessage());
+        String message = String.format(
+            "Recovery initiated. RequestId=%s, Producer=%s, After=%s, EventId=%s, Message=(%s)",
+            recoveryInitiated.getRequestId(),
+            recoveryInitiated.getProducer().getId(),
+            recoveryInitiated.getAfterTimestamp(),
+            recoveryInitiated.getEventId(),
+            recoveryInitiated.getMessage()
+        );
         CalledEvents.add(message);
         Helper.writeToOutput("Called event onRecoveryInitiated: " + message);
     }

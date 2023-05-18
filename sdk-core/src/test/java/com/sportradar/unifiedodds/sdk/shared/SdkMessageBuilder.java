@@ -11,41 +11,45 @@ import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterIm
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.utils.URN;
 
+@SuppressWarnings(
+    {
+        "HideUtilityClassConstructor",
+        "OverloadMethodsDeclarationOrder",
+        "StaticVariableName",
+        "VisibilityModifier",
+    }
+)
 public class SdkMessageBuilder {
 
     public static StaticRandom SR;
     public static RestMessageBuilder RMB;
 
-    public static AvailableSelections getAvailableSelections(int eventId, int nbrMarkets)
-    {
+    public static AvailableSelections getAvailableSelections(int eventId, int nbrMarkets) {
         URN matchId = SR.Urn(eventId == 0 ? SR.I1000() : eventId, "match");
         return new AvailableSelectionsImpl(RMB.getAvailableSelections(matchId, nbrMarkets));
     }
 
-    public static Calculation getCalculation(int eventId, int nbrSelections)
-    {
+    public static Calculation getCalculation(int eventId, int nbrSelections) {
         URN matchId = SR.Urn(eventId == 0 ? SR.I1000() : eventId, "match");
         return new CalculationImpl(RMB.getCalculationResponse(matchId, nbrSelections));
     }
 
-    public static CalculationFilter getCalculationFilter(int eventId, int nbrSelections)
-    {
+    public static CalculationFilter getCalculationFilter(int eventId, int nbrSelections) {
         URN matchId = SR.Urn(eventId == 0 ? SR.I1000() : eventId, "match");
         return new CalculationFilterImpl(RMB.getFilteredCalculationResponse(matchId, nbrSelections));
     }
 
-    public static AvailableSelections getAvailableSelections(CAPIAvailableSelections availableSelections)
-    {
+    public static AvailableSelections getAvailableSelections(CAPIAvailableSelections availableSelections) {
         return new AvailableSelectionsImpl(availableSelections);
     }
 
-    public static Calculation getCalculation(CAPICalculationResponse calculationResponse)
-    {
+    public static Calculation getCalculation(CAPICalculationResponse calculationResponse) {
         return new CalculationImpl(calculationResponse);
     }
 
-    public static CalculationFilter getCalculationFilter(CAPIFilteredCalculationResponse calculationResponse)
-    {
+    public static CalculationFilter getCalculationFilter(
+        CAPIFilteredCalculationResponse calculationResponse
+    ) {
         return new CalculationFilterImpl(calculationResponse);
     }
 }

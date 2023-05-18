@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
-
 import java.time.Duration;
 import java.util.Date;
 
@@ -14,7 +13,6 @@ import java.util.Date;
  * Defines methods used for getting list of {@link FixtureChange} and/or {@link ResultChange}
  */
 public interface EventChangeManager {
-
     /**
      * Sets the {@link EventChangeListener}
      * @param listener the event change listener

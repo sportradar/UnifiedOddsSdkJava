@@ -10,23 +10,30 @@ import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeSettlement;
-
 import java.util.Locale;
 
 /**
  * Created on 26/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ParameterNumber" })
 class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
+
     private final boolean isWinning;
     private final double voidFactor;
     private final double deadHeatFactor;
     private final OutcomeResult outcomeResult;
 
-    OutcomeSettlementImpl(String id, NameProvider nameProvider, OutcomeDefinition outcomeDefinition, Locale defaultLocale,
-                          UFResult result, UFVoidFactor voidFactor, Double deadHeatFactor) {
+    OutcomeSettlementImpl(
+        String id,
+        NameProvider nameProvider,
+        OutcomeDefinition outcomeDefinition,
+        Locale defaultLocale,
+        UFResult result,
+        UFVoidFactor voidFactor,
+        Double deadHeatFactor
+    ) {
         super(id, nameProvider, outcomeDefinition, defaultLocale);
-
         this.isWinning = result == UFResult.WON;
         this.voidFactor = voidFactor == null ? 0.0 : voidFactor.value();
         this.deadHeatFactor = deadHeatFactor == null ? 1 : deadHeatFactor;

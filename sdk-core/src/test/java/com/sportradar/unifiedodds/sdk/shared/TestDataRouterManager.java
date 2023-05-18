@@ -24,13 +24,25 @@ import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterIm
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.serializer.Deserializer;
-
 import java.time.Duration;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "DeclarationOrder",
+        "MagicNumber",
+        "MemberName",
+        "NestedIfDepth",
+        "OverloadMethodsDeclarationOrder",
+        "ReturnCount",
+        "VisibilityModifier",
+    }
+)
 public class TestDataRouterManager implements DataRouterManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TestDataRouterManager.class);
@@ -46,46 +58,41 @@ public class TestDataRouterManager implements DataRouterManager {
 
     private Object lock = new Object();
 
-    public TestDataRouterManager(TestHttpHelper testHttpHelper, DataRouter dataRouter){
+    public TestDataRouterManager(TestHttpHelper testHttpHelper, DataRouter dataRouter) {
         this.testHttpHelper = testHttpHelper;
         this.dataRouter = dataRouter;
         this.RestCalls = new HashMap<>();
     }
 
-    public int totalRestCalls() { return RestCalls.values().stream().mapToInt(i -> i).sum(); }
-
-    @Override
-    public void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
-
+    public int totalRestCalls() {
+        return RestCalls.values().stream().mapToInt(i -> i).sum();
     }
 
     @Override
-    public void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester) throws CommunicationException {
-
-    }
-
-    @Override
-    public void requestDrawSummary(Locale locale, URN id, CacheItem requester) throws CommunicationException {
-
-    }
+    public void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
 
     @Override
-    public void requestDrawFixture(Locale locale, URN id, CacheItem requester) throws CommunicationException {
-
-    }
-
-    @Override
-    public void requestAllTournamentsForAllSportsEndpoint(Locale locale) throws CommunicationException {
-
-    }
+    public void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester)
+        throws CommunicationException {}
 
     @Override
-    public void requestAllSportsEndpoint(Locale locale) throws CommunicationException {
-
-    }
+    public void requestDrawSummary(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
 
     @Override
-    public List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult) throws CommunicationException {
+    public void requestDrawFixture(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
+
+    @Override
+    public void requestAllTournamentsForAllSportsEndpoint(Locale locale) throws CommunicationException {}
+
+    @Override
+    public void requestAllSportsEndpoint(Locale locale) throws CommunicationException {}
+
+    @Override
+    public List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult)
+        throws CommunicationException {
         return null;
     }
 
@@ -95,7 +102,8 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestLotterySchedule(Locale locale, URN lotteryId, CacheItem requester) throws CommunicationException {
+    public List<URN> requestLotterySchedule(Locale locale, URN lotteryId, CacheItem requester)
+        throws CommunicationException {
         return null;
     }
 
@@ -105,19 +113,16 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public void requestPlayerProfileEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
-
-    }
-
-    @Override
-    public void requestCompetitorEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
-
-    }
+    public void requestPlayerProfileEndpoint(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
 
     @Override
-    public void requestSimpleTeamEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+    public void requestCompetitorEndpoint(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
 
-    }
+    @Override
+    public void requestSimpleTeamEndpoint(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
 
     @Override
     public List<URN> requestSeasonsFor(Locale locale, URN tournamentID) throws CommunicationException {
@@ -125,25 +130,26 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+    public SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {
         return null;
     }
 
     @Override
-    public void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException {
-
-    }
+    public void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester)
+        throws CommunicationException {}
 
     @Override
     public AvailableSelections requestAvailableSelections(URN id) throws CommunicationException {
         recordCall("requestAvailableSelections");
-        DataProvider<CAPIAvailableSelections> dataProvider = new TestingDataProvider<>("test/rest/custombet/available_selections.xml");
+        DataProvider<CAPIAvailableSelections> dataProvider = new TestingDataProvider<>(
+            "test/rest/custombet/available_selections.xml"
+        );
 
         CAPIAvailableSelections result = null;
         try {
             result = dataProvider.getData();
-        }
-        catch (DataProviderException e) {
+        } catch (DataProviderException e) {
             e.printStackTrace();
         }
 
@@ -151,8 +157,7 @@ public class TestDataRouterManager implements DataRouterManager {
 
         if (id.getId() == 0) {
             result = null;
-        }
-        else if (id.getId() != 31561675) {
+        } else if (id.getId() != 31561675) {
             result = RestMessageBuilder.getAvailableSelections(id, StaticRandom.I100());
         }
 
@@ -167,13 +172,14 @@ public class TestDataRouterManager implements DataRouterManager {
     @Override
     public Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException {
         recordCall("requestCalculateProbability");
-        DataProvider<CAPICalculationResponse> dataProvider = new TestingDataProvider<>("test/rest/custombet/calculate_response.xml");
+        DataProvider<CAPICalculationResponse> dataProvider = new TestingDataProvider<>(
+            "test/rest/custombet/calculate_response.xml"
+        );
 
         CAPICalculationResponse result = null;
         try {
             result = dataProvider.getData();
-        }
-        catch (DataProviderException e) {
+        } catch (DataProviderException e) {
             e.printStackTrace();
         }
 
@@ -181,9 +187,12 @@ public class TestDataRouterManager implements DataRouterManager {
 
         if (selections.isEmpty()) {
             result = null;
-        }
-        else if (selections.stream().findFirst().get().getEventId().getId() != 31561675) {
-            result = RestMessageBuilder.getCalculationResponse(selections.stream().findFirst().get().getEventId(), StaticRandom.I100());
+        } else if (selections.stream().findFirst().get().getEventId().getId() != 31561675) {
+            result =
+                RestMessageBuilder.getCalculationResponse(
+                    selections.stream().findFirst().get().getEventId(),
+                    StaticRandom.I100()
+                );
         }
 
         if (result != null) {
@@ -195,15 +204,17 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections) throws CommunicationException {
+    public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
+        throws CommunicationException {
         recordCall("requestCalculateProbabilityFilter");
-        DataProvider<CAPIFilteredCalculationResponse> dataProvider = new TestingDataProvider<>("test/rest/custombet/calculate_filter_response.xml");
+        DataProvider<CAPIFilteredCalculationResponse> dataProvider = new TestingDataProvider<>(
+            "test/rest/custombet/calculate_filter_response.xml"
+        );
 
         CAPIFilteredCalculationResponse result = null;
         try {
             result = dataProvider.getData();
-        }
-        catch (DataProviderException e) {
+        } catch (DataProviderException e) {
             e.printStackTrace();
         }
 
@@ -211,9 +222,12 @@ public class TestDataRouterManager implements DataRouterManager {
 
         if (selections.isEmpty()) {
             result = null;
-        }
-        else if (selections.stream().findFirst().get().getEventId().getId() != 31561675) {
-            result = RestMessageBuilder.getFilteredCalculationResponse(selections.stream().findFirst().get().getEventId(), StaticRandom.I100());
+        } else if (selections.stream().findFirst().get().getEventId().getId() != 31561675) {
+            result =
+                RestMessageBuilder.getFilteredCalculationResponse(
+                    selections.stream().findFirst().get().getEventId(),
+                    StaticRandom.I100()
+                );
         }
 
         if (result != null) {
@@ -225,42 +239,48 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale) throws CommunicationException {
+    public List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale)
+        throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<ResultChange> requestResultChanges(Date after, URN sportId, Locale locale) throws CommunicationException {
+    public List<ResultChange> requestResultChanges(Date after, URN sportId, Locale locale)
+        throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException {
+    public List<URN> requestListSportEvents(Locale locale, int startIndex, int limit)
+        throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId) throws CommunicationException {
+    public List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId)
+        throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<PeriodStatus> requestPeriodSummary(URN id, Locale locale, List<URN> competitorIds, List<Integer> periods) throws CommunicationException {
+    public List<PeriodStatus> requestPeriodSummary(
+        URN id,
+        Locale locale,
+        List<URN> competitorIds,
+        List<Integer> periods
+    ) throws CommunicationException {
         return null;
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 
     private void recordCall(String callType) {
         synchronized (lock) {
             if (RestCalls.containsKey(callType)) {
                 Integer currentValue = RestCalls.get(callType);
                 RestCalls.put(callType, currentValue + 1);
-            }
-            else {
+            } else {
                 RestCalls.put(callType, 1);
             }
         }
@@ -291,13 +311,11 @@ public class TestDataRouterManager implements DataRouterManager {
         _delayPercent = percentOfRequests;
     }
 
-    private void executeDelay(URN id, Locale locale)
-    {
+    private void executeDelay(URN id, Locale locale) {
         executeDelay(id.toString(), locale);
     }
 
-    private void executeDelay(String id, Locale locale)
-    {
+    private void executeDelay(String id, Locale locale) {
         if (_delay != Duration.ZERO) {
             if (_delayPercent < 1) {
                 return;
@@ -308,13 +326,27 @@ public class TestDataRouterManager implements DataRouterManager {
                     return;
                 }
             }
-            int delayMs = (int)_delay.toMillis();
+            int delayMs = (int) _delay.toMillis();
             if (_delayVariable) {
                 delayMs = StaticRandom.I(delayMs);
             }
-            System.out.println(String.format("DRM - executing delay for {} and {}: {} ms START", id, locale.getISO3Language(), delayMs));
+            System.out.println(
+                String.format(
+                    "DRM - executing delay for {} and {}: {} ms START",
+                    id,
+                    locale.getISO3Language(),
+                    delayMs
+                )
+            );
             Helper.sleep(delayMs);
-            System.out.println(String.format("DRM - executing delay for {} and {}: {} ms END", id, locale.getISO3Language(), delayMs));
+            System.out.println(
+                String.format(
+                    "DRM - executing delay for {} and {}: {} ms END",
+                    id,
+                    locale.getISO3Language(),
+                    delayMs
+                )
+            );
         }
     }
 }

@@ -10,19 +10,22 @@ import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.*;
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import java.time.ZonedDateTime;
+import java.util.Locale;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.time.ZonedDateTime;
-import java.util.Locale;
 
 /**
  * Created on 28/03/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings(
+    { "AbbreviationAsWordInName", "IllegalCatch", "LineLength", "MagicNumber", "MultipleStringLiterals" }
+)
 public class WhoAmIReaderTests {
 
     @Test
@@ -31,11 +34,16 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getValidProductionDataProvider(),
+            getValidProductionDataProvider(),
+            getInvalidIntegrationDataProvider()
+        );
         whoAmIReader.validateBookmakerDetails();
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 33);
-        Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
+        Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
     }
 
     @Test
@@ -44,11 +52,16 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidIntegrationDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getValidIntegrationDataProvider(),
+            getInvalidProductionDataProvider(),
+            getValidIntegrationDataProvider()
+        );
         whoAmIReader.validateBookmakerDetails();
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 3311);
-        Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
+        Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
     }
 
     @Test
@@ -58,13 +71,21 @@ public class WhoAmIReaderTests {
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getInvalidProductionDataProvider(),
+            getInvalidProductionDataProvider(),
+            getInvalidIntegrationDataProvider()
+        );
 
         try {
             whoAmIReader.validateBookmakerDetails();
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals("UOF SDK failed to fetch required bookmaker details, check logs for additional information", e.getMessage());
+            Assert.assertEquals(
+                "UOF SDK failed to fetch required bookmaker details, check logs for additional information",
+                e.getMessage()
+            );
             return;
         }
 
@@ -78,13 +99,21 @@ public class WhoAmIReaderTests {
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getInvalidIntegrationDataProvider(),
+            getInvalidProductionDataProvider(),
+            getInvalidIntegrationDataProvider()
+        );
 
         try {
             whoAmIReader.validateBookmakerDetails();
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals("UOF SDK failed to fetch required bookmaker details, check logs for additional information", e.getMessage());
+            Assert.assertEquals(
+                "UOF SDK failed to fetch required bookmaker details, check logs for additional information",
+                e.getMessage()
+            );
             return;
         }
 
@@ -95,14 +124,21 @@ public class WhoAmIReaderTests {
     public void replayServerConfigSelectionTestValidProductionEndpoint() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(true);
-        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
+        initMockForEnvironment(config, Environment.Production);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getValidProductionDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getValidProductionDataProvider(),
+            getValidProductionDataProvider(),
+            getInvalidIntegrationDataProvider()
+        );
         whoAmIReader.validateBookmakerDetails();
 
-        Mockito.verify(config, Mockito.times(0)).updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
+        Mockito
+            .verify(config, Mockito.times(0))
+            .updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 33);
-        Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
+        Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
     }
 
     @Test
@@ -111,12 +147,19 @@ public class WhoAmIReaderTests {
         Mockito.when(config.isReplaySession()).thenReturn(true);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getInvalidProductionDataProvider(),
+            getInvalidProductionDataProvider(),
+            getValidIntegrationDataProvider()
+        );
         whoAmIReader.validateBookmakerDetails();
 
-        Mockito.verify(config, Mockito.times(1)).updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
+        Mockito
+            .verify(config, Mockito.times(1))
+            .updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 3311);
-        Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
+        Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
     }
 
     @Test
@@ -126,13 +169,21 @@ public class WhoAmIReaderTests {
         Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getInvalidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getInvalidProductionDataProvider(),
+            getInvalidProductionDataProvider(),
+            getInvalidIntegrationDataProvider()
+        );
 
         try {
             whoAmIReader.validateBookmakerDetails();
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals("Looks like the access token has expired (or is invalid) - Access was denied. [msg: FORBIDDEN]", e.getMessage());
+            Assert.assertEquals(
+                "Looks like the access token has expired (or is invalid) - Access was denied. [msg: FORBIDDEN]",
+                e.getMessage()
+            );
             return;
         }
 
@@ -143,16 +194,23 @@ public class WhoAmIReaderTests {
     public void switchedTokenProductionIntegrationConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getEnvironment()).thenReturn(Environment.Production);
-        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Production));
+        initMockForEnvironment(config, Environment.Production);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidProductionDataProvider(), getInvalidProductionDataProvider(), getValidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getInvalidProductionDataProvider(),
+            getInvalidProductionDataProvider(),
+            getValidIntegrationDataProvider()
+        );
 
         try {
             whoAmIReader.validateBookmakerDetails();
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals("The provided access token is for the 'Integration' environment but the SDK is configured to access the 'Production' environment", e.getMessage());
+            Assert.assertEquals(
+                "The provided access token is for the 'Integration' environment but the SDK is configured to access the 'Production' environment",
+                e.getMessage()
+            );
             return;
         }
 
@@ -163,16 +221,23 @@ public class WhoAmIReaderTests {
     public void switchedTokenIntegrationProductionConfig() throws DataProviderException {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
-        Mockito.when(config.getEnvironment()).thenReturn(Environment.Integration);
-        Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
+        initMockForEnvironment(config, Environment.Integration);
 
-        WhoAmIReader whoAmIReader = new WhoAmIReader(config, getInvalidIntegrationDataProvider(), getValidProductionDataProvider(), getInvalidIntegrationDataProvider());
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            getInvalidIntegrationDataProvider(),
+            getValidProductionDataProvider(),
+            getInvalidIntegrationDataProvider()
+        );
 
         try {
             whoAmIReader.validateBookmakerDetails();
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals("The provided access token is for the 'Production' environment but the SDK is configured to access the 'Integration' environment", e.getMessage());
+            Assert.assertEquals(
+                "The provided access token is for the 'Production' environment but the SDK is configured to access the 'Integration' environment",
+                e.getMessage()
+            );
             return;
         }
 
@@ -184,7 +249,9 @@ public class WhoAmIReaderTests {
         SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
         Mockito.when(config.isReplaySession()).thenReturn(false);
         Mockito.when(config.getAPIHost()).thenReturn(EnvironmentManager.getApiHost(Environment.Integration));
-        TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>("test/rest/bookmaker_details.xml");
+        TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>(
+            "test/rest/bookmaker_details.xml"
+        );
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(config, dataProvider, dataProvider, dataProvider);
         try {
@@ -195,13 +262,15 @@ public class WhoAmIReaderTests {
         }
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 1);
-        Assert.assertEquals(whoAmIReader.getResponseCode(),  ResponseCode.OK);
-        Assert.assertEquals(whoAmIReader.getVirtualHost(),  "/virtualhost");
+        Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
+        Assert.assertEquals(whoAmIReader.getVirtualHost(), "/virtualhost");
     }
 
+    @SneakyThrows
     @SuppressWarnings("unchecked")
-    private static DataProvider<BookmakerDetails> getValidIntegrationDataProvider() throws DataProviderException {
-        XMLGregorianCalendar expirationDate = XMLGregorianCalendarImpl.LEAP_YEAR_DEFAULT;
+    private static DataProvider<BookmakerDetails> getValidIntegrationDataProvider()
+        throws DataProviderException {
+        XMLGregorianCalendar expirationDate = DatatypeFactory.newInstance().newXMLGregorianCalendar();
         expirationDate.setYear(2040);
 
         BookmakerDetails sampleIntegrationWhoAmIResponse = new BookmakerDetails();
@@ -211,18 +280,24 @@ public class WhoAmIReaderTests {
         sampleIntegrationWhoAmIResponse.setResponseCode(ResponseCode.OK);
         sampleIntegrationWhoAmIResponse.setVirtualHost("/vhost3311-integration");
 
-        DataProvider<BookmakerDetails> integrationDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        DataProvider<BookmakerDetails> integrationDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(
+            DataProvider.class
+        );
         Mockito.when(integrationDataProvider.getData()).thenReturn(sampleIntegrationWhoAmIResponse);
 
         DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleIntegrationWhoAmIResponse);
-        Mockito.when(integrationDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        Mockito
+            .when(integrationDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH))
+            .thenReturn(dataWrapperWith);
 
         return integrationDataProvider;
     }
 
+    @SneakyThrows
     @SuppressWarnings("unchecked")
-    private static DataProvider<BookmakerDetails> getValidProductionDataProvider() throws DataProviderException {
-        XMLGregorianCalendar expirationDate = XMLGregorianCalendarImpl.LEAP_YEAR_DEFAULT;
+    private static DataProvider<BookmakerDetails> getValidProductionDataProvider()
+        throws DataProviderException {
+        XMLGregorianCalendar expirationDate = DatatypeFactory.newInstance().newXMLGregorianCalendar();
         expirationDate.setYear(2040);
 
         BookmakerDetails sampleProductionWhoAmIResponse = new BookmakerDetails();
@@ -232,41 +307,55 @@ public class WhoAmIReaderTests {
         sampleProductionWhoAmIResponse.setResponseCode(ResponseCode.OK);
         sampleProductionWhoAmIResponse.setVirtualHost("/vhost33-production");
 
-        DataProvider<BookmakerDetails> productionDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        DataProvider<BookmakerDetails> productionDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(
+            DataProvider.class
+        );
         Mockito.when(productionDataProvider.getData()).thenReturn(sampleProductionWhoAmIResponse);
 
         DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleProductionWhoAmIResponse);
-        Mockito.when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        Mockito
+            .when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH))
+            .thenReturn(dataWrapperWith);
 
         return productionDataProvider;
     }
 
     @SuppressWarnings("unchecked")
-    private static DataProvider<BookmakerDetails> getInvalidIntegrationDataProvider() throws DataProviderException {
+    private static DataProvider<BookmakerDetails> getInvalidIntegrationDataProvider()
+        throws DataProviderException {
         BookmakerDetails sampleIntegrationWhoAmIResponse = new BookmakerDetails();
         sampleIntegrationWhoAmIResponse.setMessage("Token invalid integration");
         sampleIntegrationWhoAmIResponse.setResponseCode(ResponseCode.FORBIDDEN);
 
-        DataProvider<BookmakerDetails> integrationDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        DataProvider<BookmakerDetails> integrationDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(
+            DataProvider.class
+        );
         Mockito.when(integrationDataProvider.getData()).thenReturn(sampleIntegrationWhoAmIResponse);
 
         DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleIntegrationWhoAmIResponse);
-        Mockito.when(integrationDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        Mockito
+            .when(integrationDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH))
+            .thenReturn(dataWrapperWith);
 
         return integrationDataProvider;
     }
 
     @SuppressWarnings("unchecked")
-    private static DataProvider<BookmakerDetails> getInvalidProductionDataProvider() throws DataProviderException {
+    private static DataProvider<BookmakerDetails> getInvalidProductionDataProvider()
+        throws DataProviderException {
         BookmakerDetails sampleProductionWhoAmIResponse = new BookmakerDetails();
         sampleProductionWhoAmIResponse.setMessage("Token invalid valid prod");
         sampleProductionWhoAmIResponse.setResponseCode(ResponseCode.FORBIDDEN);
 
-        DataProvider<BookmakerDetails> productionDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(DataProvider.class);
+        DataProvider<BookmakerDetails> productionDataProvider = (DataProvider<BookmakerDetails>) Mockito.mock(
+            DataProvider.class
+        );
         Mockito.when(productionDataProvider.getData()).thenReturn(sampleProductionWhoAmIResponse);
 
         DataWrapper<BookmakerDetails> dataWrapperWith = getDataWrapperWith(sampleProductionWhoAmIResponse);
-        Mockito.when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
+        Mockito
+            .when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH))
+            .thenReturn(dataWrapperWith);
 
         return productionDataProvider;
     }
@@ -277,5 +366,15 @@ public class WhoAmIReaderTests {
         Mockito.when(mock.getData()).thenReturn(bookmakerDetails);
         Mockito.when(mock.getServerResponseTime()).thenReturn(ZonedDateTime.now());
         return mock;
+    }
+
+    private void initMockForEnvironment(SDKInternalConfiguration config, Environment environment) {
+        String host = EnvironmentManager.getApiHost(environment);
+        int port = EnvironmentManager.getApiPort(environment);
+        String hostAndPort = host + (port == 80 ? "" : ":" + port);
+        Mockito.when(config.getEnvironment()).thenReturn(environment);
+        Mockito.when(config.getAPIHost()).thenReturn(host);
+        Mockito.when(config.getAPIPort()).thenReturn(port);
+        Mockito.when(config.getApiHostAndPort()).thenReturn(hostAndPort);
     }
 }

@@ -1,12 +1,14 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import com.sportradar.utils.URN;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
+@SuppressWarnings({ "VisibilityModifier" })
 public class RegexRoutingKeyParserTest {
+
     RoutingKeyParser parser = new RegexRoutingKeyParser();
 
     @Test

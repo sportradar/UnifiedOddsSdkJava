@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +14,7 @@ import java.util.Map;
 /**
  * Defines methods used to access competitor information
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface CompetitorCI extends CacheItem {
     /**
      * Returns the {@link Map} containing translated country names
@@ -107,7 +107,7 @@ public interface CompetitorCI extends CacheItem {
      * Last time (if any) competitor profile was fetched
      * @return Last time (if any) competitor profile was fetched
      */
-    Date getLastTimeCompetitorProfileIsFetched ();
+    Date getLastTimeCompetitorProfileIsFetched();
 
     /**
      * The list of locales used to fetch competitor profiles

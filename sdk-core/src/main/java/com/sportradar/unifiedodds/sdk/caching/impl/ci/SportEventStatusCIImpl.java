@@ -12,7 +12,6 @@ import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
 import com.sportradar.unifiedodds.sdk.impl.dto.*;
 import com.sportradar.utils.URN;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import java.util.Map;
 /**
  * A basic implementation of sport event status cache representation
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class SportEventStatusCIImpl implements SportEventStatusCI {
 
     private SportEventStatusDTO feedDTO;
@@ -39,17 +39,19 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
 
     @Override
     public void setFeedStatus(SportEventStatusDTO feedDTO) {
-        if(feedDTO != null) {
+        if (feedDTO != null) {
             this.feedDTO = feedDTO;
         }
     }
 
     @Override
-    public SportEventStatusDTO getSapiStatusDTO() { return sapiDTO; }
+    public SportEventStatusDTO getSapiStatusDTO() {
+        return sapiDTO;
+    }
 
     @Override
     public void setSapiStatus(SportEventStatusDTO sapiDTO) {
-        if(sapiDTO != null) {
+        if (sapiDTO != null) {
             this.sapiDTO = sapiDTO;
         }
     }
@@ -155,12 +157,12 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
 
     @Override
     public SportEventStatisticsDTO getSportEventStatisticsDTO() {
-//        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
-//            return feedDTO.getSportEventStatisticsDTO();
-//        }
-//        if (sapiDTO != null) {
-//            return sapiDTO.getSportEventStatisticsDTO();
-//        }
+        //        if (feedDTO != null && feedDTO.getSportEventStatisticsDTO() != null) {
+        //            return feedDTO.getSportEventStatisticsDTO();
+        //        }
+        //        if (sapiDTO != null) {
+        //            return sapiDTO.getSportEventStatisticsDTO();
+        //        }
 
         List<TeamStatisticsDTO> totalStatisticsDTOs = null;
         List<PeriodStatisticsDTO> periodStatisticDTOs = null;
@@ -169,15 +171,13 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
             totalStatisticsDTOs = feedDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
         }
         if (sapiDTO != null && sapiDTO.getSportEventStatisticsDTO() != null) {
-            if(totalStatisticsDTOs == null)
-            {
+            if (totalStatisticsDTOs == null) {
                 totalStatisticsDTOs = sapiDTO.getSportEventStatisticsDTO().getTotalStatisticsDTOs();
             }
             periodStatisticDTOs = sapiDTO.getSportEventStatisticsDTO().getPeriodStatisticDTOs();
         }
 
-        if(totalStatisticsDTOs != null)
-        {
+        if (totalStatisticsDTOs != null) {
             return new SportEventStatisticsDTO(totalStatisticsDTOs, periodStatisticDTOs);
         }
 
@@ -240,7 +240,7 @@ public class SportEventStatusCIImpl implements SportEventStatusCI {
     }
 
     @Override
-    public Integer getPeriodOfLadder(){
+    public Integer getPeriodOfLadder() {
         if (feedDTO != null && feedDTO.getPeriodOfLadder() != null) {
             return feedDTO.getPeriodOfLadder();
         }

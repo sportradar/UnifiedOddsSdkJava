@@ -11,7 +11,6 @@ import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-
 import java.util.Map;
 
 /**
@@ -19,13 +18,19 @@ import java.util.Map;
  * // TODO @eti: Javadoc
  */
 public class NameProviderFactoryImpl implements NameProviderFactory {
+
     private final MarketDescriptionProvider descriptorProvider;
     private final ProfileCache profileCache;
     private final NameExpressionFactory expressionFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     @Inject
-    public NameProviderFactoryImpl(MarketDescriptionProvider descriptorProvider, ProfileCache profileCache, NameExpressionFactory expressionFactory, SDKInternalConfiguration cfg) {
+    public NameProviderFactoryImpl(
+        MarketDescriptionProvider descriptorProvider,
+        ProfileCache profileCache,
+        NameExpressionFactory expressionFactory,
+        SDKInternalConfiguration cfg
+    ) {
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(expressionFactory);
@@ -37,7 +42,21 @@ public class NameProviderFactoryImpl implements NameProviderFactory {
     }
 
     @Override
-    public NameProvider buildNameProvider(SportEvent sportEvent, int marketId, Map<String, String> specifiers, int producerId) {
-        return new NameProviderImpl(descriptorProvider, profileCache, expressionFactory, sportEvent, marketId, specifiers, producerId, exceptionHandlingStrategy);
+    public NameProvider buildNameProvider(
+        SportEvent sportEvent,
+        int marketId,
+        Map<String, String> specifiers,
+        int producerId
+    ) {
+        return new NameProviderImpl(
+            descriptorProvider,
+            profileCache,
+            expressionFactory,
+            sportEvent,
+            marketId,
+            specifiers,
+            producerId,
+            exceptionHandlingStrategy
+        );
     }
 }

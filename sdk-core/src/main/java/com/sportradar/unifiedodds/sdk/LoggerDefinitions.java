@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk;
 /**
  * Defines interfaces used to identify logger instances used trough the SDK
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface LoggerDefinitions {
     /**
      * The log for user requested operations

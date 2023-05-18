@@ -13,13 +13,13 @@ import com.sportradar.uf.custombet.datamodel.CAPIOutcomeType;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.unifiedodds.sdk.custombetentities.MarketFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.OutcomeFilter;
-
 import java.util.List;
 
 /**
  * Implements methods used to access available selections for the market
  */
 public class MarketFilterImpl implements MarketFilter {
+
     /**
      * the id of the market
      */
@@ -45,21 +45,32 @@ public class MarketFilterImpl implements MarketFilter {
 
         this.id = market.getId();
         this.specifiers = market.getSpecifiers();
-        this.outcomes = market.getOutcomes().stream()
-                .map(m->new OutcomeFilterImpl(m))
+        this.outcomes =
+            market
+                .getOutcomes()
+                .stream()
+                .map(m -> new OutcomeFilterImpl(m))
                 .collect(ImmutableList.toImmutableList());
         this.isConflict = market.isConflict();
     }
 
     @Override
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     @Override
-    public String getSpecifiers() { return specifiers; }
+    public String getSpecifiers() {
+        return specifiers;
+    }
 
     @Override
-    public List<OutcomeFilter> getOutcomes() { return outcomes; }
+    public List<OutcomeFilter> getOutcomes() {
+        return outcomes;
+    }
 
     @Override
-    public Boolean isConflict() { return isConflict; }
+    public Boolean isConflict() {
+        return isConflict;
+    }
 }

@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +15,12 @@ import java.util.List;
  * Created on 15/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "ConstantName", "HideUtilityClassConstructor", "MagicNumber", "ModifiedControlVariable" })
 class NameExpressionHelper {
-    private final static List<String> definedOperators = ImmutableList.copyOf(new String[]{
-            "+",
-            "-",
-            "$",
-            "!",
-            "%"
-    });
+
+    private static final List<String> definedOperators = ImmutableList.copyOf(
+        new String[] { "+", "-", "$", "!", "%" }
+    );
 
     static AbstractMap.SimpleImmutableEntry<String, List<String>> parseDescriptor(String descriptor) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(descriptor));
@@ -38,7 +35,9 @@ class NameExpressionHelper {
             }
 
             if (startIndex < 0 || endIndex < 0 || endIndex <= startIndex) {
-                throw new IllegalArgumentException("Format of the descriptor is incorrect. Each opening '{' must be closed by corresponding '}'");
+                throw new IllegalArgumentException(
+                    "Format of the descriptor is incorrect. Each opening '{' must be closed by corresponding '}'"
+                );
             }
 
             String expression = descriptor.substring(startIndex, endIndex + 1);
@@ -63,18 +62,24 @@ class NameExpressionHelper {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(expression));
 
         if (expression.length() < 3) {
-            throw new IllegalArgumentException("Format of the 'expression' is not correct. Minimum required length is 3");
+            throw new IllegalArgumentException(
+                "Format of the 'expression' is not correct. Minimum required length is 3"
+            );
         }
         if (!expression.startsWith("{")) {
-            throw new IllegalArgumentException("Format of the 'expression' is not correct. It must start with char '{'");
+            throw new IllegalArgumentException(
+                "Format of the 'expression' is not correct. It must start with char '{'"
+            );
         }
         if (!expression.endsWith("}")) {
-            throw new IllegalArgumentException("Format of the 'expression' is not correct. It must end with char '}'");
+            throw new IllegalArgumentException(
+                "Format of the 'expression' is not correct. It must end with char '}'"
+            );
         }
 
         String operator = expression.substring(1, 2);
         String operand;
-        if (!definedOperators.contains(operator)){
+        if (!definedOperators.contains(operator)) {
             operator = null;
             operand = expression.substring(1, expression.length() - 1);
         } else {

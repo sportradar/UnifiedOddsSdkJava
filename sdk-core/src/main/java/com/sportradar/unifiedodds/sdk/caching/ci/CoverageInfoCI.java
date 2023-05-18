@@ -11,14 +11,15 @@ import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
 import com.sportradar.uf.sportsapi.datamodel.SAPICoverageInfo;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCI;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * A coverage info representation used by caching components
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class CoverageInfoCI {
+
     /**
      * The level property backing field
      */
@@ -72,7 +73,12 @@ public class CoverageInfoCI {
         level = coverageInfo.getLevel();
         isLive = coverageInfo.isLiveCoverage();
         if (coverageInfo.getCoverage() != null) {
-            includes = coverageInfo.getCoverage().stream().map(SAPICoverage::getIncludes).collect(Collectors.toList());
+            includes =
+                coverageInfo
+                    .getCoverage()
+                    .stream()
+                    .map(SAPICoverage::getIncludes)
+                    .collect(Collectors.toList());
         }
         coveredFrom = mapCoveredFrom(coverageInfo.getCoveredFrom());
     }
@@ -114,7 +120,7 @@ public class CoverageInfoCI {
     }
 
     private static CoveredFrom mapCoveredFrom(String value) {
-        if(value==null || value.isEmpty()){
+        if (value == null || value.isEmpty()) {
             return null;
         }
         switch (value) {

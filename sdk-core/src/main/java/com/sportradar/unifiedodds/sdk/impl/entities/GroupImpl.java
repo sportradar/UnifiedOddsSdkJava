@@ -14,16 +14,17 @@ import com.sportradar.unifiedodds.sdk.entities.Group;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a competition group
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName", "UnnecessaryParentheses" })
 public class GroupImpl implements Group {
+
     private static final Logger logger = LoggerFactory.getLogger(GroupImpl.class);
     /**
      * The id of the group
@@ -55,7 +56,6 @@ public class GroupImpl implements Group {
      */
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
-
     /**
      * Initializes a new instance of the {@link GroupImpl} class
      * @param groupCI - a {@link GroupCI} used to create new instance
@@ -63,7 +63,12 @@ public class GroupImpl implements Group {
      * @param sportEntityFactory - the factory used to build competitor instances
      * @param exceptionHandlingStrategy - the exception strategy that should be used to handle errors
      */
-    GroupImpl(GroupCI groupCI, List<Locale> locales, SportEntityFactory sportEntityFactory, ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    GroupImpl(
+        GroupCI groupCI,
+        List<Locale> locales,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(groupCI);
         Preconditions.checkNotNull(sportEntityFactory);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
@@ -95,18 +100,24 @@ public class GroupImpl implements Group {
     @Override
     public List<Competitor> getCompetitors() {
         try {
-            return competitorIds == null ? null :
-                    competitorIds.stream()
-                            .map(c -> {
-                                try {
-                                    return sportEntityFactory.buildCompetitor(c, null, null, null, null, locales);
-                                } catch (ObjectNotFoundException e) {
-                                    throw new StreamWrapperException(e.getMessage(), e);
-                                }
-                            }).collect(ImmutableList.toImmutableList());
+            return competitorIds == null
+                ? null
+                : competitorIds
+                    .stream()
+                    .map(c -> {
+                        try {
+                            return sportEntityFactory.buildCompetitor(c, null, null, null, null, locales);
+                        } catch (ObjectNotFoundException e) {
+                            throw new StreamWrapperException(e.getMessage(), e);
+                        }
+                    })
+                    .collect(ImmutableList.toImmutableList());
         } catch (StreamWrapperException e) {
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
-                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException("Group competitors could not be provided", e);
+                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                    "Group competitors could not be provided",
+                    e
+                );
             } else {
                 logger.warn("Group competitors could not be provided", e);
             }
@@ -131,10 +142,17 @@ public class GroupImpl implements Group {
      */
     @Override
     public String toString() {
-        return "GroupImpl{" +
-                "id='" + id + '\'' +
-                "name='" + name + '\'' +
-                ", competitorIds=" + competitorIds +
-                '}';
+        return (
+            "GroupImpl{" +
+            "id='" +
+            id +
+            '\'' +
+            "name='" +
+            name +
+            '\'' +
+            ", competitorIds=" +
+            competitorIds +
+            '}'
+        );
     }
 }

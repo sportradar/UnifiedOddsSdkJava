@@ -5,10 +5,8 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
 
 /**
  * A class used to provide distinct incremented values between specified min & max value
@@ -35,7 +33,7 @@ public class IncrementalSequenceGenerator implements SequenceGenerator {
      * @param minValue The minimum value returned by the initialized instance
      * @param maxValue The maximum value returned by the initialized instance
      */
-    public IncrementalSequenceGenerator(int minValue, int maxValue){
+    public IncrementalSequenceGenerator(int minValue, int maxValue) {
         Preconditions.checkArgument(maxValue > minValue, "maxValue must be greater than minValue");
 
         this.minValue = minValue;
@@ -48,16 +46,14 @@ public class IncrementalSequenceGenerator implements SequenceGenerator {
      * Gets the next available distinct value
      * @return the next available distinct value
      */
-    public int getNext(){
+    public int getNext() {
         int currentValue;
         int nextValue;
 
-        do{
+        do {
             currentValue = current.get();
-            nextValue = currentValue < maxValue
-                    ? currentValue + 1
-                    : minValue;
-        }while(!current.compareAndSet(currentValue,  nextValue));
+            nextValue = currentValue < maxValue ? currentValue + 1 : minValue;
+        } while (!current.compareAndSet(currentValue, nextValue));
 
         return nextValue;
     }

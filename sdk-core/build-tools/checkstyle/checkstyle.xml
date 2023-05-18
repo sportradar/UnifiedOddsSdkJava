@@ -1,0 +1,1843 @@
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!-- Do not forget to rebuild rules -->
+<module name="Checker">
+    <module name="SuppressionSingleFilter">
+        <property name="files" value="[/\\]custom[/\\]"/>
+        <property name="checks" value=".*"/>
+    </module>
+
+    <module name="SuppressWarningsFilter"/>
+
+    <module name="SuppressionSingleFilter">
+        <property name="id" value="MethodNameRegular"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]|component[\\/])"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="id" value="MethodNameTest"/>
+        <property name="files" value=".*src[\\/](?!test[\\/])"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="id" value="MethodNameComponentTest"/>
+        <property name="files" value=".*src[\\/](?!component[\\/])"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="id" value="FileLengthRegular"/>
+        <property name="files" value=".*src[\\/](?:test[\\/])"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="id" value="FileLengthTest"/>
+        <property name="files" value=".*src[\\/](?!test[\\/])"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="files" value="[/\\]target[/\\]"/>
+        <property name="checks" value=".*"/>
+    </module>
+
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="checkstyle.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="SdkLogReplay.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEventStatusDTO.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportsInfoManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ChannelMessageConsumerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MdcScheduledExecutorService.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="RecoveryManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ProducerInfo.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEntityFactoryImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="OddsFeedSessionImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MarketFactoryImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SingleInstanceAMQPConnectionFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="RabbitMqChannelImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="FeedMessageValidatorImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ProducerManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="NameProviderImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MarketManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="WhoAmIReader.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SeasonImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="PlayerProfileImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="EventResultImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="DrawImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="FixtureImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="BasicTournamentImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="TournamentImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CurrentSeasonInfoImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MatchImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ProducerInfoImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="TimelineEventImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CompetitorImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="StageImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="LotteryImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="OperationManager.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="GeneralModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CachingModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="DataProvidersModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="OddsFeed.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportsInfoManager.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="OddsFeedConfiguration.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="OddsFeedConfigurationBuilderImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CustomConfigurationBuilderImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ConfigurationBuilderBaseImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SDKInternalConfiguration.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="EventChangeManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ReplayManager.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportsDataCacheImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEventCacheImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEventStatusCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CompetitorCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MatchCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="PlayerProfileCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="TournamentCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="TournamentStageCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="RaceStageCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="LotteryCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="DrawCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CacheItemFactoryImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="DataRouterManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ProfileCacheImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="DataRouterImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="LoadableRoundCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="CompleteRoundCIImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MarketDescriptionCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="VariantMarketDescriptionCache.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="InvariantMarketDescriptionCache.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SDKConfigurationReader.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="URN.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SdkHelper.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="RecoveryManagerTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SdkConnectionTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEntityWriter.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="MarketWriter.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="LogLineParser.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="AdditionalProbabilities.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="ConfigurationBuilder.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="EnvironmentSelector.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="MarketMetadataImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="MessageTimestamp.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="OddsGeneration.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="ProducerInfo.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="ProducerScope.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="RabbitProducer.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="ReplayOddsFeed.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="SportEventStatisticsDTO.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="UnsupportedMessageInterestCombination.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="descriptions_variants.en.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="src[\\/]test[\\/]resources[\\/]test[\\/]rest[\\/].*.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="src[\\/]test[\\/]resources[\\/]test[\\/]feed_xml[\\/].*.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="src[\\/]test[\\/]resources[\\/]logback.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="UFSdkConfiguration.properties"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="odds-sdk-install-pom.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="src[\\/]test[\\/]resources[\\/]test[\\/]rest[\\/].*.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileTabCharacter"/>
+        <property name="files" value="available_selections.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileTabCharacter"/>
+        <property name="files" value="calculate_request.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileTabCharacter"/>
+        <property name="files" value="calculate_filter_response.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileTabCharacter"/>
+        <property name="files" value="calculate_response.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="odds_change.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileTabCharacter"/>
+        <property name="files" value="schedule.en.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="probabilities.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="OrderedProperties"/>
+        <property name="files" value="UFSdkConfiguration.properties"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
+        <property name="files" value="logback.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileTabCharacter"/>
+        <property name="files" value="odds-sdk-install-pom.xml"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="CustomImportOrder"/>
+        <property name="files" value="ProducerExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="CustomImportOrder"/>
+        <property name="files" value="DeferredProducerUpComponentTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FileValidator.java"/>
+    </module>
+
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogCollectorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerUrlRewriteListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogListenerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CompositeApiLogListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="BookmakerExtractorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TotalProcessingTimeListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogRecordedLengthListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogProcessingTimeListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogSequenceListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogLineReader.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogProcessorFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CompositeApiLogProcessorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogEntry.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogfiles.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogLineParser.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogParserException.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogProcessorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogProcessor.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerStubException.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerStub.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogEntryCache.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogEntryCacheFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CachePopulatingApiLogProcessorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiEndpointSniffer.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogEntryProviderFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogEntryProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiEndpointLogEntryProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiEndpoint.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerMode.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerRequestListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiHandlerConfig.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerConfig.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerStubFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiHandlerDelay.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="GenericLogBackedHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogBasedApiHandlerDelay.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AbstractLogBackedApiHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogBackedApiHandlerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DescriptionsProducersHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DescriptionsBetStopReasonsHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FreemarkerConfigurationFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DescriptionsVariantsHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="WhoamiHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProductRecoveryInitiateHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DescriptionsMarketsVariantsHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FileLoader.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TemplatedResponseApiHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FileBackedHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SportEventsSummaryHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DescriptionsMarketsHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DescriptionsBettingStatusHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SportsSchedulesScheduleHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AbstractCannedResponseApiHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SportEventsFixtureChangeFixtureHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CannedResponseApiHandlerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SportsPlayersProfileHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MatchUrnExtractor.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TemplateFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiHandlerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="NoopApiHandlerDelay.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="BookmakerExtractorListenerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RestResponseLogParserRunner.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogLineReaderTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestFileResolver.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RecordingApiLogProcessorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogProcessorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogLineParserTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogEntryProviderTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiEndpointSnifferTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiLogEntryCacheTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerStubRunner.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MatchUrnExtractorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FeedMessageHelper.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="NoOpProcessedFixtureChangesTracker.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProcessedFixtureChangesTracker.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SingleRecoveryManagerSupervisor.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AdditionalProbabilitiesImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EnvironmentSetting.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EnvironmentManager.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CompetitorResultImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PeriodCompetitorResultImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="HoleImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PeriodStatusImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OperationManager.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AtomicReadWrite.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskLifecycleTracker.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PendingTasks.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListenerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SynchronousErrorHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ErrorHandlerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ErrorHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AsynchronousErrorHandler.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskAllocatorFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskQueuer.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskExecutorFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskAllocator.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EventTask.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskExecutor.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TrackedTaskFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskQueuerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="Task.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskID.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TrackedTask.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EventTaskFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListenerConfig.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentListenerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExecutorServiceShutdownHook.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="QueueFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExecutorFactoryProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExecutorFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="WorkerExecutorServiceFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExecutorListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DeferredProducerUpOrchestrator.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DeferredProducerUpSchedulerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DeferredProducerUpTaskFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DeferredProducerUpTask.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RecoveryContext.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerID.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RecoveryRequestID.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PendingRecoveries.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerStatusQuery.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentSDKGlobalEventsListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DelegatingSDKGlobalEventsListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentSDKGlobalEventsListenerFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="HttpClientFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="InternalCachesProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DataProvidersModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="InternalCachesProviderImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AdditionalProbabilities.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EventChangeManagerImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableFixtureCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableStreamingChannelCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableBonusInfoCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableTournamentCoverageCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableDrawResultCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableProducerInfoLinkCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableStageCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableEventTimelineCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableCoverageInfoCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CacheType.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableSportEventConditionsCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableProducerInfoCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableTimelineEventCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableWeatherInfoCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableSeasonCoverageCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableDelayedInfoCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableSeasonCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableDrawInfoCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableGroupCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableTvChannelCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableRefereeCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportablePitcherCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableEventPlayerCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableEventPlayerAssistCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableScheduledStartTimeChangeCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableLoadableRoundCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ExportableCompleteRoundCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="HoleCI.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CompetitorResult.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="Hole.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ChannelMessageConsumerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FeedMessageValidatorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="XmlMessageReader.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerDataBuilderTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SingleRecoveryManagerSupervisorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TimeUtilsStub.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TimeUtilsStubTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerDataBuilder.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FeedMessageFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ChannelFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RecoverableChannel.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ChannelFixtureTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EpochMillis.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMqChannelImplTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AMQPConnectionFactoryStubTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AMQPConnectionFactoryStub.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EpochMillisTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestingSummaryDataProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DataReaderTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RegexRoutingKeyParserTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestingDataProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CustomBetEntityTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CompetitorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="VenueTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="Constants.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskLifecycleTrackerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskLifecycleTrackerConcurrencyTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentListenerFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CustomerListenerEvent.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RecordingCustomerListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MockSportEventFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SynchronousErrorHandlerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AsynchronousErrorHandlerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ErrorHandlerFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListenerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListenerFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListenerComponentTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskAllocatorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskExecutorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskQueuerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TrackedTaskTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskIDTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TaskExecutorFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EventTaskFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EventTaskTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentOddsFeedListenerConfigTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PendingTasksTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestExecutorFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="WorkerExecutorServiceFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="QueueFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DelegatingSDKGlobalEventsListenerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DeferredProducerUpTaskTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RecoveryRequestIDTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PendingRecoveriesConcurrencyTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DeferredProducerUpOrchestratorTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerIDTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="PendingRecoveriesTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConcurrentSDKGlobalEventsListenerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerStatusQueryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MockedMasterModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="HttpClientFactoryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestingModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="InjectionModuleTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestInjectorFactory.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DataProvidersModuleTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="GeneralModuleTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMqConnectionChecker.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AssumingRabbitRunningRule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OneProducerNoMessagesIT.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerStubRule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MyMessageListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FixtureChangeIT.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SDKGlobalEventsListenerTestImpl.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="BasicSdkIT.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestLogfiles.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SleepFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMqConfig.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMqPorts.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMqExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMqFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogReplayExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogReplayFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogReplayer.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OddsFeedLifecycleFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AliveHeartbeatExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OddsFeedExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OddsFeedLifecycleExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AliveHeartbeatFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OddsFeedFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EnvironmentManagerFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerStubFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ApiServerExpectations.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="StartUpIT.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="AbstractSdkIntegrationTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EurobetMessageListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="UrnTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SDKConfigurationReaderTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerDownReasonTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestDataRouterManager.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="StaticRandom.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="Helper.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestProducersProvider.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RestMessageBuilder.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SdkMessageBuilder.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestHttpHelper.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FeedMessageBuilder.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TestFeed.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="OddsFeedConfigurationFixture.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ThreadInterruptTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ProducerManagerTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SportEventCacheTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SportEventCITest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="TournamentCITest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MarketOutcomeCITest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DateConverterToCentralEuropeTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="DateConverterToCentralEurope.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SdkConnectionTests.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="FeedMessage.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitMessage.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SdkTestModule.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="MqUser.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="RabbitProducer.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="SdkConnListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="EventChangesListener.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="CustomerLogAnalyser.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConfigModel.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="GeneralLogProcessor.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogEntryModel.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="WriteToInflux.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogEntryType.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogLineParser.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LineFileModel.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="ConfigModelTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Header"/>
+        <property name="files" value="LogEntryModelTest.java"/>
+    </module>
+
+    <module name="TreeWalker">
+        <module name="SuppressWarningsHolder"/>
+        <module name="AbbreviationAsWordInName">
+            <property name="allowedAbbreviationLength" value="0"/>
+            <property name="allowedAbbreviations" value="I,IT"/>
+        </module>
+        <module name="AnnotationLocation"/>
+        <module name="AnonInnerLength"/>
+        <module name="ArrayTrailingComma"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="AvoidDoubleBraceInitialization"/>
+        <module name="AvoidEscapedUnicodeCharacters"/>
+        <module name="AvoidNestedBlocks"/>
+        <module name="AvoidNoArgumentSuperConstructorCall"/>
+        <module name="BooleanExpressionComplexity">
+            <property name="max" value="2"/>
+        </module>
+        <module name="CatchParameterName"/>
+        <module name="ClassDataAbstractionCoupling"/>
+        <module name="ClassFanOutComplexity">
+            <property name="max" value="13"/>
+            <property name="excludedClasses" value="ArrayIndexOutOfBoundsException,
+            Class, Object, Override, Void, void,
+            Deprecated, SafeVarargs, SuppressWarnings,
+            val, var,
+            Exception, IllegalArgumentException, IllegalStateException,
+            IndexOutOfBoundsException, InterruptedException, NullPointerException,
+            RuntimeException, SecurityException, UnsupportedOperationException, Throwable,
+            Consumer, Function, FunctionalInterface, Supplier,
+            Optional, OptionalDouble, OptionalInt, OptionalLong,
+            ArrayList, Collection, Deque, EnumSet, HashMap, HashSet, LinkedHashMap, LinkedHashSet,
+            LinkedList, List, Map, Set, SortedMap, SortedSet, Queue, TreeMap, TreeSet,
+            String, StringBuffer, StringBuilder,
+            boolean, byte, char, double, float, int, long, short
+            Boolean, Byte, Character, Double, Float, Integer, Long, Short,
+            DoubleStream, IntStream, LongStream, Stream,
+            Callable, CountDownLatch, Executors, ExecutorService, Future,
+            Logger, LoggerFactory
+            Test, Before, After, BeforeClass, AfterClass"/>
+        </module>
+        <module name="ClassTypeParameterName"/>
+        <module name="CommentsIndentation"/>
+        <module name="ConstantName"/>
+        <module name="CovariantEquals"/>
+        <module name="CustomImportOrder">
+            <property name="customImportOrderRules"
+                      value="STATIC###SPECIAL_IMPORTS###"/>
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="separateLineBetweenGroups" value="true"/>
+        </module>
+        <module name="CyclomaticComplexity"/>
+        <module name="DeclarationOrder"/>
+        <module name="DefaultComesLast"/>
+        <module name="EmptyBlock"/>
+        <module name="EmptyCatchBlock"/>
+        <module name="EmptyForInitializerPad"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="EqualsHashCode"/>
+        <module name="ExecutableStatementCount"/>
+        <module name="ExplicitInitialization"/>
+        <module name="FallThrough"/>
+        <module name="GenericWhitespace"/>
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/>
+            <property name="ignoreAbstractMethods" value="true"/>
+        </module>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="IllegalCatch"/>
+        <module name="IllegalIdentifierName"/>
+        <module name="IllegalImport"/>
+        <module name="IllegalInstantiation"/>
+        <module name="IllegalThrows"/>
+        <module name="IllegalToken"/>
+        <module name="IllegalType"/>
+        <module name="InnerAssignment"/>
+        <module name="InnerTypeLast"/>
+        <module name="InterfaceIsType"/>
+        <module name="InterfaceTypeParameterName"/>
+        <module name="JavaNCSS"/>
+        <module name="LambdaBodyLength"/>
+        <module name="LambdaParameterName"/>
+        <module name="LeftCurly"/>
+        <module name="LocalVariableName"/>
+        <module name="MagicNumber"/>
+        <module name="MemberName"/>
+        <module name="MethodCount"/>
+        <module name="MethodLength">
+            <property name="max" value="50"/>
+        </module>
+        <module name="MethodName">
+            <property name="id" value="MethodNameRegular"/>
+        </module>
+        <module name="MethodName">
+            <property name="id" value="MethodNameTest"/>
+            <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+        </module>
+        <module name="MethodName">
+            <property name="id" value="MethodNameComponentTest"/>
+            <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+        </module>
+        <module name="MethodParamPad"/>
+        <module name="MethodTypeParameterName"/>
+        <module name="MissingOverride"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="ModifiedControlVariable"/>
+        <module name="ModifierOrder"/>
+        <module name="MultipleStringLiterals">
+            <property name="allowedDuplicates" value="3"/>
+        </module>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="MutableException"/>
+        <module name="NeedBraces"/>
+        <module name="NestedForDepth"/>
+        <module name="NestedIfDepth"/>
+        <module name="NestedTryDepth"/>
+        <module name="NoClone"/>
+        <module name="NoCodeInFile"/>
+        <module name="NoFinalizer"/>
+        <module name="NoLineWrap"/>
+        <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+        <module name="NPathComplexity">
+            <property name="max" value="70"/>
+        </module>
+        <module name="OneStatementPerLine"/>
+        <module name="OuterTypeFilename"/>
+        <module name="OuterTypeNumber">
+            <property name="max" value="7"/>
+        </module>
+        <module name="OverloadMethodsDeclarationOrder"/>
+        <module name="PackageAnnotation"/>
+        <module name="PackageDeclaration"/>
+        <module name="PackageName"/>
+        <module name="ParameterAssignment"/>
+        <module name="ParameterName"/>
+        <module name="ParameterNumber">
+            <property name="max" value="6"/>
+        </module>
+        <module name="ParenPad"/>
+        <module name="PatternVariableName"/>
+        <module name="RecordComponentNumber"/>
+        <module name="RecordComponentName"/>
+        <module name="RecordTypeParameterName"/>
+        <module name="RecordTypeParameterName"/>
+        <module name="RequireThis"/>
+        <module name="ReturnCount">
+            <property name="max" value="4"/>
+        </module>
+        <module name="RightCurly"/>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA" />
+        </module>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="SingleSpaceSeparator"/>
+        <module name="StaticVariableName"/>
+        <module name="StringLiteralEquality"/>
+        <module name="ThrowsCount"/>
+        <module name="TypecastParenPad"/>
+        <module name="TypeName"/>
+        <module name="UnnecessaryParentheses"/>
+        <module name="UnnecessarySemicolonInEnumeration"/>
+        <module name="UnnecessarySemicolonInTryWithResources"/>
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+        <module name="UpperEll"/>
+        <module name="VariableDeclarationUsageDistance"/>
+        <module name="VisibilityModifier"/>
+        <module name="WhitespaceAfter"/>
+    </module>
+    <module name="FileLength">
+        <property name="id" value="FileLengthRegular"/>
+        <property name="max" value="250" />
+    </module>
+    <module name="FileLength">
+        <property name="id" value="FileLengthTest"/>
+        <property name="max" value="800" />
+    </module>
+    <module name="FileTabCharacter"/>
+    <module name="Header">
+        <property name="header"
+                  value="/*\n * Copyright (C) Sportradar AG. See LICENSE for full license governing this code\n */"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    <module name="LineLength">
+        <property name="max" value="120"/>
+    </module>
+    <module name="OrderedProperties"/>
+    <module name="UniqueProperties"/>
+</module>
+

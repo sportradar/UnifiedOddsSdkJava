@@ -6,16 +6,14 @@ package com.sportradar.unifiedodds.sdk.impl.markets.mappings;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidator;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
 
-
 /**
  * A {@link MappingValidator} which checks whether a value of the specific specifier has the required decimal part
  */
-public class DecimalValueMappingValidator implements MappingValidator{
+public class DecimalValueMappingValidator implements MappingValidator {
 
     /**
      * The name of the specifier as specified in the valid_for attribute
@@ -33,8 +31,14 @@ public class DecimalValueMappingValidator implements MappingValidator{
      * @param requiredDecimalValue The required value of the decimal part of the specifier
      */
     DecimalValueMappingValidator(String specifierName, BigDecimal requiredDecimalValue) {
-        Preconditions.checkArgument(specifierName != null && !specifierName.isEmpty(), "specifierName cannot be a null reference or empty string");
-        Preconditions.checkArgument(requiredDecimalValue != null, "requiredDecimalValue cannot be a null reference");
+        Preconditions.checkArgument(
+            specifierName != null && !specifierName.isEmpty(),
+            "specifierName cannot be a null reference or empty string"
+        );
+        Preconditions.checkArgument(
+            requiredDecimalValue != null,
+            "requiredDecimalValue cannot be a null reference"
+        );
 
         this.specifierName = specifierName;
         this.requiredDecimalValue = requiredDecimalValue;
@@ -48,17 +52,31 @@ public class DecimalValueMappingValidator implements MappingValidator{
      */
     @Override
     public boolean validate(Map<String, String> specifiers) {
-        Preconditions.checkArgument(specifiers != null && !specifiers.isEmpty(), "specifier cannot be an empty map or a null reference");
+        Preconditions.checkArgument(
+            specifiers != null && !specifiers.isEmpty(),
+            "specifier cannot be an empty map or a null reference"
+        );
 
         if (!specifiers.containsKey(specifierName)) {
-            throw new IllegalArgumentException(String.format("The provided specifiers[%s] do not contain a specifier named %s", specifiers, specifierName));
+            throw new IllegalArgumentException(
+                String.format(
+                    "The provided specifiers[%s] do not contain a specifier named %s",
+                    specifiers,
+                    specifierName
+                )
+            );
         }
 
         BigDecimal value;
         try {
             value = new BigDecimal(specifiers.get(specifierName));
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(String.format("Value %s is not a valid string representation of decimal value", specifiers.get(specifierName)));
+            throw new IllegalArgumentException(
+                String.format(
+                    "Value %s is not a valid string representation of decimal value",
+                    specifiers.get(specifierName)
+                )
+            );
         }
 
         BigDecimal roundedValue = value.setScale(0, RoundingMode.FLOOR);

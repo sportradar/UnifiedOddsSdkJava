@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -101,5 +100,7 @@ public interface Venue {
      * Gets the list of the course holes
      * @return the list of the course holes
      */
-    default List<Hole> getCourse() { throw new UnsupportedOperationException("This method MUST be implemented."); }
+    default List<Hole> getCourse() {
+        throw new UnsupportedOperationException("This method MUST be implemented.");
+    }
 }

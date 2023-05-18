@@ -7,14 +7,15 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.utils.URN;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * A {@link RoutingKeyParser} implementation that uses regex for key parsing
  */
+@SuppressWarnings({ "EqualsAvoidNull", "MultipleStringLiterals", "UnnecessaryParentheses" })
 public class RegexRoutingKeyParser implements RoutingKeyParser {
+
     /**
      * The group name used by the {@link #REGEX_PATTERN} to store the sport id
      */
@@ -39,15 +40,23 @@ public class RegexRoutingKeyParser implements RoutingKeyParser {
      * The regex pattern used to parse the routing key
      */
     private static final String REGEX_STRING =
-            "\\A([^.]+)" + // hi-lo
-            "\\.([^.]+)" + // -
-            "\\.([^.]+)" + // live/prematch
-            "\\.([^.]+)" + // message type (alive, odds change,...)
-            "\\.(?<" + SPORT_GROUP_NAME + ">((\\d+)|(-)))" +
-            "\\.(?<" + EVENT_TYPE_GROUP_NAME + ">((([a-z]+):([a-zA-Z_2]+))|(-)))" +
-            "\\.(?<" + EVENT_ID_GROUP_NAME + ">((\\d+)|(-)))" +
-            "(\\.(?<" + SDK_FEED_NODE_ID + ">((-?\\d+)|(-))))?" +
-            "(\\z)";
+        "\\A([^.]+)" + // hi-lo
+        "\\.([^.]+)" + // -
+        "\\.([^.]+)" + // live/prematch
+        "\\.([^.]+)" + // message type (alive, odds change,...)
+        "\\.(?<" +
+        SPORT_GROUP_NAME +
+        ">((\\d+)|(-)))" +
+        "\\.(?<" +
+        EVENT_TYPE_GROUP_NAME +
+        ">((([a-z]+):([a-zA-Z_2]+))|(-)))" +
+        "\\.(?<" +
+        EVENT_ID_GROUP_NAME +
+        ">((\\d+)|(-)))" +
+        "(\\.(?<" +
+        SDK_FEED_NODE_ID +
+        ">((-?\\d+)|(-))))?" +
+        "(\\z)";
 
     /**
      * A {@link Pattern} instance compiled with the {@link #REGEX_STRING}
@@ -58,7 +67,6 @@ public class RegexRoutingKeyParser implements RoutingKeyParser {
      * The prefix which is used to build sport {@link URN} identifiers
      */
     private static final String SPORT_ID_PREFIX = "sr:sport:";
-
 
     /**
      * Returns a {@link RoutingKeyInfo} containing the parsed routing key data
@@ -72,7 +80,10 @@ public class RegexRoutingKeyParser implements RoutingKeyParser {
 
         Matcher matcher = REGEX_PATTERN.matcher(routingKey);
 
-        if (!matcher.find() || (matcher.group(SPORT_GROUP_NAME).equals("-") && matcher.group(EVENT_ID_GROUP_NAME).equals("-"))) {
+        if (
+            !matcher.find() ||
+            (matcher.group(SPORT_GROUP_NAME).equals("-") && matcher.group(EVENT_ID_GROUP_NAME).equals("-"))
+        ) {
             return new RoutingKeyInfo(routingKey, true);
         }
 

@@ -4,17 +4,18 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUpReason;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A {@link ProducerStatusChange} implementation used to inform that a feed-based producer came online
  */
 class ProducerUpImpl extends MessageImpl implements ProducerUp {
+
     /**
      * A {@link ProducerUpReason} instance indicating why the {@link ProducerUp} message was
      * dispatched

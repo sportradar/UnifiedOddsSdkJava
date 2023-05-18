@@ -12,12 +12,13 @@ import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 /**
  * Provides methods used to access soccer status information
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class SoccerStatusImpl extends MatchStatusImpl implements SoccerStatus {
+
     private final SportEventStatusCI statusCI;
 
     public SoccerStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
         super(statusCI, matchStatuses);
-
         this.statusCI = statusCI;
     }
 
@@ -29,7 +30,7 @@ public class SoccerStatusImpl extends MatchStatusImpl implements SoccerStatus {
     @Override
     public SoccerStatistics getStatistics() {
         return statusCI.getSportEventStatisticsDTO() == null
-                ? null
-                : new SoccerStatisticsImpl(statusCI.getSportEventStatisticsDTO());
+            ? null
+            : new SoccerStatisticsImpl(statusCI.getSportEventStatisticsDTO());
     }
 }

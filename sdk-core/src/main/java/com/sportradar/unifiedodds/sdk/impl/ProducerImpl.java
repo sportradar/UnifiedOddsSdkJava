@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.ProducerScope;
 import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
-
 import java.util.Arrays;
 import java.util.Set;
 
@@ -18,7 +17,9 @@ import java.util.Set;
  * Created on 03/07/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class ProducerImpl implements Producer {
+
     private final ProducerData producerData;
     private final int id;
     private final String name;
@@ -54,10 +55,9 @@ public class ProducerImpl implements Producer {
         description = "Unknown producer";
         active = true;
         enabled = true;
-        apiUrl = configuration.getAPIHost();
-        producerScopes = ImmutableSet.<ProducerScope>builder()
-                .addAll(Arrays.asList(ProducerScope.values()))
-                .build();
+        apiUrl = configuration.getApiHostAndPort();
+        producerScopes =
+            ImmutableSet.<ProducerScope>builder().addAll(Arrays.asList(ProducerScope.values())).build();
         producerData = null;
         statefulRecoveryWindowInMinutes = ProducerData.DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES;
     }
@@ -123,7 +123,9 @@ public class ProducerImpl implements Producer {
     }
 
     @Override
-    public long getTimestampForRecovery() { return producerData == null ? 0 : producerData.getTimestampForRecovery(); }
+    public long getTimestampForRecovery() {
+        return producerData == null ? 0 : producerData.getTimestampForRecovery();
+    }
 
     @Override
     public int getStatefulRecoveryWindowInMinutes() {
@@ -131,23 +133,36 @@ public class ProducerImpl implements Producer {
     }
 
     @Override
-    public RecoveryInfo getRecoveryInfo(){
+    public RecoveryInfo getRecoveryInfo() {
         return recoveryInfo;
     }
 
     @Override
     public String toString() {
-        return "ProducerImpl{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", active=" + active +
-                ", lastMessageTimestamp=" + getLastMessageTimestamp() +
-                ", lastProcessedMessageGenTimestamp=" + getLastProcessedMessageGenTimestamp() +
-                ", timestampForRecovery=" + getTimestampForRecovery() +
-                ", processingQueDelay=" + getProcessingQueDelay() +
-                ", enabled=" + enabled +
-                ", flaggedDown=" + isFlaggedDown() +
-                ", producerScopes=" + producerScopes +
-                '}';
+        return (
+            "ProducerImpl{" +
+            "id=" +
+            id +
+            ", name='" +
+            name +
+            '\'' +
+            ", active=" +
+            active +
+            ", lastMessageTimestamp=" +
+            getLastMessageTimestamp() +
+            ", lastProcessedMessageGenTimestamp=" +
+            getLastProcessedMessageGenTimestamp() +
+            ", timestampForRecovery=" +
+            getTimestampForRecovery() +
+            ", processingQueDelay=" +
+            getProcessingQueDelay() +
+            ", enabled=" +
+            enabled +
+            ", flaggedDown=" +
+            isFlaggedDown() +
+            ", producerScopes=" +
+            producerScopes +
+            '}'
+        );
     }
 }

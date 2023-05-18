@@ -24,18 +24,33 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundExceptio
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 15/06/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings(
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "CyclomaticComplexity",
+        "ExecutableStatementCount",
+        "LineLength",
+        "MagicNumber",
+        "MethodLength",
+        "NPathComplexity",
+        "NestedIfDepth",
+        "ParameterNumber",
+        "ReturnCount",
+    }
+)
 public class NameProviderImpl implements NameProvider {
+
     private static final Logger logger = LoggerFactory.getLogger(NameProviderImpl.class);
     private static final String PLAYER_PROFILE_MARKET_PREFIX = "sr:player:";
     private static final String COMPETITOR_PROFILE_MARKET_PREFIX = "sr:competitor";
@@ -54,14 +69,16 @@ public class NameProviderImpl implements NameProvider {
 
     private Date lastReload = new Date(0);
 
-    NameProviderImpl(MarketDescriptionProvider descriptorProvider,
-                    ProfileCache profileCache,
-                    NameExpressionFactory expressionFactory,
-                    SportEvent sportEvent,
-                    int marketId,
-                    Map<String, String> marketSpecifiers,
-                    int producerId,
-                    ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    NameProviderImpl(
+        MarketDescriptionProvider descriptorProvider,
+        ProfileCache profileCache,
+        NameExpressionFactory expressionFactory,
+        SportEvent sportEvent,
+        int marketId,
+        Map<String, String> marketSpecifiers,
+        int producerId,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(expressionFactory);
@@ -97,8 +114,13 @@ public class NameProviderImpl implements NameProvider {
 
         List<Locale> missingLocales = SdkHelper.findMissingLocales(marketDescriptor.getLocales(), locales);
         if (!missingLocales.isEmpty()) {
-            return handleErrorCondition("Retrieved market descriptor does not contain name descriptor in the specified languages",
-                    null, null, missingLocales, null);
+            return handleErrorCondition(
+                "Retrieved market descriptor does not contain name descriptor in the specified languages",
+                null,
+                null,
+                missingLocales,
+                null
+            );
         }
 
         Map<Locale, String> names = new HashMap<>();
@@ -113,13 +135,21 @@ public class NameProviderImpl implements NameProvider {
         String nameDescriptorFormat = null;
         List<NameExpression> expressions = null;
         try {
-            AbstractMap.SimpleImmutableEntry<String, List<NameExpression>> nameExpressions = getNameExpressions(nameDescriptor);
+            AbstractMap.SimpleImmutableEntry<String, List<NameExpression>> nameExpressions = getNameExpressions(
+                nameDescriptor
+            );
             if (nameExpressions != null) {
                 nameDescriptorFormat = nameExpressions.getKey();
                 expressions = nameExpressions.getValue();
             }
         } catch (IllegalArgumentException | UnsupportedUrnFormatException ex) {
-            return handleErrorCondition("The name description parsing failed",null, nameDescriptor, locale, ex);
+            return handleErrorCondition(
+                "The name description parsing failed",
+                null,
+                nameDescriptor,
+                locale,
+                ex
+            );
         }
 
         if (expressions == null) {
@@ -130,7 +160,13 @@ public class NameProviderImpl implements NameProvider {
         try {
             collect = expressions.stream().map(e -> e.buildName(locale)).collect(Collectors.toList());
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return handleErrorCondition("Error occurred while evaluating the name expression", null, nameDescriptor, locale, e);
+            return handleErrorCondition(
+                "Error occurred while evaluating the name expression",
+                null,
+                nameDescriptor,
+                locale,
+                e
+            );
         }
 
         return String.format(nameDescriptorFormat, collect.toArray());
@@ -145,37 +181,70 @@ public class NameProviderImpl implements NameProvider {
 
     @Override
     public Map<Locale, String> getOutcomeNames(String outcomeId, List<Locale> locales) {
-
         Preconditions.checkArgument(!Strings.isNullOrEmpty(outcomeId));
         Preconditions.checkNotNull(locales);
 
-        if (outcomeId.startsWith(PLAYER_PROFILE_MARKET_PREFIX) || outcomeId.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX)) {
+        if (
+            outcomeId.startsWith(PLAYER_PROFILE_MARKET_PREFIX) ||
+            outcomeId.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX)
+        ) {
             try {
                 return getOutcomeNamesFromProfile(outcomeId, locales);
-            } catch (UnsupportedUrnFormatException | CacheItemNotFoundException | IllegalCacheStateException ex) {
-                return handleErrorCondition("Failed to generate outcome name for profile", outcomeId, null, locales, ex);
+            } catch (
+                UnsupportedUrnFormatException | CacheItemNotFoundException | IllegalCacheStateException ex
+            ) {
+                return handleErrorCondition(
+                    "Failed to generate outcome name for profile",
+                    outcomeId,
+                    null,
+                    locales,
+                    ex
+                );
             }
         }
 
         MarketDescription marketDescription = getMarketDescriptionForOutcome(outcomeId, locales, true);
-        if(marketDescription == null){
+        if (marketDescription == null) {
             return Collections.emptyMap();
         }
 
-        Optional<OutcomeDescription> optDesc = marketDescription.getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
+        Optional<OutcomeDescription> optDesc = marketDescription
+            .getOutcomes()
+            .stream()
+            .filter(o -> o.getId().equals(outcomeId))
+            .findFirst();
 
-        if (!optDesc.isPresent() || !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()) {
-            return handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locales, null);
+        if (
+            !optDesc.isPresent() ||
+            !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()
+        ) {
+            return handleErrorCondition(
+                "Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language",
+                outcomeId,
+                null,
+                locales,
+                null
+            );
         }
 
         OutcomeDescription outcomeDescription = optDesc.get();
-        if (marketDescription.getAttributes() != null &&
-                marketDescription.getAttributes().stream().anyMatch(a -> a.getName().equals(UnifiedFeedConstants.FLEX_SCORE_MARKET_ATTRIBUTE_NAME))) {
+        if (
+            marketDescription.getAttributes() != null &&
+            marketDescription
+                .getAttributes()
+                .stream()
+                .anyMatch(a -> a.getName().equals(UnifiedFeedConstants.FLEX_SCORE_MARKET_ATTRIBUTE_NAME))
+        ) {
             try {
                 return FlexMarketHelper.getNames(outcomeDescription, marketSpecifiers);
             } catch (IllegalArgumentException e) {
-                return handleErrorCondition("The generation of name for flex score market outcome failed",
-                        outcomeId, outcomeDescription.getName(locales.get(0)), locales, e);
+                return handleErrorCondition(
+                    "The generation of name for flex score market outcome failed",
+                    outcomeId,
+                    outcomeDescription.getName(locales.get(0)),
+                    locales,
+                    e
+                );
             }
         }
 
@@ -185,13 +254,21 @@ public class NameProviderImpl implements NameProvider {
             String nameDescriptionFormat = null;
             List<NameExpression> expressions = null;
             try {
-                AbstractMap.SimpleImmutableEntry<String, List<NameExpression>> nameExpressions = getNameExpressions(nameDescription);
+                AbstractMap.SimpleImmutableEntry<String, List<NameExpression>> nameExpressions = getNameExpressions(
+                    nameDescription
+                );
                 if (nameExpressions != null) {
                     nameDescriptionFormat = nameExpressions.getKey();
                     expressions = nameExpressions.getValue();
                 }
             } catch (IllegalArgumentException e) {
-                return handleErrorCondition("The name description parsing failed", outcomeId, nameDescription, locales, e);
+                return handleErrorCondition(
+                    "The name description parsing failed",
+                    outcomeId,
+                    nameDescription,
+                    locales,
+                    e
+                );
             }
 
             if (expressions == null || nameDescriptionFormat == null) {
@@ -200,22 +277,35 @@ public class NameProviderImpl implements NameProvider {
             }
 
             try {
-                names.put(locale, String.format(nameDescriptionFormat, expressions.stream()
-                        .map(e -> e.buildName(locale)).toArray()));
+                names.put(
+                    locale,
+                    String.format(
+                        nameDescriptionFormat,
+                        expressions.stream().map(e -> e.buildName(locale)).toArray()
+                    )
+                );
             } catch (IllegalStateException | IllegalArgumentException | UnsupportedUrnFormatException e) {
-                return handleErrorCondition("Error occurred while evaluating the name expression",
-                        outcomeId, nameDescription, locales, e);
+                return handleErrorCondition(
+                    "Error occurred while evaluating the name expression",
+                    outcomeId,
+                    nameDescription,
+                    locales,
+                    e
+                );
             }
         }
         return names;
     }
 
-    private Map<Locale, String> getOutcomeNamesFromProfile(String outcomeId, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
+    private Map<Locale, String> getOutcomeNamesFromProfile(String outcomeId, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(outcomeId));
         Preconditions.checkNotNull(locales);
 
         String[] idParts = outcomeId.split(COMPOSITE_ID_SEPARATOR);
-        Map<Locale, List<String>> names = locales.stream().collect(Collectors.toMap(l -> l, l -> new ArrayList<>(idParts.length)));
+        Map<Locale, List<String>> names = locales
+            .stream()
+            .collect(Collectors.toMap(l -> l, l -> new ArrayList<>(idParts.length)));
 
         for (String idPart : idParts) {
             URN profileId;
@@ -226,11 +316,18 @@ public class NameProviderImpl implements NameProvider {
             }
 
             if (idPart.startsWith(PLAYER_PROFILE_MARKET_PREFIX)) {
-                PlayerProfileCI playerProfile = profileCache.getPlayerProfile(profileId, locales, competitorList.get());
+                PlayerProfileCI playerProfile = profileCache.getPlayerProfile(
+                    profileId,
+                    locales,
+                    competitorList.get()
+                );
                 for (Locale locale : locales) {
                     names.get(locale).add(playerProfile.getNames(locales).get(locale));
                 }
-            } else if (idPart.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX) || idPart.startsWith(SIMPLETEAM_PROFILE_MARKET_PREFIX)) {
+            } else if (
+                idPart.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX) ||
+                idPart.startsWith(SIMPLETEAM_PROFILE_MARKET_PREFIX)
+            ) {
                 CompetitorCI competitorProfile = profileCache.getCompetitorProfile(profileId, locales);
                 for (Locale locale : locales) {
                     names.get(locale).add(competitorProfile.getNames(locales).get(locale));
@@ -238,8 +335,12 @@ public class NameProviderImpl implements NameProvider {
             }
         }
 
-        return names.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, n -> String.join(COMPOSITE_ID_SEPARATOR, n.getValue())));
+        return names
+            .entrySet()
+            .stream()
+            .collect(
+                Collectors.toMap(Map.Entry::getKey, n -> String.join(COMPOSITE_ID_SEPARATOR, n.getValue()))
+            );
     }
 
     private MarketDescription getMarketDescriptor(Locale locale) throws ObjectNotFoundException {
@@ -251,52 +352,79 @@ public class NameProviderImpl implements NameProvider {
         Preconditions.checkNotNull(locales);
 
         try {
-            MarketDescription marketDescription = descriptorProvider.getMarketDescription(marketId, marketSpecifiers, locales, true);
+            MarketDescription marketDescription = descriptorProvider.getMarketDescription(
+                marketId,
+                marketSpecifiers,
+                locales,
+                true
+            );
             return marketDescription;
         } catch (CacheItemNotFoundException e) {
             throw new ObjectNotFoundException("The requested market[" + marketId + "] was not found", e);
         }
     }
 
-    private AbstractMap.SimpleImmutableEntry<String, List<NameExpression>> getNameExpressions(String nameDescriptor) {
+    private AbstractMap.SimpleImmutableEntry<String, List<NameExpression>> getNameExpressions(
+        String nameDescriptor
+    ) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(nameDescriptor));
 
-        AbstractMap.SimpleImmutableEntry<String, List<String>> descriptorData = NameExpressionHelper.parseDescriptor(nameDescriptor);
+        AbstractMap.SimpleImmutableEntry<String, List<String>> descriptorData = NameExpressionHelper.parseDescriptor(
+            nameDescriptor
+        );
         if (descriptorData == null || descriptorData.getValue() == null) {
             return null;
         }
 
         List<NameExpression> expressions = new ArrayList<>(descriptorData.getValue().size());
         for (String expr : descriptorData.getValue()) {
-            AbstractMap.SimpleImmutableEntry<String, String> expressionParse = NameExpressionHelper.parseExpression(expr);
-            expressions.add(expressionFactory.buildExpression(
+            AbstractMap.SimpleImmutableEntry<String, String> expressionParse = NameExpressionHelper.parseExpression(
+                expr
+            );
+            expressions.add(
+                expressionFactory.buildExpression(
                     sportEvent,
                     marketSpecifiers,
                     expressionParse.getValue(),
-                    expressionParse.getKey()));
+                    expressionParse.getKey()
+                )
+            );
         }
 
-        return new AbstractMap.SimpleImmutableEntry<>(
-                descriptorData.getKey(),
-                expressions
-        );
+        return new AbstractMap.SimpleImmutableEntry<>(descriptorData.getKey(), expressions);
     }
 
-    private String handleErrorCondition(String message, String outcomeId, String nameDescriptor, Locale locale, Exception ex) {
-        return handleErrorCondition(message, outcomeId, nameDescriptor, Collections.singletonList(locale), ex).get(locale);
+    private String handleErrorCondition(
+        String message,
+        String outcomeId,
+        String nameDescriptor,
+        Locale locale,
+        Exception ex
+    ) {
+        return handleErrorCondition(message, outcomeId, nameDescriptor, Collections.singletonList(locale), ex)
+            .get(locale);
     }
 
-    private Map<Locale, String> handleErrorCondition(String message, String outcomeId, String nameDescriptor, List<Locale> locales, Exception ex) {
+    private Map<Locale, String> handleErrorCondition(
+        String message,
+        String outcomeId,
+        String nameDescriptor,
+        List<Locale> locales,
+        Exception ex
+    ) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(message));
         Preconditions.checkNotNull(locales);
 
         StringBuilder sb = new StringBuilder("An error occurred while generating the name for event=[")
-                .append(sportEvent)
-                .append("], market=[");
-        String specifierString = marketSpecifiers == null ? "null" :
-                marketSpecifiers.entrySet().stream()
-                        .map(e -> "{" + e.getKey() + "}={" + e.getValue() + "}")
-                        .collect(Collectors.joining("|"));
+            .append(sportEvent)
+            .append("], market=[");
+        String specifierString = marketSpecifiers == null
+            ? "null"
+            : marketSpecifiers
+                .entrySet()
+                .stream()
+                .map(e -> "{" + e.getKey() + "}={" + e.getValue() + "}")
+                .collect(Collectors.joining("|"));
         sb.append(" MarketId=").append(marketId);
         sb.append(" Specifiers=[").append(specifierString).append("]");
 
@@ -334,17 +462,22 @@ public class NameProviderImpl implements NameProvider {
         Preconditions.checkNotNull(sportEvent);
 
         if (sportEvent instanceof Competition) {
-            return ((Competition) sportEvent).getCompetitors() == null ? Collections.emptyList() :
-                    ((Competition) sportEvent).getCompetitors().stream()
-                            .map(Competitor::getId)
-                            .collect(Collectors.toList());
+            return ((Competition) sportEvent).getCompetitors() == null
+                ? Collections.emptyList()
+                : ((Competition) sportEvent).getCompetitors()
+                    .stream()
+                    .map(Competitor::getId)
+                    .collect(Collectors.toList());
         }
 
         return Collections.emptyList();
     }
 
-    private MarketDescription getMarketDescriptionForOutcome(String outcomeId, List<Locale> locales, boolean firstTime)
-    {
+    private MarketDescription getMarketDescriptionForOutcome(
+        String outcomeId,
+        List<Locale> locales,
+        boolean firstTime
+    ) {
         MarketDescription marketDescription = null;
         try {
             marketDescription = getMarketDescriptor(locales);
@@ -353,14 +486,26 @@ public class NameProviderImpl implements NameProvider {
             return marketDescription;
         }
 
-        if(marketDescription == null){
-            handleErrorCondition("Failed to retrieve market name description", outcomeId, null, locales, null);
+        if (marketDescription == null) {
+            handleErrorCondition(
+                "Failed to retrieve market name description",
+                outcomeId,
+                null,
+                locales,
+                null
+            );
             return null;
         }
 
         if (marketDescription.getOutcomes() == null || marketDescription.getOutcomes().isEmpty()) {
-            if(firstTime){
-                handleErrorCondition("Retrieved market descriptor is lacking outcomes", outcomeId, null, locales, null);
+            if (firstTime) {
+                handleErrorCondition(
+                    "Retrieved market descriptor is lacking outcomes",
+                    outcomeId,
+                    null,
+                    locales,
+                    null
+                );
                 if (canReload()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locales, null);
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
@@ -369,14 +514,33 @@ public class NameProviderImpl implements NameProvider {
                     logger.debug("Throttling down market reloading");
                 }
             }
-            handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locales, null);
+            handleErrorCondition(
+                "Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language",
+                outcomeId,
+                null,
+                locales,
+                null
+            );
             return null;
         }
 
-        Optional<OutcomeDescription> optDesc = marketDescription.getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
-        if (!optDesc.isPresent() || !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()) {
-            if(firstTime){
-                handleErrorCondition("Retrieved market descriptor is missing outcome", outcomeId, null, locales, null);
+        Optional<OutcomeDescription> optDesc = marketDescription
+            .getOutcomes()
+            .stream()
+            .filter(o -> o.getId().equals(outcomeId))
+            .findFirst();
+        if (
+            !optDesc.isPresent() ||
+            !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()
+        ) {
+            if (firstTime) {
+                handleErrorCondition(
+                    "Retrieved market descriptor is missing outcome",
+                    outcomeId,
+                    null,
+                    locales,
+                    null
+                );
                 if (canReload()) {
                     handleErrorCondition("Reloading market description", outcomeId, null, locales, null);
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
@@ -385,7 +549,13 @@ public class NameProviderImpl implements NameProvider {
                     logger.debug("Throttling down market reloading");
                 }
             }
-            handleErrorCondition("Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language", outcomeId, null, locales, null);
+            handleErrorCondition(
+                "Retrieved market descriptor does not contain name descriptor for associated outcome in the specified language",
+                outcomeId,
+                null,
+                locales,
+                null
+            );
             return null;
         }
 
@@ -394,7 +564,10 @@ public class NameProviderImpl implements NameProvider {
 
     private boolean canReload() {
         Date date = new Date();
-        boolean allow = Math.abs(date.getTime() - lastReload.getTime()) / 1000 > SdkHelper.MarketDescriptionMinFetchInterval;
+        boolean allow =
+            Math.abs(date.getTime() - lastReload.getTime()) /
+            1000 >
+            SdkHelper.MarketDescriptionMinFetchInterval;
         if (allow) {
             lastReload = date;
         }

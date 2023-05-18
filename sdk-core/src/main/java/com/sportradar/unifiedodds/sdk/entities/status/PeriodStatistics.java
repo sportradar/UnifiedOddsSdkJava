@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Defines methods used to access specific period statistics
  */
+@SuppressWarnings({ "AbbreviationAsWordInName" })
 public interface PeriodStatistics {
     /**
      * Returns the name of the round to which the statistics belong to

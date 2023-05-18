@@ -11,7 +11,9 @@ import com.sportradar.unifiedodds.sdk.entities.WeatherInfo;
 /**
  * Provides information about weather conditions
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class WeatherInfoImpl implements WeatherInfo {
+
     /**
      * The pitch weather
      */
@@ -51,7 +53,6 @@ public class WeatherInfoImpl implements WeatherInfo {
         this.wind = weatherInfo.getWind();
         this.windAdvantage = weatherInfo.getWindAdvantage();
     }
-
 
     /**
      * Returns the pitch weather
@@ -110,12 +111,23 @@ public class WeatherInfoImpl implements WeatherInfo {
      */
     @Override
     public String toString() {
-        return "WeatherInfoImpl{" +
-                "pitch='" + pitch + '\'' +
-                ", temperature=" + temperature +
-                ", weatherConditions='" + weatherConditions + '\'' +
-                ", wind='" + wind + '\'' +
-                ", windAdvantage='" + windAdvantage + '\'' +
-                '}';
+        return (
+            "WeatherInfoImpl{" +
+            "pitch='" +
+            pitch +
+            '\'' +
+            ", temperature=" +
+            temperature +
+            ", weatherConditions='" +
+            weatherConditions +
+            '\'' +
+            ", wind='" +
+            wind +
+            '\'' +
+            ", windAdvantage='" +
+            windAdvantage +
+            '\'' +
+            '}'
+        );
     }
 }

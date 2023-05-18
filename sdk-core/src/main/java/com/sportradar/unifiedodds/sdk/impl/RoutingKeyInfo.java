@@ -9,7 +9,9 @@ import com.sportradar.utils.URN;
 /**
  * Representation of a broker routing key
  */
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class RoutingKeyInfo {
+
     /**
      * The complete broker routing key
      */
@@ -30,7 +32,6 @@ public class RoutingKeyInfo {
      * (pattern: "-.-.-.#")
      */
     private final boolean systemRoutingKey;
-
 
     /**
      * Initializes a new {@link RoutingKeyInfo} instance
@@ -58,7 +59,6 @@ public class RoutingKeyInfo {
         this.sportId = null;
         this.eventId = null;
     }
-
 
     /**
      * Returns the complete routing key of the current instance
@@ -98,10 +98,16 @@ public class RoutingKeyInfo {
 
     @Override
     public String toString() {
-        return "RoutingKeyInfo{" +
-                "fullRoutingKey='" + fullRoutingKey + '\'' +
-                ", sportId=" + sportId +
-                ", eventId=" + eventId +
-                '}';
+        return (
+            "RoutingKeyInfo{" +
+            "fullRoutingKey='" +
+            fullRoutingKey +
+            '\'' +
+            ", sportId=" +
+            sportId +
+            ", eventId=" +
+            eventId +
+            '}'
+        );
     }
 }

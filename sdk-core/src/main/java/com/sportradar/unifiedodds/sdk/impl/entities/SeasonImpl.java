@@ -17,19 +17,30 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods used to access data of long term events of type season
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "LineLength",
+        "MultipleStringLiterals",
+        "NPathComplexity",
+        "ReturnCount",
+    }
+)
 public class SeasonImpl extends SportEventImpl implements Season {
-    private final static Logger logger = LoggerFactory.getLogger(SeasonImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(SeasonImpl.class);
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -61,13 +72,15 @@ public class SeasonImpl extends SportEventImpl implements Season {
      * @param sportEntityFactory a {@link SportEntityFactory} instance used to construct {@link Competition} instances
      * @param exceptionHandlingStrategy the desired exception handling strategy
      */
-    public SeasonImpl(URN id,
-                          URN sportId, List<Locale> locales,
-                          SportEventCache sportEventCache,
-                          SportEntityFactory sportEntityFactory,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public SeasonImpl(
+        URN id,
+        URN sportId,
+        List<Locale> locales,
+        SportEventCache sportEventCache,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         super(id, sportId);
-
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -78,7 +91,6 @@ public class SeasonImpl extends SportEventImpl implements Season {
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
-
 
     /**
      * Returns the sport event name
@@ -156,11 +168,10 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        return seasonEndpointCi.getSeasonCoverage() == null ? null :
-                new SeasonCoverageImpl(seasonEndpointCi.getSeasonCoverage());
+        return seasonEndpointCi.getSeasonCoverage() == null
+            ? null
+            : new SeasonCoverageImpl(seasonEndpointCi.getSeasonCoverage());
     }
-
-
 
     /**
      * Returns a {@link List} of groups associated with the associated season
@@ -176,10 +187,13 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        return seasonEndpointCi.getGroups(locales) == null ? null :
-                seasonEndpointCi.getGroups(locales).stream()
-                        .map(g -> new GroupImpl(g, locales, sportEntityFactory, exceptionHandlingStrategy))
-                        .collect(Collectors.toList());
+        return seasonEndpointCi.getGroups(locales) == null
+            ? null
+            : seasonEndpointCi
+                .getGroups(locales)
+                .stream()
+                .map(g -> new GroupImpl(g, locales, sportEntityFactory, exceptionHandlingStrategy))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -224,8 +238,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        return seasonEndpointCi.getRound(locales) == null ? null :
-                new RoundImpl(seasonEndpointCi.getRound(locales), locales);
+        return seasonEndpointCi.getRound(locales) == null
+            ? null
+            : new RoundImpl(seasonEndpointCi.getRound(locales), locales);
     }
 
     /**
@@ -283,7 +298,13 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        return new TournamentInfoImpl(tournamentCI, sportEventCache, sportEntityFactory, locales, exceptionHandlingStrategy);
+        return new TournamentInfoImpl(
+            tournamentCI,
+            sportEventCache,
+            sportEntityFactory,
+            locales,
+            exceptionHandlingStrategy
+        );
     }
 
     /**
@@ -303,8 +324,13 @@ public class SeasonImpl extends SportEventImpl implements Season {
         }
 
         try {
-            return seasonEndpointCi.getCompetitorIds(locales) == null ? null :
-                    sportEntityFactory.buildStreamCompetitors(seasonEndpointCi.getCompetitorIds(locales), seasonEndpointCi, locales);
+            return seasonEndpointCi.getCompetitorIds(locales) == null
+                ? null
+                : sportEntityFactory.buildStreamCompetitors(
+                    seasonEndpointCi.getCompetitorIds(locales),
+                    seasonEndpointCi,
+                    locales
+                );
         } catch (StreamWrapperException e) {
             handleException("getCompetitors failure", e);
             return null;
@@ -352,8 +378,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        return seasonEndpointCi.getTournamentCoverage() == null ? null :
-                new TournamentCoverageImpl(seasonEndpointCi.getTournamentCoverage());
+        return seasonEndpointCi.getTournamentCoverage() == null
+            ? null
+            : new TournamentCoverageImpl(seasonEndpointCi.getTournamentCoverage());
     }
 
     /**
@@ -381,7 +408,10 @@ public class SeasonImpl extends SportEventImpl implements Season {
         }
 
         try {
-            SportSummary sportSummary = sportEntityFactory.buildSportForCategory(tournamentCi.getCategoryId(), locales);
+            SportSummary sportSummary = sportEntityFactory.buildSportForCategory(
+                tournamentCi.getCategoryId(),
+                locales
+            );
             return sportSummary.getId();
         } catch (com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException e) {
             logger.info("Could not provide sport for category[{}], ex:", tournamentCi.getCategoryId(), e);
@@ -397,11 +427,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public String toString() {
-        return "SeasonImpl{" +
-                "id=" + id +
-                ", sportId=" + sportId +
-                ", locales=" + locales +
-                "}";
+        return "SeasonImpl{" + "id=" + id + ", sportId=" + sportId + ", locales=" + locales + "}";
     }
 
     /**
@@ -413,15 +439,28 @@ public class SeasonImpl extends SportEventImpl implements Season {
     private void handleException(String request, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
-                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(this.getClass() + "[" + id + "], request(" + request + ")");
+                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                    this.getClass() + "[" + id + "], request(" + request + ")"
+                );
             } else {
                 throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(request, e);
             }
         } else {
             if (e == null) {
-                logger.warn("Error executing {}[{}] request({}), returning null", this.getClass(), id, request);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request
+                );
             } else {
-                logger.warn("Error executing {}[{}] request({}), returning null", this.getClass(), id, request, e);
+                logger.warn(
+                    "Error executing {}[{}] request({}), returning null",
+                    this.getClass(),
+                    id,
+                    request,
+                    e
+                );
             }
         }
     }

@@ -13,20 +13,30 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.entities.LocalizedNamedValueImpl;
 import com.sportradar.utils.SdkHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of {@link LocalizedNamedValueCache} used to cache {@link LocalizedNamedValue} items
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ConstantName",
+        "IllegalCatch",
+        "LineLength",
+        "MagicNumber",
+        "ParameterAssignment",
+    }
+)
 public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
+
     /**
      * A {@link Logger} instance used to log {@link LocalizedNamedValueCache} entries
      */
@@ -64,7 +74,11 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
      * @param scheduler - the {@link SDKTaskScheduler} used to perform repeating cache tasks
      * @param defaultLocales - a {@link List} of all supported {@link Locale}
      */
-    public LocalizedNamedValueCacheImpl(DataProvider dataProvider, SDKTaskScheduler scheduler, List<Locale> defaultLocales) {
+    public LocalizedNamedValueCacheImpl(
+        DataProvider dataProvider,
+        SDKTaskScheduler scheduler,
+        List<Locale> defaultLocales
+    ) {
         Preconditions.checkNotNull(dataProvider);
         Preconditions.checkNotNull(defaultLocales);
 
@@ -74,7 +88,13 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
         this.namedValues = new ConcurrentHashMap<>();
         this.fetchedLocales = Collections.synchronizedList(new ArrayList<>());
 
-        scheduler.scheduleAtFixedRate("LocalizedNamedValueRefreshTask", this::onTimerElapsed, 24, 24, TimeUnit.HOURS);
+        scheduler.scheduleAtFixedRate(
+            "LocalizedNamedValueRefreshTask",
+            this::onTimerElapsed,
+            24,
+            24,
+            TimeUnit.HOURS
+        );
     }
 
     /**
@@ -107,7 +127,11 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
             return new LocalizedNamedValueImpl(id, null, null);
         }
 
-        return new LocalizedNamedValueImpl(id, cachedTranslations, locales.stream().findFirst().orElse(defaultLocales.get(0)));
+        return new LocalizedNamedValueImpl(
+            id,
+            cachedTranslations,
+            locales.stream().findFirst().orElse(defaultLocales.get(0))
+        );
     }
 
     /**
@@ -121,7 +145,9 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
         boolean exists;
         synchronized (lock) {
             if (fetchedLocales.isEmpty()) {
-                getInternal(Collections.singletonList(defaultLocales.stream().findFirst().orElse(Locale.ENGLISH)));
+                getInternal(
+                    Collections.singletonList(defaultLocales.stream().findFirst().orElse(Locale.ENGLISH))
+                );
             }
             exists = namedValues.containsKey(id);
         }
@@ -137,7 +163,11 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
         try {
             locales.forEach(this::fetchAndMerge);
         } catch (Exception ex) {
-            cacheLog.warn("An exception occurred while attempting to retrieve named values. [{}] Exception:", dataProvider, ex);
+            cacheLog.warn(
+                "An exception occurred while attempting to retrieve named values. [{}] Exception:",
+                dataProvider,
+                ex
+            );
         }
     }
 
@@ -160,15 +190,22 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
 
         List<NamedValueCI> namedValueCIS = NamedValueCI.mapToNamedValuesCI(fetch);
         namedValueCIS.forEach(fetchedVal -> {
-            ConcurrentHashMap<Locale, String> storedData =
-                    namedValues.computeIfAbsent(fetchedVal.getId(), k -> new ConcurrentHashMap<>());
+            ConcurrentHashMap<Locale, String> storedData = namedValues.computeIfAbsent(
+                fetchedVal.getId(),
+                k -> new ConcurrentHashMap<>()
+            );
 
             storedData.put(locale, fetchedVal.getDescription());
         });
 
         fetchedLocales.add(locale);
 
-        cacheLog.info("{} {} retrieved for locale {}", namedValueCIS.size(), fetch.getClass().getName(), locale);
+        cacheLog.info(
+            "{} {} retrieved for locale {}",
+            namedValueCIS.size(),
+            fetch.getClass().getName(),
+            locale
+        );
     }
 
     /**
@@ -180,7 +217,11 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
             namedValues.clear();
             defaultLocales.forEach(this::fetchAndMerge);
         } catch (Exception ex) {
-            cacheLog.warn("An exception occurred while attempting to retrieve localized named values with the scheduled timer. [{}] Exception:", dataProvider, ex);
+            cacheLog.warn(
+                "An exception occurred while attempting to retrieve localized named values with the scheduled timer. [{}] Exception:",
+                dataProvider,
+                ex
+            );
         }
     }
 }

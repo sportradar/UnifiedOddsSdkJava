@@ -16,9 +16,6 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.SdkHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,12 +23,26 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 14/12/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings(
+    {
+        "ConstantName",
+        "IllegalCatch",
+        "LambdaBodyLength",
+        "LineLength",
+        "MagicNumber",
+        "MultipleStringLiterals",
+        "NPathComplexity",
+    }
+)
 public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
+
     private static final Logger logger = LoggerFactory.getLogger(VariantDescriptionCacheImpl.class);
 
     private final Cache<String, VariantDescriptionCI> cache;
@@ -42,11 +53,13 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
     private final ReentrantLock fetchLock = new ReentrantLock();
     private boolean hasTimerElapsedOnce;
 
-    public VariantDescriptionCacheImpl(Cache<String, VariantDescriptionCI> cache,
-                                        DataProvider<VariantDescriptions> dataProvider,
-                                        MappingValidatorFactory mappingValidatorFactory,
-                                        SDKTaskScheduler scheduler,
-                                        List<Locale> prefetchLocales) {
+    public VariantDescriptionCacheImpl(
+        Cache<String, VariantDescriptionCI> cache,
+        DataProvider<VariantDescriptions> dataProvider,
+        MappingValidatorFactory mappingValidatorFactory,
+        SDKTaskScheduler scheduler,
+        List<Locale> prefetchLocales
+    ) {
         Preconditions.checkNotNull(cache);
         Preconditions.checkNotNull(dataProvider);
         Preconditions.checkNotNull(mappingValidatorFactory);
@@ -59,11 +72,18 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         this.prefetchLocales = prefetchLocales;
         this.fetchedLocales = Collections.synchronizedList(new ArrayList<>());
 
-        scheduler.scheduleAtFixedRate("VariantDescriptionsTask", this::onTimerElapsed, 5, 60 * 60 * 6L, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(
+            "VariantDescriptionsTask",
+            this::onTimerElapsed,
+            5,
+            60 * 60 * 6L,
+            TimeUnit.SECONDS
+        );
     }
 
     @Override
-    public VariantDescriptionCI getVariantDescription(String id, List<Locale> locales) throws IllegalCacheStateException, CacheItemNotFoundException {
+    public VariantDescriptionCI getVariantDescription(String id, List<Locale> locales)
+        throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
 
@@ -77,11 +97,16 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         if (hasTimerElapsedOnce) {
             locales2fetch = prefetchLocales;
         } else {
-            locales2fetch = prefetchLocales.stream()
-                    .filter(pLocale -> !fetchedLocales.contains(pLocale)).collect(Collectors.toList());
+            locales2fetch =
+                prefetchLocales
+                    .stream()
+                    .filter(pLocale -> !fetchedLocales.contains(pLocale))
+                    .collect(Collectors.toList());
         }
-        logger.debug("Loading variant market descriptions for [{}] (timer).",
-                locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
+        logger.debug(
+            "Loading variant market descriptions for [{}] (timer).",
+            locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(","))
+        );
         fetchLock.lock();
         try {
             if (hasTimerElapsedOnce) {
@@ -92,9 +117,11 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
             }
             hasTimerElapsedOnce = true;
         } catch (Exception e) { // so the timer does not die
-            logger.warn("An error occurred while periodically fetching variant descriptions for languages [{}]",
-                    locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
-                    e);
+            logger.warn(
+                "An error occurred while periodically fetching variant descriptions for languages [{}]",
+                locales2fetch.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
+                e
+            );
         } finally {
             fetchLock.unlock();
         }
@@ -102,21 +129,26 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
 
     @Override
     public boolean loadMarketDescriptions() {
-        try{
+        try {
             fetchedLocales.clear();
-            logger.debug("Loading variant market descriptions for [{}] (user request).",
-                    prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
+            logger.debug(
+                "Loading variant market descriptions for [{}] (user request).",
+                prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(","))
+            );
             fetchMissingData(prefetchLocales);
-        }
-        catch(Exception e){
-            logger.warn("An error occurred while fetching market description for languages [{}]",
-                    prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")), e);
+        } catch (Exception e) {
+            logger.warn(
+                "An error occurred while fetching market description for languages [{}]",
+                prefetchLocales.stream().map(Locale::getLanguage).collect(Collectors.joining(",")),
+                e
+            );
             return false;
         }
         return true;
     }
 
-    private VariantDescriptionCI getVariantDescriptionInternal(String id, List<Locale> locales2fetch) throws CacheItemNotFoundException, IllegalCacheStateException {
+    private VariantDescriptionCI getVariantDescriptionInternal(String id, List<Locale> locales2fetch)
+        throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales2fetch);
 
@@ -143,7 +175,11 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
 
         ifPresent = cache.getIfPresent(id);
         if (ifPresent == null || !getMissingLocales(ifPresent, locales2fetch).isEmpty()) {
-            throw new CacheItemNotFoundException("After successful variant list fetch, the cache item should be complete[" + id + "], but its missing");
+            throw new CacheItemNotFoundException(
+                "After successful variant list fetch, the cache item should be complete[" +
+                id +
+                "], but its missing"
+            );
         }
 
         return ifPresent;
@@ -157,7 +193,10 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
                 merge(missingLocale, dataProvider.getData(missingLocale));
             }
         } catch (DataProviderException e) {
-            throw new IllegalCacheStateException("An error occurred while fetching variant descriptors in [" + missingLocales + "]", e);
+            throw new IllegalCacheStateException(
+                "An error occurred while fetching variant descriptors in [" + missingLocales + "]",
+                e
+            );
         }
     }
 
@@ -172,15 +211,20 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
 
             VariantDescriptionCI ifPresent = cache.getIfPresent(id);
             if (createNew || ifPresent == null) {
-                ifPresent = new VariantDescriptionCI(market, mappingValidatorFactory, dataLocale, SdkHelper.VariantMarketListCache);
+                ifPresent =
+                    new VariantDescriptionCI(
+                        market,
+                        mappingValidatorFactory,
+                        dataLocale,
+                        SdkHelper.VariantMarketListCache
+                    );
                 cache.put(id, ifPresent);
             } else {
                 ifPresent.merge(market, dataLocale);
             }
         });
 
-        if(!fetchedLocales.contains(dataLocale))
-        {
+        if (!fetchedLocales.contains(dataLocale)) {
             fetchedLocales.add(dataLocale);
         }
     }

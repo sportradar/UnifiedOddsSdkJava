@@ -12,6 +12,7 @@ import com.sportradar.utils.URN;
  * A basic implementation of the {@link RecoveryInitiated}
  */
 class RecoveryInitiatedImpl implements RecoveryInitiated {
+
     private final Producer producer;
     private final long requestId;
     private final Long after;
@@ -19,7 +20,14 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
     private final String message;
     private final long timestamp;
 
-    RecoveryInitiatedImpl(Producer producer, long requestId, Long after, URN eventId, String message, long timestamp) {
+    RecoveryInitiatedImpl(
+        Producer producer,
+        long requestId,
+        Long after,
+        URN eventId,
+        String message,
+        long timestamp
+    ) {
         Preconditions.checkNotNull(producer);
         Preconditions.checkState(requestId > 0);
 
@@ -65,7 +73,9 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
      * @return the identifier of the recovery request
      */
     @Override
-    public long getRequestId() { return requestId; }
+    public long getRequestId() {
+        return requestId;
+    }
 
     /**
      * Returns the after timestamp if applied
@@ -73,7 +83,9 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
      * @return the after timestamp if applied
      */
     @Override
-    public Long getAfterTimestamp() { return after; }
+    public Long getAfterTimestamp() {
+        return after;
+    }
 
     /**
      * Gets the associated event identifier
@@ -81,7 +93,9 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
      * @return the associated event identifier
      */
     @Override
-    public URN getEventId() { return eventId; }
+    public URN getEventId() {
+        return eventId;
+    }
 
     /**
      * Returns the message associated with the recovery request
@@ -89,5 +103,7 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
      * @return the message associated with the recovery request
      */
     @Override
-    public String getMessage() { return message; }
+    public String getMessage() {
+        return message;
+    }
 }

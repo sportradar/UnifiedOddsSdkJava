@@ -5,19 +5,20 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 03/01/2018.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "AvoidNoArgumentSuperConstructorCall", "ConstantName" })
 public class SDKConfigurationPropertiesReader extends SDKConfigurationReader {
+
     private static final Logger logger = LoggerFactory.getLogger(SDKConfigurationPropertiesReader.class);
     private static final String SDK_PROPERTIES_FILENAME = "UFSdkConfiguration.properties";
 
@@ -25,7 +26,6 @@ public class SDKConfigurationPropertiesReader extends SDKConfigurationReader {
 
     SDKConfigurationPropertiesReader() {
         super();
-
         filename = SDK_PROPERTIES_FILENAME;
     }
 

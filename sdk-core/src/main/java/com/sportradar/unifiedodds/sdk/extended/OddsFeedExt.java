@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The main SDK object, this is the starting point of the UF SDK. (the extended version)
  */
+@SuppressWarnings({ "ConstantName", "LineLength" })
 public class OddsFeedExt extends OddsFeed {
 
     /**
@@ -31,13 +32,18 @@ public class OddsFeedExt extends OddsFeed {
      *                                            the configuration can be obtained using {@link #getOddsFeedConfigurationBuilder()}
      * @param oddsFeedExtListener {@link OddsFeedExtListener} used to receive raw feed and api data
      */
-    public OddsFeedExt(SDKGlobalEventsListener globalEventsListener, OddsFeedConfiguration config, OddsFeedExtListener oddsFeedExtListener) {
+    public OddsFeedExt(
+        SDKGlobalEventsListener globalEventsListener,
+        OddsFeedConfiguration config,
+        OddsFeedExtListener oddsFeedExtListener
+    ) {
         super(globalEventsListener, config, null, oddsFeedExtListener);
-
         Preconditions.checkNotNull(oddsFeedExtListener);
 
         this.initOddsFeedInstance();
-        DataRouterManagerImpl dataRouterManager = (DataRouterManagerImpl) injector.getInstance(DataRouterManager.class);
+        DataRouterManagerImpl dataRouterManager = (DataRouterManagerImpl) injector.getInstance(
+            DataRouterManager.class
+        );
         dataRouterManager.addOddsFeedExtListener(oddsFeedExtListener);
     }
 }

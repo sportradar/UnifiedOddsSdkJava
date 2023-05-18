@@ -9,11 +9,11 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
  * 2.5) This is included in the {@link MarketWithOdds} which in turn is included in the
  * {@link OddsChange} message.
  */
+@SuppressWarnings({ "OverloadMethodsDeclarationOrder" })
 public interface OutcomeOdds extends OutcomeProbabilities {
-
     /**
      * The odds for this outcome in this market
-     * 
+     *
      * @return the odds for this outcome in this market in decimal
      * @deprecated from v2.0.13 in favour of {@link #getOdds(OddsDisplayType)}
      */
@@ -32,8 +32,7 @@ public interface OutcomeOdds extends OutcomeProbabilities {
      * @param oddsDisplayType display type of the odds (default: @link OddsDisplayType.Decimal)
      * @return the odds for this outcome in this market in wanted format
      */
-    default Double getOdds(OddsDisplayType oddsDisplayType)
-    {
+    default Double getOdds(OddsDisplayType oddsDisplayType) {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

@@ -2,10 +2,11 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.DrawType;
 import com.sportradar.unifiedodds.sdk.entities.TimeType;
-
 import java.io.Serializable;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableDrawInfoCI implements Serializable {
+
     private DrawType drawType;
     private TimeType timeType;
     private String gameType;

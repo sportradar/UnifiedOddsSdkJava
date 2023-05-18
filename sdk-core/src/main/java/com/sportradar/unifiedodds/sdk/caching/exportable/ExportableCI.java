@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
 public class ExportableCI implements Serializable {
+
     private String id;
     private Map<Locale, String> names;
 

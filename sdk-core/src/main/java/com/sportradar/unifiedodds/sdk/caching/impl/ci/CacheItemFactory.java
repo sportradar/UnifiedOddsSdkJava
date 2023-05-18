@@ -9,7 +9,6 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.utils.URN;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +17,7 @@ import java.util.Locale;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "OverloadMethodsDeclarationOrder" })
 public interface CacheItemFactory {
     MatchCI buildMatchCI(URN id);
     MatchCI buildMatchCI(URN id, SAPISportEvent data, Locale dataLocale);
@@ -39,13 +39,29 @@ public interface CacheItemFactory {
     StageCI buildStageCI(URN id, SAPIParentStage data, Locale dataLocale);
 
     SportCI buildSportCI(URN id, SAPISport sport, List<URN> categories, Locale dataLocale);
-    CategoryCI buildCategoryCI(URN id, SAPICategory category, List<URN> tournaments, URN associatedSportCiId, Locale dataLocale);
+    CategoryCI buildCategoryCI(
+        URN id,
+        SAPICategory category,
+        List<URN> tournaments,
+        URN associatedSportCiId,
+        Locale dataLocale
+    );
     SportCI buildSportCI(ExportableSportCI exportable);
     CategoryCI buildCategoryCI(ExportableCategoryCI exportable);
 
     PlayerProfileCI buildPlayerProfileCI(URN id, URN competitorId);
-    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerExtended data, Locale dataLocale, URN competitorId);
-    PlayerProfileCI buildPlayerProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale, URN competitorId);
+    PlayerProfileCI buildPlayerProfileCI(
+        URN id,
+        SAPIPlayerExtended data,
+        Locale dataLocale,
+        URN competitorId
+    );
+    PlayerProfileCI buildPlayerProfileCI(
+        URN id,
+        SAPIPlayerCompetitor data,
+        Locale dataLocale,
+        URN competitorId
+    );
     PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable);
 
     CompetitorCI buildCompetitorProfileCI(URN id);

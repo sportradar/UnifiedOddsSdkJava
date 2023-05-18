@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * Defines methods implemented by classes representing a player profile
  */
+@SuppressWarnings({ "LineLength" })
 public interface PlayerProfile extends Player {
     /**
      * Returns the player full name in the specified language
@@ -89,7 +90,7 @@ public interface PlayerProfile extends Player {
      *
      * @return the gender of the player if available; otherwise null
      */
-    default String getGender(){
+    default String getGender() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 }

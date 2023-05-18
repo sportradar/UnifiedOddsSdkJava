@@ -15,18 +15,33 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.*;
 import com.sportradar.unifiedodds.sdk.impl.ManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.URN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a player or a team competing in a sport event
  */
+@SuppressWarnings(
+    {
+        "AbbreviationAsWordInName",
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "DeclarationOrder",
+        "HiddenField",
+        "LambdaBodyLength",
+        "MemberName",
+        "MethodNameRegular",
+        "NeedBraces",
+        "ParameterNumber",
+        "VisibilityModifier",
+    }
+)
 public class CompetitorImpl implements Competitor {
-    private final static Logger logger = LoggerFactory.getLogger(CompetitorImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(CompetitorImpl.class);
     private final URN competitorId;
     private final ProfileCache profileCache;
     private final List<Locale> locales;
@@ -53,13 +68,15 @@ public class CompetitorImpl implements Competitor {
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
-    public CompetitorImpl(URN competitorId,
-                          ProfileCache profileCache,
-                          Map<URN, ReferenceIdCI> eventCompetitorsReferences,
-                          Boolean isVirtual,
-                          List<Locale> locales,
-                          SportEntityFactory sportEntityFactory,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy) {
+    public CompetitorImpl(
+        URN competitorId,
+        ProfileCache profileCache,
+        Map<URN, ReferenceIdCI> eventCompetitorsReferences,
+        Boolean isVirtual,
+        List<Locale> locales,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy
+    ) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -74,11 +91,9 @@ public class CompetitorImpl implements Competitor {
         sportEventCI = null;
         TeamQualifier = null;
         IsVirtual = isVirtual;
-        if (eventCompetitorsReferences != null && !eventCompetitorsReferences.isEmpty())
-        {
+        if (eventCompetitorsReferences != null && !eventCompetitorsReferences.isEmpty()) {
             ReferenceIdCI q = eventCompetitorsReferences.get(competitorId);
-            if (q != null)
-            {
+            if (q != null) {
                 referenceIdCI = q;
             }
         }
@@ -95,13 +110,15 @@ public class CompetitorImpl implements Competitor {
      * @param exceptionHandlingStrategy the exception handling strategy
      * @param isVirtual indication if the competitor is marked as virtual
      */
-    public CompetitorImpl(URN competitorId,
-                          ProfileCache profileCache,
-                          SportEventCI parentSportEventCI,
-                          List<Locale> locales,
-                          SportEntityFactory sportEntityFactory,
-                          ExceptionHandlingStrategy exceptionHandlingStrategy,
-                          Boolean isVirtual) {
+    public CompetitorImpl(
+        URN competitorId,
+        ProfileCache profileCache,
+        SportEventCI parentSportEventCI,
+        List<Locale> locales,
+        SportEntityFactory sportEntityFactory,
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        Boolean isVirtual
+    ) {
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(sportEntityFactory);
@@ -157,7 +174,10 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Map<Locale, String> getCountries() {
-        return loadCacheItem().map(ci -> ci.getCountryNames(locales)).map(Collections::unmodifiableMap).orElse(null);
+        return loadCacheItem()
+            .map(ci -> ci.getCountryNames(locales))
+            .map(Collections::unmodifiableMap)
+            .orElse(null);
     }
 
     /**
@@ -168,7 +188,10 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Map<Locale, String> getAbbreviations() {
-        return loadCacheItem().map(ci -> ci.getAbbreviations(locales)).map(Collections::unmodifiableMap).orElse(null);
+        return loadCacheItem()
+            .map(ci -> ci.getAbbreviations(locales))
+            .map(Collections::unmodifiableMap)
+            .orElse(null);
     }
 
     /**
@@ -190,9 +213,7 @@ public class CompetitorImpl implements Competitor {
     @Override
     public Reference getReferences() {
         FetchEventCompetitorsReferenceIds();
-        return referenceIdCI != null
-                ? new ReferenceImpl(referenceIdCI)
-                : null;
+        return referenceIdCI != null ? new ReferenceImpl(referenceIdCI) : null;
     }
 
     /**
@@ -238,23 +259,31 @@ public class CompetitorImpl implements Competitor {
 
         try {
             return loadCacheItem()
-                    .map(ci -> ci.getAssociatedPlayerIds(locales))
-                    .map(pIds -> pIds.stream()
+                .map(ci -> ci.getAssociatedPlayerIds(locales))
+                .map(pIds ->
+                    pIds
+                        .stream()
                         .map(id -> {
                             try {
-                                if(id.getType().equals(UnifiedFeedConstants.PLAYER_URN_TYPE)) {
+                                if (id.getType().equals(UnifiedFeedConstants.PLAYER_URN_TYPE)) {
                                     return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
+                                } else {
+                                    return sportEntityFactory.buildCompetitor(
+                                        id,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        locales
+                                    );
                                 }
-                                else {
-                                    return sportEntityFactory.buildCompetitor(id, null, null, null, null, locales);
-                                }
-
                             } catch (ObjectNotFoundException e) {
                                 throw new StreamWrapperException(e.getMessage(), e);
                             }
                         })
-                    .collect(Collectors.toList()))
-                    .orElse(null);
+                        .collect(Collectors.toList())
+                )
+                .orElse(null);
         } catch (StreamWrapperException e) {
             handleException("getPlayers()", e);
             return null;
@@ -268,11 +297,12 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public List<Jersey> getJerseys() {
-        return loadCacheItem().map(CompetitorCI::getJerseys)
-                .map(j -> j.stream()
-                        .map(jerseyCI -> (Jersey) new JerseyImpl(jerseyCI))
-                        .collect(Collectors.toList()))
-                .orElse(null);
+        return loadCacheItem()
+            .map(CompetitorCI::getJerseys)
+            .map(j ->
+                j.stream().map(jerseyCI -> (Jersey) new JerseyImpl(jerseyCI)).collect(Collectors.toList())
+            )
+            .orElse(null);
     }
 
     /**
@@ -282,9 +312,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Manager getManager() {
-        return loadCacheItem().map(ci -> ci.getManager(locales))
-                .map(ManagerImpl::new)
-                .orElse(null);
+        return loadCacheItem().map(ci -> ci.getManager(locales)).map(ManagerImpl::new).orElse(null);
     }
 
     /**
@@ -294,9 +322,10 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public Venue getVenue() {
-        return loadCacheItem().map(ci -> ci.getVenue(locales))
-                .map(v -> new VenueImpl(v, locales))
-                .orElse(null);
+        return loadCacheItem()
+            .map(ci -> ci.getVenue(locales))
+            .map(v -> new VenueImpl(v, locales))
+            .orElse(null);
     }
 
     /**
@@ -305,7 +334,9 @@ public class CompetitorImpl implements Competitor {
      * @return the gender of the competitor if available; otherwise null
      */
     @Override
-    public String getGender() { return loadCacheItem().map(CompetitorCI::getGender).orElse(null);  }
+    public String getGender() {
+        return loadCacheItem().map(CompetitorCI::getGender).orElse(null);
+    }
 
     /**
      * Returns race driver of the competitor
@@ -314,7 +345,9 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public RaceDriverProfile getRaceDriver() {
-        return loadCacheItem().map(ci -> ci.getRaceDriver() != null ? new RaceDriverProfileImpl(ci.getRaceDriver()) : null).orElse(null);
+        return loadCacheItem()
+            .map(ci -> ci.getRaceDriver() != null ? new RaceDriverProfileImpl(ci.getRaceDriver()) : null)
+            .orElse(null);
     }
 
     /**
@@ -340,15 +373,15 @@ public class CompetitorImpl implements Competitor {
     @Override
     public Sport getSport() {
         return loadCacheItem()
-                .map(CompetitorCI::getSportId)
-                .map(s -> {
-                    try {
-                        return sportEntityFactory.buildSport(s, locales);
-                    } catch (ObjectNotFoundException e) {
-                        throw new StreamWrapperException(e.getMessage(), e);
-                    }
-                })
-                .orElse(null);
+            .map(CompetitorCI::getSportId)
+            .map(s -> {
+                try {
+                    return sportEntityFactory.buildSport(s, locales);
+                } catch (ObjectNotFoundException e) {
+                    throw new StreamWrapperException(e.getMessage(), e);
+                }
+            })
+            .orElse(null);
     }
 
     /**
@@ -359,15 +392,15 @@ public class CompetitorImpl implements Competitor {
     @Override
     public CategorySummary getCategory() {
         return loadCacheItem()
-                .map(CompetitorCI::getCategoryId)
-                .map(c -> {
-                    try {
-                        return sportEntityFactory.buildCategory(c, locales);
-                    } catch (ObjectNotFoundException e) {
-                        throw new StreamWrapperException(e.getMessage(), e);
-                    }
-                })
-                .orElse(null);
+            .map(CompetitorCI::getCategoryId)
+            .map(c -> {
+                try {
+                    return sportEntityFactory.buildCategory(c, locales);
+                } catch (ObjectNotFoundException e) {
+                    throw new StreamWrapperException(e.getMessage(), e);
+                }
+            })
+            .orElse(null);
     }
 
     /**
@@ -376,7 +409,9 @@ public class CompetitorImpl implements Competitor {
      * @return the dhort name of the competitor if available; otherwise null
      */
     @Override
-    public String getShortName() { return loadCacheItem().map(CompetitorCI::getShortName).orElse(null);  }
+    public String getShortName() {
+        return loadCacheItem().map(CompetitorCI::getShortName).orElse(null);
+    }
 
     /**
      * Loads the associated entity cache item from the sport event cache
@@ -398,10 +433,12 @@ public class CompetitorImpl implements Competitor {
      * @param request the requested object method
      * @param e the actual exception
      */
-    private void  handleException(String request, Exception e) {
+    private void handleException(String request, Exception e) {
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (e == null) {
-                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException("CompetitorImpl[" + competitorId + "], request(" + request + ")");
+                throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(
+                    "CompetitorImpl[" + competitorId + "], request(" + request + ")"
+                );
             } else {
                 throw new com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException(request, e);
             }
@@ -421,14 +458,10 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String toString() {
-        return "CompetitorImpl{" +
-                "competitorId=" + competitorId +
-                ", locales=" + locales +
-                '}';
+        return "CompetitorImpl{" + "competitorId=" + competitorId + ", locales=" + locales + '}';
     }
 
-    protected void FetchEventCompetitorsReferenceIds()
-    {
+    protected void FetchEventCompetitorsReferenceIds() {
         reentrantLock.lock();
         try {
             Map<URN, ReferenceIdCI> competitorsReferences = null;
@@ -440,8 +473,8 @@ public class CompetitorImpl implements Competitor {
                 competitorsReferences = tournamentCI.getCompetitorsReferences();
             } else {
                 ReferenceIdCI referenceIdCI = loadCacheItem().map(CompetitorCI::getReferenceId).orElse(null);
-                if (referenceIdCI != null)
-                    competitorsReferences = ImmutableMap.of(competitorId, referenceIdCI);
+                if (referenceIdCI != null) competitorsReferences =
+                    ImmutableMap.of(competitorId, referenceIdCI);
             }
 
             if (competitorsReferences != null && !competitorsReferences.isEmpty()) {
@@ -457,17 +490,14 @@ public class CompetitorImpl implements Competitor {
         }
     }
 
-    protected void FetchEventCompetitorsQualifiers()
-    {
+    protected void FetchEventCompetitorsQualifiers() {
         reentrantLock.lock();
         try {
-            if (TeamQualifier == null && sportEventCI != null && sportEventCI instanceof MatchCI)
-            {
+            if (TeamQualifier == null && sportEventCI != null && sportEventCI instanceof MatchCI) {
                 MatchCI matchCI = (MatchCI) sportEventCI;
                 Map<URN, String> competitorsQualifiers = matchCI.getCompetitorsQualifiers();
 
-                if (competitorsQualifiers != null && !competitorsQualifiers.isEmpty())
-                {
+                if (competitorsQualifiers != null && !competitorsQualifiers.isEmpty()) {
                     TeamQualifier = competitorsQualifiers.get(competitorId);
                 }
             }
@@ -478,17 +508,14 @@ public class CompetitorImpl implements Competitor {
         }
     }
 
-    protected void FetchEventCompetitorsDivisions()
-    {
+    protected void FetchEventCompetitorsDivisions() {
         reentrantLock.lock();
         try {
-            if (TeamDivision == null && sportEventCI != null && sportEventCI instanceof MatchCI)
-            {
+            if (TeamDivision == null && sportEventCI != null && sportEventCI instanceof MatchCI) {
                 MatchCI matchCI = (MatchCI) sportEventCI;
                 Map<URN, Integer> competitorsDivisions = matchCI.getCompetitorsDivisions();
 
-                if (competitorsDivisions != null && !competitorsDivisions.isEmpty())
-                {
+                if (competitorsDivisions != null && !competitorsDivisions.isEmpty()) {
                     TeamDivision = competitorsDivisions.get(competitorId);
                 }
             }
@@ -499,17 +526,14 @@ public class CompetitorImpl implements Competitor {
         }
     }
 
-    protected void FetchEventCompetitorsVirtual()
-    {
+    protected void FetchEventCompetitorsVirtual() {
         reentrantLock.lock();
         try {
-            if (IsVirtual == null && sportEventCI != null && sportEventCI instanceof MatchCI)
-            {
+            if (IsVirtual == null && sportEventCI != null && sportEventCI instanceof MatchCI) {
                 MatchCI matchCI = (MatchCI) sportEventCI;
                 List<URN> competitorsVirtual = matchCI.getCompetitorsVirtual();
 
-                if (competitorsVirtual != null && !competitorsVirtual.isEmpty())
-                {
+                if (competitorsVirtual != null && !competitorsVirtual.isEmpty()) {
                     IsVirtual = competitorsVirtual.contains(competitorId);
                 }
             }

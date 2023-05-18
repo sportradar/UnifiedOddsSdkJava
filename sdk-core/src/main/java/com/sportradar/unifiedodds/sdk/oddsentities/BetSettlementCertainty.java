@@ -4,6 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
+@SuppressWarnings({ "NoEnumTrailingComma" })
 public enum BetSettlementCertainty {
-    LiveScouted, Confirmed, Unknown
+    LiveScouted,
+    Confirmed,
+    Unknown,
 }

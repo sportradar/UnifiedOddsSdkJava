@@ -10,8 +10,8 @@ import java.util.Locale;
 /**
  * All of the fields that can be set trough the {@link OddsFeedConfigurationBuilder} are optional
  */
+@SuppressWarnings({ "LineLength" })
 public interface OddsFeedConfigurationBuilder {
-
     /**
      * Sets the default locale. This is the locale that will be used for any getter that returns
      * localized Strings (i.e. Sport name, Tournament name, Team name, Player name etc). The default
@@ -63,6 +63,14 @@ public interface OddsFeedConfigurationBuilder {
      * @return the current instance {@link OddsFeedConfigurationBuilder}
      */
     OddsFeedConfigurationBuilder setApiHost(String apiHost);
+
+    /**
+     * Specify the port used for API access (if not specified this defaults to 80)
+     *
+     * @param apiPort the port used for API access
+     * @return the current instance {@link OddsFeedConfigurationBuilder}
+     */
+    OddsFeedConfigurationBuilder setApiPort(int apiPort);
 
     /**
      * Sets the port used to connect to AMQP broker

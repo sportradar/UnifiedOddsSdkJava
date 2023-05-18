@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.utils.URN;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ import java.util.Map;
  * Contains sport related entity (sport, category, tournament) data
  */
 public abstract class SportEntityData {
+
     /**
      * The {@link URN} the id of the associated entity
      */

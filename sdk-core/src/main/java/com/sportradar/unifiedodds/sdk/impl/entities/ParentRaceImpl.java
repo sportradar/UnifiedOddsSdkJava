@@ -7,7 +7,6 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.ParentRaceCI;
 import com.sportradar.unifiedodds.sdk.entities.ParentRace;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -17,7 +16,9 @@ import java.util.Locale;
  * @see com.sportradar.unifiedodds.sdk.entities.ChildRace
  * @see com.sportradar.unifiedodds.sdk.impl.entities.ChildRaceImpl
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
 public class ParentRaceImpl extends ChildRaceImpl implements ParentRace {
+
     /**
      * Initializes a new instance of the {@link ParentRaceImpl}
      *
@@ -26,7 +27,6 @@ public class ParentRaceImpl extends ChildRaceImpl implements ParentRace {
      */
     public ParentRaceImpl(ParentRaceCI parentRaceCI, List<Locale> locales) {
         super(parentRaceCI, locales);
-
         Preconditions.checkNotNull(parentRaceCI);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());

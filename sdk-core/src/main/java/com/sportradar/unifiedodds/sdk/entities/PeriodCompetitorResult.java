@@ -4,14 +4,12 @@
 package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.utils.URN;
-
 import java.util.List;
 
 /**
  * Defines methods used to access data of a competitor result per period
  */
 public interface PeriodCompetitorResult {
-
     /**
      * Returns the competitor id
      * @return the competitor id

@@ -9,13 +9,14 @@ import com.google.common.base.Strings;
 import com.sportradar.uf.sportsapi.datamodel.SAPITeamStatistics;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.utils.URN;
-
 import java.util.Map;
 
 /**
  * Team statistics data transfer object
  */
+@SuppressWarnings({ "AbbreviationAsWordInName", "ParameterNumber", "UnnecessaryParentheses" })
 public class TeamStatisticsDTO {
+
     private final String name;
     private final URN teamId;
     private final HomeAway homeAway;
@@ -31,13 +32,16 @@ public class TeamStatisticsDTO {
 
         name = t.getName();
         teamId = t.getId() != null ? URN.parse(t.getId()) : null;
-        homeAway = homeAwayMap != null ?
-                homeAwayMap.entrySet().stream()
-                        .filter(e -> e.getValue().equals(t.getId()))
-                        .map(Map.Entry::getKey)
-                        .findAny()
-                        .orElse(null) :
-                null;
+        homeAway =
+            homeAwayMap != null
+                ? homeAwayMap
+                    .entrySet()
+                    .stream()
+                    .filter(e -> e.getValue().equals(t.getId()))
+                    .map(Map.Entry::getKey)
+                    .findAny()
+                    .orElse(null)
+                : null;
 
         SAPITeamStatistics.SAPIStatistics statistics = t.getStatistics();
         yellowRedCards = tryParseInt(statistics.getYellowRedCards());
@@ -48,7 +52,16 @@ public class TeamStatisticsDTO {
         greenCards = null;
     }
 
-    TeamStatisticsDTO(String name, URN teamId, HomeAway homeAway, Integer yellowCards, Integer redCards, Integer yellowRedCards, Integer cornerKicks, Integer greenCards) {
+    TeamStatisticsDTO(
+        String name,
+        URN teamId,
+        HomeAway homeAway,
+        Integer yellowCards,
+        Integer redCards,
+        Integer yellowRedCards,
+        Integer cornerKicks,
+        Integer greenCards
+    ) {
         Preconditions.checkNotNull(homeAway);
 
         this.name = name; // not available on the AMQP message
@@ -62,23 +75,19 @@ public class TeamStatisticsDTO {
 
         boolean valueExists = false;
         int c = 0;
-        if(yellowCards != null)
-        {
+        if (yellowCards != null) {
             valueExists = true;
             c += yellowCards;
         }
-        if(redCards != null)
-        {
+        if (redCards != null) {
             valueExists = true;
             c += redCards;
         }
-        if(yellowRedCards != null)
-        {
+        if (yellowRedCards != null) {
             valueExists = true;
             c += yellowRedCards;
         }
-        if(greenCards != null)
-        {
+        if (greenCards != null) {
             valueExists = true;
             c += greenCards;
         }
@@ -117,7 +126,9 @@ public class TeamStatisticsDTO {
         return cornerKicks;
     }
 
-    public Integer getGreenCards() { return greenCards; }
+    public Integer getGreenCards() {
+        return greenCards;
+    }
 
     private static Integer tryParseInt(String val) {
         if (Strings.isNullOrEmpty(val)) {
@@ -133,16 +144,28 @@ public class TeamStatisticsDTO {
 
     @Override
     public String toString() {
-        return "TeamStatisticsDTO{" +
-                "teamId=" + teamId +
-                ", name='" + name + '\'' +
-                ", homeAway=" + homeAway +
-                ", cards=" + cards +
-                ", yellowCards=" + yellowCards +
-                ", redCards=" + redCards +
-                ", yellowRedCards=" + yellowRedCards +
-                ", cornerKicks=" + cornerKicks +
-                ", greenCards=" + greenCards +
-                '}';
+        return (
+            "TeamStatisticsDTO{" +
+            "teamId=" +
+            teamId +
+            ", name='" +
+            name +
+            '\'' +
+            ", homeAway=" +
+            homeAway +
+            ", cards=" +
+            cards +
+            ", yellowCards=" +
+            yellowCards +
+            ", redCards=" +
+            redCards +
+            ", yellowRedCards=" +
+            yellowRedCards +
+            ", cornerKicks=" +
+            cornerKicks +
+            ", greenCards=" +
+            greenCards +
+            '}'
+        );
     }
 }

@@ -8,6 +8,6 @@ package com.sportradar.unifiedodds.sdk;
  * Defines methods used to handle messages which are not related with a {@link OddsFeedSession} but
  * with producers or SDK it-self.
  */
-public interface SDKGlobalEventsListener extends SDKProducerStatusListener, SDKConnectionStatusListener, SDKEventRecoveryStatusListener {
-
-}
+@SuppressWarnings({ "AbbreviationAsWordInName" })
+public interface SDKGlobalEventsListener
+    extends SDKProducerStatusListener, SDKConnectionStatusListener, SDKEventRecoveryStatusListener {}
