@@ -31,6 +31,11 @@ public class Urns {
             final int anyId = 277;
             return URN.parse("sr:season:" + anyId);
         }
+
+        public static URN urnForAnyStage() {
+            String anyId = "338";
+            return URN.parse("sr:stage:" + anyId);
+        }
     }
 
     public static class Sports {

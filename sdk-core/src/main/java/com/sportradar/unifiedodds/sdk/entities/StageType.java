@@ -24,6 +24,7 @@ public enum StageType {
     Qualifying,
     QualifyingPart,
     Lap,
+    SprintRace,
     Run;
 
     public static StageType mapFromApiValue(String str) {
@@ -64,6 +65,8 @@ public enum StageType {
                 return Lap;
             case "run":
                 return Run;
+            case "sprint_race":
+                return SprintRace;
             default:
                 return null;
         }

@@ -1,5 +1,8 @@
 ### Unified Feed SDK 2.x changelog
 
+**2.0.61 (2023-07-20)**
+* Stages can be of SprintRace type
+
 **2.0.60.0 (2023-05-17)**
 * CustomBetManager respects ExceptionHandlingStrategy for all non-argument-validating exceptions
 * CustomBetManager now throws CommunicationException on API failures

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
+@SuppressWarnings({ "HiddenField", "ParameterNumber", "AbbreviationAsWordInName" })
 public class ExportableRaceStageCI extends ExportableStageCI {
 
     private Locale defaultLocale;

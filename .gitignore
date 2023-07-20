@@ -70,6 +70,7 @@ buildNumber.properties
 
 #custom exclusions
 /uf-sdk-logs/
+**/uf-sdk-logs/
 UFSdkConfiguration.properties
 application.yml
 
@@ -77,4 +78,3 @@ application.yml
 
 # logs
 *.log.gz
-*.log
