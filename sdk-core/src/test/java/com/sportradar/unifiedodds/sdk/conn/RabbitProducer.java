@@ -19,6 +19,7 @@ import com.sportradar.unifiedodds.sdk.shared.Helper;
 import com.sportradar.unifiedodds.sdk.shared.TestProducersProvider;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
 import com.sportradar.utils.URN;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import lombok.val;
@@ -94,16 +95,18 @@ public class RabbitProducer {
             ManagementClient.closeConnection(connectionInfo.getName(), "cleanup");
         }
 
-        try {
-            val vhostLocation = VhostLocation.at(Constants.RABBIT_IP, Constants.UF_VIRTUALHOST);
-            val exchangeLocation = ExchangeLocation.at(vhostLocation, Constants.UF_EXCHANGE);
-            val adminCredentials = Credentials.with(Constants.ADMIN_USERNAME, Constants.ADMIN_PASSWORD);
-            val factory = new ConnectionFactory();
-            producer = connectDeclaringExchange(exchangeLocation, adminCredentials, factory, time);
-        } catch (Exception ex) {
-            Helper.writeToOutput(ex.getMessage());
-        }
+        val vhostLocation = VhostLocation.at(Constants.RABBIT_IP, Constants.UF_VIRTUALHOST);
+        val exchangeLocation = ExchangeLocation.at(vhostLocation, Constants.UF_EXCHANGE);
+        val adminCredentials = Credentials.with(Constants.ADMIN_USERNAME, Constants.ADMIN_PASSWORD);
+        val factory = new ConnectionFactory();
 
+        try {
+            producer = connectDeclaringExchange(exchangeLocation, adminCredentials, factory, time);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        }
         timerTaskScheduler = Executors.newScheduledThreadPool(1);
         timerFuture =
             timerTaskScheduler.scheduleAtFixedRate(() -> timerCheckAndSend(), 1, 1, TimeUnit.SECONDS);
@@ -154,16 +157,16 @@ public class RabbitProducer {
         when(time.now()).thenReturn(timestamp);
         try {
             producer.send(msgBody, routingKey);
-            String result = String.format(
-                "Generated:%s, Routing: %s, Msg: %s",
-                new Date(timestamp),
-                routingKey,
-                message
-            );
-            Helper.writeToOutput(result);
-        } catch (Exception ex) {
-            Helper.writeToOutput("Error sending message: " + ex.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        String result = String.format(
+            "Generated:%s, Routing: %s, Msg: %s",
+            new Date(timestamp),
+            routingKey,
+            message
+        );
+        Helper.writeToOutput(result);
     }
 
     /**

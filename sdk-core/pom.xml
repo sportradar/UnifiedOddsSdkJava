@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>2.0.60</version>
+    <version>2.0.61</version>
 
     <name>Unified Odds Feed SDK</name>
 

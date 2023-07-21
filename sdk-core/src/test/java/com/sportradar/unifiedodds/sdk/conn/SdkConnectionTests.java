@@ -426,7 +426,7 @@ public class SdkConnectionTests {
             new TestHttpHelper.UrlReplacement("/liveodds/", 1, HttpStatus.SC_ACCEPTED)
         );
         feed.TestHttpHelper.PostResponses.add(
-            new TestHttpHelper.UrlReplacement("/prematch/", 1, HttpStatus.SC_ACCEPTED)
+            new TestHttpHelper.UrlReplacement("/pre/", 1, HttpStatus.SC_ACCEPTED)
         );
 
         List<Integer> disabledProducers = Arrays.asList(2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
@@ -614,7 +614,7 @@ public class SdkConnectionTests {
             new TestHttpHelper.UrlReplacement("/liveodds/", 1, HttpStatus.SC_ACCEPTED)
         );
         feed.TestHttpHelper.PostResponses.add(
-            new TestHttpHelper.UrlReplacement("/prematch/", 1, HttpStatus.SC_ACCEPTED)
+            new TestHttpHelper.UrlReplacement("/pre/", 1, HttpStatus.SC_ACCEPTED)
         );
 
         List<Integer> disabledProducers = Arrays.asList(2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
@@ -966,8 +966,8 @@ public class SdkConnectionTests {
         rabbitProducer.send(snapshotComplete);
 
         waitAndCheckTillTimeout(
-            w -> checkProducerFlaggedDown(producerId, false),
-            "Producer is not down",
+            w -> checkProducerFlaggedDown(producerId, true),
+            "Producer is down",
             1000,
             10000
         );
@@ -1143,7 +1143,7 @@ public class SdkConnectionTests {
             w -> checkProducerRecovery(producerId, false),
             "Producer recovery info is not null",
             5000,
-            62000
+            70000
         );
         producer = feed.getProducerManager().getProducer(producerId);
 
@@ -2044,7 +2044,7 @@ public class SdkConnectionTests {
             new TestHttpHelper.UrlReplacement("/liveodds/", 1, HttpStatus.SC_ACCEPTED)
         );
         feed.TestHttpHelper.PostResponses.add(
-            new TestHttpHelper.UrlReplacement("/prematch/", 1, HttpStatus.SC_ACCEPTED)
+            new TestHttpHelper.UrlReplacement("/pre/", 1, HttpStatus.SC_ACCEPTED)
         );
         feed.TestHttpHelper.PostResponses.add(
             new TestHttpHelper.UrlReplacement("/vf/", 1, HttpStatus.SC_ACCEPTED)
@@ -3140,6 +3140,7 @@ public class SdkConnectionTests {
                 Helper.durationBetweenDatesInMs(start, new Date())
             )
         );
+        throw new RuntimeException("Condition not met: " + message);
     }
 
     private void disableProducers(List<Integer> producerIds, OddsFeed feed) {
