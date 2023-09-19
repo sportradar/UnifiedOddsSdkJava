@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableManagerCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableManagerCi extends ExportableCi {
 
     private Map<Locale, String> nationalities;
     private String countryCode;
     private List<Locale> cachedLocales;
 
-    public ExportableManagerCI(
+    public ExportableManagerCi(
         String id,
         Map<Locale, String> names,
         Map<Locale, String> nationalities,

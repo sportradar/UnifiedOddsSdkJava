@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.Player;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -17,9 +17,9 @@ import java.util.Map;
 public class PlayerImpl implements Player {
 
     /**
-     * The unique {@link URN} identifier representing the current {@link Player} instance
+     * The unique {@link Urn} identifier representing the current {@link Player} instance
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An unmodifiable {@link Map} containing the available player name translations
@@ -30,10 +30,10 @@ public class PlayerImpl implements Player {
     /**
      * Initializes a new instance of the {@link PlayerImpl} class
      *
-     * @param id - the unique {@link URN} identifier representing the current {@link Player} instance
+     * @param id - the unique {@link Urn} identifier representing the current {@link Player} instance
      * @param names - a {@link Map} containing the available player name translations
      */
-    PlayerImpl(URN id, Map<Locale, String> names) {
+    PlayerImpl(Urn id, Map<Locale, String> names) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(names);
 
@@ -42,12 +42,12 @@ public class PlayerImpl implements Player {
     }
 
     /**
-     * Returns the unique {@link URN} identifier representing the current {@link Player} instance
+     * Returns the unique {@link Urn} identifier representing the current {@link Player} instance
      *
-     * @return - the unique {@link URN} identifier representing the current {@link Player} instance
+     * @return - the unique {@link Urn} identifier representing the current {@link Player} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

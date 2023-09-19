@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ConstantName",
         "HiddenField",
         "LambdaBodyLength",
@@ -39,16 +38,16 @@ import org.slf4j.LoggerFactory;
         "UnnecessaryParentheses",
     }
 )
-public class MarketDescriptionCI {
+public class MarketDescriptionCi {
 
-    private static final Logger logger = LoggerFactory.getLogger(MarketDescriptionCI.class);
+    private static final Logger logger = LoggerFactory.getLogger(MarketDescriptionCi.class);
     private final int id;
     private final Map<Locale, String> names;
     private final Map<Locale, String> descriptions;
-    private final List<MarketMappingCI> mappings;
-    private final List<MarketOutcomeCI> outcomes;
-    private final List<MarketSpecifierCI> specifiers;
-    private final List<MarketAttributeCI> attributes;
+    private final List<MarketMappingCi> mappings;
+    private final List<MarketOutcomeCi> outcomes;
+    private final List<MarketSpecifierCi> specifiers;
+    private final List<MarketAttributeCi> attributes;
     private final List<Locale> fetchedLocales;
     private final MappingValidatorFactory mappingValidatorFactory;
 
@@ -58,7 +57,7 @@ public class MarketDescriptionCI {
     private Date lastDataReceived;
     private String sourceCache;
 
-    public MarketDescriptionCI(
+    public MarketDescriptionCi(
         DescMarket market,
         MappingValidatorFactory mappingValidatorFactory,
         Locale locale,
@@ -92,7 +91,7 @@ public class MarketDescriptionCI {
                     .getOutcomes()
                     .getOutcome()
                     .stream()
-                    .map(o -> new MarketOutcomeCI(o, locale))
+                    .map(o -> new MarketOutcomeCi(o, locale))
                     .collect(Collectors.toList());
 
         mappings =
@@ -102,7 +101,7 @@ public class MarketDescriptionCI {
                     .getMappings()
                     .getMapping()
                     .stream()
-                    .map(mm -> new MarketMappingCI(mm, locale, mappingValidatorFactory))
+                    .map(mm -> new MarketMappingCi(mm, locale, mappingValidatorFactory))
                     .collect(Collectors.toList());
 
         specifiers =
@@ -112,7 +111,7 @@ public class MarketDescriptionCI {
                     .getSpecifiers()
                     .getSpecifier()
                     .stream()
-                    .map(MarketSpecifierCI::new)
+                    .map(MarketSpecifierCi::new)
                     .collect(Collectors.toList());
 
         attributes =
@@ -122,7 +121,7 @@ public class MarketDescriptionCI {
                     .getAttributes()
                     .getAttribute()
                     .stream()
-                    .map(MarketAttributeCI::new)
+                    .map(MarketAttributeCi::new)
                     .collect(Collectors.toList());
 
         fetchedLocales = Collections.synchronizedList(new ArrayList<>());
@@ -156,7 +155,7 @@ public class MarketDescriptionCI {
                 .getOutcomes()
                 .getOutcome()
                 .forEach(o -> {
-                    Optional<MarketOutcomeCI> existingOutcome = outcomes
+                    Optional<MarketOutcomeCi> existingOutcome = outcomes
                         .stream()
                         .filter(exo -> exo.getId().equals(o.getId()))
                         .findFirst();
@@ -178,9 +177,9 @@ public class MarketDescriptionCI {
                 .getMappings()
                 .getMapping()
                 .forEach(o -> {
-                    Optional<MarketMappingCI> existingMapping = mappings
+                    Optional<MarketMappingCi> existingMapping = mappings
                         .stream()
-                        .filter(exm -> MarketMappingCI.compareMappingsData(exm, o))
+                        .filter(exm -> MarketMappingCi.compareMappingsData(exm, o))
                         .findFirst();
 
                     if (existingMapping.isPresent()) {
@@ -216,19 +215,19 @@ public class MarketDescriptionCI {
         return descriptions.get(locale);
     }
 
-    public List<MarketMappingCI> getMappings() {
+    public List<MarketMappingCi> getMappings() {
         return mappings == null ? null : ImmutableList.copyOf(mappings);
     }
 
-    public List<MarketOutcomeCI> getOutcomes() {
+    public List<MarketOutcomeCi> getOutcomes() {
         return outcomes == null ? null : ImmutableList.copyOf(outcomes);
     }
 
-    public List<MarketSpecifierCI> getSpecifiers() {
+    public List<MarketSpecifierCi> getSpecifiers() {
         return specifiers == null ? null : ImmutableList.copyOf(specifiers);
     }
 
-    public List<MarketAttributeCI> getAttributes() {
+    public List<MarketAttributeCi> getAttributes() {
         return attributes == null ? null : ImmutableList.copyOf(attributes);
     }
 
@@ -254,7 +253,7 @@ public class MarketDescriptionCI {
         }
 
         for (Mappings.Mapping additionalMapping : additionalMappings) {
-            MarketMappingCI newMappingElement = new MarketMappingCI(
+            MarketMappingCi newMappingElement = new MarketMappingCi(
                 additionalMapping,
                 Locale.ENGLISH,
                 mappingValidatorFactory
@@ -262,8 +261,8 @@ public class MarketDescriptionCI {
 
             boolean added = false;
             for (int i = 0; i < mappings.size(); i++) {
-                MarketMappingCI cm = mappings.get(i);
-                if (MarketMappingCI.compareMappingsData(cm, additionalMapping)) {
+                MarketMappingCi cm = mappings.get(i);
+                if (MarketMappingCi.compareMappingsData(cm, additionalMapping)) {
                     logger.info(
                         "Over-riding mapping with additional mapping for market[{}] -> {}",
                         id,

@@ -5,8 +5,8 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPITimeline;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventTimelineCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiTimeline;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventTimelineCi;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -14,38 +14,37 @@ import java.util.stream.Collectors;
 /**
  * A cache representation of an event timeline
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class EventTimelineCI {
+public class EventTimelineCi {
 
     private final Locale cachedLocale;
-    private final List<TimelineEventCI> timelineEvents;
+    private final List<TimelineEventCi> timelineEvents;
     private final boolean isFinalized;
 
-    public EventTimelineCI(SAPITimeline timeline, Locale dataLocale, boolean isFinalized) {
+    public EventTimelineCi(SapiTimeline timeline, Locale dataLocale, boolean isFinalized) {
         Preconditions.checkNotNull(timeline);
         Preconditions.checkNotNull(dataLocale);
 
         this.timelineEvents =
-            timeline.getEvent().stream().map(TimelineEventCI::new).collect(Collectors.toList());
+            timeline.getEvent().stream().map(TimelineEventCi::new).collect(Collectors.toList());
         this.cachedLocale = dataLocale;
         this.isFinalized = isFinalized;
     }
 
-    public EventTimelineCI(ExportableEventTimelineCI exportable) {
+    public EventTimelineCi(ExportableEventTimelineCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         this.cachedLocale = exportable.getCachedLocale();
         this.timelineEvents =
-            exportable.getTimelineEvents().stream().map(TimelineEventCI::new).collect(Collectors.toList());
+            exportable.getTimelineEvents().stream().map(TimelineEventCi::new).collect(Collectors.toList());
         this.isFinalized = exportable.isFinalized();
     }
 
     /**
      * Returns a chronological list of events
      *
-     * @return a chronological list of {@link TimelineEventCI}s
+     * @return a chronological list of {@link TimelineEventCi}s
      */
-    public List<TimelineEventCI> getTimelineEvents() {
+    public List<TimelineEventCi> getTimelineEvents() {
         return timelineEvents;
     }
 
@@ -67,10 +66,10 @@ public class EventTimelineCI {
         return isFinalized;
     }
 
-    public ExportableEventTimelineCI export() {
-        return new ExportableEventTimelineCI(
+    public ExportableEventTimelineCi export() {
+        return new ExportableEventTimelineCi(
             cachedLocale,
-            timelineEvents.stream().map(TimelineEventCI::export).collect(Collectors.toList()),
+            timelineEvents.stream().map(TimelineEventCi::export).collect(Collectors.toList()),
             isFinalized
         );
     }

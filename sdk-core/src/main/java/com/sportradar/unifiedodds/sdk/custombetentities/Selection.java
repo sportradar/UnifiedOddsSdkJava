@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.custombetentities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Provides an requested selection
@@ -13,9 +13,9 @@ public interface Selection {
     /**
      * Gets the event id
      *
-     * @return the {@link URN} of the event
+     * @return the {@link Urn} of the event
      */
-    URN getEventId();
+    Urn getEventId();
 
     /**
      * Gets the market id

@@ -10,14 +10,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.uf.datamodel.UFOddsChange;
-import com.sportradar.uf.datamodel.UFOddsChange.UFOdds;
-import com.sportradar.uf.datamodel.UFOddsChangeMarket;
-import com.sportradar.uf.datamodel.UFOddsGenerationProperties;
+import com.sportradar.uf.datamodel.UfOddsChange;
+import com.sportradar.uf.datamodel.UfOddsChange.UfOdds;
+import com.sportradar.uf.datamodel.UfOddsChangeMarket;
+import com.sportradar.uf.datamodel.UfOddsGenerationProperties;
 import com.sportradar.unifiedodds.sdk.caching.fixtures.NamedValueStub;
 import com.sportradar.unifiedodds.sdk.caching.fixtures.NamedValuesProviderFixture;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
@@ -29,10 +29,10 @@ import org.junit.Test;
 
 public class OddsChangeFeedMessageFactoryTest {
 
-    private final UFOddsChange message = new UFOddsChange();
+    private final UfOddsChange message = new UfOddsChange();
     private final MarketFactory marketFactory = mock(MarketFactory.class);
     private final NamedValuesProviderFixture namedValuesProviderFixture = new NamedValuesProviderFixture();
-    private final SDKProducerManager producerManager = mock(SDKProducerManager.class);
+    private final SdkProducerManager producerManager = mock(SdkProducerManager.class);
     private final byte[] rawMessage = new byte[0];
     private final MessageTimestamp timestamp = mock(MessageTimestamp.class);
     private final SportEvent sportEvent = mock(SportEvent.class);
@@ -121,7 +121,7 @@ public class OddsChangeFeedMessageFactoryTest {
     @Test
     public void shouldConstructWithExpectedTotals() {
         final double expectedTotals = 0.4d;
-        val props = new UFOddsGenerationProperties();
+        val props = new UfOddsGenerationProperties();
         props.setExpectedTotals(expectedTotals);
         message.setOddsGenerationProperties(props);
 
@@ -133,7 +133,7 @@ public class OddsChangeFeedMessageFactoryTest {
     @Test
     public void shouldConstructWithExpectedSupremacy() {
         final double expectedSupremacy = 0.5d;
-        val props = new UFOddsGenerationProperties();
+        val props = new UfOddsGenerationProperties();
         props.setExpectedSupremacy(expectedSupremacy);
         message.setOddsGenerationProperties(props);
 
@@ -156,7 +156,7 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldBuildNoMarketsIfMassageCarriesNullMarkets() {
-        val odds = mock(UFOdds.class);
+        val odds = mock(UfOdds.class);
         when(odds.getMarket()).thenReturn(null);
         message.setOdds(odds);
 
@@ -167,7 +167,7 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldBuildNoMarketsIfMessageCarriesZeroMarkets() {
-        val odds = mock(UFOdds.class);
+        val odds = mock(UfOdds.class);
         when(odds.getMarket()).thenReturn(Collections.emptyList());
         message.setOdds(odds);
 
@@ -178,8 +178,8 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldBuildNoMarketsIfMarketCarriedByMessageWasNotBuildable() {
-        val odds = mock(UFOdds.class);
-        val market = mock(UFOddsChangeMarket.class);
+        val odds = mock(UfOdds.class);
+        val market = mock(UfOddsChangeMarket.class);
         when(odds.getMarket()).thenReturn(Arrays.asList(market));
         when(marketFactory.buildMarketWithOdds(any(), eq(market), anyInt())).thenReturn(Optional.empty());
         message.setOdds(odds);
@@ -192,8 +192,8 @@ public class OddsChangeFeedMessageFactoryTest {
     @Test
     public void shouldBuildOneMarketsIfMessageCarriesOneMarket() {
         val market = mock(MarketWithOdds.class);
-        val xmlOdds = mock(UFOdds.class);
-        val xmlMarket = mock(UFOddsChangeMarket.class);
+        val xmlOdds = mock(UfOdds.class);
+        val xmlMarket = mock(UfOddsChangeMarket.class);
         when(xmlOdds.getMarket()).thenReturn(Arrays.asList(xmlMarket));
         when(marketFactory.buildMarketWithOdds(any(), eq(xmlMarket), anyInt()))
             .thenReturn(Optional.of(market));
@@ -210,7 +210,7 @@ public class OddsChangeFeedMessageFactoryTest {
         val betstopReasonDescription = "human_readable_betstop_reason";
         val betstopReason = new NamedValueStub(betstopReasonId, betstopReasonDescription);
         namedValuesProviderFixture.stubBetstopReason(betstopReason);
-        val xmlOdds = mock(UFOdds.class);
+        val xmlOdds = mock(UfOdds.class);
         when(xmlOdds.getBetstopReason()).thenReturn(betstopReasonId);
         message.setOdds(xmlOdds);
 
@@ -222,7 +222,7 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldNotProvideBetstopReasonIfMessageDoesNotContainBetstopReason() {
-        val xmlOdds = mock(UFOdds.class);
+        val xmlOdds = mock(UfOdds.class);
         when(xmlOdds.getBetstopReason()).thenReturn(null);
         message.setOdds(xmlOdds);
 
@@ -238,7 +238,7 @@ public class OddsChangeFeedMessageFactoryTest {
         val description = "human_readable_betting_statuses_description";
         val bettingStatus = new NamedValueStub(bettingStatusId, description);
         namedValuesProviderFixture.stubBettingStatus(bettingStatus);
-        val xmlOdds = mock(UFOdds.class);
+        val xmlOdds = mock(UfOdds.class);
         when(xmlOdds.getBettingStatus()).thenReturn(bettingStatusId);
         message.setOdds(xmlOdds);
 
@@ -250,7 +250,7 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldNotProvideBettingStatusDescriptionIfMessageDoesNotContainBettingStatus() {
-        val xmlOdds = mock(UFOdds.class);
+        val xmlOdds = mock(UfOdds.class);
         when(xmlOdds.getBettingStatus()).thenReturn(null);
         message.setOdds(xmlOdds);
 

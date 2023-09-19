@@ -5,14 +5,13 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIJersey;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableJerseyCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiJersey;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableJerseyCi;
 
 /**
  * A cache representation of a jersey
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class JerseyCI {
+public class JerseyCi {
 
     /**
      * The jersey base color
@@ -55,11 +54,11 @@ public class JerseyCI {
     private final String sleeveDetail;
 
     /**
-     * Initializes a new {@link JerseyCI}
+     * Initializes a new {@link JerseyCi}
      *
      * @param jersey the API schema object which will be used to construct the instance
      */
-    public JerseyCI(SAPIJersey jersey) {
+    public JerseyCi(SapiJersey jersey) {
         Preconditions.checkNotNull(jersey);
 
         base = jersey.getBase();
@@ -72,7 +71,7 @@ public class JerseyCI {
         sleeveDetail = jersey.getSleeveDetail();
     }
 
-    public JerseyCI(ExportableJerseyCI exportable) {
+    public JerseyCi(ExportableJerseyCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         base = exportable.getBase();
@@ -157,8 +156,8 @@ public class JerseyCI {
         return sleeveDetail;
     }
 
-    public ExportableJerseyCI export() {
-        return new ExportableJerseyCI(
+    public ExportableJerseyCi export() {
+        return new ExportableJerseyCi(
             base,
             number,
             sleeve,

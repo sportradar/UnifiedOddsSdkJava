@@ -4,15 +4,15 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.Optional;
 
 /**
  * Defines methods used to access sport event type properties
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public interface SportEventCI extends CacheItem {
+@SuppressWarnings({ "LineLength" })
+public interface SportEventCi extends CacheItem {
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current
      * instance was scheduled
@@ -57,9 +57,9 @@ public interface SportEventCI extends CacheItem {
     Optional<Boolean> isStartTimeTbd();
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
-    URN getReplacedBy();
+    Urn getReplacedBy();
 }

@@ -6,15 +6,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableCoverageInfoCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableCoverageInfoCi implements Serializable {
 
     private String level;
     private boolean isLive;
     private List<String> includes;
     private CoveredFrom coveredFrom;
 
-    public ExportableCoverageInfoCI(
+    public ExportableCoverageInfoCi(
         String level,
         boolean isLive,
         List<String> includes,
@@ -26,7 +26,7 @@ public class ExportableCoverageInfoCI implements Serializable {
         this.coveredFrom = coveredFrom;
     }
 
-    public ExportableCoverageInfoCI(CoverageInfo coverageInfo) {
+    public ExportableCoverageInfoCi(CoverageInfo coverageInfo) {
         this.level = coverageInfo.getLevel();
         this.isLive = coverageInfo.isLive();
         this.includes = new ArrayList<>(coverageInfo.getIncludes());

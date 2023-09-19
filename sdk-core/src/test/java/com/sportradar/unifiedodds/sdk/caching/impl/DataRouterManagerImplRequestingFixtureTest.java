@@ -11,16 +11,16 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -41,9 +41,9 @@ public class DataRouterManagerImplRequestingFixtureTest {
         private static final CacheItem ANY_CACHE_ITEM = mock(CacheItem.class);
         private final DataProvider cachedFixtures = mock(DataProvider.class);
         private final DataRouterManager manager = new DataRouterManagerImpl(
-            mock(SDKInternalConfiguration.class),
-            mock(SDKTaskScheduler.class),
-            mock(SDKProducerManager.class),
+            mock(SdkInternalConfiguration.class),
+            mock(SdkTaskScheduler.class),
+            mock(SdkProducerManager.class),
             mock(DataRouter.class),
             mock(DataProvider.class),
             cachedFixtures,
@@ -77,7 +77,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
             throws DataProviderException {
             when(cachedFixtures.getData(any(), any())).thenThrow(DataProviderException.class);
             Locale china = Locale.CHINA;
-            URN id = urnForAnyTournament();
+            Urn id = urnForAnyTournament();
 
             CommunicationException exception = catchThrowableOfType(
                 () -> manager.requestFixtureEndpoint(china, id, USING_CACHED_PROVIDER, ANY_CACHE_ITEM),
@@ -167,9 +167,9 @@ public class DataRouterManagerImplRequestingFixtureTest {
         private final DataProvider cachedFixtures = mock(DataProvider.class);
         private final DataProvider fixtures = mock(DataProvider.class);
         private final DataRouterManager manager = new DataRouterManagerImpl(
-            mock(SDKInternalConfiguration.class),
-            mock(SDKTaskScheduler.class),
-            mock(SDKProducerManager.class),
+            mock(SdkInternalConfiguration.class),
+            mock(SdkTaskScheduler.class),
+            mock(SdkProducerManager.class),
             mock(DataRouter.class),
             mock(DataProvider.class),
             cachedFixtures,
@@ -208,7 +208,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
             when(fixtures.getData(any(), any())).thenThrow(dataProviderException);
             when(cachedFixtures.getData(any(), any())).thenThrow(DataProviderException.class);
             Locale china = Locale.CHINA;
-            URN id = urnForAnyTournament();
+            Urn id = urnForAnyTournament();
 
             CommunicationException exception = catchThrowableOfType(
                 () -> manager.requestFixtureEndpoint(china, id, USING_LIVE_PROVIDER, ANY_CACHE_ITEM),

@@ -5,24 +5,23 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawType;
-import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
-import com.sportradar.uf.sportsapi.datamodel.SAPITimeType;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawInfoCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiDrawType;
+import com.sportradar.uf.sportsapi.datamodel.SapiLottery;
+import com.sportradar.uf.sportsapi.datamodel.SapiTimeType;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.DrawType;
 import com.sportradar.unifiedodds.sdk.entities.TimeType;
 
 /**
  * A basic draw info cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class DrawInfoCI {
+public class DrawInfoCi {
 
     private final DrawType drawType;
     private final TimeType timeType;
     private final String gameType;
 
-    public DrawInfoCI(SAPILottery.SAPIDrawInfo drawInfo) {
+    public DrawInfoCi(SapiLottery.SapiDrawInfo drawInfo) {
         Preconditions.checkNotNull(drawInfo);
 
         drawType = map(drawInfo.getDrawType());
@@ -30,7 +29,7 @@ public class DrawInfoCI {
         gameType = drawInfo.getGameType();
     }
 
-    public DrawInfoCI(ExportableDrawInfoCI exportable) {
+    public DrawInfoCi(ExportableDrawInfoCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         drawType = exportable.getDrawType();
@@ -50,7 +49,7 @@ public class DrawInfoCI {
         return gameType;
     }
 
-    private static DrawType map(SAPIDrawType type) {
+    private static DrawType map(SapiDrawType type) {
         if (type == null) {
             return DrawType.Unknown;
         }
@@ -65,7 +64,7 @@ public class DrawInfoCI {
         }
     }
 
-    private static TimeType map(SAPITimeType timeType) {
+    private static TimeType map(SapiTimeType timeType) {
         if (timeType == null) {
             return TimeType.Unknown;
         }
@@ -80,7 +79,7 @@ public class DrawInfoCI {
         }
     }
 
-    public ExportableDrawInfoCI export() {
-        return new ExportableDrawInfoCI(drawType, timeType, gameType);
+    public ExportableDrawInfoCi export() {
+        return new ExportableDrawInfoCi(drawType, timeType, gameType);
     }
 }

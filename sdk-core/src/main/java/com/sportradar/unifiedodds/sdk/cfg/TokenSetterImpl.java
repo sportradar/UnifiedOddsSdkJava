@@ -6,9 +6,10 @@ package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * The default implementation of the {@link TokenSetter}
@@ -16,18 +17,24 @@ import java.util.Optional;
 @SuppressWarnings({ "LineLength" })
 public class TokenSetterImpl implements TokenSetter {
 
-    private final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
-    private final SDKConfigurationYamlReader sdkConfigurationYamlReader;
+    private final SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader;
+    private final SdkConfigurationYamlReader sdkConfigurationYamlReader;
+    private final UofConfigurationImpl configuration;
 
     public TokenSetterImpl(
-        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-        SDKConfigurationYamlReader sdkConfigurationYamlReader
+        SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SdkConfigurationYamlReader sdkConfigurationYamlReader,
+        Function<UofConfiguration, WhoAmIReader> buildWhoAmIReader,
+        Function<UofConfiguration, ProducerDataProvider> buildProducerDataProvider
     ) {
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
         Preconditions.checkNotNull(sdkConfigurationYamlReader);
+        Preconditions.checkNotNull(buildWhoAmIReader);
+        Preconditions.checkNotNull(buildProducerDataProvider);
 
         this.sdkConfigurationPropertiesReader = sdkConfigurationPropertiesReader;
         this.sdkConfigurationYamlReader = sdkConfigurationYamlReader;
+        this.configuration = new UofConfigurationImpl(buildWhoAmIReader, buildProducerDataProvider);
     }
 
     /**
@@ -40,8 +47,10 @@ public class TokenSetterImpl implements TokenSetter {
     public EnvironmentSelector setAccessToken(String token) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Access token can not be null/empty");
 
+        configuration.setAccessToken(token);
+
         return new EnvironmentSelectorImpl(
-            token,
+            configuration,
             sdkConfigurationPropertiesReader,
             sdkConfigurationYamlReader
         );
@@ -64,8 +73,10 @@ public class TokenSetterImpl implements TokenSetter {
             )
         );
 
+        configuration.setAccessToken(token);
+
         return new EnvironmentSelectorImpl(
-            token,
+            configuration,
             sdkConfigurationPropertiesReader,
             sdkConfigurationYamlReader
         );
@@ -88,8 +99,10 @@ public class TokenSetterImpl implements TokenSetter {
             )
         );
 
+        configuration.setAccessToken(token);
+
         return new EnvironmentSelectorImpl(
-            token,
+            configuration,
             sdkConfigurationPropertiesReader,
             sdkConfigurationYamlReader
         );
@@ -112,8 +125,10 @@ public class TokenSetterImpl implements TokenSetter {
             "Token system variable uf.accesstoken not found"
         );
 
+        configuration.setAccessToken(token);
+
         return new EnvironmentSelectorImpl(
-            token,
+            configuration,
             sdkConfigurationPropertiesReader,
             sdkConfigurationYamlReader
         );
@@ -122,15 +137,15 @@ public class TokenSetterImpl implements TokenSetter {
     /**
      * Sets the general configuration properties to values read from configuration file. Only value which can be set
      * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
-     * are overridden. Builds and returns a {@link OddsFeedConfiguration} instance
+     * are overridden. Builds and returns a {@link UofConfigurationImpl} instance
      * <p>
      * The properties file should be named "UFSdkConfiguration.properties" and localed in the application resources folder
      *
-     * @return builds and returns a {@link OddsFeedConfiguration} instance
+     * @return builds and returns a {@link UofConfigurationImpl} instance
      */
     @Override
-    public OddsFeedConfiguration buildConfigFromSdkProperties() {
-        Environment ufEnvironment = sdkConfigurationPropertiesReader.readUfEnvironment();
+    public UofConfiguration buildConfigFromSdkProperties() {
+        Environment ufEnvironment = sdkConfigurationPropertiesReader.readEnvironment();
         if (ufEnvironment.equals(Environment.Custom)) {
             return setAccessTokenFromSdkProperties().selectCustom().loadConfigFromSdkProperties().build();
         }
@@ -143,15 +158,18 @@ public class TokenSetterImpl implements TokenSetter {
     /**
      * Sets the general configuration properties to values read from configuration file. Only value which can be set
      * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
-     * are overridden. Builds and returns a {@link OddsFeedConfiguration} instance
+     * are overridden. Builds and returns a {@link UofConfigurationImpl} instance
      * <p>
      * The YAML file should be named "application.yml" and localed in the application resources folder
      *
-     * @return builds and returns a {@link OddsFeedConfiguration} instance
+     * @return builds and returns a {@link UofConfigurationImpl} instance
      */
     @Override
-    public OddsFeedConfiguration buildConfigFromApplicationYml() {
-        Environment ufEnvironment = sdkConfigurationYamlReader.readUfEnvironment();
+    public UofConfiguration buildConfigFromApplicationYml() {
+        Environment ufEnvironment = sdkConfigurationYamlReader.readEnvironment();
+        if (ufEnvironment.equals(Environment.Custom)) {
+            return setAccessTokenFromApplicationYaml().selectCustom().loadConfigFromApplicationYml().build();
+        }
         return setAccessTokenFromApplicationYaml()
             .selectEnvironment(ufEnvironment)
             .loadConfigFromApplicationYml()

@@ -10,12 +10,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ class ProducerInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(ProducerInfo.class);
     private final int producerId;
-    private final SDKProducerManager producerManager;
+    private final SdkProducerManager producerManager;
     private final Set<MessageInterest> interestsOfSnapshotComplete = Sets.newConcurrentHashSet();
     private final Map<Long, EventRecovery> eventRecoveries = Maps.newConcurrentMap();
     private volatile int recoveryId = 0;
@@ -44,7 +44,7 @@ class ProducerInfo {
     private volatile long lastValidAliveGenTimestampInRecovery;
     private volatile long created;
 
-    ProducerInfo(int producerId, SDKProducerManager producerManager) {
+    ProducerInfo(int producerId, SdkProducerManager producerManager) {
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkArgument(producerId > 0);
 
@@ -256,7 +256,7 @@ class ProducerInfo {
         producerManager.setLastProcessedMessageGenTimestamp(producerId, lastProcessedMessageGenTimestamp);
     }
 
-    void setEventRecoveryState(URN eventId, long recoveryId, long recoveryStartedAt) {
+    void setEventRecoveryState(Urn eventId, long recoveryId, long recoveryStartedAt) {
         if (recoveryId == 0 && recoveryStartedAt == 0) {
             eventRecoveries.remove(recoveryId);
         } else {
@@ -325,12 +325,12 @@ class ProducerInfo {
      */
     class EventRecovery {
 
-        private final URN eventId;
+        private final Urn eventId;
         private final long recoveryId;
         private final long recoveryStartedAt;
         private final Set<MessageInterest> interestsOfSnapshotComplete = Sets.newConcurrentHashSet();
 
-        private EventRecovery(URN eventId, long recoveryId, long recoveryStartedAt) {
+        private EventRecovery(Urn eventId, long recoveryId, long recoveryStartedAt) {
             Preconditions.checkNotNull(eventId);
             Preconditions.checkArgument(recoveryId > 0);
             Preconditions.checkArgument(recoveryStartedAt > 0);
@@ -340,7 +340,7 @@ class ProducerInfo {
             this.recoveryStartedAt = recoveryStartedAt;
         }
 
-        URN getEventId() {
+        Urn getEventId() {
             return eventId;
         }
 

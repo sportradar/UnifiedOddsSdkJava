@@ -2,8 +2,8 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableSeasonCoverageCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableSeasonCoverageCi implements Serializable {
 
     private String seasonId;
     private String maxCoverageLevel;
@@ -12,7 +12,7 @@ public class ExportableSeasonCoverageCI implements Serializable {
     private int played;
     private int scheduled;
 
-    public ExportableSeasonCoverageCI(
+    public ExportableSeasonCoverageCi(
         String seasonId,
         String maxCoverageLevel,
         String minCoverageLevel,

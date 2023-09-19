@@ -5,25 +5,24 @@
 package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentLiveCoverageInfo;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCoverageCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiTournamentLiveCoverageInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCoverageCi;
 
 /**
  * Created on 25/10/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class TournamentCoverageCI {
+public class TournamentCoverageCi {
 
     private final String liveCoverage;
 
-    TournamentCoverageCI(SAPITournamentLiveCoverageInfo coverageInfo) {
+    TournamentCoverageCi(SapiTournamentLiveCoverageInfo coverageInfo) {
         Preconditions.checkNotNull(coverageInfo);
 
         liveCoverage = coverageInfo.getLiveCoverage();
     }
 
-    TournamentCoverageCI(ExportableTournamentCoverageCI exportable) {
+    TournamentCoverageCi(ExportableTournamentCoverageCi exportable) {
         Preconditions.checkNotNull(exportable);
         liveCoverage = exportable.getLiveCoverage();
     }
@@ -32,7 +31,7 @@ public class TournamentCoverageCI {
         return liveCoverage;
     }
 
-    public ExportableTournamentCoverageCI export() {
-        return new ExportableTournamentCoverageCI(liveCoverage);
+    public ExportableTournamentCoverageCi export() {
+        return new ExportableTournamentCoverageCi(liveCoverage);
     }
 }

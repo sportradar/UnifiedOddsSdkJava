@@ -11,14 +11,14 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import org.junit.Test;
 
 public class DataRouterManagerImplRequestingFilteredProbabilityCalculationTest {
@@ -26,9 +26,9 @@ public class DataRouterManagerImplRequestingFilteredProbabilityCalculationTest {
     private static final String NON_NULL_URL = "http://nonNullUrl.com";
     private final DataProvider probabilityCalculations = mock(DataProvider.class);
     private final DataRouterManager manager = new DataRouterManagerImpl(
-        mock(SDKInternalConfiguration.class),
-        mock(SDKTaskScheduler.class),
-        mock(SDKProducerManager.class),
+        mock(SdkInternalConfiguration.class),
+        mock(SdkTaskScheduler.class),
+        mock(SdkProducerManager.class),
         mock(DataRouter.class),
         mock(DataProvider.class),
         mock(DataProvider.class),

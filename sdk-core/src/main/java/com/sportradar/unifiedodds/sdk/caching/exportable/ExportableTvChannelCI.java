@@ -4,20 +4,20 @@ import com.sportradar.unifiedodds.sdk.entities.TvChannel;
 import java.io.Serializable;
 import java.util.Date;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableTvChannelCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableTvChannelCi implements Serializable {
 
     private String name;
     private Date time;
     private String streamUrl;
 
-    public ExportableTvChannelCI(String name, Date time, String streamUrl) {
+    public ExportableTvChannelCi(String name, Date time, String streamUrl) {
         this.name = name;
         this.time = time;
         this.streamUrl = streamUrl;
     }
 
-    public ExportableTvChannelCI(TvChannel tvChannel) {
+    public ExportableTvChannelCi(TvChannel tvChannel) {
         this.name = tvChannel.getName();
         this.time = tvChannel.getTime();
         this.streamUrl = tvChannel.getStreamUrl();

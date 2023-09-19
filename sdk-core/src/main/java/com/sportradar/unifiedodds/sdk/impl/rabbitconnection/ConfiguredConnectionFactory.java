@@ -9,9 +9,9 @@ import com.google.common.base.Strings;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.OperationManager;
-import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.RuntimeConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class ConfiguredConnectionFactory {
     /**
      * A {@link Logger} instance used for execution logging
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SingleInstanceAMQPConnectionFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SingleInstanceAmqpConnectionFactory.class);
 
     /**
      * Specifies the AMQP broker virtual host prefix.
@@ -42,9 +42,9 @@ public class ConfiguredConnectionFactory {
 
     private final String version;
     /**
-     * A {@link SDKInternalConfiguration} instance representing odds feed configuration
+     * A {@link SdkInternalConfiguration} instance representing odds feed configuration
      */
-    private final SDKInternalConfiguration config;
+    private final SdkInternalConfiguration config;
 
     /**
      * A password used when establishing connection to the AMQP broker
@@ -62,10 +62,10 @@ public class ConfiguredConnectionFactory {
     private final ExecutorService dedicatedRabbitMqExecutor;
 
     /**
-     * A {@link SDKConnectionStatusListener} used to notify the outside world when the connection is
+     * A {@link SdkConnectionStatusListener} used to notify the outside world when the connection is
      * closed
      */
-    private final SDKConnectionStatusListener connectionStatusListener;
+    private final SdkConnectionStatusListener connectionStatusListener;
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter
         .ofPattern("yyyyMMddHHmm")
@@ -75,9 +75,9 @@ public class ConfiguredConnectionFactory {
     @Inject
     public ConfiguredConnectionFactory(
         ConnectionFactory rabbitConnectionFactory,
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         @Named("version") String version,
-        SDKConnectionStatusListener connectionStatusListener,
+        SdkConnectionStatusListener connectionStatusListener,
         @Named("DedicatedRabbitMqExecutor") ExecutorService dedicatedRabbitMqExecutor,
         final TimeUtils timeUtils
     ) {
@@ -103,12 +103,13 @@ public class ConfiguredConnectionFactory {
      *
      * @return The created {@link Connection} instance
      */
+    @SuppressWarnings("MethodLength")
     Connection createConfiguredConnection(WhoAmIReader whoAmIReader, String sslVersion)
         throws KeyManagementException, NoSuchAlgorithmException, IOException, TimeoutException {
         LOGGER.info("Creating new connection (Sportradar Unified Odds SDK " + version + ")");
         if (config.getAccessToken() == null) { // this is just a failsafe, the configuration gets validated on creation
-            LOGGER.warn("Access token needs to be set in OddsFeedConfiguration");
-            throw new IllegalArgumentException("No access token set in OddsFeedConfiguration.");
+            LOGGER.warn("Access token needs to be set in UofConfiguration");
+            throw new IllegalArgumentException("No access token set in UofConfiguration.");
         }
         rabbitConnectionFactory.setHost(config.getMessagingHost());
         rabbitConnectionFactory.setPort(config.getPort());
@@ -146,11 +147,11 @@ public class ConfiguredConnectionFactory {
 
         rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
         rabbitConnectionFactory.setConnectionTimeout(
-            OperationManager.getRabbitConnectionTimeout() * MILLIS_IN_SECOND
+            RuntimeConfiguration.getRabbitConnectionTimeout() * MILLIS_IN_SECOND
         );
-        rabbitConnectionFactory.setRequestedHeartbeat(OperationManager.getRabbitHeartbeat());
+        rabbitConnectionFactory.setRequestedHeartbeat(RuntimeConfiguration.getRabbitHeartbeat());
         rabbitConnectionFactory.setExceptionHandler(
-            new SDKExceptionHandler(connectionStatusListener, config.getAccessToken())
+            new SdkExceptionHandler(connectionStatusListener, config.getAccessToken())
         );
         return rabbitConnectionFactory.newConnection(dedicatedRabbitMqExecutor);
     }

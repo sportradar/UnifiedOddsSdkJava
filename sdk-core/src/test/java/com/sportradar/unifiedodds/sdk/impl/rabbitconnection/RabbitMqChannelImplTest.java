@@ -56,7 +56,7 @@ public class RabbitMqChannelImplTest {
             mock(RabbitMqSystemListener.class),
             mock(WhoAmIReader.class),
             "anyVersion",
-            mock(AMQPConnectionFactory.class),
+            mock(AmqpConnectionFactory.class),
             null
         );
     }
@@ -66,7 +66,7 @@ public class RabbitMqChannelImplTest {
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -86,7 +86,7 @@ public class RabbitMqChannelImplTest {
     @Test
     public void rabbitMqChannelShouldNotBeCreatedIfConnectionWasUnavailableWhenOpeningSupervisor()
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        AmqpConnectionFactory connectionFactory = mock(AmqpConnectionFactory.class);
         OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
             mock(RabbitMqSystemListener.class),
             mock(WhoAmIReader.class),
@@ -104,7 +104,7 @@ public class RabbitMqChannelImplTest {
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = mock(AMQPConnectionFactory.class);
+        AmqpConnectionFactory connectionFactory = mock(AmqpConnectionFactory.class);
         when(connectionFactory.getConnection()).thenReturn(null, connection);
         when(connectionFactory.canConnectionOpen()).thenReturn(true);
         OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
@@ -126,7 +126,7 @@ public class RabbitMqChannelImplTest {
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -150,7 +150,7 @@ public class RabbitMqChannelImplTest {
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -174,7 +174,7 @@ public class RabbitMqChannelImplTest {
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -199,7 +199,7 @@ public class RabbitMqChannelImplTest {
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -226,7 +226,7 @@ public class RabbitMqChannelImplTest {
         throws IOException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -248,7 +248,7 @@ public class RabbitMqChannelImplTest {
         channel.verifyInitiated(times(2));
     }
 
-    private static void anotherChannelCloses(AMQPConnectionFactory connectionFactory) throws IOException {
+    private static void anotherChannelCloses(AmqpConnectionFactory connectionFactory) throws IOException {
         connectionFactory.close(false);
     }
 
@@ -258,7 +258,7 @@ public class RabbitMqChannelImplTest {
         throws IOException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -285,7 +285,7 @@ public class RabbitMqChannelImplTest {
         throws IOException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -312,7 +312,7 @@ public class RabbitMqChannelImplTest {
         throws IOException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             MIDNIGHT.get(),
             connection
         );
@@ -339,7 +339,7 @@ public class RabbitMqChannelImplTest {
     public void connectionClosureDueToIoExceptionShouldBeLogged() throws IOException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs
             .holdingConnectionCreatedAt(MIDNIGHT.get(), connection)
             .onCloseThrowing(new IOException());
         when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
@@ -364,7 +364,7 @@ public class RabbitMqChannelImplTest {
     public void connectionClosureDueToRuntimeExceptionShouldBeLogged() throws IOException {
         Connection connection = mock(Connection.class);
         when(connection.createChannel()).thenReturn(channel);
-        AMQPConnectionFactory connectionFactory = AmqpConnectionFactoryStubs
+        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs
             .holdingConnectionCreatedAt(MIDNIGHT.get(), connection)
             .onCloseThrowing(new IllegalArgumentException());
         when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));

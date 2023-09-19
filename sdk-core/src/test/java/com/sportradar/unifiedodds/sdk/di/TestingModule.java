@@ -7,7 +7,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SportsInfoManager;
+import com.sportradar.unifiedodds.sdk.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.TestingSummaryDataProvider;
@@ -15,17 +15,16 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.util.Optional;
 import org.mockito.Mockito;
 
-@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class TestingModule implements Module {
 
-    private Optional<SportsInfoManager> sportsInfoManager;
+    private Optional<SportDataProvider> sportDataProvider;
 
     public TestingModule() {
-        this(Optional.of(Mockito.mock(SportsInfoManager.class)));
+        this(Optional.of(Mockito.mock(SportDataProvider.class)));
     }
 
-    public TestingModule(Optional<SportsInfoManager> sportsInfoManager) {
-        this.sportsInfoManager = sportsInfoManager;
+    public TestingModule(Optional<SportDataProvider> sportDataProvider) {
+        this.sportDataProvider = sportDataProvider;
     }
 
     @Override
@@ -34,7 +33,7 @@ public class TestingModule implements Module {
 
         binder.bind(WhoAmIReader.class).toInstance(stubWhoAmIReader);
 
-        sportsInfoManager.ifPresent(value -> binder.bind(SportsInfoManager.class).toInstance(value));
+        sportDataProvider.ifPresent(value -> binder.bind(SportDataProvider.class).toInstance(value));
     }
 
     @Provides
@@ -65,14 +64,14 @@ public class TestingModule implements Module {
 
     @Provides
     @Singleton
-    protected DataProvider<SAPICompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {
+    protected DataProvider<SapiCompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {
         return new TestingDataProvider<>("test/rest/profiles/en.competitor.3700.xml");
     }
 
     @Provides
     @Singleton
     @Named("ListSportEventsDataProvider")
-    protected DataProvider<SAPIScheduleEndpoint> providesScheduleEndpointProvider() {
+    protected DataProvider<SapiScheduleEndpoint> providesScheduleEndpointProvider() {
         return new TestingDataProvider<>("test/rest/events.xml");
     }
 
@@ -86,7 +85,7 @@ public class TestingModule implements Module {
     @Provides
     @Singleton
     @Named("DateScheduleEndpointDataProvider")
-    protected DataProvider<SAPIScheduleEndpoint> providesDateScheduleProvider() {
+    protected DataProvider<SapiScheduleEndpoint> providesDateScheduleProvider() {
         return new TestingDataProvider<>("test/rest/schedule.en.xml");
     }
 
@@ -110,7 +109,7 @@ public class TestingModule implements Module {
 
     @Provides
     @Singleton
-    protected DataProvider<SAPILotterySchedule> providesLotteryScheduleProvider() {
+    protected DataProvider<SapiLotterySchedule> providesLotteryScheduleProvider() {
         return new TestingDataProvider<>("test/rest/wns/lottery_schedule.en.xml");
     }
 }

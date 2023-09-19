@@ -19,27 +19,20 @@ import org.slf4j.LoggerFactory;
  * // TODO @eti: Javadoc
  */
 @SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "ConstantName",
-        "LambdaBodyLength",
-        "MagicNumber",
-        "MethodLength",
-        "UnnecessaryParentheses",
-    }
+    { "ConstantName", "LambdaBodyLength", "MagicNumber", "MethodLength", "UnnecessaryParentheses" }
 )
-public class VariantDescriptionCI {
+public class VariantDescriptionCi {
 
-    private static final Logger logger = LoggerFactory.getLogger(VariantDescriptionCI.class);
+    private static final Logger logger = LoggerFactory.getLogger(VariantDescriptionCi.class);
 
     private final String id;
-    private final List<MarketOutcomeCI> outcomes;
-    private final List<MarketMappingCI> mappings;
+    private final List<MarketOutcomeCi> outcomes;
+    private final List<MarketMappingCi> mappings;
     private final List<Locale> cachedLocales;
     private Date lastDataReceived;
     private String sourceCache;
 
-    public VariantDescriptionCI(
+    public VariantDescriptionCi(
         DescVariant descVariant,
         MappingValidatorFactory mappingValidatorFactory,
         Locale dataLocale,
@@ -58,8 +51,8 @@ public class VariantDescriptionCI {
                     mOutcomes
                         .getOutcome()
                         .stream()
-                        .map(VariantDescriptionCI::map)
-                        .map(o -> new MarketOutcomeCI(o, dataLocale))
+                        .map(VariantDescriptionCi::map)
+                        .map(o -> new MarketOutcomeCi(o, dataLocale))
                         .collect(Collectors.toList())
                 )
                 .orElse(Collections.emptyList());
@@ -71,8 +64,8 @@ public class VariantDescriptionCI {
                     mMappings
                         .getMapping()
                         .stream()
-                        .map(VariantDescriptionCI::map)
-                        .map(mm -> new MarketMappingCI(mm, dataLocale, mappingValidatorFactory))
+                        .map(VariantDescriptionCi::map)
+                        .map(mm -> new MarketMappingCi(mm, dataLocale, mappingValidatorFactory))
                         .collect(Collectors.toList())
                 )
                 .orElse(Collections.emptyList());
@@ -88,11 +81,11 @@ public class VariantDescriptionCI {
         return id;
     }
 
-    public List<MarketOutcomeCI> getOutcomes() {
+    public List<MarketOutcomeCi> getOutcomes() {
         return outcomes == null ? null : ImmutableList.copyOf(outcomes);
     }
 
-    public List<MarketMappingCI> getMappings() {
+    public List<MarketMappingCi> getMappings() {
         return mappings == null ? null : ImmutableList.copyOf(mappings);
     }
 
@@ -105,7 +98,7 @@ public class VariantDescriptionCI {
                 .getOutcomes()
                 .getOutcome()
                 .forEach(o -> {
-                    Optional<MarketOutcomeCI> any = outcomes
+                    Optional<MarketOutcomeCi> any = outcomes
                         .stream()
                         .filter(cachedO -> o.getId().equals(cachedO.getId()))
                         .findAny();
@@ -117,7 +110,7 @@ public class VariantDescriptionCI {
                             market.getId()
                         );
                     }
-                    any.ifPresent(marketOutcomeCI -> marketOutcomeCI.merge(map(o), dataLocale));
+                    any.ifPresent(marketOutcomeCi -> marketOutcomeCi.merge(map(o), dataLocale));
                 });
         }
 
@@ -127,9 +120,9 @@ public class VariantDescriptionCI {
                 .getMapping()
                 .forEach(m -> {
                     Mappings.Mapping newMappedMapping = map(m);
-                    Optional<MarketMappingCI> any = mappings
+                    Optional<MarketMappingCi> any = mappings
                         .stream()
-                        .filter(cachedM -> MarketMappingCI.compareMappingsData(cachedM, newMappedMapping))
+                        .filter(cachedM -> MarketMappingCi.compareMappingsData(cachedM, newMappedMapping))
                         .findAny();
                     if (!any.isPresent()) {
                         logger.warn(
@@ -139,7 +132,7 @@ public class VariantDescriptionCI {
                             market.getId()
                         );
                     }
-                    any.ifPresent(marketMappingCI -> marketMappingCI.merge(newMappedMapping, dataLocale));
+                    any.ifPresent(marketMappingCi -> marketMappingCi.merge(newMappedMapping, dataLocale));
                 });
         }
 

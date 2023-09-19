@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Defines methods used to initiate performing tasks
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public interface SDKTaskScheduler {
+@SuppressWarnings({ "LineLength" })
+public interface SdkTaskScheduler {
     /**
      * Opens the SDK task scheduler and starts all the scheduled tasks
      */

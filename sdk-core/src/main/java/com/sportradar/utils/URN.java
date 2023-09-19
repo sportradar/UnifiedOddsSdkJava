@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ConstantName",
         "DeclarationOrder",
         "EqualsAvoidNull",
@@ -30,12 +29,12 @@ import org.slf4j.LoggerFactory;
         "NeedBraces",
     }
 )
-public class URN {
+public class Urn {
 
     /**
      * A {@link Logger} instance used to log data
      */
-    private static final Logger logger = LoggerFactory.getLogger(URN.class);
+    private static final Logger logger = LoggerFactory.getLogger(Urn.class);
 
     /**
      * The name of the regex group used to store the prefix
@@ -121,13 +120,13 @@ public class URN {
     private ResourceTypeGroup group;
 
     /**
-     * Initializes a new instance of the {@link URN} class
+     * Initializes a new instance of the {@link Urn} class
      *
      * @param prefix - prefix of the URN
      * @param type   - type of the resource associated with the URN
      * @param id     - numerical identifier of the resource associated with the URN
      */
-    public URN(String prefix, String type, long id) {
+    public Urn(String prefix, String type, long id) {
         checkNotNull(prefix, "prefix can not be null");
         checkNotNull(type, "type can not be null");
         checkArgument(id != 0, "id must not be 0");
@@ -139,12 +138,12 @@ public class URN {
     }
 
     /**
-     * Constructs a {@link URN} instance by parsing the provided {@link String}
+     * Constructs a {@link Urn} instance by parsing the provided {@link String}
      *
      * @param urnString - {@link String} representation of the URN
-     * @return the {@link URN} constructed by parsing the provided string representation
+     * @return the {@link Urn} constructed by parsing the provided string representation
      */
-    public static URN parse(String urnString) {
+    public static Urn parse(String urnString) {
         try {
             checkNotNull(urnString, "urnString can not be null");
 
@@ -155,7 +154,7 @@ public class URN {
                 "Value " + urnString + " is not a valid string representation of the URN"
             );
 
-            return new URN(
+            return new Urn(
                 matcher.group(PREFIX_GROUP_NAME),
                 matcher.group(TYPE_GROUP_NAME),
                 Long.valueOf(matcher.group(ID_GROUP_NAME))
@@ -221,8 +220,8 @@ public class URN {
             return obj.equals(toString());
         }
 
-        if (obj instanceof URN) {
-            URN other = (URN) obj;
+        if (obj instanceof Urn) {
+            Urn other = (Urn) obj;
 
             return prefix.equals(other.getPrefix()) && type.equals(other.getType()) && id == other.getId();
         }

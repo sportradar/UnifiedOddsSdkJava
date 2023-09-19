@@ -4,18 +4,18 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Defines methods implemented by classes representing the replay sport event
  */
 public interface ReplaySportEvent {
     /**
-     * Returns an {@link URN} uniquely identifying the sport event
+     * Returns an {@link Urn} uniquely identifying the sport event
      *
-     * @return - an {@link URN} uniquely identifying the sport event
+     * @return - an {@link Urn} uniquely identifying the sport event
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns an {@link Integer} specifying position in the queue

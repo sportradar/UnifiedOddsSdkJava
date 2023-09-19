@@ -8,16 +8,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
+import com.sportradar.unifiedodds.sdk.caching.TournamentCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "LambdaBodyLength",
@@ -67,16 +66,16 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
     /**
      * Initializes a new {@link TournamentImpl} instance
      *
-     * @param id an {@link URN} uniquely identifying the tournament associated with the current instance
-     * @param sportId an {@link URN} identifying the sport to which the tournament belongs
+     * @param id an {@link Urn} uniquely identifying the tournament associated with the current instance
+     * @param sportId an {@link Urn} identifying the sport to which the tournament belongs
      * @param locales a {@link List} of all languages for this instance
      * @param sportEventCache the cache used to retrieve additional sport event data
      * @param sportEntityFactory a {@link SportEntityFactory} instance used to construct {@link Competition} instances
      * @param exceptionHandlingStrategy the desired exception handling strategy
      */
     public TournamentImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         List<Locale> locales,
         SportEventCache sportEventCache,
         SportEntityFactory sportEntityFactory,
@@ -102,7 +101,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public String getName(Locale locale) {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -121,7 +120,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public Date getScheduledTime() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -140,7 +139,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public Date getScheduledEndTime() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -158,7 +157,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
     @SuppressWarnings("java:S2447") // Null should not be returned from a "Boolean" method
     @Override
     public Boolean isStartTimeTbd() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -169,13 +168,13 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
-        TournamentCI tournamentCi = loadTournamentCI();
+    public Urn getReplacedBy() {
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -192,7 +191,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public CategorySummary getCategory() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null || tournamentCi.getCategoryId() == null) {
             handleException("getCategory - missing category data", null);
@@ -217,24 +216,24 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public CurrentSeasonInfo getCurrentSeason() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
             return null;
         }
 
-        SeasonCI currentSeason = tournamentCi.getCurrentSeason(locales);
+        SeasonCi currentSeason = tournamentCi.getCurrentSeason(locales);
         if (currentSeason == null) {
             logger.debug("Tournament {} has no current season", id);
             return null;
         }
 
-        TournamentCI seasonCi = null;
+        TournamentCi seasonCi = null;
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(currentSeason.getId());
-            if (eventCacheItem instanceof TournamentCI) {
-                seasonCi = (TournamentCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(currentSeason.getId());
+            if (eventCacheItem instanceof TournamentCi) {
+                seasonCi = (TournamentCi) eventCacheItem;
             } else {
                 handleException("getCurrentSeason - invalid cache item type", null);
             }
@@ -263,7 +262,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public SportSummary getSport() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -290,7 +289,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public TournamentCoverage getTournamentCoverage() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -309,12 +308,12 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      * @return the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         if (super.getSportId() != null) {
             return super.getSportId();
         }
 
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -345,14 +344,14 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public List<Season> getSeasons() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
             return null;
         }
 
-        List<URN> seasonIds = tournamentCi.getSeasonIds();
+        List<Urn> seasonIds = tournamentCi.getSeasonIds();
         try {
             return seasonIds == null
                 ? null
@@ -394,7 +393,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public Boolean isExhibitionGames() {
-        TournamentCI tournamentCi = loadTournamentCI();
+        TournamentCi tournamentCi = loadTournamentCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -411,7 +410,7 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      */
     @Override
     public List<Competition> getSchedule() {
-        List<URN> eventIds = Lists.newArrayList();
+        List<Urn> eventIds = Lists.newArrayList();
         try {
             for (Locale l : locales) {
                 eventIds = sportEventCache.getEventIds(id, l);
@@ -485,11 +484,11 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
      *
      * @return the associated cache item
      */
-    private TournamentCI loadTournamentCI() {
+    private TournamentCi loadTournamentCi() {
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(id);
-            if (eventCacheItem instanceof TournamentCI) {
-                return (TournamentCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof TournamentCi) {
+                return (TournamentCi) eventCacheItem;
             }
             handleException("loadTournamentCI, CI type miss-match", null);
         } catch (CacheItemNotFoundException e) {

@@ -32,16 +32,6 @@ public interface EventClock {
     /**
      * Returns the remaining event time
      *
-     * @deprecated since 2.0.1, will be removed in the near future(~2.1.0), use {@link #getRemainingTime()} instead
-     *
-     * @return - the remaining event time if available; otherwise null
-     */
-    @Deprecated
-    String getRemainingDate();
-
-    /**
-     * Returns the remaining event time
-     *
      * @return - the remaining event time if available; otherwise null
      */
     String getRemainingTime();

@@ -6,15 +6,14 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfo;
+import com.sportradar.uf.sportsapi.datamodel.SapiProductInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * A producer info representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class ProducerInfoCI {
+public class ProducerInfoCi {
 
     /**
      * The isInLiveScore property backing field
@@ -42,21 +41,21 @@ public class ProducerInfoCI {
     private final boolean isInLiveMatchTracker;
 
     /**
-     * A {@link List<ProducerInfoLinkCI>} containing the associated {@link ProducerInfoLinkCI}
+     * A {@link List< ProducerInfoLinkCi >} containing the associated {@link ProducerInfoLinkCi}
      */
-    private final List<ProducerInfoLinkCI> producerInfoLinks;
+    private final List<ProducerInfoLinkCi> producerInfoLinks;
 
     /**
-     * A {@link List<StreamingChannelCI>} containing the associated {@link StreamingChannelCI}
+     * A {@link List< StreamingChannelCi >} containing the associated {@link StreamingChannelCi}
      */
-    private final List<StreamingChannelCI> streamingChannels;
+    private final List<StreamingChannelCi> streamingChannels;
 
     /**
-     * Initializes a new instance of the {@link ProducerInfoCI} class
+     * Initializes a new instance of the {@link ProducerInfoCi} class
      *
-     * @param pInfo - {@link SAPIProductInfo} containing information about the producer
+     * @param pInfo - {@link SapiProductInfo} containing information about the producer
      */
-    public ProducerInfoCI(SAPIProductInfo pInfo) {
+    public ProducerInfoCi(SapiProductInfo pInfo) {
         Preconditions.checkNotNull(pInfo);
 
         isInLiveScore = pInfo.getIsInLiveScore() != null;
@@ -71,7 +70,7 @@ public class ProducerInfoCI {
             !pInfo.getLinks().getLink().isEmpty()
         ) {
             producerInfoLinks =
-                pInfo.getLinks().getLink().stream().map(ProducerInfoLinkCI::new).collect(Collectors.toList());
+                pInfo.getLinks().getLink().stream().map(ProducerInfoLinkCi::new).collect(Collectors.toList());
         } else {
             producerInfoLinks = null;
         }
@@ -86,7 +85,7 @@ public class ProducerInfoCI {
                     .getStreaming()
                     .getChannel()
                     .stream()
-                    .map(StreamingChannelCI::new)
+                    .map(StreamingChannelCi::new)
                     .collect(Collectors.toList());
         } else {
             streamingChannels = null;
@@ -139,20 +138,20 @@ public class ProducerInfoCI {
     }
 
     /**
-     * Returns a unmodifiable {@link List} containing the associated {@link StreamingChannelCI}
+     * Returns a unmodifiable {@link List} containing the associated {@link StreamingChannelCi}
      *
-     * @return - a unmodifiable {@link List} containing the associated {@link StreamingChannelCI}
+     * @return - a unmodifiable {@link List} containing the associated {@link StreamingChannelCi}
      */
-    public List<ProducerInfoLinkCI> getProducerInfoLinks() {
+    public List<ProducerInfoLinkCi> getProducerInfoLinks() {
         return producerInfoLinks == null ? null : ImmutableList.copyOf(producerInfoLinks);
     }
 
     /**
-     * Returns a unmodifiable {@link List} containing the associated {@link StreamingChannelCI}
+     * Returns a unmodifiable {@link List} containing the associated {@link StreamingChannelCi}
      *
-     * @return - a unmodifiable {@link List} containing the associated {@link StreamingChannelCI}
+     * @return - a unmodifiable {@link List} containing the associated {@link StreamingChannelCi}
      */
-    public List<StreamingChannelCI> getStreamingChannels() {
+    public List<StreamingChannelCi> getStreamingChannels() {
         return streamingChannels == null ? null : ImmutableList.copyOf(streamingChannels);
     }
 }

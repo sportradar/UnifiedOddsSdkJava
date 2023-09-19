@@ -4,15 +4,15 @@ import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.PitcherHand;
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportablePitcherCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportablePitcherCi implements Serializable {
 
     private String id;
     private String name;
     private HomeAway competitor;
     private PitcherHand hand;
 
-    public ExportablePitcherCI(String id, String name, HomeAway competitor, PitcherHand hand) {
+    public ExportablePitcherCi(String id, String name, HomeAway competitor, PitcherHand hand) {
         this.id = id;
         this.name = name;
         this.competitor = competitor;

@@ -20,7 +20,7 @@ import com.sportradar.unifiedodds.sdk.entities.Competition;
 import com.sportradar.unifiedodds.sdk.entities.Tournament;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import org.junit.Test;
 public class TournamentImplTest {
 
     private final SportEntityFactory anyFactory = mock(SportEntityFactory.class);
-    private final URN tournamentUrn = urnForAnyTournament();
+    private final Urn tournamentUrn = urnForAnyTournament();
     private final DataRouterManager dataRouterManager = mock(DataRouterManager.class);
     private final Locale inEnglish = ENGLISH;
 
@@ -123,6 +123,6 @@ public class TournamentImplTest {
         assertThatThrownBy(() -> tournament.getSchedule())
             .isInstanceOf(ObjectNotFoundException.class)
             .hasMessageContaining("getSchedule failure");
-        verify(dataRouterManager, times(1)).requestEventsFor(any(), any(URN.class));
+        verify(dataRouterManager, times(1)).requestEventsFor(any(), any(Urn.class));
     }
 }

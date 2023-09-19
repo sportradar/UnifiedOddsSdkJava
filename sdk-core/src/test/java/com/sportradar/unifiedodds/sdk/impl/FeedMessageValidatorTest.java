@@ -6,15 +6,20 @@ package com.sportradar.unifiedodds.sdk.impl;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.ValidationResult.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.inject.Injector;
 import com.sportradar.uf.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import java.util.Locale;
 import java.util.function.Consumer;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -25,18 +30,16 @@ public class FeedMessageValidatorTest {
     private static final String INVALID_EVENT_ID = "some_event_id";
     private static final String INVALID_SPECIFIERS = "some_specifiers";
 
-    SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
-
-    Injector injector = new TestInjectorFactory(config).create();
+    //    SdkInternalConfiguration config = Mockito.mock(SdkInternalConfiguration.class);
 
     FeedMessageValidator validator;
     RoutingKeyParser keyParser;
 
     @Before
     public void setup() {
+        val config = configurationWithAnyDefaultLanguageAndThrowingOnErrors();
+        Injector injector = new TestInjectorFactory(config, new StubUofConfiguration()).create();
         keyParser = injector.getInstance(RoutingKeyParser.class);
-
-        Mockito.when(config.getDefaultLocale()).thenReturn(Locale.ENGLISH);
 
         validator = injector.getInstance(FeedMessageValidator.class);
     }
@@ -71,7 +74,7 @@ public class FeedMessageValidatorTest {
     @Test
     public void invalidSpecifiersOddsChange() {
         testMsg(
-            (UFOddsChange oddsChange) ->
+            (UfOddsChange oddsChange) ->
                 oddsChange.getOdds().getMarket().get(0).setSpecifiers(INVALID_SPECIFIERS),
             ProblemsDetected,
             ODDS_CHANGE_KEY,
@@ -79,7 +82,7 @@ public class FeedMessageValidatorTest {
         );
     }
 
-    private void testOddsChange(Consumer<UFOddsChange> updater, ValidationResult expectedResult) {
+    private void testOddsChange(Consumer<UfOddsChange> updater, ValidationResult expectedResult) {
         testMsg(updater, expectedResult, ODDS_CHANGE_KEY, ODDS_CHANGE_MSG_URI);
     }
 
@@ -99,7 +102,7 @@ public class FeedMessageValidatorTest {
         testBetStop(betStop -> betStop.setGroups(""), Failure);
     }
 
-    private void testBetStop(Consumer<UFBetStop> updater, ValidationResult expectedResult) {
+    private void testBetStop(Consumer<UfBetStop> updater, ValidationResult expectedResult) {
         testMsg(updater, expectedResult, BET_STOP_KEY, BET_STOP_MSG_URI);
     }
 
@@ -117,7 +120,7 @@ public class FeedMessageValidatorTest {
 
     @Test
     public void emptyMarketsBetSettlement() {
-        UFBetSettlement.UFOutcomes emptyMarkets = new UFBetSettlement.UFOutcomes();
+        UfBetSettlement.UfOutcomes emptyMarkets = new UfBetSettlement.UfOutcomes();
 
         testBetSettlement(betSettlement -> betSettlement.setOutcomes(emptyMarkets), Success);
     }
@@ -143,7 +146,7 @@ public class FeedMessageValidatorTest {
         );
     }
 
-    private void testBetSettlement(Consumer<UFBetSettlement> updater, ValidationResult expectedResult) {
+    private void testBetSettlement(Consumer<UfBetSettlement> updater, ValidationResult expectedResult) {
         testMsg(updater, expectedResult, BET_SETTLEMENT_KEY, BET_SETTLEMENT_MSG_URI);
     }
 
@@ -177,7 +180,7 @@ public class FeedMessageValidatorTest {
         );
     }
 
-    private void testBetCancel(Consumer<UFBetCancel> updater, ValidationResult expectedResult) {
+    private void testBetCancel(Consumer<UfBetCancel> updater, ValidationResult expectedResult) {
         testMsg(updater, expectedResult, BET_CANCEL_KEY, BET_CANCEL_MSG_URI);
     }
 
@@ -191,7 +194,7 @@ public class FeedMessageValidatorTest {
     @Test
     public void zeroRequestIdSnapshotCompleted() {
         testMsg(
-            (UFSnapshotComplete snapshotComplete) -> snapshotComplete.setRequestId(0L),
+            (UfSnapshotComplete snapshotComplete) -> snapshotComplete.setRequestId(0L),
             Success,
             SNAPSHOT_COMPLETE_KEY,
             SNAPSHOT_COMPLETE_MSG_URI
@@ -210,7 +213,7 @@ public class FeedMessageValidatorTest {
         testAlive(alive -> alive.setSubscribed(-1), ProblemsDetected);
     }
 
-    private void testAlive(Consumer<UFAlive> updater, ValidationResult expectedResult) {
+    private void testAlive(Consumer<UfAlive> updater, ValidationResult expectedResult) {
         testMsg(updater, expectedResult, ALIVE_KEY, ALIVE_MSG_URI);
     }
 
@@ -224,12 +227,12 @@ public class FeedMessageValidatorTest {
     @Test
     public void invalidEventIdFixtureChange() {
         testFixtureChange(
-            (UFFixtureChange fixtureChange) -> fixtureChange.setEventId(INVALID_EVENT_ID),
+            (UfFixtureChange fixtureChange) -> fixtureChange.setEventId(INVALID_EVENT_ID),
             Success
         );
     }
 
-    private void testFixtureChange(Consumer<UFFixtureChange> updater, ValidationResult expectedResult) {
+    private void testFixtureChange(Consumer<UfFixtureChange> updater, ValidationResult expectedResult) {
         testMsg(
             updater,
             expectedResult,
@@ -269,7 +272,7 @@ public class FeedMessageValidatorTest {
     }
 
     private void testRollbackBetSettlement(
-        Consumer<UFRollbackBetSettlement> updater,
+        Consumer<UfRollbackBetSettlement> updater,
         ValidationResult expectedResult
     ) {
         testMsg(
@@ -307,7 +310,7 @@ public class FeedMessageValidatorTest {
     }
 
     private void testRollbackBetCancel(
-        Consumer<UFRollbackBetCancel> updater,
+        Consumer<UfRollbackBetCancel> updater,
         ValidationResult expectedResult
     ) {
         testMsg(
@@ -337,5 +340,12 @@ public class FeedMessageValidatorTest {
         } catch (DeserializationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static SdkInternalConfiguration configurationWithAnyDefaultLanguageAndThrowingOnErrors() {
+        SdkInternalConfiguration mock = mock(SdkInternalConfiguration.class);
+        when(mock.getDefaultLocale()).thenReturn(Locale.UK);
+        when(mock.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        return mock;
     }
 }

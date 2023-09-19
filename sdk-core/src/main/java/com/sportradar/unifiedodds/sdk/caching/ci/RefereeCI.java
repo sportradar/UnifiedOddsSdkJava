@@ -5,17 +5,17 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIReferee;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRefereeCI;
-import com.sportradar.utils.URN;
+import com.sportradar.uf.sportsapi.datamodel.SapiReferee;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRefereeCi;
+import com.sportradar.utils.Urn;
 import java.util.HashMap;
 import java.util.Locale;
 
 /**
  * A referee representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "IllegalType" })
-public class RefereeCI extends SportEntityCI {
+@SuppressWarnings({ "IllegalType" })
+public class RefereeCi extends SportEntityCi {
 
     /**
      * A {@link HashMap} containing referee nationality in different languages
@@ -28,13 +28,13 @@ public class RefereeCI extends SportEntityCI {
     private String name;
 
     /**
-     * Initializes a new instance of the {@link RefereeCI} class
+     * Initializes a new instance of the {@link RefereeCi} class
      *
-     * @param referee - {@link SAPIReferee} containing information about the referee
+     * @param referee - {@link SapiReferee} containing information about the referee
      * @param locale - {@link Locale} specifying the language of the <i>referee</i>
      */
-    RefereeCI(SAPIReferee referee, Locale locale) {
-        super(URN.parse(referee.getId()));
+    RefereeCi(SapiReferee referee, Locale locale) {
+        super(Urn.parse(referee.getId()));
         Preconditions.checkNotNull(referee);
         Preconditions.checkNotNull(locale);
 
@@ -42,19 +42,19 @@ public class RefereeCI extends SportEntityCI {
         merge(referee, locale);
     }
 
-    RefereeCI(ExportableRefereeCI exportable) {
-        super(URN.parse(exportable.getId()));
+    RefereeCi(ExportableRefereeCi exportable) {
+        super(Urn.parse(exportable.getId()));
         nationalities = new HashMap<>(exportable.getNationalities());
         name = exportable.getName();
     }
 
     /**
-     * Merges the information from the provided {@link SAPIReferee} into the current instance
+     * Merges the information from the provided {@link SapiReferee} into the current instance
      *
-     * @param referee - {@link SAPIReferee} containing information about the referee
+     * @param referee - {@link SapiReferee} containing information about the referee
      * @param locale - {@link Locale} specifying the language of the <i>referee</i>
      */
-    public void merge(SAPIReferee referee, Locale locale) {
+    public void merge(SapiReferee referee, Locale locale) {
         Preconditions.checkNotNull(referee);
         Preconditions.checkNotNull(locale);
 
@@ -81,7 +81,7 @@ public class RefereeCI extends SportEntityCI {
         return nationalities.getOrDefault(locale, null);
     }
 
-    public ExportableRefereeCI export() {
-        return new ExportableRefereeCI(getId().toString(), new HashMap<>(nationalities), name);
+    public ExportableRefereeCi export() {
+        return new ExportableRefereeCi(getId().toString(), new HashMap<>(nationalities), name);
     }
 }

@@ -3,7 +3,7 @@ package com.sportradar.unifiedodds.sdk;
 import static org.junit.Assert.*;
 
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import org.junit.Test;
 
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
@@ -11,7 +11,7 @@ public class UrnTests {
 
     @Test
     public void defaultUrnTest() {
-        URN urn = new URN("sr", "match", 12345);
+        Urn urn = new Urn("sr", "match", 12345);
         assertNotNull(urn);
         assertEquals("sr", urn.getPrefix());
         assertEquals("match", urn.getType());
@@ -22,7 +22,7 @@ public class UrnTests {
 
     @Test
     public void customEventUrnTest() {
-        URN urn = new URN("ccc", "match", 12345);
+        Urn urn = new Urn("ccc", "match", 12345);
         assertNotNull(urn);
         assertEquals("ccc", urn.getPrefix());
         assertEquals("match", urn.getType());
@@ -33,7 +33,7 @@ public class UrnTests {
 
     @Test
     public void customSimpleTournamentEventUrnTest() {
-        URN urn = new URN("ccc", "simple_tournament", 12345);
+        Urn urn = new Urn("ccc", "simple_tournament", 12345);
         assertNotNull(urn);
         assertEquals("ccc", urn.getPrefix());
         assertEquals("simple_tournament", urn.getType());
@@ -45,7 +45,7 @@ public class UrnTests {
     @Test
     public void tournamentRoundWithGroupUrnType() {
         String urnStr = "sr:group:12345";
-        URN urn = URN.parse(urnStr);
+        Urn urn = Urn.parse(urnStr);
         assertNotNull(urn);
         assertEquals("sr", urn.getPrefix());
         assertEquals("group", urn.getType());
@@ -57,7 +57,7 @@ public class UrnTests {
     @Test
     public void parseCustomUrnType() {
         String urnStr = "sr:abcde:12345";
-        URN urn = URN.parse(urnStr);
+        Urn urn = Urn.parse(urnStr);
         assertNotNull(urn);
         assertEquals("sr", urn.getPrefix());
         assertEquals("abcde", urn.getType());

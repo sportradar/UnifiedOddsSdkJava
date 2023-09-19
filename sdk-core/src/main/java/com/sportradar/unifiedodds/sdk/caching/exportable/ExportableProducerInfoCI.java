@@ -3,25 +3,25 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import java.io.Serializable;
 import java.util.List;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableProducerInfoCI implements Serializable {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableProducerInfoCi implements Serializable {
 
     private boolean isAutoTraded;
     private boolean isInHostedStatistics;
     private boolean isInLiveCenterSoccer;
     private boolean isInLiveScore;
     private boolean isInLiveMatchTracker;
-    private List<ExportableProducerInfoLinkCI> producerInfoLinks;
-    private List<ExportableStreamingChannelCI> streamingChannels;
+    private List<ExportableProducerInfoLinkCi> producerInfoLinks;
+    private List<ExportableStreamingChannelCi> streamingChannels;
 
-    public ExportableProducerInfoCI(
+    public ExportableProducerInfoCi(
         boolean isAutoTraded,
         boolean isInHostedStatistics,
         boolean isInLiveCenterSoccer,
         boolean isInLiveScore,
         boolean isInLiveMatchTracker,
-        List<ExportableProducerInfoLinkCI> producerInfoLinks,
-        List<ExportableStreamingChannelCI> streamingChannels
+        List<ExportableProducerInfoLinkCi> producerInfoLinks,
+        List<ExportableStreamingChannelCi> streamingChannels
     ) {
         this.isAutoTraded = isAutoTraded;
         this.isInHostedStatistics = isInHostedStatistics;
@@ -72,19 +72,19 @@ public class ExportableProducerInfoCI implements Serializable {
         isInLiveMatchTracker = inLiveMatchTracker;
     }
 
-    public List<ExportableProducerInfoLinkCI> getProducerInfoLinks() {
+    public List<ExportableProducerInfoLinkCi> getProducerInfoLinks() {
         return producerInfoLinks;
     }
 
-    public void setProducerInfoLinks(List<ExportableProducerInfoLinkCI> producerInfoLinks) {
+    public void setProducerInfoLinks(List<ExportableProducerInfoLinkCi> producerInfoLinks) {
         this.producerInfoLinks = producerInfoLinks;
     }
 
-    public List<ExportableStreamingChannelCI> getStreamingChannels() {
+    public List<ExportableStreamingChannelCi> getStreamingChannels() {
         return streamingChannels;
     }
 
-    public void setStreamingChannels(List<ExportableStreamingChannelCI> streamingChannels) {
+    public void setStreamingChannels(List<ExportableStreamingChannelCi> streamingChannels) {
         this.streamingChannels = streamingChannels;
     }
 }

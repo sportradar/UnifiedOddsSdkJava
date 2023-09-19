@@ -7,20 +7,20 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.sportsapi.datamodel.SAPITournamentGroup;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableGroupCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiTournamentGroup;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableGroupCi;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A group representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
-public class GroupCI {
+@SuppressWarnings({ "UnnecessaryParentheses" })
+public class GroupCi {
 
     /**
      * The id of the group
@@ -35,21 +35,21 @@ public class GroupCI {
     /**
      * A {@link List} of associated competitor identifiers
      */
-    private final List<URN> competitorIds;
+    private final List<Urn> competitorIds;
 
     /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
-    private Map<URN, ReferenceIdCI> competitorsReferences;
+    private Map<Urn, ReferenceIdCi> competitorsReferences;
 
     /**
-     * Initializes a new instance of the {@link GroupCI} class.
+     * Initializes a new instance of the {@link GroupCi} class.
      *
-     * @param group - {@link SAPITournamentGroup} containing information about the group
+     * @param group - {@link SapiTournamentGroup} containing information about the group
      * @param locale - {@link Locale} specifying the language of the <i>group</i>
      */
-    public GroupCI(SAPITournamentGroup group, Locale locale) {
+    public GroupCi(SapiTournamentGroup group, Locale locale) {
         Preconditions.checkNotNull(group);
         Preconditions.checkNotNull(locale);
 
@@ -60,34 +60,34 @@ public class GroupCI {
         competitorsReferences = new HashMap<>();
         if (group.getCompetitor() != null) {
             competitorIds.addAll(
-                group.getCompetitor().stream().map(cmp -> URN.parse(cmp.getId())).collect(Collectors.toList())
+                group.getCompetitor().stream().map(cmp -> Urn.parse(cmp.getId())).collect(Collectors.toList())
             );
             competitorsReferences =
                 SdkHelper.parseCompetitorsReferences(group.getCompetitor(), competitorsReferences);
         }
     }
 
-    public GroupCI(ExportableGroupCI exportable) {
+    public GroupCi(ExportableGroupCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         id = exportable.getId();
         name = exportable.getName();
-        competitorIds = exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList());
+        competitorIds = exportable.getCompetitorIds().stream().map(Urn::parse).collect(Collectors.toList());
         competitorsReferences =
             exportable
                 .getCompetitorsReferences()
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue())));
+                .collect(Collectors.toMap(r -> Urn.parse(r.getKey()), r -> new ReferenceIdCi(r.getValue())));
     }
 
     /**
-     * Merges the information from the provided {@link SAPITournamentGroup} into the current instance
+     * Merges the information from the provided {@link SapiTournamentGroup} into the current instance
      *
-     * @param group - {@link SAPITournamentGroup} containing information about the group
+     * @param group - {@link SapiTournamentGroup} containing information about the group
      * @param locale - {@link Locale} specifying the language of the <i>group</i>
      */
-    public void merge(SAPITournamentGroup group, Locale locale) {
+    public void merge(SapiTournamentGroup group, Locale locale) {
         Preconditions.checkNotNull(group);
         Preconditions.checkNotNull(locale);
 
@@ -98,14 +98,14 @@ public class GroupCI {
             group
                 .getCompetitor()
                 .forEach(c -> {
-                    if (!competitorIds.contains(URN.parse(c.getId()))) {
+                    if (!competitorIds.contains(Urn.parse(c.getId()))) {
                         competitorIds.clear();
                     }
                 });
             group
                 .getCompetitor()
                 .forEach(mergeCompetitor -> {
-                    URN cId = URN.parse(mergeCompetitor.getId());
+                    Urn cId = Urn.parse(mergeCompetitor.getId());
                     if (!competitorIds.contains(cId)) {
                         competitorIds.add(cId);
                     }
@@ -141,24 +141,24 @@ public class GroupCI {
      *
      * @return - a {@link List} of competitor identifiers associated with this group
      */
-    public List<URN> getCompetitorIds() {
+    public List<Urn> getCompetitorIds() {
         return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
     }
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      *
-     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      */
-    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+    public Map<Urn, ReferenceIdCi> getCompetitorsReferences() {
         return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
     }
 
-    public ExportableGroupCI export() {
-        return new ExportableGroupCI(
+    public ExportableGroupCi export() {
+        return new ExportableGroupCi(
             id,
             name,
-            competitorIds.stream().map(URN::toString).collect(Collectors.toList()),
+            competitorIds.stream().map(Urn::toString).collect(Collectors.toList()),
             competitorsReferences
                 .entrySet()
                 .stream()

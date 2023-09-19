@@ -7,17 +7,17 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompleteRoundCI;
-import com.sportradar.utils.URN;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchRound;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompleteRoundCi;
+import com.sportradar.utils.Urn;
 import java.util.*;
 
 /**
  * A round representation used by caching components. The cache item exists as a whole object,
  * there is no support for partial loading
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
-public class CompleteRoundCIImpl implements CompleteRoundCI {
+@SuppressWarnings({ "UnnecessaryParentheses" })
+public class CompleteRoundCiImpl implements CompleteRoundCi {
 
     /**
      * A {@link Map} containing round names in different languages
@@ -47,7 +47,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     /**
      * The id of the group associated with the current round
      */
-    private URN groupId;
+    private Urn groupId;
 
     /**
      * The id of the other match
@@ -87,12 +87,12 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     private final List<Locale> cachedLocales;
 
     /**
-     * Initializes a new instance of the {@link CompleteRoundCIImpl} class
+     * Initializes a new instance of the {@link CompleteRoundCiImpl} class
      *
-     * @param round - {@link SAPIMatchRound} containing information about the round
+     * @param round - {@link SapiMatchRound} containing information about the round
      * @param locale - {@link Locale} specifying the language of the <i>round</i>
      */
-    public CompleteRoundCIImpl(SAPIMatchRound round, Locale locale) {
+    public CompleteRoundCiImpl(SapiMatchRound round, Locale locale) {
         Preconditions.checkNotNull(round);
         Preconditions.checkNotNull(locale);
 
@@ -104,7 +104,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         merge(round, locale);
     }
 
-    public CompleteRoundCIImpl(ExportableCompleteRoundCI exportable) {
+    public CompleteRoundCiImpl(ExportableCompleteRoundCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         this.names = Maps.newConcurrentMap();
@@ -115,7 +115,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
         this.type = exportable.getType();
         this.group = exportable.getGroup();
-        this.groupId = exportable.getGroupId() != null ? URN.parse(exportable.getGroupId()) : null;
+        this.groupId = exportable.getGroupId() != null ? Urn.parse(exportable.getGroupId()) : null;
         this.otherMatchId = exportable.getOtherMatchId();
         this.number = exportable.getNumber();
         this.cupRoundMatches = exportable.getCupRoundMatches();
@@ -127,19 +127,19 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
     }
 
     /**
-     * Merges the information from the provided {@link SAPIMatchRound} into the current instance
+     * Merges the information from the provided {@link SapiMatchRound} into the current instance
      *
-     * @param round - {@link SAPIMatchRound} containing information about the round
+     * @param round - {@link SapiMatchRound} containing information about the round
      * @param locale - {@link Locale} specifying the language of the <i>round</i>
      */
     @Override
-    public void merge(SAPIMatchRound round, Locale locale) {
+    public void merge(SapiMatchRound round, Locale locale) {
         Preconditions.checkNotNull(round);
         Preconditions.checkNotNull(locale);
 
         type = round.getType();
         group = round.getGroup();
-        groupId = Strings.isNullOrEmpty(round.getGroupId()) ? null : URN.parse(round.getGroupId());
+        groupId = Strings.isNullOrEmpty(round.getGroupId()) ? null : Urn.parse(round.getGroupId());
         otherMatchId = round.getOtherMatchId();
         number = round.getNumber();
         cupRoundMatches = round.getCupRoundMatches();
@@ -194,7 +194,7 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
      * @return - the id of the group associated with the current round
      */
     @Override
-    public URN getGroupId() {
+    public Urn getGroupId() {
         return groupId;
     }
 
@@ -355,8 +355,8 @@ public class CompleteRoundCIImpl implements CompleteRoundCI {
         );
     }
 
-    public ExportableCompleteRoundCI export() {
-        return new ExportableCompleteRoundCI(
+    public ExportableCompleteRoundCi export() {
+        return new ExportableCompleteRoundCi(
             new HashMap<>(names),
             new HashMap<>(groupNames),
             new HashMap<>(phaseOrGroupLongNames),

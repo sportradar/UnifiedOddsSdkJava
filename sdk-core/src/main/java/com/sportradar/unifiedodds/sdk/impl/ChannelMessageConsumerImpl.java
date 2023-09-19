@@ -10,12 +10,12 @@ import com.google.inject.name.Named;
 import com.rabbitmq.client.AMQP;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.ProducerManager;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.impl.util.FeedMessageHelper;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.io.ByteArrayInputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "CyclomaticComplexity",
@@ -53,14 +52,14 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
      * A {@link Logger} instance used to log received payloads
      */
     private static final Logger loggerTraffic = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkTrafficLog.class
+        LoggerDefinitions.UfSdkTrafficLog.class
     );
 
     /**
      * A {@link Logger} instance used to log received payloads which are problematic
      */
     private static final Logger loggerTrafficFailure = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkTrafficFailureLog.class
+        LoggerDefinitions.UfSdkTrafficFailureLog.class
     );
 
     /**
@@ -76,7 +75,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     /**
      * The internal SDK configuration
      */
-    private final SDKInternalConfiguration configuration;
+    private final SdkInternalConfiguration configuration;
 
     /**
      * An indication if the consumer is opened
@@ -96,9 +95,9 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     /**
      * JAXBContext for threads to create own jabx unmarshaller because it is not thread safe by itself
      */
-    private final JAXBContext messageJAXBContext;
+    private final JAXBContext messageJaxbContext;
 
-    private final ThreadLocal<Unmarshaller> messageJAXBUnmarshaller = new ThreadLocal<>();
+    private final ThreadLocal<Unmarshaller> messageJaxbUnmarshaller = new ThreadLocal<>();
 
     /**
      * @param routingKeyParser a {@link RoutingKeyParser} used to parse the rabbit's routing key
@@ -108,9 +107,9 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
     @Inject
     public ChannelMessageConsumerImpl(
         RoutingKeyParser routingKeyParser,
-        SDKInternalConfiguration configuration,
-        SDKProducerManager producerManager,
-        @Named("MessageJAXBContext") JAXBContext messageJAXBContext
+        SdkInternalConfiguration configuration,
+        SdkProducerManager producerManager,
+        @Named("MessageJAXBContext") JAXBContext messageJaxbContext
     ) {
         Preconditions.checkNotNull(routingKeyParser);
         Preconditions.checkNotNull(configuration);
@@ -119,7 +118,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         this.routingKeyParser = routingKeyParser;
         this.configuration = configuration;
         this.producerManager = producerManager;
-        this.messageJAXBContext = messageJAXBContext;
+        this.messageJaxbContext = messageJaxbContext;
     }
 
     /**
@@ -197,9 +196,9 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         try {
             long time = System.currentTimeMillis();
 
-            Unmarshaller unmarshallerTLS = getMessageJAXBUnmarshaller();
+            Unmarshaller unmarshallerTls = getMessageJaxbUnmarshaller();
             unmarshalledMessage =
-                (UnmarshalledMessage) unmarshallerTLS.unmarshal(new ByteArrayInputStream(body));
+                (UnmarshalledMessage) unmarshallerTls.unmarshal(new ByteArrayInputStream(body));
 
             producerId = FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage);
 
@@ -287,7 +286,7 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo, timestamp);
     }
 
-    private void dispatchUnparsableMessage(String msg, byte[] body, URN eventId, MessageTimestamp timestamp) {
+    private void dispatchUnparsableMessage(String msg, byte[] body, Urn eventId, MessageTimestamp timestamp) {
         logger.warn(msg);
         messageConsumer.onMessageDeserializationFailed(body, eventId);
     }
@@ -298,15 +297,15 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         return configuration.isCleanTrafficLogEntriesEnabled() ? s.replace("\n", "") : s;
     }
 
-    private Unmarshaller getMessageJAXBUnmarshaller() {
-        if (messageJAXBUnmarshaller.get() == null) {
+    private Unmarshaller getMessageJaxbUnmarshaller() {
+        if (messageJaxbUnmarshaller.get() == null) {
             try {
-                messageJAXBUnmarshaller.set(messageJAXBContext.createUnmarshaller());
+                messageJaxbUnmarshaller.set(messageJaxbContext.createUnmarshaller());
             } catch (JAXBException e) {
                 throw new IllegalStateException("Failed to create unmarshaller for 'AMQP messages', ex: ", e);
             }
         }
 
-        return messageJAXBUnmarshaller.get();
+        return messageJaxbUnmarshaller.get();
     }
 }

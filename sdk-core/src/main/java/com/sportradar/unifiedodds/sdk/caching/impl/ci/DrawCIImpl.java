@@ -10,17 +10,17 @@ import com.google.common.collect.Sets;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.DrawCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.DrawCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawCi;
 import com.sportradar.unifiedodds.sdk.entities.DrawStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -30,14 +30,12 @@ import org.slf4j.LoggerFactory;
 /**
  * A draw cache item implementation
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "LineLength", "ReturnCount" }
-)
-public class DrawCIImpl implements DrawCI, ExportableCacheItem {
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "LineLength", "ReturnCount" })
+public class DrawCiImpl implements DrawCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(DrawCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DrawCiImpl.class);
 
-    private final URN id;
+    private final Urn id;
 
     private final DataRouterManager dataRouterManager;
     private final Locale defaultLocale;
@@ -46,14 +44,14 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
     private final Set<Locale> cachedLocales = Sets.newConcurrentHashSet();
     private final ReentrantLock fetchLock = new ReentrantLock();
 
-    private URN lotteryId;
+    private Urn lotteryId;
     private Date scheduled;
     private DrawStatus status;
-    private List<DrawResultCI> results;
+    private List<DrawResultCi> results;
     private Integer displayId;
 
-    DrawCIImpl(
-        URN id,
+    DrawCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
@@ -69,12 +67,12 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    DrawCIImpl(
-        URN id,
+    DrawCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIDrawFixture data,
+        SapiDrawFixture data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -84,12 +82,12 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    DrawCIImpl(
-        URN id,
+    DrawCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIDrawEvent data,
+        SapiDrawEvent data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -99,12 +97,12 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    DrawCIImpl(
-        URN id,
+    DrawCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIDrawSummary data,
+        SapiDrawSummary data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -114,8 +112,8 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    DrawCIImpl(
-        ExportableDrawCI exportable,
+    DrawCiImpl(
+        ExportableDrawCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
@@ -126,25 +124,25 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.defaultLocale = exportable.getDefaultLocale();
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.cachedLocales.addAll(exportable.getCachedLocales());
-        this.lotteryId = exportable.getLotteryId() != null ? URN.parse(exportable.getLotteryId()) : null;
+        this.lotteryId = exportable.getLotteryId() != null ? Urn.parse(exportable.getLotteryId()) : null;
         this.scheduled = exportable.getScheduled();
         this.status = exportable.getStatus();
         this.results =
             exportable.getResults() != null
-                ? exportable.getResults().stream().map(DrawResultCI::new).collect(Collectors.toList())
+                ? exportable.getResults().stream().map(DrawResultCi::new).collect(Collectors.toList())
                 : null;
         this.displayId = exportable.getDisplayId();
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -189,7 +187,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      * @return a list of draw results
      */
     @Override
-    public List<DrawResultCI> getResults(List<Locale> locales) {
+    public List<DrawResultCi> getResults(List<Locale> locales) {
         if (cachedLocales.containsAll(locales)) {
             return results == null ? null : ImmutableList.copyOf(results);
         }
@@ -205,7 +203,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      * @return the associated lottery id
      */
     @Override
-    public URN getLotteryId() {
+    public Urn getLotteryId() {
         if (lotteryId != null || !cachedLocales.isEmpty()) {
             return lotteryId;
         }
@@ -278,12 +276,12 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return null;
     }
 
@@ -318,16 +316,16 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
      */
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (endpointData instanceof SAPIDrawFixture) {
-            internalMerge((SAPIDrawFixture) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPIDrawEvent) {
-            internalMerge((SAPIDrawEvent) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPIDrawSummary) {
-            internalMerge((SAPIDrawSummary) endpointData, dataLocale);
+        if (endpointData instanceof SapiDrawFixture) {
+            internalMerge((SapiDrawFixture) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiDrawEvent) {
+            internalMerge((SapiDrawEvent) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiDrawSummary) {
+            internalMerge((SapiDrawSummary) endpointData, dataLocale);
         }
     }
 
-    private void internalMerge(SAPIDrawSummary endpointData, Locale dataLocale) {
+    private void internalMerge(SapiDrawSummary endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -340,13 +338,13 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         cachedLocales.add(dataLocale);
     }
 
-    private void internalMerge(SAPIDrawFixture endpointData, Locale dataLocale) {
+    private void internalMerge(SapiDrawFixture endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
         scheduled = endpointData.getDrawDate() == null ? null : SdkHelper.toDate(endpointData.getDrawDate());
 
-        lotteryId = endpointData.getLottery() == null ? null : URN.parse(endpointData.getLottery().getId());
+        lotteryId = endpointData.getLottery() == null ? null : Urn.parse(endpointData.getLottery().getId());
 
         status = map(endpointData.getStatus());
 
@@ -355,7 +353,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         }
     }
 
-    private void internalMerge(SAPIDrawEvent endpointData, Locale dataLocale) {
+    private void internalMerge(SapiDrawEvent endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -369,17 +367,17 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         }
     }
 
-    private void mergeResults(SAPIDrawResult.SAPIDraws endpointData, Locale dataLocale) {
+    private void mergeResults(SapiDrawResult.SapiDraws endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        List<SAPIDrawResult.SAPIDraws.SAPIDraw> drawResults = endpointData.getDraw();
+        List<SapiDrawResult.SapiDraws.SapiDraw> drawResults = endpointData.getDraw();
         if (drawResults != null && !drawResults.isEmpty()) {
             if (results == null) {
                 results =
                     drawResults
                         .stream()
-                        .map(r -> new DrawResultCI(r, dataLocale))
+                        .map(r -> new DrawResultCi(r, dataLocale))
                         .collect(Collectors.toList());
             } else {
                 results.forEach(cachedResult ->
@@ -445,7 +443,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
         }
     }
 
-    private static DrawStatus map(SAPIDrawStatus status) {
+    private static DrawStatus map(SapiDrawStatus status) {
         if (status == null) {
             return DrawStatus.Unknown;
         }
@@ -465,8 +463,8 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableDrawCI(
+    public ExportableCi export() {
+        return new ExportableDrawCi(
             id.toString(),
             Collections.emptyMap(),
             scheduled,
@@ -476,7 +474,7 @@ public class DrawCIImpl implements DrawCI, ExportableCacheItem {
             defaultLocale,
             lotteryId != null ? lotteryId.toString() : null,
             status,
-            results != null ? results.stream().map(DrawResultCI::export).collect(Collectors.toList()) : null,
+            results != null ? results.stream().map(DrawResultCi::export).collect(Collectors.toList()) : null,
             displayId,
             new HashSet<>(cachedLocales)
         );

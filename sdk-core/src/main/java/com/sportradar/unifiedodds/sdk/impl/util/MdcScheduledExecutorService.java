@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "LambdaBodyLength", "LineLength" })
+@SuppressWarnings({ "LambdaBodyLength", "LineLength" })
 public class MdcScheduledExecutorService implements ScheduledExecutorService {
 
     /**
@@ -65,7 +65,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
     @Override
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
         logger.info("schedule runnable");
-        return scheduledExecutor.schedule(setMDCContext(command, fixedContext), delay, unit);
+        return scheduledExecutor.schedule(setMdcContext(command, fixedContext), delay, unit);
     }
 
     /**
@@ -84,7 +84,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
     @Override
     public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
         logger.info("schedule callable");
-        return scheduledExecutor.schedule(setMDCContext(callable, fixedContext), delay, unit);
+        return scheduledExecutor.schedule(setMdcContext(callable, fixedContext), delay, unit);
     }
 
     /**
@@ -122,7 +122,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
     ) {
         logger.info("schedule runnable at fixed rate");
         return scheduledExecutor.scheduleWithFixedDelay(
-            setMDCContext(command, fixedContext),
+            setMdcContext(command, fixedContext),
             initialDelay,
             period,
             unit
@@ -161,7 +161,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
     ) {
         logger.info("schedule runnable with fixed delay");
         return scheduledExecutor.scheduleWithFixedDelay(
-            setMDCContext(command, fixedContext),
+            setMdcContext(command, fixedContext),
             initialDelay,
             delay,
             unit
@@ -464,7 +464,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
         scheduledExecutor.execute(command);
     }
 
-    private static <V> Callable<V> setMDCContext(final Callable<V> callable, final Map context) {
+    private static <V> Callable<V> setMdcContext(final Callable<V> callable, final Map context) {
         return () -> {
             Map oldContext = MDC.getCopyOfContextMap();
             if (context == null) {
@@ -487,7 +487,7 @@ public class MdcScheduledExecutorService implements ScheduledExecutorService {
     /**
      * Sets the MDC context on the thread executing the task and cleans the MDC when completed
      */
-    private static Runnable setMDCContext(final Runnable runnable, final Map context) {
+    private static Runnable setMdcContext(final Runnable runnable, final Map context) {
         return () -> {
             Map oldContext = MDC.getCopyOfContextMap();
             if (context == null) {

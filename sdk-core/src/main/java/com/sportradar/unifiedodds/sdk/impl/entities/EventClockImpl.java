@@ -104,16 +104,6 @@ public class EventClockImpl implements EventClock {
      * @return - the remaining event time if available; otherwise null
      */
     @Override
-    public String getRemainingDate() {
-        return remainingTime;
-    }
-
-    /**
-     * Returns the remaining event time
-     *
-     * @return - the remaining event time if available; otherwise null
-     */
-    @Override
     public String getRemainingTime() {
         return remainingTime;
     }

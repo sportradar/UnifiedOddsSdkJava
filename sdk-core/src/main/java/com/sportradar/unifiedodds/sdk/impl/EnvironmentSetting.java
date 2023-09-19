@@ -53,8 +53,7 @@ public class EnvironmentSetting {
         return apiHost;
     }
 
-    @Deprecated // FIXME API port comes from config files now so remove?
-    public int getApiPort() {
+    int getApiPort() {
         return apiPort;
     }
 

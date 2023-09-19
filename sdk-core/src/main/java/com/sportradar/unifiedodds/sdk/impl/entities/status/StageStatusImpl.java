@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities.status;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCi;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
 import java.util.Locale;
@@ -17,19 +17,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides methods used to access match status information
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
+@SuppressWarnings({ "ConstantName" })
 public class StageStatusImpl extends CompetitionStatusImpl implements StageStatus {
 
     private static final Logger logger = LoggerFactory.getLogger(StageStatusImpl.class);
-    private final SportEventStatusCI statusCI;
+    private final SportEventStatusCi statusCi;
     private final LocalizedNamedValueCache matchStatuses;
 
-    public StageStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
-        super(statusCI);
-        Preconditions.checkNotNull(statusCI);
+    public StageStatusImpl(SportEventStatusCi statusCi, LocalizedNamedValueCache matchStatuses) {
+        super(statusCi);
+        Preconditions.checkNotNull(statusCi);
         Preconditions.checkNotNull(matchStatuses);
 
-        this.statusCI = statusCI;
+        this.statusCi = statusCi;
         this.matchStatuses = matchStatuses;
     }
 
@@ -40,7 +40,7 @@ public class StageStatusImpl extends CompetitionStatusImpl implements StageStatu
      */
     @Override
     public int getMatchStatusId() {
-        return statusCI.getMatchStatusId();
+        return statusCi.getMatchStatusId();
     }
 
     /**
@@ -50,11 +50,11 @@ public class StageStatusImpl extends CompetitionStatusImpl implements StageStatu
      */
     @Override
     public LocalizedNamedValue getMatchStatus() {
-        if (statusCI.getMatchStatusId() < 0) {
+        if (statusCi.getMatchStatusId() < 0) {
             logger.warn("Processing match status with id < 0");
             return null;
         }
-        return matchStatuses.get(statusCI.getMatchStatusId(), null);
+        return matchStatuses.get(statusCi.getMatchStatusId(), null);
     }
 
     /**
@@ -65,10 +65,10 @@ public class StageStatusImpl extends CompetitionStatusImpl implements StageStatu
      */
     @Override
     public LocalizedNamedValue getMatchStatus(Locale locale) {
-        if (statusCI.getMatchStatusId() < 0) {
+        if (statusCi.getMatchStatusId() < 0) {
             logger.warn("Processing match status with id < 0");
             return null;
         }
-        return matchStatuses.get(statusCI.getMatchStatusId(), Lists.newArrayList(locale));
+        return matchStatuses.get(statusCi.getMatchStatusId(), Lists.newArrayList(locale));
     }
 }

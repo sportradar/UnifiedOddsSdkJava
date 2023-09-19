@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +64,7 @@ public class RegexRoutingKeyParser implements RoutingKeyParser {
     private static final Pattern REGEX_PATTERN = Pattern.compile(REGEX_STRING);
 
     /**
-     * The prefix which is used to build sport {@link URN} identifiers
+     * The prefix which is used to build sport {@link Urn} identifiers
      */
     private static final String SPORT_ID_PREFIX = "sr:sport:";
 
@@ -87,9 +87,9 @@ public class RegexRoutingKeyParser implements RoutingKeyParser {
             return new RoutingKeyInfo(routingKey, true);
         }
 
-        URN sportId;
+        Urn sportId;
         if (!matcher.group(SPORT_GROUP_NAME).equals("-")) {
-            sportId = URN.parse(SPORT_ID_PREFIX + matcher.group(SPORT_GROUP_NAME));
+            sportId = Urn.parse(SPORT_ID_PREFIX + matcher.group(SPORT_GROUP_NAME));
         } else {
             sportId = null;
         }
@@ -97,10 +97,10 @@ public class RegexRoutingKeyParser implements RoutingKeyParser {
         String eventType = matcher.group(EVENT_TYPE_GROUP_NAME);
         String eventIdKey = matcher.group(EVENT_ID_GROUP_NAME);
 
-        URN eventId = null;
+        Urn eventId = null;
         if (!eventType.equals("-") && !eventIdKey.equals("-")) {
             try {
-                eventId = URN.parse(eventType + ":" + eventIdKey);
+                eventId = Urn.parse(eventType + ":" + eventIdKey);
             } catch (UnsupportedUrnFormatException e) {
                 // ignore the exception, not a valid sport event routing key
             }

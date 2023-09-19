@@ -1,7 +1,34 @@
 ### Unified Feed SDK 2.x changelog
 
-**2.0.61 (2023-07-20)**
-* Stages can be of SprintRace type
+**3.0.0 (2023-XX-YY)**
+* Consistent casing used in naming in java code as per Google java style guidelines
+* Upgrading Apache http client library from 4 to 5
+* methods getName/s exposed more consistently in classes: 
+categoryData, sportData, currentSeason, drawResult, manager, tournamentInfo
+* upgrading sdk libraries. Rabbit, slf4j, guava, guice, icu4j, snakeyaml, jaxb
+* removing libraries: logback
+* removing deprecated methods
+* OddsFeedConfiguration renamed to UofSdkConfiguration
+* Removed selectIntegration and selectProduction from EnvironmentSelector (use selectEnvironment)
+* user agent indicating basic environment information is submitted on Sports API calls 
+* Configuration from file - renamed values:
+  * defaultLocale -> defaultLanguage
+  * desiredLocales -> desiredLanguages
+  * ufEnvironment -> environment
+  * useMessagingSsl -> messagingUseSll
+  * useApiSsl -> apiUseSsl
+  * moved HttpClient configuration to UofConfigurationBuilder
+* removing test-purposed OddsFeed constructor
+* removing OddsFeedSessionBuilder.setSpecificListeners method
+* renaming class SportsInfoProvider to SportDataProvider
+* renaming method UofSdk.getSportsInfoProvider to UofSdk.getSportDataProvider
+* renaming OddsFeed to uofSdk
+* renaming OddsFeedSession to UofSession
+* renaming OddsFeedSessionBuilder to UofSessionBuilder
+* renaming OddsFeedListener to UofListener
+* renaming OddsFeedConfigurationBuilder to UofConfigurationBuilder
+* renaming UofSdk.getOddsFeedConfigurationBuilder to UofConfigurationBuilder
+* renaming OddsFeedException to UofException
 
 **2.0.60.0 (2023-05-17)**
 * CustomBetManager respects ExceptionHandlingStrategy for all non-argument-validating exceptions

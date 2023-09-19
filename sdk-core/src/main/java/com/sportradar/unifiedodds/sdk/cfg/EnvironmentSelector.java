@@ -9,37 +9,11 @@ package com.sportradar.unifiedodds.sdk.cfg;
  */
 public interface EnvironmentSelector {
     /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
+     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access replay server
      *
-     * @deprecated in favour of {{@link #selectIntegration()}} from v2.0.18
-     *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
+     * @return a {@link ConfigurationBuilder} with properties set to values needed to access replay server
      */
-    @Deprecated
-    default ConfigurationBuilder selectStaging() {
-        return selectIntegration();
-    }
-
-    /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
-     *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
-     */
-    ConfigurationBuilder selectIntegration();
-
-    /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access production environment
-     *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access production environment
-     */
-    ConfigurationBuilder selectProduction();
-
-    /**
-     * Returns a {@link ReplayConfigurationBuilder} with properties set to values needed to access replay server
-     *
-     * @return a {@link ReplayConfigurationBuilder} with properties set to values needed to access replay server
-     */
-    ReplayConfigurationBuilder selectReplay();
+    ConfigurationBuilder selectReplay();
 
     /**
      * Returns a {@link CustomConfigurationBuilder} allowing the properties to be set to custom values (usefull for testing with local AMQP)

@@ -5,26 +5,25 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIEventPlayerAssist;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventPlayerAssistCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiEventPlayerAssist;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventPlayerAssistCi;
 
 /**
  * Created on 24/11/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class EventPlayerAssistCI extends EventPlayerCI {
+public class EventPlayerAssistCi extends EventPlayerCi {
 
     private final String type;
 
-    EventPlayerAssistCI(SAPIEventPlayerAssist assistData) {
+    EventPlayerAssistCi(SapiEventPlayerAssist assistData) {
         super(assistData);
         Preconditions.checkNotNull(assistData);
 
         type = assistData.getType();
     }
 
-    EventPlayerAssistCI(ExportableEventPlayerAssistCI exportable) {
+    EventPlayerAssistCi(ExportableEventPlayerAssistCi exportable) {
         super(exportable);
         type = exportable.getType();
     }
@@ -33,7 +32,7 @@ public class EventPlayerAssistCI extends EventPlayerCI {
         return type;
     }
 
-    public ExportableEventPlayerAssistCI export() {
-        return new ExportableEventPlayerAssistCI(getId().toString(), getName(), type);
+    public ExportableEventPlayerAssistCi export() {
+        return new ExportableEventPlayerAssistCi(getId().toString(), getName(), type);
     }
 }

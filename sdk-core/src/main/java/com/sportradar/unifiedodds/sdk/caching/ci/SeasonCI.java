@@ -5,17 +5,17 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPISeasonExtended;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiSeasonExtended;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCi;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 
 /**
  * A season representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "IllegalType" })
-public class SeasonCI extends SportEntityCI {
+@SuppressWarnings({ "IllegalType" })
+public class SeasonCi extends SportEntityCi {
 
     /**
      * A {@link HashMap} containing season names in different languages
@@ -40,18 +40,18 @@ public class SeasonCI extends SportEntityCI {
     /**
      * The associated tournament identifier
      */
-    private URN tournamentId;
+    private Urn tournamentId;
 
     private final List<Locale> cachedLocales;
 
     /**
-     * Initializes a new instance of the {@link SeasonCI} class
+     * Initializes a new instance of the {@link SeasonCi} class
      *
-     * @param season - {@link SAPISeasonExtended} containing information about the season
+     * @param season - {@link SapiSeasonExtended} containing information about the season
      * @param locale - {@link Locale} specifying the language of the <i>season</i>
      */
-    public SeasonCI(SAPISeasonExtended season, Locale locale) {
-        super(URN.parse(season.getId()));
+    public SeasonCi(SapiSeasonExtended season, Locale locale) {
+        super(Urn.parse(season.getId()));
         Preconditions.checkNotNull(season);
         Preconditions.checkNotNull(locale);
 
@@ -60,24 +60,24 @@ public class SeasonCI extends SportEntityCI {
         merge(season, locale);
     }
 
-    public SeasonCI(ExportableSeasonCI exportable) {
-        super(URN.parse(exportable.getId()));
+    public SeasonCi(ExportableSeasonCi exportable) {
+        super(Urn.parse(exportable.getId()));
         this.name = new HashMap<>(exportable.getNames());
         this.startDate = exportable.getStartDate();
         this.endDate = exportable.getEndDate();
         this.year = exportable.getYear();
         this.tournamentId =
-            exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
+            exportable.getTournamentId() != null ? Urn.parse(exportable.getTournamentId()) : null;
         this.cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
     /**
-     * Merges the information from the provided {@link SAPISeasonExtended} into the current instance
+     * Merges the information from the provided {@link SapiSeasonExtended} into the current instance
      *
-     * @param season - {@link SAPISeasonExtended} containing information about the season
+     * @param season - {@link SapiSeasonExtended} containing information about the season
      * @param locale - {@link Locale} specifying the language of the <i>season</i>
      */
-    public void merge(SAPISeasonExtended season, Locale locale) {
+    public void merge(SapiSeasonExtended season, Locale locale) {
         Preconditions.checkNotNull(season);
         Preconditions.checkNotNull(locale);
 
@@ -94,7 +94,7 @@ public class SeasonCI extends SportEntityCI {
         }
 
         if (season.getTournamentId() != null) {
-            tournamentId = URN.parse(season.getTournamentId());
+            tournamentId = Urn.parse(season.getTournamentId());
         }
 
         if (season.getStartTime() != null) {
@@ -118,12 +118,12 @@ public class SeasonCI extends SportEntityCI {
     }
 
     /**
-     * Merges the information from the provided {@link SeasonCI} into the current instance
+     * Merges the information from the provided {@link SeasonCi} into the current instance
      *
-     * @param season - {@link SeasonCI} containing information about the season
+     * @param season - {@link SeasonCi} containing information about the season
      * @param locale - {@link Locale} specifying the language of the <i>season</i>
      */
-    public void merge(SeasonCI season, Locale locale) {
+    public void merge(SeasonCi season, Locale locale) {
         Preconditions.checkNotNull(season);
         Preconditions.checkNotNull(locale);
 
@@ -174,7 +174,7 @@ public class SeasonCI extends SportEntityCI {
      *
      * @return the associated tournament identifier
      */
-    public URN getTournamentId() {
+    public Urn getTournamentId() {
         return tournamentId;
     }
 
@@ -194,8 +194,8 @@ public class SeasonCI extends SportEntityCI {
         return cachedLocales.containsAll(locales);
     }
 
-    public ExportableSeasonCI export() {
-        return new ExportableSeasonCI(
+    public ExportableSeasonCi export() {
+        return new ExportableSeasonCi(
             getId().toString(),
             new HashMap<>(name),
             startDate,

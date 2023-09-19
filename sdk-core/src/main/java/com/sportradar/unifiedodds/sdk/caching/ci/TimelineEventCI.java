@@ -5,8 +5,8 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIBasicEvent;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTimelineEventCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiBasicEvent;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTimelineEventCi;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.utils.SdkHelper;
 import java.util.Date;
@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
  * Created on 24/11/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class TimelineEventCI {
+public class TimelineEventCi {
 
     private final int id;
     private final Double awayScore;
@@ -34,18 +33,18 @@ public class TimelineEventCI {
     private final Integer x;
     private final Integer y;
     private final Date time;
-    private final List<EventPlayerAssistCI> assists;
-    private final EventPlayerCI goalScorer;
-    private final EventPlayerCI player;
+    private final List<EventPlayerAssistCi> assists;
+    private final EventPlayerCi goalScorer;
+    private final EventPlayerCi player;
     private final Integer matchStatusCode;
     private final String matchClock;
 
-    TimelineEventCI(SAPIBasicEvent event) {
+    TimelineEventCi(SapiBasicEvent event) {
         Preconditions.checkNotNull(event);
 
         id = event.getId();
-        awayScore = event.getAwayScore();
-        homeScore = event.getHomeScore();
+        awayScore = createScore(event.getAwayScore());
+        homeScore = createScore(event.getHomeScore());
         matchTime = event.getMatchTime();
         period = event.getPeriod();
         periodName = event.getPeriodName();
@@ -61,15 +60,15 @@ public class TimelineEventCI {
         assists =
             event.getAssist() == null
                 ? null
-                : event.getAssist().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList());
+                : event.getAssist().stream().map(EventPlayerAssistCi::new).collect(Collectors.toList());
 
-        goalScorer = event.getGoalScorer() == null ? null : new EventPlayerCI(event.getGoalScorer());
-        player = event.getPlayer() == null ? null : new EventPlayerCI(event.getPlayer());
+        goalScorer = event.getGoalScorer() == null ? null : new EventPlayerCi(event.getGoalScorer());
+        player = event.getPlayer() == null ? null : new EventPlayerCi(event.getPlayer());
         matchStatusCode = event.getMatchStatusCode();
         matchClock = event.getMatchClock();
     }
 
-    TimelineEventCI(ExportableTimelineEventCI exportable) {
+    TimelineEventCi(ExportableTimelineEventCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         id = exportable.getId();
@@ -88,11 +87,11 @@ public class TimelineEventCI {
         time = exportable.getTime();
         assists =
             exportable.getAssists() != null
-                ? exportable.getAssists().stream().map(EventPlayerAssistCI::new).collect(Collectors.toList())
+                ? exportable.getAssists().stream().map(EventPlayerAssistCi::new).collect(Collectors.toList())
                 : null;
         goalScorer =
-            exportable.getGoalScorer() != null ? new EventPlayerCI(exportable.getGoalScorer()) : null;
-        player = exportable.getPlayer() != null ? new EventPlayerCI(exportable.getPlayer()) : null;
+            exportable.getGoalScorer() != null ? new EventPlayerCi(exportable.getGoalScorer()) : null;
+        player = exportable.getPlayer() != null ? new EventPlayerCi(exportable.getPlayer()) : null;
         matchStatusCode = exportable.getMatchStatusCode();
         matchClock = exportable.getMatchClock();
     }
@@ -153,15 +152,15 @@ public class TimelineEventCI {
         return time;
     }
 
-    public List<EventPlayerAssistCI> getAssists() {
+    public List<EventPlayerAssistCi> getAssists() {
         return assists;
     }
 
-    public EventPlayerCI getGoalScorer() {
+    public EventPlayerCi getGoalScorer() {
         return goalScorer;
     }
 
-    public EventPlayerCI getPlayer() {
+    public EventPlayerCi getPlayer() {
         return player;
     }
 
@@ -173,8 +172,8 @@ public class TimelineEventCI {
         return matchClock;
     }
 
-    public ExportableTimelineEventCI export() {
-        return new ExportableTimelineEventCI(
+    public ExportableTimelineEventCi export() {
+        return new ExportableTimelineEventCi(
             id,
             awayScore,
             homeScore,
@@ -190,12 +189,24 @@ public class TimelineEventCI {
             y,
             time,
             assists != null
-                ? assists.stream().map(EventPlayerAssistCI::export).collect(Collectors.toList())
+                ? assists.stream().map(EventPlayerAssistCi::export).collect(Collectors.toList())
                 : null,
             goalScorer != null ? goalScorer.export() : null,
             player != null ? player.export() : null,
             matchStatusCode,
             matchClock
         );
+    }
+
+    private Double createScore(String score) {
+        if(score == null || score.isEmpty()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(score);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                String.format("Score '%s' is not a valid number", score));
+        }
     }
 }

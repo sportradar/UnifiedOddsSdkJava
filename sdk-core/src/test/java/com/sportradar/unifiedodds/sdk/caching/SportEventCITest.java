@@ -1,92 +1,235 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import static com.sportradar.unifiedodds.sdk.caching.DateConverterToCentralEurope.convertFrom;
+import static com.sportradar.utils.Urns.Lotteries.getForAnyLottery;
+import static com.sportradar.utils.Urns.SportEvents.*;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import com.google.inject.Injector;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
-import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCi;
+import com.sportradar.unifiedodds.sdk.caching.impl.*;
+import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
+import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactoryImplConstructor;
 import com.sportradar.unifiedodds.sdk.entities.DrawType;
 import com.sportradar.unifiedodds.sdk.entities.TimeType;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.impl.MappingTypeProviderImplConstructor;
+import com.sportradar.utils.Urn;
+import com.sportradar.utils.Urns;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
-import org.junit.Before;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.val;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "IllegalCatch", "MagicNumber" })
-public class SportEventCITest {
+@SuppressWarnings({ "ClassFanOutComplexity", "IllegalCatch", "MagicNumber", "ClassDataAbstractionCoupling" })
+public class SportEventCiTest {
 
-    private static final Locale LOCALE = Locale.ENGLISH;
-    private static final URN MATCH_EVENT_ID = URN.parse("sr:match:10116681");
-    private static final URN RACE_STAGE_EVENT_ID = URN.parse("sr:stage:263714");
-    private static final URN TOURNAMENT_EVENT_ID = URN.parse("sr:tournament:1030");
-    private static final URN LOTTERY_EVENT_ID = URN.parse("wns:lottery:47125");
+    private static final Urn LOTTERY_EVENT_ID = Urn.parse("wns:lottery:47125");
+    private DataRouterImpl dataRouter = new DataRouterImpl();
 
-    private SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
+    @Test
+    public void getsScheduledDateForMatch()
+        throws CacheItemNotFoundException, DataProviderException, DatatypeConfigurationException {
+        SapiSportEvent match = new SapiSportEvent();
+        match.setId(getForAnyMatch().toString());
+        match.setScheduled(april10th2016());
+        match.setTournament(tournamentWithCategory());
+        SapiMatchSummaryEndpoint matchSummary = new SapiMatchSummaryEndpoint();
+        matchSummary.setSportEvent(match);
 
-    //The cache item is obtained from the cache
-    private SportEventCache cache;
+        val summaries = mock(DataProvider.class);
 
-    private Injector injector = new TestInjectorFactory(config).create();
+        when(summaries.getData(any(Locale.class), anyString())).thenReturn(matchSummary);
 
-    @Before
-    public void setup() {
-        Mockito.when(config.getDefaultLocale()).thenReturn(LOCALE);
+        SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
+        CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
+            DataRouterManagerBuilder.create().setDataRouter(dataRouter).setSummaries(summaries).build(),
+            config,
+            mock(Cache.class)
+        );
+        SportEventCacheImpl cache = SportEventCacheImplConstructor.create(
+            ciFactory,
+            MappingTypeProviderImplConstructor.create(),
+            mock(DataRouterManager.class),
+            mock(SdkInternalConfiguration.class),
+            CacheBuilder.newBuilder().build()
+        );
+        dataRouter.setDataListeners(asList(cache));
 
-        Mockito.when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        SportEventCi cacheItem = cache.getEventCacheItem(getForAnyMatch());
+        Date actual = cacheItem.getScheduled();
 
-        cache = injector.getInstance(SportEventCache.class);
-
-        //cache is the callback object (for a http response):
-        ((DataRouterImpl) injector.getInstance(DataRouter.class)).setDataListeners(
-                Arrays.asList((DataRouterListener) cache)
-            );
+        assertEquals(new Date(116, 7, 10, 2, 0), convertFrom(actual, ZoneId.systemDefault()));
     }
 
     @Test
-    public void getsScheduledDateForMatch() {
-        verifyDate(MATCH_EVENT_ID, new Date(116, 7, 10, 2, 0));
+    public void getsScheduledDateForRaceStage()
+        throws CacheItemNotFoundException, DataProviderException, DatatypeConfigurationException {
+        SapiSportEvent stage = new SapiSportEvent();
+        stage.setId(urnForAnyStage().toString());
+        stage.setTournament(tournamentWithCategory());
+        stage.setScheduled(april10th2016());
+        SapiStageSummaryEndpoint stageSummary = new SapiStageSummaryEndpoint();
+        stageSummary.setSportEvent(stage);
+
+        val summaries = mock(DataProvider.class);
+
+        when(summaries.getData(any(Locale.class), anyString())).thenReturn(stageSummary);
+
+        SdkInternalConfiguration langConfig = configurationWithAnyLanguage();
+        SdkInternalConfiguration langConfigThrowing = configurationWithAnyLanguageThrowingOnErrors();
+        CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
+            mock(DataRouterManager.class),
+            langConfigThrowing,
+            mock(Cache.class)
+        );
+        SportEventCacheImpl cache = SportEventCacheImplConstructor.create(
+            ciFactory,
+            MappingTypeProviderImplConstructor.create(),
+            DataRouterManagerBuilder.create().setDataRouter(dataRouter).setSummaries(summaries).build(),
+            langConfig,
+            CacheBuilder.newBuilder().build()
+        );
+        dataRouter.setDataListeners(asList(cache));
+
+        SportEventCi cacheItem = cache.getEventCacheItem(urnForAnyStage());
+        Date actual = cacheItem.getScheduled();
+
+        assertEquals(new Date(116, 7, 10, 2, 0), convertFrom(actual, ZoneId.systemDefault()));
     }
 
     @Test
-    public void getsScheduledDateForRaceStage() {
-        verifyDate(RACE_STAGE_EVENT_ID, new Date(116, 8, 23, 9, 0));
-    }
+    public void getsScheduledDateForTournament()
+        throws CacheItemNotFoundException, DataProviderException, DatatypeConfigurationException {
+        SapiTournamentInfoEndpoint tournamentSummary = new SapiTournamentInfoEndpoint();
+        SapiTournamentExtended tournament = new SapiTournamentExtended();
+        tournament.setId(urnForAnyTournament().toString());
+        tournament.setScheduled(april10th2016());
+        tournamentSummary.setTournament(tournament);
 
-    @Test
-    public void getsScheduledDateForTournament() {
-        verifyDate(TOURNAMENT_EVENT_ID, new Date(118, 4, 15, 9, 30));
+        val summaries = mock(DataProvider.class);
+        when(summaries.getData(any(Locale.class), anyString())).thenReturn(tournamentSummary);
+
+        SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
+        CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
+            DataRouterManagerBuilder.create().setDataRouter(dataRouter).setSummaries(summaries).build(),
+            config,
+            mock(Cache.class)
+        );
+        SportEventCacheImpl cache = SportEventCacheImplConstructor.create(
+            ciFactory,
+            MappingTypeProviderImplConstructor.create(),
+            mock(DataRouterManager.class),
+            mock(SdkInternalConfiguration.class),
+            CacheBuilder.newBuilder().build()
+        );
+        dataRouter.setDataListeners(asList(cache));
+
+        SportEventCi cacheItem = cache.getEventCacheItem(urnForAnyTournament());
+        Date actual = cacheItem.getScheduled();
+
+        assertEquals(new Date(116, 7, 10, 2, 0), convertFrom(actual, ZoneId.systemDefault()));
     }
 
     @Test
     public void getCategoryIdForLottery() throws Exception {
-        SportEventCI cacheItem = cache.getEventCacheItem(LOTTERY_EVENT_ID);
+        val lotterySchedules = mock(DataProvider.class);
+        SapiLotterySchedule schedule = createLotteryWithIdAndDraw(
+            getForAnyLottery(),
+            fixedTimeDrumDrawWithGameType("6/41")
+        );
+        when(lotterySchedules.getData(any(Locale.class), anyString())).thenReturn(schedule);
 
-        DrawInfoCI drawInfo = ((LotteryCI) cacheItem).getDrawInfo();
+        SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
+        CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
+            DataRouterManagerBuilder
+                .create()
+                .setDataRouter(dataRouter)
+                .setLotterySchedules(lotterySchedules)
+                .build(),
+            config,
+            mock(Cache.class)
+        );
+        SportEventCacheImpl cache = SportEventCacheImplConstructor.create(
+            ciFactory,
+            MappingTypeProviderImplConstructor.create(),
+            mock(DataRouterManager.class),
+            mock(SdkInternalConfiguration.class),
+            CacheBuilder.newBuilder().build()
+        );
+        dataRouter.setDataListeners(asList(cache));
 
-        System.out.println();
+        SportEventCi cacheItem = cache.getEventCacheItem(LOTTERY_EVENT_ID);
+        DrawInfoCi drawInfo = ((LotteryCi) cacheItem).getDrawInfo();
 
         assertEquals(DrawType.Drum, drawInfo.getDrawType());
         assertEquals(TimeType.Fixed, drawInfo.getTimeType());
         assertEquals("6/41", drawInfo.getGameType());
     }
 
-    private void verifyDate(URN eventId, Date expected) {
-        try {
-            SportEventCI cacheItem = cache.getEventCacheItem(eventId);
+    private static SdkInternalConfiguration configurationWithAnyLanguageThrowingOnErrors() {
+        SdkInternalConfiguration mock = mock(SdkInternalConfiguration.class);
+        when(mock.getDefaultLocale()).thenReturn(Locale.UK);
+        when(mock.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        return mock;
+    }
 
-            Date actual = cacheItem.getScheduled();
+    private static SdkInternalConfiguration configurationWithAnyLanguage() {
+        SdkInternalConfiguration mock = mock(SdkInternalConfiguration.class);
+        when(mock.getDefaultLocale()).thenReturn(Locale.UK);
+        return mock;
+    }
 
-            assertEquals(expected, convertFrom(actual, ZoneId.systemDefault()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private SapiLottery.SapiDrawInfo fixedTimeDrumDrawWithGameType(String type) {
+        SapiLottery.SapiDrawInfo draw = new SapiLottery.SapiDrawInfo();
+        draw.setGameType(type);
+        draw.setTimeType(SapiTimeType.FIXED);
+        draw.setDrawType(SapiDrawType.DRUM);
+        return draw;
+    }
+
+    private SapiLotterySchedule createLotteryWithIdAndDraw(Urn id, SapiLottery.SapiDrawInfo draw) {
+        SapiLotterySchedule schedule = new SapiLotterySchedule();
+        SapiLottery lottery = new SapiLottery();
+        lottery.setId(id.toString());
+
+        lottery.setDrawInfo(draw);
+        schedule.setLottery(lottery);
+        return schedule;
+    }
+
+    private void verifyDate(Urn eventId, Object matchSummary, Date expected)
+        throws CacheItemNotFoundException, DataProviderException, DatatypeConfigurationException {}
+
+    private static XMLGregorianCalendar april10th2016() throws DatatypeConfigurationException {
+        val calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+        calendar.setYear(2016);
+        calendar.setMonth(8);
+        calendar.setDay(10);
+        return calendar;
+    }
+
+    private static SapiTournament tournamentWithCategory() {
+        SapiTournament tournament = new SapiTournament();
+        tournament.setId(urnForAnyTournament().toString());
+        SapiCategory category = new SapiCategory();
+        category.setId(Urns.Categories.urnForAnyCategory().toString());
+        tournament.setCategory(category);
+        return tournament;
     }
 }

@@ -4,9 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.conn;
 
-import com.sportradar.unifiedodds.sdk.OddsFeed;
-import com.sportradar.unifiedodds.sdk.OddsFeedListener;
-import com.sportradar.unifiedodds.sdk.OddsFeedSession;
+import com.sportradar.unifiedodds.sdk.UofListener;
+import com.sportradar.unifiedodds.sdk.UofSdk;
+import com.sportradar.unifiedodds.sdk.UofSession;
 import com.sportradar.unifiedodds.sdk.entities.LongTermEvent;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
@@ -29,23 +29,23 @@ import org.slf4j.LoggerFactory;
         "VisibilityModifier",
     }
 )
-public class SimpleMessageListener implements OddsFeedListener {
+public class SimpleMessageListener implements UofListener {
 
     private final Logger logger;
     private final Locale locale = Locale.ENGLISH;
     private final Date startDate;
-    private final OddsFeed oddsFeed;
+    private final UofSdk uofSdk;
     private final List<Locale> desiredLocales;
     private final String listenerVersion;
     public List<FeedMessage> FeedMessages;
 
-    public SimpleMessageListener(String listener_version, OddsFeed oddsFeed, List<Locale> desiredLocales) {
+    public SimpleMessageListener(String listener_version, UofSdk uofSdk, List<Locale> desiredLocales) {
         this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, 1);
         startDate = cal.getTime();
-        this.oddsFeed = oddsFeed;
+        this.uofSdk = uofSdk;
         this.desiredLocales = desiredLocales;
         this.listenerVersion = listener_version;
         FeedMessages = new ArrayList<>();
@@ -58,7 +58,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      * @param oddsChanges the odds changes message
      */
     @Override
-    public void onOddsChange(OddsFeedSession sender, OddsChange<SportEvent> oddsChanges) {
+    public void onOddsChange(UofSession sender, OddsChange<SportEvent> oddsChanges) {
         logBaseMessageData(oddsChanges, oddsChanges.getEvent(), oddsChanges.getProducer());
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -74,7 +74,7 @@ public class SimpleMessageListener implements OddsFeedListener {
 
     /**
      * If there are important fixture updates you will receive fixturechange message. The thinking
-     * is that most fixture updates are queried by you yourself using the SportInfoManager. However,
+     * is that most fixture updates are queried by you yourself using the SportDataProvider. However,
      * if there are important/urgent changes you will also receive a fixture change message (e.g. if
      * a match gets delayed, or if Sportradar for some reason needs to stop live coverage of a match
      * etc.). This message allows you to promptly respond to such changes
@@ -84,7 +84,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      *                      of fixture change
      */
     @Override
-    public void onFixtureChange(OddsFeedSession sender, FixtureChange<SportEvent> fixtureChange) {
+    public void onFixtureChange(UofSession sender, FixtureChange<SportEvent> fixtureChange) {
         logBaseMessageData(fixtureChange, fixtureChange.getEvent(), fixtureChange.getProducer());
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -109,7 +109,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      * @param betStop the betstop message
      */
     @Override
-    public void onBetStop(OddsFeedSession sender, BetStop<SportEvent> betStop) {
+    public void onBetStop(UofSession sender, BetStop<SportEvent> betStop) {
         logBaseMessageData(betStop, betStop.getEvent(), betStop.getProducer());
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -135,7 +135,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      * @param betSettlement the BetSettlement message
      */
     @Override
-    public void onBetSettlement(OddsFeedSession sender, BetSettlement<SportEvent> betSettlement) {
+    public void onBetSettlement(UofSession sender, BetSettlement<SportEvent> betSettlement) {
         logBaseMessageData(betSettlement, betSettlement.getEvent(), betSettlement.getProducer());
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -163,7 +163,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      *                  specifying which markets were cancelled
      */
     @Override
-    public void onBetCancel(OddsFeedSession sender, BetCancel<SportEvent> betCancel) {
+    public void onBetCancel(UofSession sender, BetCancel<SportEvent> betCancel) {
         logBaseMessageData(betCancel, betCancel.getEvent(), betCancel.getProducer());
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -187,7 +187,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      *                    specifying erroneous cancellations
      */
     @Override
-    public void onRollbackBetCancel(OddsFeedSession sender, RollbackBetCancel<SportEvent> rollbackBetCancel) {
+    public void onRollbackBetCancel(UofSession sender, RollbackBetCancel<SportEvent> rollbackBetCancel) {
         logBaseMessageData(rollbackBetCancel, rollbackBetCancel.getEvent(), rollbackBetCancel.getProducer());
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -215,7 +215,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      */
     @Override
     public void onRollbackBetSettlement(
-        OddsFeedSession sender,
+        UofSession sender,
         RollbackBetSettlement<SportEvent> rollbackBetSettlement
     ) {
         logBaseMessageData(
@@ -240,29 +240,6 @@ public class SimpleMessageListener implements OddsFeedListener {
     }
 
     /**
-     * This handler is called when the SDK detects that it has problems parsing a certain message.
-     * The handler can decide to take some custom action (shutting down everything etc. doing some
-     * special analysis of the raw message content etc) or just ignore the message. The SDK itself
-     * will always log that it has received an unparseable message and will ignore the message so a
-     * typical implementation can leave this handler empty.
-     *
-     * @param sender     the session
-     * @param rawMessage the raw message received from Betradar
-     * @param event      if the SDK was able to extract the event this message is for it will be here
-     *                   otherwise null
-     * @deprecated in favour of {{@link #onUnparsableMessage(OddsFeedSession, UnparsableMessage)}} from v2.0.11
-     */
-    @Override
-    @Deprecated
-    public void onUnparseableMessage(OddsFeedSession sender, byte[] rawMessage, SportEvent event) {
-        if (event != null) {
-            logger.info("Problems deserializing received message for event " + event.getId());
-        } else {
-            logger.info("Problems deserializing received message"); // probably a system message deserialization failure
-        }
-    }
-
-    /**
      * This handler is called when the SDK detects that it has problems parsing/dispatching a message.
      * The handler can decide to take some custom action (shutting down everything etc. doing some
      * special analysis of the raw message content etc) or just ignore the message. The SDK itself
@@ -273,7 +250,7 @@ public class SimpleMessageListener implements OddsFeedListener {
      * @since v2.0.11
      */
     @Override
-    public void onUnparsableMessage(OddsFeedSession sender, UnparsableMessage unparsableMessage) {
+    public void onUnparsableMessage(UofSession sender, UnparsableMessage unparsableMessage) {
         Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
         String message = String.format(
             "[%s]: event=%s, data=%s",
@@ -303,6 +280,9 @@ public class SimpleMessageListener implements OddsFeedListener {
         }
     }
 
+    @Override
+    public void onUserUnhandledException(UofSession sender, Exception exception) {}
+
     private void logBaseMessageData(Message message, SportEvent event, Producer producer) {
         logger.info(
             "Received " +
@@ -319,9 +299,9 @@ public class SimpleMessageListener implements OddsFeedListener {
             .append("Timestamps for ")
             .append(message.getClass().getSimpleName())
             .append(": [Timestamp=")
-            .append(message.getTimestamp())
+            .append(message.getTimestamps().getCreated())
             .append("=")
-            .append(new Date(message.getTimestamp()))
+            .append(new Date(message.getTimestamps().getCreated()))
             .append("; GeneratedAt=")
             .append(message.getTimestamps().getCreated())
             .append("=")

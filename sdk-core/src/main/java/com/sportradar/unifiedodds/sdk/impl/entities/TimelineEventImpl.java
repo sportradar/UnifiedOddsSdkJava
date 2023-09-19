@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 @SuppressWarnings({ "IllegalType", "NeedBraces", "UnnecessaryParentheses" })
 class TimelineEventImpl implements TimelineEvent {
 
-    private TimelineEventCI cacheItem;
+    private TimelineEventCi cacheItem;
     private Locale dataLocale;
 
-    TimelineEventImpl(TimelineEventCI cacheItem, Locale dataLocale) {
+    TimelineEventImpl(TimelineEventCi cacheItem, Locale dataLocale) {
         Preconditions.checkNotNull(cacheItem);
         Preconditions.checkNotNull(dataLocale);
 

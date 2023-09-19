@@ -7,15 +7,8 @@ package com.sportradar.unifiedodds.sdk.cfg;
 /**
  * A description of the environment
  */
-// Constant names should comply with a naming convention
 @SuppressWarnings({ "java:S115", "CyclomaticComplexity", "ReturnCount" })
 public enum Environment {
-    /**
-     * @deprecated in favour of {{@link #Integration}} from v2.0.18
-     */
-    @Deprecated
-    Staging,
-
     Integration,
 
     Production,
@@ -39,7 +32,6 @@ public enum Environment {
         }
 
         switch (environment) {
-            case "Staging":
             case "Integration":
                 return Integration;
             case "Production":

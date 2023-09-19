@@ -57,18 +57,14 @@ public interface MarketDescriptionManager {
      * Loads the invariant and variant list of market descriptions from the Sports API
      * @return true if the action succeeded
      */
-    default boolean loadMarketDescriptions() {
-        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
+    boolean loadMarketDescriptions();
 
     /**
      * Deletes the variant market description from cache
      * @param marketId the market id used to delete variant market description from the cache
      * @param variantValue the variant value used to delete variant market description from the cache
      */
-    default void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue) {
-        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
+    void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue);
 
     /**
      * Prefetch variant market descriptions in parallel
@@ -78,9 +74,7 @@ public interface MarketDescriptionManager {
      * @param markets the list of markets to be checked and fetched
      * @return the time needed for processing in ms
      */
-    default long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets) {
-        return parallelPrefetchVariantMarketDescriptions(markets, true, 100);
-    }
+    long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets);
 
     /**
      * Prefetch variant market descriptions in parallel
@@ -91,12 +85,10 @@ public interface MarketDescriptionManager {
      * @param onlyVariantMarkets prefetch only variant markets or all markets in the list (default: true)
      * @return the time needed for processing in ms
      */
-    default long parallelPrefetchVariantMarketDescriptions(
+    long parallelPrefetchVariantMarketDescriptions(
         List<? extends Market> markets,
         boolean onlyVariantMarkets
-    ) {
-        return parallelPrefetchVariantMarketDescriptions(markets, onlyVariantMarkets, 100);
-    }
+    );
 
     /**
      * Prefetch variant market descriptions in parallel
@@ -108,11 +100,9 @@ public interface MarketDescriptionManager {
      * @param threadPoolSize the size of the fixed thread pool (default: 100)
      * @return the time needed for processing in ms
      */
-    default long parallelPrefetchVariantMarketDescriptions(
+    long parallelPrefetchVariantMarketDescriptions(
         List<? extends Market> markets,
         boolean onlyVariantMarkets,
         int threadPoolSize
-    ) {
-        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
+    );
 }

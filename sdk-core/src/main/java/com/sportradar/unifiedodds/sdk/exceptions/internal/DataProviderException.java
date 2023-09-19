@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.exceptions.internal;
 /**
  * The following exception gets thrown when a communication error is detected (bad/empty API response,...)
  */
-public class DataProviderException extends SDKInternalException {
+public class DataProviderException extends SdkInternalException {
 
     public DataProviderException(String message, Throwable cause) {
         super(message, cause);

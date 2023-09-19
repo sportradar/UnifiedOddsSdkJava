@@ -6,15 +6,15 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.DrawCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.DrawCi;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.SportEntityFactoryImpl;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -25,15 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The basic implementation of a lottery
  */
-@SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "ClassFanOutComplexity",
-        "ConstantName",
-        "LineLength",
-        "MultipleStringLiterals",
-    }
-)
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "LineLength", "MultipleStringLiterals" })
 public class DrawImpl extends SportEventImpl implements Draw {
 
     private static final Logger logger = LoggerFactory.getLogger(DrawImpl.class);
@@ -44,8 +36,8 @@ public class DrawImpl extends SportEventImpl implements Draw {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     public DrawImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         List<Locale> locales,
         SportEventCache sportEventCache,
         SportEntityFactoryImpl sportEntityFactory,
@@ -70,14 +62,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public DrawStatus getStatus() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.getStatus();
+        return drawCi.getStatus();
     }
 
     /**
@@ -87,14 +79,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public List<DrawResult> getResults() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        List<DrawResultCI> results = drawCI.getResults(locales);
+        List<DrawResultCi> results = drawCi.getResults(locales);
 
         return results == null
             ? null
@@ -111,14 +103,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public Lottery getLottery() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        URN lotteryId = drawCI.getLotteryId();
+        Urn lotteryId = drawCi.getLotteryId();
         if (lotteryId == null) {
             handleException("Lottery id missing", null);
             return null;
@@ -148,14 +140,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public String getName(Locale locale) {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.getNames(locales).get(locale);
+        return drawCi.getNames(locales).get(locale);
     }
 
     /**
@@ -167,14 +159,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public Date getScheduledTime() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.getScheduled();
+        return drawCi.getScheduled();
     }
 
     /**
@@ -186,14 +178,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public Date getScheduledEndTime() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.getScheduledEnd();
+        return drawCi.getScheduledEnd();
     }
 
     /**
@@ -203,31 +195,31 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public Boolean isStartTimeTbd() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.isStartTimeTbd().isPresent() ? drawCI.isStartTimeTbd().get() : null;
+        return drawCi.isStartTimeTbd().isPresent() ? drawCi.isStartTimeTbd().get() : null;
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
-        DrawCI drawCI = loadDrawCI();
+    public Urn getReplacedBy() {
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.getReplacedBy();
+        return drawCi.getReplacedBy();
     }
 
     /**
@@ -237,7 +229,7 @@ public class DrawImpl extends SportEventImpl implements Draw {
      * @return - the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         if (super.getSportId() != null) {
             return super.getSportId();
         }
@@ -262,14 +254,14 @@ public class DrawImpl extends SportEventImpl implements Draw {
      */
     @Override
     public Integer getDisplayId() {
-        DrawCI drawCI = loadDrawCI();
+        DrawCi drawCi = loadDrawCi();
 
-        if (drawCI == null) {
+        if (drawCi == null) {
             handleException("DrawCI missing", null);
             return null;
         }
 
-        return drawCI.getDisplayId();
+        return drawCi.getDisplayId();
     }
 
     /**
@@ -277,11 +269,11 @@ public class DrawImpl extends SportEventImpl implements Draw {
      *
      * @return the associated cache item
      */
-    private DrawCI loadDrawCI() {
+    private DrawCi loadDrawCi() {
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(id);
-            if (eventCacheItem instanceof DrawCI) {
-                return (DrawCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof DrawCi) {
+                return (DrawCi) eventCacheItem;
             }
             handleException("loadDrawCI, CI type miss-match", null);
         } catch (CacheItemNotFoundException e) {

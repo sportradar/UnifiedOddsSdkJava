@@ -6,17 +6,13 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResultType;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
-import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +25,13 @@ public class CustomBetManagerImpl implements CustomBetManager {
 
     private static final Logger executionLogger = LoggerFactory.getLogger(CustomBetManagerImpl.class);
     private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkClientInteractionLog.class
+        LoggerDefinitions.UfSdkClientInteractionLog.class
     );
     private final DataRouterManager dataRouterManager;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     @Inject
-    CustomBetManagerImpl(DataRouterManager dataRouterManager, SDKInternalConfiguration configuration) {
+    CustomBetManagerImpl(DataRouterManager dataRouterManager, SdkInternalConfiguration configuration) {
         Preconditions.checkNotNull(dataRouterManager, "dataRouterManager");
         Preconditions.checkNotNull(configuration, "configuration");
 
@@ -50,7 +46,7 @@ public class CustomBetManagerImpl implements CustomBetManager {
 
     @Override
     @SuppressWarnings("IllegalCatch")
-    public AvailableSelections getAvailableSelections(URN eventId) throws CommunicationException {
+    public AvailableSelections getAvailableSelections(Urn eventId) throws CommunicationException {
         Preconditions.checkNotNull(eventId);
         clientInteractionLogger.info("CustomBetManager.getAvailableSelections({})", eventId);
 

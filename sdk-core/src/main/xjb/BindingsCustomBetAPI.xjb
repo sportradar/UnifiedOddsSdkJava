@@ -13,9 +13,9 @@
         </jaxb:globalBindings>
         <jaxb:schemaBindings>
             <jaxb:nameXmlTransform>
-                <jaxb:typeName prefix="CAPI"/>
-                <jaxb:anonymousTypeName prefix="CAPI"/>
-                <jaxb:elementName prefix="CAPI"/>
+                <jaxb:typeName prefix="Capi"/>
+                <jaxb:anonymousTypeName prefix="Capi"/>
+                <jaxb:elementName prefix="Capi"/>
             </jaxb:nameXmlTransform>
         </jaxb:schemaBindings>
     </jaxb:bindings>

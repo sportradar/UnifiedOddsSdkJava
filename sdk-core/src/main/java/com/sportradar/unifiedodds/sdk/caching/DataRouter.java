@@ -4,13 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,78 +18,78 @@ import java.util.Locale;
  * Created on 20/10/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity" })
+@SuppressWarnings({ "ClassFanOutComplexity" })
 public interface DataRouter {
-    void onSummaryFetched(URN requestedId, Object data, Locale locale, CacheItem requester);
+    void onSummaryFetched(Urn requestedId, Object data, Locale locale, CacheItem requester);
 
-    void onFixtureFetched(URN fixtureId, SAPIFixture fixture, Locale locale, CacheItem requester);
+    void onFixtureFetched(Urn fixtureId, SapiFixture fixture, Locale locale, CacheItem requester);
 
-    void onAllTournamentsListFetched(SAPITournamentsEndpoint endpoint, Locale locale);
+    void onAllTournamentsListFetched(SapiTournamentsEndpoint endpoint, Locale locale);
 
     void onTournamentScheduleFetched(Object endpoint, Locale locale);
 
-    void onDateScheduleFetched(SAPIScheduleEndpoint endpoint, Locale locale);
+    void onDateScheduleFetched(SapiScheduleEndpoint endpoint, Locale locale);
 
-    void onSportsListFetched(SAPISportsEndpoint endpoint, Locale locale);
+    void onSportsListFetched(SapiSportsEndpoint endpoint, Locale locale);
 
     void onPlayerFetched(
-        URN playerId,
-        SAPIPlayerExtended data,
+        Urn playerId,
+        SapiPlayerExtended data,
         Locale locale,
         CacheItem requester,
-        URN competitorId
+        Urn competitorId
     );
 
     void onCompetitorFetched(
-        URN competitorId,
-        SAPICompetitorProfileEndpoint data,
+        Urn competitorId,
+        SapiCompetitorProfileEndpoint data,
         Locale locale,
         CacheItem requester
     );
 
     void onSimpleTeamFetched(
-        URN competitorId,
-        SAPISimpleTeamProfileEndpoint data,
+        Urn competitorId,
+        SapiSimpleTeamProfileEndpoint data,
         Locale locale,
         CacheItem requester
     );
 
-    void onTournamentSeasonsFetched(URN tournamentId, SAPITournamentSeasons data, Locale locale);
+    void onTournamentSeasonsFetched(Urn tournamentId, SapiTournamentSeasons data, Locale locale);
 
     void onMatchTimelineFetched(
-        URN matchId,
-        SAPIMatchTimelineEndpoint endpoint,
+        Urn matchId,
+        SapiMatchTimelineEndpoint endpoint,
         Locale locale,
         CacheItem requester
     );
 
-    void onSportCategoriesFetched(SAPISportCategoriesEndpoint endpoint, Locale locale, CacheItem requester);
+    void onSportCategoriesFetched(SapiSportCategoriesEndpoint endpoint, Locale locale, CacheItem requester);
 
-    void onDrawSummaryFetched(URN drawId, SAPIDrawSummary endpoint, Locale locale, CacheItem requester);
+    void onDrawSummaryFetched(Urn drawId, SapiDrawSummary endpoint, Locale locale, CacheItem requester);
 
-    void onDrawFixtureFetched(URN drawId, SAPIDrawFixture endpoint, Locale locale, CacheItem requester);
+    void onDrawFixtureFetched(Urn drawId, SapiDrawFixture endpoint, Locale locale, CacheItem requester);
 
-    void onAllLotteriesListFetched(SAPILotteries endpoint, Locale locale);
+    void onAllLotteriesListFetched(SapiLotteries endpoint, Locale locale);
 
-    void onLotteryScheduleFetched(SAPILotterySchedule endpoint, Locale locale, CacheItem requester);
+    void onLotteryScheduleFetched(SapiLotterySchedule endpoint, Locale locale, CacheItem requester);
 
     void onSportEventStatusFetched(
-        URN eventId,
-        SportEventStatusDTO statusDTO,
+        Urn eventId,
+        SportEventStatusDto statusDto,
         String statusOnEvent,
         String source
     );
 
-    void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections);
+    void onAvailableSelectionsFetched(Urn id, CapiAvailableSelections availableSelections);
 
-    void onCalculateProbabilityFetched(List<Selection> selections, CAPICalculationResponse calculation);
+    void onCalculateProbabilityFetched(List<Selection> selections, CapiCalculationResponse calculation);
 
     void onCalculateProbabilityFilterFetched(
         List<Selection> selections,
-        CAPIFilteredCalculationResponse calculation
+        CapiFilteredCalculationResponse calculation
     );
 
-    void onListSportEventsFetched(SAPIScheduleEndpoint endpoint, Locale locale);
+    void onListSportEventsFetched(SapiScheduleEndpoint endpoint, Locale locale);
 
-    void onSportTournamentsFetched(URN sportId, SAPISportTournamentsEndpoint data, Locale locale);
+    void onSportTournamentsFetched(Urn sportId, SapiSportTournamentsEndpoint data, Locale locale);
 }

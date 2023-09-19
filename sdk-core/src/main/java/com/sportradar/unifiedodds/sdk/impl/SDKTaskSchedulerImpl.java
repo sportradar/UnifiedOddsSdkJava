@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,12 +16,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The main SDK task scheduler
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "ConstantName", "LineLength", "ReturnCount", "UnnecessaryParentheses" }
-)
-public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
+@SuppressWarnings({ "ConstantName", "LineLength", "ReturnCount", "UnnecessaryParentheses" })
+public class SdkTaskSchedulerImpl implements SdkTaskScheduler {
 
-    private static final Logger logger = LoggerFactory.getLogger(SDKTaskSchedulerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdkTaskSchedulerImpl.class);
 
     /**
      * The actual {@link ScheduledExecutorService} instance used to initiate tasks
@@ -31,7 +29,7 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
     /**
      * A set of tasks that should be started when the instance is opened with {@link #open()}
      */
-    private final Set<SDKTask> tasksForSchedule = Sets.newHashSet();
+    private final Set<SdkTask> tasksForSchedule = Sets.newHashSet();
 
     /**
      * An indication if the instance is open
@@ -49,9 +47,9 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
      * @param scheduler the actual {@link ScheduledExecutorService} instance which will be used to schedule tasks
      * @param sdkInternalConfiguration the internal SDK configuration
      */
-    public SDKTaskSchedulerImpl(
+    public SdkTaskSchedulerImpl(
         ScheduledExecutorService scheduler,
-        SDKInternalConfiguration sdkInternalConfiguration
+        SdkInternalConfiguration sdkInternalConfiguration
     ) {
         Preconditions.checkNotNull(scheduler);
         Preconditions.checkNotNull(sdkInternalConfiguration);
@@ -108,7 +106,7 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
             return;
         }
 
-        SDKTask sdkTask = new SDKTask(name, command, initialDelay, period, unit);
+        SdkTask sdkTask = new SdkTask(name, command, initialDelay, period, unit);
 
         if (isOpen) {
             scheduleTask(sdkTask);
@@ -137,7 +135,7 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
      *
      * @param sdkTask the task which should be initialised
      */
-    private void scheduleTask(SDKTask sdkTask) {
+    private void scheduleTask(SdkTask sdkTask) {
         Preconditions.checkNotNull(sdkTask);
 
         logger.info("Scheduling SDK task -> {}", sdkTask);
@@ -147,7 +145,7 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
     /**
      * A wrapper class used for storing the tasks waiting for the {@link #open()}
      */
-    private static class SDKTask {
+    private static class SdkTask {
 
         private final String name;
         private final Runnable command;
@@ -155,7 +153,7 @@ public class SDKTaskSchedulerImpl implements SDKTaskScheduler {
         private final long period;
         private final TimeUnit unit;
 
-        SDKTask(String name, Runnable command, long initialDelay, long period, TimeUnit unit) {
+        SdkTask(String name, Runnable command, long initialDelay, long period, TimeUnit unit) {
             Preconditions.checkNotNull(name);
             Preconditions.checkNotNull(command);
             Preconditions.checkNotNull(unit);

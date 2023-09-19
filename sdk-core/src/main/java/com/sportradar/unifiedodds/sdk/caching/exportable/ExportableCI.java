@@ -8,13 +8,13 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableCi implements Serializable {
 
     private String id;
     private Map<Locale, String> names;
 
-    public ExportableCI(String id, Map<Locale, String> names) {
+    public ExportableCi(String id, Map<Locale, String> names) {
         this.id = id;
         this.names = names;
     }

@@ -7,16 +7,12 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
 import java.util.Arrays;
 import java.util.Set;
 
-/**
- * Created on 03/07/2017.
- * // TODO @eti: Javadoc
- */
 @SuppressWarnings({ "UnnecessaryParentheses" })
 public class ProducerImpl implements Producer {
 
@@ -31,7 +27,7 @@ public class ProducerImpl implements Producer {
     private final int statefulRecoveryWindowInMinutes;
     private RecoveryInfo recoveryInfo;
 
-    ProducerImpl(ProducerData pData) {
+    public ProducerImpl(ProducerData pData) {
         Preconditions.checkNotNull(pData);
 
         producerData = pData;
@@ -46,7 +42,7 @@ public class ProducerImpl implements Producer {
         recoveryInfo = producerData.getRecoveryInfo();
     }
 
-    private ProducerImpl(int unknownProducerId, SDKInternalConfiguration configuration) {
+    private ProducerImpl(int unknownProducerId, SdkInternalConfiguration configuration) {
         Preconditions.checkArgument(unknownProducerId > 0);
         Preconditions.checkNotNull(configuration);
 
@@ -62,7 +58,7 @@ public class ProducerImpl implements Producer {
         statefulRecoveryWindowInMinutes = ProducerData.DEFAULT_STATEFUL_RECOVERY_WINDOW_IN_MINUTES;
     }
 
-    static Producer buildUnknownProducer(int unknownProducerId, SDKInternalConfiguration configuration) {
+    static Producer buildUnknownProducer(int unknownProducerId, SdkInternalConfiguration configuration) {
         return new ProducerImpl(unknownProducerId, configuration);
     }
 

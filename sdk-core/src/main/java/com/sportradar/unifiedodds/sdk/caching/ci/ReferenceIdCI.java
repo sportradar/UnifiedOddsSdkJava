@@ -13,7 +13,6 @@ import java.util.Map;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "CyclomaticComplexity",
         "ExecutableStatementCount",
         "HiddenField",
@@ -22,7 +21,7 @@ import java.util.Map;
         "NestedIfDepth",
     }
 )
-public class ReferenceIdCI {
+public class ReferenceIdCi {
 
     /**
      * The betradarId property backing field
@@ -50,11 +49,11 @@ public class ReferenceIdCI {
     private ImmutableMap<String, String> referenceIds;
 
     /**
-     * Initializes a new instance of the {@link ReferenceIdCI} class
+     * Initializes a new instance of the {@link ReferenceIdCi} class
      *
      * @param newReferenceIds - A {@link Map} with the available references
      */
-    public ReferenceIdCI(Map<String, String> newReferenceIds) {
+    public ReferenceIdCi(Map<String, String> newReferenceIds) {
         if (newReferenceIds != null) {
             merge(newReferenceIds);
         } else {

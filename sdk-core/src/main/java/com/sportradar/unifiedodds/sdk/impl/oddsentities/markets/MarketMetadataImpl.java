@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFMarketMetadata;
+import com.sportradar.uf.datamodel.UfMarketMetadata;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketMetadata;
 
 /**
@@ -19,7 +19,7 @@ public class MarketMetadataImpl implements MarketMetadata {
     private final Long endTime;
     private final Long aamsId;
 
-    MarketMetadataImpl(UFMarketMetadata marketMetadata) {
+    MarketMetadataImpl(UfMarketMetadata marketMetadata) {
         Preconditions.checkNotNull(marketMetadata);
 
         nextBetStop = marketMetadata.getNextBetstop();

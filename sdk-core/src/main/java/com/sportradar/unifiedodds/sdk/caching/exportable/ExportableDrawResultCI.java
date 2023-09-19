@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableDrawResultCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableDrawResultCi implements Serializable {
 
     private Integer value;
     private Map<Locale, String> names;
 
-    public ExportableDrawResultCI(Integer value, Map<Locale, String> names) {
+    public ExportableDrawResultCi(Integer value, Map<Locale, String> names) {
         this.value = value;
         this.names = names;
     }

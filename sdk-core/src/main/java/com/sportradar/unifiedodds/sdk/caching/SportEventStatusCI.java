@@ -8,10 +8,10 @@ import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
-import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDTO;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatisticsDTO;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDto;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatisticsDto;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -19,42 +19,41 @@ import java.util.Map;
 /**
  * A sport event status cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface SportEventStatusCI {
+public interface SportEventStatusCi {
     /**
-     * Returns the {@link SportEventStatusDTO} received from the feed
+     * Returns the {@link SportEventStatusDto} received from the feed
      *
-     * @return the {@link SportEventStatusDTO} received from the feed
+     * @return the {@link SportEventStatusDto} received from the feed
      */
-    SportEventStatusDTO getFeedStatusDTO();
+    SportEventStatusDto getFeedStatusDto();
 
     /**
-     * Sets the {@link SportEventStatusDTO} received from the feed
+     * Sets the {@link SportEventStatusDto} received from the feed
      *
-     * @param feedDTO the {@link SportEventStatusDTO} received from the feed
+     * @param feedDto the {@link SportEventStatusDto} received from the feed
      */
-    void setFeedStatus(SportEventStatusDTO feedDTO);
+    void setFeedStatus(SportEventStatusDto feedDto);
 
     /**
-     * Returns the {@link SportEventStatusDTO} received from the Sports API
+     * Returns the {@link SportEventStatusDto} received from the Sports API
      *
-     * @return the {@link SportEventStatusDTO} received from the Sports API
+     * @return the {@link SportEventStatusDto} received from the Sports API
      */
-    SportEventStatusDTO getSapiStatusDTO();
+    SportEventStatusDto getSapiStatusDto();
 
     /**
-     * Sets the {@link SportEventStatusDTO} received from the Sports API
+     * Sets the {@link SportEventStatusDto} received from the Sports API
      *
-     * @param sapiDTO the {@link SportEventStatusDTO} received from the Sports API
+     * @param sapiDto the {@link SportEventStatusDto} received from the Sports API
      */
-    void setSapiStatus(SportEventStatusDTO sapiDTO);
+    void setSapiStatus(SportEventStatusDto sapiDto);
 
     /**
      * Returns the sport event winner identifier
      *
      * @return the sport event winner identifier, if available; otherwise null
      */
-    URN getWinnerId();
+    Urn getWinnerId();
 
     /**
      * Returns an {@link EventStatus} describing the status of the associated sport event
@@ -98,7 +97,7 @@ public interface SportEventStatusCI {
      *
      * @return - a {@link List} of period scores
      */
-    List<PeriodScoreDTO> getPeriodScores();
+    List<PeriodScoreDto> getPeriodScores();
 
     /**
      * Returns an {@link EventClock} instance describing the timings in the current event
@@ -115,11 +114,11 @@ public interface SportEventStatusCI {
     List<EventResult> getEventResults();
 
     /**
-     * Returns a {@link SportEventStatisticsDTO} instance describing the associated event statistics
+     * Returns a {@link SportEventStatisticsDto} instance describing the associated event statistics
      *
      * @return an object describing the associated event statistics if available; otherwise null
      */
-    SportEventStatisticsDTO getSportEventStatisticsDTO();
+    SportEventStatisticsDto getSportEventStatisticsDto();
 
     /**
      * Returns an unmodifiable {@link Map} which contains all the additional sport event status properties

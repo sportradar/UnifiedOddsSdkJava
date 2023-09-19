@@ -15,7 +15,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketDefinition;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +31,7 @@ class MarketDefinitionImpl implements MarketDefinition {
 
     private final SportEvent sportEvent;
     private final MarketDescription marketDescriptor;
-    private final URN sportId;
+    private final Urn sportId;
     private final int producerId;
     private final Map<String, String> specifiersMap;
     private final MarketDescriptionProvider descriptorProvider;
@@ -41,7 +41,7 @@ class MarketDefinitionImpl implements MarketDefinition {
     MarketDefinitionImpl(
         SportEvent sportEvent,
         MarketDescription marketDescriptor,
-        URN sportId,
+        Urn sportId,
         int producerId,
         Map<String, String> specifiersMap,
         MarketDescriptionProvider descriptorProvider,
@@ -64,12 +64,6 @@ class MarketDefinitionImpl implements MarketDefinition {
         this.descriptorProvider = descriptorProvider;
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
-    }
-
-    @Deprecated
-    @Override
-    public String getIncludesOutcomesOfType() {
-        return marketDescriptor.getIncludesOutcomesOfType();
     }
 
     @Override

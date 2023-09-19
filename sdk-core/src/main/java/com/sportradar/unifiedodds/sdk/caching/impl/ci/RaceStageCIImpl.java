@@ -13,21 +13,21 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.StageCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.StageCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.ChildRaceCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceStageCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceStageCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "CyclomaticComplexity",
@@ -57,9 +56,9 @@ import org.slf4j.LoggerFactory;
         "VisibilityModifier",
     }
 )
-class RaceStageCIImpl implements StageCI, ExportableCacheItem {
+class RaceStageCiImpl implements StageCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(RaceStageCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(RaceStageCiImpl.class);
 
     /**
      * A {@link Locale} specifying the default language
@@ -67,9 +66,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     private final Locale defaultLocale;
 
     /**
-     * An {@link URN} specifying the id of the associated sport event
+     * An {@link Urn} specifying the id of the associated sport event
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -102,44 +101,44 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      * A {@link List} of competitorIds that participate in the sport event
      * associated with the current instance
      */
-    private List<URN> competitorIds;
+    private List<Urn> competitorIds;
 
     /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
-    private Map<URN, ReferenceIdCI> competitorsReferences;
+    private Map<Urn, ReferenceIdCi> competitorsReferences;
 
     /**
      * A {@link List} of competitor identifiers which are marked as virtual in the sport event
      */
-    private List<URN> competitorVirtual;
+    private List<Urn> competitorVirtual;
 
     /**
-     * The {@link URN} specifying the id of the parent stage
+     * The {@link Urn} specifying the id of the parent stage
      */
-    private URN parentStageId;
+    private Urn parentStageId;
 
     /**
      * The associated category id (extracted from the parent tournament - if available
      */
-    private URN categoryId;
+    private Urn categoryId;
 
     /**
-     * A {@link VenueCI} instance representing a venue where the sport event associated with the
+     * A {@link VenueCi} instance representing a venue where the sport event associated with the
      * current instance will take place
      */
-    private VenueCI venue;
+    private VenueCi venue;
 
     /**
-     * A {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * A {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      */
-    private SportEventConditionsCI conditions;
+    private SportEventConditionsCi conditions;
 
     /**
-     * A {@link List} of {@link ChildRaceCI} representing child races of the race represented by the current instance
+     * A {@link List} of {@link ChildRaceCi} representing child races of the race represented by the current instance
      */
-    private List<URN> childStagesIds;
+    private List<Urn> childStagesIds;
 
     /**
      * A {@link Map} storing the available sport event names
@@ -179,7 +178,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     /**
      * The {@link Cache} used to cache the sport events fixture timestamps
      */
-    private final Cache<URN, Date> fixtureTimestampCache;
+    private final Cache<Urn, Date> fixtureTimestampCache;
 
     /**
      * The {@link Boolean} indicating if the start time to be determined is set
@@ -187,9 +186,9 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     private Boolean startTimeTbd;
 
     /**
-     * The {@link URN} indicating the replacement sport event
+     * The {@link Urn} indicating the replacement sport event
      */
-    private URN replacedBy;
+    private Urn replacedBy;
 
     /**
      * The liveOdds
@@ -204,17 +203,17 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     /**
      * List of additional parents ids
      */
-    List<URN> additionalParentIds;
+    List<Urn> additionalParentIds;
 
     @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
-    RaceStageCIImpl(
-        URN id,
+    RaceStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPISportEvent endpointData,
+        SapiSportEvent endpointData,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -236,21 +235,21 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy =
-            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
+            endpointData.getReplacedBy() == null ? null : Urn.parse(endpointData.getReplacedBy());
 
         this.parentStageId =
             endpointData.getParent() != null
-                ? URN.parse(endpointData.getParent().getId())
+                ? Urn.parse(endpointData.getParent().getId())
                 : (
                     endpointData.getTournament() != null &&
                         !endpointData.getTournament().getId().equals(endpointData.getId())
-                        ? URN.parse(endpointData.getTournament().getId())
+                        ? Urn.parse(endpointData.getTournament().getId())
                         : null
                 );
 
         this.categoryId =
             endpointData.getTournament() != null && endpointData.getTournament().getCategory() != null
-                ? URN.parse(endpointData.getTournament().getCategory().getId())
+                ? Urn.parse(endpointData.getTournament().getCategory().getId())
                 : null;
 
         this.competitorIds =
@@ -260,7 +259,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                     .getCompetitors()
                     .getCompetitor()
                     .stream()
-                    .map(c -> URN.parse(c.getId()))
+                    .map(c -> Urn.parse(c.getId()))
                     .collect(Collectors.toList());
         loadedCompetitorLocales.add(dataLocale);
 
@@ -271,7 +270,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                     .getRaces()
                     .getSportEvent()
                     .stream()
-                    .map(se -> URN.parse(se.getId()))
+                    .map(se -> Urn.parse(se.getId()))
                     .collect(Collectors.toList());
 
         if (endpointData.getName() != null) {
@@ -303,20 +302,20 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             endpointData
                 .getAdditionalParents()
                 .getParent()
-                .forEach(f -> additionalParentIds.add(URN.parse(f.getId())));
+                .forEach(f -> additionalParentIds.add(Urn.parse(f.getId())));
         } else {
             additionalParentIds = null;
         }
     }
 
-    RaceStageCIImpl(
-        URN id,
+    RaceStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIStageSummaryEndpoint endpointData,
+        SapiStageSummaryEndpoint endpointData,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         this(
             id,
@@ -335,13 +334,13 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                     endpointData.getSportEvent().getSportEventConditions() != null &&
                     endpointData.getSportEvent().getSportEventConditions().getVenue() != null
                 )
-                ? new VenueCI(endpointData.getSportEvent().getSportEventConditions().getVenue(), dataLocale)
+                ? new VenueCi(endpointData.getSportEvent().getSportEventConditions().getVenue(), dataLocale)
                 : null;
 
         this.conditions =
             endpointData.getSportEvent().getSportEventConditions() == null
                 ? null
-                : new SportEventConditionsCI(
+                : new SportEventConditionsCi(
                     endpointData.getSportEvent().getSportEventConditions(),
                     dataLocale
                 );
@@ -349,21 +348,21 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         loadedSummaryLocales.add(dataLocale);
     }
 
-    RaceStageCIImpl(
-        URN id,
+    RaceStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIFixture endpointData,
+        SapiFixture endpointData,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         this(
             id,
             dataRouterManager,
             defaultLocale,
             exceptionHandlingStrategy,
-            (SAPISportEvent) endpointData,
+            (SapiSportEvent) endpointData,
             dataLocale,
             fixtureTimestampCache
         );
@@ -371,19 +370,19 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         Preconditions.checkNotNull(dataLocale);
 
         this.venue =
-            endpointData.getVenue() == null ? null : new VenueCI(endpointData.getVenue(), dataLocale);
+            endpointData.getVenue() == null ? null : new VenueCi(endpointData.getVenue(), dataLocale);
 
         loadedFixtureLocales.add(dataLocale);
     }
 
-    RaceStageCIImpl(
-        URN id,
+    RaceStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPISportEventChildren.SAPISportEvent endpointData,
+        SapiSportEventChildren.SapiSportEvent endpointData,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -410,7 +409,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy =
-            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
+            endpointData.getReplacedBy() == null ? null : Urn.parse(endpointData.getReplacedBy());
 
         this.fixtureTimestampCache = fixtureTimestampCache;
 
@@ -423,14 +422,14 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         additionalParentIds = null;
     }
 
-    RaceStageCIImpl(
-        URN id,
+    RaceStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIParentStage endpointData,
+        SapiParentStage endpointData,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -451,7 +450,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy =
-            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
+            endpointData.getReplacedBy() == null ? null : Urn.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
@@ -464,11 +463,11 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
     }
 
-    RaceStageCIImpl(
-        ExportableRaceStageCI exportable,
+    RaceStageCiImpl(
+        ExportableRaceStageCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
@@ -480,13 +479,13 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.fixtureTimestampCache = fixtureTimestampCache;
 
         this.defaultLocale = exportable.getDefaultLocale();
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.bookingStatus = exportable.getBookingStatus();
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
         this.competitorIds =
             exportable.getCompetitorIds() != null
-                ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getCompetitorIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.competitorsReferences =
             exportable.getCompetitorsReferences() != null
@@ -495,20 +494,20 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                     .entrySet()
                     .stream()
                     .collect(
-                        Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))
+                        Collectors.toMap(r -> Urn.parse(r.getKey()), r -> new ReferenceIdCi(r.getValue()))
                     )
                 : null;
         this.parentStageId =
-            exportable.getParentStageId() != null ? URN.parse(exportable.getParentStageId()) : null;
-        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
-        this.venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
+            exportable.getParentStageId() != null ? Urn.parse(exportable.getParentStageId()) : null;
+        this.categoryId = exportable.getCategoryId() != null ? Urn.parse(exportable.getCategoryId()) : null;
+        this.venue = exportable.getVenue() != null ? new VenueCi(exportable.getVenue()) : null;
         this.conditions =
             exportable.getConditions() != null
-                ? new SportEventConditionsCI(exportable.getConditions())
+                ? new SportEventConditionsCi(exportable.getConditions())
                 : null;
         this.childStagesIds =
             exportable.getStagesIds() != null
-                ? exportable.getStagesIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getStagesIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.sportEventNames.putAll(exportable.getNames());
         this.stageType = exportable.getStageType();
@@ -516,26 +515,26 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
         this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
         this.startTimeTbd = exportable.getStartTimeTbd();
-        this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
+        this.replacedBy = exportable.getReplacedBy() != null ? Urn.parse(exportable.getReplacedBy()) : null;
         this.liveOdds = exportable.getLiveOdds();
         this.sportEventType = exportable.getSportEventType();
         this.additionalParentIds =
             exportable.getAdditionalParentsIds() != null
-                ? exportable.getAdditionalParentsIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getAdditionalParentsIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.competitorVirtual =
             exportable.getCompetitorVirtual() != null
-                ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getCompetitorVirtual().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -575,10 +574,10 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     /**
      * Returns the identifier of the stage parent
      *
-     * @return the {@link URN} identifier of the parent stage if available; otherwise null
+     * @return the {@link Urn} identifier of the parent stage if available; otherwise null
      */
     @Override
-    public URN getParentStageId() {
+    public Urn getParentStageId() {
         if (parentStageId != null) {
             return parentStageId;
         }
@@ -598,7 +597,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      * @return a {@link List} known child stages identifiers if available; otherwise null
      */
     @Override
-    public List<URN> getStagesIds() {
+    public List<Urn> getStagesIds() {
         if (childStagesIds != null) {
             return ImmutableList.copyOf(childStagesIds);
         }
@@ -632,12 +631,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the id of the parent category
+     * Returns the {@link Urn} specifying the id of the parent category
      *
-     * @return the {@link URN} specifying the id of the parent category
+     * @return the {@link Urn} specifying the id of the parent category
      */
     @Override
-    public URN getCategoryId() {
+    public Urn getCategoryId() {
         if (categoryId != null) {
             return categoryId;
         }
@@ -676,7 +675,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
      * associated with the current instance
      */
     @Override
-    public List<URN> getCompetitorIds(List<Locale> locales) {
+    public List<Urn> getCompetitorIds(List<Locale> locales) {
         if (loadedCompetitorLocales.containsAll(locales)) {
             return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
         }
@@ -687,14 +686,14 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link VenueCI} instance representing a venue where the sport event associated with the
+     * Returns a {@link VenueCi} instance representing a venue where the sport event associated with the
      * current instance will take place
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link VenueCI} instance representing a venue where the associated sport event
+     * @return a {@link VenueCi} instance representing a venue where the associated sport event
      */
     @Override
-    public VenueCI getVenue(List<Locale> locales) {
+    public VenueCi getVenue(List<Locale> locales) {
         if (venue != null && venue.hasTranslationsFor(locales)) {
             return venue;
         }
@@ -709,13 +708,13 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * Returns a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * @return a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      */
     @Override
-    public SportEventConditionsCI getConditions(List<Locale> locales) {
+    public SportEventConditionsCi getConditions(List<Locale> locales) {
         // conditions available only on summary locales
         if (loadedSummaryLocales.containsAll(locales)) {
             return conditions;
@@ -727,7 +726,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Fetch a {@link SportEventStatusDTO} via event summary
+     * Fetch a {@link SportEventStatusDto} via event summary
      */
     @Override
     public void fetchSportEventStatus() {
@@ -823,12 +822,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         if (replacedBy != null) {
             return replacedBy;
         }
@@ -844,16 +843,16 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (endpointData instanceof SAPIFixture) {
-            internalMerge((SAPIFixture) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPISportEvent) {
-            internalMerge((SAPISportEvent) endpointData, dataLocale, false);
-        } else if (endpointData instanceof SAPIStageSummaryEndpoint) {
-            internalMerge((SAPIStageSummaryEndpoint) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPISportEventChildren.SAPISportEvent) {
-            internalMerge(((SAPISportEventChildren.SAPISportEvent) endpointData), dataLocale);
-        } else if (endpointData instanceof SAPIParentStage) {
-            internalMerge(((SAPIParentStage) endpointData), dataLocale);
+        if (endpointData instanceof SapiFixture) {
+            internalMerge((SapiFixture) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiSportEvent) {
+            internalMerge((SapiSportEvent) endpointData, dataLocale, false);
+        } else if (endpointData instanceof SapiStageSummaryEndpoint) {
+            internalMerge((SapiStageSummaryEndpoint) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiSportEventChildren.SapiSportEvent) {
+            internalMerge(((SapiSportEventChildren.SapiSportEvent) endpointData), dataLocale);
+        } else if (endpointData instanceof SapiParentStage) {
+            internalMerge(((SapiParentStage) endpointData), dataLocale);
         }
     }
 
@@ -866,12 +865,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      *
-     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      */
     @Override
-    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+    public Map<Urn, ReferenceIdCi> getCompetitorsReferences() {
         if (competitorsReferences == null || loadedCompetitorLocales.isEmpty()) {
             requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
         }
@@ -880,12 +879,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
      *
-     * @return list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     * @return list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
      */
     @Override
-    public List<URN> getCompetitorsVirtual() {
+    public List<Urn> getCompetitorsVirtual() {
         if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
             return competitorVirtual;
         }
@@ -928,7 +927,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     @Override
-    public List<URN> getAdditionalParentStages(List<Locale> locales) {
+    public List<Urn> getAdditionalParentStages(List<Locale> locales) {
         if (additionalParentIds != null) {
             return additionalParentIds;
         }
@@ -943,12 +942,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the provided {@link SAPIStageSummaryEndpoint}
+     * Merges the current instance with the provided {@link SapiStageSummaryEndpoint}
      *
      * @param endpointData the endpoint data which should be merged into the current instance
      * @param dataLocale the locale in which the data is provided
      */
-    private void internalMerge(SAPIStageSummaryEndpoint endpointData, Locale dataLocale) {
+    private void internalMerge(SapiStageSummaryEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -962,7 +961,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             if (endpointData.getSportEvent().getSportEventConditions().getVenue() != null) {
                 if (venue == null) {
                     venue =
-                        new VenueCI(
+                        new VenueCi(
                             endpointData.getSportEvent().getSportEventConditions().getVenue(),
                             dataLocale
                         );
@@ -976,7 +975,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
             if (conditions == null) {
                 conditions =
-                    new SportEventConditionsCI(
+                    new SportEventConditionsCi(
                         endpointData.getSportEvent().getSportEventConditions(),
                         dataLocale
                     );
@@ -989,12 +988,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the {@link SAPIFixture}
+     * Merges the current instance with the {@link SapiFixture}
      *
-     * @param endpointData - the {@link SAPIFixture} containing the data to be merged
+     * @param endpointData - the {@link SapiFixture} containing the data to be merged
      * @param dataLocale - the {@link Locale} in which the data is provided
      */
-    private void internalMerge(SAPIFixture endpointData, Locale dataLocale) {
+    private void internalMerge(SapiFixture endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -1006,7 +1005,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
 
         if (endpointData.getVenue() != null) {
             if (venue == null) {
-                venue = new VenueCI(endpointData.getVenue(), dataLocale);
+                venue = new VenueCi(endpointData.getVenue(), dataLocale);
             } else {
                 venue.merge(endpointData.getVenue(), dataLocale);
             }
@@ -1016,13 +1015,13 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the {@link SAPISportEvent}
+     * Merges the current instance with the {@link SapiSportEvent}
      *
-     * @param sportEvent - the {@link SAPISportEvent} containing the data to be merged
+     * @param sportEvent - the {@link SapiSportEvent} containing the data to be merged
      * @param locale - the {@link Locale} in which the data is provided
      */
     @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
-    private void internalMerge(SAPISportEvent sportEvent, Locale locale, boolean isFixtureEndpoint) {
+    private void internalMerge(SapiSportEvent sportEvent, Locale locale, boolean isFixtureEndpoint) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(locale);
 
@@ -1041,16 +1040,16 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.startTimeTbd =
             sportEvent.isStartTimeTbd() == null ? this.startTimeTbd : sportEvent.isStartTimeTbd();
         this.replacedBy =
-            sportEvent.getReplacedBy() == null ? this.replacedBy : URN.parse(sportEvent.getReplacedBy());
+            sportEvent.getReplacedBy() == null ? this.replacedBy : Urn.parse(sportEvent.getReplacedBy());
 
         if (sportEvent.getParent() != null) {
-            parentStageId = URN.parse(sportEvent.getParent().getId());
+            parentStageId = Urn.parse(sportEvent.getParent().getId());
         } else if (sportEvent.getTournament() != null) {
-            parentStageId = URN.parse(sportEvent.getTournament().getId());
+            parentStageId = Urn.parse(sportEvent.getTournament().getId());
         }
 
         if (sportEvent.getTournament() != null && sportEvent.getTournament().getCategory() != null) {
-            categoryId = URN.parse(sportEvent.getTournament().getCategory().getId());
+            categoryId = Urn.parse(sportEvent.getTournament().getCategory().getId());
         }
 
         if (sportEvent.getCompetitors() != null && sportEvent.getCompetitors().getCompetitor() != null) {
@@ -1059,7 +1058,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                     .getCompetitors()
                     .getCompetitor()
                     .stream()
-                    .map(c -> URN.parse(c.getId()))
+                    .map(c -> Urn.parse(c.getId()))
                     .collect(Collectors.toList());
             loadedCompetitorLocales.add(locale);
             competitorsReferences =
@@ -1067,12 +1066,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                     sportEvent.getCompetitors().getCompetitor(),
                     competitorsReferences
                 );
-            for (SAPITeamCompetitor teamCompetitor : sportEvent.getCompetitors().getCompetitor()) {
+            for (SapiTeamCompetitor teamCompetitor : sportEvent.getCompetitors().getCompetitor()) {
                 if (teamCompetitor.isVirtual() != null && teamCompetitor.isVirtual()) {
                     if (competitorVirtual == null) {
                         competitorVirtual = new ArrayList<>();
                     }
-                    competitorVirtual.add(URN.parse(teamCompetitor.getId()));
+                    competitorVirtual.add(Urn.parse(teamCompetitor.getId()));
                 }
             }
         }
@@ -1085,7 +1084,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 .getRaces()
                 .getSportEvent()
                 .forEach(se -> {
-                    URN seId = URN.parse(se.getId());
+                    Urn seId = Urn.parse(se.getId());
                     if (!childStagesIds.contains(seId)) {
                         childStagesIds.add(seId);
                     }
@@ -1125,17 +1124,17 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             sportEvent
                 .getAdditionalParents()
                 .getParent()
-                .forEach(f -> additionalParentIds.add(URN.parse(f.getId())));
+                .forEach(f -> additionalParentIds.add(Urn.parse(f.getId())));
         }
     }
 
     /**
-     * Merges the current instance with the {@link SAPISportEvent}
+     * Merges the current instance with the {@link SapiSportEvent}
      *
-     * @param parentStage - the {@link SAPISportEvent} containing the data to be merged
+     * @param parentStage - the {@link SapiSportEvent} containing the data to be merged
      * @param locale - the {@link Locale} in which the data is provided
      */
-    private void internalMerge(SAPIParentStage parentStage, Locale locale) {
+    private void internalMerge(SapiParentStage parentStage, Locale locale) {
         Preconditions.checkNotNull(parentStage);
         Preconditions.checkNotNull(locale);
 
@@ -1150,7 +1149,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.startTimeTbd =
             parentStage.isStartTimeTbd() == null ? this.startTimeTbd : parentStage.isStartTimeTbd();
         this.replacedBy =
-            parentStage.getReplacedBy() == null ? this.replacedBy : URN.parse(parentStage.getReplacedBy());
+            parentStage.getReplacedBy() == null ? this.replacedBy : Urn.parse(parentStage.getReplacedBy());
 
         if (parentStage.getName() != null) {
             this.sportEventNames.put(locale, parentStage.getName());
@@ -1168,12 +1167,12 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the {@link SAPISportEventChildren.SAPISportEvent}
+     * Merges the current instance with the {@link SapiSportEventChildren.SapiSportEvent}
      *
      * @param endpointData the data to be merged
      * @param dataLocale the locale in which the data is provided
      */
-    private void internalMerge(SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale) {
+    private void internalMerge(SapiSportEventChildren.SapiSportEvent endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -1188,7 +1187,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
         this.startTimeTbd =
             endpointData.isStartTimeTbd() == null ? this.startTimeTbd : endpointData.isStartTimeTbd();
         this.replacedBy =
-            endpointData.getReplacedBy() == null ? this.replacedBy : URN.parse(endpointData.getReplacedBy());
+            endpointData.getReplacedBy() == null ? this.replacedBy : Urn.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
@@ -1311,8 +1310,8 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableRaceStageCI(
+    public ExportableCi export() {
+        return new ExportableRaceStageCi(
             id.toString(),
             new HashMap<>(sportEventNames),
             scheduled,
@@ -1321,7 +1320,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             replacedBy == null ? null : replacedBy.toString(),
             bookingStatus,
             competitorIds != null
-                ? competitorIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? competitorIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             venue != null ? venue.export() : null,
             conditions != null ? conditions.export() : null,
@@ -1335,7 +1334,7 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
                 : null,
             parentStageId != null ? parentStageId.toString() : null,
             childStagesIds != null
-                ? childStagesIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? childStagesIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             stageType,
             categoryId != null ? categoryId.toString() : null,
@@ -1346,11 +1345,11 @@ class RaceStageCIImpl implements StageCI, ExportableCacheItem {
             liveOdds,
             sportEventType,
             additionalParentIds != null
-                ? additionalParentIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? additionalParentIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             competitorVirtual == null
                 ? null
-                : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
+                : competitorVirtual.stream().map(Urn::toString).collect(Collectors.toList())
         );
     }
 }

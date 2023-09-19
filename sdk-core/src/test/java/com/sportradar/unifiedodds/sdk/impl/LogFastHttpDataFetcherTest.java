@@ -3,18 +3,44 @@
  */
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import org.apache.http.impl.client.CloseableHttpClient;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.junit.Test;
 
 public class LogFastHttpDataFetcherTest extends HttpDataFetcherTest {
 
     @Override
     public HttpDataFetcher createHttpDataFetcher(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
         UnifiedOddsStatistics statsBean,
-        Deserializer apiDeserializer
+        HttpResponseHandler httpResponseHandler,
+        UserAgentProvider userAgentProvider
     ) {
-        return new LogFastHttpDataFetcher(config, httpClient, statsBean, apiDeserializer);
+        return new LogFastHttpDataFetcher(
+            config,
+            httpClient,
+            statsBean,
+            httpResponseHandler,
+            userAgentProvider
+        );
+    }
+
+    @Test
+    public void failsToCreateWithNullUserAgentProvider() {
+        assertThatThrownBy(() ->
+                new LogFastHttpDataFetcher(
+                    mock(SdkInternalConfiguration.class),
+                    mock(CloseableHttpClient.class),
+                    mock(UnifiedOddsStatistics.class),
+                    mock(HttpResponseHandler.class),
+                    null
+                )
+            )
+            .isInstanceOf(NullPointerException.class)
+            .hasMessageContaining("userAgentProvider");
     }
 }

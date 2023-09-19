@@ -1,41 +1,41 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.inject.Injector;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.Urn;
 import java.util.*;
+import lombok.val;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "VisibilityModifier" })
 public class SportEventCacheTest {
 
     private static final Locale LOCALE = Locale.ENGLISH;
-    private static final URN EVENT_ID = URN.parse("sr:match:10116681");
-    private static final URN TOURNAMENT_ID = URN.parse("sr:tournament:40");
+    private static final Urn EVENT_ID = Urn.parse("sr:match:10116681");
+    private static final Urn TOURNAMENT_ID = Urn.parse("sr:tournament:40");
 
-    SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
-
-    private Injector injector = new TestInjectorFactory(config).create();
+    private Injector injector;
 
     private SportEventCache cache;
 
     @Before
     public void setup() {
-        Mockito.when(config.getDefaultLocale()).thenReturn(LOCALE);
-
-        Mockito.when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        val config = configurationWithAnyLanguageThrowingOnErrors();
+        injector = new TestInjectorFactory(config, new StubUofConfiguration()).create();
 
         cache = injector.getInstance(SportEventCache.class);
 
@@ -47,7 +47,7 @@ public class SportEventCacheTest {
 
     @Test
     public void getsEventCacheItem() throws CacheItemNotFoundException {
-        SportEventCI item = cache.getEventCacheItem(EVENT_ID);
+        SportEventCi item = cache.getEventCacheItem(EVENT_ID);
 
         assertNotNull(item);
         assertEquals(EVENT_ID, item.getId());
@@ -55,14 +55,14 @@ public class SportEventCacheTest {
 
     @Test
     public void getsEventIdsForTournament() throws IllegalCacheStateException {
-        List<URN> eventIds = cache.getEventIds(TOURNAMENT_ID, LOCALE);
+        List<Urn> eventIds = cache.getEventIds(TOURNAMENT_ID, LOCALE);
 
         assertThat(eventIds.size(), Matchers.greaterThan(0));
     }
 
     @Test
     public void getsEventIdsForDate() throws IllegalCacheStateException {
-        List<URN> eventIds = cache.getEventIds(new Date(120, 0, 29), LOCALE);
+        List<Urn> eventIds = cache.getEventIds(new Date(120, 0, 29), LOCALE);
 
         assertThat(eventIds.size(), Matchers.greaterThan(0));
     }
@@ -70,7 +70,7 @@ public class SportEventCacheTest {
     @Test
     public void purgesCacheItem() throws Exception {
         //Prepare
-        List<URN> eventIds = cache.getEventIds(new Date(120, 0, 29), LOCALE);
+        List<Urn> eventIds = cache.getEventIds(new Date(120, 0, 29), LOCALE);
 
         Map<String, Long> mapBefore = ((ExportableSdkCache) cache).cacheStatus();
         long totalBefore = mapBefore.values().stream().reduce((x, acc) -> acc + x).get();
@@ -89,27 +89,34 @@ public class SportEventCacheTest {
     @Test
     public void onEventBookedSetsStatusToBooked() throws Exception {
         //Prepare
-        List<URN> eventIds = cache.getEventIds(TOURNAMENT_ID, LOCALE);
+        List<Urn> eventIds = cache.getEventIds(TOURNAMENT_ID, LOCALE);
 
-        URN eventId = eventIds.get(0);
+        Urn eventId = eventIds.get(0);
 
         //Execute
         cache.onEventBooked(eventId);
 
         //Verify
-        CompetitionCI item = (CompetitionCI) cache.getEventCacheItem(eventId);
+        CompetitionCi item = (CompetitionCi) cache.getEventCacheItem(eventId);
         assertEquals(BookingStatus.Booked, item.getBookingStatus());
     }
 
     @Test
     public void deletesSportEventsBeforeGivenDate() throws Exception {
         //Prepare
-        List<URN> eventIds = cache.getEventIds(new Date(120, 0, 29), LOCALE);
+        List<Urn> eventIds = cache.getEventIds(new Date(120, 0, 29), LOCALE);
 
         //Execute
         int numOfDeleted = cache.deleteSportEventsFromCache(new Date(120, 0, 31)); //two days later
 
         //Verify
         assertEquals(eventIds.size(), numOfDeleted);
+    }
+
+    private static SdkInternalConfiguration configurationWithAnyLanguageThrowingOnErrors() {
+        SdkInternalConfiguration mock = mock(SdkInternalConfiguration.class);
+        when(mock.getDefaultLocale()).thenReturn(Locale.UK);
+        when(mock.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        return mock;
     }
 }

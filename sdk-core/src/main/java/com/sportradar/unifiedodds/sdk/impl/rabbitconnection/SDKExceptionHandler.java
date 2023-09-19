@@ -11,21 +11,21 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.TopologyRecoveryException;
 import com.rabbitmq.client.impl.DefaultExceptionHandler;
-import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
 import com.sportradar.utils.SdkHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
-class SDKExceptionHandler extends DefaultExceptionHandler {
+@SuppressWarnings({ "ConstantName" })
+class SdkExceptionHandler extends DefaultExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(SDKExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdkExceptionHandler.class);
 
-    private final SDKConnectionStatusListener connectionStatusListener;
+    private final SdkConnectionStatusListener connectionStatusListener;
     private final String orgToken;
     private final String cleanToken;
 
-    public SDKExceptionHandler(SDKConnectionStatusListener connectionStatusListener, String token) {
+    public SdkExceptionHandler(SdkConnectionStatusListener connectionStatusListener, String token) {
         checkNotNull(connectionStatusListener, "connectionStatusListener cannot be a null reference");
 
         this.connectionStatusListener = connectionStatusListener;
@@ -45,13 +45,6 @@ class SDKExceptionHandler extends DefaultExceptionHandler {
     public void handleReturnListenerException(Channel channel, Throwable throwable) {
         logger.error("Return listener exception for channel {}", channel, throwable);
         super.handleReturnListenerException(channel, throwable);
-        dispatchException(throwable);
-    }
-
-    @Override
-    public void handleFlowListenerException(Channel channel, Throwable throwable) {
-        logger.error("Flow listener exception for channel {}", channel, throwable);
-        super.handleFlowListenerException(channel, throwable);
         dispatchException(throwable);
     }
 

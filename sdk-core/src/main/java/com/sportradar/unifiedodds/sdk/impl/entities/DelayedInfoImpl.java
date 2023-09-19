@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.DelayedInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.DelayedInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.DelayedInfo;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +26,7 @@ class DelayedInfoImpl implements DelayedInfo {
      * @param delayedInfo the cache item used to build the instance
      * @param locales the locales in which the data is provided
      */
-    DelayedInfoImpl(DelayedInfoCI delayedInfo, List<Locale> locales) {
+    DelayedInfoImpl(DelayedInfoCi delayedInfo, List<Locale> locales) {
         Preconditions.checkNotNull(delayedInfo);
         Preconditions.checkNotNull(locales);
 

@@ -5,18 +5,18 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportEventChildren.SAPISportEvent;
+import com.sportradar.uf.sportsapi.datamodel.SapiSportEventChildren.SapiSportEvent;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * A child race representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public class ChildRaceCI extends SportEntityCI {
+@SuppressWarnings({ "LineLength" })
+public class ChildRaceCi extends SportEntityCi {
 
     /**
      * The {@link SportEventType} specifying the type of the associated sport event
@@ -39,13 +39,13 @@ public class ChildRaceCI extends SportEntityCI {
     private final Date scheduleEnd;
 
     /**
-     * Initializes a new instance of the {@link ChildRaceCI} class
+     * Initializes a new instance of the {@link ChildRaceCi} class
      *
-     * @param sportEvent - {@link SAPISportEvent} instance containing information about the child race
+     * @param sportEvent - {@link SapiSportEvent} instance containing information about the child race
      * @param locale - {@link Locale} specifying the language of the <i>sportEvent</i>
      */
-    public ChildRaceCI(SAPISportEvent sportEvent, Locale locale) {
-        super(URN.parse(sportEvent.getId()));
+    public ChildRaceCi(SapiSportEvent sportEvent, Locale locale) {
+        super(Urn.parse(sportEvent.getId()));
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(locale);
 
@@ -57,8 +57,8 @@ public class ChildRaceCI extends SportEntityCI {
     }
 
     /**
-     * Initializes a new instance of the {@link ChildRaceCI} class.
-     * This constructor is used to instantiate sub-CI types({@link ParentRaceCI},...)
+     * Initializes a new instance of the {@link ChildRaceCi} class.
+     * This constructor is used to instantiate sub-CI types({@link ParentRaceCi},...)
      *
      * @param id - the id of the sub-CI object
      * @param type - the type of the sub-CI object
@@ -67,8 +67,8 @@ public class ChildRaceCI extends SportEntityCI {
      * @param scheduleEnd - the schedule end of the sub-CI object
      * @param locale - the {@link Locale} in which the data is provided
      */
-    ChildRaceCI(String id, String type, String name, Date schedule, Date scheduleEnd, Locale locale) {
-        super(URN.parse(id));
+    ChildRaceCi(String id, String type, String name, Date schedule, Date scheduleEnd, Locale locale) {
+        super(Urn.parse(id));
         Preconditions.checkNotNull(type);
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(locale);

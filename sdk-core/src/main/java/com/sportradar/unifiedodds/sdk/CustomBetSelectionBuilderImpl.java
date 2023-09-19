@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.SelectionImpl;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * The basic implementation of the {@link CustomBetSelectionBuilder}
@@ -14,13 +14,13 @@ import com.sportradar.utils.URN;
 @SuppressWarnings({ "HiddenField", "VariableDeclarationUsageDistance" })
 public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder {
 
-    private URN eventId;
+    private Urn eventId;
     private int marketId;
     private String outcomeId;
     private String specifiers;
 
     @Override
-    public CustomBetSelectionBuilder setEventId(URN eventId) {
+    public CustomBetSelectionBuilder setEventId(Urn eventId) {
         this.eventId = eventId;
         return this;
     }
@@ -54,7 +54,7 @@ public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder 
     }
 
     @Override
-    public Selection build(URN eventId, int marketId, String specifiers, String outcomeId) {
+    public Selection build(Urn eventId, int marketId, String specifiers, String outcomeId) {
         this.eventId = eventId;
         this.marketId = marketId;
         this.outcomeId = outcomeId;

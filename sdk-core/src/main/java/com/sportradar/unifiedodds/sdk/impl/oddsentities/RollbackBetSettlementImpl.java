@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFRollbackBetSettlement;
+import com.sportradar.uf.datamodel.UfRollbackBetSettlement;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
@@ -33,7 +33,7 @@ class RollbackBetSettlementImpl<T extends SportEvent>
 
     RollbackBetSettlementImpl(
         T sportEvent,
-        UFRollbackBetSettlement message,
+        UfRollbackBetSettlement message,
         Producer producer,
         byte[] rawMessage,
         MarketFactory factory,

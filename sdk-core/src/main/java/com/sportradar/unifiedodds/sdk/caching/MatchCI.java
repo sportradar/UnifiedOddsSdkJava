@@ -8,7 +8,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.Fixture;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,8 +16,8 @@ import java.util.Map;
 /**
  * Defines methods used to access match type properties
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public interface MatchCI extends CompetitionCI {
+@SuppressWarnings({ "LineLength" })
+public interface MatchCi extends CompetitionCi {
     /**
      * Returns a {@link Map} of translated sport event names
      * The match object name is composed from the home and away team(eg. Home vs Away)
@@ -28,29 +28,29 @@ public interface MatchCI extends CompetitionCI {
     Map<Locale, String> getNames(List<Locale> locales);
 
     /**
-     * Returns the {@link URN} specifying the id of the tournament to which the sport event belongs to
+     * Returns the {@link Urn} specifying the id of the tournament to which the sport event belongs to
      *
-     * @return - the {@link URN} specifying the id of the tournament to which the sport event belongs to
+     * @return - the {@link Urn} specifying the id of the tournament to which the sport event belongs to
      */
-    URN getTournamentId();
+    Urn getTournamentId();
 
     /**
-     * Returns a {@link RoundCI} instance describing the tournament round to which the
+     * Returns a {@link RoundCi} instance describing the tournament round to which the
      * sport event associated with current instance belongs to
      *
      * @param locales - a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return - a {@link RoundCI} instance describing the tournament round
+     * @return - a {@link RoundCi} instance describing the tournament round
      */
-    RoundCI getTournamentRound(List<Locale> locales);
+    RoundCi getTournamentRound(List<Locale> locales);
 
     /**
-     * Returns a {@link SeasonCI} instance providing basic information about
+     * Returns a {@link SeasonCi} instance providing basic information about
      * the season to which the sport event associated with the current instance belongs to
      *
      * @param locales - a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return -  {@link SeasonCI} instance providing basic information about the associated season
+     * @return -  {@link SeasonCi} instance providing basic information about the associated season
      */
-    SeasonCI getSeason(List<Locale> locales);
+    SeasonCi getSeason(List<Locale> locales);
 
     /**
      * Returns the {@link Fixture} instance containing information about the arranged sport event
@@ -62,12 +62,12 @@ public interface MatchCI extends CompetitionCI {
     Fixture getFixture(List<Locale> locales);
 
     /**
-     * Returns a {@link DelayedInfoCI} instance describing possible information about a delay
+     * Returns a {@link DelayedInfoCi} instance describing possible information about a delay
      *
      * @param locales the {@link Locale}s in which the data should be provided
-     * @return a {@link DelayedInfoCI} instance describing information about a possible delay
+     * @return a {@link DelayedInfoCi} instance describing information about a possible delay
      */
-    DelayedInfoCI getDelayedInfo(List<Locale> locales);
+    DelayedInfoCi getDelayedInfo(List<Locale> locales);
 
     /**
      * Returns a {@link CoverageInfo} instance
@@ -75,7 +75,7 @@ public interface MatchCI extends CompetitionCI {
      * @param locales the {@link Locale}s in which the data should be provided
      * @return a {@link CoverageInfo} instance
      */
-    CoverageInfoCI getCoverageInfo(List<Locale> locales);
+    CoverageInfoCi getCoverageInfo(List<Locale> locales);
 
     /**
      * Returns the associated event timeline
@@ -85,18 +85,18 @@ public interface MatchCI extends CompetitionCI {
      * @param makeApiCall should the API call be made if necessary
      * @return the associated event timeline
      */
-    EventTimelineCI getEventTimeline(Locale locale, boolean makeApiCall);
+    EventTimelineCi getEventTimeline(Locale locale, boolean makeApiCall);
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated qualifier for this sport event
-     * @return list of {@link URN} of {@link Competitor} and associated qualifier for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} and associated qualifier for this sport event
+     * @return list of {@link Urn} of {@link Competitor} and associated qualifier for this sport event
      */
-    Map<URN, String> getCompetitorsQualifiers();
+    Map<Urn, String> getCompetitorsQualifiers();
 
     /**
-     * Returns list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     * Returns list of {@link Urn} of {@link CompetitorCi} and associated division for this sport event
      *
-     * @return list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     * @return list of {@link Urn} of {@link CompetitorCi} and associated division for this sport event
      */
-    Map<URN, Integer> getCompetitorsDivisions();
+    Map<Urn, Integer> getCompetitorsDivisions();
 }

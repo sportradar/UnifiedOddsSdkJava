@@ -12,25 +12,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "HiddenField", "ParameterNumber" })
-public class ExportableMatchCI extends ExportableCompetitionCI {
+@SuppressWarnings({ "ClassFanOutComplexity", "HiddenField", "ParameterNumber" })
+public class ExportableMatchCi extends ExportableCompetitionCi {
 
     private Locale defaultLocale;
-    private ExportableFixtureCI fixture;
+    private ExportableFixtureCi fixture;
     private Map<String, String> competitorQualifiers;
     private Map<String, Integer> competitorDivisions;
     private String tournamentId;
-    private ExportableLoadableRoundCI tournamentRound;
-    private ExportableSeasonCI season;
-    private ExportableDelayedInfoCI delayedInfo;
-    private ExportableCoverageInfoCI coverageInfo;
+    private ExportableLoadableRoundCi tournamentRound;
+    private ExportableSeasonCi season;
+    private ExportableDelayedInfoCi delayedInfo;
+    private ExportableCoverageInfoCi coverageInfo;
     private List<Locale> loadedFixtureLocales;
     private List<Locale> loadedSummaryLocales;
     private List<Locale> loadedCompetitorLocales;
-    private Map<Locale, ExportableEventTimelineCI> eventTimelines;
+    private Map<Locale, ExportableEventTimelineCi> eventTimelines;
     private StageType stageType;
 
-    public ExportableMatchCI(
+    public ExportableMatchCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -39,22 +39,22 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         String replacedBy,
         BookingStatus bookingStatus,
         List<String> competitorIds,
-        ExportableVenueCI venue,
-        ExportableSportEventConditionsCI conditions,
+        ExportableVenueCi venue,
+        ExportableSportEventConditionsCi conditions,
         Map<String, Map<String, String>> competitorsReferences,
         Locale defaultLocale,
-        ExportableFixtureCI fixture,
+        ExportableFixtureCi fixture,
         Map<String, String> competitorQualifiers,
         Map<String, Integer> competitorDivisions,
         String tournamentId,
-        ExportableLoadableRoundCI tournamentRound,
-        ExportableSeasonCI season,
-        ExportableDelayedInfoCI delayedInfo,
-        ExportableCoverageInfoCI coverageInfo,
+        ExportableLoadableRoundCi tournamentRound,
+        ExportableSeasonCi season,
+        ExportableDelayedInfoCi delayedInfo,
+        ExportableCoverageInfoCi coverageInfo,
         List<Locale> loadedFixtureLocales,
         List<Locale> loadedSummaryLocales,
         List<Locale> loadedCompetitorLocales,
-        Map<Locale, ExportableEventTimelineCI> eventTimelines,
+        Map<Locale, ExportableEventTimelineCi> eventTimelines,
         String liveOdds,
         SportEventType sportEventType,
         StageType stageType,
@@ -100,11 +100,11 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         this.defaultLocale = defaultLocale;
     }
 
-    public ExportableFixtureCI getFixture() {
+    public ExportableFixtureCi getFixture() {
         return fixture;
     }
 
-    public void setFixture(ExportableFixtureCI fixture) {
+    public void setFixture(ExportableFixtureCi fixture) {
         this.fixture = fixture;
     }
 
@@ -132,35 +132,35 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         this.tournamentId = tournamentId;
     }
 
-    public ExportableLoadableRoundCI getTournamentRound() {
+    public ExportableLoadableRoundCi getTournamentRound() {
         return tournamentRound;
     }
 
-    public void setTournamentRound(ExportableLoadableRoundCI tournamentRound) {
+    public void setTournamentRound(ExportableLoadableRoundCi tournamentRound) {
         this.tournamentRound = tournamentRound;
     }
 
-    public ExportableSeasonCI getSeason() {
+    public ExportableSeasonCi getSeason() {
         return season;
     }
 
-    public void setSeason(ExportableSeasonCI season) {
+    public void setSeason(ExportableSeasonCi season) {
         this.season = season;
     }
 
-    public ExportableDelayedInfoCI getDelayedInfo() {
+    public ExportableDelayedInfoCi getDelayedInfo() {
         return delayedInfo;
     }
 
-    public void setDelayedInfo(ExportableDelayedInfoCI delayedInfo) {
+    public void setDelayedInfo(ExportableDelayedInfoCi delayedInfo) {
         this.delayedInfo = delayedInfo;
     }
 
-    public ExportableCoverageInfoCI getCoverageInfo() {
+    public ExportableCoverageInfoCi getCoverageInfo() {
         return coverageInfo;
     }
 
-    public void setCoverageInfo(ExportableCoverageInfoCI coverageInfo) {
+    public void setCoverageInfo(ExportableCoverageInfoCi coverageInfo) {
         this.coverageInfo = coverageInfo;
     }
 
@@ -188,11 +188,11 @@ public class ExportableMatchCI extends ExportableCompetitionCI {
         this.loadedCompetitorLocales = loadedCompetitorLocales;
     }
 
-    public Map<Locale, ExportableEventTimelineCI> getEventTimelines() {
+    public Map<Locale, ExportableEventTimelineCi> getEventTimelines() {
         return eventTimelines;
     }
 
-    public void setEventTimelines(Map<Locale, ExportableEventTimelineCI> eventTimelines) {
+    public void setEventTimelines(Map<Locale, ExportableEventTimelineCi> eventTimelines) {
         this.eventTimelines = eventTimelines;
     }
 

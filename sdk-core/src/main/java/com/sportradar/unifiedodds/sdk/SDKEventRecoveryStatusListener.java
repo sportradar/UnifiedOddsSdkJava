@@ -4,18 +4,17 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Defines methods used as callbacks to notify the client about event recovery updates
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface SDKEventRecoveryStatusListener {
+public interface SdkEventRecoveryStatusListener {
     /**
      * Method invoked when a requested event recovery completes
      *
      * @param eventId the associated event identifier
      * @param requestId the identifier of the recovery request
      */
-    void onEventRecoveryCompleted(URN eventId, long requestId);
+    void onEventRecoveryCompleted(Urn eventId, long requestId);
 }

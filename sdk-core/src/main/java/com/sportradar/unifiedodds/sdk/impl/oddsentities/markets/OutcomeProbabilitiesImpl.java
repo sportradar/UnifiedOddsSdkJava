@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import com.sportradar.uf.datamodel.UFOutcomeActive;
+import com.sportradar.uf.datamodel.UfOutcomeActive;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.AdditionalProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
@@ -27,12 +27,12 @@ public class OutcomeProbabilitiesImpl extends OutcomeImpl implements OutcomeProb
         NameProvider nameProvider,
         OutcomeDefinition outcomeDefinition,
         Locale defaultLocale,
-        UFOutcomeActive active,
+        UfOutcomeActive active,
         Double probabilities,
         AdditionalProbabilities additionalProbabilities
     ) {
         super(id, nameProvider, outcomeDefinition, defaultLocale);
-        this.active = active == null || active == UFOutcomeActive.ACTIVE;
+        this.active = active == null || active == UfOutcomeActive.ACTIVE;
         this.probability = probabilities == null ? Double.NaN : probabilities;
         this.additionalProbabilities = additionalProbabilities;
     }

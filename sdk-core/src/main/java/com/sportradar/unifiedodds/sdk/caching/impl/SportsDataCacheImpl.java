@@ -8,14 +8,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.inject.Inject;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Implements methods used to access various sport events data
  */
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "LineLength" })
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "LineLength" })
 public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener, ExportableSdkCache {
 
     private static final Logger logger = LoggerFactory.getLogger(SportsDataCacheImpl.class);
@@ -34,12 +33,12 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     /**
      * A {@link Cache} instance used to cache fetched sports
      */
-    private final Cache<URN, SportCI> sportsCache;
+    private final Cache<Urn, SportCi> sportsCache;
 
     /**
      * A {@link Cache} instance used to cache fetched categories
      */
-    private final Cache<URN, CategoryCI> categoriesCache;
+    private final Cache<Urn, CategoryCi> categoriesCache;
 
     /**
      * A factory used to build specific sport event cache items
@@ -53,16 +52,14 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
 
     @Inject
     public SportsDataCacheImpl(
-        Cache<URN, SportCI> sportsCache,
-        Cache<URN, CategoryCI> categoriesCache,
+        Cache<Urn, SportCi> sportsCache,
+        Cache<Urn, CategoryCi> categoriesCache,
         CacheItemFactory cacheItemFactory,
-        SDKInternalConfiguration configuration,
         DataRouterManager dataRouterManager
     ) {
         Preconditions.checkNotNull(sportsCache);
         Preconditions.checkNotNull(categoriesCache);
         Preconditions.checkNotNull(cacheItemFactory);
-        Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(dataRouterManager);
 
         this.sportsCache = sportsCache;
@@ -87,19 +84,19 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
             .asMap()
             .keySet()
             .stream()
-            .map(sportCI -> getSportFromCache(sportCI, locales))
+            .map(sportCi -> getSportFromCache(sportCi, locales))
             .collect(Collectors.toList());
     }
 
     /**
-     * Returns a {@link SportData} instance representing the sport associated with the provided {@link URN} identifier
+     * Returns a {@link SportData} instance representing the sport associated with the provided {@link Urn} identifier
      *
-     * @param sportId a {@link URN} specifying the id of the sport
+     * @param sportId a {@link Urn} specifying the id of the sport
      * @param locales a {@link List} of {@link Locale} specifying the languages in which the data is returned
      * @return a {@link SportData} containing information about the requested sport
      */
     @Override
-    public SportData getSport(URN sportId, List<Locale> locales)
+    public SportData getSport(Urn sportId, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(sportId);
         Preconditions.checkNotNull(locales);
@@ -123,7 +120,7 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
      * @throws CacheItemNotFoundException if the cache item could not be found - category does not exists in the cache/api
      */
     @Override
-    public CategoryCI getCategory(URN categoryId, List<Locale> locales)
+    public CategoryCi getCategory(Urn categoryId, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(categoryId);
         Preconditions.checkNotNull(locales);
@@ -138,21 +135,21 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     @Override
-    public void onSportEventFetched(URN id, SAPISportEvent data, Locale dataLocale) {
+    public void onSportEventFetched(Urn id, SapiSportEvent data, Locale dataLocale) {
         Preconditions.checkNotNull(data);
 
         onTournamentReceived(data.getTournament(), dataLocale);
     }
 
     @Override
-    public void onTournamentFetched(URN id, SAPITournament data, Locale locale) {
+    public void onTournamentFetched(Urn id, SapiTournament data, Locale locale) {
         Preconditions.checkNotNull(data);
 
         onTournamentReceived(id, data, locale);
     }
 
     @Override
-    public void onTournamentExtendedFetched(URN id, SAPITournamentExtended data, Locale dataLocale) {
+    public void onTournamentExtendedFetched(Urn id, SapiTournamentExtended data, Locale dataLocale) {
         Preconditions.checkNotNull(data);
 
         onTournamentReceived(id, data, dataLocale);
@@ -160,10 +157,10 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
 
     @Override
     public void onTournamentInfoEndpointFetched(
-        URN requestedId,
-        URN tournamentId,
-        URN seasonId,
-        SAPITournamentInfoEndpoint data,
+        Urn requestedId,
+        Urn tournamentId,
+        Urn seasonId,
+        SapiTournamentInfoEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -174,8 +171,8 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
 
     @Override
     public void onStageSummaryEndpointFetched(
-        URN id,
-        SAPIStageSummaryEndpoint data,
+        Urn id,
+        SapiStageSummaryEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -188,8 +185,8 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
 
     @Override
     public void onMatchSummaryEndpointFetched(
-        URN id,
-        SAPIMatchSummaryEndpoint data,
+        Urn id,
+        SapiMatchSummaryEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -201,20 +198,20 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     @Override
-    public void onFixtureFetched(URN id, SAPIFixture data, Locale dataLocale, CacheItem requester) {
+    public void onFixtureFetched(Urn id, SapiFixture data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(data);
 
         onTournamentReceived(data.getTournament(), dataLocale);
     }
 
     @Override
-    public void onSportFetched(URN sportId, SAPISport sport, Locale dataLocale) {
+    public void onSportFetched(Urn sportId, SapiSport sport, Locale dataLocale) {
         Preconditions.checkNotNull(sport);
         Preconditions.checkNotNull(dataLocale);
 
-        SportCI ifPresentSport = sportsCache.getIfPresent(sportId);
+        SportCi ifPresentSport = sportsCache.getIfPresent(sportId);
         if (ifPresentSport == null) {
-            sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, null, dataLocale));
+            sportsCache.put(sportId, cacheItemFactory.buildSportCi(sportId, sport, null, dataLocale));
         } else {
             ifPresentSport.merge(sport, dataLocale);
         }
@@ -222,8 +219,8 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
 
     @Override
     public void onMatchTimelineFetched(
-        URN id,
-        SAPIMatchTimelineEndpoint data,
+        Urn id,
+        SapiMatchTimelineEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -235,7 +232,7 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     @Override
-    public void onLotteryFetched(URN id, SAPILottery data, Locale locale, CacheItem requester) {
+    public void onLotteryFetched(Urn id, SapiLottery data, Locale locale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
@@ -244,7 +241,7 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     @Override
-    public void onDrawFixtureFetched(URN id, SAPIDrawFixture data, Locale locale, CacheItem requester) {
+    public void onDrawFixtureFetched(Urn id, SapiDrawFixture data, Locale locale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
@@ -254,8 +251,8 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
 
     @Override
     public void onSportCategoriesFetched(
-        URN sportId,
-        SAPISportCategoriesEndpoint data,
+        Urn sportId,
+        SapiSportCategoriesEndpoint data,
         Locale locale,
         CacheItem requester
     ) {
@@ -263,13 +260,13 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
 
-        List<SAPICategory> categories = data.getCategories() != null
+        List<SapiCategory> categories = data.getCategories() != null
             ? data.getCategories().getCategory()
             : new ArrayList<>();
         onSportAndCategoriesReceived(null, data, data.getSport(), categories, locale);
     }
 
-    private void onLotteryReceived(SAPILottery lottery, Locale dataLocale) {
+    private void onLotteryReceived(SapiLottery lottery, Locale dataLocale) {
         Preconditions.checkNotNull(dataLocale);
 
         if (lottery == null) {
@@ -277,7 +274,7 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
         }
 
         onSportAndCategoryReceived(
-            URN.parse(lottery.getId()),
+            Urn.parse(lottery.getId()),
             lottery,
             lottery.getSport(),
             lottery.getCategory(),
@@ -285,7 +282,7 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
         );
     }
 
-    private void onLotteryReceived(URN lotteryId, SAPILottery lottery, Locale dataLocale) {
+    private void onLotteryReceived(Urn lotteryId, SapiLottery lottery, Locale dataLocale) {
         Preconditions.checkNotNull(lotteryId);
         Preconditions.checkNotNull(lottery);
         Preconditions.checkNotNull(dataLocale);
@@ -293,17 +290,17 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
         onSportAndCategoryReceived(lotteryId, lottery, lottery.getSport(), lottery.getCategory(), dataLocale);
     }
 
-    private void onTournamentReceived(SAPITournament tournament, Locale dataLocale) {
+    private void onTournamentReceived(SapiTournament tournament, Locale dataLocale) {
         Preconditions.checkNotNull(dataLocale);
 
         if (tournament == null) {
             return;
         }
 
-        onTournamentReceived(URN.parse(tournament.getId()), tournament, dataLocale);
+        onTournamentReceived(Urn.parse(tournament.getId()), tournament, dataLocale);
     }
 
-    private void onTournamentReceived(URN tournamentId, SAPITournament tournament, Locale dataLocale) {
+    private void onTournamentReceived(Urn tournamentId, SapiTournament tournament, Locale dataLocale) {
         Preconditions.checkNotNull(tournamentId);
         Preconditions.checkNotNull(tournament);
         Preconditions.checkNotNull(dataLocale);
@@ -318,10 +315,10 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     private void onSportAndCategoryReceived(
-        URN tournamentId,
+        Urn tournamentId,
         Object sourceApiObject,
-        SAPISport sport,
-        SAPICategory category,
+        SapiSport sport,
+        SapiCategory category,
         Locale dataLocale
     ) {
         Preconditions.checkNotNull(tournamentId);
@@ -335,10 +332,10 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     private void onSportAndCategoriesReceived(
-        URN tournamentId,
+        Urn tournamentId,
         Object sourceApiObject,
-        SAPISport sport,
-        List<SAPICategory> categories,
+        SapiSport sport,
+        List<SapiCategory> categories,
         Locale dataLocale
     ) {
         Preconditions.checkNotNull(sourceApiObject);
@@ -346,20 +343,20 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
         Preconditions.checkNotNull(categories);
         Preconditions.checkNotNull(dataLocale);
 
-        URN sportId = sport == null ? null : URN.parse(sport.getId());
-        List<URN> tournamentIds = tournamentId != null
+        Urn sportId = sport == null ? null : Urn.parse(sport.getId());
+        List<Urn> tournamentIds = tournamentId != null
             ? Collections.singletonList(tournamentId)
             : new ArrayList<>();
-        List<URN> categoryIds = new ArrayList<>(categories.size());
+        List<Urn> categoryIds = new ArrayList<>(categories.size());
 
-        for (SAPICategory category : categories) {
-            URN categoryId = URN.parse(category.getId());
+        for (SapiCategory category : categories) {
+            Urn categoryId = Urn.parse(category.getId());
             categoryIds.add(categoryId);
-            CategoryCI ifPresentCategory = categoriesCache.getIfPresent(categoryId);
+            CategoryCi ifPresentCategory = categoriesCache.getIfPresent(categoryId);
             if (ifPresentCategory == null) {
                 categoriesCache.put(
                     categoryId,
-                    cacheItemFactory.buildCategoryCI(categoryId, category, tournamentIds, sportId, dataLocale)
+                    cacheItemFactory.buildCategoryCi(categoryId, category, tournamentIds, sportId, dataLocale)
                 );
             } else {
                 ifPresentCategory.merge(sourceApiObject, dataLocale);
@@ -369,9 +366,9 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
         if (sportId == null) {
             return;
         }
-        SportCI ifPresentSport = sportsCache.getIfPresent(sportId);
+        SportCi ifPresentSport = sportsCache.getIfPresent(sportId);
         if (ifPresentSport == null) {
-            sportsCache.put(sportId, cacheItemFactory.buildSportCI(sportId, sport, categoryIds, dataLocale));
+            sportsCache.put(sportId, cacheItemFactory.buildSportCi(sportId, sport, categoryIds, dataLocale));
         } else {
             ifPresentSport.merge(sourceApiObject, dataLocale);
         }
@@ -406,10 +403,10 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
      * Ensures that the sports categories was already pre-fetched by the {@link DataRouter}
      *
      * @param locale the needed locale
-     * @param id a {@link URN} specifying the id of the sport
+     * @param id a {@link Urn} specifying the id of the sport
      * @param requester a {@link CacheItem} specifying the sport cache item
      */
-    private void ensureSportCategoriesPreFetched(Locale locale, URN id, CacheItem requester) {
+    private void ensureSportCategoriesPreFetched(Locale locale, Urn id, CacheItem requester) {
         try {
             dataRouterManager.requestSportCategoriesEndpoint(locale, id, requester);
         } catch (CommunicationException e) {
@@ -421,33 +418,33 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
      * Returns a {@link SportData} representing the sport specified by <code>sportId</code> in the
      * languages specified by <code>locales</code>, or a null reference if the specified sport does not exist
      *
-     * @param sportId a {@link URN } specifying the id of the sport to get
+     * @param sportId a {@link Urn } specifying the id of the sport to get
      * @param locales a {@link  List} specifying the languages to which the sport must be translated
      * @return a {@link SportData} representing the sport or null if the request failed
      */
-    private SportData getSportFromCache(URN sportId, List<Locale> locales) {
-        SportCI sportCI = sportsCache.getIfPresent(sportId);
-        if (sportCI == null) {
+    private SportData getSportFromCache(Urn sportId, List<Locale> locales) {
+        SportCi sportCi = sportsCache.getIfPresent(sportId);
+        if (sportCi == null) {
             return null;
         }
 
-        if (sportCI.getShouldFetchCategories()) {
-            locales.forEach(l -> ensureSportCategoriesPreFetched(l, sportId, sportCI));
-            sportCI.categoriesFetched();
+        if (sportCi.getShouldFetchCategories()) {
+            locales.forEach(l -> ensureSportCategoriesPreFetched(l, sportId, sportCi));
+            sportCi.categoriesFetched();
         }
 
         List<CategoryData> cachedCategories = new ArrayList<>();
-        for (URN catURN : sportCI.getCategoryIds()) {
-            CategoryCI categoryCI = categoriesCache.getIfPresent(catURN);
-            if (categoryCI == null) {
+        for (Urn catUrn : sportCi.getCategoryIds()) {
+            CategoryCi categoryCi = categoriesCache.getIfPresent(catUrn);
+            if (categoryCi == null) {
                 return null;
             }
 
             cachedCategories.add(
                 new CategoryData(
-                    categoryCI.getId(),
+                    categoryCi.getId(),
                     ensureNamesNotEmpty(
-                        categoryCI
+                        categoryCi
                             .getNames(locales)
                             .entrySet()
                             .stream()
@@ -455,16 +452,16 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                         locales
                     ),
-                    categoryCI.getTournamentIds(),
-                    categoryCI.getCountryCode()
+                    categoryCi.getTournamentIds(),
+                    categoryCi.getCountryCode()
                 )
             );
         }
 
         return new SportData(
-            sportCI.getId(),
+            sportCi.getId(),
             ensureNamesNotEmpty(
-                sportCI
+                sportCi
                     .getNames(locales)
                     .entrySet()
                     .stream()
@@ -483,10 +480,10 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     /**
      * Exports current items in the cache
      *
-     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     * @return List of {@link ExportableCi} containing all the items currently in the cache
      */
     @Override
-    public List<ExportableCI> exportItems() {
+    public List<ExportableCi> exportItems() {
         return Stream
             .concat(
                 sportsCache.asMap().values().stream().map(i1 -> (ExportableCacheItem) i1),
@@ -499,26 +496,26 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     /**
      * Imports provided items into the cache
      *
-     * @param items List of {@link ExportableCI} to be inserted into the cache
+     * @param items List of {@link ExportableCi} to be inserted into the cache
      */
     @Override
-    public void importItems(List<ExportableCI> items) {
-        for (ExportableCI item : items) {
-            if (item instanceof ExportableSportCI) {
-                SportCI sportCI = cacheItemFactory.buildSportCI((ExportableSportCI) item);
-                SportCI ifPresentSport = sportsCache.getIfPresent(sportCI.getId());
+    public void importItems(List<ExportableCi> items) {
+        for (ExportableCi item : items) {
+            if (item instanceof ExportableSportCi) {
+                SportCi sportCi = cacheItemFactory.buildSportCi((ExportableSportCi) item);
+                SportCi ifPresentSport = sportsCache.getIfPresent(sportCi.getId());
                 if (ifPresentSport == null) {
-                    sportsCache.put(sportCI.getId(), sportCI);
+                    sportsCache.put(sportCi.getId(), sportCi);
                 } else {
-                    ifPresentSport.merge(sportCI, null);
+                    ifPresentSport.merge(sportCi, null);
                 }
-            } else if (item instanceof ExportableCategoryCI) {
-                CategoryCI categoryCI = cacheItemFactory.buildCategoryCI((ExportableCategoryCI) item);
-                CategoryCI ifPresentCategory = categoriesCache.getIfPresent(categoryCI.getId());
+            } else if (item instanceof ExportableCategoryCi) {
+                CategoryCi categoryCi = cacheItemFactory.buildCategoryCi((ExportableCategoryCi) item);
+                CategoryCi ifPresentCategory = categoriesCache.getIfPresent(categoryCi.getId());
                 if (ifPresentCategory == null) {
-                    categoriesCache.put(categoryCI.getId(), categoryCI);
+                    categoriesCache.put(categoryCi.getId(), categoryCi);
                 } else {
-                    ifPresentCategory.merge(categoryCI, null);
+                    ifPresentCategory.merge(categoryCi, null);
                 }
             }
         }

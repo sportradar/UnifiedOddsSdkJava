@@ -8,12 +8,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescVariant;
 import com.sportradar.uf.sportsapi.datamodel.VariantDescriptions;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCi;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.SdkHelper;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantDescriptionCacheImpl.class);
 
-    private final Cache<String, VariantDescriptionCI> cache;
+    private final Cache<String, VariantDescriptionCi> cache;
     private final DataProvider<VariantDescriptions> dataProvider;
     private final MappingValidatorFactory mappingValidatorFactory;
     private final List<Locale> prefetchLocales;
@@ -54,10 +54,10 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
     private boolean hasTimerElapsedOnce;
 
     public VariantDescriptionCacheImpl(
-        Cache<String, VariantDescriptionCI> cache,
+        Cache<String, VariantDescriptionCi> cache,
         DataProvider<VariantDescriptions> dataProvider,
         MappingValidatorFactory mappingValidatorFactory,
-        SDKTaskScheduler scheduler,
+        SdkTaskScheduler scheduler,
         List<Locale> prefetchLocales
     ) {
         Preconditions.checkNotNull(cache);
@@ -82,7 +82,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
     }
 
     @Override
-    public VariantDescriptionCI getVariantDescription(String id, List<Locale> locales)
+    public VariantDescriptionCi getVariantDescription(String id, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
@@ -147,12 +147,12 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         return true;
     }
 
-    private VariantDescriptionCI getVariantDescriptionInternal(String id, List<Locale> locales2fetch)
+    private VariantDescriptionCi getVariantDescriptionInternal(String id, List<Locale> locales2fetch)
         throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales2fetch);
 
-        VariantDescriptionCI ifPresent = cache.getIfPresent(id);
+        VariantDescriptionCi ifPresent = cache.getIfPresent(id);
         if (ifPresent != null && getMissingLocales(ifPresent, locales2fetch).isEmpty()) {
             return ifPresent;
         }
@@ -209,10 +209,10 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         variant.forEach(market -> {
             String id = market.getId();
 
-            VariantDescriptionCI ifPresent = cache.getIfPresent(id);
+            VariantDescriptionCi ifPresent = cache.getIfPresent(id);
             if (createNew || ifPresent == null) {
                 ifPresent =
-                    new VariantDescriptionCI(
+                    new VariantDescriptionCi(
                         market,
                         mappingValidatorFactory,
                         dataLocale,
@@ -229,7 +229,7 @@ public class VariantDescriptionCacheImpl implements VariantDescriptionCache {
         }
     }
 
-    private List<Locale> getMissingLocales(VariantDescriptionCI item, List<Locale> requiredLocales) {
+    private List<Locale> getMissingLocales(VariantDescriptionCi item, List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
         Preconditions.checkArgument(!requiredLocales.isEmpty());
 

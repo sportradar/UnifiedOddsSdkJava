@@ -10,18 +10,18 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCi;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCi;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -29,11 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link CompetitorCI}
+ * An implementation of the {@link CompetitorCi}
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassDataAbstractionCoupling",
         "ClassFanOutComplexity",
         "ConstantName",
@@ -46,13 +45,13 @@ import org.slf4j.LoggerFactory;
         "ReturnCount",
     }
 )
-class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
+class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(CompetitorCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CompetitorCiImpl.class);
     /**
-     * An {@link URN} specifying the id of the associated sport event
+     * An {@link Urn} specifying the id of the associated sport event
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * A {@link Locale} specifying the default language
@@ -97,27 +96,27 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     /**
      * The reference ids associated with the current instance
      */
-    private ReferenceIdCI referenceId;
+    private ReferenceIdCi referenceId;
 
     /**
-     * A {@link List} of associated player {@link URN}s
+     * A {@link List} of associated player {@link Urn}s
      */
-    private List<URN> associatedPlayerIds;
+    private List<Urn> associatedPlayerIds;
 
     /**
      * A {@link List} of known competitor jerseys
      */
-    private List<JerseyCI> jerseys;
+    private List<JerseyCi> jerseys;
 
     /**
      * The associated competitor manager
      */
-    private ManagerCI manager;
+    private ManagerCi manager;
 
     /**
      * The associated competitor home venue
      */
-    private VenueCI venue;
+    private VenueCi venue;
 
     /**
      * The gender of the competitor
@@ -134,17 +133,17 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     /**
      * The race driver profile of the competitor
      */
-    private RaceDriverProfileCI raceDriverProfile;
+    private RaceDriverProfileCi raceDriverProfile;
 
     /**
      * The associated sport id
      */
-    private URN sportId;
+    private Urn sportId;
 
     /**
      * The associated category id
      */
-    private URN categoryId;
+    private Urn categoryId;
 
     /**
      * The short name
@@ -161,8 +160,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     private Date lastTimeCompetitorProfileIsFetched;
     private List<Locale> cultureCompetitorProfileFetched;
 
-    CompetitorCIImpl(
-        URN id,
+    CompetitorCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
@@ -180,12 +179,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
     }
 
-    CompetitorCIImpl(
-        URN id,
+    CompetitorCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPICompetitorProfileEndpoint data,
+        SapiCompetitorProfileEndpoint data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -200,12 +199,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(
-        URN id,
+    CompetitorCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPITeam data,
+        SapiTeam data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -220,32 +219,32 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(
-        URN id,
+    CompetitorCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIPlayerCompetitor data,
+        SapiPlayerCompetitor data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(
-        URN id,
+    CompetitorCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPISimpleTeamProfileEndpoint data,
+        SapiSimpleTeamProfileEndpoint data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         merge(data, dataLocale);
     }
 
-    CompetitorCIImpl(
-        ExportableCompetitorCI exportable,
+    CompetitorCiImpl(
+        ExportableCompetitorCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
@@ -253,7 +252,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.defaultLocale = exportable.getDefaultLocale();
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
@@ -262,12 +261,12 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -362,7 +361,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return - the reference ids associated with the current instance
      */
     @Override
-    public ReferenceIdCI getReferenceId() {
+    public ReferenceIdCi getReferenceId() {
         ensureDataLoaded(referenceId);
         return referenceId;
     }
@@ -374,7 +373,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return {@link List} of associated player ids
      */
     @Override
-    public List<URN> getAssociatedPlayerIds(List<Locale> locales) {
+    public List<Urn> getAssociatedPlayerIds(List<Locale> locales) {
         if (cachedLocales.containsAll(locales)) {
             return associatedPlayerIds == null ? null : ImmutableList.copyOf(associatedPlayerIds);
         }
@@ -390,7 +389,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return {@link List} of known competitor jerseys
      */
     @Override
-    public List<JerseyCI> getJerseys() {
+    public List<JerseyCi> getJerseys() {
         ensureDataLoaded(jerseys);
         return jerseys;
     }
@@ -402,7 +401,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return the associated competitor manager
      */
     @Override
-    public ManagerCI getManager(List<Locale> locales) {
+    public ManagerCi getManager(List<Locale> locales) {
         if (manager != null && manager.hasTranslationsFor(locales)) {
             return manager;
         }
@@ -423,7 +422,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return the associated competitor home venue
      */
     @Override
-    public VenueCI getVenue(List<Locale> locales) {
+    public VenueCi getVenue(List<Locale> locales) {
         if (venue != null && venue.hasTranslationsFor(locales)) {
             return venue;
         }
@@ -471,7 +470,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return sport id
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         ensureDataLoaded(sportId);
         return sportId;
     }
@@ -482,7 +481,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return category id
      */
     @Override
-    public URN getCategoryId() {
+    public Urn getCategoryId() {
         ensureDataLoaded(categoryId);
         return categoryId;
     }
@@ -504,7 +503,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
      * @return the race driver of the competitor if available; otherwise null
      */
     @Override
-    public RaceDriverProfileCI getRaceDriver() {
+    public RaceDriverProfileCi getRaceDriver() {
         return raceDriverProfile;
     }
 
@@ -531,36 +530,36 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (endpointData instanceof SAPITeamCompetitor) {
-            internalMerge((SAPITeamCompetitor) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPITeam) {
-            internalMerge((SAPITeam) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPICompetitorProfileEndpoint) {
-            internalMerge((SAPICompetitorProfileEndpoint) endpointData, dataLocale);
+        if (endpointData instanceof SapiTeamCompetitor) {
+            internalMerge((SapiTeamCompetitor) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiTeam) {
+            internalMerge((SapiTeam) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiCompetitorProfileEndpoint) {
+            internalMerge((SapiCompetitorProfileEndpoint) endpointData, dataLocale);
             cachedLocales.add(dataLocale);
-        } else if (endpointData instanceof SAPIPlayerCompetitor) {
-            internalMerge((SAPIPlayerCompetitor) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPISimpleTeamProfileEndpoint) {
-            internalMerge((SAPISimpleTeamProfileEndpoint) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiPlayerCompetitor) {
+            internalMerge((SapiPlayerCompetitor) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiSimpleTeamProfileEndpoint) {
+            internalMerge((SapiSimpleTeamProfileEndpoint) endpointData, dataLocale);
             cachedLocales.add(dataLocale);
-        } else if (endpointData instanceof ExportableCompetitorCI) {
-            internalMerge((ExportableCompetitorCI) endpointData);
+        } else if (endpointData instanceof ExportableCompetitorCi) {
+            internalMerge((ExportableCompetitorCi) endpointData);
         }
     }
 
-    private void internalMerge(ExportableCompetitorCI exportable) {
+    private void internalMerge(ExportableCompetitorCi exportable) {
         names.putAll(exportable.getNames());
         countryNames.putAll(exportable.getCountryNames());
         abbreviations.putAll(exportable.getAbbreviations());
         isVirtual = exportable.isVirtual();
         countryCode = exportable.getCountryCode();
         referenceId =
-            exportable.getReferenceId() != null ? new ReferenceIdCI(exportable.getReferenceId()) : null;
-        List<URN> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds() != null
+            exportable.getReferenceId() != null ? new ReferenceIdCi(exportable.getReferenceId()) : null;
+        List<Urn> missingAssociatedPlayerIds = exportable.getAssociatedPlayerIds() != null
             ? exportable
                 .getAssociatedPlayerIds()
                 .stream()
-                .map(URN::parse)
+                .map(Urn::parse)
                 .filter(i -> associatedPlayerIds == null || !associatedPlayerIds.contains(i))
                 .collect(Collectors.toList())
             : new ArrayList<>();
@@ -571,31 +570,31 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
         jerseys =
             exportable.getJerseys() != null
-                ? exportable.getJerseys().stream().map(JerseyCI::new).collect(Collectors.toList())
+                ? exportable.getJerseys().stream().map(JerseyCi::new).collect(Collectors.toList())
                 : null;
-        manager = exportable.getManager() != null ? new ManagerCI(exportable.getManager()) : null;
-        venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
+        manager = exportable.getManager() != null ? new ManagerCi(exportable.getManager()) : null;
+        venue = exportable.getVenue() != null ? new VenueCi(exportable.getVenue()) : null;
         gender = exportable.getGender();
         ageGroup = exportable.getAgeGroup();
         raceDriverProfile =
             exportable.getRaceDriverProfile() != null
-                ? new RaceDriverProfileCI(exportable.getRaceDriverProfile())
+                ? new RaceDriverProfileCi(exportable.getRaceDriverProfile())
                 : null;
         cachedLocales.addAll(SdkHelper.findMissingLocales(cachedLocales, exportable.getCachedLocales()));
         state = exportable.getState();
-        sportId = Optional.ofNullable(exportable.getSportId()).map(URN::parse).orElse(null);
-        categoryId = Optional.ofNullable(exportable.getCategoryId()).map(URN::parse).orElse(null);
+        sportId = Optional.ofNullable(exportable.getSportId()).map(Urn::parse).orElse(null);
+        categoryId = Optional.ofNullable(exportable.getCategoryId()).map(Urn::parse).orElse(null);
         shortName = exportable.getShortName();
     }
 
-    private void internalMerge(SAPITeamCompetitor data, Locale dataLocale) {
+    private void internalMerge(SapiTeamCompetitor data, Locale dataLocale) {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
-        internalMerge((SAPITeam) data, dataLocale);
+        internalMerge((SapiTeam) data, dataLocale);
     }
 
-    private void internalMerge(SAPICompetitorProfileEndpoint data, Locale dataLocale) {
+    private void internalMerge(SapiCompetitorProfileEndpoint data, Locale dataLocale) {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
@@ -606,19 +605,19 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 Optional
                     .ofNullable(data.getPlayers())
                     .map(p ->
-                        p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList())
+                        p.getPlayer().stream().map(pp -> Urn.parse(pp.getId())).collect(Collectors.toList())
                     )
                     .orElse(null);
         }
         jerseys =
             Optional
                 .ofNullable(data.getJerseys())
-                .map(j -> j.getJersey().stream().map(JerseyCI::new).collect(Collectors.toList()))
+                .map(j -> j.getJersey().stream().map(JerseyCi::new).collect(Collectors.toList()))
                 .orElse(null);
 
         if (data.getManager() != null) {
             if (manager == null) {
-                manager = new ManagerCI(data.getManager(), dataLocale);
+                manager = new ManagerCi(data.getManager(), dataLocale);
             } else {
                 manager.merge(data.getManager(), dataLocale);
             }
@@ -626,7 +625,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
 
         if (data.getVenue() != null) {
             if (venue == null) {
-                venue = new VenueCI(data.getVenue(), dataLocale);
+                venue = new VenueCi(data.getVenue(), dataLocale);
             } else {
                 venue.merge(data.getVenue(), dataLocale);
             }
@@ -644,30 +643,30 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
 
         if (data.getRaceDriverProfile() != null) {
-            SAPITeam raceDriver = data.getRaceDriverProfile().getRaceDriver();
-            SAPITeam raceTeam = data.getRaceDriverProfile().getRaceTeam();
-            SAPICar car = data.getRaceDriverProfile().getCar();
+            SapiTeam raceDriver = data.getRaceDriverProfile().getRaceDriver();
+            SapiTeam raceTeam = data.getRaceDriverProfile().getRaceTeam();
+            SapiCar car = data.getRaceDriverProfile().getCar();
 
-            URN raceDriverId = raceDriver != null ? URN.parse(raceDriver.getId()) : null;
-            URN raceTeamId = raceTeam != null ? URN.parse(raceTeam.getId()) : null;
-            CarCI carCI = car != null
-                ? new CarCI(car.getName(), car.getChassis(), car.getEngineName())
+            Urn raceDriverId = raceDriver != null ? Urn.parse(raceDriver.getId()) : null;
+            Urn raceTeamId = raceTeam != null ? Urn.parse(raceTeam.getId()) : null;
+            CarCi carCi = car != null
+                ? new CarCi(car.getName(), car.getChassis(), car.getEngineName())
                 : null;
-            raceDriverProfile = new RaceDriverProfileCI(raceDriverId, raceTeamId, carCI);
+            raceDriverProfile = new RaceDriverProfileCi(raceDriverId, raceTeamId, carCi);
         }
     }
 
-    private void internalMerge(SAPITeamExtended competitor, Locale dataLocale) {
+    private void internalMerge(SapiTeamExtended competitor, Locale dataLocale) {
         Preconditions.checkNotNull(competitor);
         Preconditions.checkNotNull(dataLocale);
 
-        Optional.ofNullable(competitor.getSport()).ifPresent(s -> sportId = URN.parse(s.getId()));
-        Optional.ofNullable(competitor.getCategory()).ifPresent(c -> categoryId = URN.parse(c.getId()));
+        Optional.ofNullable(competitor.getSport()).ifPresent(s -> sportId = Urn.parse(s.getId()));
+        Optional.ofNullable(competitor.getCategory()).ifPresent(c -> categoryId = Urn.parse(c.getId()));
 
-        internalMerge((SAPITeam) competitor, dataLocale);
+        internalMerge((SapiTeam) competitor, dataLocale);
     }
 
-    private void internalMerge(SAPITeam competitor, Locale dataLocale) {
+    private void internalMerge(SapiTeam competitor, Locale dataLocale) {
         Preconditions.checkNotNull(competitor);
         Preconditions.checkNotNull(dataLocale);
 
@@ -681,7 +680,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         referenceId =
             competitor.getReferenceIds() == null
                 ? null
-                : new ReferenceIdCI(
+                : new ReferenceIdCi(
                     competitor
                         .getReferenceIds()
                         .getReferenceId()
@@ -720,13 +719,13 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
                 Optional
                     .ofNullable(competitor.getPlayers())
                     .map(p ->
-                        p.getPlayer().stream().map(pp -> URN.parse(pp.getId())).collect(Collectors.toList())
+                        p.getPlayer().stream().map(pp -> Urn.parse(pp.getId())).collect(Collectors.toList())
                     )
                     .orElse(null);
         }
     }
 
-    private void internalMerge(SAPIPlayerCompetitor competitor, Locale dataLocale) {
+    private void internalMerge(SapiPlayerCompetitor competitor, Locale dataLocale) {
         Preconditions.checkNotNull(competitor);
         Preconditions.checkNotNull(dataLocale);
 
@@ -741,7 +740,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
     }
 
-    private void internalMerge(SAPISimpleTeamProfileEndpoint data, Locale dataLocale) {
+    private void internalMerge(SapiSimpleTeamProfileEndpoint data, Locale dataLocale) {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
@@ -797,7 +796,7 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
         }
 
         referenceId =
-            new ReferenceIdCI(
+            new ReferenceIdCi(
                 ImmutableMap
                     .<String, String>builder()
                     .put("betradar", String.valueOf(id.getId()))
@@ -831,8 +830,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableCompetitorCI(
+    public ExportableCi export() {
+        return new ExportableCompetitorCi(
             id.toString(),
             new HashMap<>(names),
             defaultLocale,
@@ -842,9 +841,9 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
             countryCode,
             referenceId != null ? new HashMap<>(referenceId.getReferenceIds()) : null,
             associatedPlayerIds != null
-                ? associatedPlayerIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? associatedPlayerIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
-            jerseys != null ? jerseys.stream().map(JerseyCI::export).collect(Collectors.toList()) : null,
+            jerseys != null ? jerseys.stream().map(JerseyCi::export).collect(Collectors.toList()) : null,
             manager != null ? manager.export() : null,
             venue != null ? venue.export() : null,
             gender,
@@ -852,8 +851,8 @@ class CompetitorCIImpl implements CompetitorCI, ExportableCacheItem {
             raceDriverProfile != null ? raceDriverProfile.export() : null,
             new ArrayList<>(cachedLocales),
             state,
-            Optional.ofNullable(sportId).map(URN::toString).orElse(null),
-            Optional.ofNullable(categoryId).map(URN::toString).orElse(null),
+            Optional.ofNullable(sportId).map(Urn::toString).orElse(null),
+            Optional.ofNullable(categoryId).map(Urn::toString).orElse(null),
             shortName
         );
     }

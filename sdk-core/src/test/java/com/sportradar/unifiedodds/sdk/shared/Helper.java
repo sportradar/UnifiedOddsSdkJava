@@ -1,7 +1,7 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Calendar;
@@ -17,7 +17,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class Helper {
 
     public static void writeToOutput(String message) {
-        message = String.format("%s\t%s", new Date(), message);
+        message = String.format("%s\t%d\t%s", new Date(), System.currentTimeMillis(), message);
         System.out.println(message);
     }
 
@@ -81,12 +81,12 @@ public class Helper {
         return cal.getTime();
     }
 
-    public static URN generateEventId() {
+    public static Urn generateEventId() {
         return generateEventId("match");
     }
 
-    public static URN generateEventId(String urnGroup) {
-        return URN.parse("sr:" + urnGroup + ":" + Math.abs(new Random().nextInt(999999)));
+    public static Urn generateEventId(String urnGroup) {
+        return Urn.parse("sr:" + urnGroup + ":" + Math.abs(new Random().nextInt(999999)));
     }
 
     public static XMLGregorianCalendar getCalendar(Instant date) {

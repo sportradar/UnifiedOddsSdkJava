@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk.impl.entities.status;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.status.PeriodStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.TeamStatistics;
-import com.sportradar.unifiedodds.sdk.impl.dto.PeriodStatisticsDTO;
-import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.PeriodStatisticsDto;
+import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings({ "MagicNumber", "UnnecessaryParentheses" })
 class PeriodStatisticsImpl implements PeriodStatistics {
 
-    private final PeriodStatisticsDTO stats;
+    private final PeriodStatisticsDto stats;
 
-    PeriodStatisticsImpl(PeriodStatisticsDTO stats) {
+    PeriodStatisticsImpl(PeriodStatisticsDto stats) {
         Preconditions.checkNotNull(stats);
 
         this.stats = stats;
@@ -40,23 +40,13 @@ class PeriodStatisticsImpl implements PeriodStatistics {
      * Returns a list of specific team statistics related to the round indicated by the {@link #getPeriodName()}
      *
      * @return a list of specific team statistics related to the associated round
-     */
-    @Override
-    public List<TeamStatistics> getTeamStatisticDTOS() {
-        return getTeamStatistics();
-    }
-
-    /**
-     * Returns a list of specific team statistics related to the round indicated by the {@link #getPeriodName()}
-     *
-     * @return a list of specific team statistics related to the associated round
      * @since 2.0.1
      */
     @Override
     public List<TeamStatistics> getTeamStatistics() {
-        return stats.getTeamStatisticDTOs() == null
+        return stats.getTeamStatisticDtos() == null
             ? null
-            : stats.getTeamStatisticDTOs().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
+            : stats.getTeamStatisticDtos().stream().map(TeamStatisticsImpl::new).collect(Collectors.toList());
     }
 
     @Override
@@ -66,7 +56,7 @@ class PeriodStatisticsImpl implements PeriodStatistics {
         }
 
         String teamStatisticsResult = "";
-        for (TeamStatisticsDTO teamStatistics : stats.getTeamStatisticDTOs()) {
+        for (TeamStatisticsDto teamStatistics : stats.getTeamStatisticDtos()) {
             teamStatisticsResult += " | " + teamStatistics.toString();
         }
         if (teamStatisticsResult.length() > 3) {

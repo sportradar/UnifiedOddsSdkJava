@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import lombok.val;
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.StatusLine;
 
 public class ClosableHttpResponseStubs {
 
@@ -22,20 +22,12 @@ public class ClosableHttpResponseStubs {
 
     public static CloseableHttpResponse httpOk(final String content) throws IOException {
         val response = mock(CloseableHttpResponse.class);
-
-        final StatusLine statusLine = statusOf(HTTP_OK);
-        when(response.getStatusLine()).thenReturn(statusLine);
+        when(response.getCode()).thenReturn(HTTP_OK);
 
         HttpEntity entity = entityWithContent(content);
         when(response.getEntity()).thenReturn(entity);
 
         return response;
-    }
-
-    private static StatusLine statusOf(int statusCode) {
-        val statusLine = mock(StatusLine.class);
-        when(statusLine.getStatusCode()).thenReturn(statusCode);
-        return statusLine;
     }
 
     private static HttpEntity entityWithContent(String content) throws IOException {
@@ -48,8 +40,7 @@ public class ClosableHttpResponseStubs {
         throws IOException {
         val response = mock(CloseableHttpResponse.class);
 
-        final StatusLine statusLine = statusOf(httpCode);
-        when(response.getStatusLine()).thenReturn(statusLine);
+        when(response.getCode()).thenReturn(httpCode);
 
         HttpEntity entity = entityWithContent(content);
         when(response.getEntity()).thenReturn(entity);

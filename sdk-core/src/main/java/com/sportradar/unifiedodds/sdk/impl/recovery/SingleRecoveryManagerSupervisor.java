@@ -3,6 +3,7 @@ package com.sportradar.unifiedodds.sdk.impl.recovery;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
@@ -10,7 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "MagicNumber", "ParameterNumber" })
+@SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "ParameterNumber" })
 public class SingleRecoveryManagerSupervisor {
 
     private final RecoveryManagerImpl recoveryManager;
@@ -22,12 +23,12 @@ public class SingleRecoveryManagerSupervisor {
 
     @Inject
     public SingleRecoveryManagerSupervisor(
-        SDKInternalConfiguration config,
-        SDKProducerManager producerManager,
-        SDKProducerStatusListener producerStatusListener,
-        SDKEventRecoveryStatusListener eventRecoveryStatusListener,
+        SdkInternalConfiguration config,
+        SdkProducerManager producerManager,
+        SdkProducerStatusListener producerStatusListener,
+        SdkEventRecoveryStatusListener eventRecoveryStatusListener,
         SnapshotRequestManager snapshotRequestManager,
-        SDKTaskScheduler taskScheduler,
+        SdkTaskScheduler taskScheduler,
         @Named("DedicatedRecoveryManagerExecutor") ScheduledExecutorService executorServices,
         @Named("RecoveryHttpHelper") HttpHelper httpHelper,
         FeedMessageFactory messageFactory,

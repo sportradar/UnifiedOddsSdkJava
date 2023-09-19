@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -14,11 +14,11 @@ import java.util.Map;
  */
 public interface SeasonInfo {
     /**
-     * Returns a {@link URN} uniquely identifying the current {@link SeasonInfo} instance
+     * Returns a {@link Urn} uniquely identifying the current {@link SeasonInfo} instance
      *
-     * @return - a {@link URN} uniquely identifying the current {@link SeasonInfo} instance
+     * @return - a {@link Urn} uniquely identifying the current {@link SeasonInfo} instance
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the name of the season in the specified language
@@ -67,7 +67,7 @@ public interface SeasonInfo {
      *
      * @return the associated tournament identifier
      */
-    default URN getTournamentId() {
+    default Urn getTournamentId() {
         return null;
     }
 }

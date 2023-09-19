@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Created on 22/06/2017.
@@ -15,10 +15,6 @@ import com.sportradar.utils.URN;
  */
 @SuppressWarnings({ "ClassFanOutComplexity" })
 public interface FeedMessageFactory {
-    ProducerUp buildProducerUp(int producerId, ProducerUpReason reason, long timestamp);
-
-    ProducerDown buildProducerDown(int producerId, ProducerDownReason reason, long timestamp);
-
     ProducerStatus buildProducerStatus(
         int producerId,
         ProducerStatusReason reason,
@@ -31,63 +27,63 @@ public interface FeedMessageFactory {
         int producerId,
         long requestId,
         Long after,
-        URN eventId,
+        Urn eventId,
         String message,
         long timestamp
     );
 
     <T extends SportEvent> BetStop<T> buildBetStop(
         T sportEvent,
-        UFBetStop message,
+        UfBetStop message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> FixtureChange<T> buildFixtureChange(
         T sportEvent,
-        UFFixtureChange message,
+        UfFixtureChange message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> BetSettlement<T> buildBetSettlement(
         T sportEvent,
-        UFBetSettlement message,
+        UfBetSettlement message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> RollbackBetSettlement<T> buildRollbackBetSettlement(
         T sportEvent,
-        UFRollbackBetSettlement message,
+        UfRollbackBetSettlement message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> OddsChange<T> buildOddsChange(
         T sportEvent,
-        UFOddsChange message,
+        UfOddsChange message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> RollbackBetCancel<T> buildRollbackBetCancel(
         T sportEvent,
-        UFRollbackBetCancel message,
+        UfRollbackBetCancel message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> BetCancel<T> buildBetCancel(
         T sportEvent,
-        UFBetCancel message,
+        UfBetCancel message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     );
 
     <T extends SportEvent> CashOutProbabilities<T> buildCashOutProbabilities(
         T sportEvent,
-        UFCashout cashoutData,
+        UfCashout cashoutData,
         MessageTimestamp timestamp
     );
 

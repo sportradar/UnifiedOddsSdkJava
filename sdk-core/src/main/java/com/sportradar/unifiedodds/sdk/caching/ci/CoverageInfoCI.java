@@ -7,9 +7,9 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
-import com.sportradar.uf.sportsapi.datamodel.SAPICoverageInfo;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiCoverage;
+import com.sportradar.uf.sportsapi.datamodel.SapiCoverageInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
 /**
  * A coverage info representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class CoverageInfoCI {
+public class CoverageInfoCi {
 
     /**
      * The level property backing field
@@ -41,18 +40,18 @@ public class CoverageInfoCI {
     private CoveredFrom coveredFrom;
 
     /**
-     * Initializes a new instance of the {@link SAPICoverageInfo} class.
+     * Initializes a new instance of the {@link SapiCoverageInfo} class.
      *
-     * @param coverageInfo - {@link SAPICoverageInfo} containing information about the competitor
+     * @param coverageInfo - {@link SapiCoverageInfo} containing information about the competitor
      */
-    public CoverageInfoCI(SAPICoverageInfo coverageInfo) {
+    public CoverageInfoCi(SapiCoverageInfo coverageInfo) {
         Preconditions.checkNotNull(coverageInfo);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(coverageInfo.getLevel()));
 
         merge(coverageInfo);
     }
 
-    public CoverageInfoCI(ExportableCoverageInfoCI coverageInfo) {
+    public CoverageInfoCi(ExportableCoverageInfoCi coverageInfo) {
         Preconditions.checkNotNull(coverageInfo);
 
         level = coverageInfo.getLevel();
@@ -62,11 +61,11 @@ public class CoverageInfoCI {
     }
 
     /**
-     * Merges the information from the provided {@link SAPICoverageInfo} into the current instance
+     * Merges the information from the provided {@link SapiCoverageInfo} into the current instance
      *
-     * @param coverageInfo - {@link SAPICoverageInfo} containing information about the competitor
+     * @param coverageInfo - {@link SapiCoverageInfo} containing information about the competitor
      */
-    public void merge(SAPICoverageInfo coverageInfo) {
+    public void merge(SapiCoverageInfo coverageInfo) {
         Preconditions.checkNotNull(coverageInfo);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(coverageInfo.getLevel()));
 
@@ -77,7 +76,7 @@ public class CoverageInfoCI {
                 coverageInfo
                     .getCoverage()
                     .stream()
-                    .map(SAPICoverage::getIncludes)
+                    .map(SapiCoverage::getIncludes)
                     .collect(Collectors.toList());
         }
         coveredFrom = mapCoveredFrom(coverageInfo.getCoveredFrom());
@@ -133,7 +132,7 @@ public class CoverageInfoCI {
         }
     }
 
-    public ExportableCoverageInfoCI export() {
-        return new ExportableCoverageInfoCI(level, isLive, includes, coveredFrom);
+    public ExportableCoverageInfoCi export() {
+        return new ExportableCoverageInfoCi(level, isLive, includes, coveredFrom);
     }
 }

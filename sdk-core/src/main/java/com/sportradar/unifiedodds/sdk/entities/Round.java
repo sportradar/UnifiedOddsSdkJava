@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -94,7 +94,7 @@ public interface Round {
      *
      * @return - the id of the group associated with the current round
      */
-    default URN getGroupId() {
+    default Urn getGroupId() {
         return null;
     }
 

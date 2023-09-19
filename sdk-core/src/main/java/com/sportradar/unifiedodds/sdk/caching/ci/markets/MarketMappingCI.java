@@ -11,7 +11,7 @@ import com.sportradar.uf.sportsapi.datamodel.Mappings;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidator;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,27 +21,20 @@ import java.util.stream.Stream;
  * // TODO @eti: Javadoc
  */
 @SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "BooleanExpressionComplexity",
-        "LambdaBodyLength",
-        "NPathComplexity",
-        "UnnecessaryParentheses",
-    }
+    { "BooleanExpressionComplexity", "LambdaBodyLength", "NPathComplexity", "UnnecessaryParentheses" }
 )
-public class MarketMappingCI {
+public class MarketMappingCi {
 
     private final int marketTypeId;
     private final Integer marketSubTypeId;
-    private final int producerId;
-    private final URN sportId;
+    private final Urn sportId;
     private final String sovTemplate;
     private final String validFor;
     private final MappingValidator mappingValidator;
-    private final List<OutcomeMappingCI> outcomeMappings;
+    private final List<OutcomeMappingCi> outcomeMappings;
     private final Set<Integer> producerIds;
 
-    MarketMappingCI(Mappings.Mapping mm, Locale locale, MappingValidatorFactory mappingValidatorFactory) {
+    MarketMappingCi(Mappings.Mapping mm, Locale locale, MappingValidatorFactory mappingValidatorFactory) {
         Preconditions.checkNotNull(mm);
         Preconditions.checkNotNull(locale);
         Preconditions.checkArgument(mm.getProductId() > 0);
@@ -49,11 +42,9 @@ public class MarketMappingCI {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(mm.getMarketId()));
         Preconditions.checkNotNull(mappingValidatorFactory);
 
-        producerId = mm.getProductId();
-
         producerIds = buildProducerIds(mm);
 
-        sportId = mm.getSportId().equals("all") ? null : URN.parse(mm.getSportId());
+        sportId = mm.getSportId().equals("all") ? null : Urn.parse(mm.getSportId());
 
         AbstractMap.SimpleImmutableEntry<Integer, Integer> marketIds = parseMappingMarketId(mm.getMarketId());
         marketTypeId = marketIds.getKey();
@@ -70,7 +61,7 @@ public class MarketMappingCI {
                 : mm
                     .getMappingOutcome()
                     .stream()
-                    .map(om -> new OutcomeMappingCI(om, locale))
+                    .map(om -> new OutcomeMappingCi(om, locale))
                     .collect(Collectors.toList());
     }
 
@@ -91,19 +82,11 @@ public class MarketMappingCI {
         return marketSubTypeId;
     }
 
-    /**
-     * @deprecated since 2.0.1, user {@link #getProducerIds()}
-     */
-    @Deprecated
-    public int getProducerId() {
-        return producerId;
-    }
-
     public Set<Integer> getProducerIds() {
         return producerIds;
     }
 
-    public URN getSportId() {
+    public Urn getSportId() {
         return sportId;
     }
 
@@ -119,7 +102,7 @@ public class MarketMappingCI {
         return mappingValidator;
     }
 
-    public List<OutcomeMappingCI> getOutcomeMappings() {
+    public List<OutcomeMappingCi> getOutcomeMappings() {
         return outcomeMappings;
     }
 
@@ -131,26 +114,26 @@ public class MarketMappingCI {
             o
                 .getMappingOutcome()
                 .forEach(om -> {
-                    Optional<OutcomeMappingCI> optionalCI = outcomeMappings
+                    Optional<OutcomeMappingCi> optionalCi = outcomeMappings
                         .stream()
                         .filter(cachedMapping -> cachedMapping.getOutcomeId().equals(om.getOutcomeId()))
                         .findFirst();
 
-                    if (optionalCI.isPresent()) {
-                        optionalCI.get().merge(om, locale);
+                    if (optionalCi.isPresent()) {
+                        optionalCi.get().merge(om, locale);
                     } else {
-                        outcomeMappings.add(new OutcomeMappingCI(om, locale));
+                        outcomeMappings.add(new OutcomeMappingCi(om, locale));
                     }
                 });
         }
     }
 
-    static boolean compareMappingsData(MarketMappingCI exm, Mappings.Mapping o) {
+    static boolean compareMappingsData(MarketMappingCi exm, Mappings.Mapping o) {
         Preconditions.checkNotNull(exm);
         Preconditions.checkNotNull(o);
 
         Set<Integer> producerIds = exm.getProducerIds();
-        Set<Integer> newProducerIds = MarketMappingCI.buildProducerIds(o);
+        Set<Integer> newProducerIds = MarketMappingCi.buildProducerIds(o);
         if (!compareMappingsProducerIds(producerIds, newProducerIds)) {
             return false;
         }
@@ -163,7 +146,7 @@ public class MarketMappingCI {
             return false;
         }
 
-        AbstractMap.SimpleImmutableEntry<Integer, Integer> marketIds = MarketMappingCI.parseMappingMarketId(
+        AbstractMap.SimpleImmutableEntry<Integer, Integer> marketIds = MarketMappingCi.parseMappingMarketId(
             o.getMarketId()
         );
 

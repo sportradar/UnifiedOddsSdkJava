@@ -4,14 +4,14 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableRaceDriverProfileCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableRaceDriverProfileCi extends ExportableCi {
 
     private String raceDriverId;
     private String raceTeamId;
-    private ExportableCarCI car;
+    private ExportableCarCi car;
 
-    public ExportableRaceDriverProfileCI(String raceDriverId, String raceTeamId, ExportableCarCI car) {
+    public ExportableRaceDriverProfileCi(String raceDriverId, String raceTeamId, ExportableCarCi car) {
         super(null, null);
         this.raceDriverId = raceDriverId;
         this.raceTeamId = raceTeamId;
@@ -34,11 +34,11 @@ public class ExportableRaceDriverProfileCI extends ExportableCI {
         this.raceTeamId = raceTeamId;
     }
 
-    public ExportableCarCI getCar() {
+    public ExportableCarCi getCar() {
         return car;
     }
 
-    public void setCar(ExportableCarCI car) {
+    public void setCar(ExportableCarCi car) {
         this.car = car;
     }
 }

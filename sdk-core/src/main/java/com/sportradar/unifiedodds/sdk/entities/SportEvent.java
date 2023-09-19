@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.Locale;
 
@@ -14,11 +14,11 @@ import java.util.Locale;
 @SuppressWarnings({ "LineLength" })
 public interface SportEvent {
     /**
-     * Returns an {@link URN} uniquely identifying the tournament associated with the current instance
+     * Returns an {@link Urn} uniquely identifying the tournament associated with the current instance
      *
-     * @return - an {@link URN} uniquely identifying the tournament associated with the current instance
+     * @return - an {@link Urn} uniquely identifying the tournament associated with the current instance
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the sport event name
@@ -33,7 +33,7 @@ public interface SportEvent {
      *
      * @return - the unique sport identifier to which this event is associated
      */
-    URN getSportId();
+    Urn getSportId();
 
     /**
      * Returns the {@link Date} specifying when the sport event associated with the current
@@ -64,11 +64,11 @@ public interface SportEvent {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
-    default URN getReplacedBy() {
+    default Urn getReplacedBy() {
         return null;
     }
 }

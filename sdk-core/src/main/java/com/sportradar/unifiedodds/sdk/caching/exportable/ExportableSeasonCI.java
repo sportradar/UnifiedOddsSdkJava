@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableSeasonCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableSeasonCi extends ExportableCi {
 
     private Date startDate;
     private Date endDate;
@@ -14,7 +14,7 @@ public class ExportableSeasonCI extends ExportableCI {
     private String tournamentId;
     private List<Locale> cachedLocales;
 
-    public ExportableSeasonCI(
+    public ExportableSeasonCi(
         String id,
         Map<Locale, String> names,
         Date startDate,

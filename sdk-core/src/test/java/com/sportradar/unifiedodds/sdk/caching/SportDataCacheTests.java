@@ -3,99 +3,63 @@
  */
 package com.sportradar.unifiedodds.sdk.caching;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Injector;
-import com.sportradar.uf.sportsapi.datamodel.SAPIFixture;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportCategoriesEndpoint;
-import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.OddsFeed;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.uf.sportsapi.datamodel.SapiFixture;
+import com.sportradar.uf.sportsapi.datamodel.SapiSportCategoriesEndpoint;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.caching.impl.SportData;
 import com.sportradar.unifiedodds.sdk.caching.impl.SportsDataCacheImpl;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
-import com.sportradar.unifiedodds.sdk.conn.SdkConnListener;
+import com.sportradar.unifiedodds.sdk.conn.UofConnListener;
 import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.shared.RestMessageBuilder;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import com.sportradar.unifiedodds.sdk.shared.TestDataRouterManager;
 import com.sportradar.unifiedodds.sdk.shared.TestFeed;
-import com.sportradar.utils.URN;
-import java.util.Arrays;
-import java.util.List;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
+import java.util.Random;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-@SuppressWarnings({ "ClassFanOutComplexity" })
+@SuppressWarnings({ "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ClassFanOutComplexity" })
 public class SportDataCacheTests {
 
-    private static final Locale LOCALE = Locale.ENGLISH;
-    private static final List<Locale> LOCALES = Arrays.asList(LOCALE);
-    private static final URN EVENT_ID = URN.parse("sr:match:10116681");
-    private static final URN TOURNAMENT_ID = URN.parse("sr:tournament:40");
-    private static final URN SPORT_ID1 = URN.parse("sr:sport:1");
-
-    private Cache<URN, SportCI> sportsCache;
-    private Cache<URN, CategoryCI> categoriesCache;
-    private CacheItemFactory cacheItemFactory;
-    private DataRouterManager dataRouterManager;
-
-    private SDKInternalConfiguration configInternal = Mockito.mock(SDKInternalConfiguration.class);
-
-    private Injector injector = new TestInjectorFactory(configInternal).create();
+    private static final Urn SPORT_ID1 = Urn.parse("sr:sport:1");
+    private Cache<Urn, SportCi> sportsCache;
+    private Cache<Urn, CategoryCi> categoriesCache;
 
     private SportsDataCache cache;
-
     private DataRouterImpl dataRouter;
 
     @Before
     public void setup() {
-        Mockito.when(configInternal.getDefaultLocale()).thenReturn(LOCALE);
-        Mockito
-            .when(configInternal.getExceptionHandlingStrategy())
-            .thenReturn(ExceptionHandlingStrategy.Throw);
+        final StubUofConfiguration config = new StubUofConfiguration();
 
-        final OddsFeedConfiguration config = OddsFeed
-            .getOddsFeedConfigurationBuilder()
-            .setAccessToken("testuser")
-            .selectCustom()
-            .setMessagingUsername(Constants.SDK_USERNAME)
-            .setMessagingPassword(Constants.SDK_PASSWORD)
-            .setMessagingHost(Constants.RABBIT_IP)
-            .useMessagingSsl(false)
-            .setApiHost(Constants.RABBIT_IP)
-            .setDefaultLocale(LOCALE)
-            .setMessagingVirtualHost(Constants.UF_VIRTUALHOST)
-            .setExceptionHandlingStrategy(ExceptionHandlingStrategy.Throw)
-            .build();
+        Injector injector = new TestInjectorFactory(mock(SdkInternalConfiguration.class), config).create();
 
         sportsCache = CacheBuilder.newBuilder().build();
         categoriesCache = CacheBuilder.newBuilder().build();
-        cacheItemFactory = injector.getInstance(CacheItemFactory.class);
+        CacheItemFactory cacheItemFactory = injector.getInstance(CacheItemFactory.class);
 
-        SdkConnListener sdkListener = new SdkConnListener();
+        UofConnListener sdkListener = new UofConnListener();
         TestFeed feed = new TestFeed(sdkListener, config, sdkListener);
         dataRouter = (DataRouterImpl) injector.getInstance(DataRouter.class);
-        dataRouterManager = new TestDataRouterManager(feed.TestHttpHelper, dataRouter);
+        DataRouterManager dataRouterManager = new TestDataRouterManager(feed.TestHttpHelper, dataRouter);
 
-        cache =
-            new SportsDataCacheImpl(
-                sportsCache,
-                categoriesCache,
-                cacheItemFactory,
-                configInternal,
-                dataRouterManager
-            );
+        cache = new SportsDataCacheImpl(sportsCache, categoriesCache, cacheItemFactory, dataRouterManager);
 
-        dataRouter.setDataListeners(Arrays.asList((DataRouterListener) cache));
+        dataRouter.setDataListeners(asList((DataRouterListener) cache));
     }
 
     @Test
@@ -112,7 +76,7 @@ public class SportDataCacheTests {
         assertNotNull(sportsCache);
         assertNotNull(categoriesCache);
 
-        SportData sportData = cache.getSport(SPORT_ID1, LOCALES);
+        SportData sportData = cache.getSport(SPORT_ID1, asList());
         assertNull(sportData);
     }
 
@@ -121,8 +85,8 @@ public class SportDataCacheTests {
         assertNotNull(sportsCache);
         assertNotNull(categoriesCache);
 
-        URN categoryId = URN.parse("sr:category:1");
-        CategoryCI categoryCi = cache.getCategory(categoryId, LOCALES);
+        Urn categoryId = Urn.parse("sr:category:1");
+        CategoryCi categoryCi = cache.getCategory(categoryId, asList());
         assertNull(categoryCi);
     }
 
@@ -134,17 +98,17 @@ public class SportDataCacheTests {
         final int categoryCount = 10;
         final int categoryFactor = 15;
 
-        SAPISportCategoriesEndpoint sportCategoriesEndpoint = RestMessageBuilder.getSportCategories(
+        SapiSportCategoriesEndpoint sportCategoriesEndpoint = RestMessageBuilder.getSportCategories(
             (int) SPORT_ID1.getId(),
             categoryCount,
             categoryFactor
         );
-        dataRouter.onSportCategoriesFetched(sportCategoriesEndpoint, LOCALE, null);
+        dataRouter.onSportCategoriesFetched(sportCategoriesEndpoint, anyLanguage(), null);
 
         assertEquals(1, sportsCache.size());
         assertEquals(categoryCount, categoriesCache.size());
 
-        SportData sport = cache.getSport(SPORT_ID1, LOCALES);
+        SportData sport = cache.getSport(SPORT_ID1, asList());
         assertNotNull(sport);
         assertEquals(SPORT_ID1, sport.getId());
         assertEquals(categoryCount, sport.getCategories().size());
@@ -161,17 +125,17 @@ public class SportDataCacheTests {
         assertEquals(1, sportsCache.size());
         assertEquals(categoryCount, categoriesCache.size());
 
-        SAPISportCategoriesEndpoint sportCategoriesEndpoint = RestMessageBuilder.getSportCategories(
+        SapiSportCategoriesEndpoint sportCategoriesEndpoint = RestMessageBuilder.getSportCategories(
             (int) SPORT_ID1.getId(),
             categoryCount,
             categoryFactor
         );
-        dataRouter.onSportCategoriesFetched(sportCategoriesEndpoint, LOCALE, null);
+        dataRouter.onSportCategoriesFetched(sportCategoriesEndpoint, anyLanguage(), null);
 
         assertEquals(1, sportsCache.size());
         assertEquals(categoryCount * 2, categoriesCache.size());
 
-        SportData sport = cache.getSport(SPORT_ID1, LOCALES);
+        SportData sport = cache.getSport(SPORT_ID1, asList());
         assertNotNull(sport);
         assertEquals(SPORT_ID1, sport.getId());
         assertEquals(categoryCount * 2, sport.getCategories().size());
@@ -186,13 +150,13 @@ public class SportDataCacheTests {
         final int eventId = 123456;
         final int categoryId = 1234;
 
-        SAPIFixture fixture = RestMessageBuilder.getFixture(eventId, (int) SPORT_ID1.getId(), categoryId);
-        dataRouter.onFixtureFetched(URN.parse(fixture.getId()), fixture, LOCALE, null);
+        SapiFixture fixture = RestMessageBuilder.getFixture(eventId, (int) SPORT_ID1.getId(), categoryId);
+        dataRouter.onFixtureFetched(Urn.parse(fixture.getId()), fixture, anyLanguage(), null);
 
         assertEquals(1, sportsCache.size());
         assertEquals(1, categoriesCache.size());
 
-        SportData sport = cache.getSport(SPORT_ID1, LOCALES);
+        SportData sport = cache.getSport(SPORT_ID1, asList());
         assertNotNull(sport);
         assertEquals(SPORT_ID1, sport.getId());
         assertEquals(1, sport.getCategories().size());
@@ -208,15 +172,20 @@ public class SportDataCacheTests {
         final int eventId = 123456;
         final int categoryId = 4321;
 
-        SAPIFixture fixture = RestMessageBuilder.getFixture(eventId, (int) SPORT_ID1.getId(), categoryId);
-        dataRouter.onFixtureFetched(URN.parse(fixture.getId()), fixture, LOCALE, null);
+        SapiFixture fixture = RestMessageBuilder.getFixture(eventId, (int) SPORT_ID1.getId(), categoryId);
+        dataRouter.onFixtureFetched(Urn.parse(fixture.getId()), fixture, anyLanguage(), null);
 
         assertEquals(1, sportsCache.size());
         assertEquals(2, categoriesCache.size());
 
-        SportData sport = cache.getSport(SPORT_ID1, LOCALES);
+        SportData sport = cache.getSport(SPORT_ID1, asList());
         assertNotNull(sport);
         assertEquals(SPORT_ID1, sport.getId());
         assertEquals(2, sport.getCategories().size());
+    }
+
+    private Locale anyLanguage() {
+        val localePool = asList(Locale.CHINESE, Locale.FRENCH, Locale.CANADA, Locale.KOREA, Locale.GERMANY);
+        return localePool.get(new Random().nextInt(localePool.size()));
     }
 }

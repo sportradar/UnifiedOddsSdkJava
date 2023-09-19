@@ -7,15 +7,14 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDelayedInfo;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDelayedInfoCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiDelayedInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDelayedInfoCi;
 import java.util.*;
 
 /**
  * Event delay info cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class DelayedInfoCI {
+public class DelayedInfoCi {
 
     /**
      * The identifier of the delayed info
@@ -38,7 +37,7 @@ public class DelayedInfoCI {
      * @param delayedInfo the data from which the CI will be built
      * @param locale the {@link Locale} in which the data is provided
      */
-    public DelayedInfoCI(SAPIDelayedInfo delayedInfo, Locale locale) {
+    public DelayedInfoCi(SapiDelayedInfo delayedInfo, Locale locale) {
         Preconditions.checkNotNull(delayedInfo);
         Preconditions.checkNotNull(locale);
 
@@ -50,7 +49,7 @@ public class DelayedInfoCI {
         merge(delayedInfo, locale);
     }
 
-    public DelayedInfoCI(ExportableDelayedInfoCI exportable) {
+    public DelayedInfoCi(ExportableDelayedInfoCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.id = exportable.getId();
         this.descriptions = Maps.newConcurrentMap();
@@ -95,7 +94,7 @@ public class DelayedInfoCI {
      * @param delayedInfo the data which should be merged
      * @param locale the {@link Locale} in which the data is provided
      */
-    public void merge(SAPIDelayedInfo delayedInfo, Locale locale) {
+    public void merge(SapiDelayedInfo delayedInfo, Locale locale) {
         Preconditions.checkNotNull(delayedInfo);
         Preconditions.checkNotNull(locale);
 
@@ -106,7 +105,7 @@ public class DelayedInfoCI {
         cachedLocales.add(locale);
     }
 
-    public ExportableDelayedInfoCI export() {
-        return new ExportableDelayedInfoCI(id, new HashMap<>(descriptions), new HashSet<>(cachedLocales));
+    public ExportableDelayedInfoCi export() {
+        return new ExportableDelayedInfoCi(id, new HashMap<>(descriptions), new HashSet<>(cachedLocales));
     }
 }

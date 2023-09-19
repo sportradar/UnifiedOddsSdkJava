@@ -4,8 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import com.sportradar.uf.datamodel.UFMarketMetadata;
-import com.sportradar.uf.datamodel.UFMarketStatus;
+import com.sportradar.uf.datamodel.UfMarketMetadata;
+import com.sportradar.uf.datamodel.UfMarketStatus;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.List;
@@ -34,10 +34,10 @@ public class MarketWithProbabilitiesImpl extends MarketImpl implements MarketWit
         Map<String, String> extendedSpecifiers,
         MarketDefinition marketDefinition,
         Locale defaultLocale,
-        UFMarketStatus status,
+        UfMarketStatus status,
         List<OutcomeProbabilities> outcomeProbabilities,
         Integer cashoutStatus,
-        UFMarketMetadata marketMetadata
+        UfMarketMetadata marketMetadata
     ) {
         super(id, nameProvider, specifiersMap, extendedSpecifiers, marketDefinition, defaultLocale);
         MarketStatus stat = MarketStatus.fromFeedValue(status);

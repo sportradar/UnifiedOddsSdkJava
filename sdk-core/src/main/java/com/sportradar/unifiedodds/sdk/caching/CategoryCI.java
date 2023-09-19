@@ -4,20 +4,19 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
  * Defines methods used to access cached category entity data
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface CategoryCI extends CacheItem {
+public interface CategoryCi extends CacheItem {
     /**
-     * Returns the {@link URN} specifying the id of the associated sport
+     * Returns the {@link Urn} specifying the id of the associated sport
      *
-     * @return the {@link URN} specifying the id of the associated sport
+     * @return the {@link Urn} specifying the id of the associated sport
      */
-    URN getSportId();
+    Urn getSportId();
 
     /**
      * Returns a {@link String} representing a country code
@@ -31,5 +30,5 @@ public interface CategoryCI extends CacheItem {
      *
      * @return a {@link List} containing the ids of associated tournaments
      */
-    List<URN> getTournamentIds();
+    List<Urn> getTournamentIds();
 }

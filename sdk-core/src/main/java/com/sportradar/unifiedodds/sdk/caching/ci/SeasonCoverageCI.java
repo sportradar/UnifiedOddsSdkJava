@@ -5,20 +5,19 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPISeasonCoverageInfo;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCoverageCI;
-import com.sportradar.utils.URN;
+import com.sportradar.uf.sportsapi.datamodel.SapiSeasonCoverageInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableSeasonCoverageCi;
+import com.sportradar.utils.Urn;
 
 /**
  * A season coverage representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class SeasonCoverageCI {
+public class SeasonCoverageCi {
 
     /**
      * The identifier of the season
      */
-    private final URN seasonId;
+    private final Urn seasonId;
 
     /**
      * The {@link String} representation of the maximum coverage available for the season associated with
@@ -48,14 +47,14 @@ public class SeasonCoverageCI {
     private final int scheduled;
 
     /**
-     * Initializes a new instance of the {@link SeasonCoverageCI} class
+     * Initializes a new instance of the {@link SeasonCoverageCi} class
      *
-     * @param season - {@link SAPISeasonCoverageInfo} containing information about the season coverage
+     * @param season - {@link SapiSeasonCoverageInfo} containing information about the season coverage
      */
-    public SeasonCoverageCI(SAPISeasonCoverageInfo season) {
+    public SeasonCoverageCi(SapiSeasonCoverageInfo season) {
         Preconditions.checkNotNull(season);
 
-        seasonId = URN.parse(season.getSeasonId());
+        seasonId = Urn.parse(season.getSeasonId());
         maxCoverageLevel = season.getMaxCoverageLevel();
         minCoverageLevel = season.getMinCoverageLevel();
         maxCovered = season.getMaxCovered();
@@ -63,10 +62,10 @@ public class SeasonCoverageCI {
         scheduled = season.getScheduled();
     }
 
-    public SeasonCoverageCI(ExportableSeasonCoverageCI exportable) {
+    public SeasonCoverageCi(ExportableSeasonCoverageCi exportable) {
         Preconditions.checkNotNull(exportable);
 
-        seasonId = URN.parse(exportable.getSeasonId());
+        seasonId = Urn.parse(exportable.getSeasonId());
         maxCoverageLevel = exportable.getMaxCoverageLevel();
         minCoverageLevel = exportable.getMinCoverageLevel();
         maxCovered = exportable.getMaxCovered();
@@ -79,7 +78,7 @@ public class SeasonCoverageCI {
      *
      * @return - the identifier of the season
      */
-    public URN getSeasonId() {
+    public Urn getSeasonId() {
         return seasonId;
     }
 
@@ -132,8 +131,8 @@ public class SeasonCoverageCI {
         return scheduled;
     }
 
-    public ExportableSeasonCoverageCI export() {
-        return new ExportableSeasonCoverageCI(
+    public ExportableSeasonCoverageCi export() {
+        return new ExportableSeasonCoverageCi(
             seasonId.toString(),
             maxCoverageLevel,
             minCoverageLevel,

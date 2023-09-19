@@ -5,23 +5,21 @@
 package com.sportradar.unifiedodds.sdk.impl.recovery;
 
 import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.RecoveryInfoImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
@@ -33,7 +31,6 @@ import org.slf4j.MDC;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "BooleanExpressionComplexity",
         "ClassFanOutComplexity",
         "ConstantName",
@@ -51,6 +48,7 @@ import org.slf4j.MDC;
         "ParameterAssignment",
         "ParameterNumber",
         "ReturnCount",
+        "JavaNCSS",
     }
 )
 public class RecoveryManagerImpl
@@ -61,16 +59,16 @@ public class RecoveryManagerImpl
     private final Map<Integer, ProducerInfo> perProducerInfo = new ConcurrentHashMap<>();
     private final Map<Integer, Long> messageProcessingTimes = new ConcurrentHashMap<>();
     private final FeedMessageFactory messageFactory;
-    private final SDKInternalConfiguration config;
-    private final SDKProducerManager producerManager;
-    private final SDKProducerStatusListener producerStatusListener;
-    private final SDKEventRecoveryStatusListener eventRecoveryStatusListener;
+    private final SdkInternalConfiguration config;
+    private final SdkProducerManager producerManager;
+    private final SdkProducerStatusListener producerStatusListener;
+    private final SdkEventRecoveryStatusListener eventRecoveryStatusListener;
     private final SnapshotRequestManager snapshotRequestManager;
     private final HttpHelper httpHelper;
     private final long maxRecoveryExecutionTime;
     private final ReentrantLock onAliveLock = new ReentrantLock();
     private final ReentrantLock onSnapshotCompleteLock = new ReentrantLock();
-    private final SDKTaskScheduler taskScheduler;
+    private final SdkTaskScheduler taskScheduler;
     private final Map<String, String> sdkMdcContextDescription;
     private final int bookmakerId;
     private final SequenceGenerator sequenceGenerator;
@@ -78,12 +76,12 @@ public class RecoveryManagerImpl
     private volatile boolean initialized;
 
     RecoveryManagerImpl(
-        SDKInternalConfiguration config,
-        SDKProducerManager producerManager,
-        SDKProducerStatusListener producerStatusListener,
-        SDKEventRecoveryStatusListener eventRecoveryStatusListener,
+        SdkInternalConfiguration config,
+        SdkProducerManager producerManager,
+        SdkProducerStatusListener producerStatusListener,
+        SdkEventRecoveryStatusListener eventRecoveryStatusListener,
         SnapshotRequestManager snapshotRequestManager,
-        SDKTaskScheduler taskScheduler,
+        SdkTaskScheduler taskScheduler,
         HttpHelper httpHelper,
         FeedMessageFactory messageFactory,
         WhoAmIReader whoAmIReader,
@@ -110,7 +108,7 @@ public class RecoveryManagerImpl
         this.httpHelper = httpHelper;
         this.messageFactory = messageFactory;
         this.maxRecoveryExecutionTime =
-            TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionMinutes(), TimeUnit.MINUTES);
+            TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionSeconds(), TimeUnit.MINUTES);
         this.taskScheduler = taskScheduler;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
         this.bookmakerId = whoAmIReader.getBookmakerId();
@@ -334,7 +332,7 @@ public class RecoveryManagerImpl
     }
 
     @Override
-    public Long initiateEventOddsMessagesRecovery(Producer producer, URN eventId) {
+    public Long initiateEventOddsMessagesRecovery(Producer producer, Urn eventId) {
         Preconditions.checkNotNull(producer);
         Preconditions.checkNotNull(eventId);
 
@@ -350,7 +348,7 @@ public class RecoveryManagerImpl
     }
 
     @Override
-    public Long initiateEventStatefulMessagesRecovery(Producer producer, URN eventId) {
+    public Long initiateEventStatefulMessagesRecovery(Producer producer, Urn eventId) {
         Preconditions.checkNotNull(producer);
         Preconditions.checkNotNull(eventId);
 
@@ -365,7 +363,7 @@ public class RecoveryManagerImpl
         );
     }
 
-    private Long performEventRecovery(ProducerInfo pi, URN eventId, String urlEndpoint, String type) {
+    private Long performEventRecovery(ProducerInfo pi, Urn eventId, String urlEndpoint, String type) {
         long now = timeUtils.now();
         long recoveryId = sequenceGenerator.getNext();
 
@@ -418,6 +416,12 @@ public class RecoveryManagerImpl
         logger.info(notificationString.toString());
         MDC.clear();
     }
+
+    @Override
+    public void handleRecoveryStarted(Recoverable recoverable) {}
+
+    @Override
+    public void handleTopologyRecoveryStarted(Recoverable recoverable) {}
 
     /**
      * This method is called when the AMQP channel gets shut down/disconnect detected
@@ -640,10 +644,10 @@ public class RecoveryManagerImpl
         long currentMessageProcessingDelay = now - pi.getLastProcessedMessageGenTimestamp();
         long currentUserSessionAliveDelay = now - pi.getLastUserSessionAliveReceivedTimestamp();
 
-        boolean messageProcessingOK = currentMessageProcessingDelay < maxInactivityIntervalMs;
-        boolean userSessionAlivesOK = currentUserSessionAliveDelay < maxInactivityIntervalMs;
+        boolean messageProcessingOk = currentMessageProcessingDelay < maxInactivityIntervalMs;
+        boolean userSessionAlivesOk = currentUserSessionAliveDelay < maxInactivityIntervalMs;
 
-        return messageProcessingOK && userSessionAlivesOK;
+        return messageProcessingOk && userSessionAlivesOk;
     }
 
     private static void updateLogStringBuilders(
@@ -829,7 +833,7 @@ public class RecoveryManagerImpl
         ProducerInfo producerInfo,
         String requestQuery,
         long requestId,
-        URN eventId,
+        Urn eventId,
         String type
     ) {
         logger.info("Requesting event recovery[{}] for {} on {}", type, eventId, producerInfo);
@@ -889,7 +893,7 @@ public class RecoveryManagerImpl
         int producerId,
         long requestId,
         Long after,
-        URN eventId,
+        Urn eventId,
         String message
     ) {
         RecoveryInitiated recoveryInitiated = messageFactory.buildRecoveryInitiated(
@@ -985,18 +989,6 @@ public class RecoveryManagerImpl
                 );
                 break;
         }
-
-        ProducerDown sdkMessage = messageFactory.buildProducerDown(
-            pi.getProducerId(),
-            reason,
-            timeUtils.now()
-        );
-        try {
-            producerStatusListener.onProducerDown(sdkMessage);
-        } catch (Exception e) {
-            logger.warn("Problems dispatching onProducerDown for {}", pi, e);
-        }
-
         handleProducerStateChange(pi, reason.asProducerStatusReason());
     }
 
@@ -1011,13 +1003,6 @@ public class RecoveryManagerImpl
         pi.setProducerDown(false, null);
 
         logger.info("ProducerUp[{}], reason: {}", pi, reason);
-
-        ProducerUp producerUp = messageFactory.buildProducerUp(pi.getProducerId(), reason, timeUtils.now());
-        try {
-            producerStatusListener.onProducerUp(producerUp);
-        } catch (Exception e) {
-            logger.warn("Problems dispatching onProducerUp for {}", pi, e);
-        }
 
         handleProducerStateChange(pi, reason.asProducerStatusReason());
     }
@@ -1077,7 +1062,7 @@ public class RecoveryManagerImpl
         }
     }
 
-    private void dispatchEventRecoveryCompleted(URN eventId, long recoveryId) {
+    private void dispatchEventRecoveryCompleted(Urn eventId, long recoveryId) {
         logger.info("OnEventRecoveryCompleted(id:{}, recoveryId:{})", eventId, recoveryId);
 
         try {

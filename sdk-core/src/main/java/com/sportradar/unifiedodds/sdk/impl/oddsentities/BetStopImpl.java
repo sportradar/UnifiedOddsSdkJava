@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
-import com.sportradar.uf.datamodel.UFBetStop;
+import com.sportradar.uf.datamodel.UfBetStop;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
@@ -26,7 +26,7 @@ class BetStopImpl<T extends SportEvent> extends EventMessageImpl<T> implements B
 
     BetStopImpl(
         T sportEvent,
-        UFBetStop message,
+        UfBetStop message,
         Producer producer,
         byte[] rawMessage,
         MessageTimestamp timestamp

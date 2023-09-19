@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
-public interface AmqpConnectionFactoryStubs extends AMQPConnectionFactory {
+public interface AmqpConnectionFactoryStubs extends AmqpConnectionFactory {
     public AmqpConnectionFactoryStubs onCloseThrowing(RuntimeException t);
 
     public AmqpConnectionFactoryStubs onCloseThrowing(IOException t);

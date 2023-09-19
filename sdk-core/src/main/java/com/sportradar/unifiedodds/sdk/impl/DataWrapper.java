@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.http.Header;
+import org.apache.hc.core5.http.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

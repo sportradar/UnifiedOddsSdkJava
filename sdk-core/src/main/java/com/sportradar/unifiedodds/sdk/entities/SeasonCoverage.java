@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Defines methods representing season coverage info
@@ -16,7 +16,7 @@ public interface SeasonCoverage {
      *
      * @return - the unique identifier of the season
      */
-    URN getSeasonId();
+    Urn getSeasonId();
 
     /**
      * Returns the string representation of the maximum coverage available for the season associated with the current instance

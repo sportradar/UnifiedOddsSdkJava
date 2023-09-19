@@ -6,14 +6,14 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import java.util.Map;
 
 /**
  * A representation of the various references
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class ReferenceImpl implements Reference {
 
     /**
@@ -46,16 +46,16 @@ public class ReferenceImpl implements Reference {
     /**
      * Initializes a new instance of {@link ReferenceImpl}
      *
-     * @param referenceIdCI - a {@link ReferenceIdCI} that is used to construct the new instance
+     * @param referenceIdCi - a {@link ReferenceIdCi} that is used to construct the new instance
      */
-    ReferenceImpl(ReferenceIdCI referenceIdCI) {
-        Preconditions.checkNotNull(referenceIdCI);
+    ReferenceImpl(ReferenceIdCi referenceIdCi) {
+        Preconditions.checkNotNull(referenceIdCi);
 
-        this.betfairId = referenceIdCI.getBetfairId();
-        this.betradarId = referenceIdCI.getBetradarId();
-        this.rotationNumber = referenceIdCI.getRotationNumber();
-        this.aamsId = referenceIdCI.getAamsId();
-        this.references = ImmutableMap.copyOf(referenceIdCI.getReferenceIds());
+        this.betfairId = referenceIdCi.getBetfairId();
+        this.betradarId = referenceIdCi.getBetradarId();
+        this.rotationNumber = referenceIdCi.getRotationNumber();
+        this.aamsId = referenceIdCi.getAamsId();
+        this.references = ImmutableMap.copyOf(referenceIdCi.getReferenceIds());
     }
 
     /**

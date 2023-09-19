@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketAttributeCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketAttributeCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketAttribute;
 
 /**
@@ -13,9 +13,9 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketAttribute;
  */
 public class MarketAttributeImpl implements MarketAttribute {
 
-    private final MarketAttributeCI cacheItem;
+    private final MarketAttributeCi cacheItem;
 
-    public MarketAttributeImpl(MarketAttributeCI att) {
+    public MarketAttributeImpl(MarketAttributeCi att) {
         this.cacheItem = att;
     }
 

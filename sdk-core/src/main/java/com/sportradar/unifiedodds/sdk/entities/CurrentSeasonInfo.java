@@ -4,21 +4,27 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Defines methods implemented by classes representing a tournament season
  */
 public interface CurrentSeasonInfo {
     /**
-     * Returns the {@link URN} uniquely identifying the current season
+     * Returns the {@link Urn} uniquely identifying the current season
      *
-     * @return - the {@link URN} uniquely identifying the current season
+     * @return - the {@link Urn} uniquely identifying the current season
      */
-    URN getId();
+    Urn getId();
+
+    /**
+     * Returns the name of the season in available locales
+     */
+    Map<Locale, String> getNames();
 
     /**
      * Returns the name of the season in the specified language

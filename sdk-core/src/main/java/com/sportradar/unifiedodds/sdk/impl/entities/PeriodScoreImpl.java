@@ -9,7 +9,7 @@ import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
 import com.sportradar.unifiedodds.sdk.entities.PeriodType;
-import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.PeriodScoreDto;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Locale;
@@ -64,7 +64,7 @@ public class PeriodScoreImpl implements PeriodScore {
      * @param ps the DTO which is used to construct the instance
      * @param matchStatuses the named value cache used to extract period descriptions
      */
-    public PeriodScoreImpl(PeriodScoreDTO ps, LocalizedNamedValueCache matchStatuses) {
+    public PeriodScoreImpl(PeriodScoreDto ps, LocalizedNamedValueCache matchStatuses) {
         Preconditions.checkNotNull(ps);
         Preconditions.checkNotNull(matchStatuses);
 

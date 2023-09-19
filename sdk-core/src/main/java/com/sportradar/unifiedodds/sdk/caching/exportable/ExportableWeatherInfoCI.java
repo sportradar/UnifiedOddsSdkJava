@@ -2,8 +2,8 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableWeatherInfoCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableWeatherInfoCi implements Serializable {
 
     private Integer temperatureCelsius;
     private String wind;
@@ -11,7 +11,7 @@ public class ExportableWeatherInfoCI implements Serializable {
     private String pitch;
     private String weatherConditions;
 
-    public ExportableWeatherInfoCI(
+    public ExportableWeatherInfoCi(
         Integer temperatureCelsius,
         String wind,
         String windAdvantage,

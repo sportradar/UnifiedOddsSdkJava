@@ -8,12 +8,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.GroupCi;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Group;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents a competition group
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName", "UnnecessaryParentheses" })
+@SuppressWarnings({ "ConstantName", "UnnecessaryParentheses" })
 public class GroupImpl implements Group {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupImpl.class);
@@ -39,7 +39,7 @@ public class GroupImpl implements Group {
     /**
      * A {@link List} of associated competitor identifiers
      */
-    private final List<URN> competitorIds;
+    private final List<Urn> competitorIds;
 
     /**
      * A {@link List} of available translation{@link Locale}s
@@ -58,24 +58,24 @@ public class GroupImpl implements Group {
 
     /**
      * Initializes a new instance of the {@link GroupImpl} class
-     * @param groupCI - a {@link GroupCI} used to create new instance
-     * @param locales - a {@link List} in which is provided the {@link GroupCI}
+     * @param groupCi - a {@link GroupCi} used to create new instance
+     * @param locales - a {@link List} in which is provided the {@link GroupCi}
      * @param sportEntityFactory - the factory used to build competitor instances
      * @param exceptionHandlingStrategy - the exception strategy that should be used to handle errors
      */
     GroupImpl(
-        GroupCI groupCI,
+        GroupCi groupCi,
         List<Locale> locales,
         SportEntityFactory sportEntityFactory,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
-        Preconditions.checkNotNull(groupCI);
+        Preconditions.checkNotNull(groupCi);
         Preconditions.checkNotNull(sportEntityFactory);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
-        this.id = groupCI.getId();
-        this.name = groupCI.getName();
-        this.competitorIds = groupCI.getCompetitorIds();
+        this.id = groupCi.getId();
+        this.name = groupCi.getName();
+        this.competitorIds = groupCi.getCompetitorIds();
         this.locales = locales;
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;

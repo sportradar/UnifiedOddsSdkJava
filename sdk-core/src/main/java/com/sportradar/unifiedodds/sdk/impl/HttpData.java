@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
-import org.apache.http.Header;
+import org.apache.hc.core5.http.Header;
 
 /**
  * Created on 10/04/2018.

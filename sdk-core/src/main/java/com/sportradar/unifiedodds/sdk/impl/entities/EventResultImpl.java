@@ -5,9 +5,9 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFResultType;
-import com.sportradar.uf.sportsapi.datamodel.SAPIResultScore;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStageResult;
+import com.sportradar.uf.datamodel.UfResultType;
+import com.sportradar.uf.sportsapi.datamodel.SapiResultScore;
+import com.sportradar.uf.sportsapi.datamodel.SapiStageResult;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.utils.SdkHelper;
@@ -44,7 +44,7 @@ public class EventResultImpl implements EventResult {
     private final Double distance;
     private final List<CompetitorResult> competitorResults;
 
-    public EventResultImpl(SAPIStageResult.SAPICompetitor c) {
+    public EventResultImpl(SapiStageResult.SapiCompetitor c) {
         Preconditions.checkNotNull(c);
 
         id = c.getId();
@@ -82,7 +82,7 @@ public class EventResultImpl implements EventResult {
         }
     }
 
-    public EventResultImpl(UFResultType r) {
+    public EventResultImpl(UfResultType r) {
         Preconditions.checkNotNull(r);
 
         homeScore = r.getHomeScore();
@@ -109,7 +109,7 @@ public class EventResultImpl implements EventResult {
         competitorResults = null;
     }
 
-    public EventResultImpl(SAPIResultScore result) {
+    public EventResultImpl(SapiResultScore result) {
         Preconditions.checkNotNull(result);
 
         if (!SdkHelper.stringIsNullOrEmpty(result.getHomeScore())) {

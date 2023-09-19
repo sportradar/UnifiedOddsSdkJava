@@ -3,21 +3,21 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import java.io.Serializable;
 import java.util.List;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableSportEventConditionsCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableSportEventConditionsCi implements Serializable {
 
     private String attendance;
     private String eventMode;
-    private ExportableRefereeCI referee;
-    private ExportableWeatherInfoCI weatherInfo;
-    private List<ExportablePitcherCI> pitchers;
+    private ExportableRefereeCi referee;
+    private ExportableWeatherInfoCi weatherInfo;
+    private List<ExportablePitcherCi> pitchers;
 
-    public ExportableSportEventConditionsCI(
+    public ExportableSportEventConditionsCi(
         String attendance,
         String eventMode,
-        ExportableRefereeCI referee,
-        ExportableWeatherInfoCI weatherInfo,
-        List<ExportablePitcherCI> pitchers
+        ExportableRefereeCi referee,
+        ExportableWeatherInfoCi weatherInfo,
+        List<ExportablePitcherCi> pitchers
     ) {
         this.attendance = attendance;
         this.eventMode = eventMode;
@@ -42,27 +42,27 @@ public class ExportableSportEventConditionsCI implements Serializable {
         this.eventMode = eventMode;
     }
 
-    public ExportableRefereeCI getReferee() {
+    public ExportableRefereeCi getReferee() {
         return referee;
     }
 
-    public void setReferee(ExportableRefereeCI referee) {
+    public void setReferee(ExportableRefereeCi referee) {
         this.referee = referee;
     }
 
-    public ExportableWeatherInfoCI getWeatherInfo() {
+    public ExportableWeatherInfoCi getWeatherInfo() {
         return weatherInfo;
     }
 
-    public void setWeatherInfo(ExportableWeatherInfoCI weatherInfo) {
+    public void setWeatherInfo(ExportableWeatherInfoCi weatherInfo) {
         this.weatherInfo = weatherInfo;
     }
 
-    public List<ExportablePitcherCI> getPitchers() {
+    public List<ExportablePitcherCi> getPitchers() {
         return pitchers;
     }
 
-    public void setPitchers(List<ExportablePitcherCI> pitchers) {
+    public void setPitchers(List<ExportablePitcherCi> pitchers) {
         this.pitchers = pitchers;
     }
 }

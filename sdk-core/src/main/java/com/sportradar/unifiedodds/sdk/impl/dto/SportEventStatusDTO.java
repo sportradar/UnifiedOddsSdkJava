@@ -8,17 +8,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.datamodel.UFPeriodScoreType;
-import com.sportradar.uf.datamodel.UFSportEventStatus;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchStatistics;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodScore;
-import com.sportradar.uf.sportsapi.datamodel.SAPISportEventStatus;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStageSportEventStatus;
+import com.sportradar.uf.datamodel.UfPeriodScoreType;
+import com.sportradar.uf.datamodel.UfSportEventStatus;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchStatistics;
+import com.sportradar.uf.sportsapi.datamodel.SapiPeriodScore;
+import com.sportradar.uf.sportsapi.datamodel.SapiSportEventStatus;
+import com.sportradar.uf.sportsapi.datamodel.SapiStageSportEventStatus;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventClockImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.EventResultImpl;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "BooleanExpressionComplexity",
         "ClassFanOutComplexity",
         "CyclomaticComplexity",
@@ -43,12 +42,12 @@ import java.util.stream.Collectors;
         "NPathComplexity",
     }
 )
-public class SportEventStatusDTO {
+public class SportEventStatusDto {
 
     /**
      * The sport event winner identifier
      */
-    private final URN winnerId;
+    private final Urn winnerId;
 
     /**
      * An {@link EventStatus} describing the status of the associated sport event
@@ -76,9 +75,9 @@ public class SportEventStatusDTO {
     private final BigDecimal awayScore;
 
     /**
-     * A {@link SportEventStatisticsDTO} instance describing the associated event statistics
+     * A {@link SportEventStatisticsDto} instance describing the associated event statistics
      */
-    private final SportEventStatisticsDTO sportEventStatisticsDTO;
+    private final SportEventStatisticsDto sportEventStatisticsDto;
 
     /**
      * A {@link List} of event results
@@ -99,7 +98,7 @@ public class SportEventStatusDTO {
     /**
      * A {@link List} of period scores
      */
-    private List<PeriodScoreDTO> periodScores;
+    private List<PeriodScoreDto> periodScores;
 
     /**
      * The penalty score of the home competitor competing on the associated sport event (for Ice Hockey)
@@ -122,12 +121,12 @@ public class SportEventStatusDTO {
     private Integer periodOfLadder;
 
     /**
-     * Initializes a new instance of the {@link SportEventStatusDTO} from the provided
-     * {@link SAPIStageSportEventStatus} which is fetched from the API
+     * Initializes a new instance of the {@link SportEventStatusDto} from the provided
+     * {@link SapiStageSportEventStatus} which is fetched from the API
      *
-     * @param sportEventStatus - a {@link SAPIStageSportEventStatus} used to build the instance
+     * @param sportEventStatus - a {@link SapiStageSportEventStatus} used to build the instance
      */
-    public SportEventStatusDTO(SAPIStageSportEventStatus sportEventStatus) {
+    public SportEventStatusDto(SapiStageSportEventStatus sportEventStatus) {
         Preconditions.checkNotNull(sportEventStatus);
 
         this.status = EventStatus.valueOfApiStatusName(sportEventStatus.getStatus());
@@ -139,7 +138,7 @@ public class SportEventStatusDTO {
         this.winnerId =
             Strings.isNullOrEmpty(sportEventStatus.getWinnerId())
                 ? null
-                : URN.parse(sportEventStatus.getWinnerId());
+                : Urn.parse(sportEventStatus.getWinnerId());
 
         eventResults =
             sportEventStatus.getResults() == null
@@ -151,7 +150,7 @@ public class SportEventStatusDTO {
                     .map(EventResultImpl::new)
                     .collect(Collectors.toList());
 
-        sportEventStatisticsDTO = null;
+        sportEventStatisticsDto = null;
         eventClock = null;
 
         homePenaltyScore = null;
@@ -165,15 +164,15 @@ public class SportEventStatusDTO {
     }
 
     /**
-     * Initializes a new instance of the {@link SportEventStatusDTO} from the provided
-     * {@link SAPISportEventStatus} which is fetched from the API
-     *  @param sportEventStatus a {@link SAPISportEventStatus} used to build the instance
+     * Initializes a new instance of the {@link SportEventStatusDto} from the provided
+     * {@link SapiSportEventStatus} which is fetched from the API
+     *  @param sportEventStatus a {@link SapiSportEventStatus} used to build the instance
      * @param statistics the associated event statistics
      * @param homeAwayMap a map containing data about home/away competitors, this data is available only for events of type match
      */
-    public SportEventStatusDTO(
-        SAPISportEventStatus sportEventStatus,
-        SAPIMatchStatistics statistics,
+    public SportEventStatusDto(
+        SapiSportEventStatus sportEventStatus,
+        SapiMatchStatistics statistics,
         Map<HomeAway, String> homeAwayMap
     ) {
         Preconditions.checkNotNull(sportEventStatus);
@@ -206,7 +205,7 @@ public class SportEventStatusDTO {
         this.winnerId =
             Strings.isNullOrEmpty(sportEventStatus.getWinnerId())
                 ? null
-                : URN.parse(sportEventStatus.getWinnerId());
+                : Urn.parse(sportEventStatus.getWinnerId());
 
         properties.put("AggregateAwayScore", sportEventStatus.getAggregateAwayScore());
         properties.put("AggregateHomeScore", sportEventStatus.getAggregateHomeScore());
@@ -215,7 +214,7 @@ public class SportEventStatusDTO {
         properties.put("WinningReason", sportEventStatus.getWinningReason());
 
         /*if (sportEventStatus.getClock() != null) {
-            for (SAPIClock c : sportEventStatus.getClock()) {
+            for (SapiClock c : sportEventStatus.getClock()) {
                 this.setEventClock(c.getMatchTime(), c.getStoppageTime(), c.getStoppageTimeAnnounced(), null, null, null);
             }
         }*/
@@ -224,8 +223,8 @@ public class SportEventStatusDTO {
             sportEventStatus.getPeriodScores().getPeriodScore().forEach(this::addPeriodScore);
         }
 
-        sportEventStatisticsDTO =
-            statistics == null ? null : new SportEventStatisticsDTO(statistics, homeAwayMap);
+        sportEventStatisticsDto =
+            statistics == null ? null : new SportEventStatisticsDto(statistics, homeAwayMap);
 
         eventResults =
             sportEventStatus.getResults() == null || sportEventStatus.getResults().getResult() == null
@@ -244,7 +243,7 @@ public class SportEventStatusDTO {
         // load home and away penalty score from the penalty period score
         if (periodScores != null && !periodScores.isEmpty()) {
             try {
-                for (PeriodScoreDTO ps : periodScores) {
+                for (PeriodScoreDto ps : periodScores) {
                     if (ps.getPeriodType().equalsIgnoreCase("penalties")) {
                         homePenaltyScore = ps.getHomeScore().intValue();
                         awayPenaltyScore = ps.getAwayScore().intValue();
@@ -263,12 +262,12 @@ public class SportEventStatusDTO {
     }
 
     /**
-     * Initializes a new instance of the {@link SportEventStatusDTO} from the provided
-     * {@link UFSportEventStatus} which is received as a part of messages
+     * Initializes a new instance of the {@link SportEventStatusDto} from the provided
+     * {@link UfSportEventStatus} which is received as a part of messages
      *
-     * @param seStatus - a {@link UFSportEventStatus} used to build the instance
+     * @param seStatus - a {@link UfSportEventStatus} used to build the instance
      */
-    public SportEventStatusDTO(UFSportEventStatus seStatus) {
+    public SportEventStatusDto(UfSportEventStatus seStatus) {
         Preconditions.checkNotNull(seStatus);
 
         this.status = EventStatus.valueOfMessageStatus(seStatus.getStatus());
@@ -350,8 +349,8 @@ public class SportEventStatusDTO {
                     .map(EventResultImpl::new)
                     .collect(Collectors.toList());
 
-        sportEventStatisticsDTO =
-            seStatus.getStatistics() == null ? null : new SportEventStatisticsDTO(seStatus.getStatistics());
+        sportEventStatisticsDto =
+            seStatus.getStatistics() == null ? null : new SportEventStatisticsDto(seStatus.getStatistics());
 
         winnerId = null;
 
@@ -366,7 +365,7 @@ public class SportEventStatusDTO {
             !periodScores.isEmpty()
         ) {
             try {
-                for (PeriodScoreDTO ps : periodScores) {
+                for (PeriodScoreDto ps : periodScores) {
                     if (ps.getPeriodType().equalsIgnoreCase("penalties")) {
                         homePenaltyScore = ps.getHomeScore().intValue();
                         awayPenaltyScore = ps.getAwayScore().intValue();
@@ -385,17 +384,17 @@ public class SportEventStatusDTO {
     }
 
     /**
-     * Initializes a new {@link SportEventStatusDTO} instance with the provided data
+     * Initializes a new {@link SportEventStatusDto} instance with the provided data
      *
      * @param status - a {@link EventStatus} describing the associated event status
      */
-    private SportEventStatusDTO(EventStatus status) {
+    private SportEventStatusDto(EventStatus status) {
         this.status = status;
         this.matchStatusId = -1;
         this.reportingStatus = null;
         this.homeScore = null;
         this.awayScore = null;
-        this.sportEventStatisticsDTO = null;
+        this.sportEventStatisticsDto = null;
         this.eventClock = null;
         this.eventResults = null;
         this.winnerId = null;
@@ -406,12 +405,12 @@ public class SportEventStatusDTO {
     }
 
     /**
-     * Constructs a new {@link SportEventStatusDTO} describing the associated event as "Not started"
+     * Constructs a new {@link SportEventStatusDto} describing the associated event as "Not started"
      *
-     * @return - a new {@link SportEventStatusDTO} which is in a "Not started" state
+     * @return - a new {@link SportEventStatusDto} which is in a "Not started" state
      */
-    public static SportEventStatusDTO getNotStarted() {
-        return new SportEventStatusDTO(EventStatus.NotStarted);
+    public static SportEventStatusDto getNotStarted() {
+        return new SportEventStatusDto(EventStatus.NotStarted);
     }
 
     /**
@@ -419,7 +418,7 @@ public class SportEventStatusDTO {
      *
      * @return the sport event winner identifier, if available; otherwise null
      */
-    public URN getWinnerId() {
+    public Urn getWinnerId() {
         return winnerId;
     }
 
@@ -475,7 +474,7 @@ public class SportEventStatusDTO {
      *
      * @return - a {@link List} of period scores
      */
-    public List<PeriodScoreDTO> getPeriodScores() {
+    public List<PeriodScoreDto> getPeriodScores() {
         return periodScores == null ? null : ImmutableList.copyOf(periodScores);
     }
 
@@ -498,12 +497,12 @@ public class SportEventStatusDTO {
     }
 
     /**
-     * Returns a {@link SportEventStatisticsDTO} instance describing the associated event statistics
+     * Returns a {@link SportEventStatisticsDto} instance describing the associated event statistics
      *
      * @return an object describing the associated event statistics if available; otherwise null
      */
-    public SportEventStatisticsDTO getSportEventStatisticsDTO() {
-        return sportEventStatisticsDTO;
+    public SportEventStatisticsDto getSportEventStatisticsDto() {
+        return sportEventStatisticsDto;
     }
 
     /**
@@ -539,11 +538,11 @@ public class SportEventStatusDTO {
      *
      * @param periodScore - the period score received from the API
      */
-    private void addPeriodScore(SAPIPeriodScore periodScore) {
+    private void addPeriodScore(SapiPeriodScore periodScore) {
         if (periodScores == null) {
             periodScores = new ArrayList<>();
         }
-        periodScores.add(new PeriodScoreDTO(periodScore));
+        periodScores.add(new PeriodScoreDto(periodScore));
     }
 
     /**
@@ -551,11 +550,11 @@ public class SportEventStatusDTO {
      *
      * @param periodScore - the period score received from the feed
      */
-    private void addPeriodScore(UFPeriodScoreType periodScore) {
+    private void addPeriodScore(UfPeriodScoreType periodScore) {
         if (periodScores == null) {
             periodScores = new ArrayList<>();
         }
-        periodScores.add(new PeriodScoreDTO(periodScore));
+        periodScores.add(new PeriodScoreDto(periodScore));
     }
 
     /**
@@ -653,12 +652,12 @@ public class SportEventStatusDTO {
             );
         }
 
-        if (this.getSportEventStatisticsDTO() != null) {
-            if (this.getSportEventStatisticsDTO().getTotalStatisticsDTOs() != null) {
+        if (this.getSportEventStatisticsDto() != null) {
+            if (this.getSportEventStatisticsDto().getTotalStatisticsDtos() != null) {
                 result.put(
                     "Statistics_Total",
-                    this.getSportEventStatisticsDTO()
-                        .getTotalStatisticsDTOs()
+                    this.getSportEventStatisticsDto()
+                        .getTotalStatisticsDtos()
                         .stream()
                         .map(ps -> {
                             Map<String, Object> r = new HashMap<>();
@@ -675,13 +674,13 @@ public class SportEventStatusDTO {
                         .collect(Collectors.toList())
                 );
             }
-            if (this.getSportEventStatisticsDTO().getPeriodStatisticDTOs() != null) {
-                for (PeriodStatisticsDTO ps : this.getSportEventStatisticsDTO().getPeriodStatisticDTOs()) {
+            if (this.getSportEventStatisticsDto().getPeriodStatisticDtos() != null) {
+                for (PeriodStatisticsDto ps : this.getSportEventStatisticsDto().getPeriodStatisticDtos()) {
                     String periodName = ps.getPeriodName();
                     result.put(
                         "Statistics_Period_" + periodName,
                         ps
-                            .getTeamStatisticDTOs()
+                            .getTeamStatisticDtos()
                             .stream()
                             .map(ts -> {
                                 Map<String, Object> r = new HashMap<>();

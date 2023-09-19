@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCi;
 import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
@@ -23,19 +23,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides methods used to access match status information
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
+@SuppressWarnings({ "ConstantName" })
 public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatus {
 
     private static final Logger logger = LoggerFactory.getLogger(MatchStatusImpl.class);
-    private final SportEventStatusCI statusCI;
+    private final SportEventStatusCi statusCi;
     private final LocalizedNamedValueCache matchStatuses;
 
-    public MatchStatusImpl(SportEventStatusCI statusCI, LocalizedNamedValueCache matchStatuses) {
-        super(statusCI);
-        Preconditions.checkNotNull(statusCI);
+    public MatchStatusImpl(SportEventStatusCi statusCi, LocalizedNamedValueCache matchStatuses) {
+        super(statusCi);
+        Preconditions.checkNotNull(statusCi);
         Preconditions.checkNotNull(matchStatuses);
 
-        this.statusCI = statusCI;
+        this.statusCi = statusCi;
         this.matchStatuses = matchStatuses;
     }
 
@@ -46,7 +46,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public EventClock getEventClock() {
-        return statusCI.getEventClock();
+        return statusCi.getEventClock();
     }
 
     /**
@@ -56,9 +56,9 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public List<PeriodScore> getPeriodScores() {
-        return statusCI.getPeriodScores() == null
+        return statusCi.getPeriodScores() == null
             ? null
-            : statusCI
+            : statusCi
                 .getPeriodScores()
                 .stream()
                 .map(ps -> new PeriodScoreImpl(ps, matchStatuses))
@@ -72,7 +72,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public int getMatchStatusId() {
-        return statusCI.getMatchStatusId();
+        return statusCi.getMatchStatusId();
     }
 
     /**
@@ -82,11 +82,11 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public LocalizedNamedValue getMatchStatus() {
-        if (statusCI.getMatchStatusId() < 0) {
+        if (statusCi.getMatchStatusId() < 0) {
             logger.warn("Processing match status with id < 0");
             return null;
         }
-        return matchStatuses.get(statusCI.getMatchStatusId(), null);
+        return matchStatuses.get(statusCi.getMatchStatusId(), null);
     }
 
     /**
@@ -97,11 +97,11 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public LocalizedNamedValue getMatchStatus(Locale locale) {
-        if (statusCI.getMatchStatusId() < 0) {
+        if (statusCi.getMatchStatusId() < 0) {
             logger.warn("Processing match status with id < 0");
             return null;
         }
-        return matchStatuses.get(statusCI.getMatchStatusId(), Lists.newArrayList(locale));
+        return matchStatuses.get(statusCi.getMatchStatusId(), Lists.newArrayList(locale));
     }
 
     /**
@@ -111,7 +111,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public BigDecimal getHomeScore() {
-        return statusCI.getHomeScore();
+        return statusCi.getHomeScore();
     }
 
     /**
@@ -121,7 +121,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public BigDecimal getAwayScore() {
-        return statusCI.getAwayScore();
+        return statusCi.getAwayScore();
     }
 
     /**
@@ -129,7 +129,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public Integer getHomePenaltyScore() {
-        return statusCI.getHomePenaltyScore();
+        return statusCi.getHomePenaltyScore();
     }
 
     /**
@@ -137,7 +137,7 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public Integer getAwayPenaltyScore() {
-        return statusCI.getAwayPenaltyScore();
+        return statusCi.getAwayPenaltyScore();
     }
 
     /**
@@ -145,6 +145,6 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
      */
     @Override
     public Boolean isDecidedByFed() {
-        return statusCI.isDecidedByFed();
+        return statusCi.isDecidedByFed();
     }
 }

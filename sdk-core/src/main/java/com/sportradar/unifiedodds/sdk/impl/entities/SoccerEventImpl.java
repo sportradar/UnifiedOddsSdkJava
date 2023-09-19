@@ -14,7 +14,7 @@ import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -38,8 +38,8 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
     /**
      * Initializes a new instance of the {@link SoccerEventImpl}
      *
-     * @param id                 A {@link URN} uniquely identifying the sport event associated with the current instance
-     * @param sportId            A {@link URN} uniquely identifying the sport to which the match is related
+     * @param id                 A {@link Urn} uniquely identifying the sport event associated with the current instance
+     * @param sportId            A {@link Urn} uniquely identifying the sport to which the match is related
      * @param sportEventCache    A {@link SportEventCache} instance used to access the associated cache items
      * @param statusFactory      A {@link SportEventStatusFactory} instance used to build status entities
      * @param sportEntityFactory A {@link SportEntityFactory} instance used to construct {@link Tournament} instances
@@ -47,8 +47,8 @@ public class SoccerEventImpl extends MatchImpl implements SoccerEvent {
      * @param exceptionHandlingStrategy The desired exception handling strategy
      */
     public SoccerEventImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         SportEventCache sportEventCache,
         SportEventStatusFactory statusFactory,
         SportEntityFactory sportEntityFactory,

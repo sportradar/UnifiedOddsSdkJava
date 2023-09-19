@@ -4,41 +4,40 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCi;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
  * A lottery cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface LotteryCI extends SportEventCI {
+public interface LotteryCi extends SportEventCi {
     /**
      * Returns the associated category id
      *
      * @return the associated category id
      */
-    URN getCategoryId();
+    Urn getCategoryId();
 
     /**
      * Returns the associated bonus info
      *
      * @return the associated bonus info
      */
-    BonusInfoCI getBonusInfo();
+    BonusInfoCi getBonusInfo();
 
     /**
      * Returns the associated draw info
      *
      * @return the associated draw info
      */
-    DrawInfoCI getDrawInfo();
+    DrawInfoCi getDrawInfo();
 
     /**
      * Returns the lottery draws schedule
      *
      * @return the lottery draw schedule
      */
-    List<URN> getScheduledDraws();
+    List<Urn> getScheduledDraws();
 }

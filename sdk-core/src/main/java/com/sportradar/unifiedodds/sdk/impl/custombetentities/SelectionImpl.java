@@ -6,19 +6,19 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Implements methods used to provide an requested selection
  */
 public class SelectionImpl implements Selection {
 
-    private final URN eventId;
+    private final Urn eventId;
     private final int marketId;
     private final String outcomeId;
     private final String specifiers;
 
-    public SelectionImpl(URN eventId, int marketId, String outcomeId, String specifiers) {
+    public SelectionImpl(Urn eventId, int marketId, String outcomeId, String specifiers) {
         Preconditions.checkNotNull(eventId);
         Preconditions.checkArgument(marketId > 0);
         Preconditions.checkNotNull(outcomeId);
@@ -32,10 +32,10 @@ public class SelectionImpl implements Selection {
     /**
      * Gets the event id
      *
-     * @return the {@link URN} of the event
+     * @return the {@link Urn} of the event
      */
     @Override
-    public URN getEventId() {
+    public Urn getEventId() {
         return eventId;
     }
 

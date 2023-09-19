@@ -5,16 +5,16 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIVenue;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCI;
-import com.sportradar.utils.URN;
+import com.sportradar.uf.sportsapi.datamodel.SapiVenue;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCi;
+import com.sportradar.utils.Urn;
 import java.util.*;
 
 /**
  * A venue representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "IllegalType" })
-public class VenueCI extends SportEntityCI {
+@SuppressWarnings({ "IllegalType" })
+public class VenueCi extends SportEntityCi {
 
     /**
      * A {@link HashMap} containing venue name in different languages
@@ -48,18 +48,18 @@ public class VenueCI extends SportEntityCI {
 
     private String state;
 
-    private List<HoleCI> course;
+    private List<HoleCi> course;
 
     private final List<Locale> cachedLocales;
 
     /**
-     * Initializes a new instance of the {@link VenueCI} class
+     * Initializes a new instance of the {@link VenueCi} class
      *
-     * @param venue - {@link SAPIVenue} containing information about the venue
+     * @param venue - {@link SapiVenue} containing information about the venue
      * @param locale - {@link Locale} specifying the language of the <i>venue</i>
      */
-    public VenueCI(SAPIVenue venue, Locale locale) {
-        super(URN.parse(venue.getId()));
+    public VenueCi(SapiVenue venue, Locale locale) {
+        super(Urn.parse(venue.getId()));
         Preconditions.checkNotNull(venue);
         Preconditions.checkNotNull(locale);
 
@@ -72,8 +72,8 @@ public class VenueCI extends SportEntityCI {
         merge(venue, locale);
     }
 
-    public VenueCI(ExportableVenueCI exportable) {
-        super(URN.parse(exportable.getId()));
+    public VenueCi(ExportableVenueCi exportable) {
+        super(Urn.parse(exportable.getId()));
         Preconditions.checkNotNull(exportable);
 
         names = new HashMap<>(exportable.getNames());
@@ -85,7 +85,7 @@ public class VenueCI extends SportEntityCI {
         state = exportable.getState();
         if (exportable.getCourse() != null) {
             this.course = new ArrayList<>();
-            exportable.getCourse().forEach(ci -> this.course.add(new HoleCI(ci)));
+            exportable.getCourse().forEach(ci -> this.course.add(new HoleCi(ci)));
         } else {
             this.course = null;
         }
@@ -94,12 +94,12 @@ public class VenueCI extends SportEntityCI {
     }
 
     /**
-     * Merges the information from the provided {@link SAPIVenue} into the current instance
+     * Merges the information from the provided {@link SapiVenue} into the current instance
      *
-     * @param venue - {@link SAPIVenue} containing information about the venue
+     * @param venue - {@link SapiVenue} containing information about the venue
      * @param locale - {@link Locale} specifying the language of the <i>venue</i>
      */
-    public void merge(SAPIVenue venue, Locale locale) {
+    public void merge(SapiVenue venue, Locale locale) {
         Preconditions.checkNotNull(venue);
         Preconditions.checkNotNull(locale);
 
@@ -114,7 +114,7 @@ public class VenueCI extends SportEntityCI {
             venue
                 .getCourse()
                 .getHole()
-                .forEach(ci -> this.course.add(new HoleCI(ci.getNumber(), ci.getPar())));
+                .forEach(ci -> this.course.add(new HoleCi(ci.getNumber(), ci.getPar())));
         } else {
             this.course = null;
         }
@@ -194,7 +194,7 @@ public class VenueCI extends SportEntityCI {
      *
      * @return state
      */
-    public List<HoleCI> getCourse() {
+    public List<HoleCi> getCourse() {
         if (course == null || course.isEmpty()) {
             return null;
         }
@@ -207,8 +207,8 @@ public class VenueCI extends SportEntityCI {
         return cachedLocales.containsAll(locales);
     }
 
-    public ExportableVenueCI export() {
-        return new ExportableVenueCI(
+    public ExportableVenueCi export() {
+        return new ExportableVenueCi(
             getId().toString(),
             new HashMap<>(names),
             new HashMap<>(cityNames),

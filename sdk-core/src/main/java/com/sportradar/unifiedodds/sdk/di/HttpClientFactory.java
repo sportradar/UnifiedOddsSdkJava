@@ -1,33 +1,42 @@
 package com.sportradar.unifiedodds.sdk.di;
 
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.util.Timeout;
 
 class HttpClientFactory {
-
-    private static final LaxRedirectStrategy LAX_REDIRECT_STRATEGY = new LaxRedirectStrategy();
 
     public CloseableHttpClient create(
         int maxTimeoutInMillis,
         int connectionPoolSize,
         int maxConcurrentConnectionsPerRoute
     ) {
-        RequestConfig requestConfig = RequestConfig
+        Timeout timout = Timeout.ofMilliseconds(maxTimeoutInMillis);
+
+        RequestConfig requestConfig;
+        requestConfig = RequestConfig.custom().setConnectionRequestTimeout(timout).build();
+
+        ConnectionConfig connectionConfig = ConnectionConfig
             .custom()
-            .setConnectTimeout(maxTimeoutInMillis)
-            .setConnectionRequestTimeout(maxTimeoutInMillis)
-            .setSocketTimeout(maxTimeoutInMillis)
+            .setConnectTimeout(timout)
+            .setSocketTimeout(timout)
             .build();
 
+        PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
+            .create()
+            .setMaxConnTotal(connectionPoolSize)
+            .setMaxConnPerRoute(maxConcurrentConnectionsPerRoute)
+            .setDefaultConnectionConfig(connectionConfig)
+            .build();
         return HttpClientBuilder
             .create()
             .useSystemProperties()
-            .setRedirectStrategy(LAX_REDIRECT_STRATEGY)
+            .setConnectionManager(connectionManager)
             .setDefaultRequestConfig(requestConfig)
-            .setMaxConnTotal(connectionPoolSize)
-            .setMaxConnPerRoute(maxConcurrentConnectionsPerRoute)
             .build();
     }
 }

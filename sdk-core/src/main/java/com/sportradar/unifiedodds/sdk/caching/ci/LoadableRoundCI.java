@@ -4,20 +4,19 @@
 
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchRound;
 import java.util.Locale;
 
 /**
  * A round representation used by caching components. The cache item properties are loaded on demand.
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface LoadableRoundCI extends RoundCI {
+public interface LoadableRoundCi extends RoundCi {
     /**
-     * Merges the information from the provided {@link SAPIMatchRound} into the current instance
+     * Merges the information from the provided {@link SapiMatchRound} into the current instance
      *
-     * @param round {@link SAPIMatchRound} containing information about the round
+     * @param round {@link SapiMatchRound} containing information about the round
      * @param locale {@link Locale} specifying the language of the provided data
      * @param isFixtureEndpoint an indication if the data provided was extracted from the fixture endpoint
      */
-    void merge(SAPIMatchRound round, Locale locale, boolean isFixtureEndpoint);
+    void merge(SapiMatchRound round, Locale locale, boolean isFixtureEndpoint);
 }

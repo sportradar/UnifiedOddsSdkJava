@@ -6,14 +6,14 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.ReplaySportEvent;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Represents the replay sport event
  */
 public class ReplaySportEventImpl implements ReplaySportEvent {
 
-    private final URN id;
+    private final Urn id;
     private final Integer position;
     private final Integer startTime;
 
@@ -23,7 +23,7 @@ public class ReplaySportEventImpl implements ReplaySportEvent {
      * @param position The position of the event in the queue
      * @param startTime The start time specified when the event was added to the queue
      */
-    public ReplaySportEventImpl(URN id, Integer position, Integer startTime) {
+    public ReplaySportEventImpl(Urn id, Integer position, Integer startTime) {
         Preconditions.checkNotNull(id);
 
         this.id = id;
@@ -32,12 +32,12 @@ public class ReplaySportEventImpl implements ReplaySportEvent {
     }
 
     /**
-     * Returns an {@link URN} uniquely identifying the sport event
+     * Returns an {@link Urn} uniquely identifying the sport event
      *
-     * @return - an {@link URN} uniquely identifying the sport event
+     * @return - an {@link Urn} uniquely identifying the sport event
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

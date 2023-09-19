@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.WeatherInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.WeatherInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.WeatherInfo;
 
 /**
@@ -42,9 +42,9 @@ public class WeatherInfoImpl implements WeatherInfo {
     /**
      * Initializes a new instance of the {@link WeatherInfoImpl} class
      *
-     * @param weatherInfo - a {@link WeatherInfoCI} used to build the instance
+     * @param weatherInfo - a {@link WeatherInfoCi} used to build the instance
      */
-    public WeatherInfoImpl(WeatherInfoCI weatherInfo) {
+    public WeatherInfoImpl(WeatherInfoCi weatherInfo) {
         Preconditions.checkNotNull(weatherInfo);
 
         this.pitch = weatherInfo.getPitch();

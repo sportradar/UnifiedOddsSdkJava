@@ -5,41 +5,40 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIEventPlayer;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventPlayerCI;
-import com.sportradar.utils.URN;
+import com.sportradar.uf.sportsapi.datamodel.SapiEventPlayer;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableEventPlayerCi;
+import com.sportradar.utils.Urn;
 
 /**
  * Created on 24/11/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class EventPlayerCI {
+public class EventPlayerCi {
 
-    private final URN id;
+    private final Urn id;
     private final String name;
     private final String method;
     private final String bench;
 
-    EventPlayerCI(SAPIEventPlayer playerData) {
+    EventPlayerCi(SapiEventPlayer playerData) {
         Preconditions.checkNotNull(playerData);
 
-        id = URN.parse(playerData.getId());
+        id = Urn.parse(playerData.getId());
         name = playerData.getName();
         method = playerData.getMethod();
         bench = playerData.getBench();
     }
 
-    EventPlayerCI(ExportableEventPlayerCI exportable) {
+    EventPlayerCi(ExportableEventPlayerCi exportable) {
         Preconditions.checkNotNull(exportable);
 
-        id = URN.parse(exportable.getId());
+        id = Urn.parse(exportable.getId());
         name = exportable.getName();
         method = exportable.getMethod();
         bench = exportable.getBench();
     }
 
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -55,7 +54,7 @@ public class EventPlayerCI {
         return bench;
     }
 
-    public ExportableEventPlayerCI export() {
-        return new ExportableEventPlayerCI(id.toString(), name, method, bench);
+    public ExportableEventPlayerCi export() {
+        return new ExportableEventPlayerCi(id.toString(), name, method, bench);
     }
 }

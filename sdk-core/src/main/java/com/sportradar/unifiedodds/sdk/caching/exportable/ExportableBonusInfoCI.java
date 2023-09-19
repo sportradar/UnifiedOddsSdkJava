@@ -3,14 +3,14 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import com.sportradar.unifiedodds.sdk.entities.BonusDrumType;
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableBonusInfoCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableBonusInfoCi implements Serializable {
 
     private Integer bonusBalls;
     private BonusDrumType bonusDrumType;
     private String bonusRange;
 
-    public ExportableBonusInfoCI(Integer bonusBalls, BonusDrumType bonusDrumType, String bonusRange) {
+    public ExportableBonusInfoCi(Integer bonusBalls, BonusDrumType bonusDrumType, String bonusRange) {
         this.bonusBalls = bonusBalls;
         this.bonusDrumType = bonusDrumType;
         this.bonusRange = bonusRange;

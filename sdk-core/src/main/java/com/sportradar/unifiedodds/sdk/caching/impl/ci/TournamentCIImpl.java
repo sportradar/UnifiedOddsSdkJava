@@ -11,18 +11,18 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
+import com.sportradar.unifiedodds.sdk.caching.TournamentCi;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentCi;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassDataAbstractionCoupling",
         "ClassFanOutComplexity",
         "ConstantName",
@@ -52,9 +51,9 @@ import org.slf4j.LoggerFactory;
         "ReturnCount",
     }
 )
-class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
+class TournamentCiImpl implements TournamentCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(TournamentCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(TournamentCiImpl.class);
 
     /**
      * A {@link Locale} specifying the default language
@@ -62,9 +61,9 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     private final Locale defaultLocale;
 
     /**
-     * An {@link URN} specifying the id of the associated sport event
+     * An {@link Urn} specifying the id of the associated sport event
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -82,9 +81,9 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     private final Map<Locale, String> names = Maps.newConcurrentMap();
 
     /**
-     * A {@link URN} specifying the id of the parent category
+     * A {@link Urn} specifying the id of the parent category
      */
-    private URN categoryId;
+    private Urn categoryId;
 
     /**
      * A {@link Date} specifying the scheduled start time of the associated tournament or
@@ -99,45 +98,45 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     private Date scheduledEnd;
 
     /**
-     * A {@link SeasonCI} representing the current season of the tournament
+     * A {@link SeasonCi} representing the current season of the tournament
      */
-    private SeasonCI currentSeason;
+    private SeasonCi currentSeason;
 
     /**
-     * A {@link SeasonCI} representing the season of the tournament endpoint
+     * A {@link SeasonCi} representing the season of the tournament endpoint
      */
-    private SeasonCI season;
+    private SeasonCi season;
 
     /**
-     * A {@link SeasonCoverageCI} containing information about the tournament coverage
+     * A {@link SeasonCoverageCi} containing information about the tournament coverage
      */
-    private SeasonCoverageCI seasonCoverage;
+    private SeasonCoverageCi seasonCoverage;
 
     /**
-     * A {@link TournamentCoverageCI} instance describing the current tournament coverage
+     * A {@link TournamentCoverageCi} instance describing the current tournament coverage
      */
-    private TournamentCoverageCI tournamentCoverage;
+    private TournamentCoverageCi tournamentCoverage;
 
     /**
      * A list of groups related to the current instance
      */
-    private List<GroupCI> groups;
+    private List<GroupCi> groups;
 
     /**
      * The round related to the current instance
      */
-    private CompleteRoundCI round;
+    private CompleteRoundCi round;
 
     /**
      * A {@link List} of associated tournament competitors
      */
-    private List<URN> competitorIds;
+    private List<Urn> competitorIds;
 
     /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
-    private Map<URN, ReferenceIdCI> competitorsReferences;
+    private Map<Urn, ReferenceIdCi> competitorsReferences;
 
     /**
      * An indication if the associated season ids were loaded
@@ -147,7 +146,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     /**
      * A {@link List} of associated season ids
      */
-    private List<URN> associatedSeasonIds;
+    private List<Urn> associatedSeasonIds;
 
     /**
      * A {@link List} of locales that are already fully cached - only when the full tournament info endpoint is cached
@@ -164,8 +163,8 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      */
     private Boolean exhibitionGames;
 
-    TournamentCIImpl(
-        URN id,
+    TournamentCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
@@ -181,12 +180,12 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    TournamentCIImpl(
-        URN id,
+    TournamentCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPITournamentInfoEndpoint endpointData,
+        SapiTournamentInfoEndpoint endpointData,
         Locale dataLocale
     ) {
         this(
@@ -203,9 +202,9 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         this.round =
             endpointData.getRound() == null
                 ? null
-                : new CompleteRoundCIImpl(endpointData.getRound(), dataLocale);
+                : new CompleteRoundCiImpl(endpointData.getRound(), dataLocale);
         this.season =
-            endpointData.getSeason() != null ? new SeasonCI(endpointData.getSeason(), dataLocale) : null;
+            endpointData.getSeason() != null ? new SeasonCi(endpointData.getSeason(), dataLocale) : null;
 
         this.groups =
             endpointData.getGroups() == null
@@ -215,11 +214,11 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                         .getGroups()
                         .getGroup()
                         .stream()
-                        .map(g -> new GroupCI(g, dataLocale))
+                        .map(g -> new GroupCi(g, dataLocale))
                         .collect(Collectors.toList())
                 );
 
-        SAPICompetitors endpointCompetitors = endpointData.getCompetitors() != null
+        SapiCompetitors endpointCompetitors = endpointData.getCompetitors() != null
             ? endpointData.getCompetitors()
             : endpointData.getTournament().getCompetitors();
         if (endpointCompetitors != null) {
@@ -228,7 +227,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                     endpointCompetitors
                         .getCompetitor()
                         .stream()
-                        .map(c -> URN.parse(c.getId()))
+                        .map(c -> Urn.parse(c.getId()))
                         .collect(Collectors.toList())
                 );
             competitorsReferences =
@@ -244,17 +243,17 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         this.tournamentCoverage =
             endpointData.getCoverageInfo() == null
                 ? null
-                : new TournamentCoverageCI(endpointData.getCoverageInfo());
+                : new TournamentCoverageCi(endpointData.getCoverageInfo());
 
         cachedLocales.add(dataLocale);
     }
 
-    TournamentCIImpl(
-        URN id,
+    TournamentCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPITournamentExtended endpointData,
+        SapiTournamentExtended endpointData,
         Locale dataLocale
     ) {
         this(
@@ -262,7 +261,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             dataRouterManager,
             defaultLocale,
             exceptionHandlingStrategy,
-            (SAPITournament) endpointData,
+            (SapiTournament) endpointData,
             dataLocale
         );
         Preconditions.checkNotNull(endpointData);
@@ -271,19 +270,19 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         this.currentSeason =
             endpointData.getCurrentSeason() == null
                 ? null
-                : new SeasonCI(endpointData.getCurrentSeason(), dataLocale);
+                : new SeasonCi(endpointData.getCurrentSeason(), dataLocale);
         this.seasonCoverage =
             endpointData.getSeasonCoverageInfo() == null
                 ? null
-                : new SeasonCoverageCI(endpointData.getSeasonCoverageInfo());
+                : new SeasonCoverageCi(endpointData.getSeasonCoverageInfo());
     }
 
-    TournamentCIImpl(
-        URN id,
+    TournamentCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPITournament endpointData,
+        SapiTournament endpointData,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -296,7 +295,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             this.names.put(dataLocale, "");
         }
 
-        this.categoryId = URN.parse(endpointData.getCategory().getId());
+        this.categoryId = Urn.parse(endpointData.getCategory().getId());
         this.scheduled =
             endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd =
@@ -306,7 +305,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             (this.scheduled == null || this.scheduledEnd == null) &&
             endpointData.getTournamentLength() != null
         ) {
-            SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
+            SapiTournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled =
                 tournamentLength.getStartDate() == null
                     ? null
@@ -318,8 +317,8 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         }
     }
 
-    TournamentCIImpl(
-        ExportableTournamentCI exportable,
+    TournamentCiImpl(
+        ExportableTournamentCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
@@ -331,32 +330,32 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
 
         this.defaultLocale = exportable.getDefaultLocale();
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.names.putAll(exportable.getNames());
-        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
+        this.categoryId = exportable.getCategoryId() != null ? Urn.parse(exportable.getCategoryId()) : null;
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
         this.currentSeason =
-            exportable.getCurrentSeason() != null ? new SeasonCI(exportable.getCurrentSeason()) : null;
-        this.season = exportable.getSeason() != null ? new SeasonCI(exportable.getSeason()) : null;
+            exportable.getCurrentSeason() != null ? new SeasonCi(exportable.getCurrentSeason()) : null;
+        this.season = exportable.getSeason() != null ? new SeasonCi(exportable.getSeason()) : null;
         this.seasonCoverage =
             exportable.getSeasonCoverage() != null
-                ? new SeasonCoverageCI(exportable.getSeasonCoverage())
+                ? new SeasonCoverageCi(exportable.getSeasonCoverage())
                 : null;
         this.tournamentCoverage =
             exportable.getTournamentCoverage() != null
-                ? new TournamentCoverageCI(exportable.getTournamentCoverage())
+                ? new TournamentCoverageCi(exportable.getTournamentCoverage())
                 : null;
         this.groups =
             exportable.getGroups() != null
                 ? Collections.synchronizedList(
-                    exportable.getGroups().stream().map(GroupCI::new).collect(Collectors.toList())
+                    exportable.getGroups().stream().map(GroupCi::new).collect(Collectors.toList())
                 )
                 : null;
-        this.round = exportable.getRound() != null ? new CompleteRoundCIImpl(exportable.getRound()) : null;
+        this.round = exportable.getRound() != null ? new CompleteRoundCiImpl(exportable.getRound()) : null;
         this.competitorIds =
             exportable.getCompetitorIds() != null
-                ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getCompetitorIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.competitorsReferences =
             exportable.getCompetitorsReferences() != null
@@ -365,25 +364,25 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                     .entrySet()
                     .stream()
                     .collect(
-                        Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))
+                        Collectors.toMap(r -> Urn.parse(r.getKey()), r -> new ReferenceIdCi(r.getValue()))
                     )
                 : null;
         this.associatedSeasonIdsLoaded = exportable.isAssociatedSeasonIdsLoaded();
         this.associatedSeasonIds =
             exportable.getAssociatedSeasonIds() != null
-                ? exportable.getAssociatedSeasonIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getAssociatedSeasonIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.cachedLocales.addAll(exportable.getCachedLocales());
         this.exhibitionGames = exportable.getExhibitionGames();
     }
 
     /**
-     * Returns the {@link URN} specifying the id of the parent category
+     * Returns the {@link Urn} specifying the id of the parent category
      *
-     * @return the {@link URN} specifying the id of the parent category
+     * @return the {@link Urn} specifying the id of the parent category
      */
     @Override
-    public URN getCategoryId() {
+    public Urn getCategoryId() {
         if (categoryId != null || !cachedLocales.isEmpty()) {
             return categoryId;
         }
@@ -394,13 +393,13 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link SeasonCI} representing the current season of the tournament
+     * Returns a {@link SeasonCi} representing the current season of the tournament
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link SeasonCI} representing the current season of the tournament
+     * @return a {@link SeasonCi} representing the current season of the tournament
      */
     @Override
-    public SeasonCI getCurrentSeason(List<Locale> locales) {
+    public SeasonCi getCurrentSeason(List<Locale> locales) {
         if (currentSeason != null && currentSeason.hasTranslationsFor(locales)) {
             return currentSeason;
         }
@@ -415,12 +414,12 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link SeasonCoverageCI} containing information about the tournament coverage
+     * Returns a {@link SeasonCoverageCi} containing information about the tournament coverage
      *
-     * @return a {@link SeasonCoverageCI} containing information about the tournament coverage
+     * @return a {@link SeasonCoverageCi} containing information about the tournament coverage
      */
     @Override
-    public SeasonCoverageCI getSeasonCoverage() {
+    public SeasonCoverageCi getSeasonCoverage() {
         if (seasonCoverage != null || !cachedLocales.isEmpty()) {
             return seasonCoverage;
         }
@@ -437,7 +436,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      * @return the associated season cache item
      */
     @Override
-    public SeasonCI getSeason(List<Locale> locales) {
+    public SeasonCi getSeason(List<Locale> locales) {
         if (season != null && season.hasTranslationsFor(locales)) {
             return season;
         }
@@ -458,7 +457,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      * @return - if available a {@link List} of the associated tournament competitor ids; otherwise null
      */
     @Override
-    public List<URN> getCompetitorIds(List<Locale> locales) {
+    public List<Urn> getCompetitorIds(List<Locale> locales) {
         if (cachedLocales.containsAll(locales)) {
             return prepareCompetitorList(competitorIds, () -> getGroups(locales));
         }
@@ -475,7 +474,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      * @return a list of groups related to the current instance
      */
     @Override
-    public List<GroupCI> getGroups(List<Locale> locales) {
+    public List<GroupCi> getGroups(List<Locale> locales) {
         if (cachedLocales.containsAll(locales)) {
             return groups == null ? null : ImmutableList.copyOf(groups);
         }
@@ -492,7 +491,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      * @return the rounds related to the current instance
      */
     @Override
-    public RoundCI getRound(List<Locale> locales) {
+    public RoundCi getRound(List<Locale> locales) {
         if (round != null && round.hasTranslationsFor(locales)) {
             return round;
         }
@@ -577,22 +576,22 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return null;
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -620,10 +619,10 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     /**
      * Returns the current tournament coverage information
      *
-     * @return a {@link TournamentCoverageCI} instance describing the current coverage indication
+     * @return a {@link TournamentCoverageCi} instance describing the current coverage indication
      */
     @Override
-    public TournamentCoverageCI getTournamentCoverage() {
+    public TournamentCoverageCi getTournamentCoverage() {
         if (!cachedLocales.isEmpty()) {
             return tournamentCoverage;
         }
@@ -639,7 +638,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
      * @return a list of associated season identifiers
      */
     @Override
-    public List<URN> getSeasonIds() {
+    public List<Urn> getSeasonIds() {
         if (associatedSeasonIdsLoaded) {
             return associatedSeasonIds;
         }
@@ -650,12 +649,12 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      *
-     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      */
     @Override
-    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+    public Map<Urn, ReferenceIdCi> getCompetitorsReferences() {
         if (cachedLocales.isEmpty()) {
             requestMissingTournamentData(Collections.singletonList(defaultLocale));
         }
@@ -695,17 +694,17 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
 
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (endpointData instanceof SAPITournamentInfoEndpoint) {
-            internalMerge((SAPITournamentInfoEndpoint) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPITournamentExtended) {
-            internalMerge((SAPITournamentExtended) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPITournament) {
-            internalMerge((SAPITournament) endpointData, dataLocale);
+        if (endpointData instanceof SapiTournamentInfoEndpoint) {
+            internalMerge((SapiTournamentInfoEndpoint) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiTournamentExtended) {
+            internalMerge((SapiTournamentExtended) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiTournament) {
+            internalMerge((SapiTournament) endpointData, dataLocale);
         }
     }
 
     @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
-    private void internalMerge(SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
+    private void internalMerge(SapiTournamentInfoEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -720,9 +719,9 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         if (endpointData.getGroups() != null) {
             if (groups == null) {
                 groups = Collections.synchronizedList(new ArrayList<>());
-                endpointData.getGroups().getGroup().forEach(g -> groups.add(new GroupCI(g, dataLocale)));
+                endpointData.getGroups().getGroup().forEach(g -> groups.add(new GroupCi(g, dataLocale)));
             } else {
-                List<GroupCI> tmpGroups = Collections.synchronizedList(new ArrayList<>(groups));
+                List<GroupCi> tmpGroups = Collections.synchronizedList(new ArrayList<>(groups));
 
                 // remove obsolete groups
                 if (groups != null && !groups.isEmpty()) {
@@ -784,8 +783,8 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
 
                 // add or merge groups
                 for (int i = 0; i < endpointData.getGroups().getGroup().size(); i++) {
-                    SAPITournamentGroup sapiGroup = endpointData.getGroups().getGroup().get(i);
-                    GroupCI tmpGroup = sapiGroup.getName() != null
+                    SapiTournamentGroup sapiGroup = endpointData.getGroups().getGroup().get(i);
+                    GroupCi tmpGroup = sapiGroup.getName() != null
                         ? tmpGroups
                             .stream()
                             .filter(existingGroup ->
@@ -811,7 +810,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                                 .findFirst()
                                 .orElse(null);
                     if (tmpGroup == null) {
-                        tmpGroups.add(new GroupCI(sapiGroup, dataLocale));
+                        tmpGroups.add(new GroupCi(sapiGroup, dataLocale));
                     } else {
                         tmpGroup.merge(sapiGroup, dataLocale);
                     }
@@ -822,13 +821,13 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
 
         if (endpointData.getRound() != null) {
             if (round == null) {
-                round = new CompleteRoundCIImpl(endpointData.getRound(), dataLocale);
+                round = new CompleteRoundCiImpl(endpointData.getRound(), dataLocale);
             } else {
                 round.merge(endpointData.getRound(), dataLocale);
             }
         }
 
-        SAPICompetitors endpointCompetitors = endpointData.getCompetitors() != null
+        SapiCompetitors endpointCompetitors = endpointData.getCompetitors() != null
             ? endpointData.getCompetitors()
             : endpointData.getTournament().getCompetitors();
 
@@ -839,7 +838,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             endpointCompetitors
                 .getCompetitor()
                 .forEach(c -> {
-                    URN parsedId = URN.parse(c.getId());
+                    Urn parsedId = Urn.parse(c.getId());
                     if (!this.competitorIds.contains(parsedId)) {
                         this.competitorIds.add(parsedId);
                     }
@@ -853,14 +852,14 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
 
         if (endpointData.getSeason() != null) {
             if (this.season == null) {
-                this.season = new SeasonCI(endpointData.getSeason(), dataLocale);
+                this.season = new SeasonCi(endpointData.getSeason(), dataLocale);
             } else {
                 this.season.merge(endpointData.getSeason(), dataLocale);
             }
         }
 
         if (endpointData.getCoverageInfo() != null) {
-            this.tournamentCoverage = new TournamentCoverageCI(endpointData.getCoverageInfo());
+            this.tournamentCoverage = new TournamentCoverageCi(endpointData.getCoverageInfo());
         }
 
         internalMerge(endpointData.getTournament(), dataLocale);
@@ -868,26 +867,26 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         cachedLocales.add(dataLocale);
     }
 
-    private void internalMerge(SAPITournamentExtended endpointData, Locale dataLocale) {
+    private void internalMerge(SapiTournamentExtended endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        internalMerge((SAPITournament) endpointData, dataLocale);
+        internalMerge((SapiTournament) endpointData, dataLocale);
 
         if (endpointData.getCurrentSeason() != null) {
             if (this.currentSeason == null) {
-                this.currentSeason = new SeasonCI(endpointData.getCurrentSeason(), dataLocale);
+                this.currentSeason = new SeasonCi(endpointData.getCurrentSeason(), dataLocale);
             } else {
                 this.currentSeason.merge(endpointData.getCurrentSeason(), dataLocale);
             }
         }
 
         if (endpointData.getSeasonCoverageInfo() != null) {
-            this.seasonCoverage = new SeasonCoverageCI(endpointData.getSeasonCoverageInfo());
+            this.seasonCoverage = new SeasonCoverageCi(endpointData.getSeasonCoverageInfo());
         }
     }
 
-    private void internalMerge(SAPITournament endpointData, Locale dataLocale) {
+    private void internalMerge(SapiTournament endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -898,7 +897,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         }
 
         if (endpointData.getCategory() != null) {
-            this.categoryId = URN.parse(endpointData.getCategory().getId());
+            this.categoryId = Urn.parse(endpointData.getCategory().getId());
         }
 
         Date endpointScheduled = endpointData.getScheduled() == null
@@ -912,7 +911,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             (endpointScheduled == null || endpointScheduledEnd == null) &&
             endpointData.getTournamentLength() != null
         ) {
-            SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
+            SapiTournamentLength tournamentLength = endpointData.getTournamentLength();
             endpointScheduled =
                 tournamentLength.getStartDate() == null
                     ? null
@@ -1005,9 +1004,9 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
         }
     }
 
-    private static List<URN> prepareCompetitorList(
-        List<URN> competitors,
-        Supplier<List<GroupCI>> groupSupplier
+    private static List<Urn> prepareCompetitorList(
+        List<Urn> competitors,
+        Supplier<List<GroupCi>> groupSupplier
     ) {
         if (competitors != null) {
             return ImmutableList.copyOf(competitors);
@@ -1017,7 +1016,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             return groupSupplier
                 .get()
                 .stream()
-                .map(GroupCI::getCompetitorIds)
+                .map(GroupCi::getCompetitorIds)
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .distinct()
@@ -1028,19 +1027,19 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     }
 
     @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
-    private static Map<URN, ReferenceIdCI> prepareCompetitorReferences(
-        Map<URN, ReferenceIdCI> references,
-        Supplier<List<GroupCI>> groupSupplier
+    private static Map<Urn, ReferenceIdCi> prepareCompetitorReferences(
+        Map<Urn, ReferenceIdCi> references,
+        Supplier<List<GroupCi>> groupSupplier
     ) {
         if (references != null && !references.isEmpty()) {
             return ImmutableMap.copyOf(references);
         }
 
         if (groupSupplier != null && groupSupplier.get() != null) {
-            Map<URN, ReferenceIdCI> tmpRefs = new HashMap<>();
-            for (GroupCI group : groupSupplier.get()) {
+            Map<Urn, ReferenceIdCi> tmpRefs = new HashMap<>();
+            for (GroupCi group : groupSupplier.get()) {
                 if (group.getCompetitorsReferences() != null) {
-                    for (Map.Entry<URN, ReferenceIdCI> entry : group.getCompetitorsReferences().entrySet()) {
+                    for (Map.Entry<Urn, ReferenceIdCi> entry : group.getCompetitorsReferences().entrySet()) {
                         if (!tmpRefs.containsKey(entry.getKey())) {
                             tmpRefs.put(entry.getKey(), entry.getValue());
                         }
@@ -1054,8 +1053,8 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableTournamentCI(
+    public ExportableCi export() {
+        return new ExportableTournamentCi(
             id.toString(),
             new HashMap<>(names),
             scheduled,
@@ -1068,10 +1067,10 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
             season != null ? season.export() : null,
             seasonCoverage != null ? seasonCoverage.export() : null,
             tournamentCoverage != null ? tournamentCoverage.export() : null,
-            groups != null ? groups.stream().map(GroupCI::export).collect(Collectors.toList()) : null,
-            round != null ? ((CompleteRoundCIImpl) round).export() : null,
+            groups != null ? groups.stream().map(GroupCi::export).collect(Collectors.toList()) : null,
+            round != null ? ((CompleteRoundCiImpl) round).export() : null,
             competitorIds != null
-                ? competitorIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? competitorIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             competitorsReferences != null
                 ? competitorsReferences
@@ -1083,7 +1082,7 @@ class TournamentCIImpl implements TournamentCI, ExportableCacheItem {
                 : null,
             associatedSeasonIdsLoaded,
             associatedSeasonIds != null
-                ? associatedSeasonIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? associatedSeasonIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             new ArrayList<>(cachedLocales),
             exhibitionGames

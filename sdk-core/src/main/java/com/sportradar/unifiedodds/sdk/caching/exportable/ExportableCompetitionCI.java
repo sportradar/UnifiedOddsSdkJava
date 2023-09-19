@@ -11,19 +11,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableCompetitionCI extends ExportableSportEventCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableCompetitionCi extends ExportableSportEventCi {
 
     private BookingStatus bookingStatus;
     private List<String> competitorIds;
-    private ExportableVenueCI venue;
-    private ExportableSportEventConditionsCI conditions;
+    private ExportableVenueCi venue;
+    private ExportableSportEventConditionsCi conditions;
     private Map<String, Map<String, String>> competitorsReferences;
     private String liveOdds;
     private SportEventType sportEventType;
     private List<String> competitorVirtual;
 
-    ExportableCompetitionCI(
+    ExportableCompetitionCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -32,8 +32,8 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         String replacedBy,
         BookingStatus bookingStatus,
         List<String> competitorIds,
-        ExportableVenueCI venue,
-        ExportableSportEventConditionsCI conditions,
+        ExportableVenueCi venue,
+        ExportableSportEventConditionsCi conditions,
         Map<String, Map<String, String>> competitorsReferences,
         String liveOdds,
         SportEventType sportEventType,
@@ -66,19 +66,19 @@ public class ExportableCompetitionCI extends ExportableSportEventCI {
         this.competitorIds = competitorIds;
     }
 
-    public ExportableVenueCI getVenue() {
+    public ExportableVenueCi getVenue() {
         return venue;
     }
 
-    public void setVenue(ExportableVenueCI venue) {
+    public void setVenue(ExportableVenueCi venue) {
         this.venue = venue;
     }
 
-    public ExportableSportEventConditionsCI getConditions() {
+    public ExportableSportEventConditionsCi getConditions() {
         return conditions;
     }
 
-    public void setConditions(ExportableSportEventConditionsCI conditions) {
+    public void setConditions(ExportableSportEventConditionsCi conditions) {
         this.conditions = conditions;
     }
 

@@ -4,8 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
-import com.sportradar.uf.datamodel.UFChangeType;
-import com.sportradar.uf.datamodel.UFFixtureChange;
+import com.sportradar.uf.datamodel.UfChangeType;
+import com.sportradar.uf.datamodel.UfFixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChangeType;
@@ -25,13 +25,13 @@ class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implem
 
     FixtureChangeImpl(
         T sportEvent,
-        UFFixtureChange message,
+        UfFixtureChange message,
         Producer producer,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
-        UFChangeType type = message.getChangeType();
+        UfChangeType type = message.getChangeType();
         if (type == null) {
             changeType = FixtureChangeType.NotAvailable;
         } else {

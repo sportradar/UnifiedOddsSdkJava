@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.example.examples.replay;
 
 import com.google.common.collect.ImmutableList;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
@@ -134,15 +134,15 @@ public final class ExampleReplayEvents {
         .build();
 
     private static SampleEvent event(String description, String eventId) {
-        return new SampleEvent(description, URN.parse(eventId));
+        return new SampleEvent(description, Urn.parse(eventId));
     }
 
     public static class SampleEvent {
 
         private final String description;
-        private final URN eventId;
+        private final Urn eventId;
 
-        SampleEvent(String description, URN eventId) {
+        SampleEvent(String description, Urn eventId) {
             this.description = description;
             this.eventId = eventId;
         }
@@ -151,7 +151,7 @@ public final class ExampleReplayEvents {
             return description;
         }
 
-        public URN getEventId() {
+        public Urn getEventId() {
             return eventId;
         }
 

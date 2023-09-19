@@ -3,17 +3,19 @@
  */
 package com.sportradar.unifiedodds.sdk.integrationtest.externalrabbit;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqConsumers.connectToExchange;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures.WaitingRabbitMqConsumerDi.createWaitingRabbitMqConsumerFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
+import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
@@ -35,7 +37,7 @@ public class RabbitMqProducerConsumerIT {
         DEFAULT_ADMIN_USERNAME_IN_DOCKER_IMAGE,
         DEFAULT_ADMIN_PASSWORD_IN_DOCKER_IMAGE
     );
-    private final VhostLocation vhostLocation = VhostLocation.at("localhost", "/testhost");
+    private final VhostLocation vhostLocation = VhostLocation.at(Constants.RABBIT_IP, "/testhost");
     private final String exchange = "test_exchange";
     private final String routingKey = "specifiedRoutingKey";
     private final String messageToDeliver = "specifiedMessage";
@@ -74,7 +76,24 @@ public class RabbitMqProducerConsumerIT {
 
             producer.send(messageToDeliver, routingKey);
 
-            val actualDelivery = consumer.waitForDelivery();
+            val actualDelivery = consumer.waitForFirstDelivery();
+            assertMessagesAreSame(messageToDeliver, actualDelivery);
+        }
+    }
+
+    @Test
+    public void dashSymbolInTopicIsNormalSymbolAndDoesNotRepresentWildcard() throws Exception {
+        try (
+            val producer = connectDeclaringExchange(exchangeLocation, producerCredentials, factory, time);
+            val consumers = connectToExchange(exchangeLocation, consumerCredentials, factory)
+        ) {
+            val consumer = consumerFactory.expectingMessage();
+            consumers.registerConsumer("-.0", consumer);
+
+            producer.send(messageToDeliver, "-.-");
+            producer.send(messageToDeliver, "-.0");
+
+            val actualDelivery = consumer.waitForFirstDelivery();
             assertMessagesAreSame(messageToDeliver, actualDelivery);
         }
     }

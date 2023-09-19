@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableScheduledStartTimeChangeCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableScheduledStartTimeChangeCi;
 import com.sportradar.unifiedodds.sdk.entities.ScheduledStartTimeChange;
 import java.util.Date;
 
@@ -28,7 +28,7 @@ public class ScheduledStartTimeChangeImpl implements ScheduledStartTimeChange {
         this.changedAt = changedAt;
     }
 
-    ScheduledStartTimeChangeImpl(ExportableScheduledStartTimeChangeCI exportable) {
+    ScheduledStartTimeChangeImpl(ExportableScheduledStartTimeChangeCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.oldTime = exportable.getOldTime();
         this.newTime = exportable.getNewTime();
@@ -86,7 +86,7 @@ public class ScheduledStartTimeChangeImpl implements ScheduledStartTimeChange {
         return changedAt;
     }
 
-    public ExportableScheduledStartTimeChangeCI export() {
-        return new ExportableScheduledStartTimeChangeCI(oldTime, newTime, changedAt);
+    public ExportableScheduledStartTimeChangeCi export() {
+        return new ExportableScheduledStartTimeChangeCi(oldTime, newTime, changedAt);
     }
 }

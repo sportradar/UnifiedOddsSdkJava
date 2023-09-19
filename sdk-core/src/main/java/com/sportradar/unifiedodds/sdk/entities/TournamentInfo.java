@@ -4,19 +4,20 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Defines methods implemented by classes providing data of a tournament
  */
 public interface TournamentInfo {
     /**
-     * Returns the {@link URN} uniquely identifying the tournament
+     * Returns the {@link Urn} uniquely identifying the tournament
      *
-     * @return - the {@link URN} uniquely identifying the tournament
+     * @return - the {@link Urn} uniquely identifying the tournament
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the name of the tournament in the specified language
@@ -25,6 +26,8 @@ public interface TournamentInfo {
      * @return - the name of the tournament in the specified language
      */
     String getName(Locale locale);
+
+    Map<Locale, String> getNames();
 
     /**
      * Returns a {@link CategorySummary} representing the category associated with the current instance

@@ -4,7 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
-import com.sportradar.uf.datamodel.UFOddsChange;
+import com.google.common.base.Preconditions;
+import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +36,16 @@ class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implement
 
     OddsChangeImpl(
         T sportEvent,
-        UFOddsChange message,
+        UfOddsChange message,
         Producer producer,
         byte[] rawMessage,
-        @NonNull final MarketFactory marketFactory,
-        @NonNull final NamedValuesProvider namedValuesProvider,
+        final MarketFactory marketFactory,
+        final NamedValuesProvider namedValuesProvider,
         MessageTimestamp timestamp
     ) {
         super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
+        Preconditions.checkNotNull(marketFactory, "marketFactory");
+        Preconditions.checkNotNull(namedValuesProvider, "namedValuesProvider");
         this.namedValuesProvider = namedValuesProvider;
 
         // TODO update schemas to get more odds change reasons?

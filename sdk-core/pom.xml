@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>2.0.61</version>
+    <version>3.0.0-rc1</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -57,16 +57,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- TODO rabbitMQ.version is 3.6.0 in parent pom, but 3.6.0 and 3.12.0 here -->
-        <rabbitMQ.version>3.6.0</rabbitMQ.version>
-        <apache.httpComponents.version>4.5.1</apache.httpComponents.version>
-        <slf4j.version>1.7.13</slf4j.version>
-        <logback.version>1.2.3</logback.version>
-        <junit.version>4.12</junit.version>
+        <rabbitMQ.version>5.17.0</rabbitMQ.version>
+        <apache.httpComponents.version>5.2.1</apache.httpComponents.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <logback.version>1.3.6</logback.version>
+        <junit5.version>5.10.0</junit5.version>
         <mockito.version>4.5.1</mockito.version>
-        <guava.version>21.0</guava.version>
-        <guice.version>4.0</guice.version>
-        <icu4j.version>57.1</icu4j.version>
-        <snake.yaml.version>1.20</snake.yaml.version>
+        <guava.version>31.1-jre</guava.version>
+        <guice.version>5.1.0</guice.version>
+        <icu4j.version>72.1</icu4j.version>
+        <snake.yaml.version>2.0</snake.yaml.version>
         <rabbitMQ.http.version>3.12.0</rabbitMQ.http.version>
         <org.springframework.spring-web.version>5.3.9</org.springframework.spring-web.version>
         <junitparams.version>1.1.1</junitparams.version>
@@ -75,6 +75,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.25.0</version>
+        </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
@@ -85,10 +90,18 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>${apache.httpComponents.version}</version>
+        </dependency>
+        <!-- HttpClient 4.x is currently being used rabbit com.rabbitmq.http.client.Client in tests-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${apache.httpComponents.version}</version>
+            <version>4.5.14</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -127,7 +140,7 @@
             <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.22.0</version>
+            <version>3.24.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -137,21 +150,11 @@
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
@@ -177,24 +180,22 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>2.3.0</version>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.8</version>
+            <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.3.0</version>
-        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>pl.pragmatists</groupId>
@@ -212,6 +213,30 @@
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-matchers</artifactId>
             <version>2.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.12.5</version>
             <scope>test</scope>
         </dependency>
 
@@ -270,7 +295,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.1.2</version>
                 <configuration>
                     <includes>
                         <include>**/*Tests.java</include>
@@ -302,7 +327,7 @@
                 <version>3.0.0-M7</version>
                 <configuration>
                     <includes>
-                        <include>**/SdkConnectionTests</include>
+                        <include>**/*IT</include>
                     </includes>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
@@ -378,7 +403,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -397,12 +422,17 @@
 
                     <excludePackageNames>
                         com.sportradar.unifiedodds.sdk.impl
+                        :com.sportradar.unifiedodds.sdk.impl.*
                         :com.sportradar.unifiedodds.sdk.di
+                        :com.sportradar.unifiedodds.sdk.di.*
                         :com.sportradar.unifiedodds.sdk.caching
+                        :com.sportradar.unifiedodds.sdk.caching.*
                         :com.sportradar.unifiedodds.sdk.exceptions.internal
                         :com.sportradar.uf
+                        :com.sportradar.uf.*
                     </excludePackageNames>
                     <failOnError>false</failOnError>
+                    <doclint>all,-missing</doclint>
                 </configuration>
             </plugin>
 
@@ -739,6 +769,25 @@
                         <goals>
                             <goal>write</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipITs}</skip>
+                            <mainClass>com.sportradar.unifiedodds.sdk.integrationtest.preconditions.PreconditionsForIntegrationTests</mainClass>
+                            <classpathScope>test</classpathScope>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

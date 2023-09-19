@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Optional;
 
 /**
@@ -16,5 +16,5 @@ public interface MappingTypeProvider {
      * @param identifier the type to which the provided identifier can be mapped
      * @return the {@link Class} to which the id can be mapped, empty optional if the mapping type could not be provided
      */
-    Optional<Class> getMappingType(URN identifier);
+    Optional<Class> getMappingType(Urn identifier);
 }

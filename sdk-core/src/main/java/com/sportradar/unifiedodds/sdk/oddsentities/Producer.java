@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.ProducerScope;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationImpl;
 import java.util.Set;
 
 /**
@@ -41,7 +42,7 @@ public interface Producer {
     long getLastMessageTimestamp();
 
     /**
-     * An indication if the producer is available with the token provided with the {@link com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration}
+     * An indication if the producer is available with the token provided with the {@link UofConfigurationImpl}
      *
      * @return <code>true</code> if the producer is available, otherwise <code>false</code>
      */

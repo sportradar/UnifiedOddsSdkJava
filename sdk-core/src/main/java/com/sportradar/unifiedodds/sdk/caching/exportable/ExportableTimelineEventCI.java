@@ -5,8 +5,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableTimelineEventCI implements Serializable {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableTimelineEventCi implements Serializable {
 
     private int id;
     private Double awayScore;
@@ -22,13 +22,13 @@ public class ExportableTimelineEventCI implements Serializable {
     private Integer x;
     private Integer y;
     private Date time;
-    private List<ExportableEventPlayerAssistCI> assists;
-    private ExportableEventPlayerCI goalScorer;
-    private ExportableEventPlayerCI player;
+    private List<ExportableEventPlayerAssistCi> assists;
+    private ExportableEventPlayerCi goalScorer;
+    private ExportableEventPlayerCi player;
     private Integer matchStatusCode;
     private String matchClock;
 
-    public ExportableTimelineEventCI(
+    public ExportableTimelineEventCi(
         int id,
         Double awayScore,
         Double homeScore,
@@ -43,9 +43,9 @@ public class ExportableTimelineEventCI implements Serializable {
         Integer x,
         Integer y,
         Date time,
-        List<ExportableEventPlayerAssistCI> assists,
-        ExportableEventPlayerCI goalScorer,
-        ExportableEventPlayerCI player,
+        List<ExportableEventPlayerAssistCi> assists,
+        ExportableEventPlayerCi goalScorer,
+        ExportableEventPlayerCi player,
         Integer matchStatusCode,
         String matchClock
     ) {
@@ -182,27 +182,27 @@ public class ExportableTimelineEventCI implements Serializable {
         this.time = time;
     }
 
-    public List<ExportableEventPlayerAssistCI> getAssists() {
+    public List<ExportableEventPlayerAssistCi> getAssists() {
         return assists;
     }
 
-    public void setAssists(List<ExportableEventPlayerAssistCI> assists) {
+    public void setAssists(List<ExportableEventPlayerAssistCi> assists) {
         this.assists = assists;
     }
 
-    public ExportableEventPlayerCI getGoalScorer() {
+    public ExportableEventPlayerCi getGoalScorer() {
         return goalScorer;
     }
 
-    public void setGoalScorer(ExportableEventPlayerCI goalScorer) {
+    public void setGoalScorer(ExportableEventPlayerCi goalScorer) {
         this.goalScorer = goalScorer;
     }
 
-    public ExportableEventPlayerCI getPlayer() {
+    public ExportableEventPlayerCi getPlayer() {
         return player;
     }
 
-    public void setPlayer(ExportableEventPlayerCI player) {
+    public void setPlayer(ExportableEventPlayerCi player) {
         this.player = player;
     }
 

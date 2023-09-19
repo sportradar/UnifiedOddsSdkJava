@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.uf.custombet.datamodel.*;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
@@ -24,10 +24,10 @@ import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.unifiedodds.sdk.extended.OddsFeedExtListener;
+import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
@@ -35,7 +35,7 @@ import com.sportradar.unifiedodds.sdk.impl.entities.FixtureChangeImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.PeriodStatusImpl;
 import com.sportradar.unifiedodds.sdk.impl.entities.ResultChangeImpl;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -46,9 +46,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,22 +131,22 @@ public class DataRouterManagerImpl implements DataRouterManager {
     /**
      * The {@link DataProvider} used to fetch fixture data
      */
-    private final DataProvider<SAPIFixturesEndpoint> fixtureProvider;
+    private final DataProvider<SapiFixturesEndpoint> fixtureProvider;
 
     /**
      * The {@link DataProvider} used to fetch fixture data without cache
      */
-    private final DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureProvider;
+    private final DataProvider<SapiFixturesEndpoint> fixtureChangeFixtureProvider;
 
     /**
      * A {@link DataProvider} instance used to fetch the tournament list API endpoint
      */
-    private final DataProvider<SAPITournamentsEndpoint> tournamentsListProvider;
+    private final DataProvider<SapiTournamentsEndpoint> tournamentsListProvider;
 
     /**
      * A {@link DataProvider} instance which is used to fill the cache with schedule endpoints
      */
-    private final DataProvider<SAPIScheduleEndpoint> dateScheduleProvider;
+    private final DataProvider<SapiScheduleEndpoint> dateScheduleProvider;
 
     /**
      * A {@link DataProvider} instance which is used to fill the cache
@@ -156,102 +156,102 @@ public class DataRouterManagerImpl implements DataRouterManager {
     /**
      * A {@link DataProvider} instance used to fetch the all available sports API endpoint
      */
-    private final DataProvider<SAPISportsEndpoint> sportsListProvider;
+    private final DataProvider<SapiSportsEndpoint> sportsListProvider;
 
     /**
      * A {@link DataProvider} used to fetch player profiles
      */
-    private final DataProvider<SAPIPlayerProfileEndpoint> playerProvider;
+    private final DataProvider<SapiPlayerProfileEndpoint> playerProvider;
 
     /**
      * A {@link DataProvider} used to fetch competitor profiles
      */
-    private final DataProvider<SAPICompetitorProfileEndpoint> competitorProvider;
+    private final DataProvider<SapiCompetitorProfileEndpoint> competitorProvider;
 
     /**
      * A {@link DataProvider} used to fetch simpleteam profiles
      */
-    private final DataProvider<SAPISimpleTeamProfileEndpoint> simpleTeamProvider;
+    private final DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeamProvider;
 
     /**
      * A {@link DataProvider} used to fetch tournament seasons
      */
-    private final DataProvider<SAPITournamentSeasons> tournamentSeasonsDataProvider;
+    private final DataProvider<SapiTournamentSeasons> tournamentSeasonsDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch draw summaries
      */
-    private final DataProvider<SAPIDrawSummary> drawSummaryDataProvider;
+    private final DataProvider<SapiDrawSummary> drawSummaryDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch draw fixtures
      */
-    private final DataProvider<SAPIDrawFixtures> drawFixtureDataProvider;
+    private final DataProvider<SapiDrawFixtures> drawFixtureDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch all lotteries
      */
-    private final DataProvider<SAPILotteries> lotteriesListProvider;
+    private final DataProvider<SapiLotteries> lotteriesListProvider;
 
     /**
      * A {@link DataProvider} used to fetch lottery schedules
      */
-    private final DataProvider<SAPILotterySchedule> lotteryScheduleProvider;
+    private final DataProvider<SapiLotterySchedule> lotteryScheduleProvider;
 
     /**
      * A {@link DataProvider} used to fetch match time lines
      */
-    private final DataProvider<SAPIMatchTimelineEndpoint> matchTimelineEndpointDataProvider;
+    private final DataProvider<SapiMatchTimelineEndpoint> matchTimelineEndpointDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch sport categories
      */
-    private final DataProvider<SAPISportCategoriesEndpoint> sportCategoriesEndpointDataProvider;
+    private final DataProvider<SapiSportCategoriesEndpoint> sportCategoriesEndpointDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch available selections
      */
-    private final DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider;
+    private final DataProvider<CapiAvailableSelections> availableSelectionsTypeDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch probability calculations
      */
-    private final DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider;
+    private final DataProvider<CapiCalculationResponse> calculateProbabilityDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch probability calculations (filtered)
      */
-    private final DataProvider<CAPIFilteredCalculationResponse> calculateProbabilityFilterDataProvider;
+    private final DataProvider<CapiFilteredCalculationResponse> calculateProbabilityFilterDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch fixture changes
      */
-    private final DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider;
+    private final DataProvider<SapiFixtureChangesEndpoint> fixtureChangesDataProvider;
 
     /**
      * A {@link DataProvider} used to fetch result changes
      */
-    private final DataProvider<SAPIResultChangesEndpoint> resultChangesDataProvider;
+    private final DataProvider<SapiResultChangesEndpoint> resultChangesDataProvider;
 
     /**
      * A {@link DataProvider} instance which is used to get list of sport events
      */
-    private final DataProvider<SAPIScheduleEndpoint> listSportEventsProvider;
+    private final DataProvider<SapiScheduleEndpoint> listSportEventsProvider;
 
     /**
      * A {@link DataProvider} instance which is used to get all available tournaments for specific sport
      */
-    private final DataProvider<SAPISportTournamentsEndpoint> availableSportTournamentsProvider;
+    private final DataProvider<SapiSportTournamentsEndpoint> availableSportTournamentsProvider;
 
     /**
      * A {@link DataProvider} instance which is used to get period summary endpoint for specific sport event
      */
-    private final DataProvider<SAPIStagePeriodEndpoint> periodSummaryDataProvider;
+    private final DataProvider<SapiStagePeriodEndpoint> periodSummaryDataProvider;
 
     /**
      * The extended odds feed listener
      */
-    private OddsFeedExtListener oddsFeedExtListener;
+    private UofExtListener uofExtListener;
 
     private final ReentrantLock tournamentListLock = new ReentrantLock();
     private final ReentrantLock sportsListLock = new ReentrantLock();
@@ -261,37 +261,37 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
     @Inject
     DataRouterManagerImpl(
-        SDKInternalConfiguration configuration,
-        SDKTaskScheduler scheduler,
-        SDKProducerManager producerManager,
+        SdkInternalConfiguration configuration,
+        SdkTaskScheduler scheduler,
+        SdkProducerManager producerManager,
         DataRouter dataRouter,
         @Named("SummaryEndpointDataProvider") DataProvider<Object> summaryEndpointProvider,
-        @Named("FixtureEndpointDataProvider") DataProvider<SAPIFixturesEndpoint> fixtureProvider,
+        @Named("FixtureEndpointDataProvider") DataProvider<SapiFixturesEndpoint> fixtureProvider,
         @Named(
             "FixtureChangeFixtureEndpointDataProvider"
-        ) DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureProvider,
-        DataProvider<SAPITournamentsEndpoint> tournamentsListProvider,
-        @Named("DateScheduleEndpointDataProvider") DataProvider<SAPIScheduleEndpoint> dateScheduleProvider,
+        ) DataProvider<SapiFixturesEndpoint> fixtureChangeFixtureProvider,
+        DataProvider<SapiTournamentsEndpoint> tournamentsListProvider,
+        @Named("DateScheduleEndpointDataProvider") DataProvider<SapiScheduleEndpoint> dateScheduleProvider,
         @Named("TournamentScheduleProvider") DataProvider<Object> tournamentScheduleProvider,
-        DataProvider<SAPISportsEndpoint> sportsListProvider,
-        DataProvider<SAPIPlayerProfileEndpoint> playerProvider,
-        DataProvider<SAPICompetitorProfileEndpoint> competitorProvider,
-        DataProvider<SAPISimpleTeamProfileEndpoint> simpleTeamProvider,
-        DataProvider<SAPITournamentSeasons> tournamentSeasonsDataProvider,
-        DataProvider<SAPIMatchTimelineEndpoint> matchTimelineEndpointDataProvider,
-        DataProvider<SAPISportCategoriesEndpoint> sportCategoriesEndpointDataProvider,
-        DataProvider<SAPIDrawSummary> drawSummaryDataProvider,
-        DataProvider<SAPIDrawFixtures> drawFixtureDataProvider,
-        DataProvider<SAPILotteries> lotteriesListProvider,
-        DataProvider<SAPILotterySchedule> lotteryScheduleProvider,
-        DataProvider<CAPIAvailableSelections> availableSelectionsTypeDataProvider,
-        DataProvider<CAPICalculationResponse> calculateProbabilityDataProvider,
-        DataProvider<CAPIFilteredCalculationResponse> calculateProbabilityFilterDataProvider,
-        DataProvider<SAPIFixtureChangesEndpoint> fixtureChangesDataProvider,
-        DataProvider<SAPIResultChangesEndpoint> resultChangesDataProvider,
-        @Named("ListSportEventsDataProvider") DataProvider<SAPIScheduleEndpoint> listSportEventsProvider,
-        DataProvider<SAPISportTournamentsEndpoint> availableSportTournamentsProvider,
-        DataProvider<SAPIStagePeriodEndpoint> periodSummaryDataProvider
+        DataProvider<SapiSportsEndpoint> sportsListProvider,
+        DataProvider<SapiPlayerProfileEndpoint> playerProvider,
+        DataProvider<SapiCompetitorProfileEndpoint> competitorProvider,
+        DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeamProvider,
+        DataProvider<SapiTournamentSeasons> tournamentSeasonsDataProvider,
+        DataProvider<SapiMatchTimelineEndpoint> matchTimelineEndpointDataProvider,
+        DataProvider<SapiSportCategoriesEndpoint> sportCategoriesEndpointDataProvider,
+        DataProvider<SapiDrawSummary> drawSummaryDataProvider,
+        DataProvider<SapiDrawFixtures> drawFixtureDataProvider,
+        DataProvider<SapiLotteries> lotteriesListProvider,
+        DataProvider<SapiLotterySchedule> lotteryScheduleProvider,
+        DataProvider<CapiAvailableSelections> availableSelectionsTypeDataProvider,
+        DataProvider<CapiCalculationResponse> calculateProbabilityDataProvider,
+        DataProvider<CapiFilteredCalculationResponse> calculateProbabilityFilterDataProvider,
+        DataProvider<SapiFixtureChangesEndpoint> fixtureChangesDataProvider,
+        DataProvider<SapiResultChangesEndpoint> resultChangesDataProvider,
+        @Named("ListSportEventsDataProvider") DataProvider<SapiScheduleEndpoint> listSportEventsProvider,
+        DataProvider<SapiSportTournamentsEndpoint> availableSportTournamentsProvider,
+        DataProvider<SapiStagePeriodEndpoint> periodSummaryDataProvider
     ) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerManager);
@@ -384,13 +384,13 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.isFeedClosed = false;
     }
 
-    public void addOddsFeedExtListener(OddsFeedExtListener oddsFeedExtListener) {
-        Preconditions.checkNotNull(oddsFeedExtListener);
-        this.oddsFeedExtListener = oddsFeedExtListener;
+    public void addUofExtListener(UofExtListener uofExtListener) {
+        Preconditions.checkNotNull(uofExtListener);
+        this.uofExtListener = uofExtListener;
     }
 
     @Override
-    public void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestSummaryEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
@@ -415,14 +415,14 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester)
+    public void requestFixtureEndpoint(Locale locale, Urn id, boolean useCachedProvider, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPIFixturesEndpoint endpoint;
+        SapiFixturesEndpoint endpoint;
         try {
-            DataProvider<SAPIFixturesEndpoint> provider = useCachedProvider
+            DataProvider<SapiFixturesEndpoint> provider = useCachedProvider
                 ? fixtureProvider
                 : fixtureChangeFixtureProvider;
             endpoint = provider.getData(locale, id.toString());
@@ -465,17 +465,17 @@ public class DataRouterManagerImpl implements DataRouterManager {
             : fixtureChangeFixtureProvider.getFinalUrl(locale, id.toString());
         dispatchReceivedRawApiData(finalUrl, endpoint);
 
-        SAPIFixture fixture = endpoint.getFixture();
-        URN fixtureId = URN.parse(fixture.getId());
+        SapiFixture fixture = endpoint.getFixture();
+        Urn fixtureId = Urn.parse(fixture.getId());
         dataRouter.onFixtureFetched(fixtureId, fixture, locale, requester);
     }
 
     @Override
-    public void requestDrawSummary(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+    public void requestDrawSummary(Locale locale, Urn id, CacheItem requester) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPIDrawSummary endpoint;
+        SapiDrawSummary endpoint;
         try {
             endpoint = drawSummaryDataProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -491,16 +491,16 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dispatchReceivedRawApiData(drawSummaryDataProvider.getFinalUrl(locale, id.toString()), endpoint);
 
-        URN drawId = URN.parse(endpoint.getDrawFixture().getId());
+        Urn drawId = Urn.parse(endpoint.getDrawFixture().getId());
         dataRouter.onDrawSummaryFetched(drawId, endpoint, locale, requester);
     }
 
     @Override
-    public void requestDrawFixture(Locale locale, URN id, CacheItem requester) throws CommunicationException {
+    public void requestDrawFixture(Locale locale, Urn id, CacheItem requester) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPIDrawFixtures endpoint;
+        SapiDrawFixtures endpoint;
         try {
             endpoint = drawFixtureDataProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -516,9 +516,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dispatchReceivedRawApiData(drawFixtureDataProvider.getFinalUrl(locale, id.toString()), endpoint);
 
-        SAPIDrawFixture drawFixture = endpoint.getDrawFixture();
+        SapiDrawFixture drawFixture = endpoint.getDrawFixture();
         if (drawFixture != null) {
-            URN drawId = URN.parse(drawFixture.getId());
+            Urn drawId = Urn.parse(drawFixture.getId());
             dataRouter.onDrawFixtureFetched(drawId, drawFixture, locale, requester);
         } else {
             logger.warn(
@@ -543,7 +543,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 return;
             }
 
-            SAPITournamentsEndpoint endpoint;
+            SapiTournamentsEndpoint endpoint;
             try {
                 endpoint = tournamentsListProvider.getData(locale);
             } catch (DataProviderException e) {
@@ -579,7 +579,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 return;
             }
 
-            SAPISportsEndpoint endpoint;
+            SapiSportsEndpoint endpoint;
             try {
                 endpoint = sportsListProvider.getData(locale);
             } catch (DataProviderException e) {
@@ -604,7 +604,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult)
+    public List<Urn> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
 
@@ -623,7 +623,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 return Collections.emptyList();
             }
 
-            SAPILotteries endpoint;
+            SapiLotteries endpoint;
             try {
                 endpoint = lotteriesListProvider.getData(locale);
             } catch (DataProviderException e) {
@@ -643,10 +643,10 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
             lotteriesListDataFetched.add(locale);
 
-            List<URN> lotteryIds = endpoint
+            List<Urn> lotteryIds = endpoint
                 .getLottery()
                 .stream()
-                .map(e -> URN.parse(e.getId()))
+                .map(e -> Urn.parse(e.getId()))
                 .collect(Collectors.toList());
             return lotteryIds;
         } finally {
@@ -655,7 +655,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestEventsFor(Locale locale, URN tournamentId) throws CommunicationException {
+    public List<Urn> requestEventsFor(Locale locale, Urn tournamentId) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(tournamentId);
 
@@ -684,15 +684,15 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dataRouter.onTournamentScheduleFetched(endpoint, locale);
 
-        if (endpoint instanceof SAPITournamentSchedule) {
+        if (endpoint instanceof SapiTournamentSchedule) {
             return extractEventIds(
-                ((SAPITournamentSchedule) endpoint).getSportEvents()
+                ((SapiTournamentSchedule) endpoint).getSportEvents()
                     .stream()
                     .flatMap(seWrapper -> seWrapper.getSportEvent().stream())
                     .collect(Collectors.toList())
             );
-        } else if (endpoint instanceof SAPIRaceScheduleEndpoint) {
-            SAPIRaceScheduleEndpoint raceSchedule = (SAPIRaceScheduleEndpoint) endpoint;
+        } else if (endpoint instanceof SapiRaceScheduleEndpoint) {
+            SapiRaceScheduleEndpoint raceSchedule = (SapiRaceScheduleEndpoint) endpoint;
             if (
                 raceSchedule.getSportEvents() != null && raceSchedule.getSportEvents().getSportEvent() != null
             ) {
@@ -700,7 +700,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                     .getSportEvents()
                     .getSportEvent()
                     .stream()
-                    .map(e -> URN.parse(e.getId()))
+                    .map(e -> Urn.parse(e.getId()))
                     .collect(Collectors.toList());
             }
         }
@@ -709,12 +709,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestLotterySchedule(Locale locale, URN lotteryId, CacheItem requester)
+    public List<Urn> requestLotterySchedule(Locale locale, Urn lotteryId, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(lotteryId);
 
-        SAPILotterySchedule endpoint;
+        SapiLotterySchedule endpoint;
         try {
             endpoint = lotteryScheduleProvider.getData(locale, lotteryId.toString());
         } catch (DataProviderException e) {
@@ -744,7 +744,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 .getDrawEvents()
                 .getDrawEvent()
                 .stream()
-                .map(draw -> URN.parse(draw.getId()))
+                .map(draw -> Urn.parse(draw.getId()))
                 .collect(Collectors.toList());
         }
 
@@ -752,10 +752,10 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestEventsFor(Locale locale, Date date) throws CommunicationException {
+    public List<Urn> requestEventsFor(Locale locale, Date date) throws CommunicationException {
         Preconditions.checkNotNull(locale);
 
-        SAPIScheduleEndpoint endpoint;
+        SapiScheduleEndpoint endpoint;
         String formattedDate = "live";
         try {
             if (date != null) {
@@ -787,12 +787,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public void requestPlayerProfileEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestPlayerProfileEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPIPlayerProfileEndpoint endpoint;
+        SapiPlayerProfileEndpoint endpoint;
         try {
             endpoint = playerProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -808,18 +808,18 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dispatchReceivedRawApiData(playerProvider.getFinalUrl(locale, id.toString()), endpoint);
 
-        SAPIPlayerExtended player = endpoint.getPlayer();
-        URN playerId = URN.parse(player.getId());
+        SapiPlayerExtended player = endpoint.getPlayer();
+        Urn playerId = Urn.parse(player.getId());
         dataRouter.onPlayerFetched(playerId, player, locale, requester, null);
     }
 
     @Override
-    public void requestCompetitorEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestCompetitorEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPICompetitorProfileEndpoint endpoint;
+        SapiCompetitorProfileEndpoint endpoint;
         try {
             endpoint = competitorProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -835,18 +835,18 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dispatchReceivedRawApiData(competitorProvider.getFinalUrl(locale, id.toString()), endpoint);
 
-        SAPITeamExtended competitor = endpoint.getCompetitor();
-        URN competitorId = URN.parse(competitor.getId());
+        SapiTeamExtended competitor = endpoint.getCompetitor();
+        Urn competitorId = Urn.parse(competitor.getId());
         dataRouter.onCompetitorFetched(competitorId, endpoint, locale, requester);
     }
 
     @Override
-    public void requestSimpleTeamEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestSimpleTeamEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPISimpleTeamProfileEndpoint endpoint;
+        SapiSimpleTeamProfileEndpoint endpoint;
         try {
             endpoint = simpleTeamProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -862,8 +862,8 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dispatchReceivedRawApiData(simpleTeamProvider.getFinalUrl(locale, id.toString()), endpoint);
 
-        SAPITeam competitor = endpoint.getCompetitor();
-        URN competitorId = URN.parse(competitor.getId());
+        SapiTeam competitor = endpoint.getCompetitor();
+        Urn competitorId = Urn.parse(competitor.getId());
         dataRouter.onSimpleTeamFetched(competitorId, endpoint, locale, requester);
         if (!competitorId.equals(id)) {
             dataRouter.onSimpleTeamFetched(id, endpoint, locale, requester);
@@ -871,11 +871,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestSeasonsFor(Locale locale, URN tournamentId) throws CommunicationException {
+    public List<Urn> requestSeasonsFor(Locale locale, Urn tournamentId) throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(tournamentId);
 
-        SAPITournamentSeasons endpoint;
+        SapiTournamentSeasons endpoint;
         try {
             endpoint = tournamentSeasonsDataProvider.getData(locale, tournamentId.toString());
         } catch (DataProviderException e) {
@@ -905,7 +905,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 .getSeasons()
                 .getSeason()
                 .stream()
-                .map(s -> URN.parse(s.getId()))
+                .map(s -> Urn.parse(s.getId()))
                 .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
@@ -913,12 +913,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester)
+    public SapiMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPIMatchTimelineEndpoint endpoint;
+        SapiMatchTimelineEndpoint endpoint;
         try {
             endpoint = matchTimelineEndpointDataProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -943,12 +943,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestSportCategoriesEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
-        SAPISportCategoriesEndpoint endpoint;
+        SapiSportCategoriesEndpoint endpoint;
         try {
             endpoint = sportCategoriesEndpointDataProvider.getData(locale, id.toString());
         } catch (DataProviderException e) {
@@ -971,10 +971,10 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public AvailableSelections requestAvailableSelections(URN id) throws CommunicationException {
+    public AvailableSelections requestAvailableSelections(Urn id) throws CommunicationException {
         Preconditions.checkNotNull(id);
 
-        CAPIAvailableSelections availableSelections;
+        CapiAvailableSelections availableSelections;
         try {
             availableSelections = availableSelectionsTypeDataProvider.getData(id.toString());
         } catch (DataProviderException e) {
@@ -994,16 +994,16 @@ public class DataRouterManagerImpl implements DataRouterManager {
     public Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException {
         Preconditions.checkNotNull(selections);
 
-        CAPICalculationResponse calculation;
+        CapiCalculationResponse calculation;
         try {
-            CAPISelections content = new CAPISelections();
+            CapiSelections content = new CapiSelections();
             content
                 .getSelections()
                 .addAll(
                     selections
                         .stream()
                         .map(s -> {
-                            CAPISelectionType selection = new CAPISelectionType();
+                            CapiSelectionType selection = new CapiSelectionType();
                             selection.setId(s.getEventId().toString());
                             selection.setMarketId(s.getMarketId());
                             selection.setSpecifiers(s.getSpecifiers());
@@ -1032,17 +1032,17 @@ public class DataRouterManagerImpl implements DataRouterManager {
         throws CommunicationException {
         Preconditions.checkNotNull(selections);
 
-        CAPIFilteredCalculationResponse calculation;
+        CapiFilteredCalculationResponse calculation;
         try {
-            CAPIFilterSelections content = new CAPIFilterSelections();
+            CapiFilterSelections content = new CapiFilterSelections();
 
             for (Selection selection : selections) {
-                CAPIFilterSelectionMarketType filterSelectionMarketType = new CAPIFilterSelectionMarketType();
+                CapiFilterSelectionMarketType filterSelectionMarketType = new CapiFilterSelectionMarketType();
                 filterSelectionMarketType.setMarketId(selection.getMarketId());
                 filterSelectionMarketType.setOutcomeId(selection.getOutcomeId());
                 filterSelectionMarketType.setSpecifiers(selection.getSpecifiers());
 
-                CAPIFilterSelectionType filterSelectionType = new CAPIFilterSelectionType();
+                CapiFilterSelectionType filterSelectionType = new CapiFilterSelectionType();
                 filterSelectionType.setId(selection.getEventId().toString());
                 filterSelectionType.getMarkets().add(filterSelectionMarketType);
                 content.getSelections().add(filterSelectionType);
@@ -1063,7 +1063,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale)
+    public List<FixtureChange> requestFixtureChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         try {
@@ -1087,7 +1087,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<ResultChange> requestResultChanges(Date after, URN sportId, Locale locale)
+    public List<ResultChange> requestResultChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         try {
@@ -1111,11 +1111,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestListSportEvents(Locale locale, int startIndex, int limit)
+    public List<Urn> requestListSportEvents(Locale locale, int startIndex, int limit)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
 
-        SAPIScheduleEndpoint endpoint;
+        SapiScheduleEndpoint endpoint;
         try {
             endpoint =
                 listSportEventsProvider.getData(locale, String.valueOf(startIndex), String.valueOf(limit));
@@ -1149,12 +1149,12 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId)
+    public List<Urn> requestAvailableTournamentsFor(Locale locale, Urn sportId)
         throws CommunicationException {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(sportId);
 
-        SAPISportTournamentsEndpoint endpoint;
+        SapiSportTournamentsEndpoint endpoint;
         try {
             endpoint = availableSportTournamentsProvider.getData(locale, sportId.toString());
         } catch (DataProviderException e) {
@@ -1184,7 +1184,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 .getTournaments()
                 .getTournament()
                 .stream()
-                .map(s -> URN.parse(s.getId()))
+                .map(s -> Urn.parse(s.getId()))
                 .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
@@ -1193,9 +1193,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
     @Override
     public List<PeriodStatus> requestPeriodSummary(
-        URN id,
+        Urn id,
         Locale locale,
-        List<URN> competitorIds,
+        List<Urn> competitorIds,
         List<Integer> periods
     ) throws CommunicationException {
         Preconditions.checkNotNull(id);
@@ -1207,7 +1207,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         List<PeriodStatus> results = new ArrayList<>();
         try {
             String query = getPeriodSummaryQueryString(competitorIds, periods);
-            SAPIStagePeriodEndpoint response = periodSummaryDataProvider.getData(
+            SapiStagePeriodEndpoint response = periodSummaryDataProvider.getData(
                 locale,
                 id.toString(),
                 query
@@ -1243,7 +1243,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.isFeedClosed = true;
     }
 
-    private String getPeriodSummaryQueryString(List<URN> competitorIds, List<Integer> periods) {
+    private String getPeriodSummaryQueryString(List<Urn> competitorIds, List<Integer> periods) {
         //host/v1/sports/en/sport_events/sr:stage:{id}/period_summary.xml?competitors=sr:competitor:{id}&competitors=sr:competitor:{id}&periods=2&periods=3&periods=4
         String query = "";
         String compQuery = "";
@@ -1267,7 +1267,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         return query;
     }
 
-    private String getChangesQueryString(Date after, URN sportId) {
+    private String getChangesQueryString(Date after, Urn sportId) {
         ArrayList<NameValuePair> params = new ArrayList<>();
         if (after != null) {
             ZonedDateTime zonedAfter = ZonedDateTime.ofInstant(after.toInstant(), ZoneId.of("UTC"));
@@ -1281,19 +1281,15 @@ public class DataRouterManagerImpl implements DataRouterManager {
         if (sportId != null) {
             params.add(new BasicNameValuePair("sportId", sportId.toString()));
         }
-        String query = URLEncodedUtils.format(params, StandardCharsets.UTF_8);
-        if (!query.isEmpty()) {
-            query = "?" + query;
-        }
-        return query;
+        return new URIBuilder().addParameters(params).setCharset(StandardCharsets.UTF_8).toString();
     }
 
-    private List<URN> extractEventIds(List<SAPISportEvent> sportEvents) {
+    private List<Urn> extractEventIds(List<SapiSportEvent> sportEvents) {
         if (sportEvents == null || sportEvents.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return sportEvents.stream().map(se -> URN.parse(se.getId())).collect(Collectors.toList());
+        return sportEvents.stream().map(se -> Urn.parse(se.getId())).collect(Collectors.toList());
     }
 
     /**
@@ -1400,7 +1396,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     private void dispatchReceivedRawApiData(String uri, Object restMessage) {
-        if (oddsFeedExtListener == null) {
+        if (uofExtListener == null) {
             return;
         }
 
@@ -1412,7 +1408,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
-            oddsFeedExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
+            uofExtListener.onRawApiDataReceived(URI.create(uri), restMessage);
             stopwatch.stop();
             String msg = String.format(
                 "Dispatching raw api message for %s took %s ms.",

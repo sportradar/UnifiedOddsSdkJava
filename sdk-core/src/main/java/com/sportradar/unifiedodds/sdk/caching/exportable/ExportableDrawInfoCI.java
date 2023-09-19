@@ -4,14 +4,14 @@ import com.sportradar.unifiedodds.sdk.entities.DrawType;
 import com.sportradar.unifiedodds.sdk.entities.TimeType;
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableDrawInfoCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableDrawInfoCi implements Serializable {
 
     private DrawType drawType;
     private TimeType timeType;
     private String gameType;
 
-    public ExportableDrawInfoCI(DrawType drawType, TimeType timeType, String gameType) {
+    public ExportableDrawInfoCi(DrawType drawType, TimeType timeType, String gameType) {
         this.drawType = drawType;
         this.timeType = timeType;
         this.gameType = gameType;

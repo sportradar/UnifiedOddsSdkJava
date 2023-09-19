@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -22,66 +22,66 @@ import java.util.Locale;
  * Created on 26/10/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "OverloadMethodsDeclarationOrder" })
+@SuppressWarnings({ "OverloadMethodsDeclarationOrder" })
 public interface DataRouterManager {
-    void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    void requestSummaryEndpoint(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
-    void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester)
+    void requestFixtureEndpoint(Locale locale, Urn id, boolean useCachedProvider, CacheItem requester)
         throws CommunicationException;
 
-    void requestDrawSummary(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    void requestDrawSummary(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
-    void requestDrawFixture(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    void requestDrawFixture(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
     void requestAllTournamentsForAllSportsEndpoint(Locale locale) throws CommunicationException;
 
     void requestAllSportsEndpoint(Locale locale) throws CommunicationException;
 
-    List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult) throws CommunicationException;
+    List<Urn> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult) throws CommunicationException;
 
-    List<URN> requestEventsFor(Locale locale, URN tournamentId) throws CommunicationException;
+    List<Urn> requestEventsFor(Locale locale, Urn tournamentId) throws CommunicationException;
 
-    List<URN> requestLotterySchedule(Locale locale, URN lotteryId, CacheItem requester)
+    List<Urn> requestLotterySchedule(Locale locale, Urn lotteryId, CacheItem requester)
         throws CommunicationException;
 
-    List<URN> requestEventsFor(Locale locale, Date date) throws CommunicationException;
+    List<Urn> requestEventsFor(Locale locale, Date date) throws CommunicationException;
 
-    void requestPlayerProfileEndpoint(Locale locale, URN id, CacheItem requester)
+    void requestPlayerProfileEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException;
 
-    void requestCompetitorEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    void requestCompetitorEndpoint(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
-    void requestSimpleTeamEndpoint(Locale locale, URN id, CacheItem requester) throws CommunicationException;
+    void requestSimpleTeamEndpoint(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
-    List<URN> requestSeasonsFor(Locale locale, URN tournamentID) throws CommunicationException;
+    List<Urn> requestSeasonsFor(Locale locale, Urn tournamentId) throws CommunicationException;
 
-    SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester)
+    SapiMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException;
 
-    void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester)
+    void requestSportCategoriesEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException;
 
-    AvailableSelections requestAvailableSelections(URN id) throws CommunicationException;
+    AvailableSelections requestAvailableSelections(Urn id) throws CommunicationException;
 
     Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException;
 
     CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
         throws CommunicationException;
 
-    List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale)
+    List<FixtureChange> requestFixtureChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException;
 
-    List<ResultChange> requestResultChanges(Date after, URN sportId, Locale locale)
+    List<ResultChange> requestResultChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException;
 
-    List<URN> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException;
+    List<Urn> requestListSportEvents(Locale locale, int startIndex, int limit) throws CommunicationException;
 
-    List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId) throws CommunicationException;
+    List<Urn> requestAvailableTournamentsFor(Locale locale, Urn sportId) throws CommunicationException;
 
     List<PeriodStatus> requestPeriodSummary(
-        URN id,
+        Urn id,
         Locale locale,
-        List<URN> competitorIds,
+        List<Urn> competitorIds,
         List<Integer> periods
     ) throws CommunicationException;
 

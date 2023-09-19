@@ -6,17 +6,17 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.util.*;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableLotteryCI extends ExportableSportEventCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableLotteryCi extends ExportableSportEventCi {
 
     private Locale defaultLocale;
     private String categoryId;
-    private ExportableBonusInfoCI bonusInfo;
-    private ExportableDrawInfoCI drawInfo;
+    private ExportableBonusInfoCi bonusInfo;
+    private ExportableDrawInfoCi drawInfo;
     private List<String> scheduledDraws;
     private Set<Locale> cachedLocales;
 
-    public ExportableLotteryCI(
+    public ExportableLotteryCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -25,8 +25,8 @@ public class ExportableLotteryCI extends ExportableSportEventCI {
         String replacedBy,
         Locale defaultLocale,
         String categoryId,
-        ExportableBonusInfoCI bonusInfo,
-        ExportableDrawInfoCI drawInfo,
+        ExportableBonusInfoCi bonusInfo,
+        ExportableDrawInfoCi drawInfo,
         List<String> scheduledDraws,
         Set<Locale> cachedLocales
     ) {
@@ -55,19 +55,19 @@ public class ExportableLotteryCI extends ExportableSportEventCI {
         this.categoryId = categoryId;
     }
 
-    public ExportableBonusInfoCI getBonusInfo() {
+    public ExportableBonusInfoCi getBonusInfo() {
         return bonusInfo;
     }
 
-    public void setBonusInfo(ExportableBonusInfoCI bonusInfo) {
+    public void setBonusInfo(ExportableBonusInfoCi bonusInfo) {
         this.bonusInfo = bonusInfo;
     }
 
-    public ExportableDrawInfoCI getDrawInfo() {
+    public ExportableDrawInfoCi getDrawInfo() {
         return drawInfo;
     }
 
-    public void setDrawInfo(ExportableDrawInfoCI drawInfo) {
+    public void setDrawInfo(ExportableDrawInfoCi drawInfo) {
         this.drawInfo = drawInfo;
     }
 

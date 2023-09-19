@@ -15,21 +15,21 @@ import com.google.common.collect.Maps;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCi;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.MatchCI;
+import com.sportradar.unifiedodds.sdk.caching.MatchCi;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableMatchCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableMatchCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
 import com.sportradar.unifiedodds.sdk.impl.entities.FixtureImpl;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassDataAbstractionCoupling",
         "ClassFanOutComplexity",
         "ConstantName",
@@ -56,9 +55,9 @@ import org.slf4j.LoggerFactory;
         "ReturnCount",
     }
 )
-class MatchCIImpl implements MatchCI, ExportableCacheItem {
+class MatchCiImpl implements MatchCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(MatchCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MatchCiImpl.class);
 
     /**
      * A {@link Locale} specifying the default language
@@ -66,9 +65,9 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private final Locale defaultLocale;
 
     /**
-     * An {@link URN} specifying the id of the associated sport event
+     * An {@link Urn} specifying the id of the associated sport event
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * A {@link Fixture} instance associated with the current instance
@@ -96,66 +95,66 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * A {@link List} of competitor identifiers that participate in the sport event
      * associated with the current instance
      */
-    private List<URN> competitorIds;
+    private List<Urn> competitorIds;
 
     /**
      * A map of available competitor qualifiers
      */
-    private Map<URN, String> competitorQualifiers;
+    private Map<Urn, String> competitorQualifiers;
 
     /**
      * A map of available competitor qualifiers
      */
-    private Map<URN, Integer> competitorDivisions;
+    private Map<Urn, Integer> competitorDivisions;
 
     /**
      * A {@link List} of competitor identifiers which are marked as virtual in the sport event
      */
-    private List<URN> competitorVirtual;
+    private List<Urn> competitorVirtual;
 
     /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
-    private Map<URN, ReferenceIdCI> competitorsReferences;
+    private Map<Urn, ReferenceIdCi> competitorsReferences;
 
     /**
-     * The {@link URN} specifying the id of the tournament to which the sport event belongs to
+     * The {@link Urn} specifying the id of the tournament to which the sport event belongs to
      */
-    private URN tournamentId;
+    private Urn tournamentId;
 
     /**
-     * A {@link LoadableRoundCI} instance describing the tournament round to which the
+     * A {@link LoadableRoundCi} instance describing the tournament round to which the
      * sport event associated with current instance belongs to
      */
-    private LoadableRoundCI tournamentRound;
+    private LoadableRoundCi tournamentRound;
 
     /**
-     * A {@link SeasonCI} instance providing basic information about
+     * A {@link SeasonCi} instance providing basic information about
      * the season to which the sport event associated with the current instance belongs to
      */
-    private SeasonCI season;
+    private SeasonCi season;
 
     /**
-     * A {@link VenueCI} instance representing a venue where the sport event associated with the
+     * A {@link VenueCi} instance representing a venue where the sport event associated with the
      * current instance will take place
      */
-    private VenueCI venue;
+    private VenueCi venue;
 
     /**
-     * A {@link DelayedInfoCI} instance describing possible information about a delay
+     * A {@link DelayedInfoCi} instance describing possible information about a delay
      */
-    private DelayedInfoCI delayedInfo;
+    private DelayedInfoCi delayedInfo;
 
     /**
-     * A {@link CoverageInfoCI} instance
+     * A {@link CoverageInfoCi} instance
      */
-    private CoverageInfoCI coverageInfo;
+    private CoverageInfoCi coverageInfo;
 
     /**
-     * A {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * A {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      */
-    private SportEventConditionsCI conditions;
+    private SportEventConditionsCi conditions;
 
     /**
      * The liveOdds
@@ -195,7 +194,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     /**
      * A {@link Map} associated translated event time lines
      */
-    private final Map<Locale, EventTimelineCI> eventTimelines = Maps.newConcurrentMap();
+    private final Map<Locale, EventTimelineCi> eventTimelines = Maps.newConcurrentMap();
 
     /**
      * A {@link ReentrantLock} used to synchronize summary request operations
@@ -225,7 +224,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     /**
      * The {@link Cache} used to cache the sport events fixture timestamps
      */
-    private final Cache<URN, Date> fixtureTimestampCache;
+    private final Cache<Urn, Date> fixtureTimestampCache;
 
     /**
      * The {@link Boolean} indicating if the start time to be determined is set
@@ -233,16 +232,16 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     private Boolean startTimeTbd;
 
     /**
-     * The {@link URN} indicating the replacement sport event
+     * The {@link Urn} indicating the replacement sport event
      */
-    private URN replacedBy;
+    private Urn replacedBy;
 
-    MatchCIImpl(
-        URN id,
+    MatchCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -258,14 +257,14 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.fixtureTimestampCache = fixtureTimestampCache;
     }
 
-    MatchCIImpl(
-        URN id,
+    MatchCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPISportEvent data,
+        SapiSportEvent data,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
         Preconditions.checkNotNull(data);
@@ -274,14 +273,14 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         constructWithSportEventData(data, dataLocale, false);
     }
 
-    MatchCIImpl(
-        URN id,
+    MatchCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIFixture data,
+        SapiFixture data,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
         Preconditions.checkNotNull(data);
@@ -290,22 +289,22 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         constructWithSportEventData(data, dataLocale, true);
 
         this.delayedInfo =
-            data.getDelayedInfo() == null ? null : new DelayedInfoCI(data.getDelayedInfo(), dataLocale);
+            data.getDelayedInfo() == null ? null : new DelayedInfoCi(data.getDelayedInfo(), dataLocale);
         this.coverageInfo =
-            data.getCoverageInfo() == null ? null : new CoverageInfoCI(data.getCoverageInfo());
+            data.getCoverageInfo() == null ? null : new CoverageInfoCi(data.getCoverageInfo());
         this.fixture = new FixtureImpl(data);
 
         loadedFixtureLocales.add(dataLocale);
     }
 
-    MatchCIImpl(
-        URN id,
+    MatchCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPIMatchSummaryEndpoint data,
+        SapiMatchSummaryEndpoint data,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy, fixtureTimestampCache);
         Preconditions.checkNotNull(data);
@@ -316,22 +315,22 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.conditions =
             data.getSportEventConditions() == null
                 ? null
-                : new SportEventConditionsCI(data.getSportEventConditions(), dataLocale);
+                : new SportEventConditionsCi(data.getSportEventConditions(), dataLocale);
 
         this.coverageInfo =
-            data.getCoverageInfo() == null ? null : new CoverageInfoCI(data.getCoverageInfo());
+            data.getCoverageInfo() == null ? null : new CoverageInfoCi(data.getCoverageInfo());
 
         loadedSummaryLocales.add(dataLocale);
     }
 
-    MatchCIImpl(
-        URN id,
+    MatchCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPISportEventChildren.SAPISportEvent endpointData,
+        SapiSportEventChildren.SapiSportEvent endpointData,
         Locale dataLocale,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(dataRouterManager);
@@ -353,7 +352,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         scheduledEnd =
             endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         startTimeTbd = endpointData.isStartTimeTbd();
-        replacedBy = endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
+        replacedBy = endpointData.getReplacedBy() == null ? null : Urn.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
@@ -368,11 +367,11 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.sportEventType = SportEventType.mapFromApiValue(endpointData.getType());
     }
 
-    MatchCIImpl(
-        ExportableMatchCI exportable,
+    MatchCiImpl(
+        ExportableMatchCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        Cache<URN, Date> fixtureTimestampCache
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(exportable);
         Preconditions.checkNotNull(dataRouterManager);
@@ -383,23 +382,23 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.fixtureTimestampCache = fixtureTimestampCache;
 
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.sportEventNames.putAll(exportable.getNames());
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
         this.startTimeTbd = exportable.getStartTimeTbd();
-        this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
+        this.replacedBy = exportable.getReplacedBy() != null ? Urn.parse(exportable.getReplacedBy()) : null;
         this.bookingStatus = exportable.getBookingStatus();
         this.competitorIds =
             exportable.getCompetitorIds() != null
                 ? ImmutableList.copyOf(
-                    exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())
+                    exportable.getCompetitorIds().stream().map(Urn::parse).collect(Collectors.toList())
                 )
                 : null;
-        this.venue = exportable.getVenue() != null ? new VenueCI(exportable.getVenue()) : null;
+        this.venue = exportable.getVenue() != null ? new VenueCi(exportable.getVenue()) : null;
         this.conditions =
             exportable.getConditions() != null
-                ? new SportEventConditionsCI(exportable.getConditions())
+                ? new SportEventConditionsCi(exportable.getConditions())
                 : null;
         this.competitorsReferences =
             exportable.getCompetitorsReferences() != null
@@ -409,7 +408,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                         .entrySet()
                         .stream()
                         .collect(
-                            Collectors.toMap(e -> URN.parse(e.getKey()), e -> new ReferenceIdCI(e.getValue()))
+                            Collectors.toMap(e -> Urn.parse(e.getKey()), e -> new ReferenceIdCi(e.getValue()))
                         )
                 )
                 : null;
@@ -421,7 +420,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                     .getCompetitorQualifiers()
                     .entrySet()
                     .stream()
-                    .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue))
+                    .collect(Collectors.toMap(c -> Urn.parse(c.getKey()), Map.Entry::getValue))
                 : null;
         this.competitorDivisions =
             exportable.getCompetitorDivisions() != null
@@ -429,28 +428,28 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                     .getCompetitorDivisions()
                     .entrySet()
                     .stream()
-                    .collect(Collectors.toMap(c -> URN.parse(c.getKey()), Map.Entry::getValue))
+                    .collect(Collectors.toMap(c -> Urn.parse(c.getKey()), Map.Entry::getValue))
                 : null;
         this.competitorVirtual =
             exportable.getCompetitorVirtual() != null
-                ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getCompetitorVirtual().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.tournamentId =
-            exportable.getTournamentId() != null ? URN.parse(exportable.getTournamentId()) : null;
+            exportable.getTournamentId() != null ? Urn.parse(exportable.getTournamentId()) : null;
         this.tournamentRound =
             exportable.getTournamentRound() != null
-                ? new LoadableRoundCIImpl(
+                ? new LoadableRoundCiImpl(
                     this,
                     exportable.getTournamentRound(),
                     dataRouterManager,
                     exceptionHandlingStrategy
                 )
                 : null;
-        this.season = exportable.getSeason() != null ? new SeasonCI(exportable.getSeason()) : null;
+        this.season = exportable.getSeason() != null ? new SeasonCi(exportable.getSeason()) : null;
         this.delayedInfo =
-            exportable.getDelayedInfo() != null ? new DelayedInfoCI(exportable.getDelayedInfo()) : null;
+            exportable.getDelayedInfo() != null ? new DelayedInfoCi(exportable.getDelayedInfo()) : null;
         this.coverageInfo =
-            exportable.getCoverageInfo() != null ? new CoverageInfoCI(exportable.getCoverageInfo()) : null;
+            exportable.getCoverageInfo() != null ? new CoverageInfoCi(exportable.getCoverageInfo()) : null;
         this.loadedFixtureLocales.addAll(exportable.getLoadedFixtureLocales());
         this.loadedSummaryLocales.addAll(exportable.getLoadedSummaryLocales());
         this.loadedCompetitorLocales.addAll(exportable.getLoadedCompetitorLocales());
@@ -459,19 +458,19 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                     .getEventTimelines()
                     .entrySet()
                     .stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new EventTimelineCI(e.getValue())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new EventTimelineCi(e.getValue())))
             );
         this.liveOdds = exportable.getLiveOdds();
         this.stageType = exportable.getStageType();
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -509,12 +508,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the id of the tournament to which the sport event belongs to
+     * Returns the {@link Urn} specifying the id of the tournament to which the sport event belongs to
      *
-     * @return the {@link URN} specifying the id of the tournament to which the sport event belongs to
+     * @return the {@link Urn} specifying the id of the tournament to which the sport event belongs to
      */
     @Override
-    public URN getTournamentId() {
+    public Urn getTournamentId() {
         if (tournamentId != null) {
             return tournamentId;
         }
@@ -529,31 +528,31 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link RoundCI} instance describing the tournament round to which the
+     * Returns a {@link RoundCi} instance describing the tournament round to which the
      * sport event associated with current instance belongs to
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link RoundCI} instance describing the tournament round
+     * @return a {@link RoundCi} instance describing the tournament round
      */
     @Override
-    public RoundCI getTournamentRound(List<Locale> locales) {
+    public RoundCi getTournamentRound(List<Locale> locales) {
         if (tournamentRound == null) {
             tournamentRound =
-                new LoadableRoundCIImpl(this, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+                new LoadableRoundCiImpl(this, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         }
 
         return tournamentRound;
     }
 
     /**
-     * Returns a {@link SeasonCI} instance providing basic information about
+     * Returns a {@link SeasonCi} instance providing basic information about
      * the season to which the sport event associated with the current instance belongs to
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return  {@link SeasonCI} instance providing basic information about the associated season
+     * @return  {@link SeasonCi} instance providing basic information about the associated season
      */
     @Override
-    public SeasonCI getSeason(List<Locale> locales) {
+    public SeasonCi getSeason(List<Locale> locales) {
         if (season != null && season.hasTranslationsFor(locales)) {
             return season;
         }
@@ -614,7 +613,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * associated with the current instance
      */
     @Override
-    public List<URN> getCompetitorIds(List<Locale> locales) {
+    public List<Urn> getCompetitorIds(List<Locale> locales) {
         if (loadedCompetitorLocales.containsAll(locales)) {
             return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
         }
@@ -625,14 +624,14 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link VenueCI} instance representing a venue where the sport event associated with the
+     * Returns a {@link VenueCi} instance representing a venue where the sport event associated with the
      * current instance will take place
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link VenueCI} instance representing a venue where the associated sport event
+     * @return a {@link VenueCi} instance representing a venue where the associated sport event
      */
     @Override
-    public VenueCI getVenue(List<Locale> locales) {
+    public VenueCi getVenue(List<Locale> locales) {
         if (venue != null && venue.hasTranslationsFor(locales)) {
             return venue;
         }
@@ -647,13 +646,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link DelayedInfoCI} instance describing possible information about a delay
+     * Returns a {@link DelayedInfoCi} instance describing possible information about a delay
      *
      * @param locales the {@link Locale}s in which the data should be provided
-     * @return a {@link DelayedInfoCI} instance describing information about a possible delay
+     * @return a {@link DelayedInfoCi} instance describing information about a possible delay
      */
     @Override
-    public DelayedInfoCI getDelayedInfo(List<Locale> locales) {
+    public DelayedInfoCi getDelayedInfo(List<Locale> locales) {
         if (delayedInfo != null && delayedInfo.hasTranslationsFor(locales)) {
             return delayedInfo;
         }
@@ -673,7 +672,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @return a {@link CoverageInfo} instance
      */
     @Override
-    public CoverageInfoCI getCoverageInfo(List<Locale> locales) {
+    public CoverageInfoCi getCoverageInfo(List<Locale> locales) {
         if (coverageInfo != null) {
             return coverageInfo;
         }
@@ -688,13 +687,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * Returns a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * @return a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      */
     @Override
-    public SportEventConditionsCI getConditions(List<Locale> locales) {
+    public SportEventConditionsCi getConditions(List<Locale> locales) {
         // conditions available only on summary locales
         if (loadedSummaryLocales.containsAll(locales)) {
             return conditions;
@@ -706,7 +705,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Fetch a {@link SportEventStatusDTO} via event summary
+     * Fetch a {@link SportEventStatusDto} via event summary
      */
     @Override
     public void fetchSportEventStatus() {
@@ -802,12 +801,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         if (replacedBy != null) {
             return replacedBy;
         }
@@ -830,22 +829,22 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @return the associated event timeline
      */
     @Override
-    public EventTimelineCI getEventTimeline(Locale locale, boolean makeApiCall) {
+    public EventTimelineCi getEventTimeline(Locale locale, boolean makeApiCall) {
         Preconditions.checkNotNull(locale);
 
-        EventTimelineCI eventTimelineCI = eventTimelines.get(locale);
+        EventTimelineCi eventTimelineCi = eventTimelines.get(locale);
         if (!makeApiCall) {
-            return eventTimelineCI;
+            return eventTimelineCi;
         }
-        if (eventTimelineCI != null && eventTimelineCI.isFinalized()) {
-            return eventTimelineCI;
+        if (eventTimelineCi != null && eventTimelineCi.isFinalized()) {
+            return eventTimelineCi;
         }
 
         timelineRequest.lock();
         try {
-            eventTimelineCI = eventTimelines.get(locale);
-            if (eventTimelineCI != null && eventTimelineCI.isFinalized()) {
-                return eventTimelineCI;
+            eventTimelineCi = eventTimelines.get(locale);
+            if (eventTimelineCi != null && eventTimelineCi.isFinalized()) {
+                return eventTimelineCi;
             }
 
             // reset the timeline if it is not finalized & than try to fetch
@@ -863,12 +862,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
+     * Returns list of {@link Urn} of {@link CompetitorCi} and associated {@link ReferenceIdCi} for this sport event
      *
-     * @return list of {@link URN} of {@link CompetitorCI} and associated {@link ReferenceIdCI} for this sport event
+     * @return list of {@link Urn} of {@link CompetitorCi} and associated {@link ReferenceIdCi} for this sport event
      */
     @Override
-    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+    public Map<Urn, ReferenceIdCi> getCompetitorsReferences() {
         if (loadedCompetitorLocales.isEmpty()) {
             requestMissingFixtureData(Collections.singletonList(defaultLocale));
         }
@@ -877,12 +876,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link CompetitorCI} and associated qualifier for this sport event
+     * Returns list of {@link Urn} of {@link CompetitorCi} and associated qualifier for this sport event
      *
-     * @return list of {@link URN} of {@link CompetitorCI} and associated qualifier for this sport event
+     * @return list of {@link Urn} of {@link CompetitorCi} and associated qualifier for this sport event
      */
     @Override
-    public Map<URN, String> getCompetitorsQualifiers() {
+    public Map<Urn, String> getCompetitorsQualifiers() {
         if (competitorQualifiers != null && !competitorQualifiers.isEmpty()) {
             return copyOf(competitorQualifiers);
         }
@@ -895,12 +894,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     * Returns list of {@link Urn} of {@link CompetitorCi} and associated division for this sport event
      *
-     * @return list of {@link URN} of {@link CompetitorCI} and associated division for this sport event
+     * @return list of {@link Urn} of {@link CompetitorCi} and associated division for this sport event
      */
     @Override
-    public Map<URN, Integer> getCompetitorsDivisions() {
+    public Map<Urn, Integer> getCompetitorsDivisions() {
         if (competitorDivisions != null && !competitorDivisions.isEmpty()) {
             return copyOf(competitorDivisions);
         }
@@ -913,12 +912,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link CompetitorCI} which are marked as virtual for this sport event
+     * Returns list of {@link Urn} of {@link CompetitorCi} which are marked as virtual for this sport event
      *
-     * @return list of {@link URN} of {@link CompetitorCI} which are marked as virtual for this sport event
+     * @return list of {@link Urn} of {@link CompetitorCi} which are marked as virtual for this sport event
      */
     @Override
-    public List<URN> getCompetitorsVirtual() {
+    public List<Urn> getCompetitorsVirtual() {
         if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
             return competitorVirtual;
         }
@@ -962,16 +961,16 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (endpointData instanceof SAPIFixture) {
-            internalMerge((SAPIFixture) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPISportEvent) {
-            internalMerge((SAPISportEvent) endpointData, dataLocale, false);
-        } else if (endpointData instanceof SAPIMatchSummaryEndpoint) {
-            internalMerge((SAPIMatchSummaryEndpoint) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPISportEventChildren.SAPISportEvent) {
-            internalMerge((SAPISportEventChildren.SAPISportEvent) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPIMatchTimelineEndpoint) {
-            internalMerge((SAPIMatchTimelineEndpoint) endpointData, dataLocale);
+        if (endpointData instanceof SapiFixture) {
+            internalMerge((SapiFixture) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiSportEvent) {
+            internalMerge((SapiSportEvent) endpointData, dataLocale, false);
+        } else if (endpointData instanceof SapiMatchSummaryEndpoint) {
+            internalMerge((SapiMatchSummaryEndpoint) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiSportEventChildren.SapiSportEvent) {
+            internalMerge((SapiSportEventChildren.SapiSportEvent) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiMatchTimelineEndpoint) {
+            internalMerge((SapiMatchTimelineEndpoint) endpointData, dataLocale);
         }
     }
 
@@ -985,13 +984,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
     /**
      * Constructs the current instance with all the basic sport event information
-     * using the provided {@link SAPISportEvent}
+     * using the provided {@link SapiSportEvent}
      *
-     * @param sportEvent a {@link SAPISportEvent} which contains basic sport event data
+     * @param sportEvent a {@link SapiSportEvent} which contains basic sport event data
      * @param currentLocale the {@link Locale} in which the data is provided
      */
     private void constructWithSportEventData(
-        SAPISportEvent sportEvent,
+        SapiSportEvent sportEvent,
         Locale currentLocale,
         boolean isFixtureEndpoint
     ) {
@@ -1003,11 +1002,11 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         this.scheduledEnd =
             sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.tournamentId =
-            sportEvent.getTournament() == null ? null : URN.parse(sportEvent.getTournament().getId());
+            sportEvent.getTournament() == null ? null : Urn.parse(sportEvent.getTournament().getId());
         this.tournamentRound =
             sportEvent.getTournamentRound() == null
                 ? null
-                : new LoadableRoundCIImpl(
+                : new LoadableRoundCiImpl(
                     sportEvent.getTournamentRound(),
                     isFixtureEndpoint,
                     currentLocale,
@@ -1017,14 +1016,14 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                     exceptionHandlingStrategy
                 );
         this.season =
-            sportEvent.getSeason() == null ? null : new SeasonCI(sportEvent.getSeason(), currentLocale);
-        this.venue = sportEvent.getVenue() == null ? null : new VenueCI(sportEvent.getVenue(), currentLocale);
+            sportEvent.getSeason() == null ? null : new SeasonCi(sportEvent.getSeason(), currentLocale);
+        this.venue = sportEvent.getVenue() == null ? null : new VenueCi(sportEvent.getVenue(), currentLocale);
         cacheCompetitors(
             sportEvent.getCompetitors() == null ? null : sportEvent.getCompetitors().getCompetitor(),
             currentLocale
         );
         this.startTimeTbd = sportEvent.isStartTimeTbd();
-        this.replacedBy = sportEvent.getReplacedBy() == null ? null : URN.parse(sportEvent.getReplacedBy());
+        this.replacedBy = sportEvent.getReplacedBy() == null ? null : Urn.parse(sportEvent.getReplacedBy());
         if (sportEvent.getLiveodds() != null) {
             this.liveOdds = sportEvent.getLiveodds();
         }
@@ -1126,12 +1125,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the {@link SAPIFixture}
+     * Merges the current instance with the {@link SapiFixture}
      *
-     * @param fixtureData the {@link SAPIFixture} containing the data to be merged
+     * @param fixtureData the {@link SapiFixture} containing the data to be merged
      * @param locale the {@link Locale} in which the data is provided
      */
-    private void internalMerge(SAPIFixture fixtureData, Locale locale) {
+    private void internalMerge(SapiFixture fixtureData, Locale locale) {
         Preconditions.checkNotNull(fixtureData);
         Preconditions.checkNotNull(locale);
 
@@ -1143,13 +1142,13 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
         if (fixtureData.getDelayedInfo() != null) {
             if (delayedInfo == null) {
-                delayedInfo = new DelayedInfoCI(fixtureData.getDelayedInfo(), locale);
+                delayedInfo = new DelayedInfoCi(fixtureData.getDelayedInfo(), locale);
             } else {
                 delayedInfo.merge(fixtureData.getDelayedInfo(), locale);
             }
         }
         if (fixtureData.getCoverageInfo() != null) {
-            coverageInfo = new CoverageInfoCI(fixtureData.getCoverageInfo());
+            coverageInfo = new CoverageInfoCi(fixtureData.getCoverageInfo());
         }
 
         fixture = new FixtureImpl(fixtureData);
@@ -1158,12 +1157,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the {@link SAPIMatchSummaryEndpoint}
+     * Merges the current instance with the {@link SapiMatchSummaryEndpoint}
      *
-     * @param summaryEndpoint the {@link SAPIMatchSummaryEndpoint} containing the data to be merged
+     * @param summaryEndpoint the {@link SapiMatchSummaryEndpoint} containing the data to be merged
      * @param locale the {@link Locale} in which the data is provided
      */
-    private void internalMerge(SAPIMatchSummaryEndpoint summaryEndpoint, Locale locale) {
+    private void internalMerge(SapiMatchSummaryEndpoint summaryEndpoint, Locale locale) {
         Preconditions.checkNotNull(summaryEndpoint);
         Preconditions.checkNotNull(locale);
 
@@ -1175,25 +1174,25 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
         if (summaryEndpoint.getSportEventConditions() != null) {
             if (conditions == null) {
-                conditions = new SportEventConditionsCI(summaryEndpoint.getSportEventConditions(), locale);
+                conditions = new SportEventConditionsCi(summaryEndpoint.getSportEventConditions(), locale);
             } else {
                 conditions.merge(summaryEndpoint.getSportEventConditions(), locale);
             }
         }
         if (summaryEndpoint.getCoverageInfo() != null) {
-            coverageInfo = new CoverageInfoCI(summaryEndpoint.getCoverageInfo());
+            coverageInfo = new CoverageInfoCi(summaryEndpoint.getCoverageInfo());
         }
 
         loadedSummaryLocales.add(locale);
     }
 
     /**
-     * Merges the current instance with the {@link SAPIMatchTimelineEndpoint}
+     * Merges the current instance with the {@link SapiMatchTimelineEndpoint}
      *
-     * @param endpointData the {@link SAPIMatchTimelineEndpoint} containing the data to be merged
+     * @param endpointData the {@link SapiMatchTimelineEndpoint} containing the data to be merged
      * @param dataLocale the {@link Locale} in which the data is provided
      */
-    private void internalMerge(SAPIMatchTimelineEndpoint endpointData, Locale dataLocale) {
+    private void internalMerge(SapiMatchTimelineEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -1201,7 +1200,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
         if (endpointData.getSportEventConditions() != null) {
             if (conditions == null) {
-                conditions = new SportEventConditionsCI(endpointData.getSportEventConditions(), dataLocale);
+                conditions = new SportEventConditionsCi(endpointData.getSportEventConditions(), dataLocale);
             } else {
                 conditions.merge(endpointData.getSportEventConditions(), dataLocale);
             }
@@ -1210,23 +1209,23 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         if (endpointData.getTimeline() != null) {
             eventTimelines.put(
                 dataLocale,
-                new EventTimelineCI(endpointData.getTimeline(), dataLocale, isTimelineFinalized(endpointData))
+                new EventTimelineCi(endpointData.getTimeline(), dataLocale, isTimelineFinalized(endpointData))
             );
         }
 
         if (endpointData.getCoverageInfo() != null) {
-            coverageInfo = new CoverageInfoCI(endpointData.getCoverageInfo());
+            coverageInfo = new CoverageInfoCi(endpointData.getCoverageInfo());
         }
     }
 
     /**
-     * Merges the current instance with the {@link SAPISportEvent}
+     * Merges the current instance with the {@link SapiSportEvent}
      *
-     * @param sportEvent the {@link SAPISportEvent} containing the data to be merged
+     * @param sportEvent the {@link SapiSportEvent} containing the data to be merged
      * @param locale the {@link Locale} in which the data is provided
      */
     @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
-    private void internalMerge(SAPISportEvent sportEvent, Locale locale, boolean isFixtureEndpoint) {
+    private void internalMerge(SapiSportEvent sportEvent, Locale locale, boolean isFixtureEndpoint) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(locale);
 
@@ -1240,10 +1239,10 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         scheduledEnd =
             sportEvent.getScheduledEnd() == null ? null : SdkHelper.toDate(sportEvent.getScheduledEnd());
         this.startTimeTbd = sportEvent.isStartTimeTbd();
-        this.replacedBy = sportEvent.getReplacedBy() == null ? null : URN.parse(sportEvent.getReplacedBy());
+        this.replacedBy = sportEvent.getReplacedBy() == null ? null : Urn.parse(sportEvent.getReplacedBy());
 
         if (sportEvent.getTournament() != null) {
-            tournamentId = URN.parse(sportEvent.getTournament().getId());
+            tournamentId = Urn.parse(sportEvent.getTournament().getId());
         }
 
         if (sportEvent.getCompetitors() != null && sportEvent.getCompetitors().getCompetitor() != null) {
@@ -1253,7 +1252,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
         if (sportEvent.getTournamentRound() != null) {
             if (tournamentRound == null) {
                 tournamentRound =
-                    new LoadableRoundCIImpl(
+                    new LoadableRoundCiImpl(
                         sportEvent.getTournamentRound(),
                         isFixtureEndpoint,
                         locale,
@@ -1269,7 +1268,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
         if (sportEvent.getSeason() != null) {
             if (season == null) {
-                season = new SeasonCI(sportEvent.getSeason(), locale);
+                season = new SeasonCi(sportEvent.getSeason(), locale);
             } else {
                 season.merge(sportEvent.getSeason(), locale);
             }
@@ -1277,7 +1276,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
 
         if (sportEvent.getVenue() != null) {
             if (venue == null) {
-                venue = new VenueCI(sportEvent.getVenue(), locale);
+                venue = new VenueCi(sportEvent.getVenue(), locale);
             } else {
                 venue.merge(sportEvent.getVenue(), locale);
             }
@@ -1297,12 +1296,12 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Merges the current instance with the {@link SAPISportEventChildren.SAPISportEvent}
+     * Merges the current instance with the {@link SapiSportEventChildren.SapiSportEvent}
      *
      * @param endpointData the data to be merged
      * @param dataLocale the locale in which the data is provided
      */
-    private void internalMerge(SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale) {
+    private void internalMerge(SapiSportEventChildren.SapiSportEvent endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -1312,7 +1311,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             endpointData.getScheduledEnd() == null ? null : SdkHelper.toDate(endpointData.getScheduledEnd());
         this.startTimeTbd = endpointData.isStartTimeTbd();
         this.replacedBy =
-            endpointData.getReplacedBy() == null ? null : URN.parse(endpointData.getReplacedBy());
+            endpointData.getReplacedBy() == null ? null : Urn.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(dataLocale, endpointData.getName());
@@ -1329,27 +1328,27 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     /**
-     * Enriches the current instance with the provided {@link List} of {@link SAPITeamCompetitor}
+     * Enriches the current instance with the provided {@link List} of {@link SapiTeamCompetitor}
      *
      * The competitors data should always be over-written(not merged!) because the competitor list could change over time
      *
-     * @param competitors a {@link List} of {@link SAPITeamCompetitor} which should be added to the instance
+     * @param competitors a {@link List} of {@link SapiTeamCompetitor} which should be added to the instance
      * @param locale the {@link Locale} in which the data is provided
      */
-    private void cacheCompetitors(List<SAPITeamCompetitor> competitors, Locale locale) {
+    private void cacheCompetitors(List<SapiTeamCompetitor> competitors, Locale locale) {
         Preconditions.checkNotNull(locale);
 
         if (competitors == null) {
             return;
         }
 
-        List<URN> competitorIdsLocal = new ArrayList<>(competitors.size());
-        Map<URN, String> competitorQualifiersLocal = new HashMap<>(competitors.size());
-        Map<URN, Integer> competitorDivisionsLocal = new HashMap<>(competitors.size());
-        List<URN> competitorVirtualLocal = new ArrayList<>();
+        List<Urn> competitorIdsLocal = new ArrayList<>(competitors.size());
+        Map<Urn, String> competitorQualifiersLocal = new HashMap<>(competitors.size());
+        Map<Urn, Integer> competitorDivisionsLocal = new HashMap<>(competitors.size());
+        List<Urn> competitorVirtualLocal = new ArrayList<>();
 
         competitors.forEach(inputC -> {
-            URN parsedId = URN.parse(inputC.getId());
+            Urn parsedId = Urn.parse(inputC.getId());
             competitorIdsLocal.add(parsedId);
 
             if (inputC.getQualifier() != null) {
@@ -1380,7 +1379,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @param locale the locale in which the data is provided
      * @param competitors the list of match competitors
      */
-    private void constructEventName(Locale locale, SAPISportEventCompetitors competitors) {
+    private void constructEventName(Locale locale, SapiSportEventCompetitors competitors) {
         Preconditions.checkNotNull(locale);
 
         if (competitors != null && competitors.getCompetitor().size() == 2) {
@@ -1406,7 +1405,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
      * @param endpointData the endpoint data which should be validated
      * @return <code>true</code> if the timeline is finalized, otherwise <code>false</code>
      */
-    private static boolean isTimelineFinalized(SAPIMatchTimelineEndpoint endpointData) {
+    private static boolean isTimelineFinalized(SapiMatchTimelineEndpoint endpointData) {
         Preconditions.checkNotNull(endpointData);
 
         if (
@@ -1439,8 +1438,8 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableMatchCI(
+    public ExportableCi export() {
+        return new ExportableMatchCi(
             id.toString(),
             new HashMap<>(sportEventNames),
             scheduled,
@@ -1449,7 +1448,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             replacedBy != null ? replacedBy.toString() : null,
             bookingStatus,
             competitorIds != null
-                ? competitorIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? competitorIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             venue != null ? venue.export() : null,
             conditions != null ? conditions.export() : null,
@@ -1476,7 +1475,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
                     .collect(Collectors.toMap(c -> c.getKey().toString(), Map.Entry::getValue))
                 : null,
             tournamentId != null ? tournamentId.toString() : null,
-            tournamentRound != null ? ((LoadableRoundCIImpl) tournamentRound).export() : null,
+            tournamentRound != null ? ((LoadableRoundCiImpl) tournamentRound).export() : null,
             season != null ? season.export() : null,
             delayedInfo != null ? delayedInfo.export() : null,
             coverageInfo != null ? coverageInfo.export() : null,
@@ -1492,7 +1491,7 @@ class MatchCIImpl implements MatchCI, ExportableCacheItem {
             stageType,
             competitorVirtual == null
                 ? null
-                : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
+                : competitorVirtual.stream().map(Urn::toString).collect(Collectors.toList())
         );
     }
 }

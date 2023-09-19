@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.SportSummary;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -17,9 +17,9 @@ import java.util.Map;
 public class SportSummaryImpl implements SportSummary {
 
     /**
-     * An {@link URN} uniquely identifying the sport represented by the current instance
+     * An {@link Urn} uniquely identifying the sport represented by the current instance
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An unmodifiable {@link Map} containing translated sport names
@@ -29,10 +29,10 @@ public class SportSummaryImpl implements SportSummary {
     /**
      * Initializes a new instance of {@link SportImpl}
      *
-     * @param id - an {@link URN} uniquely identifying the sport represented by the current instance
+     * @param id - an {@link Urn} uniquely identifying the sport represented by the current instance
      * @param names - a {@link Map} containing translated sport names
      */
-    SportSummaryImpl(URN id, Map<Locale, String> names) {
+    SportSummaryImpl(Urn id, Map<Locale, String> names) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(names);
         Preconditions.checkArgument(!names.isEmpty());
@@ -42,12 +42,12 @@ public class SportSummaryImpl implements SportSummary {
     }
 
     /**
-     * Returns an {@link URN} uniquely identifying the sport represented by the current instance
+     * Returns an {@link Urn} uniquely identifying the sport represented by the current instance
      *
-     * @return - an {@link URN} uniquely identifying the sport represented by the current instance
+     * @return - an {@link Urn} uniquely identifying the sport represented by the current instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,11 +15,11 @@ import java.util.Map;
 @SuppressWarnings({ "LineLength" })
 public interface CacheItem {
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the {@link Map} containing translated names of the item
@@ -37,5 +37,5 @@ public interface CacheItem {
      */
     boolean hasTranslationsLoadedFor(List<Locale> localeList);
 
-    default <T> void merge(T endpointData, Locale dataLocale) {}
+    <T> void merge(T endpointData, Locale dataLocale);
 }

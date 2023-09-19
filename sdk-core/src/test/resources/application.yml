@@ -4,24 +4,26 @@ sportradar:
     uf:
       accessToken: test-token-yaml
       nodeId: 46
-      maxInactivitySeconds: 25
+      inactivitySeconds: 25
+      inactivitySecondsPrematch: 35
       maxRecoveryTime: 60
       minIntervalBetweenRecoveryRequests: 35
-      defaultLocale: it
-      desiredLocales:
+      defaultLanguage: it
+      desiredLanguages:
         - fr
         - de
         - en
+      environment: GlobalIntegration
       messaging:
         host: test-msg-host
         port: 7777
         username: msg-uname
         password: msg-pass
         virtualHost: msg-vhost
-      useMessagingSsl: true
+      messagingUseSsl: true
       apiHost: api-host
       apiPort: 80
-      useApiSsl: true
+      apiUseSsl: true
       disabledProducers:
         - 5
         - 6

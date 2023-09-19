@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableCompleteRoundCI implements Serializable {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableCompleteRoundCi implements Serializable {
 
     private Map<Locale, String> names;
     private Map<Locale, String> groupNames;
@@ -23,7 +23,7 @@ public class ExportableCompleteRoundCI implements Serializable {
     private String betradarName;
     private List<Locale> cachedLocales;
 
-    public ExportableCompleteRoundCI(
+    public ExportableCompleteRoundCi(
         Map<Locale, String> names,
         Map<Locale, String> groupNames,
         Map<Locale, String> phaseOrGroupLongNames,

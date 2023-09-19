@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableCompetitorCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableCompetitorCi extends ExportableCi {
 
     private Locale defaultLocale;
     private Map<Locale, String> countryNames;
@@ -18,19 +18,19 @@ public class ExportableCompetitorCI extends ExportableCI {
     private String countryCode;
     private Map<String, String> referenceId;
     private List<String> associatedPlayerIds;
-    private List<ExportableJerseyCI> jerseys;
-    private ExportableManagerCI manager;
-    private ExportableVenueCI venue;
+    private List<ExportableJerseyCi> jerseys;
+    private ExportableManagerCi manager;
+    private ExportableVenueCi venue;
     private String gender;
     private String ageGroup;
-    private ExportableRaceDriverProfileCI raceDriverProfile;
+    private ExportableRaceDriverProfileCi raceDriverProfile;
     private List<Locale> cachedLocales;
     private String state;
     private String sportId;
     private String categoryId;
     private String shortName;
 
-    public ExportableCompetitorCI(
+    public ExportableCompetitorCi(
         String id,
         Map<Locale, String> names,
         Locale defaultLocale,
@@ -40,12 +40,12 @@ public class ExportableCompetitorCI extends ExportableCI {
         String countryCode,
         Map<String, String> referenceId,
         List<String> associatedPlayerIds,
-        List<ExportableJerseyCI> jerseys,
-        ExportableManagerCI manager,
-        ExportableVenueCI venue,
+        List<ExportableJerseyCi> jerseys,
+        ExportableManagerCi manager,
+        ExportableVenueCi venue,
         String gender,
         String ageGroup,
-        ExportableRaceDriverProfileCI raceDriverProfile,
+        ExportableRaceDriverProfileCi raceDriverProfile,
         List<Locale> cachedLocales,
         String state,
         String sportId,
@@ -129,27 +129,27 @@ public class ExportableCompetitorCI extends ExportableCI {
         this.associatedPlayerIds = associatedPlayerIds;
     }
 
-    public List<ExportableJerseyCI> getJerseys() {
+    public List<ExportableJerseyCi> getJerseys() {
         return jerseys;
     }
 
-    public void setJerseys(List<ExportableJerseyCI> jerseys) {
+    public void setJerseys(List<ExportableJerseyCi> jerseys) {
         this.jerseys = jerseys;
     }
 
-    public ExportableManagerCI getManager() {
+    public ExportableManagerCi getManager() {
         return manager;
     }
 
-    public void setManager(ExportableManagerCI manager) {
+    public void setManager(ExportableManagerCi manager) {
         this.manager = manager;
     }
 
-    public ExportableVenueCI getVenue() {
+    public ExportableVenueCi getVenue() {
         return venue;
     }
 
-    public void setVenue(ExportableVenueCI venue) {
+    public void setVenue(ExportableVenueCi venue) {
         this.venue = venue;
     }
 
@@ -169,11 +169,11 @@ public class ExportableCompetitorCI extends ExportableCI {
         this.ageGroup = ageGroup;
     }
 
-    public ExportableRaceDriverProfileCI getRaceDriverProfile() {
+    public ExportableRaceDriverProfileCi getRaceDriverProfile() {
         return raceDriverProfile;
     }
 
-    public void setRaceDriverProfile(ExportableRaceDriverProfileCI raceDriverProfile) {
+    public void setRaceDriverProfile(ExportableRaceDriverProfileCi raceDriverProfile) {
         this.raceDriverProfile = raceDriverProfile;
     }
 

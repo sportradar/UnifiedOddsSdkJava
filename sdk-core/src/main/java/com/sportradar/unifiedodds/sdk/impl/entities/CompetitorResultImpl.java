@@ -1,7 +1,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodStatus;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStageResult;
+import com.sportradar.uf.sportsapi.datamodel.SapiPeriodStatus;
+import com.sportradar.uf.sportsapi.datamodel.SapiStageResult;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 
 @SuppressWarnings({ "UnnecessaryParentheses" })
@@ -11,13 +11,13 @@ public class CompetitorResultImpl implements CompetitorResult {
     private final String value;
     private final String specifiers;
 
-    public CompetitorResultImpl(SAPIStageResult.SAPICompetitor.SAPIResult result) {
+    public CompetitorResultImpl(SapiStageResult.SapiCompetitor.SapiResult result) {
         this.type = result.getType();
         this.value = result.getValue();
         this.specifiers = result.getSpecifiers();
     }
 
-    public CompetitorResultImpl(SAPIPeriodStatus.SAPICompetitor.SAPIResult result) {
+    public CompetitorResultImpl(SapiPeriodStatus.SapiCompetitor.SapiResult result) {
         this.type = result.getType();
         this.value = result.getValue();
         this.specifiers = result.getSpecifiers();

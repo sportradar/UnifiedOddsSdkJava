@@ -22,7 +22,7 @@ public class AmqpConnectionFactoryStubsTest {
     @Test
     public void shouldBeAbleToProvideConnection()
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        AMQPConnectionFactory factory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory factory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             createTimestamp,
             connection
         );
@@ -35,7 +35,7 @@ public class AmqpConnectionFactoryStubsTest {
 
     @Test
     public void shouldClose() throws IOException {
-        AMQPConnectionFactory factory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
+        AmqpConnectionFactory factory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
             createTimestamp,
             connection
         );

@@ -7,16 +7,16 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchRound;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchRound;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableLoadableRoundCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableLoadableRoundCi;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ConstantName",
         "CyclomaticComplexity",
         "ExecutableStatementCount",
@@ -40,9 +39,9 @@ import org.slf4j.LoggerFactory;
         "UnnecessaryParentheses",
     }
 )
-public class LoadableRoundCIImpl implements LoadableRoundCI {
+public class LoadableRoundCiImpl implements LoadableRoundCi {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoadableRoundCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoadableRoundCiImpl.class);
 
     /**
      * A {@link Map} containing round names in different languages
@@ -67,12 +66,12 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     /**
      * The associated event cache item
      */
-    private final CacheItem associatedEventCI;
+    private final CacheItem associatedEventCi;
 
     /**
      * The associated event identifier - used to initiate {@link DataRouterManager} requests
      */
-    private final URN associatedEventId;
+    private final Urn associatedEventId;
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -97,7 +96,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     /**
      * The id of the group associated with the current round
      */
-    private URN groupId;
+    private Urn groupId;
 
     /**
      * The id of the other match
@@ -154,53 +153,53 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
      */
     private final ReentrantLock fixtureRequest = new ReentrantLock();
 
-    public LoadableRoundCIImpl(
-        CacheItem associatedEventCI,
+    public LoadableRoundCiImpl(
+        CacheItem associatedEventCi,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
-        Preconditions.checkNotNull(associatedEventCI);
+        Preconditions.checkNotNull(associatedEventCi);
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
-        this.associatedEventCI = associatedEventCI;
-        this.associatedEventId = associatedEventCI.getId();
+        this.associatedEventCi = associatedEventCi;
+        this.associatedEventId = associatedEventCi.getId();
         this.dataRouterManager = dataRouterManager;
         this.defaultLocale = defaultLocale;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    public LoadableRoundCIImpl(
-        SAPIMatchRound roundData,
+    public LoadableRoundCiImpl(
+        SapiMatchRound roundData,
         boolean isFixtureEndpoint,
         Locale dataLocale,
-        CacheItem associatedEventCI,
+        CacheItem associatedEventCi,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
-        this(associatedEventCI, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+        this(associatedEventCi, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         Preconditions.checkNotNull(roundData);
         Preconditions.checkNotNull(dataLocale);
 
         merge(roundData, dataLocale, isFixtureEndpoint);
     }
 
-    public LoadableRoundCIImpl(
-        CacheItem associatedEventCI,
-        ExportableLoadableRoundCI exportable,
+    public LoadableRoundCiImpl(
+        CacheItem associatedEventCi,
+        ExportableLoadableRoundCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
-        this(associatedEventCI, dataRouterManager, exportable.getDefaultLocale(), exceptionHandlingStrategy);
+        this(associatedEventCi, dataRouterManager, exportable.getDefaultLocale(), exceptionHandlingStrategy);
         this.names.putAll(exportable.getNames());
         this.groupNames.putAll(exportable.getGroupNames());
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
         this.type = exportable.getType();
         this.group = exportable.getGroup();
-        this.groupId = exportable.getGroupId() != null ? URN.parse(exportable.getGroupId()) : null;
+        this.groupId = exportable.getGroupId() != null ? Urn.parse(exportable.getGroupId()) : null;
         this.otherMatchId = exportable.getOtherMatchId();
         this.number = exportable.getNumber();
         this.cupRoundMatches = exportable.getCupRoundMatches();
@@ -250,7 +249,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
      * @return the id of the group associated with the current round
      */
     @Override
-    public URN getGroupId() {
+    public Urn getGroupId() {
         if (summaryLoadedCheck(groupId, defaultLocale)) {
             return groupId;
         }
@@ -427,14 +426,14 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
     }
 
     /**
-     * Merges the information from the provided {@link SAPIMatchRound} into the current instance
+     * Merges the information from the provided {@link SapiMatchRound} into the current instance
      *
-     * @param round             {@link SAPIMatchRound} containing information about the round
+     * @param round             {@link SapiMatchRound} containing information about the round
      * @param locale            {@link Locale} specifying the language of the provided data
      * @param isFixtureEndpoint an indication if the data provided was extracted from the fixture endpoint
      */
     @Override
-    public void merge(SAPIMatchRound round, Locale locale, boolean isFixtureEndpoint) {
+    public void merge(SapiMatchRound round, Locale locale, boolean isFixtureEndpoint) {
         Preconditions.checkNotNull(round);
         Preconditions.checkNotNull(locale);
 
@@ -447,7 +446,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         }
 
         if (!Strings.isNullOrEmpty(round.getGroupId())) {
-            groupId = URN.parse(round.getGroupId());
+            groupId = Urn.parse(round.getGroupId());
         }
 
         if (round.getOtherMatchId() != null) {
@@ -542,7 +541,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestSummaryEndpoint(l, associatedEventId, associatedEventCI);
+                    dataRouterManager.requestSummaryEndpoint(l, associatedEventId, associatedEventCi);
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }
@@ -594,7 +593,7 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
             ", defaultLocale=" +
             defaultLocale +
             ", associatedEventCI=" +
-            associatedEventCI +
+            associatedEventCi +
             ", associatedEventId=" +
             associatedEventId +
             ", exceptionHandlingStrategy=" +
@@ -637,8 +636,8 @@ public class LoadableRoundCIImpl implements LoadableRoundCI {
         );
     }
 
-    public ExportableLoadableRoundCI export() {
-        return new ExportableLoadableRoundCI(
+    public ExportableLoadableRoundCi export() {
+        return new ExportableLoadableRoundCi(
             new HashMap<>(names),
             new HashMap<>(groupNames),
             new HashMap<>(phaseOrGroupLongNames),

@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.EventPlayerCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.EventPlayerCi;
 import com.sportradar.unifiedodds.sdk.entities.EventPlayer;
 import com.sportradar.unifiedodds.sdk.entities.Player;
 import java.util.HashMap;
@@ -14,7 +14,6 @@ import java.util.Locale;
 /**
  * Represents a player or driver in a sport event
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class EventPlayerImpl extends PlayerImpl implements EventPlayer {
 
     /**
@@ -25,14 +24,14 @@ public class EventPlayerImpl extends PlayerImpl implements EventPlayer {
     /**
      * Initializes a new instance of the {@link EventPlayerImpl} class
      *
-     * @param eventPlayerCI - the {@link EventPlayerCI} instance
+     * @param eventPlayerCi - the {@link EventPlayerCi} instance
      */
-    EventPlayerImpl(EventPlayerCI eventPlayerCI, Locale dataLocale) {
-        super(eventPlayerCI.getId(), new HashMap<>());
-        Preconditions.checkNotNull(eventPlayerCI);
+    EventPlayerImpl(EventPlayerCi eventPlayerCi, Locale dataLocale) {
+        super(eventPlayerCi.getId(), new HashMap<>());
+        Preconditions.checkNotNull(eventPlayerCi);
 
-        super.names.put(dataLocale, eventPlayerCI.getName());
-        this.bench = eventPlayerCI.getBench();
+        super.names.put(dataLocale, eventPlayerCi.getName());
+        this.bench = eventPlayerCi.getBench();
     }
 
     /**

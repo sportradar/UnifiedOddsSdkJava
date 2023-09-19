@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.dto;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchPeriod;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchPeriod;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import java.util.List;
 import java.util.Map;
@@ -14,25 +14,24 @@ import java.util.stream.Collectors;
 /**
  * Period statistics data transfer object
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class PeriodStatisticsDTO {
+public class PeriodStatisticsDto {
 
     private final String periodName;
-    private final List<TeamStatisticsDTO> teamStatisticDTOS;
+    private final List<TeamStatisticsDto> teamStatisticDtoS;
 
-    PeriodStatisticsDTO(SAPIMatchPeriod p, Map<HomeAway, String> homeAwayMap) {
+    PeriodStatisticsDto(SapiMatchPeriod p, Map<HomeAway, String> homeAwayMap) {
         Preconditions.checkNotNull(p);
 
         periodName = p.getName();
 
-        teamStatisticDTOS =
+        teamStatisticDtoS =
             (p.getTeams() != null)
                 ? p
                     .getTeams()
                     .get(0)
                     .getTeam()
                     .stream()
-                    .map(t -> new TeamStatisticsDTO(t, homeAwayMap))
+                    .map(t -> new TeamStatisticsDto(t, homeAwayMap))
                     .collect(Collectors.toList())
                 : null;
     }
@@ -41,7 +40,7 @@ public class PeriodStatisticsDTO {
         return periodName;
     }
 
-    public List<TeamStatisticsDTO> getTeamStatisticDTOs() {
-        return teamStatisticDTOS;
+    public List<TeamStatisticsDto> getTeamStatisticDtos() {
+        return teamStatisticDtoS;
     }
 }

@@ -2,12 +2,12 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableTournamentCoverageCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableTournamentCoverageCi implements Serializable {
 
     private String liveCoverage;
 
-    public ExportableTournamentCoverageCI(String liveCoverage) {
+    public ExportableTournamentCoverageCi(String liveCoverage) {
         this.liveCoverage = liveCoverage;
     }
 

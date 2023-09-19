@@ -17,8 +17,5 @@ public interface SnapshotRequest {
 
     long getRecoveryFromTimestamp();
 
-    @Deprecated
-    long recoveryFromTimestamp();
-
     void approveRecovery();
 }

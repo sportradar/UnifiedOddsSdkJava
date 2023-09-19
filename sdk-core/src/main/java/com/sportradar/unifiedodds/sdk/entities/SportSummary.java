@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -13,11 +13,11 @@ import java.util.Map;
  */
 public interface SportSummary {
     /**
-     * Returns an {@link URN} uniquely identifying the sport represented by the current instance
+     * Returns an {@link Urn} uniquely identifying the sport represented by the current instance
      *
-     * @return - an {@link URN} uniquely identifying the sport represented by the current instance
+     * @return - an {@link Urn} uniquely identifying the sport represented by the current instance
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the name of the current {@link SportSummary} instance in the specified language

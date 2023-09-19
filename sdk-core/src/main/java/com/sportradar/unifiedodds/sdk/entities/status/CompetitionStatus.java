@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.entities.status;
 import com.sportradar.unifiedodds.sdk.entities.EventResult;
 import com.sportradar.unifiedodds.sdk.entities.EventStatus;
 import com.sportradar.unifiedodds.sdk.entities.ReportingStatus;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public interface CompetitionStatus {
      *
      * @return the sport event winner identifier, if available; otherwise null
      */
-    URN getWinnerId();
+    Urn getWinnerId();
 
     /**
      * Returns an {@link EventStatus} describing the high-level status of the associated sport event

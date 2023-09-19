@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFBetCancel;
+import com.sportradar.uf.datamodel.UfBetCancel;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetCancel;
@@ -35,7 +35,7 @@ class BetCancelImpl<T extends SportEvent> extends EventMessageImpl<T> implements
 
     BetCancelImpl(
         T sportEvent,
-        UFBetCancel message,
+        UfBetCancel message,
         Producer producer,
         byte[] rawMessage,
         MarketFactory factory,

@@ -46,22 +46,22 @@ public interface TokenSetter {
     /**
      * Sets the general configuration properties to values read from configuration file. Only value which can be set
      * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
-     * are overridden. Builds and returns a {@link OddsFeedConfiguration} instance
+     * are overridden. Builds and returns a {@link UofConfigurationImpl} instance
      *
      * The properties file should be named "UFSdkConfiguration.properties" and localed in the application resources folder
      *
-     * @return builds and returns a {@link OddsFeedConfiguration} instance
+     * @return builds and returns a {@link UofConfigurationImpl} instance
      */
-    OddsFeedConfiguration buildConfigFromSdkProperties();
+    UofConfiguration buildConfigFromSdkProperties();
 
     /**
      * Sets the general configuration properties to values read from configuration file. Only value which can be set
      * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
-     * are overridden. Builds and returns a {@link OddsFeedConfiguration} instance
+     * are overridden. Builds and returns a {@link UofConfigurationImpl} instance
      *
      * The YAML file should be named "application.yml" and localed in the application resources folder
      *
-     * @return builds and returns a {@link OddsFeedConfiguration} instance
+     * @return builds and returns a {@link UofConfigurationImpl} instance
      */
-    OddsFeedConfiguration buildConfigFromApplicationYml();
+    UofConfiguration buildConfigFromApplicationYml();
 }

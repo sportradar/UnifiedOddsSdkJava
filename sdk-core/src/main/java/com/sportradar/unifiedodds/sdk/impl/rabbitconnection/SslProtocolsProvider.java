@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.net.ssl.SSLContext;
-import lombok.val;
 
 public class SslProtocolsProvider {
 
     List<String> provideSupportedPrioritised() throws NoSuchAlgorithmException {
-        val sslProtocols = extractSslProtocolsFromContext();
+        final List<String> sslProtocols = extractSslProtocolsFromContext();
         if (containAtLeast2TlsOccurences(sslProtocols)) {
             prioritiseNewerTlsFirst(sslProtocols);
         } else {
@@ -49,11 +48,6 @@ public class SslProtocolsProvider {
     }
 
     private static List<String> getFirst2TlsOccurrences(List<String> sslProtocols) {
-        final val twoTlsProtocols = sslProtocols
-            .stream()
-            .filter(p -> p.startsWith("TLS"))
-            .limit(2)
-            .collect(Collectors.toList());
-        return twoTlsProtocols;
+        return sslProtocols.stream().filter(p -> p.startsWith("TLS")).limit(2).collect(Collectors.toList());
     }
 }

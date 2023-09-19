@@ -11,15 +11,15 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import org.junit.Test;
 
@@ -29,9 +29,9 @@ public class DataRouterManagerImplRequestingAvailableTournamentsTest {
     private static final Locale ANY_LANGUAGE = Locale.FRENCH;
     private final DataProvider tournaments = mock(DataProvider.class);
     private final DataRouterManager manager = new DataRouterManagerImpl(
-        mock(SDKInternalConfiguration.class),
-        mock(SDKTaskScheduler.class),
-        mock(SDKProducerManager.class),
+        mock(SdkInternalConfiguration.class),
+        mock(SdkTaskScheduler.class),
+        mock(SdkProducerManager.class),
         mock(DataRouter.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
@@ -64,7 +64,7 @@ public class DataRouterManagerImplRequestingAvailableTournamentsTest {
     public void providerFailureShouldResultInExceptionExplainingThat() throws DataProviderException {
         when(tournaments.getData(any(), any())).thenThrow(DataProviderException.class);
         Locale china = Locale.CHINA;
-        URN id = urnForAnyTournament();
+        Urn id = urnForAnyTournament();
 
         CommunicationException exception = catchThrowableOfType(
             () -> manager.requestAvailableTournamentsFor(china, id),

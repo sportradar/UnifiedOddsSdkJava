@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.rabbitmq.client.*;
-import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.io.IOException;
@@ -21,23 +21,23 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /**
- * A {@link AMQPConnectionFactory} implementation which creates only one connection instance. All
+ * A {@link AmqpConnectionFactory} implementation which creates only one connection instance. All
  * subsequent calls to {@code newConnection()} method return instance created by the first call.
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "HiddenField", "IllegalCatch" })
-public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactory {
+@SuppressWarnings({ "ClassFanOutComplexity", "HiddenField", "IllegalCatch" })
+public class SingleInstanceAmqpConnectionFactory implements AmqpConnectionFactory {
 
     /**
      * A {@link Logger} instance used for execution logging
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SingleInstanceAMQPConnectionFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SingleInstanceAmqpConnectionFactory.class);
 
     private String sslVersion;
 
     /**
-     * A {@link SDKInternalConfiguration} instance representing odds feed configuration
+     * A {@link SdkInternalConfiguration} instance representing odds feed configuration
      */
-    private final SDKInternalConfiguration config;
+    private final SdkInternalConfiguration config;
 
     /**
      * A {@link ConnectionFactory} instance used to create the {@link Connection} instance
@@ -45,10 +45,10 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private final ConfiguredConnectionFactory configuredConnectionFactory;
 
     /**
-     * A {@link SDKConnectionStatusListener} used to notify the outside world when the connection is
+     * A {@link SdkConnectionStatusListener} used to notify the outside world when the connection is
      * closed
      */
-    private final SDKConnectionStatusListener connectionStatusListener;
+    private final SdkConnectionStatusListener connectionStatusListener;
 
     /**
      * Instance used to fetch data about the client token
@@ -90,20 +90,20 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     private final SslProtocolsProvider sslProtocolsProvider;
 
     /**
-     * Initializes a new instance of the {@link SingleInstanceAMQPConnectionFactory} class
+     * Initializes a new instance of the {@link SingleInstanceAmqpConnectionFactory} class
      *
      * @param configuredConnectionFactory A {@link ConfiguredConnectionFactory} instance used to create the
      *        {@link Connection} instance
-     * @param config A {@link SDKInternalConfiguration} instance representing odds feed configuration
-     * @param connectionStatusListener A {@link SDKConnectionStatusListener} used to notify the
+     * @param config A {@link SdkInternalConfiguration} instance representing odds feed configuration
+     * @param connectionStatusListener A {@link SdkConnectionStatusListener} used to notify the
      *        outside world when the connection is closed
      */
     @Inject
     @SuppressWarnings("ParameterNumber")
-    public SingleInstanceAMQPConnectionFactory(
+    public SingleInstanceAmqpConnectionFactory(
         ConfiguredConnectionFactory configuredConnectionFactory,
-        SDKInternalConfiguration config,
-        SDKConnectionStatusListener connectionStatusListener,
+        SdkInternalConfiguration config,
+        SdkConnectionStatusListener connectionStatusListener,
         WhoAmIReader whoAmIReader,
         FirewallChecker firewallChecker,
         TimeUtils timeUtils,
@@ -130,13 +130,13 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
     }
 
     /**
-     * Creates and returns a {@link SDKConnection} instance
+     * Creates and returns a {@link SdkConnection} instance
      *
-     * @return the created {@link SDKConnection} instance
+     * @return the created {@link SdkConnection} instance
      */
-    private SDKConnection createSdkConnection()
+    private SdkConnection createSdkConnection()
         throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
-        firewallChecker.checkFirewall(config.getAPIHost());
+        firewallChecker.checkFirewall(config.getApiHost());
         LOGGER.info("Creating new SDKConnection for {}", config.getMessagingHost());
         Connection actualConnection = null;
         if (config.getUseMessagingSsl()) {
@@ -163,7 +163,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
         if (actualConnection == null) {
             return null;
         }
-        SDKConnection sdkConnection = new SDKConnection(actualConnection);
+        SdkConnection sdkConnection = new SdkConnection(actualConnection);
         sdkConnection.addShutdownListener(shutdownListener);
         sdkConnection.addBlockedListener(blockedListener);
         return sdkConnection;
@@ -194,7 +194,7 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
             }
             try {
                 if (this.connection == null) {
-                    SDKConnection sdkConnection = this.createSdkConnection();
+                    SdkConnection sdkConnection = this.createSdkConnection();
                     this.connection = sdkConnection;
                 }
             } catch (Exception exc) {
@@ -293,9 +293,9 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
     private static final class ShutdownListenerImpl implements ShutdownListener {
 
-        private final SingleInstanceAMQPConnectionFactory parent;
+        private final SingleInstanceAmqpConnectionFactory parent;
 
-        private ShutdownListenerImpl(final SingleInstanceAMQPConnectionFactory parent) {
+        private ShutdownListenerImpl(final SingleInstanceAmqpConnectionFactory parent) {
             this.parent = parent;
         }
 
@@ -307,9 +307,9 @@ public class SingleInstanceAMQPConnectionFactory implements AMQPConnectionFactor
 
     private static final class BlockedListenerImpl implements BlockedListener {
 
-        private final SingleInstanceAMQPConnectionFactory parent;
+        private final SingleInstanceAmqpConnectionFactory parent;
 
-        private BlockedListenerImpl(final SingleInstanceAMQPConnectionFactory parent) {
+        private BlockedListenerImpl(final SingleInstanceAmqpConnectionFactory parent) {
             this.parent = parent;
         }
 

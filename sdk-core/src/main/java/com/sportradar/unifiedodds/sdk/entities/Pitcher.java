@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Defines methods implemented by classes representing the sport event pitcher
@@ -15,7 +15,7 @@ public interface Pitcher {
      *
      * @return - the unique identifier of the current {@link Pitcher} instance
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the name of the pitcher represented by the current {@link Pitcher} instance

@@ -9,20 +9,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
+import com.sportradar.uf.sportsapi.datamodel.SapiLottery;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.LotteryCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.LotteryCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableLotteryCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableLotteryCi;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -33,14 +33,12 @@ import org.slf4j.LoggerFactory;
  * Created on 18/01/2018.
  * Lottery cache item
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "LineLength", "ReturnCount" }
-)
-public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "LineLength", "ReturnCount" })
+public class LotteryCiImpl implements LotteryCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(LotteryCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(LotteryCiImpl.class);
 
-    private final URN id;
+    private final Urn id;
 
     private final DataRouterManager dataRouterManager;
     private final Locale defaultLocale;
@@ -50,13 +48,13 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
     private final Set<Locale> cachedLocales = Sets.newConcurrentHashSet();
     private final ReentrantLock fetchLock = new ReentrantLock();
 
-    private URN categoryId;
-    private BonusInfoCI bonusInfo;
-    private DrawInfoCI drawInfo;
-    private List<URN> scheduledDraws;
+    private Urn categoryId;
+    private BonusInfoCi bonusInfo;
+    private DrawInfoCi drawInfo;
+    private List<Urn> scheduledDraws;
 
-    LotteryCIImpl(
-        URN id,
+    LotteryCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
@@ -72,12 +70,12 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
-    LotteryCIImpl(
-        URN id,
+    LotteryCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPILottery data,
+        SapiLottery data,
         Locale dataLocale
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
@@ -87,8 +85,8 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
         merge(data, dataLocale);
     }
 
-    LotteryCIImpl(
-        ExportableLotteryCI exportable,
+    LotteryCiImpl(
+        ExportableLotteryCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
@@ -100,26 +98,26 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
 
         this.defaultLocale = exportable.getDefaultLocale();
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.names.putAll(exportable.getNames());
         this.cachedLocales.addAll(exportable.getCachedLocales());
-        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
+        this.categoryId = exportable.getCategoryId() != null ? Urn.parse(exportable.getCategoryId()) : null;
         this.bonusInfo =
-            exportable.getBonusInfo() != null ? new BonusInfoCI(exportable.getBonusInfo()) : null;
-        this.drawInfo = exportable.getDrawInfo() != null ? new DrawInfoCI(exportable.getDrawInfo()) : null;
+            exportable.getBonusInfo() != null ? new BonusInfoCi(exportable.getBonusInfo()) : null;
+        this.drawInfo = exportable.getDrawInfo() != null ? new DrawInfoCi(exportable.getDrawInfo()) : null;
         this.scheduledDraws =
             exportable.getScheduledDraws() != null
-                ? exportable.getScheduledDraws().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getScheduledDraws().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -146,7 +144,7 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      * @return the associated category id
      */
     @Override
-    public URN getCategoryId() {
+    public Urn getCategoryId() {
         if (categoryId != null || !cachedLocales.isEmpty()) {
             return categoryId;
         }
@@ -162,7 +160,7 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      * @return the associated bonus info
      */
     @Override
-    public BonusInfoCI getBonusInfo() {
+    public BonusInfoCi getBonusInfo() {
         if (bonusInfo != null || !cachedLocales.isEmpty()) {
             return bonusInfo;
         }
@@ -178,7 +176,7 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      * @return the associated draw info
      */
     @Override
-    public DrawInfoCI getDrawInfo() {
+    public DrawInfoCi getDrawInfo() {
         if (drawInfo != null || !cachedLocales.isEmpty()) {
             return drawInfo;
         }
@@ -194,7 +192,7 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      * @return the lottery draw schedule
      */
     @Override
-    public List<URN> getScheduledDraws() {
+    public List<Urn> getScheduledDraws() {
         if (scheduledDraws != null || !cachedLocales.isEmpty()) {
             return scheduledDraws == null ? null : ImmutableList.copyOf(scheduledDraws);
         }
@@ -263,12 +261,12 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return null;
     }
 
@@ -292,22 +290,22 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
      */
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (!(endpointData instanceof SAPILottery)) {
+        if (!(endpointData instanceof SapiLottery)) {
             return;
         }
 
-        SAPILottery lottery = (SAPILottery) endpointData;
+        SapiLottery lottery = (SapiLottery) endpointData;
 
         if (lottery.getCategory() != null) {
-            categoryId = URN.parse(lottery.getCategory().getId());
+            categoryId = Urn.parse(lottery.getCategory().getId());
         }
 
         if (lottery.getBonusInfo() != null) {
-            bonusInfo = new BonusInfoCI(lottery.getBonusInfo());
+            bonusInfo = new BonusInfoCi(lottery.getBonusInfo());
         }
 
         if (lottery.getDrawInfo() != null) {
-            drawInfo = new DrawInfoCI(lottery.getDrawInfo());
+            drawInfo = new DrawInfoCi(lottery.getDrawInfo());
         }
 
         if (lottery.getName() != null) {
@@ -371,8 +369,8 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableLotteryCI(
+    public ExportableCi export() {
+        return new ExportableLotteryCi(
             id.toString(),
             new HashMap<>(names),
             null,
@@ -384,7 +382,7 @@ public class LotteryCIImpl implements LotteryCI, ExportableCacheItem {
             bonusInfo != null ? bonusInfo.export() : null,
             drawInfo != null ? drawInfo.export() : null,
             scheduledDraws != null
-                ? scheduledDraws.stream().map(URN::toString).collect(Collectors.toList())
+                ? scheduledDraws.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             new HashSet<>(cachedLocales)
         );

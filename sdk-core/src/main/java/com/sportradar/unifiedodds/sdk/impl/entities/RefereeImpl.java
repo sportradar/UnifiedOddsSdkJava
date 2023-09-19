@@ -5,9 +5,9 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.RefereeCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.RefereeCi;
 import com.sportradar.unifiedodds.sdk.entities.Referee;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,13 +15,13 @@ import java.util.Map;
 /**
  * Represents a sport event referee
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class RefereeImpl implements Referee {
 
     /**
      *  A value used to uniquely identify the current {@link Referee} instance
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * The name of the referee represented by the current {@link Referee} instance
@@ -37,17 +37,17 @@ public class RefereeImpl implements Referee {
     /**
      * Initializes a new instance of {@link RefereeImpl} class
      *
-     * @param refereeCI - a {@link RefereeCI} used to create a new instance
+     * @param refereeCi - a {@link RefereeCi} used to create a new instance
      * @param locales - a {@link List} of locales supported by the new instance
      */
-    RefereeImpl(RefereeCI refereeCI, List<Locale> locales) {
-        this.id = refereeCI.getId();
-        this.name = refereeCI.getName();
+    RefereeImpl(RefereeCi refereeCi, List<Locale> locales) {
+        this.id = refereeCi.getId();
+        this.name = refereeCi.getName();
         this.nationalities =
             locales
                 .stream()
-                .filter(l -> refereeCI.getNationality(l) != null)
-                .collect(ImmutableMap.toImmutableMap(k -> k, refereeCI::getNationality));
+                .filter(l -> refereeCi.getNationality(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, refereeCi::getNationality));
     }
 
     /**
@@ -56,7 +56,7 @@ public class RefereeImpl implements Referee {
      * @return - the unique identifier of the current {@link Referee} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

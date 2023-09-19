@@ -4,68 +4,186 @@
 
 package com.sportradar.unifiedodds.sdk.cfg;
 
-import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import java.util.Optional;
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- * Created on 26/03/2018.
- * // TODO @eti: Javadoc
- */
 @SuppressWarnings({ "ConstantName" })
-public class TokenSetterTests {
+public class TokenSetterTests extends ConfigurationBuilderSetup {
 
-    private static SDKConfigurationPropertiesReader propertiesWithToken;
-    private static SDKConfigurationPropertiesReader propertiesWithoutToken;
-    private static final SDKConfigurationYamlReader yamlConfigMock = Mockito.mock(
-        SDKConfigurationYamlReader.class
-    );
+    @Test
+    public void directSettingMinimalProperties() {
+        Assert.assertEquals(
+            defaultAccessToken,
+            getTokenSetter()
+                .setAccessToken(defaultAccessToken)
+                .selectEnvironment(Environment.Integration)
+                .setDefaultLanguage(defaultLanguage)
+                .build()
+                .getAccessToken()
+        );
+    }
 
-    @BeforeClass
-    public static void init() {
-        propertiesWithToken = Mockito.mock(SDKConfigurationPropertiesReader.class);
-        Mockito.when(propertiesWithToken.readAccessToken()).thenReturn(Optional.of("some-token"));
+    @Test(expected = InvalidParameterException.class)
+    public void directSettingMinimalPropertiesWithoutAccessTokenFails() {
+        getTokenSetter(baseSection)
+            .setAccessTokenFromSdkProperties()
+            .selectEnvironment(Environment.Integration)
+            .build();
+    }
 
-        propertiesWithoutToken = Mockito.mock(SDKConfigurationPropertiesReader.class);
-        Mockito.when(propertiesWithoutToken.readAccessToken()).thenReturn(Optional.empty());
+    @Test(expected = InvalidParameterException.class)
+    public void directSettingMinimalPropertiesWithoutLanguageFails() {
+        getTokenSetter()
+            .setAccessToken(defaultAccessToken)
+            .selectEnvironment(Environment.Integration)
+            .build();
+    }
+
+    @Test
+    public void tokenFromPropertiesIsConfigured() {
+        Assert.assertEquals(Environment.Integration, basePropertiesReader.readEnvironment());
+
+        UofConfiguration config = getTokenSetter(baseSection).buildConfigFromSdkProperties();
+
+        Assert.assertEquals(basePropertiesReader.readAccessToken().get(), config.getAccessToken());
+        Assert.assertEquals(basePropertiesReader.readEnvironment(), config.getEnvironment());
+
+        validateDefaultConfig(config, basePropertiesReader.readEnvironment());
+        validateDefaultProducerConfig(config);
+        validateDefaultCacheConfig(config);
+        validateApiConfigForEnvironment(config, basePropertiesReader.readEnvironment());
+        validateRabbitConfigForEnvironment(config, basePropertiesReader.readEnvironment());
+    }
+
+    @Test
+    public void tokenFromPropertiesIsConfiguredWithCustomEnvironment() {
+        Assert.assertEquals(Environment.Custom, customPropertiesReader.readEnvironment());
+
+        UofConfiguration config = getTokenSetter(customSection).buildConfigFromSdkProperties();
+
+        Assert.assertNotNull(config);
+        Assert.assertEquals(customPropertiesReader.readAccessToken().get(), config.getAccessToken());
+        Assert.assertEquals(customPropertiesReader.readEnvironment(), config.getEnvironment());
+
+        Assert.assertEquals(defaultAccessToken, config.getAccessToken());
+        Assert.assertEquals(Environment.Custom, config.getEnvironment());
+        Assert.assertEquals(1, config.getLanguages().size());
+        Assert.assertTrue(config.getLanguages().contains(defaultLanguage));
+        Assert.assertEquals(defaultLanguage, config.getLanguages().get(0));
+        Assert.assertEquals(defaultLanguage, config.getDefaultLanguage());
+        Assert.assertEquals(ExceptionHandlingStrategy.Throw, config.getExceptionHandlingStrategy());
+        Assert.assertEquals(customPropertiesReader.readNodeId().get(), config.getNodeId());
+    }
+
+    @Test
+    public void tokenFromYamlIsConfigured() {
+        Assert.assertEquals(Environment.Integration, basePropertiesReader.readEnvironment());
+
+        UofConfiguration config = getTokenSetter(baseSection).buildConfigFromApplicationYml();
+
+        Assert.assertEquals(basePropertiesReader.readAccessToken().get(), config.getAccessToken());
+        Assert.assertEquals(basePropertiesReader.readEnvironment(), config.getEnvironment());
+
+        validateDefaultConfig(config, basePropertiesReader.readEnvironment());
+        validateDefaultProducerConfig(config);
+        validateDefaultCacheConfig(config);
+        validateApiConfigForEnvironment(config, basePropertiesReader.readEnvironment());
+        validateRabbitConfigForEnvironment(config, basePropertiesReader.readEnvironment());
+    }
+
+    @Test
+    public void tokenFromYamlIsConfiguredWithCustomEnvironment() {
+        Assert.assertEquals(Environment.Custom, customPropertiesReader.readEnvironment());
+
+        UofConfiguration config = getTokenSetter(customSection).buildConfigFromApplicationYml();
+
+        Assert.assertNotNull(config);
+        Assert.assertEquals(customPropertiesReader.readAccessToken().get(), config.getAccessToken());
+        Assert.assertEquals(customPropertiesReader.readEnvironment(), config.getEnvironment());
+
+        Assert.assertEquals(defaultAccessToken, config.getAccessToken());
+        Assert.assertEquals(Environment.Custom, config.getEnvironment());
+        Assert.assertEquals(1, config.getLanguages().size());
+        Assert.assertTrue(config.getLanguages().contains(defaultLanguage));
+        Assert.assertEquals(defaultLanguage, config.getLanguages().get(0));
+        Assert.assertEquals(defaultLanguage, config.getDefaultLanguage());
+        Assert.assertEquals(ExceptionHandlingStrategy.Throw, config.getExceptionHandlingStrategy());
+        Assert.assertEquals(customPropertiesReader.readNodeId().get(), config.getNodeId());
+    }
+
+    @Test
+    public void environmentFromPropertiesCanBeOverridden() {
+        Environment selectedEnvironment = Environment.ProxyTokyo;
+        Assert.assertEquals(Environment.Integration, basePropertiesReader.readEnvironment());
+        UofConfiguration config = getTokenSetter(baseSection)
+            .setAccessTokenFromSdkProperties()
+            .selectEnvironment(selectedEnvironment)
+            .loadConfigFromSdkProperties()
+            .build();
+        Assert.assertEquals(basePropertiesReader.readAccessToken().get(), config.getAccessToken());
+        Assert.assertEquals(selectedEnvironment, config.getEnvironment());
+
+        validateDefaultConfig(config, selectedEnvironment);
+        validateDefaultProducerConfig(config);
+        validateDefaultCacheConfig(config);
+        validateApiConfigForEnvironment(config, selectedEnvironment);
+        validateRabbitConfigForEnvironment(config, selectedEnvironment);
+    }
+
+    @Test
+    public void tokenFromPropertiesCanNotBeOverridden() {
+        UofConfiguration config = getTokenSetter(baseSection).buildConfigFromSdkProperties();
+        Assert.assertEquals(basePropertiesReader.readAccessToken().get(), config.getAccessToken());
+
+        validateDefaultConfig(config, basePropertiesReader.readEnvironment());
+        validateDefaultProducerConfig(config);
+        validateDefaultCacheConfig(config);
+        validateApiConfigForEnvironment(config, basePropertiesReader.readEnvironment());
+        validateRabbitConfigForEnvironment(config, basePropertiesReader.readEnvironment());
     }
 
     @Test(expected = NullPointerException.class)
     public void tokenSetterConstructRequirementsFailOne() {
-        TokenSetter tokenSetter = new TokenSetterImpl(null, Mockito.mock(SDKConfigurationYamlReader.class));
+        new TokenSetterImpl(
+            null,
+            Mockito.mock(SdkConfigurationYamlReader.class),
+            anyConfig -> bookmakerDetailsProvider,
+            anyConfig -> producerDataProvider
+        );
     }
 
     @Test(expected = NullPointerException.class)
     public void tokenSetterConstructRequirementsFailTwo() {
-        TokenSetter tokenSetter = new TokenSetterImpl(
-            Mockito.mock(SDKConfigurationPropertiesReader.class),
-            null
+        new TokenSetterImpl(
+            Mockito.mock(SdkConfigurationPropertiesReader.class),
+            null,
+            anyConfig -> bookmakerDetailsProvider,
+            anyConfig -> producerDataProvider
         );
     }
 
     @Test
     public void programmaticTokenSet() {
-        TokenSetter tokenSetter = new TokenSetterImpl(propertiesWithoutToken, yamlConfigMock);
-
-        EnvironmentSelector environmentSelector = tokenSetter.setAccessToken("some-token");
+        EnvironmentSelector environmentSelector = getTokenSetter().setAccessToken("some-token");
 
         Assert.assertNotNull(environmentSelector);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void programmaticTokenSetNull() {
-        TokenSetter tokenSetter = new TokenSetterImpl(propertiesWithoutToken, yamlConfigMock);
+        TokenSetter tokenSetter = getTokenSetter();
 
         tokenSetter.setAccessToken(null);
     }
 
     @Test
     public void propertiesTokenSet() {
-        TokenSetter tokenSetter = new TokenSetterImpl(propertiesWithToken, yamlConfigMock);
+        TokenSetter tokenSetter = getTokenSetter(baseSection);
 
         EnvironmentSelector environmentSelector = tokenSetter.setAccessTokenFromSdkProperties();
 
@@ -73,15 +191,30 @@ public class TokenSetterTests {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void propertiesTokenSetNull() {
-        TokenSetter tokenSetter = new TokenSetterImpl(propertiesWithoutToken, yamlConfigMock);
+    public void propertiesTokenMissingInProperties() {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("uf.sdk.defaultLanguage", defaultLanguage.toLanguageTag());
+        properties.put("uf.sdk.exceptionHandlingStrategy", "catch");
+        properties.put("uf.sdk.environment", "GlobalIntegration");
+        TokenSetter tokenSetter = getTokenSetter(properties);
 
         tokenSetter.setAccessTokenFromSdkProperties();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void propertiesTokenMissingInYaml() {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("uf.sdk.defaultLanguage", defaultLanguage.toLanguageTag());
+        properties.put("uf.sdk.exceptionHandlingStrategy", "catch");
+        properties.put("uf.sdk.environment", "GlobalIntegration");
+        TokenSetter tokenSetter = getTokenSetter(properties);
+
+        tokenSetter.setAccessTokenFromApplicationYaml();
+    }
+
     @Test
     public void systemVarTokenSet() {
-        TokenSetter tokenSetter = new TokenSetterImpl(propertiesWithToken, yamlConfigMock);
+        TokenSetter tokenSetter = getTokenSetter();
 
         System.setProperty("uf.accesstoken", "some-token");
 
@@ -94,7 +227,7 @@ public class TokenSetterTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void systemVarTokenSetNull() {
-        TokenSetter tokenSetter = new TokenSetterImpl(propertiesWithoutToken, yamlConfigMock);
+        TokenSetter tokenSetter = getTokenSetter();
 
         tokenSetter.setAccessTokenFromSystemVar();
     }

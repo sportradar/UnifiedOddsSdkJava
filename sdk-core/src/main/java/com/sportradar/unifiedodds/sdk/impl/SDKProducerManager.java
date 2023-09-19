@@ -11,8 +11,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
  * Created on 03/07/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface SDKProducerManager extends ProducerManager {
+public interface SdkProducerManager extends ProducerManager {
     void open();
 
     void setProducerDown(int producerId, boolean flaggedDown);

@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -14,8 +14,7 @@ import java.util.Map;
 /**
  * Defines methods used to access competitor information
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface CompetitorCI extends CacheItem {
+public interface CompetitorCi extends CacheItem {
     /**
      * Returns the {@link Map} containing translated country names
      *
@@ -51,7 +50,7 @@ public interface CompetitorCI extends CacheItem {
      *
      * @return - the reference ids associated with the current instance
      */
-    ReferenceIdCI getReferenceId();
+    ReferenceIdCi getReferenceId();
 
     /**
      * Returns a {@link List} of associated player ids
@@ -59,14 +58,14 @@ public interface CompetitorCI extends CacheItem {
      * @param locales the locales in which the players data should be pre-fetched
      * @return {@link List} of associated player ids
      */
-    List<URN> getAssociatedPlayerIds(List<Locale> locales);
+    List<Urn> getAssociatedPlayerIds(List<Locale> locales);
 
     /**
      * Returns a {@link List} of known competitor jerseys
      *
      * @return {@link List} of known competitor jerseys
      */
-    List<JerseyCI> getJerseys();
+    List<JerseyCi> getJerseys();
 
     /**
      * Returns the associated competitor manager
@@ -74,7 +73,7 @@ public interface CompetitorCI extends CacheItem {
      * @param locales the locales in which the data should be translated
      * @return the associated competitor manager
      */
-    ManagerCI getManager(List<Locale> locales);
+    ManagerCi getManager(List<Locale> locales);
 
     /**
      * Return the associated competitor home venue
@@ -82,7 +81,7 @@ public interface CompetitorCI extends CacheItem {
      * @param locales the locales in which the data should be translated
      * @return the associated competitor home venue
      */
-    VenueCI getVenue(List<Locale> locales);
+    VenueCi getVenue(List<Locale> locales);
 
     /**
      * Get the gender of the player
@@ -101,7 +100,7 @@ public interface CompetitorCI extends CacheItem {
      *
      * @return the race driver of the competitor if available; otherwise null
      */
-    RaceDriverProfileCI getRaceDriver();
+    RaceDriverProfileCi getRaceDriver();
 
     /**
      * Last time (if any) competitor profile was fetched
@@ -126,13 +125,13 @@ public interface CompetitorCI extends CacheItem {
      * Returns id of the associated sport
      * @return sport id
      */
-    URN getSportId();
+    Urn getSportId();
 
     /**
      * Returns id of the associated category
      * @return category id
      */
-    URN getCategoryId();
+    Urn getCategoryId();
 
     /**
      * Return the short name

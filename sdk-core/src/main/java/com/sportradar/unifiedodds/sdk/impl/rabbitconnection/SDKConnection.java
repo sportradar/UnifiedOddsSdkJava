@@ -17,16 +17,16 @@ import org.slf4j.LoggerFactory;
  * A wrapper around RabbitMQ {@link Connection} which automatically closes the connection when there
  * are no more opened channels channels
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ConstantName" })
-public class SDKConnection implements Connection {
+@SuppressWarnings({ "ConstantName" })
+public class SdkConnection implements Connection {
 
     /**
      * A {@link Logger} instance used for logging
      */
-    private static final Logger logger = LoggerFactory.getLogger(SDKConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdkConnection.class);
 
     /**
-     * A {@link Connection} instance wrapped with current {@link SDKConnection} instance
+     * A {@link Connection} instance wrapped with current {@link SdkConnection} instance
      */
     private final Connection actualConnection;
 
@@ -41,12 +41,12 @@ public class SDKConnection implements Connection {
     private final Object syncLock = new Object();
 
     /**
-     * Initializes a new instance of the {@link SDKConnection} class
+     * Initializes a new instance of the {@link SdkConnection} class
      *
      * @param actualConnection A {@link Connection} instance wrapped with current
-     *        {@link SDKConnection} instance
+     *        {@link SdkConnection} instance
      */
-    public SDKConnection(Connection actualConnection) {
+    public SdkConnection(Connection actualConnection) {
         checkNotNull(actualConnection, "actualConnection cannot be a null reference");
 
         this.actualConnection = actualConnection;
@@ -90,6 +90,11 @@ public class SDKConnection implements Connection {
     @Override
     public Map<String, Object> getClientProperties() {
         return actualConnection.getClientProperties();
+    }
+
+    @Override
+    public String getClientProvidedName() {
+        return actualConnection.getClientProvidedName();
     }
 
     @Override
@@ -161,6 +166,14 @@ public class SDKConnection implements Connection {
     }
 
     @Override
+    public BlockedListener addBlockedListener(
+        BlockedCallback blockedCallback,
+        UnblockedCallback unblockedCallback
+    ) {
+        return actualConnection.addBlockedListener(blockedCallback, unblockedCallback);
+    }
+
+    @Override
     public boolean removeBlockedListener(BlockedListener blockedListener) {
         return false; // To change body of implemented methods use File | Settings | File Templates.
     }
@@ -173,6 +186,16 @@ public class SDKConnection implements Connection {
     @Override
     public ExceptionHandler getExceptionHandler() {
         return actualConnection.getExceptionHandler();
+    }
+
+    @Override
+    public String getId() {
+        return actualConnection.getId();
+    }
+
+    @Override
+    public void setId(String s) {
+        actualConnection.setId(s);
     }
 
     @Override

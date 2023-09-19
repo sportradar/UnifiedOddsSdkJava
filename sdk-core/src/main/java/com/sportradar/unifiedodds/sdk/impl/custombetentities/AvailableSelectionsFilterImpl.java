@@ -6,15 +6,10 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPIEventType;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredEventType;
-import com.sportradar.uf.custombet.datamodel.CAPIMarketsType;
-import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredEventType;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelectionsFilter;
-import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.unifiedodds.sdk.custombetentities.MarketFilter;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
@@ -23,9 +18,9 @@ import java.util.List;
 public class AvailableSelectionsFilterImpl implements AvailableSelectionsFilter {
 
     /**
-     * An {@link URN} specifying the id of the event
+     * An {@link Urn} specifying the id of the event
      */
-    private final URN event;
+    private final Urn event;
 
     /**
      * An {@link List} specifying available markets for the event
@@ -34,10 +29,10 @@ public class AvailableSelectionsFilterImpl implements AvailableSelectionsFilter 
 
     private final String generatedAt;
 
-    public AvailableSelectionsFilterImpl(CAPIFilteredEventType eventType, String generatedAt) {
+    public AvailableSelectionsFilterImpl(CapiFilteredEventType eventType, String generatedAt) {
         Preconditions.checkNotNull(eventType);
 
-        this.event = URN.parse(eventType.getId());
+        this.event = Urn.parse(eventType.getId());
 
         this.markets =
             (eventType.getMarkets() != null)
@@ -53,7 +48,7 @@ public class AvailableSelectionsFilterImpl implements AvailableSelectionsFilter 
     }
 
     @Override
-    public URN getEvent() {
+    public Urn getEvent() {
         return event;
     }
 

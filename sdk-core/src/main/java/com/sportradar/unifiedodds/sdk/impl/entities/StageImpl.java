@@ -7,11 +7,11 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.StageCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
+import com.sportradar.unifiedodds.sdk.caching.StageCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.StageStatus;
@@ -19,7 +19,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "LambdaBodyLength",
@@ -75,8 +74,8 @@ public class StageImpl extends SportEventImpl implements Stage {
     /**
      * Initializes a new instance of the {@link StageImpl}
      *
-     * @param id A {@link URN} uniquely identifying the sport event associated with the current instance
-     * @param sportId A {@link URN} uniquely identifying the sport to which the tournament is related
+     * @param id A {@link Urn} uniquely identifying the sport event associated with the current instance
+     * @param sportId A {@link Urn} uniquely identifying the sport to which the tournament is related
      * @param sportEventCache A {@link SportEventCache} instance used to access the associated cache items
      * @param statusFactory A {@link SportEventStatusFactory} instance used to build status entities
      * @param sportEntityFactory A {@link SportEntityFactory} instance used to construct other associated sport entities
@@ -84,8 +83,8 @@ public class StageImpl extends SportEventImpl implements Stage {
      * @param exceptionHandlingStrategy The exception handling strategy that should be followed by the instance
      */
     public StageImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         SportEventCache sportEventCache,
         SportEventStatusFactory statusFactory,
         SportEntityFactory sportEntityFactory,
@@ -113,7 +112,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public SportSummary getSport() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null || cacheItem.getCategoryId() == null) {
             handleException("getSport - missing category data", null);
@@ -135,7 +134,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public CategorySummary getCategory() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null || cacheItem.getCategoryId() == null) {
             handleException("getCategory - missing category data", null);
@@ -152,21 +151,21 @@ public class StageImpl extends SportEventImpl implements Stage {
     }
 
     /**
-     * Returns a {@link ParentRace} representing the parent race of the race represented by the current instance
+     * Returns a {@link Stage} representing the parent race of the race represented by the current instance
      *
-     * @return - a {@link ParentRace} representing the parent race of the race represented by the current instance or a null reference
+     * @return - a {@link Stage} representing the parent race of the race represented by the current instance or a null reference
      * if the represented race does not have the parent race
      */
     @Override
     public Stage getParentStage() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
             return null;
         }
 
-        URN id = cacheItem.getParentStageId();
+        Urn id = cacheItem.getParentStageId();
 
         if (id == null) {
             return null;
@@ -186,20 +185,20 @@ public class StageImpl extends SportEventImpl implements Stage {
     }
 
     /**
-     * Returns a {@link List} of {@link ChildRace} instances representing stages of the multi-stage race
+     * Returns a {@link List} of {@link Stage} instances representing stages of the multi-stage race
      *
-     * @return - a {@link List} of {@link ChildRace} instances representing stages of the multi-stage race, if available
+     * @return - a {@link List} of {@link Stage} instances representing stages of the multi-stage race, if available
      */
     @Override
     public List<Stage> getStages() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
             return null;
         }
 
-        List<URN> childRaceIds = cacheItem.getStagesIds();
+        List<Urn> childRaceIds = cacheItem.getStagesIds();
 
         if (childRaceIds == null) {
             return null;
@@ -207,7 +206,7 @@ public class StageImpl extends SportEventImpl implements Stage {
 
         List<Stage> result = new ArrayList<>();
         try {
-            for (URN childRaceId : childRaceIds) {
+            for (Urn childRaceId : childRaceIds) {
                 SportEvent sportEvent = sportEntityFactory.buildSportEvent(childRaceId, locales, false);
                 if (sportEvent instanceof Stage) {
                     result.add((Stage) sportEvent);
@@ -236,7 +235,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public StageType getStageType() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -255,7 +254,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public StageStatus getStatus() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -294,7 +293,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public BookingStatus getBookingStatus() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -324,14 +323,14 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public Venue getVenue() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
             return null;
         }
 
-        VenueCI venue = cacheItem.getVenue(locales);
+        VenueCi venue = cacheItem.getVenue(locales);
 
         return venue == null ? null : new VenueImpl(venue, locales);
     }
@@ -345,14 +344,14 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public SportEventConditions getConditions() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
             return null;
         }
 
-        SportEventConditionsCI conditions = cacheItem.getConditions(locales);
+        SportEventConditionsCi conditions = cacheItem.getConditions(locales);
 
         return conditions == null ? null : new SportEventConditionsImpl(conditions, locales);
     }
@@ -366,14 +365,14 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public List<Competitor> getCompetitors() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
             return null;
         }
 
-        List<URN> competitors = cacheItem.getCompetitorIds(locales);
+        List<Urn> competitors = cacheItem.getCompetitorIds(locales);
 
         if (competitors == null) {
             return null;
@@ -395,7 +394,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public String getName(Locale locale) {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -414,7 +413,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public Date getScheduledTime() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -433,7 +432,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public Date getScheduledEndTime() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -451,7 +450,7 @@ public class StageImpl extends SportEventImpl implements Stage {
     @SuppressWarnings("java:S2447") // Null should not be returned from a "Boolean" method
     @Override
     public Boolean isStartTimeTbd() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -462,13 +461,13 @@ public class StageImpl extends SportEventImpl implements Stage {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
-        StageCI cacheItem = loadStageCI();
+    public Urn getReplacedBy() {
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("StageCI missing", null);
@@ -485,7 +484,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      * @return the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         if (super.getSportId() != null) {
             return super.getSportId();
         }
@@ -505,7 +504,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public String getLiveOdds() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("getLiveOdds", null);
@@ -521,7 +520,7 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public SportEventType getSportEventType() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("getSportEventType", null);
@@ -537,14 +536,14 @@ public class StageImpl extends SportEventImpl implements Stage {
      */
     @Override
     public List<Stage> getAdditionalParentStages() {
-        StageCI cacheItem = loadStageCI();
+        StageCi cacheItem = loadStageCi();
 
         if (cacheItem == null) {
             handleException("getAdditionalParentStages", null);
             return null;
         }
 
-        List<URN> stageIds = cacheItem.getAdditionalParentStages(locales);
+        List<Urn> stageIds = cacheItem.getAdditionalParentStages(locales);
         if (stageIds != null && !stageIds.isEmpty()) {
             List<Stage> results = new ArrayList<>();
             stageIds.forEach(f ->
@@ -580,11 +579,11 @@ public class StageImpl extends SportEventImpl implements Stage {
      *
      * @return the associated cache item
      */
-    private StageCI loadStageCI() {
+    private StageCi loadStageCi() {
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(id);
-            if (eventCacheItem instanceof StageCI) {
-                return (StageCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof StageCi) {
+                return (StageCi) eventCacheItem;
             }
             handleException("loadStageCI, CI type miss-match", null);
         } catch (CacheItemNotFoundException e) {

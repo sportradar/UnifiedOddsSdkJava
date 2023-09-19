@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -13,8 +13,8 @@ import java.util.Map;
 /**
  * Defines methods used to access cached player data
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public interface PlayerProfileCI extends CacheItem {
+@SuppressWarnings({ "LineLength" })
+public interface PlayerProfileCi extends CacheItem {
     /**
      * Returns the {@link Map} containing translated full names of the player
      *
@@ -98,9 +98,9 @@ public interface PlayerProfileCI extends CacheItem {
      * Get the competitor id this player belongs to
      * @return the competitor id this player belongs to
      */
-    URN getCompetitorId();
+    Urn getCompetitorId();
 
-    <T> void merge(T endpointData, Locale dataLocale, URN competitorId);
+    <T> void merge(T endpointData, Locale dataLocale, Urn competitorId);
 
     /**
      * Get the list of cached locales

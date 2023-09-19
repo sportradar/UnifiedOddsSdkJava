@@ -12,15 +12,15 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPILotteries;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.uf.sportsapi.datamodel.SapiLotteries;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.LogsMock;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Collections;
@@ -38,11 +38,11 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
     private static final String ERROR_ON_PROVIDING_SPORTS = "Error execution all sports request";
     private static final String ERROR_ON_PROVIDING_LOTTERIES = "Error executing all lotteries list request";
 
-    private static SDKProducerManager producersWithSingleEnabledProducer(int producerId) {
+    private static SdkProducerManager producersWithSingleEnabledProducer(int producerId) {
         Producer enabledProducer = mock(Producer.class);
         when(enabledProducer.getId()).thenReturn(producerId);
         when(enabledProducer.isEnabled()).thenReturn(true);
-        SDKProducerManager producers = mock(SDKProducerManager.class);
+        SdkProducerManager producers = mock(SdkProducerManager.class);
         when(producers.getActiveProducers())
             .thenReturn(Collections.singletonMap(producerId, enabledProducer));
         return producers;
@@ -57,13 +57,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Before
         public void setupPrefetchedLanguage() {
-            SDKInternalConfiguration configuration = mock(SDKInternalConfiguration.class);
+            SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
             when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
             manager =
                 new DataRouterManagerImpl(
                     configuration,
-                    mock(SDKTaskScheduler.class),
-                    mock(SDKProducerManager.class),
+                    mock(SdkTaskScheduler.class),
+                    mock(SdkProducerManager.class),
                     mock(DataRouter.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -165,14 +165,14 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Before
         public void setupPrefetchedLanguageAndEnableWns() {
-            SDKInternalConfiguration configuration = mock(SDKInternalConfiguration.class);
+            SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
             when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
             final int wnsProducerId = 7;
-            SDKProducerManager wnsProducer = producersWithSingleEnabledProducer(wnsProducerId);
+            SdkProducerManager wnsProducer = producersWithSingleEnabledProducer(wnsProducerId);
             manager =
                 new DataRouterManagerImpl(
                     configuration,
-                    mock(SDKTaskScheduler.class),
+                    mock(SdkTaskScheduler.class),
                     wnsProducer,
                     mock(DataRouter.class),
                     mock(DataProvider.class),
@@ -274,13 +274,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Before
         public void setupPrefetchedLanguage() {
-            SDKInternalConfiguration configuration = mock(SDKInternalConfiguration.class);
+            SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
             when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
             manager =
                 new DataRouterManagerImpl(
                     configuration,
-                    mock(SDKTaskScheduler.class),
-                    mock(SDKProducerManager.class),
+                    mock(SdkTaskScheduler.class),
+                    mock(SdkProducerManager.class),
                     mock(DataRouter.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -382,13 +382,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Before
         public void setupPrefetchedLanguage() {
-            SDKInternalConfiguration configuration = mock(SDKInternalConfiguration.class);
+            SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
             when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
             final int wnsProducerId = 7;
             manager =
                 new DataRouterManagerImpl(
                     configuration,
-                    mock(SDKTaskScheduler.class),
+                    mock(SdkTaskScheduler.class),
                     producersWithSingleEnabledProducer(wnsProducerId),
                     mock(DataRouter.class),
                     mock(DataProvider.class),
@@ -463,7 +463,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void noFailureWhileProvidingLotteriesShouldNotBeLogged() throws DataProviderException {
             LogsMock logsMock = LogsMock.createCapturingFor(DataRouterManagerImpl.class);
-            when(allLotteries.getData(PREFETCHED_LANGUAGE)).thenReturn(new SAPILotteries());
+            when(allLotteries.getData(PREFETCHED_LANGUAGE)).thenReturn(new SapiLotteries());
 
             manager.onSportsDataTimerElapsed();
 

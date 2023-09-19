@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.CategorySummary;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -19,9 +19,9 @@ import java.util.Optional;
 public class CategorySummaryImpl implements CategorySummary {
 
     /**
-     * An {@link URN} uniquely identifying the current {@link CategorySummary} instance
+     * An {@link Urn} uniquely identifying the current {@link CategorySummary} instance
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An unmodifiable {@link Map} containing translated category name
@@ -36,11 +36,11 @@ public class CategorySummaryImpl implements CategorySummary {
     /**
      * Initializes a new instance of the {@link CategorySummaryImpl}
      *
-     * @param id - an {@link URN} uniquely identifying the current {@link CategorySummary} instance
+     * @param id - an {@link Urn} uniquely identifying the current {@link CategorySummary} instance
      * @param names - a {@link Map} containing translated category name
      * @param countryCode - a {@link String} representation of a country code
      */
-    public CategorySummaryImpl(URN id, Map<Locale, String> names, String countryCode) {
+    public CategorySummaryImpl(Urn id, Map<Locale, String> names, String countryCode) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(names);
         Preconditions.checkArgument(!names.isEmpty());
@@ -51,12 +51,12 @@ public class CategorySummaryImpl implements CategorySummary {
     }
 
     /**
-     * Returns an {@link URN} uniquely identifying the current {@link CategorySummary} instance
+     * Returns an {@link Urn} uniquely identifying the current {@link CategorySummary} instance
      *
-     * @return - an {@link URN} uniquely identifying the current {@link CategorySummary} instance
+     * @return - an {@link Urn} uniquely identifying the current {@link CategorySummary} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

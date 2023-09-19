@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFBetSettlement;
+import com.sportradar.uf.datamodel.UfBetSettlement;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
@@ -29,7 +29,7 @@ class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implem
 
     BetSettlementImpl(
         T sportEvent,
-        UFBetSettlement message,
+        UfBetSettlement message,
         Producer producer,
         byte[] rawMessage,
         MarketFactory marketFactory,

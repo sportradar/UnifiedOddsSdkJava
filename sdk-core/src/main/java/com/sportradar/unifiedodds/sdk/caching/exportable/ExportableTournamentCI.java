@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableTournamentCI extends ExportableSportEventCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableTournamentCi extends ExportableSportEventCi {
 
     private Locale defaultLocale;
     private String categoryId;
-    private ExportableSeasonCI currentSeason;
-    private ExportableSeasonCI season;
-    private ExportableSeasonCoverageCI seasonCoverage;
-    private ExportableTournamentCoverageCI tournamentCoverage;
-    private List<ExportableGroupCI> groups;
-    private ExportableCompleteRoundCI round;
+    private ExportableSeasonCi currentSeason;
+    private ExportableSeasonCi season;
+    private ExportableSeasonCoverageCi seasonCoverage;
+    private ExportableTournamentCoverageCi tournamentCoverage;
+    private List<ExportableGroupCi> groups;
+    private ExportableCompleteRoundCi round;
     private List<String> competitorIds;
     private Map<String, Map<String, String>> competitorsReferences;
     private boolean associatedSeasonIdsLoaded;
@@ -27,7 +27,7 @@ public class ExportableTournamentCI extends ExportableSportEventCI {
     private List<Locale> cachedLocales;
     private Boolean exhibitionGames;
 
-    public ExportableTournamentCI(
+    public ExportableTournamentCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -36,12 +36,12 @@ public class ExportableTournamentCI extends ExportableSportEventCI {
         String replacedBy,
         Locale defaultLocale,
         String categoryId,
-        ExportableSeasonCI currentSeason,
-        ExportableSeasonCI season,
-        ExportableSeasonCoverageCI seasonCoverage,
-        ExportableTournamentCoverageCI tournamentCoverage,
-        List<ExportableGroupCI> groups,
-        ExportableCompleteRoundCI round,
+        ExportableSeasonCi currentSeason,
+        ExportableSeasonCi season,
+        ExportableSeasonCoverageCi seasonCoverage,
+        ExportableTournamentCoverageCi tournamentCoverage,
+        List<ExportableGroupCi> groups,
+        ExportableCompleteRoundCi round,
         List<String> competitorIds,
         Map<String, Map<String, String>> competitorsReferences,
         boolean associatedSeasonIdsLoaded,
@@ -82,51 +82,51 @@ public class ExportableTournamentCI extends ExportableSportEventCI {
         this.categoryId = categoryId;
     }
 
-    public ExportableSeasonCI getCurrentSeason() {
+    public ExportableSeasonCi getCurrentSeason() {
         return currentSeason;
     }
 
-    public void setCurrentSeason(ExportableSeasonCI currentSeason) {
+    public void setCurrentSeason(ExportableSeasonCi currentSeason) {
         this.currentSeason = currentSeason;
     }
 
-    public ExportableSeasonCI getSeason() {
+    public ExportableSeasonCi getSeason() {
         return season;
     }
 
-    public void setSeason(ExportableSeasonCI season) {
+    public void setSeason(ExportableSeasonCi season) {
         this.season = season;
     }
 
-    public ExportableSeasonCoverageCI getSeasonCoverage() {
+    public ExportableSeasonCoverageCi getSeasonCoverage() {
         return seasonCoverage;
     }
 
-    public void setSeasonCoverage(ExportableSeasonCoverageCI seasonCoverage) {
+    public void setSeasonCoverage(ExportableSeasonCoverageCi seasonCoverage) {
         this.seasonCoverage = seasonCoverage;
     }
 
-    public ExportableTournamentCoverageCI getTournamentCoverage() {
+    public ExportableTournamentCoverageCi getTournamentCoverage() {
         return tournamentCoverage;
     }
 
-    public void setTournamentCoverage(ExportableTournamentCoverageCI tournamentCoverage) {
+    public void setTournamentCoverage(ExportableTournamentCoverageCi tournamentCoverage) {
         this.tournamentCoverage = tournamentCoverage;
     }
 
-    public List<ExportableGroupCI> getGroups() {
+    public List<ExportableGroupCi> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<ExportableGroupCI> groups) {
+    public void setGroups(List<ExportableGroupCi> groups) {
         this.groups = groups;
     }
 
-    public ExportableCompleteRoundCI getRound() {
+    public ExportableCompleteRoundCi getRound() {
         return round;
     }
 
-    public void setRound(ExportableCompleteRoundCI round) {
+    public void setRound(ExportableCompleteRoundCi round) {
         this.round = round;
     }
 

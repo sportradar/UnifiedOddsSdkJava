@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInfo;
 import java.util.HashSet;
@@ -24,17 +24,17 @@ import org.slf4j.LoggerFactory;
  * // TODO @eti: Javadoc
  */
 @SuppressWarnings({ "ConstantName", "IllegalCatch", "LineLength" })
-public class ProducerManagerImpl implements SDKProducerManager {
+public class ProducerManagerImpl implements SdkProducerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ProducerManagerImpl.class);
-    private final SDKInternalConfiguration configuration;
+    private final SdkInternalConfiguration configuration;
     private final Map<Integer, ProducerData> producers;
     private Set<Integer> unknownProducersWarning = new HashSet<>();
     private boolean feedOpened;
 
     @Inject
     public ProducerManagerImpl(
-        SDKInternalConfiguration configuration,
+        SdkInternalConfiguration configuration,
         ProducerDataProvider producerDataProvider
     ) {
         Preconditions.checkNotNull(configuration);

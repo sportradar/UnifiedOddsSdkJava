@@ -9,7 +9,7 @@ import com.google.inject.Inject;
 import com.sportradar.uf.sportsapi.datamodel.Producer;
 import com.sportradar.uf.sportsapi.datamodel.Producers;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import java.util.Collections;
@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public class ProducerDataProviderImpl implements ProducerDataProvider {
 
     private final DataProvider<Producers> dataProvider;
-    private final SDKInternalConfiguration config;
+    private final SdkInternalConfiguration config;
 
     @Inject
     public ProducerDataProviderImpl(
-        SDKInternalConfiguration configuration,
+        SdkInternalConfiguration configuration,
         DataProvider<Producers> dataProvider
     ) {
         Preconditions.checkNotNull(configuration);
@@ -75,12 +75,12 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
     }
 
     private String ReplaceProducerApiUrl(String url) {
-        if (url.contains(config.getAPIHost())) {
+        if (url.contains(config.getApiHost())) {
             return url;
         }
         if (url.contains(EnvironmentManager.getApiHost(Environment.Integration))) {
-            return url.replace(EnvironmentManager.getApiHost(Environment.Integration), config.getAPIHost());
+            return url.replace(EnvironmentManager.getApiHost(Environment.Integration), config.getApiHost());
         }
-        return url.replace(EnvironmentManager.getApiHost(Environment.Production), config.getAPIHost());
+        return url.replace(EnvironmentManager.getApiHost(Environment.Production), config.getApiHost());
     }
 }

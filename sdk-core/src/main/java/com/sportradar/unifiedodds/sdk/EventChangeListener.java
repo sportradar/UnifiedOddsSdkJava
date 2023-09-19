@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 
 /**
@@ -19,7 +19,7 @@ public interface EventChangeListener {
      * @param updated the date when change was made
      * @param sportEvent the {@link SportEvent}
      */
-    void onFixtureChange(URN eventId, Date updated, SportEvent sportEvent);
+    void onFixtureChange(Urn eventId, Date updated, SportEvent sportEvent);
 
     /**
      * Method invoked for new result change
@@ -28,5 +28,5 @@ public interface EventChangeListener {
      * @param updated the date when change was made
      * @param sportEvent the {@link SportEvent}
      */
-    void onResultChange(URN eventId, Date updated, SportEvent sportEvent);
+    void onResultChange(Urn eventId, Date updated, SportEvent sportEvent);
 }

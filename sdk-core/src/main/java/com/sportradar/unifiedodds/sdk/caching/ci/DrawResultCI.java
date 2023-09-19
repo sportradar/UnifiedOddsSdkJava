@@ -6,8 +6,8 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawResult;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawResultCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiDrawResult;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDrawResultCi;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -17,13 +17,12 @@ import java.util.stream.Collectors;
 /**
  * A basic draw result cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class DrawResultCI {
+public class DrawResultCi {
 
     private final Integer value;
     private final Map<Locale, String> names;
 
-    public DrawResultCI(SAPIDrawResult.SAPIDraws.SAPIDraw dr, Locale dataLocale) {
+    public DrawResultCi(SapiDrawResult.SapiDraws.SapiDraw dr, Locale dataLocale) {
         Preconditions.checkNotNull(dr);
         Preconditions.checkNotNull(dataLocale);
 
@@ -38,7 +37,7 @@ public class DrawResultCI {
         }
     }
 
-    public DrawResultCI(ExportableDrawResultCI exportable) {
+    public DrawResultCi(ExportableDrawResultCi exportable) {
         Preconditions.checkNotNull(exportable);
         names = Maps.newConcurrentMap();
         names.putAll(exportable.getNames());
@@ -57,7 +56,7 @@ public class DrawResultCI {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public void merge(SAPIDrawResult.SAPIDraws.SAPIDraw dr, Locale dataLocale) {
+    public void merge(SapiDrawResult.SapiDraws.SapiDraw dr, Locale dataLocale) {
         Preconditions.checkNotNull(dr);
         Preconditions.checkNotNull(dataLocale);
 
@@ -68,7 +67,7 @@ public class DrawResultCI {
         }
     }
 
-    public ExportableDrawResultCI export() {
-        return new ExportableDrawResultCI(value, new HashMap<>(names));
+    public ExportableDrawResultCi export() {
+        return new ExportableDrawResultCi(value, new HashMap<>(names));
     }
 }

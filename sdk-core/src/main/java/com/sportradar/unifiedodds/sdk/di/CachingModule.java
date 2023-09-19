@@ -10,7 +10,7 @@ import com.google.inject.*;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.impl.*;
@@ -19,21 +19,14 @@ import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactoryImpl;
 import com.sportradar.unifiedodds.sdk.caching.markets.*;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
-import com.sportradar.utils.URN;
-import java.io.Closeable;
-import java.io.IOException;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 
 /**
  * A derived injection module managing SDK caches
  */
 @SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "AvoidNoArgumentSuperConstructorCall",
-        "ClassDataAbstractionCoupling",
-        "ClassFanOutComplexity",
-    }
+    { "AvoidNoArgumentSuperConstructorCall", "ClassDataAbstractionCoupling", "ClassFanOutComplexity" }
 )
 public class CachingModule extends AbstractModule {
 
@@ -64,25 +57,25 @@ public class CachingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    protected Cache<URN, SportEventCI> provideSportEventCICache() {
+    protected Cache<Urn, SportEventCi> provideSportEventCiCache() {
         return internalCachesProvider.getSportEventCache();
     }
 
     @Provides
     @Singleton
-    protected Cache<URN, SportCI> provideSportDataCICache() {
+    protected Cache<Urn, SportCi> provideSportDataCiCache() {
         return internalCachesProvider.getSportDataCache();
     }
 
     @Provides
     @Singleton
-    protected Cache<URN, CategoryCI> provideCategoryCICache() {
+    protected Cache<Urn, CategoryCi> provideCategoryCiCache() {
         return internalCachesProvider.getCategoryDataCache();
     }
 
     @Provides
     @Singleton
-    protected Cache<URN, Date> provideFixtureTimestampCache() {
+    protected Cache<Urn, Date> provideFixtureTimestampCache() {
         return internalCachesProvider.getFixtureTimestampCache();
     }
 
@@ -115,10 +108,10 @@ public class CachingModule extends AbstractModule {
     @Singleton
     @Named("MatchStatusCache")
     protected LocalizedNamedValueCache provideMatchStatusCache(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-        SDKTaskScheduler sdkTaskScheduler
+        SdkTaskScheduler sdkTaskScheduler
     ) {
         return new LocalizedNamedValueCacheImpl(
             new DataProvider("/descriptions/%s/match_status.xml", cfg, httpDataFetcher, deserializer),
@@ -131,10 +124,10 @@ public class CachingModule extends AbstractModule {
     @Singleton
     @Named("VoidReasonsCache")
     protected NamedValueCache provideVoidReasonCache(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-        SDKTaskScheduler sdkTaskScheduler
+        SdkTaskScheduler sdkTaskScheduler
     ) {
         return new NamedValueCacheImpl(
             new DataProvider("/descriptions/void_reasons.xml", cfg, httpDataFetcher, deserializer),
@@ -147,7 +140,7 @@ public class CachingModule extends AbstractModule {
     @Named("BetStopReasonCache")
     protected NamedValueCache provideBetStopReasonCache(
         @Named("BetStopReasonDataProvider") DataProvider dataProvider,
-        SDKTaskScheduler sdkTaskScheduler
+        SdkTaskScheduler sdkTaskScheduler
     ) {
         return new NamedValueCacheImpl(dataProvider, sdkTaskScheduler);
     }
@@ -157,7 +150,7 @@ public class CachingModule extends AbstractModule {
     @Named("BettingStatusCache")
     protected NamedValueCache provideBettingStatusCache(
         @Named("BettingStatusDataProvider") DataProvider dataProvider,
-        SDKTaskScheduler sdkTaskScheduler
+        SdkTaskScheduler sdkTaskScheduler
     ) {
         return new NamedValueCacheImpl(dataProvider, sdkTaskScheduler);
     }
@@ -166,12 +159,12 @@ public class CachingModule extends AbstractModule {
     @Singleton
     @Named("InvariantMarketCache")
     protected InvariantMarketDescriptionCache provideInvariantMarketDescriptionCache(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         @Named(
             "AdditionalMarketMappingsProvider"
         ) ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
         MappingValidatorFactory mappingFactory,
-        SDKTaskScheduler sdkTaskScheduler,
+        SdkTaskScheduler sdkTaskScheduler,
         DataProvider<MarketDescriptions> dataProvider
     ) {
         return new InvariantMarketDescriptionCache(
@@ -190,7 +183,7 @@ public class CachingModule extends AbstractModule {
     @Singleton
     @Named("BettingStatusDataProvider")
     protected DataProvider providesBettingStatusDataProvider(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -201,7 +194,7 @@ public class CachingModule extends AbstractModule {
     @Singleton
     @Named("BetStopReasonDataProvider")
     protected DataProvider providesBetStopReasonDataProvider(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -211,7 +204,7 @@ public class CachingModule extends AbstractModule {
     @Provides
     @Singleton
     protected DataProvider<MarketDescriptions> providesMarketDescriptionsProvider(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -227,7 +220,7 @@ public class CachingModule extends AbstractModule {
     @Singleton
     @Named("VariantMarketCache")
     protected MarketDescriptionCache provideVariantMarketDescriptionCache(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
         MappingValidatorFactory mappingFactory
@@ -248,11 +241,11 @@ public class CachingModule extends AbstractModule {
     @Provides
     @Singleton
     protected VariantDescriptionCache provideVariantDescriptionCache(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
         MappingValidatorFactory mappingFactory,
-        SDKTaskScheduler sdkTaskScheduler
+        SdkTaskScheduler sdkTaskScheduler
     ) {
         return new VariantDescriptionCacheImpl(
             internalCachesProvider.getVariantDescriptionCache(),

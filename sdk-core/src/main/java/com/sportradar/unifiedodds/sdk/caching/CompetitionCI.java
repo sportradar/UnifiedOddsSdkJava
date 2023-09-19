@@ -4,15 +4,15 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
 import com.sportradar.unifiedodds.sdk.entities.BookingStatus;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.entities.SportEventType;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,8 +20,8 @@ import java.util.Map;
 /**
  * Defines methods used to access competition type data
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public interface CompetitionCI extends SportEventCI {
+@SuppressWarnings({ "LineLength" })
+public interface CompetitionCi extends SportEventCi {
     /**
      * Returns a {@link BookingStatus} enum member providing booking status of the current instance
      *
@@ -37,27 +37,27 @@ public interface CompetitionCI extends SportEventCI {
      * @return a {@link List} of competitor identifiers that participate in the sport event
      * associated with the current instance
      */
-    List<URN> getCompetitorIds(List<Locale> locales);
+    List<Urn> getCompetitorIds(List<Locale> locales);
 
     /**
-     * Returns a {@link VenueCI} instance representing a venue where the sport event associated with the
+     * Returns a {@link VenueCi} instance representing a venue where the sport event associated with the
      * current instance will take place
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link VenueCI} instance representing a venue where the associated sport event
+     * @return a {@link VenueCi} instance representing a venue where the associated sport event
      */
-    VenueCI getVenue(List<Locale> locales);
+    VenueCi getVenue(List<Locale> locales);
 
     /**
-     * Returns a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * Returns a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * @return a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      */
-    SportEventConditionsCI getConditions(List<Locale> locales);
+    SportEventConditionsCi getConditions(List<Locale> locales);
 
     /**
-     * Fetch a {@link SportEventStatusDTO} via event summary
+     * Fetch a {@link SportEventStatusDto} via event summary
      */
     void fetchSportEventStatus();
 
@@ -67,10 +67,10 @@ public interface CompetitionCI extends SportEventCI {
     void onEventBooked();
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
-     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      */
-    Map<URN, ReferenceIdCI> getCompetitorsReferences();
+    Map<Urn, ReferenceIdCi> getCompetitorsReferences();
 
     /**
      * Returns the liveOdds
@@ -87,8 +87,8 @@ public interface CompetitionCI extends SportEventCI {
     SportEventType getSportEventType(List<Locale> locales);
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
-     * @return list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
+     * @return list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
      */
-    List<URN> getCompetitorsVirtual();
+    List<Urn> getCompetitorsVirtual();
 }

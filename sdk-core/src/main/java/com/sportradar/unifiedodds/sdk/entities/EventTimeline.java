@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCi;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ public interface EventTimeline {
     /**
      * Returns a chronological list of events
      *
-     * @return a chronological list of {@link TimelineEventCI}s
+     * @return a chronological list of {@link TimelineEventCi}s
      */
     List<TimelineEvent> getTimelineEvents();
 }

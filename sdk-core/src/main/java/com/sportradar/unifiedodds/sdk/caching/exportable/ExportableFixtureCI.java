@@ -5,35 +5,35 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableFixtureCI implements Serializable {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableFixtureCi implements Serializable {
 
     private Date startTime;
     private boolean startTimeConfirmed;
     private Date nextLiveTime;
     private Map<String, String> extraInfo;
-    private List<ExportableTvChannelCI> tvChannels;
-    private ExportableCoverageInfoCI coverageInfo;
-    private ExportableProducerInfoCI producerInfo;
+    private List<ExportableTvChannelCi> tvChannels;
+    private ExportableCoverageInfoCi coverageInfo;
+    private ExportableProducerInfoCi producerInfo;
     private Map<String, String> references;
     private Boolean startTimeTbd;
     private String replacedBy;
-    private List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges;
+    private List<ExportableScheduledStartTimeChangeCi> scheduledStartTimeChanges;
     private String parentId;
     private List<String> additionalParentsIds;
 
-    public ExportableFixtureCI(
+    public ExportableFixtureCi(
         Date startTime,
         boolean startTimeConfirmed,
         Date nextLiveTime,
         Map<String, String> extraInfo,
-        List<ExportableTvChannelCI> tvChannels,
-        ExportableCoverageInfoCI coverageInfo,
-        ExportableProducerInfoCI producerInfo,
+        List<ExportableTvChannelCi> tvChannels,
+        ExportableCoverageInfoCi coverageInfo,
+        ExportableProducerInfoCi producerInfo,
         Map<String, String> references,
         Boolean startTimeTbd,
         String replacedBy,
-        List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges,
+        List<ExportableScheduledStartTimeChangeCi> scheduledStartTimeChanges,
         String parentId,
         List<String> additionalParentsIds
     ) {
@@ -84,27 +84,27 @@ public class ExportableFixtureCI implements Serializable {
         this.extraInfo = extraInfo;
     }
 
-    public List<ExportableTvChannelCI> getTvChannels() {
+    public List<ExportableTvChannelCi> getTvChannels() {
         return tvChannels;
     }
 
-    public void setTvChannels(List<ExportableTvChannelCI> tvChannels) {
+    public void setTvChannels(List<ExportableTvChannelCi> tvChannels) {
         this.tvChannels = tvChannels;
     }
 
-    public ExportableCoverageInfoCI getCoverageInfo() {
+    public ExportableCoverageInfoCi getCoverageInfo() {
         return coverageInfo;
     }
 
-    public void setCoverageInfo(ExportableCoverageInfoCI coverageInfo) {
+    public void setCoverageInfo(ExportableCoverageInfoCi coverageInfo) {
         this.coverageInfo = coverageInfo;
     }
 
-    public ExportableProducerInfoCI getProducerInfo() {
+    public ExportableProducerInfoCi getProducerInfo() {
         return producerInfo;
     }
 
-    public void setProducerInfo(ExportableProducerInfoCI producerInfo) {
+    public void setProducerInfo(ExportableProducerInfoCi producerInfo) {
         this.producerInfo = producerInfo;
     }
 
@@ -132,12 +132,12 @@ public class ExportableFixtureCI implements Serializable {
         this.replacedBy = replacedBy;
     }
 
-    public List<ExportableScheduledStartTimeChangeCI> getScheduledStartTimeChanges() {
+    public List<ExportableScheduledStartTimeChangeCi> getScheduledStartTimeChanges() {
         return scheduledStartTimeChanges;
     }
 
     public void setScheduledStartTimeChanges(
-        List<ExportableScheduledStartTimeChangeCI> scheduledStartTimeChanges
+        List<ExportableScheduledStartTimeChangeCi> scheduledStartTimeChanges
     ) {
         this.scheduledStartTimeChanges = scheduledStartTimeChanges;
     }

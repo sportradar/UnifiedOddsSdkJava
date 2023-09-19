@@ -5,14 +5,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableDelayedInfoCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableDelayedInfoCi implements Serializable {
 
     private int id;
     private Map<Locale, String> descriptions;
     private Set<Locale> cachedLocales;
 
-    public ExportableDelayedInfoCI(int id, Map<Locale, String> descriptions, Set<Locale> cachedLocales) {
+    public ExportableDelayedInfoCi(int id, Map<Locale, String> descriptions, Set<Locale> cachedLocales) {
         this.id = id;
         this.descriptions = descriptions;
         this.cachedLocales = cachedLocales;

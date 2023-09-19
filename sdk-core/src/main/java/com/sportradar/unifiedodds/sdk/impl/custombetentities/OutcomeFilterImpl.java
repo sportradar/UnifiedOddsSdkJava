@@ -6,9 +6,9 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredOutcomeType;
-import com.sportradar.uf.custombet.datamodel.CAPIMarketType;
-import com.sportradar.uf.custombet.datamodel.CAPIOutcomeType;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredOutcomeType;
+import com.sportradar.uf.custombet.datamodel.CapiMarketType;
+import com.sportradar.uf.custombet.datamodel.CapiOutcomeType;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.unifiedodds.sdk.custombetentities.OutcomeFilter;
 import java.util.List;
@@ -28,7 +28,7 @@ public class OutcomeFilterImpl implements OutcomeFilter {
      */
     private final Boolean isConflict;
 
-    OutcomeFilterImpl(CAPIFilteredOutcomeType outcomeType) {
+    OutcomeFilterImpl(CapiFilteredOutcomeType outcomeType) {
         Preconditions.checkNotNull(outcomeType);
 
         this.id = outcomeType.getId();

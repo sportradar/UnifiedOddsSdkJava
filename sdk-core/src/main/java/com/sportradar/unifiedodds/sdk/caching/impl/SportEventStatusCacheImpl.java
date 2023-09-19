@@ -6,12 +6,12 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
-import com.sportradar.unifiedodds.sdk.OperationManager;
+import com.sportradar.unifiedodds.sdk.RuntimeConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.impl.ci.SportEventStatusCIImpl;
+import com.sportradar.unifiedodds.sdk.caching.impl.ci.SportEventStatusCiImpl;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ConstantName",
         "CyclomaticComplexity",
         "EqualsAvoidNull",
@@ -38,7 +37,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
     /**
      * A {@link Cache} instance used to store sport event statuses
      */
-    private final Cache<String, SportEventStatusCI> sportEventStatusCache;
+    private final Cache<String, SportEventStatusCi> sportEventStatusCache;
 
     /**
      * The {@link SportEventCache} instance that stores sport events
@@ -59,7 +58,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * @param ignoreEventsTimelineCache - the {@link Cache} instance used to store event ids for which timeline SES should be ignored
      */
     public SportEventStatusCacheImpl(
-        Cache<String, SportEventStatusCI> sportEventStatusCache,
+        Cache<String, SportEventStatusCi> sportEventStatusCache,
         SportEventCache sportEventCache,
         Cache<String, Date> ignoreEventsTimelineCache
     ) {
@@ -74,17 +73,17 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
 
     /**
      * Returns the status of the event associated with the provided identifier. If the instance associated with
-     * the specified event is not found, a {@link SportEventStatusCI} instance indicating a 'not started' event is returned.
+     * the specified event is not found, a {@link SportEventStatusCi} instance indicating a 'not started' event is returned.
      *
      * @param eventId the event identifier
      * @param makeApiCall should the API call be made if necessary
-     * @return a {@link SportEventStatusCI} instance describing the last known event status
+     * @return a {@link SportEventStatusCi} instance describing the last known event status
      */
     @Override
-    public SportEventStatusCI getSportEventStatusCI(URN eventId, boolean makeApiCall) {
+    public SportEventStatusCi getSportEventStatusCi(Urn eventId, boolean makeApiCall) {
         Preconditions.checkNotNull(eventId);
 
-        SportEventStatusCI statusCi = sportEventStatusCache.getIfPresent(eventId.toString());
+        SportEventStatusCi statusCi = sportEventStatusCache.getIfPresent(eventId.toString());
 
         if (statusCi != null || !makeApiCall) {
             return statusCi;
@@ -94,7 +93,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
         statusCi = sportEventStatusCache.getIfPresent(eventId.toString());
 
         if (statusCi == null) {
-            statusCi = new SportEventStatusCIImpl(null, SportEventStatusDTO.getNotStarted());
+            statusCi = new SportEventStatusCiImpl(null, SportEventStatusDto.getNotStarted());
         }
 
         return statusCi;
@@ -104,14 +103,14 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * Adds a new {@link #sportEventStatusCache} entry
      *
      * @param id - the unique identifier of the sport event to which the status belongs to
-     * @param data - a {@link SportEventStatusDTO} to store in the cache
+     * @param data - a {@link SportEventStatusDto} to store in the cache
      * @param statusOnEvent - a status obtained directly on the sport event
      * @param source - a source of the data
      */
     @Override
     public void onSportEventStatusFetched(
-        URN id,
-        SportEventStatusDTO data,
+        Urn id,
+        SportEventStatusDto data,
         String statusOnEvent,
         String source
     ) {
@@ -120,13 +119,13 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
 
         // sportEventStatus from oddsChange message has priority
         if (
-            source.equalsIgnoreCase("UFOddsChange") ||
+            source.equalsIgnoreCase("UfOddsChange") ||
             source.contains("Summary") ||
             sportEventStatusCache.getIfPresent(id.toString()) == null
         ) {
             Date d = ignoreEventsTimelineCache.getIfPresent(id.toString());
             if (
-                OperationManager.getIgnoreBetPalTimelineSportEventStatus() &&
+                RuntimeConfiguration.getIgnoreBetPalTimelineSportEventStatus() &&
                 source.contains("Timeline") &&
                 d != null
             ) {
@@ -145,21 +144,21 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
                 String.format("Received SES for %s from %s with EventStatus:%s", id, source, data.getStatus())
             );
 
-            SportEventStatusCI cacheItem = sportEventStatusCache.getIfPresent(id.toString());
-            SportEventStatusDTO feedDTO = (cacheItem != null) ? cacheItem.getFeedStatusDTO() : null;
-            SportEventStatusDTO sapiDTO = (cacheItem != null) ? cacheItem.getSapiStatusDTO() : null;
+            SportEventStatusCi cacheItem = sportEventStatusCache.getIfPresent(id.toString());
+            SportEventStatusDto feedDto = (cacheItem != null) ? cacheItem.getFeedStatusDto() : null;
+            SportEventStatusDto sapiDto = (cacheItem != null) ? cacheItem.getSapiStatusDto() : null;
 
-            if (source.equalsIgnoreCase("UFOddsChange")) {
-                feedDTO = data;
+            if (source.equalsIgnoreCase("UfOddsChange")) {
+                feedDto = data;
             } else {
-                sapiDTO = data;
+                sapiDto = data;
             }
 
             if (cacheItem == null) {
-                cacheItem = new SportEventStatusCIImpl(feedDTO, sapiDTO);
+                cacheItem = new SportEventStatusCiImpl(feedDto, sapiDto);
             } else {
-                cacheItem.setFeedStatus(feedDTO);
-                cacheItem.setSapiStatus(sapiDTO);
+                cacheItem.setFeedStatus(feedDto);
+                cacheItem.setSapiStatus(sapiDto);
             }
             sportEventStatusCache.put(id.toString(), cacheItem);
             return;
@@ -180,7 +179,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * @param id the id of the event that you want to purge the sport event status
      */
     @Override
-    public void purgeSportEventStatus(URN id) {
+    public void purgeSportEventStatus(Urn id) {
         sportEventStatusCache.invalidate(id.toString());
     }
 
@@ -193,7 +192,7 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * @param messageType type of the feed message
      */
     @Override
-    public void addEventIdForTimelineIgnore(URN eventId, int producerId, String messageType) {
+    public void addEventIdForTimelineIgnore(Urn eventId, int producerId, String messageType) {
         if (producerId == 4) { // BetPal
             Date d = ignoreEventsTimelineCache.getIfPresent(eventId.toString());
             if (d == null) {
@@ -212,15 +211,15 @@ public class SportEventStatusCacheImpl implements SportEventStatusCache, DataRou
      * Tries to load the sport event status from the associated event cache item, if the load was successful
      * the status gets cached
      *
-     * @param eventId the {@link URN} of the event that the status should be fetched-cached
+     * @param eventId the {@link Urn} of the event that the status should be fetched-cached
      */
-    private void tryFetchCacheSportEventStatus(URN eventId) {
+    private void tryFetchCacheSportEventStatus(Urn eventId) {
         Preconditions.checkNotNull(eventId);
 
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(eventId);
-            if (eventCacheItem instanceof CompetitionCI) {
-                ((CompetitionCI) eventCacheItem).fetchSportEventStatus();
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(eventId);
+            if (eventCacheItem instanceof CompetitionCi) {
+                ((CompetitionCi) eventCacheItem).fetchSportEventStatus();
             } else {
                 logger.warn(
                     "Received sport event[{}] status fetch-cache request for unsupported entity type: {}",

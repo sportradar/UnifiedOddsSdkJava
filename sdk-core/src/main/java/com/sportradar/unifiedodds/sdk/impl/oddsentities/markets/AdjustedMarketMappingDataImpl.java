@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,17 +22,6 @@ abstract class AdjustedMarketMappingDataImpl implements MarketMappingData {
         Preconditions.checkNotNull(mapping);
 
         this.mapping = mapping;
-    }
-
-    /**
-     * The producer id for which the mapping data is valid
-     *
-     * @return the producer id for which the mapping data is valid
-     * @deprecated since 2.0.1, user {@link #getProducerIds()}
-     */
-    @Override
-    public int getProducerId() {
-        return mapping.getProducerId();
     }
 
     /**
@@ -51,7 +40,7 @@ abstract class AdjustedMarketMappingDataImpl implements MarketMappingData {
      * @return the sport id for which the mapping data is valid
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         return mapping.getSportId();
     }
 
@@ -119,12 +108,12 @@ abstract class AdjustedMarketMappingDataImpl implements MarketMappingData {
      * Indicates if the mapping data is usable with the provided values
      *
      * @param producerId a valid producerId
-     * @param sportId    a valid {@link URN} sport identifier
+     * @param sportId    a valid {@link Urn} sport identifier
      * @param specifiers a {@link Map} of feed message specifiers
      * @return <code>true</code> if the mapping data is valid for the provided values; otherwise <code>false</code>
      */
     @Override
-    public boolean canMap(int producerId, URN sportId, Map<String, String> specifiers) {
+    public boolean canMap(int producerId, Urn sportId, Map<String, String> specifiers) {
         return mapping.canMap(producerId, sportId, specifiers);
     }
 }

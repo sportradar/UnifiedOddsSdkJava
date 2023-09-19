@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 /**
  * A simple key-value representation used by the caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ReturnCount" })
-public class NamedValueCI {
+@SuppressWarnings({ "ReturnCount" })
+public class NamedValueCi {
 
     /**
      * The id of the current instance
@@ -30,12 +30,12 @@ public class NamedValueCI {
     private final String description;
 
     /**
-     * Initializes a new instance of the {@link NamedValueCI}
+     * Initializes a new instance of the {@link NamedValueCi}
      *
      * @param id - the identifier
      * @param description - the description of the instance
      */
-    public NamedValueCI(int id, String description) {
+    public NamedValueCi(int id, String description) {
         this.id = id;
         this.description = description;
     }
@@ -59,36 +59,36 @@ public class NamedValueCI {
     }
 
     /**
-     * Maps a fetched schema object to a new {@link NamedValueCI}
+     * Maps a fetched schema object to a new {@link NamedValueCi}
      *
      * @param fetch - the fetched schema object
      * @param <T> - the type of the fetched schema object
      * @return - a {@link List} of mapped objects
      */
-    public static <T> List<NamedValueCI> mapToNamedValuesCI(T fetch) {
+    public static <T> List<NamedValueCi> mapToNamedValuesCi(T fetch) {
         if (fetch instanceof MatchStatusDescriptions) {
             return ((MatchStatusDescriptions) fetch).getMatchStatus()
                 .stream()
-                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .map(v -> new NamedValueCi(Math.toIntExact(v.getId()), v.getDescription()))
                 .collect(Collectors.toList());
         } else if (fetch instanceof VoidReasonsDescriptions) {
             return ((VoidReasonsDescriptions) fetch).getVoidReason()
                 .stream()
-                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .map(v -> new NamedValueCi(Math.toIntExact(v.getId()), v.getDescription()))
                 .collect(Collectors.toList());
         } else if (fetch instanceof BetstopReasonsDescriptions) {
             return ((BetstopReasonsDescriptions) fetch).getBetstopReason()
                 .stream()
-                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .map(v -> new NamedValueCi(Math.toIntExact(v.getId()), v.getDescription()))
                 .collect(Collectors.toList());
         } else if (fetch instanceof BettingStatusDescriptions) {
             return ((BettingStatusDescriptions) fetch).getBettingStatus()
                 .stream()
-                .map(v -> new NamedValueCI(Math.toIntExact(v.getId()), v.getDescription()))
+                .map(v -> new NamedValueCi(Math.toIntExact(v.getId()), v.getDescription()))
                 .collect(Collectors.toList());
         }
         LoggerFactory
-            .getLogger(NamedValueCI.class)
+            .getLogger(NamedValueCi.class)
             .error("Mapping unknown fetched API object >>> " + fetch.getClass().getName());
         return Collections.emptyList();
     }

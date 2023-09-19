@@ -13,8 +13,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Represents a factory used to create {@link Connection} instances
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface AMQPConnectionFactory {
+public interface AmqpConnectionFactory {
     /**
      * Returns a {@link Connection} instance representing connection to the AMQP broker
      *

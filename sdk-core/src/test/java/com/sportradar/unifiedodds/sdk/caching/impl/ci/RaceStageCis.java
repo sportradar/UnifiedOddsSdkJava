@@ -12,7 +12,7 @@ import static java.util.Optional.empty;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceStageCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceStageCi;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterManagers;
 import com.sportradar.unifiedodds.sdk.testutil.guava.libraryfixtures.Caches;
 import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
@@ -30,18 +30,18 @@ public class RaceStageCis {
     }
 
     public static BuilderForConstructionFromExportedOnly usingConstructorToReimport(
-        ExportableRaceStageCI exported
+        ExportableRaceStageCi exported
     ) {
         return new BuilderForConstructionFromExportedOnly(exported);
     }
 
     public static BuilderForConstructionFromExportedOnly exportSerializeAndUseConstructorToReimport(
-        RaceStageCIImpl original
+        RaceStageCiImpl original
     ) throws Exception {
         val exportedRaceStage = original.export();
         val serialized = serialize(exportedRaceStage);
         val deserialized = deserialize(serialized);
-        return usingConstructorToReimport((ExportableRaceStageCI) deserialized);
+        return usingConstructorToReimport((ExportableRaceStageCi) deserialized);
     }
 
     public static class BuilderForConstructionOnly {
@@ -61,8 +61,8 @@ public class RaceStageCis {
             return this;
         }
 
-        public RaceStageCIImpl constructFrom(SAPISportEvent sapiSourceObject) {
-            return new RaceStageCIImpl(
+        public RaceStageCiImpl constructFrom(SapiSportEvent sapiSourceObject) {
+            return new RaceStageCiImpl(
                 urnForAnyStage(),
                 providedDataRouterManager.orElse(DataRouterManagers.any()),
                 Languages.any(),
@@ -73,8 +73,8 @@ public class RaceStageCis {
             );
         }
 
-        public RaceStageCIImpl constructFrom(SAPIFixture sapiSourceObject) {
-            return new RaceStageCIImpl(
+        public RaceStageCiImpl constructFrom(SapiFixture sapiSourceObject) {
+            return new RaceStageCiImpl(
                 urnForAnyStage(),
                 providedDataRouterManager.orElse(DataRouterManagers.any()),
                 Languages.any(),
@@ -85,8 +85,8 @@ public class RaceStageCis {
             );
         }
 
-        public RaceStageCIImpl constructFrom(SAPIStageSummaryEndpoint sapiSourceObject) {
-            return new RaceStageCIImpl(
+        public RaceStageCiImpl constructFrom(SapiStageSummaryEndpoint sapiSourceObject) {
+            return new RaceStageCiImpl(
                 urnForAnyStage(),
                 providedDataRouterManager.orElse(DataRouterManagers.any()),
                 Languages.any(),
@@ -97,8 +97,8 @@ public class RaceStageCis {
             );
         }
 
-        public RaceStageCIImpl constructFrom(SAPISportEventChildren.SAPISportEvent sapiSourceObject) {
-            return new RaceStageCIImpl(
+        public RaceStageCiImpl constructFrom(SapiSportEventChildren.SapiSportEvent sapiSourceObject) {
+            return new RaceStageCiImpl(
                 urnForAnyStage(),
                 providedDataRouterManager.orElse(DataRouterManagers.any()),
                 Languages.any(),
@@ -109,8 +109,8 @@ public class RaceStageCis {
             );
         }
 
-        public RaceStageCIImpl constructFrom(SAPIParentStage sapiSourceObject) {
-            return new RaceStageCIImpl(
+        public RaceStageCiImpl constructFrom(SapiParentStage sapiSourceObject) {
+            return new RaceStageCiImpl(
                 urnForAnyStage(),
                 providedDataRouterManager.orElse(DataRouterManagers.any()),
                 Languages.any(),
@@ -124,11 +124,11 @@ public class RaceStageCis {
 
     public static class BuilderForConstructionFromExportedOnly {
 
-        private ExportableRaceStageCI exportableToImport;
+        private ExportableRaceStageCi exportableToImport;
         private Optional<DataRouterManager> providedDataRouterManager = empty();
         private Optional<ExceptionHandlingStrategy> providedErrorHandlingStrategy = empty();
 
-        private BuilderForConstructionFromExportedOnly(ExportableRaceStageCI exportableToImport) {
+        private BuilderForConstructionFromExportedOnly(ExportableRaceStageCi exportableToImport) {
             this.exportableToImport = exportableToImport;
         }
 
@@ -144,8 +144,8 @@ public class RaceStageCis {
             return this;
         }
 
-        public RaceStageCIImpl construct() {
-            return new RaceStageCIImpl(
+        public RaceStageCiImpl construct() {
+            return new RaceStageCiImpl(
                 exportableToImport,
                 providedDataRouterManager.orElse(DataRouterManagers.any()),
                 providedErrorHandlingStrategy.orElse(anyErrorHandlingStrategy()),

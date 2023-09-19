@@ -6,19 +6,19 @@ package com.sportradar.unifiedodds.sdk.impl.dto;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.sportradar.uf.sportsapi.datamodel.SAPITeamStatistics;
+import com.sportradar.uf.sportsapi.datamodel.SapiTeamStatistics;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Map;
 
 /**
  * Team statistics data transfer object
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ParameterNumber", "UnnecessaryParentheses" })
-public class TeamStatisticsDTO {
+@SuppressWarnings({ "ParameterNumber", "UnnecessaryParentheses" })
+public class TeamStatisticsDto {
 
     private final String name;
-    private final URN teamId;
+    private final Urn teamId;
     private final HomeAway homeAway;
     private final Integer cards;
     private final Integer yellowCards;
@@ -27,11 +27,11 @@ public class TeamStatisticsDTO {
     private final Integer cornerKicks;
     private final Integer greenCards;
 
-    TeamStatisticsDTO(SAPITeamStatistics t, Map<HomeAway, String> homeAwayMap) {
+    TeamStatisticsDto(SapiTeamStatistics t, Map<HomeAway, String> homeAwayMap) {
         Preconditions.checkNotNull(t);
 
         name = t.getName();
-        teamId = t.getId() != null ? URN.parse(t.getId()) : null;
+        teamId = t.getId() != null ? Urn.parse(t.getId()) : null;
         homeAway =
             homeAwayMap != null
                 ? homeAwayMap
@@ -43,7 +43,7 @@ public class TeamStatisticsDTO {
                     .orElse(null)
                 : null;
 
-        SAPITeamStatistics.SAPIStatistics statistics = t.getStatistics();
+        SapiTeamStatistics.SapiStatistics statistics = t.getStatistics();
         yellowRedCards = tryParseInt(statistics.getYellowRedCards());
         yellowCards = tryParseInt(statistics.getYellowCards());
         redCards = tryParseInt(statistics.getRedCards());
@@ -52,9 +52,9 @@ public class TeamStatisticsDTO {
         greenCards = null;
     }
 
-    TeamStatisticsDTO(
+    TeamStatisticsDto(
         String name,
-        URN teamId,
+        Urn teamId,
         HomeAway homeAway,
         Integer yellowCards,
         Integer redCards,
@@ -98,7 +98,7 @@ public class TeamStatisticsDTO {
         return name;
     }
 
-    public URN getTeamId() {
+    public Urn getTeamId() {
         return teamId;
     }
 

@@ -7,17 +7,17 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import com.sportradar.unifiedodds.sdk.entities.DrawStatus;
 import java.util.*;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableDrawCI extends ExportableSportEventCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableDrawCi extends ExportableSportEventCi {
 
     private Locale defaultLocale;
     private String lotteryId;
     private DrawStatus status;
-    private List<ExportableDrawResultCI> results;
+    private List<ExportableDrawResultCi> results;
     private Integer displayId;
     private Set<Locale> cachedLocales;
 
-    public ExportableDrawCI(
+    public ExportableDrawCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -27,7 +27,7 @@ public class ExportableDrawCI extends ExportableSportEventCI {
         Locale defaultLocale,
         String lotteryId,
         DrawStatus status,
-        List<ExportableDrawResultCI> results,
+        List<ExportableDrawResultCi> results,
         Integer displayId,
         Set<Locale> cachedLocales
     ) {
@@ -64,11 +64,11 @@ public class ExportableDrawCI extends ExportableSportEventCI {
         this.status = status;
     }
 
-    public List<ExportableDrawResultCI> getResults() {
+    public List<ExportableDrawResultCi> getResults() {
         return results;
     }
 
-    public void setResults(List<ExportableDrawResultCI> results) {
+    public void setResults(List<ExportableDrawResultCi> results) {
         this.results = results;
     }
 

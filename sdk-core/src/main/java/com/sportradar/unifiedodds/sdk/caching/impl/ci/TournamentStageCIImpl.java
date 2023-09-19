@@ -12,20 +12,20 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.BookingManager;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.StageCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCI;
+import com.sportradar.unifiedodds.sdk.caching.StageCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentStageCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTournamentStageCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "DeclarationOrder",
@@ -48,9 +47,9 @@ import org.slf4j.LoggerFactory;
         "VisibilityModifier",
     }
 )
-class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
+class TournamentStageCiImpl implements StageCi, ExportableCacheItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(TournamentStageCIImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(TournamentStageCiImpl.class);
 
     /**
      * A {@link Locale} specifying the default language
@@ -58,9 +57,9 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private final Locale defaultLocale;
 
     /**
-     * An {@link URN} specifying the id of the associated sport event
+     * An {@link Urn} specifying the id of the associated sport event
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An indication on how should be the SDK exceptions handled
@@ -88,18 +87,18 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * A {@link List} of competitor identifiers that participate in the sport event
      * associated with the current instance
      */
-    private List<URN> competitorIds;
+    private List<Urn> competitorIds;
 
     /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
-    private Map<URN, ReferenceIdCI> competitorsReferences;
+    private Map<Urn, ReferenceIdCi> competitorsReferences;
 
     /**
      * A {@link List} of competitor identifiers which are marked as virtual in the sport event
      */
-    private List<URN> competitorVirtual;
+    private List<Urn> competitorVirtual;
 
     /**
      * A {@link Map} storing the available sport event names
@@ -107,9 +106,9 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
 
     /**
-     * A {@link URN} specifying the id of the parent category
+     * A {@link Urn} specifying the id of the parent category
      */
-    private URN categoryId;
+    private Urn categoryId;
 
     /**
      * The stage type
@@ -129,7 +128,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     /**
      * List of additional parents ids
      */
-    List<URN> additionalParentIds;
+    List<Urn> additionalParentIds;
 
     /**
      * The {@link Boolean} indicating if the start time to be determined is set
@@ -137,9 +136,9 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     private Boolean startTimeTbd;
 
     /**
-     * The {@link URN} indicating the replacement sport event
+     * The {@link Urn} indicating the replacement sport event
      */
-    private URN replacedBy;
+    private Urn replacedBy;
 
     /**
      * A {@link List} of locales that are already fully cached - only when the full tournament info endpoint is cached
@@ -151,12 +150,12 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      */
     private final ReentrantLock fetchRequestLock = new ReentrantLock();
 
-    TournamentStageCIImpl(
-        URN id,
+    TournamentStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPITournament endpointData,
+        SapiTournament endpointData,
         Locale dataLocale
     ) {
         Preconditions.checkNotNull(id);
@@ -177,7 +176,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             this.sportEventNames.put(dataLocale, "");
         }
 
-        this.categoryId = URN.parse(endpointData.getCategory().getId());
+        this.categoryId = Urn.parse(endpointData.getCategory().getId());
         this.scheduled =
             endpointData.getScheduled() == null ? null : SdkHelper.toDate(endpointData.getScheduled());
         this.scheduledEnd =
@@ -187,7 +186,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             (this.scheduled == null || this.scheduledEnd == null) &&
             endpointData.getTournamentLength() != null
         ) {
-            SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
+            SapiTournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled =
                 tournamentLength.getStartDate() == null
                     ? null
@@ -203,12 +202,12 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.additionalParentIds = null;
     }
 
-    TournamentStageCIImpl(
-        URN id,
+    TournamentStageCiImpl(
+        Urn id,
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SAPITournamentInfoEndpoint endpointData,
+        SapiTournamentInfoEndpoint endpointData,
         Locale dataLocale
     ) {
         this(
@@ -222,7 +221,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
-        SAPICompetitors endpointCompetitors = endpointData.getCompetitors() != null
+        SapiCompetitors endpointCompetitors = endpointData.getCompetitors() != null
             ? endpointData.getCompetitors()
             : endpointData.getTournament().getCompetitors();
         this.competitorIds =
@@ -232,7 +231,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                     endpointCompetitors
                         .getCompetitor()
                         .stream()
-                        .map(c -> URN.parse(c.getId()))
+                        .map(c -> Urn.parse(c.getId()))
                         .collect(Collectors.toList())
                 );
 
@@ -247,8 +246,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         cachedLocales.add(dataLocale);
     }
 
-    TournamentStageCIImpl(
-        ExportableTournamentStageCI exportable,
+    TournamentStageCiImpl(
+        ExportableTournamentStageCi exportable,
         DataRouterManager dataRouterManager,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
@@ -259,12 +258,12 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.dataRouterManager = dataRouterManager;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
         this.defaultLocale = exportable.getDefaultLocale();
-        this.id = URN.parse(exportable.getId());
+        this.id = Urn.parse(exportable.getId());
         this.scheduled = exportable.getScheduled();
         this.scheduledEnd = exportable.getScheduledEnd();
         this.competitorIds =
             exportable.getCompetitorIds() != null
-                ? exportable.getCompetitorIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getCompetitorIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.competitorsReferences =
             exportable.getCompetitorsReferences() != null
@@ -273,15 +272,15 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                     .entrySet()
                     .stream()
                     .collect(
-                        Collectors.toMap(r -> URN.parse(r.getKey()), r -> new ReferenceIdCI(r.getValue()))
+                        Collectors.toMap(r -> Urn.parse(r.getKey()), r -> new ReferenceIdCi(r.getValue()))
                     )
                 : null;
         this.competitorVirtual =
             exportable.getCompetitorVirtual() != null
-                ? exportable.getCompetitorVirtual().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getCompetitorVirtual().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.sportEventNames.putAll(exportable.getNames());
-        this.categoryId = exportable.getCategoryId() != null ? URN.parse(exportable.getCategoryId()) : null;
+        this.categoryId = exportable.getCategoryId() != null ? Urn.parse(exportable.getCategoryId()) : null;
         this.cachedLocales.addAll(exportable.getCachedLocales());
         this.stageType = exportable.getStageType();
         this.liveOdds = exportable.getLiveOdds();
@@ -289,17 +288,17 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         //        exportable.getParentStageId() // is always null
         this.additionalParentIds =
             exportable.getAdditionalParentsIds() != null
-                ? exportable.getAdditionalParentsIds().stream().map(URN::parse).collect(Collectors.toList())
+                ? exportable.getAdditionalParentsIds().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
     }
 
     /**
-     * Returns the {@link URN} representing id of the related entity
+     * Returns the {@link Urn} representing id of the related entity
      *
-     * @return the {@link URN} representing id of the related entity
+     * @return the {@link Urn} representing id of the related entity
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -339,10 +338,10 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     /**
      * Returns the identifier of the stage parent
      *
-     * @return the {@link URN} identifier of the parent stage if available; otherwise null
+     * @return the {@link Urn} identifier of the parent stage if available; otherwise null
      */
     @Override
-    public URN getParentStageId() {
+    public Urn getParentStageId() {
         // tournament info endpoint can not have a "parent" stage
         return null;
     }
@@ -353,8 +352,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * @return a {@link List} known child stages identifiers if available; otherwise null
      */
     @Override
-    public List<URN> getStagesIds() {
-        List<URN> stageIds = null;
+    public List<Urn> getStagesIds() {
+        List<Urn> stageIds = null;
         try {
             stageIds = dataRouterManager.requestEventsFor(defaultLocale, id);
         } catch (CommunicationException e) {
@@ -374,12 +373,12 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the id of the parent category
+     * Returns the {@link Urn} specifying the id of the parent category
      *
-     * @return the {@link URN} specifying the id of the parent category
+     * @return the {@link Urn} specifying the id of the parent category
      */
     @Override
-    public URN getCategoryId() {
+    public Urn getCategoryId() {
         if (categoryId != null) {
             return categoryId;
         }
@@ -404,7 +403,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     @Override
-    public List<URN> getAdditionalParentStages(List<Locale> locales) {
+    public List<Urn> getAdditionalParentStages(List<Locale> locales) {
         return additionalParentIds;
     }
 
@@ -427,7 +426,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
      * associated with the current instance
      */
     @Override
-    public List<URN> getCompetitorIds(List<Locale> locales) {
+    public List<Urn> getCompetitorIds(List<Locale> locales) {
         if (cachedLocales.containsAll(locales)) {
             return competitorIds == null ? null : ImmutableList.copyOf(competitorIds);
         }
@@ -438,32 +437,32 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns a {@link VenueCI} instance representing a venue where the sport event associated with the
+     * Returns a {@link VenueCi} instance representing a venue where the sport event associated with the
      * current instance will take place
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link VenueCI} instance representing a venue where the associated sport event
+     * @return a {@link VenueCi} instance representing a venue where the associated sport event
      */
     @Override
-    public VenueCI getVenue(List<Locale> locales) {
+    public VenueCi getVenue(List<Locale> locales) {
         // no venue info
         return null;
     }
 
     /**
-     * Returns a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * Returns a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      *
      * @param locales a {@link List} of {@link Locale} specifying the languages to which the returned instance should be translated
-     * @return a {@link SportEventConditionsCI} instance representing live conditions of the sport event associated with the current instance
+     * @return a {@link SportEventConditionsCi} instance representing live conditions of the sport event associated with the current instance
      */
     @Override
-    public SportEventConditionsCI getConditions(List<Locale> locales) {
+    public SportEventConditionsCi getConditions(List<Locale> locales) {
         // no conditions info
         return null;
     }
 
     /**
-     * Fetch a {@link SportEventStatusDTO} via event summary
+     * Fetch a {@link SportEventStatusDto} via event summary
      */
     @Override
     public void fetchSportEventStatus() {
@@ -549,23 +548,23 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return replacedBy;
     }
 
     @Override
     public <T> void merge(T endpointData, Locale dataLocale) {
-        if (endpointData instanceof SAPITournamentInfoEndpoint) {
-            internalMerge((SAPITournamentInfoEndpoint) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPITournament) {
-            internalMerge((SAPITournament) endpointData, dataLocale);
-        } else if (endpointData instanceof SAPIParentStage) {
-            internalMerge((SAPIParentStage) endpointData, dataLocale);
+        if (endpointData instanceof SapiTournamentInfoEndpoint) {
+            internalMerge((SapiTournamentInfoEndpoint) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiTournament) {
+            internalMerge((SapiTournament) endpointData, dataLocale);
+        } else if (endpointData instanceof SapiParentStage) {
+            internalMerge((SapiParentStage) endpointData, dataLocale);
         }
     }
 
@@ -578,12 +577,12 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      *
-     * @return list of {@link URN} of {@link Competitor} and associated {@link Reference} for this sport event
+     * @return list of {@link Urn} of {@link Competitor} and associated {@link Reference} for this sport event
      */
     @Override
-    public Map<URN, ReferenceIdCI> getCompetitorsReferences() {
+    public Map<Urn, ReferenceIdCi> getCompetitorsReferences() {
         if (competitorsReferences == null || cachedLocales.isEmpty()) {
             requestMissingStageTournamentData(Collections.singletonList(defaultLocale));
         }
@@ -592,12 +591,12 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     /**
-     * Returns list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     * Returns list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
      *
-     * @return list of {@link URN} of {@link Competitor} which are marked as virtual for this sport event
+     * @return list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
      */
     @Override
-    public List<URN> getCompetitorsVirtual() {
+    public List<Urn> getCompetitorsVirtual() {
         if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
             return competitorVirtual;
         }
@@ -609,7 +608,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         return competitorVirtual == null ? null : competitorVirtual;
     }
 
-    private void internalMerge(SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
+    private void internalMerge(SapiTournamentInfoEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -621,7 +620,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             );
         }
 
-        SAPICompetitors endpointCompetitors = endpointData.getCompetitors() != null
+        SapiCompetitors endpointCompetitors = endpointData.getCompetitors() != null
             ? endpointData.getCompetitors()
             : endpointData.getTournament().getCompetitors();
 
@@ -631,7 +630,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
                     endpointCompetitors
                         .getCompetitor()
                         .stream()
-                        .map(c -> URN.parse(c.getId()))
+                        .map(c -> Urn.parse(c.getId()))
                         .collect(Collectors.toList())
                 );
         }
@@ -641,7 +640,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         cachedLocales.add(dataLocale);
     }
 
-    private void internalMerge(SAPITournament endpointData, Locale dataLocale) {
+    private void internalMerge(SapiTournament endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -652,7 +651,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         }
 
         if (endpointData.getCategory() != null) {
-            this.categoryId = URN.parse(endpointData.getCategory().getId());
+            this.categoryId = Urn.parse(endpointData.getCategory().getId());
         }
 
         this.scheduled =
@@ -668,7 +667,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             (this.scheduled == null || this.scheduledEnd == null) &&
             endpointData.getTournamentLength() != null
         ) {
-            SAPITournamentLength tournamentLength = endpointData.getTournamentLength();
+            SapiTournamentLength tournamentLength = endpointData.getTournamentLength();
             this.scheduled =
                 tournamentLength.getStartDate() == null
                     ? this.scheduled
@@ -680,7 +679,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         }
     }
 
-    private void internalMerge(SAPIParentStage endpointData, Locale dataLocale) {
+    private void internalMerge(SapiParentStage endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
 
@@ -695,7 +694,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
         this.startTimeTbd =
             endpointData.isStartTimeTbd() == null ? this.startTimeTbd : endpointData.isStartTimeTbd();
         this.replacedBy =
-            endpointData.getReplacedBy() == null ? this.replacedBy : URN.parse(endpointData.getReplacedBy());
+            endpointData.getReplacedBy() == null ? this.replacedBy : Urn.parse(endpointData.getReplacedBy());
 
         if (endpointData.getName() != null) {
             this.sportEventNames.put(defaultLocale, endpointData.getName());
@@ -773,8 +772,8 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
     }
 
     @Override
-    public ExportableCI export() {
-        return new ExportableTournamentStageCI(
+    public ExportableCi export() {
+        return new ExportableTournamentStageCi(
             id.toString(),
             new HashMap<>(sportEventNames),
             scheduled,
@@ -783,7 +782,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             null,
             BookingStatus.Unavailable,
             competitorIds != null
-                ? competitorIds.stream().map(URN::toString).collect(Collectors.toList())
+                ? competitorIds.stream().map(Urn::toString).collect(Collectors.toList())
                 : null,
             null,
             null,
@@ -805,7 +804,7 @@ class TournamentStageCIImpl implements StageCI, ExportableCacheItem {
             sportEventType,
             competitorVirtual == null
                 ? null
-                : competitorVirtual.stream().map(URN::toString).collect(Collectors.toList())
+                : competitorVirtual.stream().map(Urn::toString).collect(Collectors.toList())
         );
     }
 }

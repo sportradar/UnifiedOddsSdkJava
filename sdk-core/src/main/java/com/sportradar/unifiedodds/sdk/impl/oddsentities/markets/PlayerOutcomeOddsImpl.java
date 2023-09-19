@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFOutcomeActive;
+import com.sportradar.uf.datamodel.UfOutcomeActive;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.Match;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
@@ -36,7 +36,7 @@ public class PlayerOutcomeOddsImpl extends OutcomeOddsImpl implements PlayerOutc
         NameProvider nameProvider,
         OutcomeDefinition outcomeDefinition,
         Locale defaultLocale,
-        UFOutcomeActive active,
+        UfOutcomeActive active,
         Double odds,
         Double probability,
         Match match,

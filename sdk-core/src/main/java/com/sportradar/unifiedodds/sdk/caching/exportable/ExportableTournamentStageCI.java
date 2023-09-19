@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableTournamentStageCI extends ExportableStageCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableTournamentStageCi extends ExportableStageCi {
 
     private Locale defaultLocale;
     private List<Locale> cachedLocales;
 
-    public ExportableTournamentStageCI(
+    public ExportableTournamentStageCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -27,8 +27,8 @@ public class ExportableTournamentStageCI extends ExportableStageCI {
         String replacedBy,
         BookingStatus bookingStatus,
         List<String> competitorIds,
-        ExportableVenueCI venue,
-        ExportableSportEventConditionsCI conditions,
+        ExportableVenueCi venue,
+        ExportableSportEventConditionsCi conditions,
         Map<String, Map<String, String>> competitorsReferences,
         String parentStageId,
         List<String> stagesIds,

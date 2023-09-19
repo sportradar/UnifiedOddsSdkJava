@@ -16,8 +16,8 @@ import com.sportradar.unifiedodds.sdk.impl.*;
 /**
  * An injection module which is used to customise some of the SDK internal components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
-public class CustomisableSDKModule extends AbstractModule {
+@SuppressWarnings({ "LineLength" })
+public class CustomisableSdkModule extends AbstractModule {
 
     /**
      * Configures a {@link Binder} via the exposed methods.

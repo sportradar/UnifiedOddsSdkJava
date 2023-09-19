@@ -4,14 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 
 /**
  * A round representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface RoundCI {
+public interface RoundCi {
     /**
      * Returns the type of the round
      *
@@ -31,7 +30,7 @@ public interface RoundCI {
      *
      * @return the id of the group associated with the current round
      */
-    URN getGroupId();
+    Urn getGroupId();
 
     /**
      * Returns the id of the other match

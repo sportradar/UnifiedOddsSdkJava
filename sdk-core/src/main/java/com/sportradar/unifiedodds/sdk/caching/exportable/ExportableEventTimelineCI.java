@@ -4,16 +4,16 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableEventTimelineCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableEventTimelineCi implements Serializable {
 
     private Locale cachedLocale;
-    private List<ExportableTimelineEventCI> timelineEvents;
+    private List<ExportableTimelineEventCi> timelineEvents;
     private boolean isFinalized;
 
-    public ExportableEventTimelineCI(
+    public ExportableEventTimelineCi(
         Locale cachedLocale,
-        List<ExportableTimelineEventCI> timelineEvents,
+        List<ExportableTimelineEventCi> timelineEvents,
         boolean isFinalized
     ) {
         this.cachedLocale = cachedLocale;
@@ -29,11 +29,11 @@ public class ExportableEventTimelineCI implements Serializable {
         this.cachedLocale = cachedLocale;
     }
 
-    public List<ExportableTimelineEventCI> getTimelineEvents() {
+    public List<ExportableTimelineEventCi> getTimelineEvents() {
         return timelineEvents;
     }
 
-    public void setTimelineEvents(List<ExportableTimelineEventCI> timelineEvents) {
+    public void setTimelineEvents(List<ExportableTimelineEventCi> timelineEvents) {
         this.timelineEvents = timelineEvents;
     }
 

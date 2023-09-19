@@ -8,15 +8,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableSportEventCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableSportEventCi extends ExportableCi {
 
     private Date scheduled;
     private Date scheduledEnd;
     private Boolean startTimeTbd;
     private String replacedBy;
 
-    ExportableSportEventCI(
+    ExportableSportEventCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,

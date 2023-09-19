@@ -11,8 +11,10 @@ import com.google.inject.name.Named;
 import com.ibm.icu.util.Calendar;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.EnvironmentUpdater;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationImpl;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
@@ -28,15 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "ClassFanOutComplexity",
-        "ConstantName",
-        "HiddenField",
-        "LineLength",
-        "MagicNumber",
-        "MethodLength",
-    }
+    { "ClassFanOutComplexity", "ConstantName", "HiddenField", "LineLength", "MagicNumber", "MethodLength" }
 )
 public class WhoAmIReader {
 
@@ -44,20 +38,23 @@ public class WhoAmIReader {
     private final DataProvider<BookmakerDetails> configDataProvider;
     private final DataProvider<BookmakerDetails> productionDataProvider;
     private final DataProvider<BookmakerDetails> integrationDataProvider;
-    private final SDKInternalConfiguration config;
+    private final UofConfiguration config;
     private boolean dataFetched;
     private boolean whoAmIValidated;
     private Map<String, String> associatedSdkMdcContextMap;
     private com.sportradar.unifiedodds.sdk.entities.BookmakerDetails bookmakerDetails;
     private Duration serverTimeDifference;
+    private final EnvironmentUpdater environmentUpdater;
 
     @Inject
     public WhoAmIReader(
-        SDKInternalConfiguration config,
+        UofConfiguration config,
+        EnvironmentUpdater environmentUpdater,
         @Named("ConfigDataProvider") DataProvider<BookmakerDetails> configDataProvider,
         @Named("ProductionDataProvider") DataProvider<BookmakerDetails> productionDataProvider,
         @Named("IntegrationDataProvider") DataProvider<BookmakerDetails> integrationDataProvider
     ) {
+        this.environmentUpdater = environmentUpdater;
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(productionDataProvider);
         Preconditions.checkNotNull(integrationDataProvider);
@@ -102,11 +99,13 @@ public class WhoAmIReader {
     public String getSdkContextDescription() {
         Preconditions.checkState(whoAmIValidated);
 
-        return String.format(
-            "uf-sdk-%s%s",
-            bookmakerDetails.getBookmakerId(),
-            config.getSdkNodeId() == null ? "" : "-" + config.getSdkNodeId()
-        );
+        return Concatenator
+            .separatingWith("-")
+            .appendIfNotNull("uf")
+            .appendIfNotNull("sdk")
+            .appendIfNotNull(bookmakerDetails.getBookmakerId())
+            .appendIfNotNull(config.getNodeId())
+            .retrieve();
     }
 
     public Map<String, String> getAssociatedSdkMdcContextMap() {
@@ -178,7 +177,7 @@ public class WhoAmIReader {
             return;
         }
 
-        BookmakerDetails bookmakerDetails = config.isReplaySession()
+        BookmakerDetails bookmakerDetails = config.getEnvironment() == Environment.Replay
             ? fetchReplayBookmakerDetails()
             : fetchBookmakerDetails();
 
@@ -201,7 +200,7 @@ public class WhoAmIReader {
         logger.info(
             "Attempting bookmaker details fetch from the configured environment[{}], API: '{}'",
             config.getEnvironment(),
-            config.getApiHostAndPort()
+            config.getApi().getHost()
         );
 
         BookmakerDetails bookmakerDetails = null;
@@ -223,14 +222,21 @@ public class WhoAmIReader {
             "Bookmaker details fetch failed from the configured environment, checking token status on other available environments..."
         );
 
-        if (!config.getAPIHost().equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Integration))) {
+        if (
+            !config
+                .getApi()
+                .getHost()
+                .equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Integration))
+        ) {
             attemptTokenValidationOn(
                 Environment.Integration,
                 EnvironmentManager.getApiHost(Environment.Integration),
                 integrationDataProvider
             );
         }
-        if (!config.getAPIHost().equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Production))) {
+        if (
+            !config.getApi().getHost().equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Production))
+        ) {
             attemptTokenValidationOn(
                 Environment.Production,
                 EnvironmentManager.getApiHost(Environment.Production),
@@ -284,16 +290,17 @@ public class WhoAmIReader {
         BookmakerDetails bookmakerDetails = null;
         try {
             bookmakerDetails = provideBookmakerDetails(productionDataProvider);
+            if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
+                logger.info(
+                    "Production WhoAmI request successful, switching SDK configuration to production API"
+                );
+
+                environmentUpdater.updateToProduction();
+
+                return bookmakerDetails;
+            }
         } catch (DataProviderException e) {
             logger.warn("Replay WhoAmI fetch failed on 'production' with exc:", e);
-        }
-
-        if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
-            logger.info(
-                "Production WhoAmI request successful, switching SDK configuration to production API"
-            );
-            config.updateApiHost(EnvironmentManager.getApiHost(Environment.Production));
-            return bookmakerDetails;
         }
 
         logger.info("Production API request failed, fetching 'integration' WhoAmI endpoint");
@@ -307,7 +314,8 @@ public class WhoAmIReader {
             logger.info(
                 "Integration WhoAmI request successful, switching SDK configuration to integration API"
             );
-            config.updateApiHost(EnvironmentManager.getApiHost(Environment.Integration));
+
+            environmentUpdater.updateToIntegration();
         }
 
         return bookmakerDetails;

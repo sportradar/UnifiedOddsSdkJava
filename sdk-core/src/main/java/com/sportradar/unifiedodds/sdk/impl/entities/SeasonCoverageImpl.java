@@ -5,20 +5,20 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCoverageCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCoverageCi;
 import com.sportradar.unifiedodds.sdk.entities.SeasonCoverage;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Provides information about season coverage
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength", "UnnecessaryParentheses" })
+@SuppressWarnings({ "LineLength", "UnnecessaryParentheses" })
 public class SeasonCoverageImpl implements SeasonCoverage {
 
     /**
      * The unique identifier of the season
      */
-    private final URN seasonId;
+    private final Urn seasonId;
 
     /**
      * The string representation of the maximum coverage available for the season associated with the current instance
@@ -48,17 +48,17 @@ public class SeasonCoverageImpl implements SeasonCoverage {
     /**
      * Initializes a new instance of {@link SeasonCoverageImpl}
      *
-     * @param seasonCoverageCI - a {@link SeasonCoverageCI} used to make the instance
+     * @param seasonCoverageCi - a {@link SeasonCoverageCi} used to make the instance
      */
-    public SeasonCoverageImpl(SeasonCoverageCI seasonCoverageCI) {
-        Preconditions.checkNotNull(seasonCoverageCI);
+    public SeasonCoverageImpl(SeasonCoverageCi seasonCoverageCi) {
+        Preconditions.checkNotNull(seasonCoverageCi);
 
-        this.seasonId = seasonCoverageCI.getSeasonId();
-        this.maxCoverageLevel = seasonCoverageCI.getMaxCoverageLevel();
-        this.minCoverageLevel = seasonCoverageCI.getMinCoverageLevel();
-        this.maxCovered = seasonCoverageCI.getMaxCovered();
-        this.played = seasonCoverageCI.getPlayed();
-        this.scheduled = seasonCoverageCI.getScheduled();
+        this.seasonId = seasonCoverageCi.getSeasonId();
+        this.maxCoverageLevel = seasonCoverageCi.getMaxCoverageLevel();
+        this.minCoverageLevel = seasonCoverageCi.getMinCoverageLevel();
+        this.maxCovered = seasonCoverageCi.getMaxCovered();
+        this.played = seasonCoverageCi.getPlayed();
+        this.scheduled = seasonCoverageCi.getScheduled();
     }
 
     /**
@@ -67,7 +67,7 @@ public class SeasonCoverageImpl implements SeasonCoverage {
      * @return - the unique identifier of the season
      */
     @Override
-    public URN getSeasonId() {
+    public Urn getSeasonId() {
         return seasonId;
     }
 

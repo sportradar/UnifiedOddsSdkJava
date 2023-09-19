@@ -6,9 +6,9 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.entities.SeasonInfo;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -17,13 +17,13 @@ import java.util.Map;
 /**
  * Provides season information about an entity (sport, category, season, ...)
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class SeasonInfoImpl implements SeasonInfo {
 
     /**
-     * The unique {@link URN} identifier
+     * The unique {@link Urn} identifier
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An unmodifiable {@link Map} containing translated names
@@ -49,38 +49,38 @@ public class SeasonInfoImpl implements SeasonInfo {
     /**
      * The associated tournament identifier
      */
-    private URN tournamentId;
+    private Urn tournamentId;
 
     /**
      * Initializes a new instance of {@link SeasonInfoImpl}
      *
-     * @param seasonCI - a {@link SeasonCI} used to build the instance
+     * @param seasonCi - a {@link SeasonCi} used to build the instance
      * @param locales - a {@link List} of locales supported by the instance
      */
-    SeasonInfoImpl(SeasonCI seasonCI, List<Locale> locales) {
-        Preconditions.checkNotNull(seasonCI);
+    SeasonInfoImpl(SeasonCi seasonCi, List<Locale> locales) {
+        Preconditions.checkNotNull(seasonCi);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        this.id = seasonCI.getId();
+        this.id = seasonCi.getId();
         this.names =
             locales
                 .stream()
-                .filter(l -> seasonCI.getName(l) != null)
-                .collect(ImmutableMap.toImmutableMap(k -> k, seasonCI::getName));
-        this.startDate = seasonCI.getStartDate();
-        this.endDate = seasonCI.getEndDate();
-        this.year = seasonCI.getYear();
-        this.tournamentId = seasonCI.getTournamentId();
+                .filter(l -> seasonCi.getName(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, seasonCi::getName));
+        this.startDate = seasonCi.getStartDate();
+        this.endDate = seasonCi.getEndDate();
+        this.year = seasonCi.getYear();
+        this.tournamentId = seasonCi.getTournamentId();
     }
 
     /**
-     * Returns a {@link URN} uniquely identifying the current {@link SeasonInfo} instance
+     * Returns a {@link Urn} uniquely identifying the current {@link SeasonInfo} instance
      *
-     * @return - a {@link URN} uniquely identifying the current {@link SeasonInfo} instance
+     * @return - a {@link Urn} uniquely identifying the current {@link SeasonInfo} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -138,7 +138,7 @@ public class SeasonInfoImpl implements SeasonInfo {
      *
      * @return the associated tournament identifier
      */
-    public URN getTournamentId() {
+    public Urn getTournamentId() {
         return tournamentId;
     }
 

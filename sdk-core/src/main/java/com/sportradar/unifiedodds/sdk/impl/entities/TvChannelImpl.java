@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTvChannelCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTvChannelCi;
 import com.sportradar.unifiedodds.sdk.entities.TvChannel;
 import java.util.Date;
 
@@ -44,7 +44,7 @@ public class TvChannelImpl implements TvChannel {
         this.streamUrl = streamUrl;
     }
 
-    TvChannelImpl(ExportableTvChannelCI exportable) {
+    TvChannelImpl(ExportableTvChannelCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         this.name = exportable.getName();
@@ -104,7 +104,7 @@ public class TvChannelImpl implements TvChannel {
         );
     }
 
-    public ExportableTvChannelCI export() {
-        return new ExportableTvChannelCI(name, time, streamUrl);
+    public ExportableTvChannelCi export() {
+        return new ExportableTvChannelCi(name, time, streamUrl);
     }
 }

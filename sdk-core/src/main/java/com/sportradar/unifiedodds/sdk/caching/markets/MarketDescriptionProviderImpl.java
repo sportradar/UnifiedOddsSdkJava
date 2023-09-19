@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CachingException;
@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
  * Created on 15/06/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "ConstantName", "IllegalCatch", "LineLength", "UnnecessaryParentheses" }
-)
+@SuppressWarnings({ "ConstantName", "IllegalCatch", "LineLength", "UnnecessaryParentheses" })
 public class MarketDescriptionProviderImpl implements MarketDescriptionProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MarketDescriptionProviderImpl.class);
@@ -109,21 +107,21 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
         String variantValue
     ) {
         try {
-            VariantDescriptionCI variantDescriptionCI = variantDescriptionCache.getVariantDescription(
+            VariantDescriptionCi variantDescriptionCi = variantDescriptionCache.getVariantDescription(
                 variantValue,
                 locales
             );
 
             ((MarketDescriptionImpl) marketDescriptor).mergeOutcomes(
-                    variantDescriptionCI.getOutcomes(),
+                    variantDescriptionCi.getOutcomes(),
                     locales
                 );
             ((MarketDescriptionImpl) marketDescriptor).setStaticMappingsData(
-                    variantDescriptionCI.getMappings()
+                    variantDescriptionCi.getMappings()
                 );
             ((MarketDescriptionImpl) marketDescriptor).setFetchInfo(
-                    variantDescriptionCI.getSourceCache(),
-                    variantDescriptionCI.getLastDataReceived()
+                    variantDescriptionCi.getSourceCache(),
+                    variantDescriptionCi.getLastDataReceived()
                 );
 
             return Optional.of(marketDescriptor);

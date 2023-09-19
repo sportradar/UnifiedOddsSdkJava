@@ -153,22 +153,22 @@
     </logger>
 
     <!-- traffic log config assigned to the traffic logger -->
-    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UfSdkTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkTrafficLogFileAppender" />
     </logger>
 
     <!-- traffic failure log config assigned to the traffic failure logger -->
-    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkTrafficFailureLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UfSdkTrafficFailureLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkTrafficFailureLogFileAppender" />
     </logger>
 
     <!-- rest traffic log config assigned to the rest traffic logger -->
-    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkRestTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UfSdkRestTrafficLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkRestTrafficLogFileAppender" />
     </logger>
 
     <!-- client interaction log config assigned to the client interaction logger -->
-    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UFSdkClientInteractionLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
+    <logger name="com.sportradar.unifiedodds.sdk.LoggerDefinitions$UfSdkClientInteractionLog" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkClientInteractionLogFileAppender" />
     </logger>
 

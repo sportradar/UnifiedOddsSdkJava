@@ -5,36 +5,35 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * A sport entity representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-class SportEntityCI {
+class SportEntityCi {
 
     /**
      * The id of the represented sport entity
      */
-    private final URN id;
+    private final Urn id;
 
     /**
-     * Initializes a new instance of the {@link SportEntityCI} class
+     * Initializes a new instance of the {@link SportEntityCi} class
      *
-     * @param id - The {@link URN} of the represented sport entity
+     * @param id - The {@link Urn} of the represented sport entity
      */
-    protected SportEntityCI(URN id) {
+    protected SportEntityCi(Urn id) {
         Preconditions.checkNotNull(id);
 
         this.id = id;
     }
 
     /**
-     * Returns the {@link URN} of the represented sport entity
+     * Returns the {@link Urn} of the represented sport entity
      *
-     * @return - the {@link URN} of the represented sport entity
+     * @return - the {@link Urn} of the represented sport entity
      */
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -54,8 +53,8 @@ class SportEntityCI {
             return true;
         }
 
-        if (obj instanceof SportEntityCI) {
-            SportEntityCI other = (SportEntityCI) obj;
+        if (obj instanceof SportEntityCi) {
+            SportEntityCi other = (SportEntityCi) obj;
 
             return id.equals(other.getId());
         }

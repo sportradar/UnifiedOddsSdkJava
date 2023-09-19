@@ -14,14 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class OutcomeMappingCI {
+public class OutcomeMappingCi {
 
     private final String outcomeId;
     private final String producerOutcomeId;
     private final Map<Locale, String> producerOutcomeName;
 
-    OutcomeMappingCI(Mappings.Mapping.MappingOutcome o, Locale locale) {
+    OutcomeMappingCi(Mappings.Mapping.MappingOutcome o, Locale locale) {
         Preconditions.checkNotNull(o);
         Preconditions.checkNotNull(locale);
 

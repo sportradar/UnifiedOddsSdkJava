@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
@@ -43,8 +44,8 @@ public class SingleRecoveryManagerSupervisorTest {
 
     private ProducerDataProvider producerDataProvider = mock(ProducerDataProvider.class);
 
-    private SDKProducerManager producerManager = new ProducerManagerImpl(
-        mock(SDKInternalConfiguration.class),
+    private SdkProducerManager producerManager = new ProducerManagerImpl(
+        mock(SdkInternalConfiguration.class),
         producerDataProvider
     );
 
@@ -55,16 +56,16 @@ public class SingleRecoveryManagerSupervisorTest {
         ProducerData producerData = producerData().active().withId(PRODUCER_ID);
         when(producerDataProvider.getAvailableProducers()).thenReturn(asList(producerData));
 
-        producerManager = new ProducerManagerImpl(mock(SDKInternalConfiguration.class), producerDataProvider);
+        producerManager = new ProducerManagerImpl(mock(SdkInternalConfiguration.class), producerDataProvider);
 
         supervisor =
             new SingleRecoveryManagerSupervisor(
-                mock(SDKInternalConfiguration.class),
+                mock(SdkInternalConfiguration.class),
                 producerManager,
-                mock(SDKProducerStatusListener.class),
-                mock(SDKEventRecoveryStatusListener.class),
+                mock(SdkProducerStatusListener.class),
+                mock(SdkEventRecoveryStatusListener.class),
                 mock(SnapshotRequestManager.class),
-                mock(SDKTaskScheduler.class),
+                mock(SdkTaskScheduler.class),
                 executorServices,
                 mock(HttpHelper.class),
                 mock(FeedMessageFactory.class),

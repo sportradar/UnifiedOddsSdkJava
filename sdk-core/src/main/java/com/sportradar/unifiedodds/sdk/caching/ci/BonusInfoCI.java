@@ -5,22 +5,21 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIBonusDrumType;
-import com.sportradar.uf.sportsapi.datamodel.SAPILottery;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableBonusInfoCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiBonusDrumType;
+import com.sportradar.uf.sportsapi.datamodel.SapiLottery;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableBonusInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.BonusDrumType;
 
 /**
  * A basic bonus info cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class BonusInfoCI {
+public class BonusInfoCi {
 
     private final Integer bonusBalls;
     private final BonusDrumType bonusDrumType;
     private final String bonusRange;
 
-    public BonusInfoCI(SAPILottery.SAPIBonusInfo bonusInfo) {
+    public BonusInfoCi(SapiLottery.SapiBonusInfo bonusInfo) {
         Preconditions.checkNotNull(bonusInfo);
 
         bonusBalls = bonusInfo.getBonusBalls();
@@ -28,7 +27,7 @@ public class BonusInfoCI {
         bonusRange = bonusInfo.getBonusRange();
     }
 
-    public BonusInfoCI(ExportableBonusInfoCI exportable) {
+    public BonusInfoCi(ExportableBonusInfoCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         bonusBalls = exportable.getBonusBalls();
@@ -48,7 +47,7 @@ public class BonusInfoCI {
         return bonusRange;
     }
 
-    private static BonusDrumType map(SAPIBonusDrumType bonusDrum) {
+    private static BonusDrumType map(SapiBonusDrumType bonusDrum) {
         if (bonusDrum == null) {
             return null;
         }
@@ -63,7 +62,7 @@ public class BonusInfoCI {
         }
     }
 
-    public ExportableBonusInfoCI export() {
-        return new ExportableBonusInfoCI(bonusBalls, bonusDrumType, bonusRange);
+    public ExportableBonusInfoCi export() {
+        return new ExportableBonusInfoCi(bonusBalls, bonusDrumType, bonusRange);
     }
 }

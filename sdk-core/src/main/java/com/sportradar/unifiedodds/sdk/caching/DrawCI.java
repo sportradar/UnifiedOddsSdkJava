@@ -4,17 +4,16 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawResultCi;
 import com.sportradar.unifiedodds.sdk.entities.DrawStatus;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
 /**
  * A draw cache representation
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public interface DrawCI extends SportEventCI {
+public interface DrawCi extends SportEventCi {
     /**
      * Returns the status of the draw
      *
@@ -28,14 +27,14 @@ public interface DrawCI extends SportEventCI {
      * @param locales a {@link List} specifying the required languages
      * @return a list of draw results
      */
-    List<DrawResultCI> getResults(List<Locale> locales);
+    List<DrawResultCi> getResults(List<Locale> locales);
 
     /**
      * Returns the associated lottery id
      *
      * @return the associated lottery id
      */
-    URN getLotteryId();
+    Urn getLotteryId();
 
     /**
      * Returns the display id

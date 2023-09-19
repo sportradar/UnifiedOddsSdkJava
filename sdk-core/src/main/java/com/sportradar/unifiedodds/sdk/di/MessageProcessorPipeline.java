@@ -12,7 +12,7 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageProcessor;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CacheMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.NoOpProcessedFixtureChangesTracker;
@@ -36,7 +36,7 @@ public class MessageProcessorPipeline extends AbstractModule {
         SportEventStatusCache sportEventStatusCache,
         SportEventCache sportEventCache,
         ProcessedFixtureChangesTracker processedFixtureChangesTracker,
-        SDKProducerManager producerManager
+        SdkProducerManager producerManager
     ) {
         return new CacheMessageProcessor(
             sportEventStatusCache,

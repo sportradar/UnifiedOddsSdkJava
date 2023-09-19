@@ -6,13 +6,12 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import java.util.concurrent.TimeUnit;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,28 +23,28 @@ public class LogHttpDataFetcher extends HttpDataFetcher {
 
     private static final Logger logger = LoggerFactory.getLogger(LogHttpDataFetcher.class);
     private static final Logger trafficLogger = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkRestTrafficLog.class
+        LoggerDefinitions.UfSdkRestTrafficLog.class
     );
 
     @Inject
     public LogHttpDataFetcher(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
         UnifiedOddsStatistics statsBean,
-        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+        HttpResponseHandler httpResponseHandler,
+        UserAgentProvider userAgentProvider
     ) {
-        super(config, httpClient, statsBean, apiDeserializer);
+        super(config, httpClient, statsBean, httpResponseHandler, userAgentProvider);
     }
 
     @Override
-    protected HttpData send(HttpRequestBase request) throws CommunicationException {
-        String path = request.getURI().toString();
+    protected HttpData send(ClassicHttpRequest request, String path) throws CommunicationException {
         logger.info("Fetching data from: " + path);
 
         Stopwatch timer = Stopwatch.createStarted();
         HttpData result;
         try {
-            result = super.send(request);
+            result = super.send(request, path);
         } catch (CommunicationException e) {
             trafficLogger.info(
                 "Request[DataFetcher]: {}, response - FAILED({} ms), ex:",

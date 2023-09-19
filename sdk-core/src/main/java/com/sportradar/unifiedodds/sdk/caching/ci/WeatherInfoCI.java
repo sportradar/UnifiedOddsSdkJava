@@ -5,14 +5,13 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIWeatherInfo;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableWeatherInfoCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiWeatherInfo;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableWeatherInfoCi;
 
 /**
  * A weather info representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class WeatherInfoCI {
+public class WeatherInfoCi {
 
     /**
      * The temperature in degrees celsius
@@ -40,11 +39,11 @@ public class WeatherInfoCI {
     private final String weatherConditions;
 
     /**
-     * Initializes a new instance of the {@link WeatherInfoCI} class
+     * Initializes a new instance of the {@link WeatherInfoCi} class
      *
-     * @param weatherInfo - {@link SAPIWeatherInfo} containing information about the weather
+     * @param weatherInfo - {@link SapiWeatherInfo} containing information about the weather
      */
-    WeatherInfoCI(SAPIWeatherInfo weatherInfo) {
+    WeatherInfoCi(SapiWeatherInfo weatherInfo) {
         Preconditions.checkNotNull(weatherInfo);
 
         temperatureCelsius = weatherInfo.getTemperatureCelsius();
@@ -54,7 +53,7 @@ public class WeatherInfoCI {
         weatherConditions = weatherInfo.getWeatherConditions();
     }
 
-    WeatherInfoCI(ExportableWeatherInfoCI exportable) {
+    WeatherInfoCi(ExportableWeatherInfoCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         temperatureCelsius = exportable.getTemperatureCelsius();
@@ -109,7 +108,7 @@ public class WeatherInfoCI {
         return weatherConditions;
     }
 
-    public ExportableWeatherInfoCI export() {
-        return new ExportableWeatherInfoCI(temperatureCelsius, wind, windAdvantage, pitch, weatherConditions);
+    public ExportableWeatherInfoCi export() {
+        return new ExportableWeatherInfoCi(temperatureCelsius, wind, windAdvantage, pitch, weatherConditions);
     }
 }

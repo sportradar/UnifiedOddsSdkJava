@@ -1,7 +1,7 @@
 package com.sportradar.unifiedodds.sdk.impl.processing.pipeline;
 
 import com.google.inject.Inject;
-import com.sportradar.uf.datamodel.UFFixtureChange;
+import com.sportradar.uf.datamodel.UfFixtureChange;
 
 /**
  * Created on 2019-03-29
@@ -24,7 +24,7 @@ public class NoOpProcessedFixtureChangesTracker implements ProcessedFixtureChang
      * @return if the fixture wasn't processed yet, the result is <code>false</code>, otherwise <code>true</code>
      */
     @Override
-    public boolean onFixtureChangeReceived(UFFixtureChange fixtureChange) {
+    public boolean onFixtureChangeReceived(UfFixtureChange fixtureChange) {
         // fixture change check is already being performed on the session level,
         // no need for this precise monitoring in normal ops mode
         return false;

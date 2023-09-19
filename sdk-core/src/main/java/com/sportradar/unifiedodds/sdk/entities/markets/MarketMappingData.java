@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities.markets;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,15 +12,6 @@ import java.util.Set;
  * Defines methods used to access market mapping data provided by the API
  */
 public interface MarketMappingData {
-    /**
-     * The producer id for which the mapping data is valid
-     *
-     * @deprecated since 2.0.1, user {@link #getProducerIds()}
-     * @return the producer id for which the mapping data is valid
-     */
-    @Deprecated
-    int getProducerId();
-
     /**
      * The associated producer ids
      *
@@ -33,7 +24,7 @@ public interface MarketMappingData {
      *
      * @return the sport id for which the mapping data is valid
      */
-    URN getSportId();
+    Urn getSportId();
 
     /**
      * Returns the market id
@@ -81,9 +72,9 @@ public interface MarketMappingData {
      * Indicates if the mapping data is usable with the provided values
      *
      * @param producerId a valid producerId
-     * @param sportId a valid {@link URN} sport identifier
+     * @param sportId a valid {@link Urn} sport identifier
      * @param specifiers a {@link Map} of feed message specifiers
      * @return <code>true</code> if the mapping data is valid for the provided values; otherwise <code>false</code>
      */
-    boolean canMap(int producerId, URN sportId, Map<String, String> specifiers);
+    boolean canMap(int producerId, Urn sportId, Map<String, String> specifiers);
 }

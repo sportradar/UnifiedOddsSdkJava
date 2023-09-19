@@ -9,14 +9,6 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
  */
 public interface OutcomeSettlement extends Outcome {
     /**
-     *
-     * @return true if this outcome is a win, false if it is a loss
-     * @deprecated in favour of {@link #getOutcomeResult()}
-     */
-    @Deprecated
-    boolean isWinning();
-
-    /**
      * Under certain circumstances the whole bet is refunded or half the bet is refunded
      *
      * @return 1 if the whole bet is refunded (regardless of win or loss), 0.5 if half the bet is

@@ -8,11 +8,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.sportradar.uf.datamodel.UFBetSettlementMarket;
-import com.sportradar.uf.datamodel.UFMarket;
-import com.sportradar.uf.datamodel.UFOddsChangeMarket;
+import com.sportradar.uf.datamodel.UfBetSettlementMarket;
+import com.sportradar.uf.datamodel.UfMarket;
+import com.sportradar.uf.datamodel.UfOddsChangeMarket;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.Match;
@@ -23,7 +23,7 @@ import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProviderFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ public class MarketFactoryImpl implements MarketFactory {
         MarketDescriptionProvider marketDescriptionProvider,
         NameProviderFactory nameProviderFactory,
         NamedValuesProvider namedValuesProvider,
-        SDKInternalConfiguration config
+        SdkInternalConfiguration config
     ) {
         Preconditions.checkNotNull(marketDescriptionProvider);
         Preconditions.checkNotNull(nameProviderFactory);
@@ -74,7 +74,7 @@ public class MarketFactoryImpl implements MarketFactory {
     }
 
     @Override
-    public Optional<Market> buildMarket(SportEvent sportEvent, UFMarket market, int producerId) {
+    public Optional<Market> buildMarket(SportEvent sportEvent, UfMarket market, int producerId) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(market);
 
@@ -113,7 +113,7 @@ public class MarketFactoryImpl implements MarketFactory {
     @Override
     public Optional<MarketWithOdds> buildMarketWithOdds(
         SportEvent sportEvent,
-        UFOddsChangeMarket market,
+        UfOddsChangeMarket market,
         int producerId
     ) {
         Preconditions.checkNotNull(sportEvent);
@@ -172,7 +172,7 @@ public class MarketFactoryImpl implements MarketFactory {
     @Override
     public Optional<MarketWithSettlement> buildMarketWithSettlement(
         SportEvent sportEvent,
-        UFBetSettlementMarket market,
+        UfBetSettlementMarket market,
         int producerId
     ) {
         Preconditions.checkNotNull(sportEvent);
@@ -230,7 +230,7 @@ public class MarketFactoryImpl implements MarketFactory {
     @Override
     public Optional<MarketWithProbabilities> buildMarketWithProbabilities(
         SportEvent sportEvent,
-        UFOddsChangeMarket market,
+        UfOddsChangeMarket market,
         int producerId
     ) {
         Preconditions.checkNotNull(sportEvent);
@@ -287,7 +287,7 @@ public class MarketFactoryImpl implements MarketFactory {
     }
 
     @Override
-    public Optional<MarketCancel> buildMarketCancel(SportEvent sportEvent, UFMarket market, int producerId) {
+    public Optional<MarketCancel> buildMarketCancel(SportEvent sportEvent, UfMarket market, int producerId) {
         Preconditions.checkNotNull(sportEvent);
         Preconditions.checkNotNull(market);
 
@@ -351,7 +351,7 @@ public class MarketFactoryImpl implements MarketFactory {
 
     private MarketDescription getMarketDescription(
         int marketId,
-        URN sportId,
+        Urn sportId,
         Map<String, String> specifiersMap,
         int producerId
     ) throws CacheItemNotFoundException {
@@ -373,14 +373,14 @@ public class MarketFactoryImpl implements MarketFactory {
         SportEvent sportEvent,
         int producerId,
         Map<String, String> specifiersMap,
-        List<UFOddsChangeMarket.UFOutcome> outcomes
+        List<UfOddsChangeMarket.UfOutcome> outcomes
     ) {
         if (outcomes == null || outcomes.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<OutcomeOdds> builtOutcomes = new ArrayList<>();
-        for (UFOddsChangeMarket.UFOutcome o : outcomes) {
+        for (UfOddsChangeMarket.UfOutcome o : outcomes) {
             OutcomeOdds outcomeOdds;
 
             if (isValidPlayerOutcome(sportEvent, md.getId(), o.getId(), o.getTeam())) {
@@ -441,14 +441,14 @@ public class MarketFactoryImpl implements MarketFactory {
         SportEvent sportEvent,
         int producerId,
         Map<String, String> specifiersMap,
-        List<UFBetSettlementMarket.UFOutcome> outcomes
+        List<UfBetSettlementMarket.UfOutcome> outcomes
     ) {
         if (outcomes == null || outcomes.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<OutcomeSettlement> builtOutcomes = new ArrayList<>();
-        for (UFBetSettlementMarket.UFOutcome o : outcomes) {
+        for (UfBetSettlementMarket.UfOutcome o : outcomes) {
             OutcomeSettlement outcomeSettlement = new OutcomeSettlementImpl(
                 o.getId(),
                 nameProvider,
@@ -480,7 +480,7 @@ public class MarketFactoryImpl implements MarketFactory {
         SportEvent sportEvent,
         int producerId,
         Map<String, String> specifiersMap,
-        List<UFOddsChangeMarket.UFOutcome> outcomes
+        List<UfOddsChangeMarket.UfOutcome> outcomes
     ) {
         if (outcomes == null || outcomes.isEmpty()) {
             return Collections.emptyList();
@@ -536,7 +536,7 @@ public class MarketFactoryImpl implements MarketFactory {
         return true;
     }
 
-    private AdditionalProbabilities buildAdditionalProbabilities(UFOddsChangeMarket.UFOutcome outcome) {
+    private AdditionalProbabilities buildAdditionalProbabilities(UfOddsChangeMarket.UfOutcome outcome) {
         return (
                 outcome.getWinProbabilities() != null ||
                 outcome.getLoseProbabilities() != null ||

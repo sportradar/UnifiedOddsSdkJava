@@ -12,9 +12,9 @@ import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.SDKEventRecoveryStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.SDKProducerStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkEventRecoveryStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkProducerStatusListener;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
@@ -38,7 +38,6 @@ import org.junit.Test;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ExecutableStatementCount",
         "ExplicitInitialization",
@@ -51,19 +50,19 @@ import org.junit.Test;
 public class RecoveryManagerTests {
 
     private RecoveryManagerImpl recoveryManager;
-    private SDKProducerManager producerManager;
+    private SdkProducerManager producerManager;
     private ProducerStatusListener producerStatusListener;
     private TaskScheduler taskScheduler;
-    private SDKEventRecoveryStatusListener mockedEventRecoveryListener;
+    private SdkEventRecoveryStatusListener mockedEventRecoveryListener;
     private HttpHelper mockedHttpHelper;
     private TimeUtils mockedTimeUtils;
     private SequenceGenerator mockedSequenceGenerator;
 
     @Before
     public void beforeTest() {
-        SDKInternalConfiguration cfg = mock(SDKInternalConfiguration.class);
+        SdkInternalConfiguration cfg = mock(SdkInternalConfiguration.class);
         when(cfg.isReplaySession()).thenReturn(false);
-        when(cfg.getMaxRecoveryExecutionMinutes()).thenReturn(60);
+        when(cfg.getMaxRecoveryExecutionSeconds()).thenReturn(60);
         when(cfg.getLongestInactivityInterval()).thenReturn(20);
         when(cfg.getSdkNodeId()).thenReturn(null);
 
@@ -71,7 +70,7 @@ public class RecoveryManagerTests {
         when(producerDataProvider.getAvailableProducers()).thenReturn(getAvailableProducerData());
         producerManager = new ProducerManagerImpl(cfg, producerDataProvider);
 
-        mockedEventRecoveryListener = mock(SDKEventRecoveryStatusListener.class);
+        mockedEventRecoveryListener = mock(SdkEventRecoveryStatusListener.class);
         mockedHttpHelper = mock(HttpHelper.class);
         mockedTimeUtils = mock(TimeUtils.class);
         mockedSequenceGenerator = mock(SequenceGenerator.class);
@@ -152,7 +151,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -223,7 +221,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -251,7 +248,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -280,7 +276,6 @@ public class RecoveryManagerTests {
 
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.AliveIntervalViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.AliveIntervalViolation
@@ -305,7 +300,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -322,7 +316,6 @@ public class RecoveryManagerTests {
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, false);
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -338,7 +331,6 @@ public class RecoveryManagerTests {
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, true);
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, false);
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(2, ProducerUpReason.ProcessingQueDelayStabilized);
         producerStatusListener.assertProducerStatusChangeInvoked(
             3,
             ProducerStatusReason.ProcessingQueDelayStabilized
@@ -365,7 +357,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -381,7 +372,6 @@ public class RecoveryManagerTests {
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, true);
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -391,7 +381,6 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(25);
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             3,
             ProducerStatusReason.AliveIntervalViolation
@@ -427,7 +416,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(2, ProducerUpReason.ReturnedFromInactivity);
         producerStatusListener.assertProducerStatusChangeInvoked(
             5,
             ProducerStatusReason.ReturnedFromInactivity
@@ -452,7 +440,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -469,7 +456,6 @@ public class RecoveryManagerTests {
         recoveryManager.onAliveReceived(1, userSessionAliveGenTimestamp, mockedTimeUtils.now(), true, false);
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -494,7 +480,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -565,7 +550,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -589,6 +573,12 @@ public class RecoveryManagerTests {
     }
 
     @Test
+    public void recoveyStartedCallbacksShouldNotFail() {
+        recoveryManager.handleRecoveryStarted(mock(Recoverable.class));
+        recoveryManager.handleTopologyRecoveryStarted(mock(Recoverable.class));
+    }
+
+    @Test
     public void handleChannelRecoveryFollowedByAliveMessageWhileProducerIsUpTest() {
         Producer producer = producerManager.getProducer(1);
         assertTrue(producer.isFlaggedDown());
@@ -606,7 +596,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -654,7 +643,6 @@ public class RecoveryManagerTests {
 
         adjustMockedTimeUtils(3);
 
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -670,7 +658,6 @@ public class RecoveryManagerTests {
 
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -686,7 +673,6 @@ public class RecoveryManagerTests {
         recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
         assertTrue(producer.isFlaggedDown());
         assertEquals(2, taskScheduler.getOneTimeTaskRuns());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -778,7 +764,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -817,7 +802,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -842,7 +826,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -862,7 +845,6 @@ public class RecoveryManagerTests {
         adjustMockedTimeUtils(5);
         recoveryManager.onAliveReceived(3, getAdjustedMilliseconds(-1), mockedTimeUtils.now(), false, true);
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.Other);
         producerStatusListener.assertProducerStatusChangeInvoked(2, ProducerStatusReason.Other);
     }
 
@@ -884,7 +866,6 @@ public class RecoveryManagerTests {
             MessageInterest.AllMessages
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -906,7 +887,6 @@ public class RecoveryManagerTests {
         recoveryManager.onAliveReceived(1, mockedTimeUtils.now(), mockedTimeUtils.now(), true, false);
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -919,7 +899,6 @@ public class RecoveryManagerTests {
 
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             2,
             ProducerStatusReason.ProcessingQueueDelayViolation
@@ -932,7 +911,6 @@ public class RecoveryManagerTests {
 
         recoveryManager.onTimerElapsed();
         assertTrue(producer.isFlaggedDown());
-        producerStatusListener.assertProducerDownInvoked(1, ProducerDownReason.ProcessingQueueDelayViolation);
         producerStatusListener.assertProducerStatusChangeInvoked(
             3,
             ProducerStatusReason.AliveIntervalViolation
@@ -966,7 +944,6 @@ public class RecoveryManagerTests {
             MessageInterest.LiveMessagesOnly
         );
         assertFalse(producer.isFlaggedDown());
-        producerStatusListener.assertProducerUpInvoked(1, ProducerUpReason.FirstRecoveryCompleted);
         producerStatusListener.assertProducerStatusChangeInvoked(
             1,
             ProducerStatusReason.FirstRecoveryCompleted
@@ -1063,7 +1040,7 @@ public class RecoveryManagerTests {
         );
     }
 
-    private class TaskScheduler implements SDKTaskScheduler {
+    private class TaskScheduler implements SdkTaskScheduler {
 
         private int oneTimeTaskRuns = 0;
 
@@ -1098,7 +1075,7 @@ public class RecoveryManagerTests {
         }
     }
 
-    private class ProducerStatusListener implements SDKProducerStatusListener {
+    private class ProducerStatusListener implements SdkProducerStatusListener {
 
         private int producerDownTriggered = 0;
         private int producerUpTriggered = 0;
@@ -1108,22 +1085,13 @@ public class RecoveryManagerTests {
         private ProducerStatusReason lastProducerStatusReason = null;
 
         @Override
-        public void onProducerDown(ProducerDown producerDown) {
-            producerDownTriggered++;
-            lastProducerDownReason = producerDown.getReason();
-        }
-
-        @Override
-        public void onProducerUp(ProducerUp producerUp) {
-            producerUpTriggered++;
-            lastProducerUpReason = producerUp.getReason();
-        }
-
-        @Override
         public void onProducerStatusChange(ProducerStatus producerStatus) {
             producerStatusChangeTriggered++;
             lastProducerStatusReason = producerStatus.getProducerStatusReason();
         }
+
+        @Override
+        public void onRecoveryInitiated(RecoveryInitiated recoveryInitiated) {}
 
         void assertProducerUpInvoked(int count) {
             assertEquals(count, producerUpTriggered);

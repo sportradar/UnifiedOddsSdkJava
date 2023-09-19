@@ -5,48 +5,47 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceDriverProfileCI;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceDriverProfileCi;
+import com.sportradar.utils.Urn;
 
 /**
  * A cache representation of race driver profile
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class RaceDriverProfileCI {
+public class RaceDriverProfileCi {
 
-    private final URN raceDriverId;
-    private final URN raceTeamId;
-    private final CarCI car;
+    private final Urn raceDriverId;
+    private final Urn raceTeamId;
+    private final CarCi car;
 
-    public RaceDriverProfileCI(URN raceDriverId, URN raceTeamId, CarCI car) {
+    public RaceDriverProfileCi(Urn raceDriverId, Urn raceTeamId, CarCi car) {
         this.raceDriverId = raceDriverId;
         this.raceTeamId = raceTeamId;
         this.car = car;
     }
 
-    public RaceDriverProfileCI(ExportableRaceDriverProfileCI exportable) {
+    public RaceDriverProfileCi(ExportableRaceDriverProfileCi exportable) {
         Preconditions.checkNotNull(exportable);
 
         this.raceDriverId =
-            exportable.getRaceDriverId() != null ? URN.parse(exportable.getRaceDriverId()) : null;
-        this.raceTeamId = exportable.getRaceTeamId() != null ? URN.parse(exportable.getRaceTeamId()) : null;
-        this.car = exportable.getCar() != null ? new CarCI(exportable.getCar()) : null;
+            exportable.getRaceDriverId() != null ? Urn.parse(exportable.getRaceDriverId()) : null;
+        this.raceTeamId = exportable.getRaceTeamId() != null ? Urn.parse(exportable.getRaceTeamId()) : null;
+        this.car = exportable.getCar() != null ? new CarCi(exportable.getCar()) : null;
     }
 
-    public URN getRaceDriverId() {
+    public Urn getRaceDriverId() {
         return raceDriverId;
     }
 
-    public URN getRaceTeamId() {
+    public Urn getRaceTeamId() {
         return raceTeamId;
     }
 
-    public CarCI getCar() {
+    public CarCi getCar() {
         return car;
     }
 
-    public ExportableRaceDriverProfileCI export() {
-        return new ExportableRaceDriverProfileCI(
+    public ExportableRaceDriverProfileCi export() {
+        return new ExportableRaceDriverProfileCi(
             raceDriverId != null ? raceDriverId.toString() : null,
             raceTeamId != null ? raceTeamId.toString() : null,
             car != null ? car.export() : null

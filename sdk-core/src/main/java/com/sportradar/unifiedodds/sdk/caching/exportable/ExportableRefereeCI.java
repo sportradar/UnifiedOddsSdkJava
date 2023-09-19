@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableRefereeCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableRefereeCi implements Serializable {
 
     private String id;
     private Map<Locale, String> nationalities;
     private String name;
 
-    public ExportableRefereeCI(String id, Map<Locale, String> nationalities, String name) {
+    public ExportableRefereeCi(String id, Map<Locale, String> nationalities, String name) {
         this.id = id;
         this.nationalities = nationalities;
         this.name = name;

@@ -11,13 +11,12 @@ import com.sportradar.uf.sportsapi.datamodel.DescSpecifiers;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class MarketSpecifierCI {
+public class MarketSpecifierCi {
 
     private final String name;
     private final String type;
 
-    public MarketSpecifierCI(DescSpecifiers.Specifier s) {
+    public MarketSpecifierCi(DescSpecifiers.Specifier s) {
         Preconditions.checkNotNull(s);
         Preconditions.checkArgument(!s.getType().isEmpty());
         Preconditions.checkArgument(!s.getName().isEmpty());

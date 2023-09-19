@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.exceptions.internal;
 /**
  * The following exception gets thrown when a cache problem is encountered
  */
-public abstract class CachingException extends SDKInternalException {
+public abstract class CachingException extends SdkInternalException {
 
     public CachingException(String message) {
         super(message);

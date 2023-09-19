@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * A basic implementation of the {@link RecoveryInitiated}
@@ -16,7 +16,7 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
     private final Producer producer;
     private final long requestId;
     private final Long after;
-    private final URN eventId;
+    private final Urn eventId;
     private final String message;
     private final long timestamp;
 
@@ -24,7 +24,7 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
         Producer producer,
         long requestId,
         Long after,
-        URN eventId,
+        Urn eventId,
         String message,
         long timestamp
     ) {
@@ -47,14 +47,6 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
     @Override
     public Producer getProducer() {
         return producer;
-    }
-
-    /**
-     * @return when was this message created in milliseconds since EPOCH UTC
-     */
-    @Override
-    public long getTimestamp() {
-        return timestamp;
     }
 
     /**
@@ -93,7 +85,7 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
      * @return the associated event identifier
      */
     @Override
-    public URN getEventId() {
+    public Urn getEventId() {
         return eventId;
     }
 

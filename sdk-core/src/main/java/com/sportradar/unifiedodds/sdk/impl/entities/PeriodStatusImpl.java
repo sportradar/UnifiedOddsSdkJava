@@ -1,7 +1,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodStatus;
+import com.sportradar.uf.sportsapi.datamodel.SapiPeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.PeriodCompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class PeriodStatusImpl implements PeriodStatus {
     private final String status;
     private final List<PeriodCompetitorResult> periodResults;
 
-    public PeriodStatusImpl(SAPIPeriodStatus periodStatus) {
+    public PeriodStatusImpl(SapiPeriodStatus periodStatus) {
         Preconditions.checkNotNull(periodStatus);
 
         this.number = periodStatus.getNumber();

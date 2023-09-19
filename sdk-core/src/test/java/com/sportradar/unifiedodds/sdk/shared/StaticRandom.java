@@ -1,7 +1,7 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings(
@@ -51,21 +51,21 @@ public class StaticRandom {
         return limit > 1 ? Instance.nextInt(0, limit) + Instance.nextDouble() : Instance.nextDouble();
     }
 
-    public static URN Urn(String type, int limit) {
+    public static Urn Urn(String type, int limit) {
         if (SdkHelper.stringIsNullOrEmpty(type)) {
             type = "match";
         }
         long id = L(limit);
 
-        return new URN("sr", type, id);
+        return new Urn("sr", type, id);
     }
 
-    public static URN Urn(int id, String type) {
+    public static Urn Urn(int id, String type) {
         if (SdkHelper.stringIsNullOrEmpty(type)) {
             type = "match";
         }
 
-        return new URN("sr", type, id);
+        return new Urn("sr", type, id);
     }
 
     public static String S1000() {
@@ -92,7 +92,7 @@ public class StaticRandom {
         return I(100);
     }
 
-    public static URN U1000() {
+    public static Urn U1000() {
         return Urn("", 1000);
     }
 

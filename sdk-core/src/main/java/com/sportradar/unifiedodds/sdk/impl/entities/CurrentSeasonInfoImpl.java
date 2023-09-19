@@ -10,18 +10,15 @@ import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.GroupCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.TournamentCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.GroupCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
-import com.sportradar.utils.URN;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.sportradar.utils.Urn;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,17 +26,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides information about a tournament season
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName", "UnnecessaryParentheses" }
-)
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "UnnecessaryParentheses" })
 public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrentSeasonInfoImpl.class);
 
     /**
-     * An {@link URN} uniquely identifying the current season
+     * An {@link Urn} uniquely identifying the current season
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An unmodifiable {@link Map} containing names of the season in different languages
@@ -65,7 +60,7 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     /**
      * A cache item representing the season endpoint
      */
-    private final TournamentCI seasonEndpointCI;
+    private final TournamentCi seasonEndpointCi;
 
     /**
      * The cache used to retrieve related event data
@@ -90,28 +85,28 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     /**
      * Initializes a new intance of the {@link CurrentSeasonInfoImpl}
      *
-     * @param currentSeasonCi a {@link TournamentCI} used to build the instance
-     * @param seasonEndpointCI the associated season endpoint cache representation
+     * @param currentSeasonCi a {@link TournamentCi} used to build the instance
+     * @param seasonEndpointCi the associated season endpoint cache representation
      * @param sportEventCache the cache used to retrieve related event data
      * @param sportEntityFactory a {@link SportEntityFactory} instance used to build additional entities
      * @param locales a {@link List} of supported locales
      * @param exceptionHandlingStrategy - the exception handling policy
      */
     CurrentSeasonInfoImpl(
-        SeasonCI currentSeasonCi,
-        TournamentCI seasonEndpointCI,
+        SeasonCi currentSeasonCi,
+        TournamentCi seasonEndpointCi,
         SportEventCache sportEventCache,
         SportEntityFactory sportEntityFactory,
         List<Locale> locales,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
         Preconditions.checkNotNull(currentSeasonCi);
-        Preconditions.checkNotNull(seasonEndpointCI);
+        Preconditions.checkNotNull(seasonEndpointCi);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
-        Preconditions.checkNotNull(locales);
+        Preconditions.checkNotNull(locales, "locales");
         Preconditions.checkNotNull(exceptionHandlingStrategy);
-        Preconditions.checkArgument(!locales.isEmpty());
+        Preconditions.checkArgument(!locales.isEmpty(), "no locales are provided");
 
         this.id = currentSeasonCi.getId();
         this.year = currentSeasonCi.getYear();
@@ -123,7 +118,7 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
                 .filter(l -> currentSeasonCi.getName(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, currentSeasonCi::getName));
 
-        this.seasonEndpointCI = seasonEndpointCI;
+        this.seasonEndpointCi = seasonEndpointCi;
 
         this.locales = locales;
         this.sportEventCache = sportEventCache;
@@ -132,13 +127,21 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     }
 
     /**
-     * Returns the {@link URN} uniquely identifying the current season
+     * Returns the {@link Urn} uniquely identifying the current season
      *
-     * @return - the {@link URN} uniquely identifying the current season
+     * @return - the {@link Urn} uniquely identifying the current season
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
+    }
+
+    /**
+     * Returns the name of the season
+     */
+    @Override
+    public Map<Locale, String> getNames() {
+        return names;
     }
 
     /**
@@ -190,9 +193,9 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public SeasonCoverage getCoverage() {
-        return seasonEndpointCI.getSeasonCoverage() == null
+        return seasonEndpointCi.getSeasonCoverage() == null
             ? null
-            : new SeasonCoverageImpl(seasonEndpointCI.getSeasonCoverage());
+            : new SeasonCoverageImpl(seasonEndpointCi.getSeasonCoverage());
     }
 
     /**
@@ -202,7 +205,7 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public List<Group> getGroups() {
-        List<GroupCI> groups = seasonEndpointCI.getGroups(locales);
+        List<GroupCi> groups = seasonEndpointCi.getGroups(locales);
 
         return groups == null
             ? null
@@ -219,9 +222,9 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public Round getCurrentRound() {
-        return seasonEndpointCI.getRound(locales) == null
+        return seasonEndpointCi.getRound(locales) == null
             ? null
-            : new RoundImpl(seasonEndpointCI.getRound(locales), locales);
+            : new RoundImpl(seasonEndpointCi.getRound(locales), locales);
     }
 
     /**
@@ -234,11 +237,11 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
     @Override
     public List<Competitor> getCompetitors() {
         try {
-            return seasonEndpointCI.getCompetitorIds(locales) == null
+            return seasonEndpointCi.getCompetitorIds(locales) == null
                 ? null
                 : sportEntityFactory.buildStreamCompetitors(
-                    seasonEndpointCI.getCompetitorIds(locales),
-                    seasonEndpointCI,
+                    seasonEndpointCi.getCompetitorIds(locales),
+                    seasonEndpointCi,
                     locales
                 );
         } catch (StreamWrapperException e) {
@@ -254,7 +257,7 @@ public class CurrentSeasonInfoImpl implements CurrentSeasonInfo {
      */
     @Override
     public List<Competition> getSchedule() {
-        List<URN> eventIds = Lists.newArrayList();
+        List<Urn> eventIds = Lists.newArrayList();
         try {
             for (Locale l : locales) {
                 eventIds = sportEventCache.getEventIds(id, l);

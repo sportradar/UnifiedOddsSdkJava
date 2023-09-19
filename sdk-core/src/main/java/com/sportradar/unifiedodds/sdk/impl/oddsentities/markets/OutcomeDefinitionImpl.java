@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,7 +26,7 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
 
     private final MarketDescription marketDescription;
     private final String outcomeId;
-    private final URN sportId;
+    private final Urn sportId;
     private final int producerId;
     private final Map<String, String> specifiersMap;
     private final Locale defaultLocale;
@@ -36,7 +36,7 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
     OutcomeDefinitionImpl(
         MarketDescription md,
         String outcomeId,
-        URN sportId,
+        Urn sportId,
         int producerId,
         Map<String, String> specifiersMap,
         MarketDescriptionProvider descriptorProvider,

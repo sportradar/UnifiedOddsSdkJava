@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.entities.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class MappingTypeProviderImpl implements MappingTypeProvider {
      * @return the {@link Class} to which the id can be mapped, empty optional if the mapping type could not be provided
      */
     @Override
-    public Optional<Class> getMappingType(URN identifier) {
+    public Optional<Class> getMappingType(Urn identifier) {
         Preconditions.checkNotNull(identifier);
 
         switch (identifier.getType()) {

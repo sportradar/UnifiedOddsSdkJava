@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportableStageCI extends ExportableCompetitionCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportableStageCi extends ExportableCompetitionCi {
 
     private String parentStageId;
     private List<String> stagesIds;
@@ -17,7 +17,7 @@ public class ExportableStageCI extends ExportableCompetitionCI {
     private String categoryId;
     private List<String> additionalParentsIds;
 
-    ExportableStageCI(
+    ExportableStageCi(
         String id,
         Map<Locale, String> names,
         Date scheduled,
@@ -26,8 +26,8 @@ public class ExportableStageCI extends ExportableCompetitionCI {
         String replacedBy,
         BookingStatus bookingStatus,
         List<String> competitorIds,
-        ExportableVenueCI venue,
-        ExportableSportEventConditionsCI conditions,
+        ExportableVenueCi venue,
+        ExportableSportEventConditionsCi conditions,
         Map<String, Map<String, String>> competitorsReferences,
         String parentStageId,
         List<String> stagesIds,

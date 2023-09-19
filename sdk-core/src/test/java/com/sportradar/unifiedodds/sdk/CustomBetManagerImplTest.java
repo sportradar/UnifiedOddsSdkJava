@@ -17,7 +17,7 @@ import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class CustomBetManagerImplTest {
         @Test
         public void shouldNotBeCreatedWithNullArguments() {
             assertThatNullPointerException()
-                .isThrownBy(() -> new CustomBetManagerImpl(null, mock(SDKInternalConfiguration.class)))
+                .isThrownBy(() -> new CustomBetManagerImpl(null, mock(SdkInternalConfiguration.class)))
                 .withMessage("dataRouterManager");
             assertThatNullPointerException()
                 .isThrownBy(() -> new CustomBetManagerImpl(mock(DataRouterManager.class), null))
@@ -47,9 +47,9 @@ public class CustomBetManagerImplTest {
     @RunWith(JUnitParamsRunner.class)
     public static class RequestingAvailableSelection {
 
-        private static final URN ANY_URN = Urns.SportEvents.getForAnyMatch();
+        private static final Urn ANY_URN = Urns.SportEvents.getForAnyMatch();
         private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-        private SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
         @Test
         public void shouldRequireNonNullUrn() {
@@ -102,7 +102,7 @@ public class CustomBetManagerImplTest {
 
         private static final List<Selection> ANY_SELECTION = new ArrayList<>();
         private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-        private SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
         @Test
         public void shouldRequireNonNullSelection() {
@@ -155,7 +155,7 @@ public class CustomBetManagerImplTest {
 
         private static final List<Selection> ANY_SELECTION = new ArrayList<>();
         private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-        private SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
         @Test
         public void shouldRequireNonNullSelection() {

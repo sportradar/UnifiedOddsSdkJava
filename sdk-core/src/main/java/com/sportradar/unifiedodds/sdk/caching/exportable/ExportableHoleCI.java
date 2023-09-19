@@ -6,13 +6,13 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import java.io.Serializable;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableHoleCI implements Serializable {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableHoleCi implements Serializable {
 
     private int number;
     private int par;
 
-    public ExportableHoleCI(int number, int par) {
+    public ExportableHoleCi(int number, int par) {
         this.number = number;
         this.par = par;
     }

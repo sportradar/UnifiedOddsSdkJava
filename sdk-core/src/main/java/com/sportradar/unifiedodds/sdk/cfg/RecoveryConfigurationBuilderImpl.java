@@ -4,11 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.cfg;
 
+import static java.time.Duration.of;
+
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import java.util.concurrent.TimeUnit;
+import com.sportradar.unifiedodds.sdk.RuntimeConfiguration;
+import java.time.temporal.ChronoUnit;
 
 /**
  * A base implementation of the {@link RecoveryConfigurationBuilder}
@@ -18,124 +18,173 @@ abstract class RecoveryConfigurationBuilderImpl<T>
     extends ConfigurationBuilderBaseImpl<T>
     implements RecoveryConfigurationBuilder<T> {
 
-    private static final int MIN_INACTIVITY_SECONDS = 20;
-    private static final int MAX_INACTIVITY_SECONDS = 180;
-    private static final int MIN_RECOVERY_EXECUTION_MINUTES = 10;
-    private static final int MAX_RECOVERY_EXECUTION_MINUTES = 60 * 6;
-    private static final int MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 20;
-    private static final int MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 180;
-    private static final int DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS = 30;
-
-    int maxInactivitySeconds = MIN_INACTIVITY_SECONDS;
-    int maxRecoveryExecutionTimeMinutes = 60;
-    int minIntervalBetweenRecoveryRequests = DEFAULT_INTERVAL_BETWEEN_RECOVERY_REQUESTS;
-
     RecoveryConfigurationBuilderImpl(
-        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-        SDKConfigurationYamlReader sdkConfigurationYamlReader
+        UofConfigurationImpl uofConfiguration,
+        SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SdkConfigurationYamlReader sdkConfigurationYamlReader
     ) {
-        super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+        super(uofConfiguration, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
     }
 
-    @Override
-    public T loadConfigFromSdkProperties() {
-        loadRecoveryConfigFrom(sdkConfigurationPropertiesReader);
-        return super.loadConfigFromSdkProperties();
-    }
-
-    @Override
-    public T loadConfigFromApplicationYml() {
-        loadRecoveryConfigFrom(sdkConfigurationYamlReader);
-        return super.loadConfigFromApplicationYml();
-    }
-
-    /**
-     * Sets the max time window between two consecutive alive messages before the associated producer is marked as down(min 20s - max 180s)
-     *
-     * @param inactivitySeconds the max time window between two consecutive alive messages
-     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
-     */
     @Override
     @SuppressWarnings("unchecked")
-    public T setMaxInactivitySeconds(int inactivitySeconds) {
-        Preconditions.checkArgument(
-            inactivitySeconds >= MIN_INACTIVITY_SECONDS,
-            "Inactivity seconds value must be more than " + MIN_INACTIVITY_SECONDS
-        );
-        Preconditions.checkArgument(
-            inactivitySeconds <= MAX_INACTIVITY_SECONDS,
-            "Inactivity seconds value must be less than " + MAX_INACTIVITY_SECONDS
-        );
-
-        this.maxInactivitySeconds = inactivitySeconds;
+    public T setInactivitySeconds(int inactivitySeconds) {
+        UofProducerConfigurationImpl producerConfiguration = (UofProducerConfigurationImpl) configuration.getProducer();
+        producerConfiguration.setInactivitySeconds(inactivitySeconds);
         return (T) this;
     }
 
-    /**
-     * Sets the maximum time in seconds in which recovery must be completed (minimum 10 minutes - max 6 hours)
-     *
-     * @param value the {@link TimeUnit} value
-     * @param timeUnit the used {@link TimeUnit}
-     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
-     */
     @Override
-    @SuppressWarnings("unchecked")
-    public T setMaxRecoveryExecutionTime(int value, TimeUnit timeUnit) {
-        Preconditions.checkNotNull(timeUnit, "The time unit can not be null");
-
-        long executionMinutes = TimeUnit.MINUTES.convert(value, timeUnit);
-
-        Preconditions.checkArgument(
-            executionMinutes >= MIN_RECOVERY_EXECUTION_MINUTES,
-            "Recovery execution minutes must be more than " + MIN_RECOVERY_EXECUTION_MINUTES
-        );
-        Preconditions.checkArgument(
-            executionMinutes <= MAX_RECOVERY_EXECUTION_MINUTES,
-            "Recovery execution minutes must be less than " + MAX_RECOVERY_EXECUTION_MINUTES
-        );
-
-        maxRecoveryExecutionTimeMinutes = Math.toIntExact(executionMinutes);
+    public T setInactivitySecondsPrematch(int inactivitySeconds) {
+        UofProducerConfigurationImpl producerConfiguration = (UofProducerConfigurationImpl) configuration.getProducer();
+        producerConfiguration.setInactivitySecondsPrematch(inactivitySeconds);
         return (T) this;
     }
 
-    /**
-     * Sets the minimal time between two successive recovery requests initiated by alive messages (minimum 20 seconds)
-     *
-     * @param intervalSeconds the minimal time between two successive recovery requests initiated by alive messages (default 30)
-     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
-     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setMaxRecoveryTime(int timeInSeconds) {
+        UofProducerConfigurationImpl producerConfiguration = (UofProducerConfigurationImpl) configuration.getProducer();
+        producerConfiguration.setMaxRecoveryTime(timeInSeconds);
+        return (T) this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public T setMinIntervalBetweenRecoveryRequests(int intervalSeconds) {
-        Preconditions.checkArgument(
-            intervalSeconds >= MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS,
-            "Minimal time between two successive recovery requests must be greater than " +
-            MIN_INTERVAL_BETWEEN_RECOVERY_REQUESTS
-        );
-        Preconditions.checkArgument(
-            intervalSeconds <= MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS,
-            "Minimal time between two successive recovery requests must be leaser than " +
-            MAX_INTERVAL_BETWEEN_RECOVERY_REQUESTS
-        );
-
-        minIntervalBetweenRecoveryRequests = intervalSeconds;
+        UofProducerConfigurationImpl producerConfiguration = (UofProducerConfigurationImpl) configuration.getProducer();
+        producerConfiguration.setMinIntervalBetweenRecoveryRequest(intervalSeconds);
         return (T) this;
     }
 
-    /**
-     * Loads the properties that are relevant to the builder from the provided {@link SDKConfigurationReader}
-     *
-     * @param sdkConfigurationReader the reader from which the properties should be red
-     */
-    private void loadRecoveryConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
-        Preconditions.checkNotNull(sdkConfigurationReader);
+    @Override
+    public T setAdjustAfterAge(boolean adjustAfterAge) {
+        UofProducerConfigurationImpl producerConfiguration = (UofProducerConfigurationImpl) configuration.getProducer();
+        producerConfiguration.setAdjustAfterAge(adjustAfterAge);
+        return (T) this;
+    }
 
-        sdkConfigurationReader
-            .readMaxRecoveryTime()
-            .ifPresent(v -> setMaxRecoveryExecutionTime(v, TimeUnit.MINUTES));
-        sdkConfigurationReader.readMaxInactivitySeconds().ifPresent(this::setMaxInactivitySeconds);
-        sdkConfigurationReader
-            .readMinIntervalBetweenRecoveryRequests()
-            .ifPresent(this::setMinIntervalBetweenRecoveryRequests);
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientTimeout(int httpClientTimeout) {
+        Preconditions.checkNotNull(httpClientTimeout);
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.setHttpClientTimeout(httpClientTimeout);
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientRecoveryTimeout(int httpClientRecoveryTimeout) {
+        Preconditions.checkNotNull(httpClientRecoveryTimeout);
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.setHttpClientRecoveryTimeout(httpClientRecoveryTimeout);
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientFastFailingTimeout(int timeout) {
+        Preconditions.checkNotNull(timeout);
+        getApiConfig().setHttpClientFastFailingTimeout(timeout);
+        RuntimeConfiguration.setFastHttpClientTimeout(of(timeout, ChronoUnit.SECONDS));
+        return (T) this;
+    }
+
+    private UofApiConfigurationImpl getApiConfig() {
+        return (UofApiConfigurationImpl) configuration.getApi();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientMaxConnTotal(int httpClientMaxConnTotal) {
+        Preconditions.checkNotNull(httpClientMaxConnTotal);
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.setHttpClientMaxConnTotal(httpClientMaxConnTotal);
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setHttpClientMaxConnPerRoute(int httpClientMaxConnPerRoute) {
+        Preconditions.checkNotNull(httpClientMaxConnPerRoute);
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.setHttpClientMaxConnPerRoute(httpClientMaxConnPerRoute);
+        return (T) this;
+    }
+
+    @Override
+    public T setSportEventCacheTimeout(int timeoutInHours) {
+        UofCacheConfigurationImpl cacheConfiguration = (UofCacheConfigurationImpl) configuration.getCache();
+        cacheConfiguration.setSportEventCacheTimeout(timeoutInHours);
+        return (T) this;
+    }
+
+    @Override
+    public T setSportEventStatusCacheTimeout(int timeoutInMinutes) {
+        UofCacheConfigurationImpl cacheConfiguration = (UofCacheConfigurationImpl) configuration.getCache();
+        cacheConfiguration.setSportEventStatusCacheTimeout(timeoutInMinutes);
+        return (T) this;
+    }
+
+    @Override
+    public T setProfileCacheTimeout(int timeoutInHours) {
+        UofCacheConfigurationImpl cacheConfiguration = (UofCacheConfigurationImpl) configuration.getCache();
+        cacheConfiguration.setProfileCacheTimeout(timeoutInHours);
+        return (T) this;
+    }
+
+    @Override
+    public T setVariantMarketDescriptionCacheTimeout(int timeoutInHours) {
+        UofCacheConfigurationImpl cacheConfiguration = (UofCacheConfigurationImpl) configuration.getCache();
+        cacheConfiguration.setVariantMarketDescriptionCacheTimeout(timeoutInHours);
+        return (T) this;
+    }
+
+    @Override
+    public T setIgnoreBetPalTimelineSportEventStatusCacheTimeout(int timeoutInHours) {
+        UofCacheConfigurationImpl cacheConfiguration = (UofCacheConfigurationImpl) configuration.getCache();
+        cacheConfiguration.setIgnoreBetPalTimelineSportEventStatusCacheTimeout(timeoutInHours);
+        return (T) this;
+    }
+
+    @Override
+    public T setIgnoreBetPalTimelineSportEventStatus(boolean ignore) {
+        getUofCacheConfiguration().setIgnoreBetPalTimelineSportEventStatus(ignore);
+        RuntimeConfiguration.setIgnoreBetPalTimelineSportEventStatus(ignore);
+        return (T) this;
+    }
+
+    private UofCacheConfigurationImpl getUofCacheConfiguration() {
+        return (UofCacheConfigurationImpl) configuration.getCache();
+    }
+
+    @Override
+    public T setRabbitConnectionTimeout(int timeoutInSeconds) {
+        ((UofRabbitConfigurationImpl) configuration.getRabbit()).setConnectionTimeout(timeoutInSeconds);
+        RuntimeConfiguration.setRabbitConnectionTimeout(timeoutInSeconds);
+
+        return (T) this;
+    }
+
+    @Override
+    public T setRabbitHeartbeat(int heartbeatInSeconds) {
+        ((UofRabbitConfigurationImpl) configuration.getRabbit()).setHeartBeat(heartbeatInSeconds);
+        RuntimeConfiguration.setRabbitHeartbeat(heartbeatInSeconds);
+        return (T) this;
+    }
+
+    @Override
+    public T setStatisticsInterval(int intervalInMinutes) {
+        UofAdditionalConfigurationImpl additionalConfiguration = (UofAdditionalConfigurationImpl) configuration.getAdditional();
+        additionalConfiguration.setStatisticsInterval(intervalInMinutes);
+        return (T) this;
+    }
+
+    @Override
+    public T omitMarketMappings(boolean omit) {
+        UofAdditionalConfigurationImpl additionalConfiguration = (UofAdditionalConfigurationImpl) configuration.getAdditional();
+        additionalConfiguration.setOmitMarketMappings(omit);
+        return (T) this;
     }
 }

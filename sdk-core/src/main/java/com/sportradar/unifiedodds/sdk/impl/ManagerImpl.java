@@ -5,23 +5,24 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCi;
 import com.sportradar.unifiedodds.sdk.entities.Manager;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * An implementation of the {@link Manager} interface
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class ManagerImpl implements Manager {
 
-    private final ManagerCI managerCI;
+    private final ManagerCi managerCi;
 
-    public ManagerImpl(ManagerCI managerCI) {
-        Preconditions.checkNotNull(managerCI);
+    public ManagerImpl(ManagerCi managerCi) {
+        Preconditions.checkNotNull(managerCi);
 
-        this.managerCI = managerCI;
+        this.managerCi = managerCi;
     }
 
     /**
@@ -30,8 +31,8 @@ public class ManagerImpl implements Manager {
      * @return the manager identifier
      */
     @Override
-    public URN getId() {
-        return managerCI.getId();
+    public Urn getId() {
+        return managerCi.getId();
     }
 
     /**
@@ -42,7 +43,15 @@ public class ManagerImpl implements Manager {
      */
     @Override
     public String getName(Locale locale) {
-        return managerCI.getName(locale);
+        return managerCi.getNames().get(locale);
+    }
+
+    /**
+     * Returns the translated manager name
+     */
+    @Override
+    public Map<Locale, String> getNames() {
+        return managerCi.getNames();
     }
 
     /**
@@ -53,7 +62,7 @@ public class ManagerImpl implements Manager {
      */
     @Override
     public String getNationality(Locale locale) {
-        return managerCI.getNationality(locale);
+        return managerCi.getNationality(locale);
     }
 
     /**
@@ -63,6 +72,6 @@ public class ManagerImpl implements Manager {
      */
     @Override
     public String getCountryCode() {
-        return managerCI.getCountryCode();
+        return managerCi.getCountryCode();
     }
 }

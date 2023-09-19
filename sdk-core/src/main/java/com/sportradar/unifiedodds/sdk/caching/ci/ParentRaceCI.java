@@ -4,22 +4,21 @@
 
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPIParentStage;
+import com.sportradar.uf.sportsapi.datamodel.SapiParentStage;
 import com.sportradar.utils.SdkHelper;
 import java.util.Locale;
 
 /**
  * A parent race representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class ParentRaceCI extends ChildRaceCI {
+public class ParentRaceCi extends ChildRaceCi {
 
     /**
-     * Initializes a new instance of the {@link ParentRaceCI} class
-     *  @param parentStage - {@link SAPIParentStage} instance containing information about the child race
+     * Initializes a new instance of the {@link ParentRaceCi} class
+     *  @param parentStage - {@link SapiParentStage} instance containing information about the child race
      * @param locale - {@link Locale} specifying the language of the <i>sportEvent</i>
      */
-    public ParentRaceCI(SAPIParentStage parentStage, Locale locale) {
+    public ParentRaceCi(SapiParentStage parentStage, Locale locale) {
         super(
             parentStage.getId(),
             parentStage.getType(),

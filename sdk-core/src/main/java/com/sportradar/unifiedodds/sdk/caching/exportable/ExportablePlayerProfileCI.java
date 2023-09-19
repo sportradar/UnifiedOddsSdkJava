@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField", "ParameterNumber" })
-public class ExportablePlayerProfileCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField", "ParameterNumber" })
+public class ExportablePlayerProfileCi extends ExportableCi {
 
     private Locale defaultLocale;
     private Map<Locale, String> fullNames;
@@ -27,7 +27,7 @@ public class ExportablePlayerProfileCI extends ExportableCI {
     private List<Locale> cachedLocales;
     private String competitorId;
 
-    public ExportablePlayerProfileCI(
+    public ExportablePlayerProfileCi(
         String id,
         Map<Locale, String> names,
         Locale defaultLocale,

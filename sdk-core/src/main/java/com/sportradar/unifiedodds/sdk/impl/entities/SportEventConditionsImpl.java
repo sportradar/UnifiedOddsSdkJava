@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.SportEventConditionsCi;
 import com.sportradar.unifiedodds.sdk.entities.Pitcher;
 import com.sportradar.unifiedodds.sdk.entities.Referee;
 import com.sportradar.unifiedodds.sdk.entities.SportEventConditions;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Provides information about sport event conditions
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength", "UnnecessaryParentheses" })
+@SuppressWarnings({ "LineLength", "UnnecessaryParentheses" })
 public class SportEventConditionsImpl implements SportEventConditions {
 
     /**
@@ -49,29 +49,29 @@ public class SportEventConditionsImpl implements SportEventConditions {
     /**
      * Initializes a new instance of {@link SportEventConditionsImpl}
      *
-     * @param sportEventConditionsCI - a {@link SportEventConditionsCI} used to build the instance
+     * @param sportEventConditionsCi - a {@link SportEventConditionsCi} used to build the instance
      * @param locales - a {@link List} of locales supported by the instance
      */
-    public SportEventConditionsImpl(SportEventConditionsCI sportEventConditionsCI, List<Locale> locales) {
-        Preconditions.checkNotNull(sportEventConditionsCI);
+    public SportEventConditionsImpl(SportEventConditionsCi sportEventConditionsCi, List<Locale> locales) {
+        Preconditions.checkNotNull(sportEventConditionsCi);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        this.attendance = sportEventConditionsCI.getAttendance();
-        this.eventMode = sportEventConditionsCI.getEventMode();
+        this.attendance = sportEventConditionsCi.getAttendance();
+        this.eventMode = sportEventConditionsCi.getEventMode();
         this.referee =
-            sportEventConditionsCI.getReferee() == null
+            sportEventConditionsCi.getReferee() == null
                 ? null
-                : new RefereeImpl(sportEventConditionsCI.getReferee(), locales);
+                : new RefereeImpl(sportEventConditionsCi.getReferee(), locales);
         this.weatherInfo =
-            sportEventConditionsCI.getWeatherInfo() == null
+            sportEventConditionsCi.getWeatherInfo() == null
                 ? null
-                : new WeatherInfoImpl(sportEventConditionsCI.getWeatherInfo());
-        if (sportEventConditionsCI.getPitchers() != null && !sportEventConditionsCI.getPitchers().isEmpty()) {
+                : new WeatherInfoImpl(sportEventConditionsCi.getWeatherInfo());
+        if (sportEventConditionsCi.getPitchers() != null && !sportEventConditionsCi.getPitchers().isEmpty()) {
             this.pitchers = new ArrayList<>();
-            sportEventConditionsCI
+            sportEventConditionsCi
                 .getPitchers()
-                .forEach(pitcherCI -> this.pitchers.add(new PitcherImpl(pitcherCI)));
+                .forEach(pitcherCi -> this.pitchers.add(new PitcherImpl(pitcherCi)));
         } else {
             this.pitchers = null;
         }

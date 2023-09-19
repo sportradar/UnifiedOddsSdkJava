@@ -11,13 +11,12 @@ import com.sportradar.uf.sportsapi.datamodel.Attributes;
  * Created on 14/06/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class MarketAttributeCI {
+public class MarketAttributeCi {
 
     private final String name;
     private final String description;
 
-    public MarketAttributeCI(Attributes.Attribute a) {
+    public MarketAttributeCi(Attributes.Attribute a) {
         Preconditions.checkNotNull(a);
 
         name = a.getName();

@@ -10,9 +10,9 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.SportsInfoManager;
 import com.sportradar.unifiedodds.sdk.entities.ReplaySportEvent;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
@@ -22,15 +22,15 @@ import com.sportradar.unifiedodds.sdk.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.entities.ReplaySportEventImpl;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +46,12 @@ public class ReplayManager {
      * The client interaction log instance
      */
     private static final Logger clientInteractionLog = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkClientInteractionLog.class
+        LoggerDefinitions.UfSdkClientInteractionLog.class
     );
 
     private static final Logger logger = LoggerFactory.getLogger(ReplayManager.class);
-    private final SDKInternalConfiguration config;
-    private final SportsInfoManager sportsInfoManager;
+    private final SdkInternalConfiguration config;
+    private final SportDataProvider sportDataProvider;
     private final HttpHelper httpHelper;
     private final Deserializer deserializer;
     private final LogHttpDataFetcher logHttpDataFetcher;
@@ -59,22 +59,22 @@ public class ReplayManager {
 
     @Inject
     ReplayManager(
-        SDKInternalConfiguration config,
-        SportsInfoManager sportsInfoManager,
+        SdkInternalConfiguration config,
+        SportDataProvider sportDataProvider,
         HttpHelper httpHelper,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
         LogHttpDataFetcher logHttpDataFetcher,
         SportEntityFactory sportEntityFactory
     ) {
         Preconditions.checkNotNull(config);
-        Preconditions.checkNotNull(sportsInfoManager);
+        Preconditions.checkNotNull(sportDataProvider);
         Preconditions.checkNotNull(httpHelper);
         Preconditions.checkNotNull(deserializer);
         Preconditions.checkNotNull(logHttpDataFetcher);
         Preconditions.checkNotNull(sportEntityFactory);
 
         this.config = config;
-        this.sportsInfoManager = sportsInfoManager;
+        this.sportDataProvider = sportDataProvider;
         this.httpHelper = httpHelper;
         this.deserializer = deserializer;
         this.logHttpDataFetcher = logHttpDataFetcher;
@@ -94,7 +94,7 @@ public class ReplayManager {
 
         return replaySportEventsList
             .stream()
-            .map(r -> sportsInfoManager.getSportEvent(r.getId()))
+            .map(r -> sportDataProvider.getSportEvent(r.getId()))
             .collect(Collectors.toList());
     }
 
@@ -121,7 +121,7 @@ public class ReplayManager {
         if (replaySetContent != null && replaySetContent.getEvent() != null) {
             for (ReplayEvent replayEvent : replaySetContent.getEvent()) {
                 ReplaySportEvent event = new ReplaySportEventImpl(
-                    URN.parse(replayEvent.getId()),
+                    Urn.parse(replayEvent.getId()),
                     replayEvent.getPosition(),
                     replayEvent.getStartTime()
                 );
@@ -168,7 +168,7 @@ public class ReplayManager {
      * @param id the id of the SportEvent to add
      * @return an indication of the request success
      */
-    public boolean addSportEventToReplay(URN id) {
+    public boolean addSportEventToReplay(Urn id) {
         return this.addSportEventToReplay(id, null);
     }
 
@@ -181,7 +181,7 @@ public class ReplayManager {
      * @param startTime minutes relative to event start time
      * @return an indication of the request success
      */
-    public boolean addSportEventToReplay(URN id, Integer startTime) {
+    public boolean addSportEventToReplay(Urn id, Integer startTime) {
         Preconditions.checkNotNull(id);
         Preconditions.checkArgument(
             startTime == null || startTime >= 0,
@@ -232,7 +232,7 @@ public class ReplayManager {
      * @param id the identifier of the event which should be removed from the replay list
      * @return <code>true</code> if the removal was successful, otherwise <code>false</code>
      */
-    public boolean removeSportEventFromReplay(URN id) {
+    public boolean removeSportEventFromReplay(Urn id) {
         Preconditions.checkNotNull(id);
 
         String responseMessage;
@@ -381,9 +381,9 @@ public class ReplayManager {
 
         boolean responseStatus = tryPerformRequest(
             String.format(
-                "https://%s/v1/replay/play?%s",
+                "https://%s/v1/replay/play%s",
                 config.getApiHostAndPort(),
-                URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)
+                new URIBuilder().addParameters(queryParams).setCharset(StandardCharsets.UTF_8).toString()
             )
         );
 
@@ -568,10 +568,10 @@ public class ReplayManager {
 
         boolean responseStatus = tryPerformRequest(
             String.format(
-                "https://%s/v1/replay/scenario/play/%d?%s",
+                "https://%s/v1/replay/scenario/play/%d%s",
                 config.getApiHostAndPort(),
                 id,
-                URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8)
+                new URIBuilder().addParameters(queryParams).setCharset(StandardCharsets.UTF_8).toString()
             )
         );
 

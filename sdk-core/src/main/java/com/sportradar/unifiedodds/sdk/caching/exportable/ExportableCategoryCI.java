@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "HiddenField" })
-public class ExportableCategoryCI extends ExportableCI {
+@SuppressWarnings({ "HiddenField" })
+public class ExportableCategoryCi extends ExportableCi {
 
     private String associatedSportId;
     private List<String> associatedTournaments;
     private String countryCode;
     private List<Locale> cachedLocales;
 
-    public ExportableCategoryCI(
+    public ExportableCategoryCi(
         String id,
         Map<Locale, String> names,
         String associatedSportId,

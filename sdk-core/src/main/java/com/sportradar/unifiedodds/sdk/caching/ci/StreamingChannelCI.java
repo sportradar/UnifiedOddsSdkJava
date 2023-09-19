@@ -5,13 +5,12 @@
 package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStreamingChannel;
+import com.sportradar.uf.sportsapi.datamodel.SapiStreamingChannel;
 
 /**
  * A streaming channel representation used by caching components
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
-public class StreamingChannelCI {
+public class StreamingChannelCi {
 
     /**
      * The id of the channel
@@ -24,11 +23,11 @@ public class StreamingChannelCI {
     private final String name;
 
     /**
-     * Initializes a new instance of the {@link StreamingChannelCI} class
+     * Initializes a new instance of the {@link StreamingChannelCi} class
      *
-     * @param channel - {@link SAPIStreamingChannel} containing information about the channel
+     * @param channel - {@link SapiStreamingChannel} containing information about the channel
      */
-    public StreamingChannelCI(SAPIStreamingChannel channel) {
+    public StreamingChannelCi(SapiStreamingChannel channel) {
         Preconditions.checkNotNull(channel);
 
         id = channel.getId();

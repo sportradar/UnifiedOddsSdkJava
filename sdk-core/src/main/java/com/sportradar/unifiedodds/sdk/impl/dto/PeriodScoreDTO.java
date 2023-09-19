@@ -4,15 +4,15 @@
 
 package com.sportradar.unifiedodds.sdk.impl.dto;
 
-import com.sportradar.uf.datamodel.UFPeriodScoreType;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodScore;
+import com.sportradar.uf.datamodel.UfPeriodScoreType;
+import com.sportradar.uf.sportsapi.datamodel.SapiPeriodScore;
 import java.math.BigDecimal;
 
 /**
  * A data transfer object containing period score information
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
-public class PeriodScoreDTO {
+@SuppressWarnings({ "UnnecessaryParentheses" })
+public class PeriodScoreDto {
 
     /**
      * The score of the home team in the period represented by the current instance
@@ -40,11 +40,11 @@ public class PeriodScoreDTO {
     private final String periodType;
 
     /**
-     * Initializes a new instance of {@link PeriodScoreDTO}
+     * Initializes a new instance of {@link PeriodScoreDto}
      *
      * @param periodScore - the period score received from the API
      */
-    PeriodScoreDTO(SAPIPeriodScore periodScore) {
+    PeriodScoreDto(SapiPeriodScore periodScore) {
         this.homeScore = new BigDecimal(periodScore.getHomeScore());
         this.awayScore = new BigDecimal(periodScore.getAwayScore());
         this.number = periodScore.getNumber();
@@ -53,11 +53,11 @@ public class PeriodScoreDTO {
     }
 
     /**
-     * Initializes a new instance of {@link PeriodScoreDTO}
+     * Initializes a new instance of {@link PeriodScoreDto}
      *
      * @param periodScore - the period score received from the feed
      */
-    PeriodScoreDTO(UFPeriodScoreType periodScore) {
+    PeriodScoreDto(UfPeriodScoreType periodScore) {
         this.homeScore = periodScore.getHomeScore();
         this.awayScore = periodScore.getAwayScore();
         this.number = periodScore.getNumber();
@@ -111,9 +111,9 @@ public class PeriodScoreDTO {
     }
 
     /**
-     * Returns a {@link String} describing the current {@link PeriodScoreDTO} instance
+     * Returns a {@link String} describing the current {@link PeriodScoreDto} instance
      *
-     * @return - a {@link String} describing the current {@link PeriodScoreDTO} instance
+     * @return - a {@link String} describing the current {@link PeriodScoreDto} instance
      */
     @Override
     public String toString() {

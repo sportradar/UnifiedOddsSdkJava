@@ -56,12 +56,6 @@ class SnapshotRequestImpl implements SnapshotRequest {
     }
 
     @Override
-    @Deprecated
-    public long recoveryFromTimestamp() {
-        return fromTimestamp;
-    }
-
-    @Override
     public void approveRecovery() {
         approvalCallback.approve();
     }

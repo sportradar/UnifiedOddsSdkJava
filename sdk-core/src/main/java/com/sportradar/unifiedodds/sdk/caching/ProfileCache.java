@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,24 +16,24 @@ import java.util.Locale;
 @SuppressWarnings({ "LineLength" })
 public interface ProfileCache {
     /**
-     * Returns a {@link PlayerProfileCI} associated with the provided {@link URN}
+     * Returns a {@link PlayerProfileCi} associated with the provided {@link Urn}
      *
-     * @param id - the unique {@link URN} identifier of the player
+     * @param id - the unique {@link Urn} identifier of the player
      * @param locales - a {@link List} of locales in which the data is required
      * @param possibleAssociatedCompetitorIds - a list of possible associated competitors, used to prefetch competitor profiles
-     * @return - a {@link PlayerProfileCI} associated with the provided {@link URN}
+     * @return - a {@link PlayerProfileCi} associated with the provided {@link Urn}
      */
-    PlayerProfileCI getPlayerProfile(URN id, List<Locale> locales, List<URN> possibleAssociatedCompetitorIds)
+    PlayerProfileCi getPlayerProfile(Urn id, List<Locale> locales, List<Urn> possibleAssociatedCompetitorIds)
         throws IllegalCacheStateException, CacheItemNotFoundException;
 
     /**
-     * Returns a {@link CompetitorCI} associated with the provided {@link URN}
+     * Returns a {@link CompetitorCi} associated with the provided {@link Urn}
      *
-     * @param id - the unique {@link URN} identifier of the competitor
+     * @param id - the unique {@link Urn} identifier of the competitor
      * @param locales - a {@link List} of locales in which the data is required
-     * @return - a {@link CompetitorCI} associated with the provided {@link URN}
+     * @return - a {@link CompetitorCi} associated with the provided {@link Urn}
      */
-    CompetitorCI getCompetitorProfile(URN id, List<Locale> locales)
+    CompetitorCi getCompetitorProfile(Urn id, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException;
 
     /**
@@ -41,12 +41,12 @@ public interface ProfileCache {
      *
      * @param competitorId the identifier of the cache item to purge
      */
-    void purgeCompetitorProfileCacheItem(URN competitorId);
+    void purgeCompetitorProfileCacheItem(Urn competitorId);
 
     /**
      * Purges the associated player profile cache item
      *
      * @param playerId the identifier of the cache item to purge
      */
-    void purgePlayerProfileCacheItem(URN playerId);
+    void purgePlayerProfileCacheItem(Urn playerId);
 }

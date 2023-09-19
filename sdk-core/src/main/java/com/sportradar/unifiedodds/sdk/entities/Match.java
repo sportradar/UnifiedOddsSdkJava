@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -103,4 +104,6 @@ public interface Match extends Competition {
     default CoverageInfo getCoverageInfo() {
         return null;
     }
+
+    SportSummary getSport();
 }

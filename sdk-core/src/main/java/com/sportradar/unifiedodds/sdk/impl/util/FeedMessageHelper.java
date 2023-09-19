@@ -15,24 +15,24 @@ public class FeedMessageHelper {
      */
     public static int provideProducerIdFromMessage(UnmarshalledMessage o) {
         int producerId;
-        if (o instanceof UFOddsChange) {
-            producerId = ((UFOddsChange) o).getProduct();
-        } else if (o instanceof UFBetStop) {
-            producerId = ((UFBetStop) o).getProduct();
-        } else if (o instanceof UFBetSettlement) {
-            producerId = ((UFBetSettlement) o).getProduct();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            producerId = ((UFRollbackBetSettlement) o).getProduct();
-        } else if (o instanceof UFBetCancel) {
-            producerId = ((UFBetCancel) o).getProduct();
-        } else if (o instanceof UFFixtureChange) {
-            producerId = ((UFFixtureChange) o).getProduct();
-        } else if (o instanceof UFRollbackBetCancel) {
-            producerId = ((UFRollbackBetCancel) o).getProduct();
-        } else if (o instanceof UFSnapshotComplete) {
-            producerId = ((UFSnapshotComplete) o).getProduct();
-        } else if (o instanceof UFAlive) {
-            producerId = ((UFAlive) o).getProduct();
+        if (o instanceof UfOddsChange) {
+            producerId = ((UfOddsChange) o).getProduct();
+        } else if (o instanceof UfBetStop) {
+            producerId = ((UfBetStop) o).getProduct();
+        } else if (o instanceof UfBetSettlement) {
+            producerId = ((UfBetSettlement) o).getProduct();
+        } else if (o instanceof UfRollbackBetSettlement) {
+            producerId = ((UfRollbackBetSettlement) o).getProduct();
+        } else if (o instanceof UfBetCancel) {
+            producerId = ((UfBetCancel) o).getProduct();
+        } else if (o instanceof UfFixtureChange) {
+            producerId = ((UfFixtureChange) o).getProduct();
+        } else if (o instanceof UfRollbackBetCancel) {
+            producerId = ((UfRollbackBetCancel) o).getProduct();
+        } else if (o instanceof UfSnapshotComplete) {
+            producerId = ((UfSnapshotComplete) o).getProduct();
+        } else if (o instanceof UfAlive) {
+            producerId = ((UfAlive) o).getProduct();
         } else {
             producerId = UnifiedFeedConstants.UNKNOWN_PRODUCER_ID;
         }
@@ -41,12 +41,12 @@ public class FeedMessageHelper {
     }
 
     /**
-     * Returns a built cache key for the provided {@link UFFixtureChange}
+     * Returns a built cache key for the provided {@link UfFixtureChange}
      *
      * @param fixtureChange the object for which the key is needed
-     * @return a built cache key for the provided {@link UFFixtureChange}
+     * @return a built cache key for the provided {@link UfFixtureChange}
      */
-    public static String generateFixtureChangeCacheKey(UFFixtureChange fixtureChange) {
+    public static String generateFixtureChangeCacheKey(UfFixtureChange fixtureChange) {
         return (
             fixtureChange.getProduct() + "_" + fixtureChange.getEventId() + "_" + fixtureChange.getTimestamp()
         );
@@ -62,20 +62,20 @@ public class FeedMessageHelper {
      */
     public static String provideEventIdFromMessage(UnmarshalledMessage o) {
         String eventId;
-        if (o instanceof UFOddsChange) {
-            eventId = ((UFOddsChange) o).getEventId();
-        } else if (o instanceof UFBetStop) {
-            eventId = ((UFBetStop) o).getEventId();
-        } else if (o instanceof UFBetSettlement) {
-            eventId = ((UFBetSettlement) o).getEventId();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            eventId = ((UFRollbackBetSettlement) o).getEventId();
-        } else if (o instanceof UFBetCancel) {
-            eventId = ((UFBetCancel) o).getEventId();
-        } else if (o instanceof UFFixtureChange) {
-            eventId = ((UFFixtureChange) o).getEventId();
-        } else if (o instanceof UFRollbackBetCancel) {
-            eventId = ((UFRollbackBetCancel) o).getEventId();
+        if (o instanceof UfOddsChange) {
+            eventId = ((UfOddsChange) o).getEventId();
+        } else if (o instanceof UfBetStop) {
+            eventId = ((UfBetStop) o).getEventId();
+        } else if (o instanceof UfBetSettlement) {
+            eventId = ((UfBetSettlement) o).getEventId();
+        } else if (o instanceof UfRollbackBetSettlement) {
+            eventId = ((UfRollbackBetSettlement) o).getEventId();
+        } else if (o instanceof UfBetCancel) {
+            eventId = ((UfBetCancel) o).getEventId();
+        } else if (o instanceof UfFixtureChange) {
+            eventId = ((UfFixtureChange) o).getEventId();
+        } else if (o instanceof UfRollbackBetCancel) {
+            eventId = ((UfRollbackBetCancel) o).getEventId();
         } else {
             return "System message";
         }
@@ -92,12 +92,12 @@ public class FeedMessageHelper {
      */
     public static Long provideMessageGenTimestampFromMessage(UnmarshalledMessage o) {
         Long timestamp = null;
-        if (o instanceof UFOddsChange) {
-            timestamp = ((UFOddsChange) o).getTimestamp();
-        } else if (o instanceof UFBetStop) {
-            timestamp = ((UFBetStop) o).getTimestamp();
-        } else if (o instanceof UFAlive) {
-            timestamp = ((UFAlive) o).getTimestamp();
+        if (o instanceof UfOddsChange) {
+            timestamp = ((UfOddsChange) o).getTimestamp();
+        } else if (o instanceof UfBetStop) {
+            timestamp = ((UfBetStop) o).getTimestamp();
+        } else if (o instanceof UfAlive) {
+            timestamp = ((UfAlive) o).getTimestamp();
         }
 
         return timestamp;
@@ -111,24 +111,24 @@ public class FeedMessageHelper {
      */
     public static long provideGenTimestampFromMessage(UnmarshalledMessage o) {
         long timestamp;
-        if (o instanceof UFOddsChange) {
-            timestamp = ((UFOddsChange) o).getTimestamp();
-        } else if (o instanceof UFBetStop) {
-            timestamp = ((UFBetStop) o).getTimestamp();
-        } else if (o instanceof UFBetSettlement) {
-            timestamp = ((UFBetSettlement) o).getTimestamp();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            timestamp = ((UFRollbackBetSettlement) o).getTimestamp();
-        } else if (o instanceof UFBetCancel) {
-            timestamp = ((UFBetCancel) o).getTimestamp();
-        } else if (o instanceof UFFixtureChange) {
-            timestamp = ((UFFixtureChange) o).getTimestamp();
-        } else if (o instanceof UFRollbackBetCancel) {
-            timestamp = ((UFRollbackBetCancel) o).getTimestamp();
-        } else if (o instanceof UFSnapshotComplete) {
-            timestamp = ((UFSnapshotComplete) o).getTimestamp();
-        } else if (o instanceof UFAlive) {
-            timestamp = ((UFAlive) o).getTimestamp();
+        if (o instanceof UfOddsChange) {
+            timestamp = ((UfOddsChange) o).getTimestamp();
+        } else if (o instanceof UfBetStop) {
+            timestamp = ((UfBetStop) o).getTimestamp();
+        } else if (o instanceof UfBetSettlement) {
+            timestamp = ((UfBetSettlement) o).getTimestamp();
+        } else if (o instanceof UfRollbackBetSettlement) {
+            timestamp = ((UfRollbackBetSettlement) o).getTimestamp();
+        } else if (o instanceof UfBetCancel) {
+            timestamp = ((UfBetCancel) o).getTimestamp();
+        } else if (o instanceof UfFixtureChange) {
+            timestamp = ((UfFixtureChange) o).getTimestamp();
+        } else if (o instanceof UfRollbackBetCancel) {
+            timestamp = ((UfRollbackBetCancel) o).getTimestamp();
+        } else if (o instanceof UfSnapshotComplete) {
+            timestamp = ((UfSnapshotComplete) o).getTimestamp();
+        } else if (o instanceof UfAlive) {
+            timestamp = ((UfAlive) o).getTimestamp();
         } else {
             timestamp = 0;
         }
@@ -144,24 +144,24 @@ public class FeedMessageHelper {
      */
     public static Long provideRequestIdFromMessage(UnmarshalledMessage o) {
         Long requestId;
-        if (o instanceof UFOddsChange) {
-            requestId = ((UFOddsChange) o).getRequestId();
-        } else if (o instanceof UFBetStop) {
-            requestId = ((UFBetStop) o).getRequestId();
-        } else if (o instanceof UFBetSettlement) {
-            requestId = ((UFBetSettlement) o).getRequestId();
-        } else if (o instanceof UFRollbackBetSettlement) {
-            requestId = ((UFRollbackBetSettlement) o).getRequestId();
-        } else if (o instanceof UFBetCancel) {
-            requestId = ((UFBetCancel) o).getRequestId();
-        } else if (o instanceof UFFixtureChange) {
-            requestId = ((UFFixtureChange) o).getRequestId();
-        } else if (o instanceof UFRollbackBetCancel) {
-            requestId = ((UFRollbackBetCancel) o).getRequestId();
-        } else if (o instanceof UFSnapshotComplete) {
-            requestId = ((UFSnapshotComplete) o).getRequestId();
-            //        } else if (o instanceof UFAlive) {
-            //            requestId = ((UFAlive) o).getRequestId();
+        if (o instanceof UfOddsChange) {
+            requestId = ((UfOddsChange) o).getRequestId();
+        } else if (o instanceof UfBetStop) {
+            requestId = ((UfBetStop) o).getRequestId();
+        } else if (o instanceof UfBetSettlement) {
+            requestId = ((UfBetSettlement) o).getRequestId();
+        } else if (o instanceof UfRollbackBetSettlement) {
+            requestId = ((UfRollbackBetSettlement) o).getRequestId();
+        } else if (o instanceof UfBetCancel) {
+            requestId = ((UfBetCancel) o).getRequestId();
+        } else if (o instanceof UfFixtureChange) {
+            requestId = ((UfFixtureChange) o).getRequestId();
+        } else if (o instanceof UfRollbackBetCancel) {
+            requestId = ((UfRollbackBetCancel) o).getRequestId();
+        } else if (o instanceof UfSnapshotComplete) {
+            requestId = ((UfSnapshotComplete) o).getRequestId();
+            //        } else if (o instanceof UfAlive) {
+            //            requestId = ((UfAlive) o).getRequestId();
         } else {
             requestId = null;
         }
