@@ -25,7 +25,7 @@ public class Constants {
     // local rabbit data for tests
     public static final String ADMIN_USERNAME = "guest";
     public static final String ADMIN_PASSWORD = "guest";
-    public static final String RABBIT_IP = "rabbit";
+    public static final String RABBIT_IP = "localhost";
     public static final String SDK_USERNAME = "testuser";
     public static final String SDK_PASSWORD = "testpass";
     public static final String UF_EXCHANGE = "unifiedfeed";

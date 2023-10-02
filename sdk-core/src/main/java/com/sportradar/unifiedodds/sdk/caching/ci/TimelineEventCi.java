@@ -199,14 +199,13 @@ public class TimelineEventCi {
     }
 
     private Double createScore(String score) {
-        if(score == null || score.isEmpty()) {
+        if (score == null || score.isEmpty()) {
             return null;
         }
         try {
             return Double.parseDouble(score);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                String.format("Score '%s' is not a valid number", score));
+            throw new IllegalArgumentException(String.format("Score '%s' is not a valid number", score));
         }
     }
 }

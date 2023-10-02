@@ -82,9 +82,6 @@ public class TimelineEventCiTest {
     }
 
     private Object[] nonNumberScores() {
-        return new Object[] {
-            new String[] {"HomeScore", "1.0"},
-            new String[] {"1.0", "AwayScore"}
-        };
+        return new Object[] { new String[] { "HomeScore", "1.0" }, new String[] { "1.0", "AwayScore" } };
     }
 }
