@@ -71,10 +71,14 @@ buildNumber.properties
 #custom exclusions
 /uf-sdk-logs/
 **/uf-sdk-logs/
-UFSdkConfiguration.properties
-application.yml
 
-**/custom
+UFSdkConfiguration.properties
+!/sdk-integration-tests/**/src/test/resources/UFSdkConfiguration.properties
+application.yml
+!/sdk-integration-tests/**/src/test/resources/application.yml
+
+**/generatedsources
+/git-ignored-playground/
 
 # logs
 *.log.gz

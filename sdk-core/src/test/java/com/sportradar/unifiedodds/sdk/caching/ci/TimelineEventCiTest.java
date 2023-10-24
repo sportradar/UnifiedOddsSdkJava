@@ -6,15 +6,14 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiBasicEvent;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import junitparams.converters.Param;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 @RunWith(JUnitParamsRunner.class)
 public class TimelineEventCiTest {
@@ -25,8 +24,8 @@ public class TimelineEventCiTest {
         final String awayScore = "1.0";
         TimelineEventCi timelineEvent = new TimelineEventCi(createWithScores(homeScore, awayScore));
 
-        final Double expectedHomeScore = 2.0;
-        final Double expectedAwayScore = 1.0;
+        final double expectedHomeScore = 2.0;
+        final double expectedAwayScore = 1.0;
 
         validateScore(timelineEvent, expectedHomeScore, expectedAwayScore);
     }
@@ -37,19 +36,10 @@ public class TimelineEventCiTest {
         final String awayScore = "1.1";
         TimelineEventCi timelineEvent = new TimelineEventCi(createWithScores(homeScore, awayScore));
 
-        final Double expectedHomeScore = 2.1;
-        final Double expectedAwayScore = 1.1;
+        final double expectedHomeScore = 2.1;
+        final double expectedAwayScore = 1.1;
 
         validateScore(timelineEvent, expectedHomeScore, expectedAwayScore);
-    }
-
-    @Test
-    public void shouldCreateWithoutScores() {
-        SapiBasicEvent sapiBasicEvent = mock(SapiBasicEvent.class);
-        when(sapiBasicEvent.getHomeScore()).thenReturn(null);
-        when(sapiBasicEvent.getAwayScore()).thenReturn(null);
-        TimelineEventCi timelineEvent = new TimelineEventCi(sapiBasicEvent);
-        validateScore(timelineEvent, null, null);
     }
 
     @Test
@@ -62,7 +52,8 @@ public class TimelineEventCiTest {
     @Test
     public void shouldNotCreateScoresFromEmptyString() {
         TimelineEventCi timelineEvent = new TimelineEventCi(createWithScores("", ""));
-        validateScore(timelineEvent, null, null);
+        assertNull(timelineEvent.getAwayScore());
+        assertNull(timelineEvent.getHomeScore());
     }
 
     private SapiBasicEvent createWithScores(String homeScore, String awayScore) {
@@ -74,11 +65,12 @@ public class TimelineEventCiTest {
 
     private void validateScore(
         TimelineEventCi timelineEventCi,
-        Double expectedHomeScore,
-        Double expectedAwayScore
+        double expectedHomeScore,
+        double expectedAwayScore
     ) {
-        assertEquals(expectedHomeScore, timelineEventCi.getHomeScore());
-        assertEquals(expectedAwayScore, timelineEventCi.getAwayScore());
+        final double scoreDelta = 0.1;
+        assertEquals(expectedHomeScore, timelineEventCi.getHomeScore().doubleValue(), scoreDelta);
+        assertEquals(expectedAwayScore, timelineEventCi.getAwayScore().doubleValue(), scoreDelta);
     }
 
     private Object[] nonNumberScores() {

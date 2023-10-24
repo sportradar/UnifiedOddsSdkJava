@@ -42,7 +42,7 @@ import org.junit.Test;
 public class WhoAmIReaderTests {
 
     private static final DataProvider ANY_DATA_PROVIDER = mock(DataProvider.class);
-    private static final EnvironmentUpdater ANY_ENVIRONMENT_UPDATER = mock(EnvironmentUpdater.class);
+    private static final ApiHostUpdater ANY_ENVIRONMENT_UPDATER = mock(ApiHostUpdater.class);
 
     @Test
     public void validTokenProductionConfig() throws DataProviderException {
@@ -159,7 +159,7 @@ public class WhoAmIReaderTests {
         StubUofConfiguration config = new StubUofConfiguration();
         config.setEnvironment(Environment.Replay);
         config.resetNbrSetEnvironmentCalled();
-        val environmentUpdater = mock(EnvironmentUpdater.class);
+        val environmentUpdater = mock(ApiHostUpdater.class);
         doAnswer(p -> {
                 config.setEnvironment(Environment.Integration);
                 return null;
@@ -382,17 +382,17 @@ public class WhoAmIReaderTests {
         val productionBookmakers = mock(DataProvider.class);
         final DataWrapper dataWrapper = wrapped(bet365());
         when(productionBookmakers.getDataWithAdditionalInfo(any())).thenReturn(dataWrapper);
-        EnvironmentUpdater environmentUpdater = mock(EnvironmentUpdater.class);
+        ApiHostUpdater apiHostUpdater = mock(ApiHostUpdater.class);
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             replayConfig(),
-            environmentUpdater,
+            apiHostUpdater,
             ANY_DATA_PROVIDER,
             productionBookmakers,
             ANY_DATA_PROVIDER
         );
         whoAmIReader.getBookmakerId();
 
-        verify(environmentUpdater).updateToProduction();
+        verify(apiHostUpdater).updateToProduction();
     }
 
     @Test
@@ -404,17 +404,17 @@ public class WhoAmIReaderTests {
         final DataWrapper integrationBookmaker = wrapped(bet365());
         val integrationBookmakers = mock(DataProvider.class);
         when(integrationBookmakers.getDataWithAdditionalInfo(any())).thenReturn(integrationBookmaker);
-        EnvironmentUpdater environmentUpdater = mock(EnvironmentUpdater.class);
+        ApiHostUpdater apiHostUpdater = mock(ApiHostUpdater.class);
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             replayConfig(),
-            environmentUpdater,
+            apiHostUpdater,
             ANY_DATA_PROVIDER,
             productionBookmakers,
             integrationBookmakers
         );
         whoAmIReader.getBookmakerId();
 
-        verify(environmentUpdater).updateToIntegration();
+        verify(apiHostUpdater).updateToIntegration();
     }
 
     @Test
@@ -425,16 +425,16 @@ public class WhoAmIReaderTests {
         final DataWrapper integrationBookmaker = wrapped(bet365());
         val integrationBookmakers = mock(DataProvider.class);
         when(integrationBookmakers.getDataWithAdditionalInfo(any())).thenReturn(integrationBookmaker);
-        EnvironmentUpdater environmentUpdater = mock(EnvironmentUpdater.class);
+        ApiHostUpdater apiHostUpdater = mock(ApiHostUpdater.class);
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             replayConfig(),
-            environmentUpdater,
+            apiHostUpdater,
             ANY_DATA_PROVIDER,
             productionBookmakers,
             integrationBookmakers
         );
         whoAmIReader.getBookmakerId();
-        verify(environmentUpdater).updateToIntegration();
+        verify(apiHostUpdater).updateToIntegration();
     }
 
     private static UofConfigurationStub replayConfig() {

@@ -138,4 +138,5 @@ public interface CompetitorCi extends CacheItem {
      * @return the short name
      */
     String getShortName();
+    DivisionCi getDivision();
 }

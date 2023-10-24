@@ -67,12 +67,6 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
         return TeamQualifier;
     }
 
-    @Override
-    public Integer getDivision() {
-        FetchEventCompetitorsDivisions();
-        return TeamDivision;
-    }
-
     /**
      * Returns a {@link String} describing the current {@link TeamCompetitor} instance
      *

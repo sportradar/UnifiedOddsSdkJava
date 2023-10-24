@@ -313,7 +313,7 @@ public class SportEntityWriter {
         return String.format(
             "Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s",
             tournamentRound.getName(defaultLocale),
-            tournamentRound.getGroupName(),
+            tournamentRound.getPhaseOrGroupLongName(defaultLocale),
             tournamentRound.getGroupId(),
             tournamentRound.getType(),
             tournamentRound.getNumber()
@@ -332,7 +332,7 @@ public class SportEntityWriter {
         }
 
         return String.format(
-            "%s[%s]  %s - s%",
+            "%s[%s]  %s - %s",
             season.getName(defaultLocale),
             season.getId(),
             season.getStartDate(),

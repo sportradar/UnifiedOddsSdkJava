@@ -43,13 +43,6 @@ public interface Round {
     Map<Locale, String> getNames();
 
     /**
-     * Returns the name of the group associated with the current round
-     *
-     * @return - the name of the group associated with the current round
-     */
-    String getGroupName();
-
-    /**
      * Returns the id of the other match
      *
      * @return - the id of the other match
@@ -104,15 +97,6 @@ public interface Round {
      */
     default String getPhase() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
-
-    /**
-     * Returns the group name of the group associated with the current round
-     *
-     * @return - the group name of the group associated with the current round
-     */
-    default String getGroupName(Locale locale) {
-        return getGroupName();
     }
 
     /**

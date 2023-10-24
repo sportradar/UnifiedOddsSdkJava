@@ -100,7 +100,7 @@ public interface Venue {
      * Gets the list of the course holes
      * @return the list of the course holes
      */
-    default List<Hole> getCourse() {
+    default List<Course> getCourses() {
         throw new UnsupportedOperationException("This method MUST be implemented.");
     }
 }

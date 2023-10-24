@@ -48,7 +48,7 @@ public class VenueCi extends SportEntityCi {
 
     private String state;
 
-    private List<HoleCi> course;
+    private CoursesCi courses;
 
     private final List<Locale> cachedLocales;
 
@@ -66,9 +66,9 @@ public class VenueCi extends SportEntityCi {
         names = new HashMap<>();
         cityNames = new HashMap<>();
         countryNames = new HashMap<>();
-        course = new ArrayList<>();
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
+        this.courses = new CoursesCi(venue.getCourse(), locale);
         merge(venue, locale);
     }
 
@@ -83,13 +83,7 @@ public class VenueCi extends SportEntityCi {
         countryCode = exportable.getCountryCode();
         coordinates = exportable.getCoordinates();
         state = exportable.getState();
-        if (exportable.getCourse() != null) {
-            this.course = new ArrayList<>();
-            exportable.getCourse().forEach(ci -> this.course.add(new HoleCi(ci)));
-        } else {
-            this.course = null;
-        }
-
+        this.courses = CoursesCi.importFrom(exportable.getCourses());
         cachedLocales = Collections.synchronizedList(new ArrayList<>(exportable.getCachedLocales()));
     }
 
@@ -110,14 +104,7 @@ public class VenueCi extends SportEntityCi {
         countryNames.put(locale, venue.getCountryName());
         countryCode = venue.getCountryCode();
         state = venue.getState();
-        if (venue.getCourse() != null) {
-            venue
-                .getCourse()
-                .getHole()
-                .forEach(ci -> this.course.add(new HoleCi(ci.getNumber(), ci.getPar())));
-        } else {
-            this.course = null;
-        }
+        courses.merge(venue.getCourse(), locale);
         cachedLocales.add(locale);
     }
 
@@ -194,11 +181,8 @@ public class VenueCi extends SportEntityCi {
      *
      * @return state
      */
-    public List<HoleCi> getCourse() {
-        if (course == null || course.isEmpty()) {
-            return null;
-        }
-        return course;
+    public List<CourseCi> getCourses() {
+        return courses.get();
     }
 
     public boolean hasTranslationsFor(List<Locale> locales) {
@@ -218,7 +202,7 @@ public class VenueCi extends SportEntityCi {
             coordinates,
             new ArrayList<>(cachedLocales),
             state,
-            course
+            courses.export()
         );
     }
 }

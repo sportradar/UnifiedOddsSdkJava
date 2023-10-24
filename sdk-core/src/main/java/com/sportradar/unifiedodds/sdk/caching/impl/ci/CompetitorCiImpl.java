@@ -16,6 +16,8 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDivisionCi;
+import com.sportradar.unifiedodds.sdk.entities.Division;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -159,6 +161,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
 
     private Date lastTimeCompetitorProfileIsFetched;
     private List<Locale> cultureCompetitorProfileFetched;
+    private DivisionCi division;
 
     CompetitorCiImpl(
         Urn id,
@@ -508,6 +511,12 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
     }
 
     @Override
+    public DivisionCi getDivision() {
+        ensureDataLoaded(division);
+        return division;
+    }
+
+    @Override
     public Date getLastTimeCompetitorProfileIsFetched() {
         return lastTimeCompetitorProfileIsFetched;
     }
@@ -585,6 +594,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
         sportId = Optional.ofNullable(exportable.getSportId()).map(Urn::parse).orElse(null);
         categoryId = Optional.ofNullable(exportable.getCategoryId()).map(Urn::parse).orElse(null);
         shortName = exportable.getShortName();
+        division = exportable.getDivision() != null ? new DivisionCi(exportable.getDivision()) : null;
     }
 
     private void internalMerge(SapiTeamCompetitor data, Locale dataLocale) {
@@ -723,6 +733,9 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
                     )
                     .orElse(null);
         }
+        if (competitor.getDivision() != null) {
+            division = new DivisionCi(competitor.getDivision(), competitor.getDivisionName());
+        }
     }
 
     private void internalMerge(SapiPlayerCompetitor competitor, Locale dataLocale) {
@@ -853,7 +866,8 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
             state,
             Optional.ofNullable(sportId).map(Urn::toString).orElse(null),
             Optional.ofNullable(categoryId).map(Urn::toString).orElse(null),
-            shortName
+            shortName,
+            division != null ? division.export() : null
         );
     }
 }

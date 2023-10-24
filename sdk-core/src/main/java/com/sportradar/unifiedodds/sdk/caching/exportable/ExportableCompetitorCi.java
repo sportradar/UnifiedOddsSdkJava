@@ -29,6 +29,7 @@ public class ExportableCompetitorCi extends ExportableCi {
     private String sportId;
     private String categoryId;
     private String shortName;
+    private ExportableDivisionCi division;
 
     public ExportableCompetitorCi(
         String id,
@@ -50,7 +51,8 @@ public class ExportableCompetitorCi extends ExportableCi {
         String state,
         String sportId,
         String categoryId,
-        String shortName
+        String shortName,
+        ExportableDivisionCi division
     ) {
         super(id, names);
         this.defaultLocale = defaultLocale;
@@ -71,6 +73,7 @@ public class ExportableCompetitorCi extends ExportableCi {
         this.sportId = sportId;
         this.categoryId = categoryId;
         this.shortName = shortName;
+        this.division = division;
     }
 
     public Locale getDefaultLocale() {
@@ -175,6 +178,10 @@ public class ExportableCompetitorCi extends ExportableCi {
 
     public void setRaceDriverProfile(ExportableRaceDriverProfileCi raceDriverProfile) {
         this.raceDriverProfile = raceDriverProfile;
+    }
+
+    public ExportableDivisionCi getDivision() {
+        return division;
     }
 
     public List<Locale> getCachedLocales() {

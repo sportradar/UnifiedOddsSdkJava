@@ -4,8 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.caching.exportable;
 
-import com.google.common.collect.Lists;
-import com.sportradar.unifiedodds.sdk.caching.ci.HoleCi;
+import static java.util.Collections.EMPTY_LIST;
+import static java.util.Optional.ofNullable;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class ExportableVenueCi extends ExportableCi {
     private String countryCode;
     private String coordinates;
     private String state;
-    private List<ExportableHoleCi> course;
+    private List<ExportableCourseCi> courses;
 
     private List<Locale> cachedLocales;
 
@@ -33,7 +34,7 @@ public class ExportableVenueCi extends ExportableCi {
         String coordinates,
         List<Locale> cachedLocales,
         String state,
-        List<HoleCi> course
+        List<ExportableCourseCi> courses
     ) {
         super(id, names);
         this.cityNames = cityNames;
@@ -43,12 +44,7 @@ public class ExportableVenueCi extends ExportableCi {
         this.coordinates = coordinates;
         this.cachedLocales = cachedLocales;
         this.state = state;
-        if (course != null && !course.isEmpty()) {
-            this.course = Lists.newArrayList();
-            course.forEach(ci -> this.course.add(new ExportableHoleCi(ci.getNumber(), ci.getPar())));
-        } else {
-            this.course = null;
-        }
+        this.courses = ofNullable(courses).orElse(EMPTY_LIST);
     }
 
     public Map<Locale, String> getCityNames() {
@@ -107,11 +103,7 @@ public class ExportableVenueCi extends ExportableCi {
         this.state = state;
     }
 
-    public List<ExportableHoleCi> getCourse() {
-        return course;
-    }
-
-    public void setCourse(List<ExportableHoleCi> course) {
-        this.course = course;
+    public List<ExportableCourseCi> getCourses() {
+        return courses;
     }
 }

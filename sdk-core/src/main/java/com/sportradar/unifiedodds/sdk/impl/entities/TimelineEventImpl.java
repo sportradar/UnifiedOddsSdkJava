@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ class TimelineEventImpl implements TimelineEvent {
      * @return the away score
      */
     @Override
-    public Double getAwayScore() {
+    public BigDecimal getAwayScore() {
         return cacheItem.getAwayScore();
     }
 
@@ -56,7 +57,7 @@ class TimelineEventImpl implements TimelineEvent {
      * @return the home score
      */
     @Override
-    public Double getHomeScore() {
+    public BigDecimal getHomeScore() {
         return cacheItem.getHomeScore();
     }
 

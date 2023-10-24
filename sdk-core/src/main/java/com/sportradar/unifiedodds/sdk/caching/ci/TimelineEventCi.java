@@ -9,6 +9,7 @@ import com.sportradar.uf.sportsapi.datamodel.SapiBasicEvent;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableTimelineEventCi;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.utils.SdkHelper;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,8 +21,8 @@ import java.util.stream.Collectors;
 public class TimelineEventCi {
 
     private final int id;
-    private final Double awayScore;
-    private final Double homeScore;
+    private final BigDecimal awayScore;
+    private final BigDecimal homeScore;
     private final Integer matchTime;
     private final String period;
     private final String periodName;
@@ -100,11 +101,11 @@ public class TimelineEventCi {
         return id;
     }
 
-    public Double getAwayScore() {
+    public BigDecimal getAwayScore() {
         return awayScore;
     }
 
-    public Double getHomeScore() {
+    public BigDecimal getHomeScore() {
         return homeScore;
     }
 
@@ -198,12 +199,12 @@ public class TimelineEventCi {
         );
     }
 
-    private Double createScore(String score) {
+    private BigDecimal createScore(String score) {
         if (score == null || score.isEmpty()) {
             return null;
         }
         try {
-            return Double.parseDouble(score);
+            return new BigDecimal(score);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(String.format("Score '%s' is not a valid number", score));
         }

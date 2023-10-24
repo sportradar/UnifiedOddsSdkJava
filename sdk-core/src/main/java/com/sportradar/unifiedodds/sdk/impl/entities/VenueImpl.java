@@ -4,16 +4,18 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
-import com.sportradar.unifiedodds.sdk.entities.Hole;
+import com.sportradar.unifiedodds.sdk.entities.Course;
 import com.sportradar.unifiedodds.sdk.entities.Venue;
 import com.sportradar.utils.Urn;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a sport event venue
@@ -61,7 +63,7 @@ public class VenueImpl implements Venue {
 
     private final String state;
 
-    private final List<Hole> course;
+    private final List<Course> courses;
 
     /**
      * Initializes a new intance of {@link VenueImpl}
@@ -95,13 +97,7 @@ public class VenueImpl implements Venue {
                 .stream()
                 .filter(l -> venueCi.getCountryName(l) != null)
                 .collect(ImmutableMap.toImmutableMap(k -> k, venueCi::getCountryName));
-
-        if (venueCi.getCourse() != null) {
-            this.course = new ArrayList<>();
-            venueCi.getCourse().forEach(f -> this.course.add(new HoleImpl(f)));
-        } else {
-            this.course = null;
-        }
+        this.courses = venueCi.getCourses().stream().map(CourseImpl::new).collect(toList());
     }
 
     /**
@@ -213,8 +209,8 @@ public class VenueImpl implements Venue {
     }
 
     @Override
-    public List<Hole> getCourse() {
-        return course;
+    public List<Course> getCourses() {
+        return courses;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +10,8 @@ import java.util.List;
 public class ExportableTimelineEventCi implements Serializable {
 
     private int id;
-    private Double awayScore;
-    private Double homeScore;
+    private BigDecimal awayScore;
+    private BigDecimal homeScore;
     private Integer matchTime;
     private String period;
     private String periodName;
@@ -30,8 +31,8 @@ public class ExportableTimelineEventCi implements Serializable {
 
     public ExportableTimelineEventCi(
         int id,
-        Double awayScore,
-        Double homeScore,
+        BigDecimal awayScore,
+        BigDecimal homeScore,
         Integer matchTime,
         String period,
         String periodName,
@@ -78,19 +79,19 @@ public class ExportableTimelineEventCi implements Serializable {
         this.id = id;
     }
 
-    public Double getAwayScore() {
+    public BigDecimal getAwayScore() {
         return awayScore;
     }
 
-    public void setAwayScore(Double awayScore) {
+    public void setAwayScore(BigDecimal awayScore) {
         this.awayScore = awayScore;
     }
 
-    public Double getHomeScore() {
+    public BigDecimal getHomeScore() {
         return homeScore;
     }
 
-    public void setHomeScore(Double homeScore) {
+    public void setHomeScore(BigDecimal homeScore) {
         this.homeScore = homeScore;
     }
 

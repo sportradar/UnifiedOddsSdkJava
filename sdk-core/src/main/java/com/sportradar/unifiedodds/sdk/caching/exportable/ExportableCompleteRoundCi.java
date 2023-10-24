@@ -25,7 +25,6 @@ public class ExportableCompleteRoundCi implements Serializable {
 
     public ExportableCompleteRoundCi(
         Map<Locale, String> names,
-        Map<Locale, String> groupNames,
         Map<Locale, String> phaseOrGroupLongNames,
         String type,
         String group,

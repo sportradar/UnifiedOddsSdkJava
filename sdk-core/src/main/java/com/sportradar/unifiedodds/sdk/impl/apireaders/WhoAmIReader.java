@@ -11,10 +11,9 @@ import com.google.inject.name.Named;
 import com.ibm.icu.util.Calendar;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
+import com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.EnvironmentUpdater;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationImpl;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.DataWrapper;
@@ -44,17 +43,17 @@ public class WhoAmIReader {
     private Map<String, String> associatedSdkMdcContextMap;
     private com.sportradar.unifiedodds.sdk.entities.BookmakerDetails bookmakerDetails;
     private Duration serverTimeDifference;
-    private final EnvironmentUpdater environmentUpdater;
+    private final ApiHostUpdater apiHostUpdater;
 
     @Inject
     public WhoAmIReader(
         UofConfiguration config,
-        EnvironmentUpdater environmentUpdater,
+        ApiHostUpdater apiHostUpdater,
         @Named("ConfigDataProvider") DataProvider<BookmakerDetails> configDataProvider,
         @Named("ProductionDataProvider") DataProvider<BookmakerDetails> productionDataProvider,
         @Named("IntegrationDataProvider") DataProvider<BookmakerDetails> integrationDataProvider
     ) {
-        this.environmentUpdater = environmentUpdater;
+        this.apiHostUpdater = apiHostUpdater;
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(productionDataProvider);
         Preconditions.checkNotNull(integrationDataProvider);
@@ -295,7 +294,7 @@ public class WhoAmIReader {
                     "Production WhoAmI request successful, switching SDK configuration to production API"
                 );
 
-                environmentUpdater.updateToProduction();
+                apiHostUpdater.updateToProduction();
 
                 return bookmakerDetails;
             }
@@ -315,9 +314,8 @@ public class WhoAmIReader {
                 "Integration WhoAmI request successful, switching SDK configuration to integration API"
             );
 
-            environmentUpdater.updateToIntegration();
+            apiHostUpdater.updateToIntegration();
         }
-
         return bookmakerDetails;
     }
 

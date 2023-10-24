@@ -4,10 +4,13 @@
 
 package com.sportradar.unifiedodds.example.common;
 
+import static java.util.Optional.ofNullable;
+
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import com.sportradar.utils.SdkHelper;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,7 +50,7 @@ public class MarketMappingWriter {
                     "MarketId:{}, producer:{}, sportId:{}, specifiers={}, mapping[{}]: {}",
                     market.getId(),
                     SdkHelper.integerSetToString(mapping.getProducerIds()),
-                    mapping.getSportId().getId(),
+                    ofNullable(mapping.getSportId()).map(Urn::getId).orElse(null),
                     SdkHelper.dictionaryToString(market.getSpecifiers()),
                     i,
                     mapping

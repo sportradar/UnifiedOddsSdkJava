@@ -80,14 +80,6 @@ public interface RoundCi {
     String getName(Locale locale);
 
     /**
-     * Returns the group name for specific locale
-     *
-     * @param locale  {@link Locale} specifying the language of the returned group name
-     * @return Return the name if exists, or null
-     */
-    String getGroupName(Locale locale);
-
-    /**
      * Returns the name or group long name for the specified locale
      *
      * @param locale {@link Locale} specifying the language of the value

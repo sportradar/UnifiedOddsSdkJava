@@ -13,7 +13,6 @@ import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.stream.IntStream;
 
 /**
  * The following example is a very simple example that just connects to the Unified Odds Feed and
@@ -30,7 +29,7 @@ public class BasicUofSdkExampleMain {
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
         UofConfiguration config = UofSdk
             .getUofConfigurationBuilder()
-            .setAccessToken("your-staging-token-here")
+            .setAccessToken("tkIQxFhK84x4QdgPXR")
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID)
             .setDefaultLanguage(Locale.ENGLISH)
@@ -41,12 +40,6 @@ public class BasicUofSdkExampleMain {
 
         // access the producer manager
         ProducerManager producerManager = uofSdk.getProducerManager();
-
-        IntStream
-            .range(1, 20)
-            .forEach(i ->
-                producerManager.setProducerRecoveryFromTimestamp(i, System.currentTimeMillis() - 5 * 1000)
-            );
 
         // set the last received message timestamp trough the producer - if known
         // (as an example, we set the last message received timestamp as 2 days ago)
@@ -65,14 +58,8 @@ public class BasicUofSdkExampleMain {
         // We can accomplish this with the UofSessionBuilder class.
         UofSessionBuilder sessionBuilder = uofSdk.getSessionBuilder();
 
-        MessageListener listenerLive = new MessageListener("Live");
-        sessionBuilder.setListener(listenerLive).setMessageInterest(MessageInterest.LiveMessagesOnly).build();
-
-        MessageListener listenerPrematch = new MessageListener("Live");
-        sessionBuilder
-            .setListener(listenerPrematch)
-            .setMessageInterest(MessageInterest.PrematchMessagesOnly)
-            .build();
+        MessageListener listener = new MessageListener("AllMessages");
+        sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.AllMessages).build();
 
         // Open the feed with all the built sessions
         uofSdk.open();

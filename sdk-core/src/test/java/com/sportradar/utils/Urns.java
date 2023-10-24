@@ -3,9 +3,20 @@
  */
 package com.sportradar.utils;
 
+import com.sportradar.utils.domain.UniqueObjects;
+import java.util.Random;
+import java.util.function.Supplier;
 import lombok.val;
 
 public class Urns {
+
+    private static final Random RANDOM = new Random();
+
+    private Urns() {}
+
+    public static <T> UniqueObjects<T> unique(Supplier<T> generator) {
+        return new UniqueObjects<>(generator);
+    }
 
     public static class SportEvents {
 
@@ -78,6 +89,16 @@ public class Urns {
         public static Urn urnForAnyCompetitor() {
             final int anyId = 43;
             return Urn.parse("sr:competitor:" + anyId);
+        }
+    }
+
+    public static class Venues {
+
+        public static Urn urnForAnyVenue() {
+            final int variationLevelWhichIsEnoughForTypicalTest = 10;
+            final int idShouldNotBe0 = 1;
+            final int anyId = RANDOM.nextInt(variationLevelWhichIsEnoughForTypicalTest) + idShouldNotBe0;
+            return Urn.parse("sr:venue:" + anyId);
         }
     }
 }

@@ -25,11 +25,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
     private final Map<Locale, String> names;
 
     /**
-     * A {@link Map} containing round group names in different languages
-     */
-    private final Map<Locale, String> groupNames;
-
-    /**
      * A {@link Map} containing phase or group name in different languages
      */
     private final Map<Locale, String> phaseOrGroupLongNames;
@@ -97,7 +92,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
         Preconditions.checkNotNull(locale);
 
         names = Maps.newConcurrentMap();
-        groupNames = Maps.newConcurrentMap();
         phaseOrGroupLongNames = Maps.newConcurrentMap();
         cachedLocales = Collections.synchronizedList(new ArrayList<>());
 
@@ -109,8 +103,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
 
         this.names = Maps.newConcurrentMap();
         this.names.putAll(exportable.getNames());
-        this.groupNames = Maps.newConcurrentMap();
-        this.groupNames.putAll(exportable.getGroupNames());
         this.phaseOrGroupLongNames = Maps.newConcurrentMap();
         this.phaseOrGroupLongNames.putAll(exportable.getPhaseOrGroupLongNames());
         this.type = exportable.getType();
@@ -151,12 +143,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
             names.put(locale, round.getName());
         } else {
             names.put(locale, "");
-        }
-
-        if (round.getGroupName() != null) {
-            groupNames.put(locale, round.getGroupName());
-        } else {
-            groupNames.put(locale, "");
         }
 
         if (round.getGroupLongName() != null) {
@@ -264,17 +250,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
     }
 
     /**
-     * Returns the group name for specific locale
-     *
-     * @param locale - {@link Locale} specifying the language of the returned nationality
-     * @return - Return the group name if exists, or null
-     */
-    @Override
-    public String getGroupName(Locale locale) {
-        return groupNames.getOrDefault(locale, null);
-    }
-
-    /**
      * Returns the name or group long name for the specified locale
      *
      * @param locale {@link Locale} specifying the language of the value
@@ -321,8 +296,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
             "CompleteRoundCIImpl{" +
             "names=" +
             names +
-            ", groupNames=" +
-            groupNames +
             ", phaseOrGroupLongNames=" +
             phaseOrGroupLongNames +
             ", type='" +
@@ -358,7 +331,6 @@ public class CompleteRoundCiImpl implements CompleteRoundCi {
     public ExportableCompleteRoundCi export() {
         return new ExportableCompleteRoundCi(
             new HashMap<>(names),
-            new HashMap<>(groupNames),
             new HashMap<>(phaseOrGroupLongNames),
             type,
             group,

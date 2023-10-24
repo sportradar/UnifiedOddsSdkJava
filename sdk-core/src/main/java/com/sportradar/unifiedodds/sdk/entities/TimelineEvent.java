@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -24,14 +25,14 @@ public interface TimelineEvent {
      *
      * @return the home score
      */
-    Double getHomeScore();
+    BigDecimal getHomeScore();
 
     /**
      * Returns the timeline event away score
      *
      * @return the away score
      */
-    Double getAwayScore();
+    BigDecimal getAwayScore();
 
     /**
      * Returns the timeline event match time

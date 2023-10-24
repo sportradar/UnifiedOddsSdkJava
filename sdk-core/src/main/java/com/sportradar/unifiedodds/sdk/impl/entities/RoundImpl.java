@@ -83,32 +83,6 @@ public class RoundImpl implements Round {
     }
 
     /**
-     * Returns the name of the group associated with the current round
-     *
-     * @return - the name of the group associated with the current round
-     */
-    @Override
-    public String getGroupName() {
-        if (locales.isEmpty()) {
-            return null;
-        }
-        return roundCi.getGroupName(locales.get(0));
-    }
-
-    /**
-     * Returns the name of the group associated with the current round
-     *
-     * @return - the name of the group associated with the current round
-     */
-    @Override
-    public String getGroupName(Locale locale) {
-        if (!locales.contains(locale)) {
-            return null;
-        }
-        return roundCi.getGroupName(locale);
-    }
-
-    /**
      * Returns the name or group long name for the specified locale
      *
      * @param locale {@link Locale} specifying the language of the value

@@ -48,7 +48,7 @@ public class SdkInternalConfiguration {
     private String apiHost;
     private final int apiPort;
     private String apiHostAndPort;
-    private final Supplier<Environment> selectedEnvironment;
+    private final Environment selectedEnvironment;
     private final int httpClientMaxConnTotal;
     private final int httpClientMaxConnPerRoute;
     private final int recoveryHttpClientMaxConnTotal;
@@ -94,7 +94,7 @@ public class SdkInternalConfiguration {
         sdkNodeId = cfg.getNodeId();
         disabledProducers = cfg.getProducer().getDisabledProducers();
         exceptionHandlingStrategy = cfg.getExceptionHandlingStrategy();
-        selectedEnvironment = () -> cfg.getEnvironment();
+        selectedEnvironment = cfg.getEnvironment();
         httpClientTimeout = (int) (cfg.getApi().getHttpClientTimeout().toMillis() / 1000);
         httpClientMaxConnTotal = cfg.getApi().getHttpClientMaxConnTotal();
         httpClientMaxConnPerRoute = cfg.getApi().getHttpClientMaxConnPerRoute();
@@ -134,7 +134,7 @@ public class SdkInternalConfiguration {
      * @return The selected environment used for API-access
      */
     public Environment getEnvironment() {
-        return selectedEnvironment.get();
+        return selectedEnvironment;
     }
 
     /**

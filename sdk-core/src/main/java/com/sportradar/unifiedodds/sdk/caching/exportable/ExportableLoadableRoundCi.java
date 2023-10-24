@@ -9,7 +9,6 @@ import java.util.Map;
 public class ExportableLoadableRoundCi implements Serializable {
 
     private Map<Locale, String> names;
-    private Map<Locale, String> groupNames;
     private Map<Locale, String> phaseOrGroupLongNames;
     private Locale defaultLocale;
     private String type;
@@ -27,7 +26,6 @@ public class ExportableLoadableRoundCi implements Serializable {
 
     public ExportableLoadableRoundCi(
         Map<Locale, String> names,
-        Map<Locale, String> groupNames,
         Map<Locale, String> phaseOrGroupLongNames,
         Locale defaultLocale,
         String type,
@@ -44,7 +42,6 @@ public class ExportableLoadableRoundCi implements Serializable {
         List<Locale> cachedFixtureLocales
     ) {
         this.names = names;
-        this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
         this.defaultLocale = defaultLocale;
         this.type = type;
@@ -67,14 +64,6 @@ public class ExportableLoadableRoundCi implements Serializable {
 
     public void setNames(Map<Locale, String> names) {
         this.names = names;
-    }
-
-    public Map<Locale, String> getGroupNames() {
-        return groupNames;
-    }
-
-    public void setGroupNames(Map<Locale, String> groupNames) {
-        this.groupNames = groupNames;
     }
 
     public Map<Locale, String> getPhaseOrGroupLongNames() {

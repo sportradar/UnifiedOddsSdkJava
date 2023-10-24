@@ -3,9 +3,13 @@
  */
 package com.sportradar.utils;
 
+import static com.sportradar.utils.Urns.unique;
 import static org.junit.Assert.*;
 
+import com.sportradar.unifiedodds.sdk.testutil.generic.generationassert.DataGenerationAssert;
+import com.sportradar.utils.domain.UniqueObjects;
 import lombok.val;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -144,6 +148,44 @@ public class UrnsTest {
             assertEquals(SR, match.getPrefix());
             assertEquals("competitor", match.getType());
             assertTrue(match.getId() > 0L);
+        }
+    }
+
+    public static class VenueUrns {
+
+        @Test
+        public void forAnyVenue() {
+            Urn venue = Urns.Venues.urnForAnyVenue();
+
+            assertEquals(SR, venue.getPrefix());
+            assertEquals("venue", venue.getType());
+            assertTrue(venue.getId() > 0L);
+        }
+
+        @Test
+        public void generatesDynamicNonNullIds() {
+            DataGenerationAssert.assertThatGeneratesDistinctAndNonNull(() ->
+                Urns.Venues.urnForAnyVenue().getId()
+            );
+        }
+    }
+
+    public static class UniqueUrns {
+
+        private static final int ONE_SECOND_IN_MILLIS = 1000;
+
+        @Test(timeout = ONE_SECOND_IN_MILLIS)
+        public void shouldGenerateUniqueIdsOnly() {
+            UniqueObjects uniqueUrns = unique(() -> Urns.Venues.urnForAnyVenue());
+            val urn1 = uniqueUrns.getOne();
+            val urn2 = uniqueUrns.getOne();
+
+            Assert.assertNotEquals(urn1, urn2);
+        }
+
+        @Test
+        public void testClassCanRelyOnUrnEquals() {
+            assertEquals(Urn.parse("sr:venue:54"), Urn.parse("sr:venue:54"));
         }
     }
 }

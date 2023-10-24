@@ -22,6 +22,7 @@ import java.util.Locale;
 @SuppressWarnings({ "MagicNumber" })
 public class AdvancedConfigurationSetup {
 
+    public static final int SECONDS_IN_HOUR = 60 * 60;
     private final UofSdk uofSdk;
 
     public AdvancedConfigurationSetup(String token) {
@@ -34,8 +35,8 @@ public class AdvancedConfigurationSetup {
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID);
 
-        logEntry("Setting the max recovery execution time to 3 hours");
-        cfgBuilder.setMaxRecoveryTime(3);
+        logEntry("Setting the max recovery execution time to 1 hours");
+        cfgBuilder.setMaxRecoveryTime(1 * SECONDS_IN_HOUR);
 
         logEntry("Setting the default locale to German");
         cfgBuilder.setDefaultLanguage(Locale.ENGLISH);

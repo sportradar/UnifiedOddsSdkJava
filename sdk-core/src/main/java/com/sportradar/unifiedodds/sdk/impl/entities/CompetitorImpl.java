@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
         "NeedBraces",
         "ParameterNumber",
         "VisibilityModifier",
+        "classDataAbstractionCoupling",
     }
 )
 public class CompetitorImpl implements Competitor {
@@ -410,6 +411,15 @@ public class CompetitorImpl implements Competitor {
     @Override
     public String getShortName() {
         return loadCacheItem().map(CompetitorCi::getShortName).orElse(null);
+    }
+
+    @Override
+    public Division getDivision() {
+        return loadCacheItem()
+            .map(competitorCi ->
+                competitorCi.getDivision() != null ? new DivisionImpl(competitorCi.getDivision()) : null
+            )
+            .orElse(null);
     }
 
     /**
