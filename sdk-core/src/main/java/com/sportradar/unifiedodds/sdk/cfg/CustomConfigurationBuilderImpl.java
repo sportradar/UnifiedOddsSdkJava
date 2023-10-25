@@ -6,12 +6,6 @@ package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-import com.sportradar.utils.SdkHelper;
-import java.util.ArrayList;
 
 /**
  * A basic implementation of the {@link CustomConfigurationBuilder}
@@ -21,95 +15,82 @@ class CustomConfigurationBuilderImpl
     extends RecoveryConfigurationBuilderImpl<CustomConfigurationBuilder>
     implements CustomConfigurationBuilder {
 
-    private final String accessToken;
-    private final Environment environment;
-
-    private String messagingHost;
-    private String apiHost;
-    private int apiPort;
-    private int messagingPort;
-    private boolean useMessagingSsl;
-    private boolean useApiSsl;
-    private String username;
-    private String password;
-    private String messagingVirtualHost;
-
     CustomConfigurationBuilderImpl(
-        String accessToken,
-        String messagingHost,
-        String apiHost,
-        int apiPort,
-        int messagingPort,
-        boolean useMessagingSsl,
-        boolean useApiSsl,
-        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-        SDKConfigurationYamlReader sdkConfigurationYamlReader,
-        Environment environment
+        UofConfigurationImpl config,
+        SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SdkConfigurationYamlReader sdkConfigurationYamlReader
     ) {
-        super(sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
-        this.accessToken = accessToken;
-        this.messagingHost = messagingHost;
-        this.apiHost = apiHost;
-        this.apiPort = apiPort;
-        this.messagingPort = messagingPort;
-        this.useMessagingSsl = useMessagingSsl;
-        this.useApiSsl = useApiSsl;
-        this.environment = environment;
+        super(config, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+        setMessagingUseSsl(true);
+        setApiUseSsl(true);
     }
 
     @Override
     public CustomConfigurationBuilder loadConfigFromSdkProperties() {
-        loadCustomConfigFrom(sdkConfigurationPropertiesReader);
+        updateFieldsFromConfig(sdkConfigurationPropertiesReader);
+        updateCustomFieldsFromConfig(sdkConfigurationPropertiesReader);
         return super.loadConfigFromSdkProperties();
     }
 
     @Override
     public CustomConfigurationBuilder loadConfigFromApplicationYml() {
-        loadCustomConfigFrom(sdkConfigurationYamlReader);
+        updateFieldsFromConfig(sdkConfigurationYamlReader);
+        updateCustomFieldsFromConfig(sdkConfigurationYamlReader);
         return super.loadConfigFromApplicationYml();
     }
 
     /**
      * Set the host name of the Sports API server
      *
-     * @param apiHost the host name of the Sports API server
+     * @param host the host name of the Sports API server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     @Override
-    public CustomConfigurationBuilder setApiHost(String apiHost) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(apiHost), "ApiHost can not be null/empty");
-
-        this.apiHost = apiHost;
+    public CustomConfigurationBuilder setApiHost(String host) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(host), "ApiHost can not be null/empty");
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.setHost(host);
         return this;
     }
 
     /**
      * Set the port of the Sports API server
      *
-     * @param apiPort the port of the Sports API server
+     * @param port the port of the Sports API server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     @Override
-    public CustomConfigurationBuilder setApiPort(int apiPort) {
-        Preconditions.checkArgument(apiPort > 0, "API Port must be greater than 0!");
-        this.apiPort = apiPort;
+    public CustomConfigurationBuilder setApiPort(int port) {
+        Preconditions.checkArgument(port > 0, "API Port must be greater than 0!");
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.setPort(port);
+        return this;
+    }
+
+    /**
+     * Sets the value specifying whether SSL should be used to communicate with Sports API
+     *
+     * @param useSsl the value specifying whether SSL should be used to communicate with Sports API
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    @Override
+    public CustomConfigurationBuilder setApiUseSsl(boolean useSsl) {
+        UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
+        apiConfiguration.useSsl(useSsl);
         return this;
     }
 
     /**
      * Sets the host name of the AMQP server
      *
-     * @param messagingHost the host name of the AMQP server
+     * @param host the host name of the AMQP server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     @Override
-    public CustomConfigurationBuilder setMessagingHost(String messagingHost) {
-        Preconditions.checkArgument(
-            !Strings.isNullOrEmpty(messagingHost),
-            "MessagingHost can not be null/empty"
-        );
-
-        this.messagingHost = messagingHost;
+    public CustomConfigurationBuilder setMessagingHost(String host) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(host), "MessagingHost can not be null/empty");
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setHost(host);
         return this;
     }
 
@@ -122,8 +103,8 @@ class CustomConfigurationBuilderImpl
     @Override
     public CustomConfigurationBuilder setMessagingPort(int port) {
         Preconditions.checkArgument(port > 0);
-
-        this.messagingPort = port;
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setPort(port);
         return this;
     }
 
@@ -136,8 +117,8 @@ class CustomConfigurationBuilderImpl
     @Override
     public CustomConfigurationBuilder setMessagingUsername(String username) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(username));
-
-        this.username = username;
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setUsername(username);
         return this;
     }
 
@@ -150,8 +131,8 @@ class CustomConfigurationBuilderImpl
     @Override
     public CustomConfigurationBuilder setMessagingPassword(String password) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(password));
-
-        this.password = password;
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setPassword(password);
         return this;
     }
 
@@ -165,108 +146,36 @@ class CustomConfigurationBuilderImpl
     public CustomConfigurationBuilder setMessagingVirtualHost(String vHost) {
         Preconditions.checkArgument(
             !Strings.isNullOrEmpty(vHost),
-            "messaging virtual host can be null or not empty"
+            "Virtual host can not be null or not empty"
         );
-
-        this.messagingVirtualHost = vHost;
-        return this;
-    }
-
-    /**
-     * Sets the value specifying whether SSL should be used to communicate with Sports API
-     *
-     * @param useApiSsl the value specifying whether SSL should be used to communicate with Sports API
-     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
-     */
-    @Override
-    public CustomConfigurationBuilder useApiSsl(boolean useApiSsl) {
-        this.useApiSsl = useApiSsl;
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setVirtualHost(vHost);
         return this;
     }
 
     /**
      * Sets the value specifying whether SSL should be used to communicate with the messaging server
      *
-     * @param useMessagingSsl the value specifying whether SSL should be used to communicate with the messaging server
+     * @param useSsl the value specifying whether SSL should be used to communicate with the messaging server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     @Override
-    public CustomConfigurationBuilder useMessagingSsl(boolean useMessagingSsl) {
-        this.useMessagingSsl = useMessagingSsl;
-
-        if (
-            messagingPort == 0 ||
-            messagingPort == EnvironmentManager.DEFAULT_MQ_HOST_PORT ||
-            messagingPort == 5672
-        ) {
-            this.messagingPort = useMessagingSsl ? EnvironmentManager.DEFAULT_MQ_HOST_PORT : 5672;
-        }
+    public CustomConfigurationBuilder setMessagingUseSsl(boolean useSsl) {
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.useSsl(useSsl);
         return this;
     }
 
     /**
-     * Builds and returns a {@link OddsFeedConfiguration} instance
+     * Builds and returns a {@link UofConfigurationImpl} instance
      *
-     * @return the constructed {@link OddsFeedConfiguration} instance
+     * @return the constructed {@link UofConfigurationImpl} instance
      */
     @Override
-    public OddsFeedConfiguration build() {
-        defaultLocale = SdkHelper.checkConfigurationLocales(defaultLocale, getSupportedLocales());
+    public UofConfiguration build() {
+        configuration.validateMinimumSettings();
+        configuration.acquireBookmakerDetailsAndProducerData();
 
-        if (messagingPort == 0) {
-            if (useMessagingSsl) {
-                messagingPort = 5671;
-            } else {
-                messagingPort = 5672;
-            }
-        }
-
-        return new OddsFeedConfiguration(
-            accessToken,
-            defaultLocale,
-            new ArrayList<>(getSupportedLocales()),
-            messagingHost,
-            apiHost,
-            apiPort,
-            maxInactivitySeconds,
-            maxRecoveryExecutionTimeMinutes,
-            minIntervalBetweenRecoveryRequests,
-            useMessagingSsl,
-            useApiSsl,
-            messagingPort,
-            username,
-            password,
-            nodeId,
-            environment == Environment.Integration || environment == Environment.Staging,
-            new ArrayList<>(disabledProducers),
-            exceptionHandlingStrategy,
-            environment,
-            messagingVirtualHost,
-            httpClientTimeout,
-            httpClientMaxConnTotal,
-            httpClientMaxConnPerRoute,
-            recoveryHttpClientTimeout,
-            recoveryHttpClientMaxConnTotal,
-            recoveryHttpClientMaxConnPerRoute
-        );
-    }
-
-    /**
-     * Loads the properties that are relevant to the builder from the provided {@link SDKConfigurationReader}
-     *
-     * @param sdkConfigurationReader the reader from which the properties should be red
-     */
-    private void loadCustomConfigFrom(SDKConfigurationReader sdkConfigurationReader) {
-        Preconditions.checkNotNull(sdkConfigurationReader);
-
-        sdkConfigurationReader.readMessagingHost().ifPresent(this::setMessagingHost);
-        sdkConfigurationReader.readApiHost().ifPresent(this::setApiHost);
-        sdkConfigurationReader.readApiPort().ifPresent(this::setApiPort);
-        sdkConfigurationReader.readUseApiSsl().ifPresent(this::useApiSsl);
-        sdkConfigurationReader.readUseMessagingSsl().ifPresent(this::useMessagingSsl);
-        sdkConfigurationReader.readMessagingPort().ifPresent(this::setMessagingPort);
-        sdkConfigurationReader.readMessagingUsername().ifPresent(this::setMessagingUsername);
-        sdkConfigurationReader.readMessagingPassword().ifPresent(this::setMessagingPassword);
-        sdkConfigurationReader.readMessagingVirtualHost().ifPresent(this::setMessagingVirtualHost);
+        return configuration;
     }
 }

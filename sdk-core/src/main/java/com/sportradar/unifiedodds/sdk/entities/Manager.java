@@ -4,8 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Defines methods used to access manager properties
@@ -16,7 +17,7 @@ public interface Manager {
      *
      * @return the manager identifier
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the translated manager name
@@ -25,6 +26,11 @@ public interface Manager {
      * @return the translated manager name
      */
     String getName(Locale locale);
+
+    /**
+     * Returns the translated manager name
+     */
+    Map<Locale, String> getNames();
 
     /**
      * Returns the translated nationality

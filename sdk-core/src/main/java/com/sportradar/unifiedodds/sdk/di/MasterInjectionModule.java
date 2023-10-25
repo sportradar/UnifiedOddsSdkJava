@@ -7,35 +7,40 @@ package com.sportradar.unifiedodds.sdk.di;
 import com.google.common.base.Preconditions;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
-import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationImpl;
+import com.sportradar.unifiedodds.sdk.impl.util.files.ResourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The master SDK {@link Module} implementation used to set-up the dependency injection container
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "ClassDataAbstractionCoupling", "ClassFanOutComplexity", "ConstantName" }
-)
+@SuppressWarnings({ "ClassDataAbstractionCoupling", "ClassFanOutComplexity", "ConstantName" })
 public class MasterInjectionModule extends AbstractModule {
 
     private static final Logger logger = LoggerFactory.getLogger(MasterInjectionModule.class);
-    private final SDKGlobalEventsListener sdkListener;
-    private final SDKInternalConfiguration config;
-    private final CustomisableSDKModule customisableSDKModule;
+    private final UofGlobalEventsListener sdkListener;
+    private final SdkInternalConfiguration configInternal;
+    private final CustomisableSdkModule customisableSdkModule;
+    private final UofConfiguration uofConfiguration;
 
     public MasterInjectionModule(
-        SDKGlobalEventsListener sdkListener,
-        SDKInternalConfiguration config,
-        CustomisableSDKModule customisableSDKModule
+        UofGlobalEventsListener sdkListener,
+        SdkInternalConfiguration sdkInternalConfiguration,
+        UofConfiguration uofConfiguration,
+        CustomisableSdkModule customisableSdkModule
     ) {
         Preconditions.checkNotNull(sdkListener, "sdkListener cannot be a null reference");
-        Preconditions.checkNotNull(config, "config cannot be a null reference");
+        Preconditions.checkNotNull(uofConfiguration, "config cannot be a null reference");
 
         this.sdkListener = sdkListener;
-        this.config = config;
-        this.customisableSDKModule = customisableSDKModule;
+        this.uofConfiguration = uofConfiguration;
+        this.configInternal = sdkInternalConfiguration;
+
+        this.customisableSdkModule = customisableSdkModule;
     }
 
     @Override
@@ -43,12 +48,22 @@ public class MasterInjectionModule extends AbstractModule {
         // disable circular proxies, since they are a sign of insufficiently granular decomposition/bad practice
         binder().disableCircularProxies();
 
-        bind(SDKInternalConfiguration.class).toInstance(config);
+        bind(SdkInternalConfiguration.class).toInstance(configInternal);
+        bind(UofConfiguration.class).toInstance(uofConfiguration);
+        bind(UofConfigurationImpl.class).toInstance((UofConfigurationImpl) uofConfiguration);
 
-        InternalCachesProvider internalCachesProvider = new InternalCachesProviderImpl();
+        InternalCachesProvider internalCachesProvider = new InternalCachesProviderImpl(
+            uofConfiguration.getCache()
+        );
         bind(InternalCachesProvider.class).toInstance(internalCachesProvider);
 
-        install(new GeneralModule(sdkListener, config, new HttpClientFactory()));
+        install(new GlobalVariablesModule(new ResourceReader()));
+        install(new MetricsModule());
+        install(new DeserializerModule());
+        install(new HttpClientModule(configInternal));
+        install(new WhoAmIReaderModule(configInternal));
+        install(new ProducersDataProviderModule(configInternal));
+        install(new GeneralModule(sdkListener));
         install(new ReadersModule());
         install(new DataProvidersModule());
         install(new CachingModule(internalCachesProvider));
@@ -57,14 +72,14 @@ public class MasterInjectionModule extends AbstractModule {
         install(new MarketsModule());
         install(new EventChangeManagerModule());
 
-        if (customisableSDKModule == null) {
-            install(new CustomisableSDKModule());
+        if (customisableSdkModule == null) {
+            install(new CustomisableSdkModule());
         } else {
             logger.warn(
                 "Installing user customisable injection module: {}",
-                customisableSDKModule.getClass()
+                customisableSdkModule.getClass()
             );
-            install(customisableSDKModule);
+            install(customisableSdkModule);
         }
     }
 }

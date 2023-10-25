@@ -1,65 +1,67 @@
 /*
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
-
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.sportradar.uf.sportsapi.datamodel.APIPageNotFound;
-import com.sportradar.uf.sportsapi.datamodel.Response;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
+import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.*;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings(
-    { "ClassFanOutComplexity", "ConstantName", "InnerTypeLast", "MethodLength", "NestedIfDepth" }
-)
+@SuppressWarnings("ClassFanOutComplexity")
 public class HttpHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpHelper.class);
-    private static final Logger trafficLogger = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkRestTrafficLog.class
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpHelper.class);
+    private static final Logger TRAFFIC_LOGGER = LoggerFactory.getLogger(
+        LoggerDefinitions.UfSdkRestTrafficLog.class
     );
     private static final String EMPTY_RESPONSE = "EMPTY_RESPONSE";
-    private final SDKInternalConfiguration config;
+    private final SdkInternalConfiguration config;
     private final CloseableHttpClient httpClient;
-    private final Deserializer apiDeserializer;
+    private final MessageAndActionExtractor messageExtractor;
+    private final UserAgentProvider userAgent;
 
     @Inject
     public HttpHelper(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
-        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+        MessageAndActionExtractor messageExtractor,
+        UserAgentProvider userAgent
     ) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(httpClient);
-        Preconditions.checkNotNull(apiDeserializer);
+        Preconditions.checkNotNull(messageExtractor);
+        Preconditions.checkNotNull(userAgent, "userAgent");
 
         this.config = config;
         this.httpClient = httpClient;
-        this.apiDeserializer = apiDeserializer;
+        this.messageExtractor = messageExtractor;
+        this.userAgent = userAgent;
     }
 
     public ResponseData post(String path) throws CommunicationException {
-        logger.info("POST request: " + path);
+        LOGGER.info("POST request: " + path);
         HttpPost httpPost = new HttpPost(path);
         try {
-            return executeRequest(httpPost, path, "POST");
+            return executeRequest(httpPost, path);
         } catch (CommunicationException e) {
             throw new CommunicationException(
                 "Problems executing POST request",
@@ -67,16 +69,14 @@ public class HttpHelper {
                 e.getHttpStatusCode(),
                 e
             );
-        } finally {
-            httpPost.releaseConnection();
         }
     }
 
     public ResponseData put(String path) throws CommunicationException {
-        logger.info("PUT request: " + path);
+        LOGGER.info("PUT request: " + path);
         HttpPut httpPut = new HttpPut(path);
         try {
-            return executeRequest(httpPut, path, "PUT");
+            return executeRequest(httpPut, path);
         } catch (CommunicationException e) {
             throw new CommunicationException(
                 "Problems performing PUT request",
@@ -84,16 +84,14 @@ public class HttpHelper {
                 e.getHttpStatusCode(),
                 e
             );
-        } finally {
-            httpPut.releaseConnection();
         }
     }
 
     public ResponseData delete(String path) throws CommunicationException {
-        logger.info("DELETE request: {}", path);
+        LOGGER.info("DELETE request: {}", path);
         HttpDelete httpDelete = new HttpDelete(path);
         try {
-            return executeRequest(httpDelete, path, "DELETE");
+            return executeRequest(httpDelete, path);
         } catch (CommunicationException e) {
             throw new CommunicationException(
                 "Problems executing DELETE request",
@@ -101,77 +99,78 @@ public class HttpHelper {
                 e.getHttpStatusCode(),
                 e
             );
-        } finally {
-            httpDelete.releaseConnection();
         }
     }
 
-    private ResponseData executeRequest(HttpUriRequest httpRequest, String path, String type)
+    public ResponseData executeRequest(ClassicHttpRequest httpRequest, String path)
         throws CommunicationException {
         Stopwatch timer = Stopwatch.createStarted();
-        Integer statusCode = -1;
-        String responseContent;
-        CloseableHttpResponse resp = null;
         ResponseData responseData;
         try {
             httpRequest.addHeader("x-access-token", config.getAccessToken());
-            resp = httpClient.execute(httpRequest);
-
-            statusCode = resp.getStatusLine().getStatusCode();
-
-            // content string used to log data
-            responseContent =
-                resp.getEntity() == null
-                    ? null
-                    : EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8).replace("\n", "");
-
-            // return response object
+            httpRequest.addHeader("User-Agent", userAgent.asHeaderValue());
             responseData =
-                new ResponseData(
-                    statusCode,
-                    responseContent == null
-                        ? null
-                        : new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8)),
-                    apiDeserializer
+                httpClient.execute(
+                    httpRequest,
+                    httpResponse -> handleHttpResponse(httpRequest, httpResponse, path, timer)
                 );
         } catch (IOException e) {
-            trafficLogger.info("Request[{}]: {}, FAILED({}), ex:", type, path, timer.stop(), e);
-            throw new CommunicationException(
-                "An exception occurred while performing HTTP request",
+            TRAFFIC_LOGGER.info(
+                "Request[{}]: {}, FAILED({}), ex:",
+                httpRequest.getMethod(),
                 path,
-                statusCode,
+                timer.stop(),
                 e
             );
-        } finally {
-            try {
-                if (resp != null) {
-                    resp.close();
-                }
-            } catch (IOException e) {
-                logger.info("Response closure failed, with ex: {}", e.getMessage());
-            }
-        }
-
-        if (responseData.isSuccessful()) {
-            trafficLogger.info(
-                "Request[{}]: {}, response code - OK[{}]({}): {}",
-                type,
-                path,
-                statusCode,
-                timer.stop(),
-                responseContent
-            );
-        } else {
-            trafficLogger.info(
-                "Request[{}]: {}, response code - FAILED[{}]({}): {}",
-                type,
-                path,
-                statusCode,
-                timer.stop(),
-                responseContent
-            );
+            throw new CommunicationException("An exception occurred while performing HTTP request", path, e);
         }
         return responseData;
+    }
+
+    private ResponseData handleHttpResponse(
+        ClassicHttpRequest httpRequest,
+        ClassicHttpResponse httpResponse,
+        String path,
+        Stopwatch timer
+    ) throws IOException, ParseException {
+        int statusCode = httpResponse.getCode();
+        String responseContent = httpResponse.getEntity() == null
+            ? null
+            : EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8).replace("\n", "");
+
+        ResponseData responseDataFromRequest = new ResponseData(
+            statusCode,
+            responseContent == null
+                ? null
+                : new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8)),
+            messageExtractor
+        );
+        logRequestStatus(responseDataFromRequest, httpRequest, path, timer, responseContent);
+        return responseDataFromRequest;
+    }
+
+    private void logRequestStatus(
+        ResponseData responseData,
+        ClassicHttpRequest httpRequest,
+        String path,
+        Stopwatch timer,
+        String responseContent
+    ) {
+        String errorMessage;
+
+        if (responseData.isSuccessful()) {
+            errorMessage = "Request[{}]: {}, response code - OK[{}]({}): {}";
+        } else {
+            errorMessage = "Request[{}]: {}, response code - FAILED[{}]({}): {}";
+        }
+        TRAFFIC_LOGGER.info(
+            errorMessage,
+            httpRequest.getMethod(),
+            path,
+            responseData.getStatusCode(),
+            timer.stop(),
+            responseContent
+        );
     }
 
     public static class ResponseData {
@@ -180,15 +179,17 @@ public class HttpHelper {
         private final boolean successStatus;
         private final String message;
 
-        ResponseData(Integer statusCode, InputStream httpResponseContent, Deserializer deserializer) {
-            Preconditions.checkNotNull(deserializer);
+        ResponseData(
+            Integer statusCode,
+            InputStream httpResponseContent,
+            MessageAndActionExtractor messageExtractor
+        ) {
+            Preconditions.checkNotNull(messageExtractor);
 
             this.statusCode = statusCode;
             this.successStatus = statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_ACCEPTED;
             this.message =
-                httpResponseContent == null
-                    ? EMPTY_RESPONSE
-                    : tryDeserializeResponseMessage(deserializer, httpResponseContent);
+                httpResponseContent == null ? EMPTY_RESPONSE : messageExtractor.parse(httpResponseContent);
         }
 
         public ResponseData(Integer statusCode, String message) {
@@ -208,43 +209,5 @@ public class HttpHelper {
         public String getMessage() {
             return message;
         }
-    }
-
-    public static String tryDeserializeResponseMessage(
-        Deserializer apiDeserializer,
-        InputStream httpResponseContent
-    ) {
-        Preconditions.checkNotNull(apiDeserializer);
-        Preconditions.checkNotNull(httpResponseContent);
-
-        String errMsg;
-        try {
-            Object deserializedResponse = apiDeserializer.deserialize(httpResponseContent);
-            if (deserializedResponse instanceof APIPageNotFound) {
-                errMsg = ((APIPageNotFound) deserializedResponse).getMessage();
-            } else if (deserializedResponse instanceof Response) {
-                String message = ((Response) deserializedResponse).getMessage();
-                String action = ((Response) deserializedResponse).getAction();
-
-                StringBuilder sb = new StringBuilder();
-                if (message != null) {
-                    sb.append(message);
-                }
-
-                if (action != null) {
-                    if (message != null) {
-                        sb.append(", ");
-                    }
-                    sb.append(action);
-                }
-
-                errMsg = sb.toString();
-            } else {
-                errMsg = "Unknown response format, " + deserializedResponse.getClass().getName();
-            }
-        } catch (DeserializationException e) {
-            errMsg = "No specific message";
-        }
-        return errMsg;
     }
 }

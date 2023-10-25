@@ -5,8 +5,8 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.EventTimelineCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCi;
 import com.sportradar.unifiedodds.sdk.entities.EventTimeline;
 import com.sportradar.unifiedodds.sdk.entities.TimelineEvent;
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
  */
 public class EventTimelineImpl implements EventTimeline {
 
-    private final EventTimelineCI eventTimeline;
+    private final EventTimelineCi eventTimeline;
 
-    public EventTimelineImpl(EventTimelineCI eventTimeline) {
+    public EventTimelineImpl(EventTimelineCi eventTimeline) {
         Preconditions.checkNotNull(eventTimeline);
 
         this.eventTimeline = eventTimeline;
@@ -28,7 +28,7 @@ public class EventTimelineImpl implements EventTimeline {
     /**
      * Returns a chronological list of events
      *
-     * @return a chronological list of {@link TimelineEventCI}s
+     * @return a chronological list of {@link TimelineEventCi}s
      */
     @Override
     public List<TimelineEvent> getTimelineEvents() {

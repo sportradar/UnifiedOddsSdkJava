@@ -14,15 +14,15 @@ public interface ExportableSdkCache {
     /**
      * Exports current items in the cache
      *
-     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     * @return List of {@link ExportableCi} containing all the items currently in the cache
      */
-    List<ExportableCI> exportItems();
+    List<ExportableCi> exportItems();
 
     /**
      * Imports provided items into the cache
-     * @param items List of {@link ExportableCI} to be inserted into the cache
+     * @param items List of {@link ExportableCi} to be inserted into the cache
      */
-    void importItems(List<ExportableCI> items);
+    void importItems(List<ExportableCi> items);
 
     /**
      * Returns current cache status

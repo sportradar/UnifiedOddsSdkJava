@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.DrawInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.DrawInfo;
 import com.sportradar.unifiedodds.sdk.entities.DrawType;
 import com.sportradar.unifiedodds.sdk.entities.TimeType;
@@ -19,7 +19,7 @@ public class DrawInfoImpl implements DrawInfo {
     private final String gameType;
     private final TimeType timeType;
 
-    DrawInfoImpl(DrawInfoCI drawInfo) {
+    DrawInfoImpl(DrawInfoCi drawInfo) {
         Preconditions.checkNotNull(drawInfo);
 
         drawType = drawInfo.getDrawType();

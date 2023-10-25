@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class OutcomeDescriptionImpl implements OutcomeDescription {
     private final Map<Locale, String> names;
     private final Map<Locale, String> descriptions;
 
-    OutcomeDescriptionImpl(MarketOutcomeCI ci, List<Locale> locales) {
+    OutcomeDescriptionImpl(MarketOutcomeCi ci, List<Locale> locales) {
         Preconditions.checkNotNull(ci);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());

@@ -3,11 +3,14 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import static com.sportradar.unifiedodds.sdk.impl.entities.CurrentSeasonAssertions.assertThat;
 import static com.sportradar.utils.Urns.SportEvents.urnForAnySeason;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -16,123 +19,264 @@ import static org.mockito.Mockito.times;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.caching.TournamentCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.caching.impl.SportEventCacheImpl;
 import com.sportradar.unifiedodds.sdk.entities.Competition;
 import com.sportradar.unifiedodds.sdk.entities.CurrentSeasonInfo;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import lombok.val;
+import org.apache.groovy.util.Maps;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 
+@RunWith(Enclosed.class)
 public class CurrentSeasonInfoImplTest {
 
-    private final SportEntityFactory anyFactory = mock(SportEntityFactory.class);
-    private final TournamentCI anyTournamentCi = mock(TournamentCI.class);
-    private final URN seasonUrn = urnForAnySeason();
-    private final DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-    private final Locale inEnglish = ENGLISH;
+    public static class ScheduledSportEventIdsRetrieval {
 
-    @Test
-    public void failingToGetScheduledSportEventIdsComposingScheduleShouldReturnNullWhenConfiguredToCatchExceptions()
-        throws CommunicationException {
-        final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
-            dataRouterManager
-        );
-        final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
-            seasonCiWithUrn(seasonUrn),
-            anyTournamentCi,
-            sportEventCache,
-            anyFactory,
-            asList(inEnglish),
-            ExceptionHandlingStrategy.Catch
-        );
-        when(dataRouterManager.requestEventsFor(inEnglish, seasonUrn))
-            .thenThrow(CommunicationException.class);
+        private final SportEntityFactory anyFactory = mock(SportEntityFactory.class);
+        private final TournamentCi anyTournamentCi = mock(TournamentCi.class);
+        private final Urn seasonUrn = urnForAnySeason();
+        private final DataRouterManager dataRouterManager = mock(DataRouterManager.class);
+        private final Locale inEnglish = ENGLISH;
 
-        final List<Competition> schedule = season.getSchedule();
+        @Test
+        public void returnsNullOnFailureWhenConfiguredToCatchExceptions() throws CommunicationException {
+            final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
+                dataRouterManager
+            );
+            final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
+                seasonCiWithUrn(seasonUrn),
+                anyTournamentCi,
+                sportEventCache,
+                anyFactory,
+                asList(inEnglish),
+                ExceptionHandlingStrategy.Catch
+            );
+            when(dataRouterManager.requestEventsFor(inEnglish, seasonUrn))
+                .thenThrow(CommunicationException.class);
 
-        assertNull(schedule);
+            final List<Competition> schedule = season.getSchedule();
+
+            assertNull(schedule);
+        }
+
+        @Test
+        public void throwsOnFailureWhenConfiguredToThrowExceptions() throws CommunicationException {
+            final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
+                dataRouterManager
+            );
+            final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
+                seasonCiWithUrn(seasonUrn),
+                anyTournamentCi,
+                sportEventCache,
+                anyFactory,
+                asList(inEnglish),
+                ExceptionHandlingStrategy.Throw
+            );
+            when(dataRouterManager.requestEventsFor(inEnglish, seasonUrn))
+                .thenThrow(CommunicationException.class);
+
+            assertThatThrownBy(() -> season.getSchedule())
+                .isInstanceOf(ObjectNotFoundException.class)
+                .hasMessageContaining("getSchedule failure");
+        }
+
+        @Test
+        public void sequentiallyAttemptsAllConfiguredLanguagesTillOneFails() throws CommunicationException {
+            final Locale firstLanguage = ENGLISH;
+            final Locale secondLanguage = FRENCH;
+            final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
+                dataRouterManager
+            );
+            final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
+                seasonCiWithUrn(seasonUrn),
+                anyTournamentCi,
+                sportEventCache,
+                anyFactory,
+                asList(firstLanguage, secondLanguage),
+                ExceptionHandlingStrategy.Throw
+            );
+            when(dataRouterManager.requestEventsFor(firstLanguage, seasonUrn)).thenReturn(asList());
+            when(dataRouterManager.requestEventsFor(secondLanguage, seasonUrn))
+                .thenThrow(CommunicationException.class);
+
+            assertThatThrownBy(() -> season.getSchedule())
+                .isInstanceOf(ObjectNotFoundException.class)
+                .hasMessageContaining("getSchedule failure");
+        }
+
+        @Test
+        public void afterFailingOneLanguageSubsequentOnesAreNotAttempted() throws CommunicationException {
+            final Locale firstLanguage = ENGLISH;
+            final Locale secondLanguage = FRENCH;
+            final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
+                dataRouterManager
+            );
+            final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
+                seasonCiWithUrn(seasonUrn),
+                anyTournamentCi,
+                sportEventCache,
+                anyFactory,
+                asList(firstLanguage, secondLanguage),
+                ExceptionHandlingStrategy.Throw
+            );
+            when(dataRouterManager.requestEventsFor(firstLanguage, seasonUrn))
+                .thenThrow(CommunicationException.class);
+
+            assertThatThrownBy(() -> season.getSchedule())
+                .isInstanceOf(ObjectNotFoundException.class)
+                .hasMessageContaining("getSchedule failure");
+            verify(dataRouterManager, times(1)).requestEventsFor(any(), any(Urn.class));
+        }
+
+        private SeasonCi seasonCiWithUrn(final Urn urn) {
+            final SeasonCi season = mock(SeasonCi.class);
+            when(season.getId()).thenReturn(urn);
+            return season;
+        }
     }
 
-    @Test
-    public void failingToGetScheduledSportEventIdsComposingScheduleShouldThrowWhenConfiguredToThrowExceptions()
-        throws CommunicationException {
-        final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
-            dataRouterManager
-        );
-        final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
-            seasonCiWithUrn(seasonUrn),
-            anyTournamentCi,
-            sportEventCache,
-            anyFactory,
-            asList(inEnglish),
-            ExceptionHandlingStrategy.Throw
-        );
-        when(dataRouterManager.requestEventsFor(inEnglish, seasonUrn))
-            .thenThrow(CommunicationException.class);
+    @RunWith(JUnitParamsRunner.class)
+    public static class Name {
 
-        assertThatThrownBy(() -> season.getSchedule())
-            .isInstanceOf(ObjectNotFoundException.class)
-            .hasMessageContaining("getSchedule failure");
-    }
+        private static final String UNDER_20_EN = "Under 20";
+        private static final String UNDER_20_FR = "moins de 20 ans";
+        private static final ExceptionHandlingStrategy ANY_EXCEPTION_HANDLING =
+            ExceptionHandlingStrategy.Throw;
+        private final TournamentCi anyTournamentCi = mock(TournamentCi.class);
+        private final SportEventCache anySportEventCache = mock(SportEventCache.class);
+        private final SportEntityFactory anyFactory = mock(SportEntityFactory.class);
 
-    @Test
-    public void allConfiguredLanguagesShouldBeAttemptedUntilFailureWhenGettingScheduledSportEventIdsComposingSchedule()
-        throws CommunicationException {
-        final Locale firstLanguage = ENGLISH;
-        final Locale secondLanguage = FRENCH;
-        final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
-            dataRouterManager
-        );
-        final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
-            seasonCiWithUrn(seasonUrn),
-            anyTournamentCi,
-            sportEventCache,
-            anyFactory,
-            asList(firstLanguage, secondLanguage),
-            ExceptionHandlingStrategy.Throw
-        );
-        when(dataRouterManager.requestEventsFor(firstLanguage, seasonUrn)).thenReturn(asList());
-        when(dataRouterManager.requestEventsFor(secondLanguage, seasonUrn))
-            .thenThrow(CommunicationException.class);
+        @Test
+        public void doesNotConstructWithNullLanguages() {
+            Map<Locale, String> anyTranslations = Maps.of(ENGLISH, "anyTranslation");
 
-        assertThatThrownBy(() -> season.getSchedule())
-            .isInstanceOf(ObjectNotFoundException.class)
-            .hasMessageContaining("getSchedule failure");
-    }
+            assertThatThrownBy(() ->
+                    new CurrentSeasonInfoImpl(
+                        seasonCiWithName(anyTranslations),
+                        anyTournamentCi,
+                        anySportEventCache,
+                        anyFactory,
+                        null,
+                        ANY_EXCEPTION_HANDLING
+                    )
+                )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("locales");
+        }
 
-    @Test
-    public void noFurtherLanguagesShouldBeAttemptedAfterFailingOneWhenGettingScheduledSportEventIdsComposingSchedule()
-        throws CommunicationException {
-        final Locale firstLanguage = ENGLISH;
-        final Locale secondLanguage = FRENCH;
-        final SportEventCacheImpl sportEventCache = SportEvenCacheToProxyDataRouterManagerOnly.create(
-            dataRouterManager
-        );
-        final CurrentSeasonInfo season = new CurrentSeasonInfoImpl(
-            seasonCiWithUrn(seasonUrn),
-            anyTournamentCi,
-            sportEventCache,
-            anyFactory,
-            asList(firstLanguage, secondLanguage),
-            ExceptionHandlingStrategy.Throw
-        );
-        when(dataRouterManager.requestEventsFor(firstLanguage, seasonUrn))
-            .thenThrow(CommunicationException.class);
+        @Test
+        public void doesNotConstructWithoutLanguages() {
+            Map<Locale, String> anyTranslations = Maps.of(ENGLISH, "anyTranslation");
+            List<Locale> noLanguages = asList();
 
-        assertThatThrownBy(() -> season.getSchedule())
-            .isInstanceOf(ObjectNotFoundException.class)
-            .hasMessageContaining("getSchedule failure");
-        verify(dataRouterManager, times(1)).requestEventsFor(any(), any(URN.class));
-    }
+            assertThatThrownBy(() ->
+                    new CurrentSeasonInfoImpl(
+                        seasonCiWithName(anyTranslations),
+                        anyTournamentCi,
+                        anySportEventCache,
+                        anyFactory,
+                        noLanguages,
+                        ANY_EXCEPTION_HANDLING
+                    )
+                )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("locales");
+        }
 
-    private SeasonCI seasonCiWithUrn(final URN urn) {
-        final SeasonCI season = mock(SeasonCI.class);
-        when(season.getId()).thenReturn(urn);
-        return season;
+        @Test
+        public void getsNoTranslationsWhenNoneAvailable() {
+            Map<Locale, String> noTranslations = emptyMap();
+            val season = new CurrentSeasonInfoImpl(
+                seasonCiWithName(noTranslations),
+                anyTournamentCi,
+                anySportEventCache,
+                anyFactory,
+                asList(ENGLISH),
+                ANY_EXCEPTION_HANDLING
+            );
+
+            assertThat(season).hasNameNotTranslatedTo(ENGLISH);
+        }
+
+        @Test
+        public void getsNoTranslationWhenDesiredOneIsUnavailable() {
+            val season = new CurrentSeasonInfoImpl(
+                seasonCiWithName(Maps.of(ENGLISH, UNDER_20_EN)),
+                anyTournamentCi,
+                anySportEventCache,
+                anyFactory,
+                asList(ENGLISH),
+                ANY_EXCEPTION_HANDLING
+            );
+
+            assertThat(season).hasNameNotTranslatedTo(FRENCH);
+        }
+
+        @Test
+        public void getsNoTranslationWhenConfiguredLanguageDoesNotMatchTranslation() {
+            val season = new CurrentSeasonInfoImpl(
+                seasonCiWithName(Maps.of(ENGLISH, UNDER_20_EN)),
+                anyTournamentCi,
+                anySportEventCache,
+                anyFactory,
+                asList(FRENCH),
+                ANY_EXCEPTION_HANDLING
+            );
+
+            assertThat(season).hasNameNotTranslatedTo(FRENCH);
+            assertThat(season).hasNameNotTranslatedTo(ENGLISH);
+        }
+
+        @Test
+        @Parameters(method = "translations")
+        public void getsNameInTheOnlyLanguageAvailable(Locale language, String translation) {
+            val season = new CurrentSeasonInfoImpl(
+                seasonCiWithName(Maps.of(language, translation)),
+                anyTournamentCi,
+                anySportEventCache,
+                anyFactory,
+                asList(language),
+                ANY_EXCEPTION_HANDLING
+            );
+
+            assertThat(season).hasNameTranslated(language, translation);
+        }
+
+        private Object[] translations() {
+            return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
+        }
+
+        @Test
+        public void getsNameInMultipleLanguages() {
+            val season = new CurrentSeasonInfoImpl(
+                seasonCiWithName(Maps.of(ENGLISH, UNDER_20_EN, FRENCH, UNDER_20_FR)),
+                anyTournamentCi,
+                anySportEventCache,
+                anyFactory,
+                asList(ENGLISH, FRENCH),
+                ExceptionHandlingStrategy.Throw
+            );
+
+            assertThat(season).hasNameTranslated(ENGLISH, UNDER_20_EN);
+            assertThat(season).hasNameTranslated(FRENCH, UNDER_20_FR);
+        }
+
+        private SeasonCi seasonCiWithName(Map<Locale, String> name) {
+            final SeasonCi season = mock(SeasonCi.class);
+            name.forEach((locale, translation) -> when(season.getName(locale)).thenReturn(translation));
+            return season;
+        }
     }
 }

@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * The event that gets released when the recovery for the producer is initiated
@@ -26,7 +26,7 @@ public interface RecoveryInitiated extends Message {
      * Gets the associated event identifier
      * @return the associated event identifier
      */
-    URN getEventId();
+    Urn getEventId();
 
     /**
      * Returns the message associated with the recovery request

@@ -36,16 +36,6 @@ abstract class MessageImpl implements Message {
     }
 
     /**
-     * Returns a timestamp indicating when was this message created in milliseconds since EPOCH UTC
-     * @deprecated check getTimestamps for all available message timestamps
-     * @return a timestamp indicating when was this message created in milliseconds since EPOCH UTC
-     */
-    @Override
-    public long getTimestamp() {
-        return timestamps.getCreated();
-    }
-
-    /**
      * Gets the timestamps when the message was generated, sent, received and dispatched by the sdk
      * @return gets the timestamps when the message was generated, sent, received and dispatched by the sdk
      */

@@ -8,7 +8,7 @@ import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -17,69 +17,69 @@ import java.util.Locale;
  * Created on 19/10/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "OverloadMethodsDeclarationOrder" })
+@SuppressWarnings({ "ClassFanOutComplexity", "OverloadMethodsDeclarationOrder" })
 public interface CacheItemFactory {
-    MatchCI buildMatchCI(URN id);
-    MatchCI buildMatchCI(URN id, SAPISportEvent data, Locale dataLocale);
-    MatchCI buildMatchCI(URN id, SAPISportEventChildren.SAPISportEvent data, Locale dataLocale);
-    MatchCI buildMatchCI(URN id, SAPIFixture data, Locale dataLocale);
-    MatchCI buildMatchCI(URN id, SAPIMatchSummaryEndpoint endpointData, Locale dataLocale);
+    MatchCi buildMatchCi(Urn id);
+    MatchCi buildMatchCi(Urn id, SapiSportEvent data, Locale dataLocale);
+    MatchCi buildMatchCi(Urn id, SapiSportEventChildren.SapiSportEvent data, Locale dataLocale);
+    MatchCi buildMatchCi(Urn id, SapiFixture data, Locale dataLocale);
+    MatchCi buildMatchCi(Urn id, SapiMatchSummaryEndpoint endpointData, Locale dataLocale);
 
-    TournamentCI buildTournamentCI(URN id);
-    TournamentCI buildTournamentCI(URN id, SAPITournament endpointData, Locale dataLocale);
-    TournamentCI buildTournamentCI(URN id, SAPITournamentExtended endpointData, Locale dataLocale);
-    TournamentCI buildTournamentCI(URN id, SAPITournamentInfoEndpoint endpointData, Locale dataLocale);
+    TournamentCi buildTournamentCi(Urn id);
+    TournamentCi buildTournamentCi(Urn id, SapiTournament endpointData, Locale dataLocale);
+    TournamentCi buildTournamentCi(Urn id, SapiTournamentExtended endpointData, Locale dataLocale);
+    TournamentCi buildTournamentCi(Urn id, SapiTournamentInfoEndpoint endpointData, Locale dataLocale);
 
-    StageCI buildStageCI(URN id, SAPIStageSummaryEndpoint endpointData, Locale dataLocale);
-    StageCI buildStageCI(URN id, SAPITournament endpointData, Locale dataLocale);
-    StageCI buildStageCI(URN id, SAPITournamentInfoEndpoint endpointData, Locale dataLocale);
-    StageCI buildStageCI(URN id, SAPISportEvent data, Locale dataLocale);
-    StageCI buildStageCI(URN id, SAPISportEventChildren.SAPISportEvent endpointData, Locale dataLocale);
-    StageCI buildStageCI(URN id, SAPIFixture data, Locale dataLocale);
-    StageCI buildStageCI(URN id, SAPIParentStage data, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiStageSummaryEndpoint endpointData, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiTournament endpointData, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiTournamentInfoEndpoint endpointData, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiSportEvent data, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiSportEventChildren.SapiSportEvent endpointData, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiFixture data, Locale dataLocale);
+    StageCi buildStageCi(Urn id, SapiParentStage data, Locale dataLocale);
 
-    SportCI buildSportCI(URN id, SAPISport sport, List<URN> categories, Locale dataLocale);
-    CategoryCI buildCategoryCI(
-        URN id,
-        SAPICategory category,
-        List<URN> tournaments,
-        URN associatedSportCiId,
+    SportCi buildSportCi(Urn id, SapiSport sport, List<Urn> categories, Locale dataLocale);
+    CategoryCi buildCategoryCi(
+        Urn id,
+        SapiCategory category,
+        List<Urn> tournaments,
+        Urn associatedSportCiId,
         Locale dataLocale
     );
-    SportCI buildSportCI(ExportableSportCI exportable);
-    CategoryCI buildCategoryCI(ExportableCategoryCI exportable);
+    SportCi buildSportCi(ExportableSportCi exportable);
+    CategoryCi buildCategoryCi(ExportableCategoryCi exportable);
 
-    PlayerProfileCI buildPlayerProfileCI(URN id, URN competitorId);
-    PlayerProfileCI buildPlayerProfileCI(
-        URN id,
-        SAPIPlayerExtended data,
+    PlayerProfileCi buildPlayerProfileCi(Urn id, Urn competitorId);
+    PlayerProfileCi buildPlayerProfileCi(
+        Urn id,
+        SapiPlayerExtended data,
         Locale dataLocale,
-        URN competitorId
+        Urn competitorId
     );
-    PlayerProfileCI buildPlayerProfileCI(
-        URN id,
-        SAPIPlayerCompetitor data,
+    PlayerProfileCi buildPlayerProfileCi(
+        Urn id,
+        SapiPlayerCompetitor data,
         Locale dataLocale,
-        URN competitorId
+        Urn competitorId
     );
-    PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable);
+    PlayerProfileCi buildPlayerProfileCi(ExportablePlayerProfileCi exportable);
 
-    CompetitorCI buildCompetitorProfileCI(URN id);
-    CompetitorCI buildCompetitorProfileCI(URN id, SAPICompetitorProfileEndpoint data, Locale dataLocale);
-    CompetitorCI buildCompetitorProfileCI(URN id, SAPITeam data, Locale dataLocale);
-    CompetitorCI buildCompetitorProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale);
-    CompetitorCI buildCompetitorProfileCI(URN id, SAPISimpleTeamProfileEndpoint data, Locale dataLocale);
-    CompetitorCI buildCompetitorProfileCI(ExportableCompetitorCI exportable);
+    CompetitorCi buildCompetitorProfileCi(Urn id);
+    CompetitorCi buildCompetitorProfileCi(Urn id, SapiCompetitorProfileEndpoint data, Locale dataLocale);
+    CompetitorCi buildCompetitorProfileCi(Urn id, SapiTeam data, Locale dataLocale);
+    CompetitorCi buildCompetitorProfileCi(Urn id, SapiPlayerCompetitor data, Locale dataLocale);
+    CompetitorCi buildCompetitorProfileCi(Urn id, SapiSimpleTeamProfileEndpoint data, Locale dataLocale);
+    CompetitorCi buildCompetitorProfileCi(ExportableCompetitorCi exportable);
 
-    LotteryCI buildLotteryCI(URN id);
-    LotteryCI buildLotteryCI(URN id, SAPILottery data, Locale dataLocale);
+    LotteryCi buildLotteryCi(Urn id);
+    LotteryCi buildLotteryCi(Urn id, SapiLottery data, Locale dataLocale);
 
-    DrawCI buildDrawCI(URN id);
-    DrawCI buildDrawCI(URN id, SAPIDrawEvent data, Locale dataLocale);
-    DrawCI buildDrawCI(URN id, SAPIDrawSummary data, Locale dataLocale);
-    DrawCI buildDrawCI(URN id, SAPIDrawFixture data, Locale dataLocale);
+    DrawCi buildDrawCi(Urn id);
+    DrawCi buildDrawCi(Urn id, SapiDrawEvent data, Locale dataLocale);
+    DrawCi buildDrawCi(Urn id, SapiDrawSummary data, Locale dataLocale);
+    DrawCi buildDrawCi(Urn id, SapiDrawFixture data, Locale dataLocale);
 
-    SportEventCI buildSportEventCI(ExportableCI exportable);
+    SportEventCi buildSportEventCi(ExportableCi exportable);
 
-    Cache<URN, Date> getFixtureTimestampCache();
+    Cache<Urn, Date> getFixtureTimestampCache();
 }

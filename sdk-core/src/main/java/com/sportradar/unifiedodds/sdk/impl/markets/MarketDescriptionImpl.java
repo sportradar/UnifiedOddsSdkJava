@@ -10,9 +10,9 @@ import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.OUTCOMETE
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketOutcomeCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.*;
 import com.sportradar.utils.SdkHelper;
 import java.util.*;
@@ -22,14 +22,7 @@ import java.util.*;
  * // TODO @eti: Javadoc
  */
 @SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "HiddenField",
-        "MagicNumber",
-        "NeedBraces",
-        "OneStatementPerLine",
-        "UnnecessaryParentheses",
-    }
+    { "HiddenField", "MagicNumber", "NeedBraces", "OneStatementPerLine", "UnnecessaryParentheses" }
 )
 public class MarketDescriptionImpl implements MarketDescription {
 
@@ -40,7 +33,7 @@ public class MarketDescriptionImpl implements MarketDescription {
     private final List<Specifier> specifiers;
     private final List<MarketAttribute> attributes;
     private final List<String> groups;
-    private List<MarketMappingCI> staticMappingsData;
+    private List<MarketMappingCi> staticMappingsData;
     private List<OutcomeDescription> outcomes;
     private List<MarketMappingData> mappings;
     private boolean mappingsBuilt;
@@ -48,7 +41,7 @@ public class MarketDescriptionImpl implements MarketDescription {
     private String sourceCache;
 
     @SuppressWarnings("UnstableApiUsage")
-    public MarketDescriptionImpl(MarketDescriptionCI cachedItem, List<Locale> locales) {
+    public MarketDescriptionImpl(MarketDescriptionCi cachedItem, List<Locale> locales) {
         Preconditions.checkNotNull(cachedItem);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
@@ -140,16 +133,6 @@ public class MarketDescriptionImpl implements MarketDescription {
         return attributes;
     }
 
-    @Deprecated
-    @Override
-    public String getIncludesOutcomesOfType() {
-        if (outcomeType == null) return null;
-
-        if (outcomeType.equals(FREETEXT_VARIANT_VALUE)) return OUTCOMETEXT_VARIANT_VALUE; else return (
-            "sr:" + outcomeType
-        );
-    }
-
     @Override
     public List<String> getGroups() {
         return groups;
@@ -166,30 +149,30 @@ public class MarketDescriptionImpl implements MarketDescription {
     }
 
     // outcomes get only merged because some of them might be static
-    public void mergeOutcomes(List<MarketOutcomeCI> outcomeCIs, List<Locale> locales) {
+    public void mergeOutcomes(List<MarketOutcomeCi> outcomeCis, List<Locale> locales) {
         if (this.outcomes == null) {
-            this.outcomes = buildOutcomes(outcomeCIs, locales);
+            this.outcomes = buildOutcomes(outcomeCis, locales);
         } else {
             List<OutcomeDescription> newOutcomes = new ArrayList<>(this.outcomes);
-            if (outcomeCIs != null) {
-                newOutcomes.addAll(buildOutcomes(outcomeCIs, locales));
+            if (outcomeCis != null) {
+                newOutcomes.addAll(buildOutcomes(outcomeCis, locales));
             }
 
             this.outcomes = ImmutableList.copyOf(newOutcomes);
         }
     }
 
-    public List<MarketMappingCI> getStaticMappingsData() {
+    public List<MarketMappingCi> getStaticMappingsData() {
         return staticMappingsData;
     }
 
-    public void setStaticMappingsData(List<MarketMappingCI> staticMappingsData) {
+    public void setStaticMappingsData(List<MarketMappingCi> staticMappingsData) {
         this.staticMappingsData = staticMappingsData;
     }
 
     @SuppressWarnings("UnstableApiUsage")
     private static List<OutcomeDescription> buildOutcomes(
-        List<MarketOutcomeCI> outcomeCis,
+        List<MarketOutcomeCi> outcomeCis,
         List<Locale> locales
     ) {
         return outcomeCis == null

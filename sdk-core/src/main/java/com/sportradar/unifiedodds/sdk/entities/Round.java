@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,13 +41,6 @@ public interface Round {
      * @return - an unmodifiable {@link Map} which contains translated {@link Round} names
      */
     Map<Locale, String> getNames();
-
-    /**
-     * Returns the name of the group associated with the current round
-     *
-     * @return - the name of the group associated with the current round
-     */
-    String getGroupName();
 
     /**
      * Returns the id of the other match
@@ -94,7 +87,7 @@ public interface Round {
      *
      * @return - the id of the group associated with the current round
      */
-    default URN getGroupId() {
+    default Urn getGroupId() {
         return null;
     }
 
@@ -104,15 +97,6 @@ public interface Round {
      */
     default String getPhase() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
-
-    /**
-     * Returns the group name of the group associated with the current round
-     *
-     * @return - the group name of the group associated with the current round
-     */
-    default String getGroupName(Locale locale) {
-        return getGroupName();
     }
 
     /**

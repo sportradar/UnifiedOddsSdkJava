@@ -6,18 +6,18 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCi;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.entities.TeamCompetitor;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Represents a competing team
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ParameterNumber", "UnnecessaryParentheses" })
+@SuppressWarnings({ "ParameterNumber", "UnnecessaryParentheses" })
 public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor {
 
     /**
@@ -27,18 +27,18 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
      * @param profileCache the cache instance used to retrieve the cached data
      * @param qualifier the associated team qualifier
      * @param isVirtual indication if the competitor is marked as virtual
-     * @param parentSportEventCI the {@link SportEventCI} this {@link CompetitorCI} belongs to
-     * @param locales a {@link List} in which is provided the {@link CompetitorCI}
+     * @param parentSportEventCi the {@link SportEventCi} this {@link CompetitorCi} belongs to
+     * @param locales a {@link List} in which is provided the {@link CompetitorCi}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
     public TeamCompetitorImpl(
-        URN competitorId,
+        Urn competitorId,
         ProfileCache profileCache,
         String qualifier,
         Integer division,
         Boolean isVirtual,
-        SportEventCI parentSportEventCI,
+        SportEventCi parentSportEventCi,
         List<Locale> locales,
         SportEntityFactory sportEntityFactory,
         ExceptionHandlingStrategy exceptionHandlingStrategy
@@ -46,7 +46,7 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
         super(
             competitorId,
             profileCache,
-            parentSportEventCI,
+            parentSportEventCi,
             locales,
             sportEntityFactory,
             exceptionHandlingStrategy,
@@ -65,12 +65,6 @@ public class TeamCompetitorImpl extends CompetitorImpl implements TeamCompetitor
     public String getQualifier() {
         FetchEventCompetitorsQualifiers();
         return TeamQualifier;
-    }
-
-    @Override
-    public Integer getDivision() {
-        FetchEventCompetitorsDivisions();
-        return TeamDivision;
     }
 
     /**

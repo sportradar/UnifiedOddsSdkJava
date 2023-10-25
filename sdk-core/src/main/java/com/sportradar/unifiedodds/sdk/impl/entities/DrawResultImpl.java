@@ -5,7 +5,9 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.entities.DrawResult;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -43,5 +45,13 @@ public class DrawResultImpl implements DrawResult {
     @Override
     public String getName(Locale locale) {
         return names == null ? null : names.get(locale);
+    }
+
+    /**
+     * Returns the name of the draw result
+     */
+    @Override
+    public Map<Locale, String> getNames() {
+        return ImmutableMap.copyOf(names);
     }
 }

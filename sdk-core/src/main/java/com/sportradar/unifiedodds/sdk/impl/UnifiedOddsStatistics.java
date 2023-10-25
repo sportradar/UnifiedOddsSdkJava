@@ -93,13 +93,13 @@ public class UnifiedOddsStatistics implements UnifiedOddsStatisticsMBean {
             totalLongProcTime += (finished - now);
         }
         //totalMsgSizeReceived += body.length;
-        if (o instanceof UFOddsChange) oddsChanges++; else if (
-            o instanceof UFBetSettlement
-        ) betSettlements++; else if (o instanceof UFBetCancel) betCancels++; else if (
-            o instanceof UFRollbackBetCancel
+        if (o instanceof UfOddsChange) oddsChanges++; else if (
+            o instanceof UfBetSettlement
+        ) betSettlements++; else if (o instanceof UfBetCancel) betCancels++; else if (
+            o instanceof UfRollbackBetCancel
         ) betCancelRollbacks++; else if (
-            o instanceof UFRollbackBetSettlement
-        ) betSettlementRollbacks++; else if (o instanceof UFFixtureChange) fixtureChanges++;
+            o instanceof UfRollbackBetSettlement
+        ) betSettlementRollbacks++; else if (o instanceof UfFixtureChange) fixtureChanges++;
         String msgExcerpt = new String(tmpBuf.get());
         if (msgExcerpt.contains("request_id")) recoveryMessages++;
         int pid = msgExcerpt.indexOf("product=\"");

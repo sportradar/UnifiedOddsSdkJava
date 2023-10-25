@@ -1,7 +1,40 @@
 ### Unified Feed SDK 2.x changelog
 
-**2.0.61 (2023-07-20)**
-* Stages can be of SprintRace type
+**3.0.0 (2023-XX-YY)**
+* Consistent casing used in naming in java code as per Google java style guidelines (refer to Migration Guide)
+* Upgrading Apache http client library from 4 to 5
+* methods getName/s exposed more consistently in classes: categoryData, sportData, currentSeason, drawResult, manager, tournamentInfo
+* upgrading sdk libraries. Rabbit, slf4j, guava, guice, icu4j, snakeyaml, jaxb
+* removing libraries: logback
+* removing deprecated methods
+* OddsFeedConfiguration renamed to UofSdkConfiguration
+* Removed selectIntegration and selectProduction from EnvironmentSelector (use selectEnvironment)
+* user agent indicating basic environment information is submitted on Sports API calls 
+* Configuration from file - renamed values:
+  * defaultLocale -> defaultLanguage
+  * desiredLocales -> desiredLanguages
+  * ufEnvironment -> environment
+  * useMessagingSsl -> messagingUseSll
+  * useApiSsl -> apiUseSsl
+  * moved HttpClient configuration to UofConfigurationBuilder
+* removing OddsFeedSessionBuilder.setSpecificListeners method
+* renaming class SportsInfoProvider to SportDataProvider
+* renaming method UofSdk.getSportsInfoProvider to UofSdk.getSportDataProvider
+* renaming OddsFeed to uofSdk
+* renaming OddsFeedSession to UofSession
+* renaming OddsFeedSessionBuilder to UofSessionBuilder
+* renaming OddsFeedListener to UofListener, 
+* renaming OddsFeedConfigurationBuilder to UofConfigurationBuilder
+* renaming UofSdk.getOddsFeedConfigurationBuilder to UofConfigurationBuilder
+* renaming OddsFeedException to UofException
+* renaming ReplayOddsFeed to UofSdkForReplay
+* removed OperationManager
+* Venue can now contain multiple courses, each with holes, id, and name translations.
+* venue.getCourses signature was changed from returning List<Hole> to List<Course> to accommodate multiple courses and carry additionally id and name for each of them. Corresponding changes were made to ExportableCompetitorCi
+* teamCompetitor.getDivision method was moved up in the inheritance hierarchy to competitorCi and its signature was changed from returning Integer to Division in order for Decision to also carry division name. Corresponding changes were made to ExportableCompetitorCi
+* timelineEvent.getHomeScore and timelineEvent.getAwayScore signatures were changed from returning double to BigDecimal to make these methods return types consistent with other occurrences of these same methods elsewhere in the SDK API. Corresponding changes were made to ExportableTimelineEventCi
+* removed round.getGroupName along with corresponding adjustments in ExportableCompleteRoundCi and ExportableLoadableRoundCi
+* round.getName, round.getNames and round.getPhaseOrGroupLongName are backed by their own corresponding attributes "name" and "group_name" only in the Sports API responses, and no longer falls back to other attributes.
 
 **2.0.60.0 (2023-05-17)**
 * CustomBetManager respects ExceptionHandlingStrategy for all non-argument-validating exceptions

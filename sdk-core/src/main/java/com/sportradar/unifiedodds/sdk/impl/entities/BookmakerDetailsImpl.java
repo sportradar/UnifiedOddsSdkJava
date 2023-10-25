@@ -10,7 +10,7 @@ import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.utils.SdkHelper;
 import java.time.Duration;
 import java.util.Date;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 
 /**
  * Represents the current bookmaker details
@@ -149,37 +149,5 @@ public class BookmakerDetailsImpl implements BookmakerDetails {
     @Override
     public Duration getServerTimeDifference() {
         return serverTimeDifference;
-    }
-
-    /**
-     * Maps the server response enum to a valid HTTP response code using the {@link HttpStatus} interface
-     *
-     * @param responseCode - the {@link ResponseCode} which the server returned
-     * @return - a valid value from {@link HttpStatus}
-     * @see HttpStatus
-     */
-    private int mapResponseCode2HttpStatus(ResponseCode responseCode) {
-        switch (responseCode) {
-            case OK:
-                return HttpStatus.SC_OK;
-            case CREATED:
-                return HttpStatus.SC_CREATED;
-            case ACCEPTED:
-                return HttpStatus.SC_ACCEPTED;
-            case CONFLICT:
-                return HttpStatus.SC_CONFLICT;
-            case FORBIDDEN:
-                return HttpStatus.SC_FORBIDDEN;
-            case NOT_FOUND:
-                return HttpStatus.SC_NOT_FOUND;
-            case NOT_IMPLEMENTED:
-                return HttpStatus.SC_NOT_IMPLEMENTED;
-            case MOVED_PERMANENTLY:
-                return HttpStatus.SC_MOVED_PERMANENTLY;
-            case SERVICE_UNAVAILABLE:
-                return HttpStatus.SC_UNAUTHORIZED;
-            default:
-                return HttpStatus.SC_SEE_OTHER;
-        }
     }
 }

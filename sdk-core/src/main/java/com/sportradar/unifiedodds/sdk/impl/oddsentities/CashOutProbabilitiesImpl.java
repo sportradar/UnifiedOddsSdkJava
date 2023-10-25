@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFCashout;
+import com.sportradar.uf.datamodel.UfCashout;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
@@ -33,7 +33,7 @@ public class CashOutProbabilitiesImpl<T extends SportEvent>
 
     CashOutProbabilitiesImpl(
         T sportEvent,
-        UFCashout cashoutData,
+        UfCashout cashoutData,
         Producer producer,
         MarketFactory marketFactory,
         NamedValuesProvider namedValuesProvider,

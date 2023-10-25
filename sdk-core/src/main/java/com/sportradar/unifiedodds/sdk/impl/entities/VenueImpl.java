@@ -4,27 +4,29 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCI;
-import com.sportradar.unifiedodds.sdk.entities.Hole;
+import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
+import com.sportradar.unifiedodds.sdk.entities.Course;
 import com.sportradar.unifiedodds.sdk.entities.Venue;
-import com.sportradar.utils.URN;
-import java.util.ArrayList;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a sport event venue
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class VenueImpl implements Venue {
 
     /**
-     * A unique {@link URN} identifier representing the current {@link Venue} instance
+     * A unique {@link Urn} identifier representing the current {@link Venue} instance
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * An unmodifiable {@link Map} containing venue's names in different languages
@@ -61,56 +63,50 @@ public class VenueImpl implements Venue {
 
     private final String state;
 
-    private final List<Hole> course;
+    private final List<Course> courses;
 
     /**
      * Initializes a new intance of {@link VenueImpl}
      *
-     * @param venueCI - a {@link VenueCI} used to build the instance
+     * @param venueCi - a {@link VenueCi} used to build the instance
      * @param locales - a {@link List} specifying the supported languages
      */
-    VenueImpl(VenueCI venueCI, List<Locale> locales) {
-        Preconditions.checkNotNull(venueCI);
+    VenueImpl(VenueCi venueCi, List<Locale> locales) {
+        Preconditions.checkNotNull(venueCi);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        this.id = venueCI.getId();
-        this.capacity = venueCI.getCapacity();
-        this.coordinates = venueCI.getCoordinates();
-        this.countryCode = venueCI.getCountryCode();
-        this.state = venueCI.getState();
+        this.id = venueCi.getId();
+        this.capacity = venueCi.getCapacity();
+        this.coordinates = venueCi.getCoordinates();
+        this.countryCode = venueCi.getCountryCode();
+        this.state = venueCi.getState();
 
         this.names =
             locales
                 .stream()
-                .filter(l -> venueCI.getName(l) != null)
-                .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getName));
+                .filter(l -> venueCi.getName(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, venueCi::getName));
         this.cities =
             locales
                 .stream()
-                .filter(l -> venueCI.getCityName(l) != null)
-                .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getCityName));
+                .filter(l -> venueCi.getCityName(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, venueCi::getCityName));
         this.countries =
             locales
                 .stream()
-                .filter(l -> venueCI.getCountryName(l) != null)
-                .collect(ImmutableMap.toImmutableMap(k -> k, venueCI::getCountryName));
-
-        if (venueCI.getCourse() != null) {
-            this.course = new ArrayList<>();
-            venueCI.getCourse().forEach(f -> this.course.add(new HoleImpl(f)));
-        } else {
-            this.course = null;
-        }
+                .filter(l -> venueCi.getCountryName(l) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, venueCi::getCountryName));
+        this.courses = venueCi.getCourses().stream().map(CourseImpl::new).collect(toList());
     }
 
     /**
-     * Returns a unique {@link URN} identifier representing the current {@link Venue} instance
+     * Returns a unique {@link Urn} identifier representing the current {@link Venue} instance
      *
-     * @return - a unique {@link URN} identifier representing the current {@link Venue} instance
+     * @return - a unique {@link Urn} identifier representing the current {@link Venue} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -213,8 +209,8 @@ public class VenueImpl implements Venue {
     }
 
     @Override
-    public List<Hole> getCourse() {
-        return course;
+    public List<Course> getCourses() {
+        return courses;
     }
 
     /**

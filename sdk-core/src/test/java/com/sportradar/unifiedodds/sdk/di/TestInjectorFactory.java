@@ -1,27 +1,32 @@
 package com.sportradar.unifiedodds.sdk.di;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import org.mockito.Mockito;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 
 @SuppressWarnings({ "MagicNumber" })
 public class TestInjectorFactory {
 
-    private final SDKInternalConfiguration config;
+    private final UofConfiguration config;
+    private final SdkInternalConfiguration internalConfig;
 
-    public TestInjectorFactory(SDKInternalConfiguration config) {
+    public TestInjectorFactory(SdkInternalConfiguration internalConfig, UofConfiguration config) {
         this.config = config;
+        this.internalConfig = internalConfig;
     }
 
     public TestInjectorFactory() {
-        config = Mockito.mock(SDKInternalConfiguration.class);
-        when(config.getAPIHost()).thenReturn("api.betradar.com");
-        when(config.getAPIPort()).thenReturn(80); // ensure port is > 0 so validation doesn't fail
-        when(config.getApiHostAndPort()).thenReturn("mq.betradar.com");
+        StubUofConfiguration stubConfig = new StubUofConfiguration();
+        stubConfig.setEnvironment(Environment.Integration);
+        stubConfig.resetNbrSetEnvironmentCalled();
+        internalConfig = mock(SdkInternalConfiguration.class);
+        config = stubConfig;
     }
 
     public Injector create() {
@@ -32,6 +37,6 @@ public class TestInjectorFactory {
     }
 
     private MasterInjectionModule createMasterInjectionModule() {
-        return new MockedMasterModule(config);
+        return new MockedMasterModule(internalConfig, config);
     }
 }

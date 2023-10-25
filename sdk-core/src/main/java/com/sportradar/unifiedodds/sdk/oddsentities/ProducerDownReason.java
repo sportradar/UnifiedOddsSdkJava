@@ -5,30 +5,30 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 /**
- * Describes reasons why the {@link ProducerDown} message was dispatched
+ * Describes reasons why the Producer was marked down
  */
 @SuppressWarnings({ "LineLength", "MissingSwitchDefault" })
 public enum ProducerDownReason {
     /**
-     * Indicates that the {@link ProducerDown} messages was dispatched because the interval
+     * Indicates that the Producer was marked down because the interval
      * between alive messages was greater than allowed.
      */
     AliveIntervalViolation,
 
     /**
-     * Indicates that the {@link ProducerDown} message was dispatched because the time frame between the message generation
+     * Indicates that the Producer was marked down because the time frame between the message generation
      * and the message processing completion was exceeded.
      */
     ProcessingQueueDelayViolation,
 
     /**
-     * Indicates that the {@link ProducerDown} message was dispatched due to information received
+     * Indicates that the Producer was marked down due to information received
      * from the feed.
      */
     Other,
 
     /**
-     * Indicates that the {@link ProducerDown} message was dispatched due to the loss of connection
+     * Indicates that the Producer was marked down dispatched due to the loss of connection
      * to the server.
      */
     ConnectionDown;

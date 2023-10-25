@@ -16,8 +16,6 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ChannelStatus.UnderlyingConnectionStatus;
 import com.sportradar.utils.SdkHelper;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Date;
@@ -33,7 +31,6 @@ import org.slf4j.MDC;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "AnonInnerLength",
         "ClassFanOutComplexity",
         "ConstantName",
@@ -81,7 +78,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
     /**
      * Connection factory for getting new channel
      */
-    private AMQPConnectionFactory connectionFactory;
+    private AmqpConnectionFactory connectionFactory;
 
     /**
      * A {@link Channel} instance used by this instance
@@ -119,7 +116,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         RabbitMqSystemListener rabbitMqSystemListener,
         WhoAmIReader whoAmIReader,
         @Named("version") String sdkVersion,
-        AMQPConnectionFactory connectionFactory,
+        AmqpConnectionFactory connectionFactory,
         TimeUtils timeUtils
     ) {
         Preconditions.checkNotNull(rabbitMqSystemListener);

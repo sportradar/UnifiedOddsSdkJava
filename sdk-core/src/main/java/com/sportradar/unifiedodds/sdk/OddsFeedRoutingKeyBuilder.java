@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -37,8 +37,8 @@ class OddsFeedRoutingKeyBuilder {
      * @return - a collection of session identifiers associated with a valid list of valid routing keys
      */
     static Map<Integer, List<String>> generateKeys(
-        Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData,
-        SDKInternalConfiguration oddsFeedConfiguration
+        Map<Integer, Entry<MessageInterest, Set<Urn>>> sessionsData,
+        SdkInternalConfiguration oddsFeedConfiguration
     ) {
         Preconditions.checkNotNull(sessionsData);
         Preconditions.checkArgument(!sessionsData.isEmpty());
@@ -84,7 +84,7 @@ class OddsFeedRoutingKeyBuilder {
         return result;
     }
 
-    private static List<String> getBasicRoutingKeys(MessageInterest messageInterest, Set<URN> eventIds) {
+    private static List<String> getBasicRoutingKeys(MessageInterest messageInterest, Set<Urn> eventIds) {
         return messageInterest != MessageInterest.SpecifiedMatchesOnly
             ? messageInterest.getRoutingKeys()
             : eventIds
@@ -94,7 +94,7 @@ class OddsFeedRoutingKeyBuilder {
     }
 
     private static void validateInterestCombination(
-        Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData
+        Map<Integer, Entry<MessageInterest, Set<Urn>>> sessionsData
     ) {
         Preconditions.checkNotNull(sessionsData);
 
@@ -108,8 +108,8 @@ class OddsFeedRoutingKeyBuilder {
             return;
         }
 
-        Collection<Entry<MessageInterest, Set<URN>>> allUserValues = sessionsData.values();
-        Set<Entry<MessageInterest, Set<URN>>> uniqueValues = new HashSet<>(allUserValues);
+        Collection<Entry<MessageInterest, Set<Urn>>> allUserValues = sessionsData.values();
+        Set<Entry<MessageInterest, Set<Urn>>> uniqueValues = new HashSet<>(allUserValues);
         if (allUserValues.size() != uniqueValues.size()) {
             throw new UnsupportedMessageInterestCombination(
                 "Session message interest must be unique per SDK instance, found duplicates. " + allUserValues
@@ -132,7 +132,7 @@ class OddsFeedRoutingKeyBuilder {
         }
     }
 
-    private static boolean containsLowOrHigh(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData) {
+    private static boolean containsLowOrHigh(Map<Integer, Entry<MessageInterest, Set<Urn>>> sessionsData) {
         Preconditions.checkNotNull(sessionsData);
         List<MessageInterest> messageInterests = sessionsData
             .values()
@@ -147,7 +147,7 @@ class OddsFeedRoutingKeyBuilder {
     }
 
     private static boolean containsMessageTypeInterest(
-        Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData
+        Map<Integer, Entry<MessageInterest, Set<Urn>>> sessionsData
     ) {
         Preconditions.checkNotNull(sessionsData);
         List<MessageInterest> messageInterests = sessionsData
@@ -163,7 +163,7 @@ class OddsFeedRoutingKeyBuilder {
         );
     }
 
-    private static boolean haveBothLowAndHigh(Map<Integer, Entry<MessageInterest, Set<URN>>> sessionsData) {
+    private static boolean haveBothLowAndHigh(Map<Integer, Entry<MessageInterest, Set<Urn>>> sessionsData) {
         Preconditions.checkNotNull(sessionsData);
         List<MessageInterest> messageInterests = sessionsData
             .values()

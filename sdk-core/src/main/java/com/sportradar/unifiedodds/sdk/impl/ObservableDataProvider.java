@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import java.util.Locale;
 
@@ -16,7 +16,7 @@ public abstract class ObservableDataProvider<TOut> extends DataProvider<TOut> {
 
     public ObservableDataProvider(
         String uriFormat,
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         LogHttpDataFetcher logHttpDataFetcher,
         Deserializer deserializer
     ) {

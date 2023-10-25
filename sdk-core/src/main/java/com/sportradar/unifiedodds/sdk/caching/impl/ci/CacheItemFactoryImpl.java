@@ -9,10 +9,10 @@ import com.google.common.cache.Cache;
 import com.google.inject.Inject;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -35,13 +35,13 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     private final DataRouterManager dataRouterManager;
     private final Locale defaultLocale;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
-    private final Cache<URN, Date> fixtureTimestampCache;
+    private final Cache<Urn, Date> fixtureTimestampCache;
 
     @Inject
     CacheItemFactoryImpl(
         DataRouterManager dataRouterManager,
-        SDKInternalConfiguration configuration,
-        Cache<URN, Date> fixtureTimestampCache
+        SdkInternalConfiguration configuration,
+        Cache<Urn, Date> fixtureTimestampCache
     ) {
         Preconditions.checkNotNull(dataRouterManager);
         Preconditions.checkNotNull(configuration);
@@ -54,8 +54,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public MatchCI buildMatchCI(URN id) {
-        return new MatchCIImpl(
+    public MatchCi buildMatchCi(Urn id) {
+        return new MatchCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -65,21 +65,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public MatchCI buildMatchCI(URN id, SAPISportEvent data, Locale dataLocale) {
-        return new MatchCIImpl(
-            id,
-            dataRouterManager,
-            defaultLocale,
-            exceptionHandlingStrategy,
-            data,
-            dataLocale,
-            fixtureTimestampCache
-        );
-    }
-
-    @Override
-    public MatchCI buildMatchCI(URN id, SAPISportEventChildren.SAPISportEvent data, Locale dataLocale) {
-        return new MatchCIImpl(
+    public MatchCi buildMatchCi(Urn id, SapiSportEvent data, Locale dataLocale) {
+        return new MatchCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -91,8 +78,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public MatchCI buildMatchCI(URN id, SAPIFixture data, Locale dataLocale) {
-        return new MatchCIImpl(
+    public MatchCi buildMatchCi(Urn id, SapiSportEventChildren.SapiSportEvent data, Locale dataLocale) {
+        return new MatchCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -104,8 +91,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public MatchCI buildMatchCI(URN id, SAPIMatchSummaryEndpoint data, Locale dataLocale) {
-        return new MatchCIImpl(
+    public MatchCi buildMatchCi(Urn id, SapiFixture data, Locale dataLocale) {
+        return new MatchCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -117,13 +104,26 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public TournamentCI buildTournamentCI(URN id) {
-        return new TournamentCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    public MatchCi buildMatchCi(Urn id, SapiMatchSummaryEndpoint data, Locale dataLocale) {
+        return new MatchCiImpl(
+            id,
+            dataRouterManager,
+            defaultLocale,
+            exceptionHandlingStrategy,
+            data,
+            dataLocale,
+            fixtureTimestampCache
+        );
     }
 
     @Override
-    public TournamentCI buildTournamentCI(URN id, SAPITournament endpointData, Locale dataLocale) {
-        return new TournamentCIImpl(
+    public TournamentCi buildTournamentCi(Urn id) {
+        return new TournamentCiImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    }
+
+    @Override
+    public TournamentCi buildTournamentCi(Urn id, SapiTournament endpointData, Locale dataLocale) {
+        return new TournamentCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -134,8 +134,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public TournamentCI buildTournamentCI(URN id, SAPITournamentExtended endpointData, Locale dataLocale) {
-        return new TournamentCIImpl(
+    public TournamentCi buildTournamentCi(Urn id, SapiTournamentExtended endpointData, Locale dataLocale) {
+        return new TournamentCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -146,12 +146,12 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public TournamentCI buildTournamentCI(
-        URN id,
-        SAPITournamentInfoEndpoint endpointData,
+    public TournamentCi buildTournamentCi(
+        Urn id,
+        SapiTournamentInfoEndpoint endpointData,
         Locale dataLocale
     ) {
-        return new TournamentCIImpl(
+        return new TournamentCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -162,8 +162,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(URN id, SAPIStageSummaryEndpoint endpointData, Locale dataLocale) {
-        return new RaceStageCIImpl(
+    public StageCi buildStageCi(Urn id, SapiStageSummaryEndpoint endpointData, Locale dataLocale) {
+        return new RaceStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -175,8 +175,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(URN id, SAPISportEvent endpointData, Locale dataLocale) {
-        return new RaceStageCIImpl(
+    public StageCi buildStageCi(Urn id, SapiSportEvent endpointData, Locale dataLocale) {
+        return new RaceStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -188,12 +188,12 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(
-        URN id,
-        SAPISportEventChildren.SAPISportEvent endpointData,
+    public StageCi buildStageCi(
+        Urn id,
+        SapiSportEventChildren.SapiSportEvent endpointData,
         Locale dataLocale
     ) {
-        return new RaceStageCIImpl(
+        return new RaceStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -205,8 +205,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(URN id, SAPIFixture endpointData, Locale dataLocale) {
-        return new RaceStageCIImpl(
+    public StageCi buildStageCi(Urn id, SapiFixture endpointData, Locale dataLocale) {
+        return new RaceStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -218,8 +218,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(URN id, SAPITournament endpointData, Locale dataLocale) {
-        return new TournamentStageCIImpl(
+    public StageCi buildStageCi(Urn id, SapiTournament endpointData, Locale dataLocale) {
+        return new TournamentStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -230,8 +230,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(URN id, SAPITournamentInfoEndpoint endpointData, Locale dataLocale) {
-        return new TournamentStageCIImpl(
+    public StageCi buildStageCi(Urn id, SapiTournamentInfoEndpoint endpointData, Locale dataLocale) {
+        return new TournamentStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -242,8 +242,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public StageCI buildStageCI(URN id, SAPIParentStage endpointData, Locale dataLocale) {
-        return new RaceStageCIImpl(
+    public StageCi buildStageCi(Urn id, SapiParentStage endpointData, Locale dataLocale) {
+        return new RaceStageCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -255,34 +255,34 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public SportCI buildSportCI(URN id, SAPISport sport, List<URN> categories, Locale dataLocale) {
-        return new SportCIImpl(id, sport, categories, dataLocale);
+    public SportCi buildSportCi(Urn id, SapiSport sport, List<Urn> categories, Locale dataLocale) {
+        return new SportCiImpl(id, sport, categories, dataLocale);
     }
 
     @Override
-    public CategoryCI buildCategoryCI(
-        URN id,
-        SAPICategory category,
-        List<URN> tournamentIds,
-        URN associatedSportCiId,
+    public CategoryCi buildCategoryCi(
+        Urn id,
+        SapiCategory category,
+        List<Urn> tournamentIds,
+        Urn associatedSportCiId,
         Locale dataLocale
     ) {
-        return new CategoryCIImpl(id, category, tournamentIds, associatedSportCiId, dataLocale);
+        return new CategoryCiImpl(id, category, tournamentIds, associatedSportCiId, dataLocale);
     }
 
     @Override
-    public SportCI buildSportCI(ExportableSportCI exportable) {
-        return new SportCIImpl(exportable);
+    public SportCi buildSportCi(ExportableSportCi exportable) {
+        return new SportCiImpl(exportable);
     }
 
     @Override
-    public CategoryCI buildCategoryCI(ExportableCategoryCI exportable) {
-        return new CategoryCIImpl(exportable);
+    public CategoryCi buildCategoryCi(ExportableCategoryCi exportable) {
+        return new CategoryCiImpl(exportable);
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(URN id, URN competitorId) {
-        return new PlayerProfileCIImpl(
+    public PlayerProfileCi buildPlayerProfileCi(Urn id, Urn competitorId) {
+        return new PlayerProfileCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -292,13 +292,13 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(
-        URN id,
-        SAPIPlayerExtended data,
+    public PlayerProfileCi buildPlayerProfileCi(
+        Urn id,
+        SapiPlayerExtended data,
         Locale dataLocale,
-        URN competitorId
+        Urn competitorId
     ) {
-        return new PlayerProfileCIImpl(
+        return new PlayerProfileCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -310,13 +310,13 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(
-        URN id,
-        SAPIPlayerCompetitor data,
+    public PlayerProfileCi buildPlayerProfileCi(
+        Urn id,
+        SapiPlayerCompetitor data,
         Locale dataLocale,
-        URN competitorId
+        Urn competitorId
     ) {
-        return new PlayerProfileCIImpl(
+        return new PlayerProfileCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -328,29 +328,29 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public PlayerProfileCI buildPlayerProfileCI(ExportablePlayerProfileCI exportable) {
-        return new PlayerProfileCIImpl(
+    public PlayerProfileCi buildPlayerProfileCi(ExportablePlayerProfileCi exportable) {
+        return new PlayerProfileCiImpl(
             exportable,
             dataRouterManager,
             exceptionHandlingStrategy,
             exportable.getCompetitorId() == null || exportable.getCompetitorId().isEmpty()
                 ? null
-                : URN.parse(exportable.getCompetitorId())
+                : Urn.parse(exportable.getCompetitorId())
         );
     }
 
     @Override
-    public CompetitorCI buildCompetitorProfileCI(URN id) {
-        return new CompetitorCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    public CompetitorCi buildCompetitorProfileCi(Urn id) {
+        return new CompetitorCiImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
     }
 
     @Override
-    public CompetitorCI buildCompetitorProfileCI(
-        URN id,
-        SAPICompetitorProfileEndpoint data,
+    public CompetitorCi buildCompetitorProfileCi(
+        Urn id,
+        SapiCompetitorProfileEndpoint data,
         Locale dataLocale
     ) {
-        return new CompetitorCIImpl(
+        return new CompetitorCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -361,8 +361,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public CompetitorCI buildCompetitorProfileCI(URN id, SAPITeam data, Locale dataLocale) {
-        return new CompetitorCIImpl(
+    public CompetitorCi buildCompetitorProfileCi(Urn id, SapiTeam data, Locale dataLocale) {
+        return new CompetitorCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -373,8 +373,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public CompetitorCI buildCompetitorProfileCI(URN id, SAPIPlayerCompetitor data, Locale dataLocale) {
-        return new CompetitorCIImpl(
+    public CompetitorCi buildCompetitorProfileCi(Urn id, SapiPlayerCompetitor data, Locale dataLocale) {
+        return new CompetitorCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -385,12 +385,12 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public CompetitorCI buildCompetitorProfileCI(
-        URN id,
-        SAPISimpleTeamProfileEndpoint data,
+    public CompetitorCi buildCompetitorProfileCi(
+        Urn id,
+        SapiSimpleTeamProfileEndpoint data,
         Locale dataLocale
     ) {
-        return new CompetitorCIImpl(
+        return new CompetitorCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -401,18 +401,18 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public CompetitorCI buildCompetitorProfileCI(ExportableCompetitorCI exportable) {
-        return new CompetitorCIImpl(exportable, dataRouterManager, exceptionHandlingStrategy);
+    public CompetitorCi buildCompetitorProfileCi(ExportableCompetitorCi exportable) {
+        return new CompetitorCiImpl(exportable, dataRouterManager, exceptionHandlingStrategy);
     }
 
     @Override
-    public LotteryCI buildLotteryCI(URN id) {
-        return new LotteryCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    public LotteryCi buildLotteryCi(Urn id) {
+        return new LotteryCiImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
     }
 
     @Override
-    public LotteryCI buildLotteryCI(URN id, SAPILottery data, Locale dataLocale) {
-        return new LotteryCIImpl(
+    public LotteryCi buildLotteryCi(Urn id, SapiLottery data, Locale dataLocale) {
+        return new LotteryCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -423,13 +423,13 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public DrawCI buildDrawCI(URN id) {
-        return new DrawCIImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
+    public DrawCi buildDrawCi(Urn id) {
+        return new DrawCiImpl(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
     }
 
     @Override
-    public DrawCI buildDrawCI(URN id, SAPIDrawFixture data, Locale dataLocale) {
-        return new DrawCIImpl(
+    public DrawCi buildDrawCi(Urn id, SapiDrawFixture data, Locale dataLocale) {
+        return new DrawCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -440,36 +440,36 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public SportEventCI buildSportEventCI(ExportableCI exportable) {
-        if (exportable instanceof ExportableMatchCI) return new MatchCIImpl(
-            (ExportableMatchCI) exportable,
+    public SportEventCi buildSportEventCi(ExportableCi exportable) {
+        if (exportable instanceof ExportableMatchCi) return new MatchCiImpl(
+            (ExportableMatchCi) exportable,
             dataRouterManager,
             exceptionHandlingStrategy,
             fixtureTimestampCache
         );
-        if (exportable instanceof ExportableRaceStageCI) return new RaceStageCIImpl(
-            (ExportableRaceStageCI) exportable,
+        if (exportable instanceof ExportableRaceStageCi) return new RaceStageCiImpl(
+            (ExportableRaceStageCi) exportable,
             dataRouterManager,
             exceptionHandlingStrategy,
             fixtureTimestampCache
         );
-        if (exportable instanceof ExportableTournamentStageCI) return new TournamentStageCIImpl(
-            (ExportableTournamentStageCI) exportable,
+        if (exportable instanceof ExportableTournamentStageCi) return new TournamentStageCiImpl(
+            (ExportableTournamentStageCi) exportable,
             dataRouterManager,
             exceptionHandlingStrategy
         );
-        if (exportable instanceof ExportableTournamentCI) return new TournamentCIImpl(
-            (ExportableTournamentCI) exportable,
+        if (exportable instanceof ExportableTournamentCi) return new TournamentCiImpl(
+            (ExportableTournamentCi) exportable,
             dataRouterManager,
             exceptionHandlingStrategy
         );
-        if (exportable instanceof ExportableLotteryCI) return new LotteryCIImpl(
-            (ExportableLotteryCI) exportable,
+        if (exportable instanceof ExportableLotteryCi) return new LotteryCiImpl(
+            (ExportableLotteryCi) exportable,
             dataRouterManager,
             exceptionHandlingStrategy
         );
-        if (exportable instanceof ExportableDrawCI) return new DrawCIImpl(
-            (ExportableDrawCI) exportable,
+        if (exportable instanceof ExportableDrawCi) return new DrawCiImpl(
+            (ExportableDrawCi) exportable,
             dataRouterManager,
             exceptionHandlingStrategy
         );
@@ -477,8 +477,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public DrawCI buildDrawCI(URN id, SAPIDrawEvent data, Locale dataLocale) {
-        return new DrawCIImpl(
+    public DrawCi buildDrawCi(Urn id, SapiDrawEvent data, Locale dataLocale) {
+        return new DrawCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -489,8 +489,8 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public DrawCI buildDrawCI(URN id, SAPIDrawSummary data, Locale dataLocale) {
-        return new DrawCIImpl(
+    public DrawCi buildDrawCi(Urn id, SapiDrawSummary data, Locale dataLocale) {
+        return new DrawCiImpl(
             id,
             dataRouterManager,
             defaultLocale,
@@ -501,7 +501,7 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public Cache<URN, Date> getFixtureTimestampCache() {
+    public Cache<Urn, Date> getFixtureTimestampCache() {
         return fixtureTimestampCache;
     }
 }

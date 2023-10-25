@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.BonusInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.BonusDrumType;
 import com.sportradar.unifiedodds.sdk.entities.BonusInfo;
 
@@ -18,7 +18,7 @@ public class BonusInfoImpl implements BonusInfo {
     private final BonusDrumType bonusDrumType;
     private final Integer bonusBalls;
 
-    BonusInfoImpl(BonusInfoCI bonusInfo) {
+    BonusInfoImpl(BonusInfoCi bonusInfo) {
         Preconditions.checkNotNull(bonusInfo);
 
         bonusBalls = bonusInfo.getBonusBalls();

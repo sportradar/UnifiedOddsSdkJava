@@ -6,11 +6,11 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
-import com.sportradar.unifiedodds.sdk.caching.ci.NamedValueCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.NamedValueCi;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.entities.LocalizedNamedValueImpl;
 import com.sportradar.utils.SdkHelper;
 import java.util.ArrayList;
@@ -25,16 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * An implementation of {@link LocalizedNamedValueCache} used to cache {@link LocalizedNamedValue} items
  */
-@SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "ConstantName",
-        "IllegalCatch",
-        "LineLength",
-        "MagicNumber",
-        "ParameterAssignment",
-    }
-)
+@SuppressWarnings({ "ConstantName", "IllegalCatch", "LineLength", "MagicNumber", "ParameterAssignment" })
 public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
 
     /**
@@ -71,12 +62,12 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
      * Initializes a new instance of {@link LocalizedNamedValueCacheImpl}
      *
      * @param dataProvider - a {@link DataProvider} that will be used to get new data
-     * @param scheduler - the {@link SDKTaskScheduler} used to perform repeating cache tasks
+     * @param scheduler - the {@link SdkTaskScheduler} used to perform repeating cache tasks
      * @param defaultLocales - a {@link List} of all supported {@link Locale}
      */
     public LocalizedNamedValueCacheImpl(
         DataProvider dataProvider,
-        SDKTaskScheduler scheduler,
+        SdkTaskScheduler scheduler,
         List<Locale> defaultLocales
     ) {
         Preconditions.checkNotNull(dataProvider);
@@ -188,8 +179,8 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
             return;
         }
 
-        List<NamedValueCI> namedValueCIS = NamedValueCI.mapToNamedValuesCI(fetch);
-        namedValueCIS.forEach(fetchedVal -> {
+        List<NamedValueCi> namedValueCis = NamedValueCi.mapToNamedValuesCi(fetch);
+        namedValueCis.forEach(fetchedVal -> {
             ConcurrentHashMap<Locale, String> storedData = namedValues.computeIfAbsent(
                 fetchedVal.getId(),
                 k -> new ConcurrentHashMap<>()
@@ -202,7 +193,7 @@ public class LocalizedNamedValueCacheImpl implements LocalizedNamedValueCache {
 
         cacheLog.info(
             "{} {} retrieved for locale {}",
-            namedValueCIS.size(),
+            namedValueCis.size(),
             fetch.getClass().getName(),
             locale
         );

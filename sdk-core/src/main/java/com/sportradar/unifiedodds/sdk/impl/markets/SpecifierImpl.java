@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketSpecifierCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketSpecifierCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 
 /**
@@ -13,9 +13,9 @@ import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
  */
 public class SpecifierImpl implements Specifier {
 
-    private final MarketSpecifierCI ci;
+    private final MarketSpecifierCi ci;
 
-    public SpecifierImpl(MarketSpecifierCI s) {
+    public SpecifierImpl(MarketSpecifierCi s) {
         ci = s;
     }
 

@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.impl.ci.TournamentCoverageCI;
+import com.sportradar.unifiedodds.sdk.caching.impl.ci.TournamentCoverageCi;
 import com.sportradar.unifiedodds.sdk.entities.TournamentCoverage;
 
 /**
@@ -16,7 +16,7 @@ class TournamentCoverageImpl implements TournamentCoverage {
 
     private final boolean isLiveCoverage;
 
-    TournamentCoverageImpl(TournamentCoverageCI tournamentCoverage) {
+    TournamentCoverageImpl(TournamentCoverageCi tournamentCoverage) {
         Preconditions.checkNotNull(tournamentCoverage);
 
         isLiveCoverage =

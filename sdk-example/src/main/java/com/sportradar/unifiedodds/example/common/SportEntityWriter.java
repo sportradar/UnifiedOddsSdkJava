@@ -313,7 +313,7 @@ public class SportEntityWriter {
         return String.format(
             "Name:'%s', GroupName:'%s', GroupId:'%s', Type:%s, Number:%s",
             tournamentRound.getName(defaultLocale),
-            tournamentRound.getGroupName(),
+            tournamentRound.getPhaseOrGroupLongName(defaultLocale),
             tournamentRound.getGroupId(),
             tournamentRound.getType(),
             tournamentRound.getNumber()
@@ -332,7 +332,7 @@ public class SportEntityWriter {
         }
 
         return String.format(
-            "%s[%s]  %s - s%",
+            "%s[%s]  %s - %s",
             season.getName(defaultLocale),
             season.getId(),
             season.getStartDate(),
@@ -502,7 +502,7 @@ public class SportEntityWriter {
     public void writeData(SportEvent sportEvent) {
         String description = null;
         if (sportEvent != null) {
-            // the same kind of entities are returned on the callbacks of the OddsFeedListener/MessageListener
+            // the same kind of entities are returned on the callbacks of the UofListener/MessageListener
             if (sportEvent instanceof Tournament) {
                 description = writeData((Tournament) sportEvent, false);
             } else if (sportEvent instanceof BasicTournament) {

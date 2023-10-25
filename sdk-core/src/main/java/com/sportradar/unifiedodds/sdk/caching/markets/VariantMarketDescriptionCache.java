@@ -9,7 +9,7 @@ import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
@@ -28,19 +28,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Single variant market description cache
  */
-@SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "ClassFanOutComplexity",
-        "ConstantName",
-        "MagicNumber",
-        "ParameterAssignment",
-    }
-)
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MagicNumber", "ParameterAssignment" })
 public class VariantMarketDescriptionCache implements MarketDescriptionCache {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantMarketDescriptionCache.class);
-    private final Cache<String, MarketDescriptionCI> cache;
+    private final Cache<String, MarketDescriptionCi> cache;
     private final DataProvider<MarketDescriptions> dataProvider;
     private final MappingValidatorFactory mappingValidatorFactory;
     private final ReentrantLock lock = new ReentrantLock();
@@ -49,7 +41,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     private Date lastTimeFetchedVariantsWereCleared;
 
     public VariantMarketDescriptionCache(
-        Cache<String, MarketDescriptionCI> cache,
+        Cache<String, MarketDescriptionCi> cache,
         DataProvider<MarketDescriptions> dataProvider,
         MappingValidatorFactory mappingValidatorFactory,
         boolean simpleVariantCaching
@@ -73,9 +65,9 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        MarketDescriptionCI marketCI;
+        MarketDescriptionCi marketCi;
         try {
-            marketCI =
+            marketCi =
                 cache.get(
                     getCacheKey(marketId, variant),
                     () -> loadMarketDescriptorData(null, marketId, variant, locales)
@@ -87,7 +79,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         List<Locale> missingLocales;
         try {
             lock.lock();
-            missingLocales = getMissingLocales(marketCI, locales);
+            missingLocales = getMissingLocales(marketCi, locales);
         } finally {
             lock.unlock();
         }
@@ -96,11 +88,11 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             try {
                 lock.lock();
                 if (!isFetchingAllowed(marketId, variant, missingLocales)) {
-                    return new MarketDescriptionImpl(marketCI, locales);
+                    return new MarketDescriptionImpl(marketCi, locales);
                 }
-                missingLocales = getMissingLocales(marketCI, locales);
+                missingLocales = getMissingLocales(marketCi, locales);
                 if (!missingLocales.isEmpty()) {
-                    loadMarketDescriptorData(marketCI, marketId, variant, missingLocales);
+                    loadMarketDescriptorData(marketCi, marketId, variant, missingLocales);
 
                     for (Locale l : missingLocales) {
                         fetchedVariants.put(getFetchedVariantsKey(marketId, variant, l), new Date());
@@ -111,7 +103,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             }
         }
 
-        return new MarketDescriptionImpl(marketCI, locales);
+        return new MarketDescriptionImpl(marketCi, locales);
     }
 
     @Override
@@ -131,14 +123,14 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     @Override
     public void updateCacheItem(int marketId, String variant) {
         String cacheId = getCacheKey(marketId, variant);
-        MarketDescriptionCI description = cache.getIfPresent(cacheId);
+        MarketDescriptionCi description = cache.getIfPresent(cacheId);
         if (description != null) {
             description.setLastDataReceived(new Date());
         }
     }
 
-    private MarketDescriptionCI loadMarketDescriptorData(
-        MarketDescriptionCI existingMarketDescriptor,
+    private MarketDescriptionCi loadMarketDescriptorData(
+        MarketDescriptionCi existingMarketDescriptor,
         int marketId,
         String variant,
         List<Locale> locales
@@ -164,7 +156,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
                 DescMarket descMarket = data.getMarket().get(0);
                 if (existingMarketDescriptor == null) {
                     existingMarketDescriptor =
-                        new MarketDescriptionCI(
+                        new MarketDescriptionCi(
                             descMarket,
                             mappingValidatorFactory,
                             mLoc,
@@ -192,7 +184,7 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         return id + "_" + variant;
     }
 
-    private List<Locale> getMissingLocales(MarketDescriptionCI item, List<Locale> requiredLocales) {
+    private List<Locale> getMissingLocales(MarketDescriptionCi item, List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
         Preconditions.checkArgument(!requiredLocales.isEmpty());
 

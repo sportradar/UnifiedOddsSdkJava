@@ -6,15 +6,15 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.LotteryCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.LotteryCi;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.unifiedodds.sdk.impl.SportEntityFactoryImpl;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "LambdaBodyLength",
@@ -47,8 +46,8 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     public LotteryImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         List<Locale> locales,
         SportEventCache sportEventCache,
         SportEntityFactoryImpl sportEntityFactory,
@@ -73,7 +72,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public CategorySummary getCategory() {
-        LotteryCI lotteryCi = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
         if (lotteryCi == null || lotteryCi.getCategoryId() == null) {
             handleException("getCategory - missing category data", null);
@@ -96,14 +95,14 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public BonusInfo getBonusInfo() {
-        LotteryCI lotteryCI = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        return lotteryCI.getBonusInfo() == null ? null : new BonusInfoImpl(lotteryCI.getBonusInfo());
+        return lotteryCi.getBonusInfo() == null ? null : new BonusInfoImpl(lotteryCi.getBonusInfo());
     }
 
     /**
@@ -113,14 +112,14 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public DrawInfo getDrawInfo() {
-        LotteryCI lotteryCI = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        return lotteryCI.getDrawInfo() == null ? null : new DrawInfoImpl(lotteryCI.getDrawInfo());
+        return lotteryCi.getDrawInfo() == null ? null : new DrawInfoImpl(lotteryCi.getDrawInfo());
     }
 
     /**
@@ -130,14 +129,14 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public List<Draw> getScheduledDraws() {
-        LotteryCI lotteryCI = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        List<URN> scheduledDraws = lotteryCI.getScheduledDraws();
+        List<Urn> scheduledDraws = lotteryCi.getScheduledDraws();
         try {
             return scheduledDraws == null
                 ? null
@@ -179,7 +178,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public SportSummary getSport() {
-        LotteryCI lotteryCi = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
         if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
@@ -218,7 +217,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public String getName(Locale locale) {
-        LotteryCI lotteryCi = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
         if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
@@ -234,12 +233,12 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      * @return - the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         if (super.getSportId() != null) {
             return super.getSportId();
         }
 
-        LotteryCI lotteryCi = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
         if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
@@ -272,14 +271,14 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public Date getScheduledTime() {
-        LotteryCI lotteryCI = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        return lotteryCI.getScheduled();
+        return lotteryCi.getScheduled();
     }
 
     /**
@@ -291,14 +290,14 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public Date getScheduledEndTime() {
-        LotteryCI lotteryCI = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        return lotteryCI.getScheduledEnd();
+        return lotteryCi.getScheduledEnd();
     }
 
     /**
@@ -308,31 +307,31 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      */
     @Override
     public Boolean isStartTimeTbd() {
-        LotteryCI lotteryCI = loadLotteryCI();
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        return lotteryCI.isStartTimeTbd().isPresent() ? lotteryCI.isStartTimeTbd().get() : null;
+        return lotteryCi.isStartTimeTbd().isPresent() ? lotteryCi.isStartTimeTbd().get() : null;
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
-        LotteryCI lotteryCI = loadLotteryCI();
+    public Urn getReplacedBy() {
+        LotteryCi lotteryCi = loadLotteryCi();
 
-        if (lotteryCI == null) {
+        if (lotteryCi == null) {
             handleException("LotteryCI missing", null);
             return null;
         }
 
-        return lotteryCI.getReplacedBy();
+        return lotteryCi.getReplacedBy();
     }
 
     @Override
@@ -356,11 +355,11 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
      *
      * @return the associated cache item
      */
-    private LotteryCI loadLotteryCI() {
+    private LotteryCi loadLotteryCi() {
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(id);
-            if (eventCacheItem instanceof LotteryCI) {
-                return (LotteryCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof LotteryCi) {
+                return (LotteryCi) eventCacheItem;
             }
             handleException("loadLotteryCI, CI type miss-match", null);
         } catch (CacheItemNotFoundException e) {

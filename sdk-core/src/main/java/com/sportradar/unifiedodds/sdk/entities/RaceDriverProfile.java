@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * An interface providing methods to access race driver data
@@ -15,14 +15,14 @@ public interface RaceDriverProfile {
      *
      * @return the race driver id
      */
-    URN getRaceDriverId();
+    Urn getRaceDriverId();
 
     /**
      * Returns the race team id
      *
      * @return the race team id
      */
-    URN getRaceTeamId();
+    Urn getRaceTeamId();
 
     /**
      * Returns the car information

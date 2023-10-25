@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.CarCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.CarCi;
 import com.sportradar.unifiedodds.sdk.entities.Car;
 
 /**
@@ -17,7 +17,7 @@ public class CarImpl implements Car {
     private final String chassis;
     private final String engineName;
 
-    public CarImpl(CarCI car) {
+    public CarImpl(CarCi car) {
         Preconditions.checkNotNull(car);
 
         this.name = car.getName();

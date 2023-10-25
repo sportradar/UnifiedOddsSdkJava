@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import org.junit.Test;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "MagicNumber" })
+@SuppressWarnings({ "MagicNumber" })
 public class DateConverterToCentralEuropeTest {
 
     @Test
@@ -30,7 +30,7 @@ public class DateConverterToCentralEuropeTest {
     }
 
     @Test
-    public void shouldKeepCentralEuropeanTimeUNchanged() {
+    public void shouldKeepCentralEuropeanTimeUnchanged() {
         Date centralEuropeanTime = new Date(118, 4, 15, 9, 30);
         assertEquals(
             centralEuropeanTime,

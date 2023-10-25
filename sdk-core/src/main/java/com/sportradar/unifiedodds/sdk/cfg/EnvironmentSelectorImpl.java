@@ -5,10 +5,16 @@
 package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationPropertiesReader;
-import com.sportradar.unifiedodds.sdk.SDKConfigurationYamlReader;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
+import com.google.common.collect.ImmutableList;
+import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
+import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsException;
+import com.sportradar.unifiedodds.sdk.impl.ProducerData;
+import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
+import com.sportradar.unifiedodds.sdk.impl.ProducerImpl;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * A basic implementation of the {@link EnvironmentSelector}
@@ -16,64 +22,32 @@ import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 @SuppressWarnings({ "LineLength" })
 class EnvironmentSelectorImpl implements EnvironmentSelector {
 
-    private final String accessToken;
-    private final SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader;
-    private final SDKConfigurationYamlReader sdkConfigurationYamlReader;
+    private final UofConfigurationImpl configuration;
+    private final SdkConfigurationPropertiesReader configurationPropertiesReader;
+    private final SdkConfigurationYamlReader configurationYamlReader;
 
     EnvironmentSelectorImpl(
-        String accessToken,
-        SDKConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-        SDKConfigurationYamlReader sdkConfigurationYamlReader
+        UofConfigurationImpl config,
+        SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader,
+        SdkConfigurationYamlReader sdkConfigurationYamlReader
     ) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(accessToken));
+        Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(sdkConfigurationPropertiesReader);
         Preconditions.checkNotNull(sdkConfigurationYamlReader);
 
-        this.accessToken = accessToken;
-        this.sdkConfigurationPropertiesReader = sdkConfigurationPropertiesReader;
-        this.sdkConfigurationYamlReader = sdkConfigurationYamlReader;
+        this.configuration = config;
+        this.configurationPropertiesReader = sdkConfigurationPropertiesReader;
+        this.configurationYamlReader = sdkConfigurationYamlReader;
     }
 
-    /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
-     *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access integration environment
-     */
     @Override
-    public ConfigurationBuilder selectIntegration() {
-        return selectEnvironment(Environment.Integration);
-    }
+    public ConfigurationBuilder selectReplay() {
+        configuration.updateSdkEnvironment(Environment.Replay);
 
-    /**
-     * Returns a {@link ConfigurationBuilder} with properties set to values needed to access production environment
-     *
-     * @return a {@link ConfigurationBuilder} with properties set to values needed to access production environment
-     */
-    @Override
-    public ConfigurationBuilder selectProduction() {
-        return selectEnvironment(Environment.Production);
-    }
-
-    /**
-     * Returns a {@link ReplayConfigurationBuilder} with properties set to values needed to access replay server
-     *
-     * @return a {@link ReplayConfigurationBuilder} with properties set to values needed to access replay server
-     */
-    @Override
-    public ReplayConfigurationBuilder selectReplay() {
-        String messagingHost = EnvironmentManager.getMqHost(Environment.Replay);
-        String apiHost = EnvironmentManager.getApiHost(Environment.Replay);
-
-        return new ReplayConfigurationBuilderImpl(
-            accessToken,
-            messagingHost,
-            apiHost,
-            EnvironmentManager.DEFAULT_MQ_HOST_PORT,
-            true,
-            true,
-            sdkConfigurationPropertiesReader,
-            sdkConfigurationYamlReader,
-            Environment.Replay
+        return new ConfigurationBuilderImpl(
+            configuration,
+            configurationPropertiesReader,
+            configurationYamlReader
         );
     }
 
@@ -84,21 +58,14 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      */
     @Override
     public CustomConfigurationBuilder selectCustom() {
-        String messagingHost = EnvironmentManager.getMqHost(Environment.Integration);
-        String apiHost = EnvironmentManager.getApiHost(Environment.Integration);
-        int apiPort = EnvironmentManager.getApiPort(Environment.Integration);
+        //populate connection settings and then override only needed
+        configuration.updateSdkEnvironment(Environment.Integration);
+        configuration.updateSdkEnvironment(Environment.Custom);
 
         return new CustomConfigurationBuilderImpl(
-            accessToken,
-            messagingHost,
-            apiHost,
-            apiPort,
-            EnvironmentManager.DEFAULT_MQ_HOST_PORT,
-            true,
-            true,
-            sdkConfigurationPropertiesReader,
-            sdkConfigurationYamlReader,
-            Environment.Custom
+            configuration,
+            configurationPropertiesReader,
+            configurationYamlReader
         );
     }
 
@@ -111,27 +78,12 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
      */
     @Override
     public ConfigurationBuilder selectEnvironment(Environment environment) {
-        String messagingHost = EnvironmentManager.getMqHost(Environment.Integration);
-        String apiHost = EnvironmentManager.getApiHost(Environment.Integration);
-        int apiPort = EnvironmentManager.getApiPort(Environment.Integration);
-
-        if (!environment.equals(Environment.Custom)) {
-            messagingHost = EnvironmentManager.getMqHost(environment);
-            apiHost = EnvironmentManager.getApiHost(environment);
-            apiPort = EnvironmentManager.getApiPort(environment);
-        }
+        configuration.updateSdkEnvironment(environment);
 
         return new ConfigurationBuilderImpl(
-            accessToken,
-            messagingHost,
-            apiHost,
-            apiPort,
-            EnvironmentManager.DEFAULT_MQ_HOST_PORT,
-            true,
-            true,
-            sdkConfigurationPropertiesReader,
-            sdkConfigurationYamlReader,
-            environment
+            configuration,
+            configurationPropertiesReader,
+            configurationYamlReader
         );
     }
 }

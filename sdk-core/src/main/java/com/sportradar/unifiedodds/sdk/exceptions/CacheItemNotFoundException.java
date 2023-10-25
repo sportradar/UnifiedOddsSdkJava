@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.exceptions;
 /**
  * The following exception gets thrown when a cache item could not be found
  */
-public class CacheItemNotFoundException extends OddsFeedSdkException {
+public class CacheItemNotFoundException extends UofSdkException {
 
     public CacheItemNotFoundException(String message) {
         super(message);

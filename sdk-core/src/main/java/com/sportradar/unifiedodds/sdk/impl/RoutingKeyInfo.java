@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Representation of a broker routing key
@@ -20,12 +20,12 @@ public class RoutingKeyInfo {
     /**
      * The relating sport identifier
      */
-    private final URN sportId;
+    private final Urn sportId;
 
     /**
      * The relating event identifier
      */
-    private final URN eventId;
+    private final Urn eventId;
 
     /**
      * Indicates if the routing key is a system related routing key (snapshot complete, producer ups,...)
@@ -40,7 +40,7 @@ public class RoutingKeyInfo {
      * @param sportId - the relating sport identifier
      * @param eventId - the relating event identifier
      */
-    RoutingKeyInfo(String fullRoutingKey, URN sportId, URN eventId) {
+    RoutingKeyInfo(String fullRoutingKey, Urn sportId, Urn eventId) {
         this.fullRoutingKey = fullRoutingKey;
         this.sportId = sportId;
         this.eventId = eventId;
@@ -70,20 +70,20 @@ public class RoutingKeyInfo {
     }
 
     /**
-     * Returns the relating sport {@link URN} identifier
+     * Returns the relating sport {@link Urn} identifier
      *
-     * @return - the relating sport {@link URN} identifier if available; otherwise null
+     * @return - the relating sport {@link Urn} identifier if available; otherwise null
      */
-    public URN getSportId() {
+    public Urn getSportId() {
         return sportId;
     }
 
     /**
-     * Returns the relating event {@link URN} identifier
+     * Returns the relating event {@link Urn} identifier
      *
-     * @return - the relating event {@link URN} identifier if available; otherwise null
+     * @return - the relating event {@link Urn} identifier if available; otherwise null
      */
-    public URN getEventId() {
+    public Urn getEventId() {
         return eventId;
     }
 

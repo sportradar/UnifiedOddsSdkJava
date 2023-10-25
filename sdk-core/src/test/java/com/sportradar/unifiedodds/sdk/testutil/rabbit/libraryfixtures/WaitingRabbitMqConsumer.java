@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue;
-import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.WaiterForEvents;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
@@ -36,7 +35,7 @@ public class WaitingRabbitMqConsumer extends NoOpConsumer {
         getReceivedMessages().add(new Delivery(envelope, properties, body));
     }
 
-    public Optional<Delivery> waitForDelivery() {
+    public Optional<Delivery> waitForFirstDelivery() {
         val message = ofNullable(receivedMessages.poll(1, TimeUnit.SECONDS));
         assertTrue("Message was not received", message.isPresent());
         return message;

@@ -5,50 +5,50 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
+import com.sportradar.unifiedodds.sdk.caching.TournamentCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.entities.CategorySummary;
 import com.sportradar.unifiedodds.sdk.entities.CurrentSeasonInfo;
 import com.sportradar.unifiedodds.sdk.entities.TournamentInfo;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
-import com.sportradar.utils.URN;
-import java.util.List;
-import java.util.Locale;
+import com.sportradar.utils.Urn;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods used to access tournament properties
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "ConstantName" })
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName" })
 class TournamentInfoImpl implements TournamentInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(TournamentInfoImpl.class);
-    private final TournamentCI tournament;
+    private final TournamentCi tournament;
     private final SportEventCache sportEventCache;
     private final SportEntityFactory sportEntityFactory;
     private final List<Locale> locales;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     TournamentInfoImpl(
-        TournamentCI tournamentCI,
+        TournamentCi tournamentCi,
         SportEventCache sportEventCache,
         SportEntityFactory sportEntityFactory,
         List<Locale> locales,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
-        Preconditions.checkNotNull(tournamentCI);
+        Preconditions.checkNotNull(tournamentCi);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
         Preconditions.checkNotNull(locales);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
-        this.tournament = tournamentCI;
+        this.tournament = tournamentCi;
         this.sportEventCache = sportEventCache;
         this.sportEntityFactory = sportEntityFactory;
         this.locales = locales;
@@ -56,12 +56,12 @@ class TournamentInfoImpl implements TournamentInfo {
     }
 
     /**
-     * Returns the {@link URN} uniquely identifying the current season
+     * Returns the {@link Urn} uniquely identifying the current season
      *
-     * @return - the {@link URN} uniquely identifying the current season
+     * @return - the {@link Urn} uniquely identifying the current season
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return tournament.getId();
     }
 
@@ -74,6 +74,11 @@ class TournamentInfoImpl implements TournamentInfo {
     @Override
     public String getName(Locale locale) {
         return tournament.getNames(locales) == null ? null : tournament.getNames(locales).get(locale);
+    }
+
+    @Override
+    public Map<Locale, String> getNames() {
+        return Optional.ofNullable(tournament.getNames(locales)).orElse(ImmutableMap.of());
     }
 
     /**
@@ -105,16 +110,16 @@ class TournamentInfoImpl implements TournamentInfo {
      */
     @Override
     public CurrentSeasonInfo getCurrentSeason() {
-        SeasonCI currentSeason = tournament.getCurrentSeason(locales);
+        SeasonCi currentSeason = tournament.getCurrentSeason(locales);
         if (currentSeason == null) {
             return null;
         }
 
-        TournamentCI tournamentCI = null;
+        TournamentCi tournamentCi = null;
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(currentSeason.getId());
-            if (eventCacheItem instanceof TournamentCI) {
-                tournamentCI = (TournamentCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(currentSeason.getId());
+            if (eventCacheItem instanceof TournamentCi) {
+                tournamentCi = (TournamentCi) eventCacheItem;
             } else {
                 handleException("tInfo.getCurrentSeason - invalid cache item type", null);
             }
@@ -122,13 +127,13 @@ class TournamentInfoImpl implements TournamentInfo {
             handleException("tInfo.getCurrentSeason - error providing season cache item", e);
         }
 
-        if (tournamentCI == null) {
+        if (tournamentCi == null) {
             return null;
         }
 
         return new CurrentSeasonInfoImpl(
             currentSeason,
-            tournamentCI,
+            tournamentCi,
             sportEventCache,
             sportEntityFactory,
             locales,

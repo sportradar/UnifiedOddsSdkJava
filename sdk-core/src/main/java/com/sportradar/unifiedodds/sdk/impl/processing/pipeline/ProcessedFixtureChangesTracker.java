@@ -1,6 +1,6 @@
 package com.sportradar.unifiedodds.sdk.impl.processing.pipeline;
 
-import com.sportradar.uf.datamodel.UFFixtureChange;
+import com.sportradar.uf.datamodel.UfFixtureChange;
 
 /**
  * Created on 2019-03-29
@@ -16,5 +16,5 @@ public interface ProcessedFixtureChangesTracker {
      * @param fixtureChange the fixture change that needs to be checked
      * @return if the fixture wasn't processed yet, the result is <code>false</code>, otherwise <code>true</code>
      */
-    boolean onFixtureChangeReceived(UFFixtureChange fixtureChange);
+    boolean onFixtureChangeReceived(UfFixtureChange fixtureChange);
 }

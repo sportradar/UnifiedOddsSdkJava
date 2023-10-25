@@ -4,23 +4,23 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.PitcherCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.PitcherCi;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.Pitcher;
 import com.sportradar.unifiedodds.sdk.entities.PitcherHand;
 import com.sportradar.unifiedodds.sdk.entities.Referee;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Represents a sport event pitcher
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "UnnecessaryParentheses" })
+@SuppressWarnings({ "UnnecessaryParentheses" })
 public class PitcherImpl implements Pitcher {
 
     /**
      *  A value used to uniquely identify the current {@link Pitcher} instance
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * The name of the pitcher represented by the current {@link Pitcher} instance
@@ -40,13 +40,13 @@ public class PitcherImpl implements Pitcher {
     /**
      * Initializes a new instance of {@link PitcherImpl} class
      *
-     * @param pitcherCI - a {@link PitcherCI} used to create a new instance
+     * @param pitcherCi - a {@link PitcherCi} used to create a new instance
      */
-    public PitcherImpl(PitcherCI pitcherCI) {
-        this.id = pitcherCI.getId();
-        this.name = pitcherCI.getName();
-        this.competitor = pitcherCI.getCompetitor();
-        this.hand = pitcherCI.getHand();
+    public PitcherImpl(PitcherCi pitcherCi) {
+        this.id = pitcherCi.getId();
+        this.name = pitcherCi.getName();
+        this.competitor = pitcherCi.getCompetitor();
+        this.hand = pitcherCi.getHand();
     }
 
     /**
@@ -55,7 +55,7 @@ public class PitcherImpl implements Pitcher {
      * @return - the unique identifier of the current {@link Referee} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

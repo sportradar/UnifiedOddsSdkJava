@@ -9,8 +9,8 @@ import static org.mockito.Mockito.*;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.io.IOException;
@@ -37,16 +37,16 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     private static final String CONNECTION_HAS_BEEN_SHUT_DOWN = "connection has been shut-down";
     private static final String INITIATED_BY_APPLICATION = "initiated by application";
     private ConnectionFixture openConnection = new ConnectionFixture.Holder().get();
-    private SDKInternalConfiguration configWithToken = createConfigWithToken();
+    private SdkInternalConfiguration configWithToken = createConfigWithToken();
     private FirewallChecker firewallChecker = mock(FirewallChecker.class);
     private TimeUtils timeUtils = mock(TimeUtils.class);
     private ConnectionFactory rabbitConnectionFactory = mock(ConnectionFactory.class);
 
-    private LogsMock logsMock = LogsMock.createCapturingFor(SingleInstanceAMQPConnectionFactory.class);
+    private LogsMock logsMock = LogsMock.createCapturingFor(SingleInstanceAmqpConnectionFactory.class);
     private ExecutorService executorService = mock(ExecutorService.class);
 
     private SslProtocolsProvider sslProtocolsProvider = mock(SslProtocolsProvider.class);
-    private SDKConnectionStatusListener connectionStatusListener = mock(SDKConnectionStatusListener.class);
+    private SdkConnectionStatusListener connectionStatusListener = mock(SdkConnectionStatusListener.class);
     private ConfiguredConnectionFactory configuredConnectionFactory = new ConfiguredConnectionFactory(
         rabbitConnectionFactory,
         configWithToken,
@@ -55,7 +55,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         executorService,
         timeUtils
     );
-    private AMQPConnectionFactory factory = new SingleInstanceAMQPConnectionFactory(
+    private AmqpConnectionFactory factory = new SingleInstanceAmqpConnectionFactory(
         configuredConnectionFactory,
         configWithToken,
         connectionStatusListener,
@@ -70,7 +70,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void shouldNotInstantiateWithoutFirewallChecker() {
         assertThatThrownBy(() ->
-                new SingleInstanceAMQPConnectionFactory(
+                new SingleInstanceAmqpConnectionFactory(
                     configuredConnectionFactory,
                     configWithToken,
                     connectionStatusListener,
@@ -87,7 +87,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void shouldNotInstantiateWithoutSslProtocolsProvider() {
         assertThatThrownBy(() ->
-                new SingleInstanceAMQPConnectionFactory(
+                new SingleInstanceAmqpConnectionFactory(
                     configuredConnectionFactory,
                     configWithToken,
                     connectionStatusListener,
@@ -104,7 +104,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void shouldNotInstantiateWithoutTimeUtils() throws NoSuchAlgorithmException {
         assertThatThrownBy(() ->
-                new SingleInstanceAMQPConnectionFactory(
+                new SingleInstanceAmqpConnectionFactory(
                     configuredConnectionFactory,
                     configWithToken,
                     connectionStatusListener,
@@ -148,7 +148,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void creatingConnectionShouldCheckFirewall()
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        when(configWithToken.getAPIHost()).thenReturn("https://sportradar.com");
+        when(configWithToken.getApiHost()).thenReturn("https://sportradar.com");
 
         factory.getConnection();
 
@@ -475,8 +475,8 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         return factoryInvocation.call();
     }
 
-    private static SDKInternalConfiguration createConfigWithToken() {
-        SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+    private static SdkInternalConfiguration createConfigWithToken() {
+        SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         when(config.getAccessToken()).thenReturn("someAccessToken");
         return config;
     }

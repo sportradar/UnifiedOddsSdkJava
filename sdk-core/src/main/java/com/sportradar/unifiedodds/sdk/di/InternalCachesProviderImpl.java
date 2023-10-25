@@ -2,11 +2,11 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.sportradar.unifiedodds.sdk.OperationManager;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCi;
+import com.sportradar.unifiedodds.sdk.cfg.UofCacheConfiguration;
+import com.sportradar.utils.Urn;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -19,31 +19,31 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({ "MagicNumber", "MethodLength" })
 class InternalCachesProviderImpl implements InternalCachesProvider {
 
-    private final Cache<URN, SportCI> sportDataCache;
-    private final Cache<URN, CategoryCI> categoryDataCache;
-    private final Cache<URN, SportEventCI> sportEventCache;
-    private final Cache<URN, PlayerProfileCI> playerProfileCache;
-    private final Cache<URN, CompetitorCI> competitorCache;
-    private final Cache<URN, CompetitorCI> simpleTeamCompetitorCache;
-    private final Cache<String, SportEventStatusCI> sportEventStatusCache;
-    private final Cache<String, MarketDescriptionCI> invariantMarketCache;
-    private final Cache<String, MarketDescriptionCI> variantMarketCache;
+    private final Cache<Urn, SportCi> sportDataCache;
+    private final Cache<Urn, CategoryCi> categoryDataCache;
+    private final Cache<Urn, SportEventCi> sportEventCache;
+    private final Cache<Urn, PlayerProfileCi> playerProfileCache;
+    private final Cache<Urn, CompetitorCi> competitorCache;
+    private final Cache<Urn, CompetitorCi> simpleTeamCompetitorCache;
+    private final Cache<String, SportEventStatusCi> sportEventStatusCache;
+    private final Cache<String, MarketDescriptionCi> invariantMarketCache;
+    private final Cache<String, MarketDescriptionCi> variantMarketCache;
     private final Cache<String, String> dispatchedFixtureChanges;
-    private final Cache<String, VariantDescriptionCI> variantDescriptionCache;
-    private final Cache<URN, Date> fixtureTimestampCache;
+    private final Cache<String, VariantDescriptionCi> variantDescriptionCache;
+    private final Cache<Urn, Date> fixtureTimestampCache;
     private final Cache<String, Date> ignoreEventsTimelineCache;
-    private final SDKCacheRemovalListener removalListenerSportEventCache;
-    private final SDKCacheRemovalListener removalListenerPlayerProfileCache;
-    private final SDKCacheRemovalListener removalListenerCompetitorProfileCache;
-    private final SDKCacheRemovalListener removalListenerSimpleTeamCompetitorCache;
-    private final SDKCacheRemovalListener removalListenerSportEventStatusCache;
+    private final SdkCacheRemovalListener removalListenerSportEventCache;
+    private final SdkCacheRemovalListener removalListenerPlayerProfileCache;
+    private final SdkCacheRemovalListener removalListenerCompetitorProfileCache;
+    private final SdkCacheRemovalListener removalListenerSimpleTeamCompetitorCache;
+    private final SdkCacheRemovalListener removalListenerSportEventStatusCache;
 
-    InternalCachesProviderImpl() {
-        removalListenerSportEventCache = new SDKCacheRemovalListener<>("SportEventCache");
-        removalListenerPlayerProfileCache = new SDKCacheRemovalListener<>("PlayerProfileCache");
-        removalListenerCompetitorProfileCache = new SDKCacheRemovalListener<>("CompetitorProfileCache");
-        removalListenerSimpleTeamCompetitorCache = new SDKCacheRemovalListener<>("SimpleTeamCompetitorCache");
-        removalListenerSportEventStatusCache = new SDKCacheRemovalListener<>("SportEventStatusCache", true);
+    InternalCachesProviderImpl(UofCacheConfiguration config) {
+        removalListenerSportEventCache = new SdkCacheRemovalListener<>("SportEventCache");
+        removalListenerPlayerProfileCache = new SdkCacheRemovalListener<>("PlayerProfileCache");
+        removalListenerCompetitorProfileCache = new SdkCacheRemovalListener<>("CompetitorProfileCache");
+        removalListenerSimpleTeamCompetitorCache = new SdkCacheRemovalListener<>("SimpleTeamCompetitorCache");
+        removalListenerSportEventStatusCache = new SdkCacheRemovalListener<>("SportEventStatusCache", true);
 
         sportDataCache = CacheBuilder.newBuilder().build();
         categoryDataCache = CacheBuilder.newBuilder().build();
@@ -51,20 +51,20 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
         sportEventCache =
             CacheBuilder
                 .newBuilder()
-                .expireAfterWrite(12, TimeUnit.HOURS)
+                .expireAfterWrite(config.getSportEventCacheTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .removalListener(removalListenerSportEventCache)
                 .build();
 
         playerProfileCache =
             CacheBuilder
                 .newBuilder()
-                .expireAfterWrite(OperationManager.getProfileCacheTimeout().toHours(), TimeUnit.HOURS)
+                .expireAfterWrite(config.getProfileCacheTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .removalListener(removalListenerPlayerProfileCache)
                 .build();
         competitorCache =
             CacheBuilder
                 .newBuilder()
-                .expireAfterWrite(OperationManager.getProfileCacheTimeout().toHours(), TimeUnit.HOURS)
+                .expireAfterWrite(config.getProfileCacheTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .removalListener(removalListenerCompetitorProfileCache)
                 .build();
         simpleTeamCompetitorCache =
@@ -77,10 +77,7 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
         sportEventStatusCache =
             CacheBuilder
                 .newBuilder()
-                .expireAfterWrite(
-                    OperationManager.getSportEventStatusCacheTimeout().toMinutes(),
-                    TimeUnit.MINUTES
-                )
+                .expireAfterWrite(config.getSportEventStatusCacheTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .removalListener(removalListenerSportEventStatusCache)
                 .build();
 
@@ -90,8 +87,8 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
             CacheBuilder
                 .newBuilder()
                 .expireAfterAccess(
-                    OperationManager.getVariantMarketDescriptionCacheTimeout().toHours(),
-                    TimeUnit.HOURS
+                    config.getVariantMarketDescriptionCacheTimeout().toMillis(),
+                    TimeUnit.MILLISECONDS
                 )
                 .build();
         fixtureTimestampCache = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
@@ -99,8 +96,8 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
             CacheBuilder
                 .newBuilder()
                 .expireAfterAccess(
-                    OperationManager.getIgnoreBetPalTimelineSportEventStatusCacheTimeout().toHours(),
-                    TimeUnit.HOURS
+                    config.getIgnoreBetPalTimelineSportEventStatusCacheTimeout().toMillis(),
+                    TimeUnit.MILLISECONDS
                 )
                 .build();
 
@@ -108,47 +105,47 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     }
 
     @Override
-    public Cache<URN, SportCI> getSportDataCache() {
+    public Cache<Urn, SportCi> getSportDataCache() {
         return sportDataCache;
     }
 
     @Override
-    public Cache<URN, CategoryCI> getCategoryDataCache() {
+    public Cache<Urn, CategoryCi> getCategoryDataCache() {
         return categoryDataCache;
     }
 
     @Override
-    public Cache<URN, SportEventCI> getSportEventCache() {
+    public Cache<Urn, SportEventCi> getSportEventCache() {
         return sportEventCache;
     }
 
     @Override
-    public Cache<URN, PlayerProfileCI> getPlayerProfileCache() {
+    public Cache<Urn, PlayerProfileCi> getPlayerProfileCache() {
         return playerProfileCache;
     }
 
     @Override
-    public Cache<URN, CompetitorCI> getCompetitorCache() {
+    public Cache<Urn, CompetitorCi> getCompetitorCache() {
         return competitorCache;
     }
 
     @Override
-    public Cache<URN, CompetitorCI> getSimpleTeamCompetitorCache() {
+    public Cache<Urn, CompetitorCi> getSimpleTeamCompetitorCache() {
         return simpleTeamCompetitorCache;
     }
 
     @Override
-    public Cache<String, SportEventStatusCI> getSportEventStatusCache() {
+    public Cache<String, SportEventStatusCi> getSportEventStatusCache() {
         return sportEventStatusCache;
     }
 
     @Override
-    public Cache<String, MarketDescriptionCI> getInvariantMarketCache() {
+    public Cache<String, MarketDescriptionCi> getInvariantMarketCache() {
         return invariantMarketCache;
     }
 
     @Override
-    public Cache<String, MarketDescriptionCI> getVariantMarketCache() {
+    public Cache<String, MarketDescriptionCi> getVariantMarketCache() {
         return variantMarketCache;
     }
 
@@ -158,12 +155,12 @@ class InternalCachesProviderImpl implements InternalCachesProvider {
     }
 
     @Override
-    public Cache<String, VariantDescriptionCI> getVariantDescriptionCache() {
+    public Cache<String, VariantDescriptionCi> getVariantDescriptionCache() {
         return variantDescriptionCache;
     }
 
     @Override
-    public Cache<URN, Date> getFixtureTimestampCache() {
+    public Cache<Urn, Date> getFixtureTimestampCache() {
         return fixtureTimestampCache;
     }
 

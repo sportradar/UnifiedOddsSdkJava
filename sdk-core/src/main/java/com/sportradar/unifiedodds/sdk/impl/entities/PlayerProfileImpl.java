@@ -6,12 +6,12 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
+import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCi;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.entities.PlayerProfile;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 public class PlayerProfileImpl implements PlayerProfile {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerProfileImpl.class);
-    private final URN playerId;
+    private final Urn playerId;
     private final ProfileCache profileCache;
-    private final List<URN> possibleAssociatedCompetitorIds;
+    private final List<Urn> possibleAssociatedCompetitorIds;
     private final List<Locale> locales;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
@@ -39,9 +39,9 @@ public class PlayerProfileImpl implements PlayerProfile {
      * @param exceptionHandlingStrategy the preferred exception handling strategy
      */
     public PlayerProfileImpl(
-        URN playerId,
+        Urn playerId,
         ProfileCache profileCache,
-        List<URN> possibleAssociatedCompetitorIds,
+        List<Urn> possibleAssociatedCompetitorIds,
         List<Locale> locales,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
@@ -59,12 +59,12 @@ public class PlayerProfileImpl implements PlayerProfile {
     }
 
     /**
-     * Returns the unique {@link URN} identifier representing the current {@link PlayerProfile} instance
+     * Returns the unique {@link Urn} identifier representing the current {@link PlayerProfile} instance
      *
-     * @return - the unique {@link URN} identifier representing the current {@link PlayerProfile} instance
+     * @return - the unique {@link Urn} identifier representing the current {@link PlayerProfile} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return playerId;
     }
 
@@ -107,7 +107,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getType() {
-        return loadCacheItem().map(PlayerProfileCI::getType).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getType).orElse(null);
     }
 
     /**
@@ -117,7 +117,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public Date getDateOfBirth() {
-        return loadCacheItem().map(PlayerProfileCI::getDateOfBirth).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getDateOfBirth).orElse(null);
     }
 
     /**
@@ -127,7 +127,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public Integer getHeight() {
-        return loadCacheItem().map(PlayerProfileCI::getHeight).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getHeight).orElse(null);
     }
 
     /**
@@ -137,7 +137,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public Integer getWeight() {
-        return loadCacheItem().map(PlayerProfileCI::getWeight).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getWeight).orElse(null);
     }
 
     /**
@@ -147,7 +147,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getCountryCode() {
-        return loadCacheItem().map(PlayerProfileCI::getCountryCode).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getCountryCode).orElse(null);
     }
 
     /**
@@ -179,7 +179,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public Integer getJerseyNumber() {
-        return loadCacheItem().map(PlayerProfileCI::getJerseyNumber).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getJerseyNumber).orElse(null);
     }
 
     /**
@@ -189,7 +189,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getNickname() {
-        return loadCacheItem().map(PlayerProfileCI::getNickname).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getNickname).orElse(null);
     }
 
     /**
@@ -199,7 +199,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      */
     @Override
     public String getGender() {
-        return loadCacheItem().map(PlayerProfileCI::getGender).orElse(null);
+        return loadCacheItem().map(PlayerProfileCi::getGender).orElse(null);
     }
 
     /**
@@ -207,7 +207,7 @@ public class PlayerProfileImpl implements PlayerProfile {
      *
      * @return the associated cache item
      */
-    private Optional<PlayerProfileCI> loadCacheItem() {
+    private Optional<PlayerProfileCi> loadCacheItem() {
         try {
             return Optional.ofNullable(
                 profileCache.getPlayerProfile(playerId, locales, possibleAssociatedCompetitorIds)

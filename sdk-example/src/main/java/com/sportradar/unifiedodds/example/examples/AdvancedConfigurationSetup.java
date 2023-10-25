@@ -8,14 +8,13 @@ import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.OddsFeed;
+import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A basic example demonstrating on how to start the SDK with an advanced configuration setup
@@ -23,39 +22,40 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({ "MagicNumber" })
 public class AdvancedConfigurationSetup {
 
-    private final OddsFeed oddsFeed;
+    public static final int SECONDS_IN_HOUR = 60 * 60;
+    private final UofSdk uofSdk;
 
     public AdvancedConfigurationSetup(String token) {
-        logEntry("Running the OddsFeed SDK Basic example - advanced configuration setup");
+        logEntry("Running the UofSdk SDK Basic example - advanced configuration setup");
 
         logEntry("Building the configuration using the provided token");
-        ConfigurationBuilder cfgBuilder = OddsFeed
-            .getOddsFeedConfigurationBuilder()
+        ConfigurationBuilder cfgBuilder = UofSdk
+            .getUofConfigurationBuilder()
             .setAccessToken(token)
             .selectEnvironment(Environment.GlobalIntegration)
-            .setSdkNodeId(SdkConstants.NODE_ID);
+            .setNodeId(SdkConstants.NODE_ID);
 
-        logEntry("Setting the max recovery execution time to 3 hours");
-        cfgBuilder.setMaxRecoveryExecutionTime(3, TimeUnit.HOURS);
+        logEntry("Setting the max recovery execution time to 1 hours");
+        cfgBuilder.setMaxRecoveryTime(1 * SECONDS_IN_HOUR);
 
         logEntry("Setting the default locale to German");
-        cfgBuilder.setDefaultLocale(Locale.ENGLISH);
+        cfgBuilder.setDefaultLanguage(Locale.ENGLISH);
 
         logEntry("Setting the max inactivity to 30 seconds (max interval between alive messages)");
-        cfgBuilder.setMaxInactivitySeconds(30);
+        cfgBuilder.setInactivitySeconds(30);
 
         logEntry(
             "Adding additional desired locales - these locales will be directly available on the exposed entities"
         );
-        cfgBuilder.setDesiredLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
+        cfgBuilder.setDesiredLanguages(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
 
-        logEntry("Creating a new OddsFeed instance with the advanced config");
-        oddsFeed = new OddsFeed(new GlobalEventsListener(), cfgBuilder.build());
+        logEntry("Creating a new UofSdk instance with the advanced config");
+        uofSdk = new UofSdk(new GlobalEventsListener(), cfgBuilder.build());
     }
 
     public void run() throws IOException, InitException, InterruptedException {
         logEntry("Building a simple session which will receive all messages");
-        oddsFeed
+        uofSdk
             .getSessionBuilder()
             .setMessageInterest(MessageInterest.AllMessages)
             .setListener(new MessageListener("AdvancedConfigurationSetup"))
@@ -63,14 +63,14 @@ public class AdvancedConfigurationSetup {
 
         logEntry("Opening the feed instance");
         logEntry("Feed instance will remain open for 30 minutes");
-        oddsFeed.open();
+        uofSdk.open();
 
         logEntry("Example successfully started");
 
         Thread.sleep(1000 * 60 * 30L);
 
         logEntry("Closing the odds feed instance (30min elapsed)");
-        oddsFeed.close();
+        uofSdk.close();
 
         logEntry("AdvancedConfigurationSetup example finished");
         logEntry("");

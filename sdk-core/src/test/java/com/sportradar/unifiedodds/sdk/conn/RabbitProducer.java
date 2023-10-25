@@ -18,7 +18,7 @@ import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.shared.Helper;
 import com.sportradar.unifiedodds.sdk.shared.TestProducersProvider;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -107,6 +107,7 @@ public class RabbitProducer {
         } catch (TimeoutException e) {
             throw new RuntimeException(e);
         }
+
         timerTaskScheduler = Executors.newScheduledThreadPool(1);
         timerFuture =
             timerTaskScheduler.scheduleAtFixedRate(() -> timerCheckAndSend(), 1, 1, TimeUnit.SECONDS);
@@ -227,7 +228,7 @@ public class RabbitProducer {
         try {
             Thread.sleep(periodInMs == 0 ? 5000 : periodInMs);
             while (ProducersAlive.containsKey(producerId)) {
-                UFAlive msgAlive = feedMessageBuilder.buildAlive(producerId, new Date(), true);
+                UfAlive msgAlive = feedMessageBuilder.buildAlive(producerId, new Date(), true);
                 send(msgAlive, "-.-.-.alive.-.-.-.-", msgAlive.getTimestamp());
                 int sleep = periodInMs > 0 ? periodInMs : new Random().nextInt(10000);
                 Thread.sleep(sleep);
@@ -243,22 +244,22 @@ public class RabbitProducer {
      * @return xml message body
      */
     private String buildMessageBody(UnmarshalledMessage message) {
-        if (message instanceof UFAlive) {
+        if (message instanceof UfAlive) {
             return Helper.serializeToJaxbXml(message);
         }
-        if (message instanceof UFOddsChange) {
+        if (message instanceof UfOddsChange) {
             return Helper.serializeToJaxbXml(message);
         }
-        if (message instanceof UFBetStop) {
+        if (message instanceof UfBetStop) {
             return Helper.serializeToJaxbXml(message);
         }
-        if (message instanceof UFFixtureChange) {
+        if (message instanceof UfFixtureChange) {
             return Helper.serializeToJaxbXml(message);
         }
-        if (message instanceof UFSnapshotComplete) {
+        if (message instanceof UfSnapshotComplete) {
             return Helper.serializeToJaxbXml(message);
         }
-        if (message instanceof UFBetSettlement) {
+        if (message instanceof UfBetSettlement) {
             return Helper.serializeToJaxbXml(message);
         }
 
@@ -271,11 +272,11 @@ public class RabbitProducer {
      * @return the appropriate routing key
      */
     private String buildRoutingKey(UnmarshalledMessage message) {
-        if (message instanceof UFAlive) {
+        if (message instanceof UfAlive) {
             return "-.-.-.alive.-.-.-.-";
-        } else if (message instanceof UFOddsChange) {
-            UFOddsChange oddsChange = (UFOddsChange) message;
-            URN urn = URN.parse(oddsChange.getEventId());
+        } else if (message instanceof UfOddsChange) {
+            UfOddsChange oddsChange = (UfOddsChange) message;
+            Urn urn = Urn.parse(oddsChange.getEventId());
             int sportId = 1;
             return String.format(
                 "hi.%s.odds_change.%s.%s:%s.%s.-",
@@ -285,9 +286,9 @@ public class RabbitProducer {
                 urn.getType(),
                 urn.getId()
             );
-        } else if (message instanceof UFBetStop) {
-            UFBetStop betStop = (UFBetStop) message;
-            URN urn = URN.parse(betStop.getEventId());
+        } else if (message instanceof UfBetStop) {
+            UfBetStop betStop = (UfBetStop) message;
+            Urn urn = Urn.parse(betStop.getEventId());
             int sportId = 1;
             return String.format(
                 "hi.%s.bet_stop.%s.%s:%s.%s.-",
@@ -297,9 +298,9 @@ public class RabbitProducer {
                 urn.getType(),
                 urn.getId()
             );
-        } else if (message instanceof UFFixtureChange) {
-            UFFixtureChange fixtureChange = (UFFixtureChange) message;
-            URN urn = URN.parse(fixtureChange.getEventId());
+        } else if (message instanceof UfFixtureChange) {
+            UfFixtureChange fixtureChange = (UfFixtureChange) message;
+            Urn urn = Urn.parse(fixtureChange.getEventId());
             int sportId = 1;
             return String.format(
                 "hi.pre.live.bet_stop.%s.%s:%s.%s.-",
@@ -308,11 +309,11 @@ public class RabbitProducer {
                 urn.getType(),
                 urn.getId()
             );
-        } else if (message instanceof UFSnapshotComplete) {
-            return "-.-.-.snapshot_complete.-.-.-.-";
-        } else if (message instanceof UFBetSettlement) {
-            UFBetSettlement betSettlement = (UFBetSettlement) message;
-            URN urn = URN.parse(betSettlement.getEventId());
+        } else if (message instanceof UfSnapshotComplete) {
+            return "-.-.-.snapshot_complete.-.-.-.0";
+        } else if (message instanceof UfBetSettlement) {
+            UfBetSettlement betSettlement = (UfBetSettlement) message;
+            Urn urn = Urn.parse(betSettlement.getEventId());
             int sportId = 1;
             return String.format(
                 "lo.%s.bet_stop.%s.%s:%s.%s.-",

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 
 import com.rabbitmq.client.*;
 import com.rabbitmq.http.client.Client;
+import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqUserSetup;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.VhostLocation;
@@ -28,7 +29,7 @@ public class RabbitMqUserSetupIT {
     );
     private final Credentials producerCredentials = Credentials.with("producer1", "producer1_P4ssw0rd");
 
-    private final VhostLocation vhostLocation = VhostLocation.at("localhost", "/testhost");
+    private final VhostLocation vhostLocation = VhostLocation.at(Constants.RABBIT_IP, "/testhost");
     private final Client rabbitClient = createRabbitMqClient(
         vhostLocation.getHost(),
         adminCredentials,

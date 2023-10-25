@@ -79,14 +79,6 @@ class ProducerStatusImpl implements ProducerStatus {
     }
 
     /**
-     * @return when was this message created in milliseconds since EPOCH UTC
-     */
-    @Override
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    /**
      * Gets the timestamps when the message was generated, sent, received and dispatched by the sdk
      *
      * @return gets the timestamps when the message was generated, sent, received and dispatched by the sdk

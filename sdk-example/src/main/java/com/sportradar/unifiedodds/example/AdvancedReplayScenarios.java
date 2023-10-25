@@ -9,13 +9,13 @@ import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.example.examples.replay.ExampleReplayEvents;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.OddsFeed;
-import com.sportradar.unifiedodds.sdk.OddsFeedSessionBuilder;
-import com.sportradar.unifiedodds.sdk.ReplayOddsFeed;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.UofSdk;
+import com.sportradar.unifiedodds.sdk.UofSdkForReplay;
+import com.sportradar.unifiedodds.sdk.UofSessionBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
@@ -28,20 +28,20 @@ import java.util.stream.IntStream;
 public class AdvancedReplayScenarios {
 
     public static void main(String[] args) throws InitException, IOException, InterruptedException {
-        // create a new OddsFeedConfiguration, the settings should be the same as for a normal(non-replay) feed instance
-        OddsFeedConfiguration config = OddsFeed
-            .getOddsFeedConfigurationBuilder()
+        // create a new UofConfiguration, the settings should be the same as for a normal(non-replay) feed instance
+        UofConfiguration config = UofSdk
+            .getUofConfigurationBuilder()
             .setAccessToken("your-token-here")
             .selectReplay()
-            .setSdkNodeId(SdkConstants.NODE_ID)
-            .setDefaultLocale(Locale.ENGLISH)
+            .setNodeId(SdkConstants.NODE_ID)
+            .setDefaultLanguage(Locale.ENGLISH)
             .build();
 
-        // create new ReplayOddsFeed instance
-        ReplayOddsFeed replayOddsFeed = new ReplayOddsFeed(new GlobalEventsListener(), config);
+        // create new UofSdkForReplay instance
+        UofSdkForReplay uofSdkForReplay = new UofSdkForReplay(new GlobalEventsListener(), config);
 
         // all the operations supported by the replay server can be accessed trough the ReplayManager
-        ReplayManager replayManager = replayOddsFeed.getReplayManager();
+        ReplayManager replayManager = uofSdkForReplay.getReplayManager();
 
         // stop & clear the replay server, so we cleanup the "previous" state
         System.out.println("Clearing previous replay server state");
@@ -49,14 +49,14 @@ public class AdvancedReplayScenarios {
         replayManager.clear();
 
         // for testing purposes it is advised that the sessions combination is the same as you will use in non-replay SDK instances
-        OddsFeedSessionBuilder sessionBuilder = replayOddsFeed.getSessionBuilder();
+        UofSessionBuilder sessionBuilder = uofSdkForReplay.getSessionBuilder();
         MessageListener listener = new MessageListener("AllMessages");
         sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.AllMessages).build();
 
-        // Open the ReplayOddsFeed with all the built sessions
-        replayOddsFeed.open();
+        // Open the UofSdkForReplay with all the built sessions
+        uofSdkForReplay.open();
 
-        System.out.println("ReplayOddsFeed opened");
+        System.out.println("UofSdkForReplay opened");
 
         // after the feed is opened we can start adding events to the replay server and eventually play them
 
@@ -72,8 +72,8 @@ public class AdvancedReplayScenarios {
         // Let's sleep awhile (30 minutes) and see what gets printed.
         Thread.sleep(1000 * 60 * 30L);
 
-        // finally we close the ReplayOddsFeed - the replay scenario will most likely finish much sooner than 30 minutes
-        replayOddsFeed.close();
+        // finally we close the UofSdkForReplay - the replay scenario will most likely finish much sooner than 30 minutes
+        uofSdkForReplay.close();
     }
 
     private static void addReplayEventsBasedOnSelection(ReplayManager replayManager) {
@@ -103,7 +103,7 @@ public class AdvancedReplayScenarios {
                 continue;
             }
 
-            URN additionalEventId = ExampleReplayEvents.SAMPLE_EVENTS
+            Urn additionalEventId = ExampleReplayEvents.SAMPLE_EVENTS
                 .get(additionalItemPosition)
                 .getEventId();
             replayManager.addSportEventToReplay(additionalEventId);

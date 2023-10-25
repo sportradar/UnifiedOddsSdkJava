@@ -3,11 +3,10 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.*;
-import lombok.NonNull;
-import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +21,11 @@ public class FirewallChecker {
 
     @Inject
     FirewallChecker(
-        @NonNull final SocketFactory socketFactory,
-        @NonNull final BodyOnlyFetchingHttpClient bodyOnlyFetchingHttpClient
+        final SocketFactory socketFactory,
+        final BodyOnlyFetchingHttpClient bodyOnlyFetchingHttpClient
     ) {
+        Preconditions.checkNotNull(socketFactory, "socketFactory");
+        Preconditions.checkNotNull(bodyOnlyFetchingHttpClient, "bodyOnlyFetchingHttpClient");
         this.socketFactory = socketFactory;
         this.bodyOnlyFetchingHttpClient = bodyOnlyFetchingHttpClient;
     }
@@ -41,7 +42,7 @@ public class FirewallChecker {
             Socket s = socketFactory.openNew(uri.getHost(), uri.getPort() < 0 ? HTTPS_PORT : uri.getPort());
             s.close();
         } catch (UnknownHostException e) {
-            final val message = "Unable to lookup " + apiHost + ":" + port + ". Network down?";
+            final String message = "Unable to lookup " + apiHost + ":" + port + ". Network down?";
             LOGGER.error(message);
             throw new IOException(message, e);
         } catch (SocketException e) {

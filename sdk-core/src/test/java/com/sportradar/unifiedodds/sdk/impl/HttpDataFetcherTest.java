@@ -1,53 +1,56 @@
 /*
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
-
 package com.sportradar.unifiedodds.sdk.impl;
 
-import static com.sportradar.unifiedodds.sdk.impl.ClosableHttpResponseStubs.httpOk;
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
-import com.sportradar.uf.sportsapi.datamodel.Response;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
+import com.sportradar.unifiedodds.sdk.impl.http.ApiResponseHandlingException;
 import java.io.IOException;
 import lombok.val;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 public abstract class HttpDataFetcherTest {
 
-    private static final String ANY = "any";
-    private static final String NO_CONTENT = "";
     private static final String TOKEN = "someToken";
     private static final String ANY_URI = "https://sportradar.com";
+    private static final int ANY_STATUS = 400;
     private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-    private Deserializer deserializer = mock(Deserializer.class);
-    private SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
-    private UnifiedOddsStatistics stats = mock(UnifiedOddsStatistics.class);
-    private HttpDataFetcher httpFetcher = createHttpDataFetcher(config, httpClient, stats, deserializer);
+    private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+    private final UnifiedOddsStatistics stats = mock(UnifiedOddsStatistics.class);
+    private final HttpResponseHandler responseDataHandler = mock(HttpResponseHandler.class);
+    private final UserAgentProvider userAgentProvider = mock(UserAgentProvider.class);
+    private HttpDataFetcher httpFetcher = createHttpDataFetcher(
+        config,
+        httpClient,
+        stats,
+        responseDataHandler,
+        userAgentProvider
+    );
 
     public abstract HttpDataFetcher createHttpDataFetcher(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
         UnifiedOddsStatistics statsBean,
-        Deserializer apiDeserializer
+        HttpResponseHandler httpResponseHandler,
+        UserAgentProvider userAgentProvider
     );
 
     @Test
-    public void apiResponseContainingNoContentShouldResultInExceptionExplainingThat()
-        throws IOException, DeserializationException {
-        val httpOk = httpOk(NO_CONTENT);
-        when(httpClient.execute(any())).thenReturn(httpOk);
-        when(deserializer.deserialize(any())).thenReturn(parsedMessageAndAction());
+    public void failuresCausedByResponseHandlingIssuesPreservesExplanatoryMessage() throws IOException {
+        String causalMessage = "causal message";
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class)))
+            .thenThrow(new ApiResponseHandlingException(causalMessage, ANY_URI, ANY_STATUS));
         when(config.getAccessToken()).thenReturn(TOKEN);
 
         CommunicationException exception = catchThrowableOfType(
@@ -55,33 +58,29 @@ public abstract class HttpDataFetcherTest {
             CommunicationException.class
         );
 
-        assertEquals("Invalid server response. Message=no message", exception.getMessage());
+        assertEquals(causalMessage, exception.getMessage());
     }
 
     @Test
-    public void apiResponseContainingNoContentShouldResultInExceptionPreservingUrl()
-        throws IOException, DeserializationException {
-        val httpOk = httpOk(NO_CONTENT);
-        when(httpClient.execute(any())).thenReturn(httpOk);
-        when(deserializer.deserialize(any())).thenReturn(parsedMessageAndAction());
+    public void failuresCausedByResponseHandlingIssuesPreservesUrl() throws IOException {
+        String url = "http://providedUrl.com";
+        val cause = new ApiResponseHandlingException(ANY_URI, url, ANY_STATUS);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(cause);
         when(config.getAccessToken()).thenReturn(TOKEN);
-        String prividedUri = "https://providedUri.com";
 
         CommunicationException exception = catchThrowableOfType(
-            () -> httpFetcher.get(prividedUri),
+            () -> httpFetcher.get(url),
             CommunicationException.class
         );
 
-        assertEquals(prividedUri, exception.getUrl());
+        assertEquals(url, exception.getUrl());
     }
 
     @Test
-    public void apiResponseContainingNoContentShouldResultInExceptionPreservingHttpCode()
-        throws IOException, DeserializationException {
-        final int okHttpCode = 200;
-        val httpOk = ClosableHttpResponseStubs.emptyResponseWithCode(okHttpCode, NO_CONTENT);
-        when(httpClient.execute(any())).thenReturn(httpOk);
-        when(deserializer.deserialize(any())).thenReturn(parsedMessageAndAction());
+    public void failuresCausedByResponseHandlingIssuesHttpStatusCode() throws IOException {
+        final int statusCode = 403;
+        val cause = new ApiResponseHandlingException(ANY_URI, ANY_URI, statusCode);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(cause);
         when(config.getAccessToken()).thenReturn(TOKEN);
 
         CommunicationException exception = catchThrowableOfType(
@@ -89,15 +88,13 @@ public abstract class HttpDataFetcherTest {
             CommunicationException.class
         );
 
-        assertEquals(okHttpCode, exception.getHttpStatusCode());
+        assertEquals(statusCode, exception.getHttpStatusCode());
     }
 
     @Test
-    public void apiResponseContainingNoContentShouldResultInExceptionWithNoCause()
-        throws IOException, DeserializationException {
-        final CloseableHttpResponse httpOk = ClosableHttpResponseStubs.httpOk(NO_CONTENT);
-        when(httpClient.execute(any())).thenReturn(httpOk);
-        when(deserializer.deserialize(any())).thenReturn(parsedMessageAndAction());
+    public void failuresCausedByResponseHandlingIssuesArePreserved() throws IOException {
+        val cause = new ApiResponseHandlingException(ANY_URI, ANY_URI, ANY_STATUS);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(cause);
         when(config.getAccessToken()).thenReturn(TOKEN);
 
         CommunicationException exception = catchThrowableOfType(
@@ -105,25 +102,12 @@ public abstract class HttpDataFetcherTest {
             CommunicationException.class
         );
 
-        assertNull(exception.getCause());
-    }
-
-    @Test
-    public void apiCallsResultingInIoIssuesShouldExplainThatInException() throws IOException {
-        when(httpClient.execute(any())).thenThrow(new IOException());
-        when(config.getAccessToken()).thenReturn(TOKEN);
-
-        CommunicationException exception = catchThrowableOfType(
-            () -> httpFetcher.get(ANY_URI),
-            CommunicationException.class
-        );
-
-        assertThat(exception.getMessage()).contains("There was a problem");
+        assertEquals(cause, exception.getCause());
     }
 
     @Test
     public void apiCallsResultingInIoIssuesShouldPreserveUrl() throws IOException {
-        when(httpClient.execute(any())).thenThrow(new IOException());
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(new IOException());
         when(config.getAccessToken()).thenReturn(TOKEN);
         String providedUri = "https://providedUri.com";
 
@@ -137,7 +121,7 @@ public abstract class HttpDataFetcherTest {
 
     @Test
     public void apiCallsResultingInIoIssuesShouldNotContainHttpCode() throws IOException {
-        when(httpClient.execute(any())).thenThrow(new IOException());
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(new IOException());
         when(config.getAccessToken()).thenReturn(TOKEN);
         final int notSetHttpCode = -1;
 
@@ -152,7 +136,7 @@ public abstract class HttpDataFetcherTest {
     @Test
     public void apiCallsResultingInIoIssuesShouldHaveContainItAsCausalException() throws IOException {
         IOException rootException = new IOException();
-        when(httpClient.execute(any())).thenThrow(rootException);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(rootException);
         when(config.getAccessToken()).thenReturn(TOKEN);
 
         CommunicationException exception = catchThrowableOfType(
@@ -164,11 +148,9 @@ public abstract class HttpDataFetcherTest {
     }
 
     @Test
-    public void shouldSubmitHttpGetRequestWithToken()
-        throws IOException, DeserializationException, CommunicationException {
-        val httpOk = httpOk(ANY);
-        when(httpClient.execute(any())).thenReturn(httpOk);
-        when(deserializer.deserialize(any())).thenReturn(parsedMessageAndAction());
+    public void shouldSubmitHttpGetRequestWithToken() throws IOException, CommunicationException {
+        val anyReturnedHttpData = mock(HttpData.class);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenReturn(anyReturnedHttpData);
         when(config.getAccessToken()).thenReturn(TOKEN);
 
         httpFetcher.get(ANY_URI);
@@ -177,11 +159,9 @@ public abstract class HttpDataFetcherTest {
     }
 
     @Test
-    public void shouldSubmitHttpPostRequestWithToken()
-        throws IOException, DeserializationException, CommunicationException {
-        val httpOk = httpOk(ANY);
-        when(httpClient.execute(any())).thenReturn(httpOk);
-        when(deserializer.deserialize(any())).thenReturn(parsedMessageAndAction());
+    public void shouldSubmitHttpPostRequestWithToken() throws IOException, CommunicationException {
+        HttpData mockedHttpData = mock(HttpData.class);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenReturn(mockedHttpData);
         when(config.getAccessToken()).thenReturn(TOKEN);
 
         httpFetcher.post(ANY_URI, mock(HttpEntity.class));
@@ -189,16 +169,47 @@ public abstract class HttpDataFetcherTest {
         verifyRequestSubmittedHasToken(TOKEN);
     }
 
+    @Test
+    public void shouldSubmitHttpGetRequestWithUserAgent() throws IOException, CommunicationException {
+        val anyReturnedHttpData = mock(HttpData.class);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenReturn(anyReturnedHttpData);
+        String userAgentHeaderValue = "UserAgentHeaderValue";
+        when(userAgentProvider.asHeaderValue()).thenReturn(userAgentHeaderValue);
+
+        httpFetcher.get(ANY_URI);
+
+        verifyRequestSubmittedHasUserAgentHeader(userAgentHeaderValue);
+    }
+
+    @Test
+    public void shouldSubmitHttpPostRequestWithUserAgent() throws IOException, CommunicationException {
+        HttpData mockedHttpData = mock(HttpData.class);
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenReturn(mockedHttpData);
+        String userAgentHeaderValue = "UserAgentHeaderValue";
+        when(userAgentProvider.asHeaderValue()).thenReturn(userAgentHeaderValue);
+
+        httpFetcher.post(ANY_URI, mock(HttpEntity.class));
+
+        verifyRequestSubmittedHasUserAgentHeader(userAgentHeaderValue);
+    }
+
+    @Test
+    public void sendShouldThrowExceptionWhenExceptionIsThrownDuringResponseHandling() throws IOException {
+        when(httpClient.execute(any(), any(HttpClientResponseHandler.class))).thenThrow(IOException.class);
+        String anyPath = "some/path";
+        String expectedErrorMessage = "There was a problem retrieving the requested data";
+        assertThatThrownBy(() -> httpFetcher.get(anyPath)).hasMessageContaining(expectedErrorMessage);
+    }
+
     private void verifyRequestSubmittedHasToken(final String token) throws IOException {
-        val request = ArgumentCaptor.forClass(HttpRequestBase.class);
-        verify(httpClient).execute(request.capture());
+        val request = ArgumentCaptor.forClass(ClassicHttpRequest.class);
+        verify(httpClient).execute(request.capture(), any(HttpClientResponseHandler.class));
         assertEquals(token, request.getValue().getFirstHeader("x-access-token").getValue());
     }
 
-    private Response parsedMessageAndAction() {
-        Response parsed = new Response();
-        parsed.setMessage(ANY);
-        parsed.setAction(ANY);
-        return parsed;
+    private void verifyRequestSubmittedHasUserAgentHeader(String headerValue) throws IOException {
+        val request = ArgumentCaptor.forClass(ClassicHttpRequest.class);
+        verify(httpClient).execute(request.capture(), any(HttpClientResponseHandler.class));
+        assertEquals(headerValue, request.getValue().getFirstHeader("User-Agent").getValue());
     }
 }

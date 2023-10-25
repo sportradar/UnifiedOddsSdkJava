@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities.status;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.unifiedodds.sdk.entities.status.TeamStatistics;
-import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDto;
 
 /**
  * Provides methods used to access team statistics
@@ -15,9 +15,9 @@ import com.sportradar.unifiedodds.sdk.impl.dto.TeamStatisticsDTO;
 @SuppressWarnings({ "LineLength", "UnnecessaryParentheses" })
 class TeamStatisticsImpl implements TeamStatistics {
 
-    private final TeamStatisticsDTO stats;
+    private final TeamStatisticsDto stats;
 
-    TeamStatisticsImpl(TeamStatisticsDTO stats) {
+    TeamStatisticsImpl(TeamStatisticsDto stats) {
         Preconditions.checkNotNull(stats);
 
         this.stats = stats;

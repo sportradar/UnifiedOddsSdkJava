@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import com.sportradar.uf.datamodel.UFOutcomeActive;
+import com.sportradar.uf.datamodel.UfOutcomeActive;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.AdditionalProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsDisplayType;
@@ -18,9 +18,7 @@ import java.util.Locale;
  * Created on 26/06/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings(
-    { "AbbreviationAsWordInName", "MagicNumber", "OverloadMethodsDeclarationOrder", "ParameterNumber" }
-)
+@SuppressWarnings({ "MagicNumber", "OverloadMethodsDeclarationOrder", "ParameterNumber" })
 class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
 
     private final double odds;
@@ -30,7 +28,7 @@ class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
         NameProvider nameProvider,
         OutcomeDefinition outcomeDefinition,
         Locale defaultLocale,
-        UFOutcomeActive active,
+        UfOutcomeActive active,
         Double odds,
         Double probability,
         AdditionalProbabilities additionalProbabilities
@@ -45,16 +43,6 @@ class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
             additionalProbabilities
         );
         this.odds = odds == null ? Double.NaN : odds;
-    }
-
-    /**
-     * The odds for this outcome in this market
-     *
-     * @return the odds for this outcome in this market in decimal
-     */
-    @Override
-    public double getOdds() {
-        return odds;
     }
 
     /**
@@ -82,13 +70,13 @@ class OutcomeOddsImpl extends OutcomeProbabilitiesImpl implements OutcomeOdds {
      * <p>if EU_odds >= 2 then US_odds=(EU_odds - 1)</p>
      * <p>100 if EU_odds <2 then US_odds=(-100)/(EU_odds-1)</p>
      *
-     * @param oddsEUDouble EU odds not null
+     * @param oddsEuDouble EU odds not null
      */
-    private static Double convertEuOddsToUs(Double oddsEUDouble) {
-        if (oddsEUDouble == null || oddsEUDouble.isNaN()) {
-            return oddsEUDouble;
+    private static Double convertEuOddsToUs(Double oddsEuDouble) {
+        if (oddsEuDouble == null || oddsEuDouble.isNaN()) {
+            return oddsEuDouble;
         }
-        BigDecimal oddsEu = BigDecimal.valueOf(oddsEUDouble);
+        BigDecimal oddsEu = BigDecimal.valueOf(oddsEuDouble);
         Double oddUs;
         if (oddsEu.doubleValue() == 1) {
             oddUs = null;

@@ -8,22 +8,21 @@ import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.status.PeriodStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.TeamStatistics;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatisticsDTO;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatisticsDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Provides access to soccer match specific statistics
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class SoccerStatisticsImpl implements SoccerStatistics {
 
-    private final SportEventStatisticsDTO statisticsDTO;
+    private final SportEventStatisticsDto statisticsDto;
 
-    SoccerStatisticsImpl(SportEventStatisticsDTO statisticsDTO) {
-        Preconditions.checkNotNull(statisticsDTO);
+    SoccerStatisticsImpl(SportEventStatisticsDto statisticsDto) {
+        Preconditions.checkNotNull(statisticsDto);
 
-        this.statisticsDTO = statisticsDTO;
+        this.statisticsDto = statisticsDto;
     }
 
     /**
@@ -33,10 +32,10 @@ public class SoccerStatisticsImpl implements SoccerStatistics {
      */
     @Override
     public List<TeamStatistics> getTotalStatistics() {
-        return statisticsDTO.getTotalStatisticsDTOs() == null
+        return statisticsDto.getTotalStatisticsDtos() == null
             ? null
-            : statisticsDTO
-                .getTotalStatisticsDTOs()
+            : statisticsDto
+                .getTotalStatisticsDtos()
                 .stream()
                 .map(TeamStatisticsImpl::new)
                 .collect(Collectors.toList());
@@ -49,10 +48,10 @@ public class SoccerStatisticsImpl implements SoccerStatistics {
      */
     @Override
     public List<PeriodStatistics> getPeriodStatistics() {
-        return statisticsDTO.getPeriodStatisticDTOs() == null
+        return statisticsDto.getPeriodStatisticDtos() == null
             ? null
-            : statisticsDTO
-                .getPeriodStatisticDTOs()
+            : statisticsDto
+                .getPeriodStatisticDtos()
                 .stream()
                 .map(PeriodStatisticsImpl::new)
                 .collect(Collectors.toList());

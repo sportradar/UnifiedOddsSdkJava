@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.*;
 
 /**
@@ -24,7 +24,7 @@ public class DataProvidersModule extends AbstractModule {
     @Provides
     @Named("SummaryEndpointDataProvider")
     private DataProvider<Object> provideSummaryEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -44,8 +44,8 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     @Named("FixtureEndpointDataProvider")
-    private DataProvider<SAPIFixturesEndpoint> provideFixtureEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiFixturesEndpoint> provideFixtureEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -54,8 +54,8 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     @Named("FixtureChangeFixtureEndpointDataProvider")
-    private DataProvider<SAPIFixturesEndpoint> provideFixtureChangeFixtureEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiFixturesEndpoint> provideFixtureChangeFixtureEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -63,8 +63,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPIFixtureChangesEndpoint> provideFixtureChangesDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiFixtureChangesEndpoint> provideFixtureChangesDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -72,8 +72,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPIResultChangesEndpoint> provideResultChangesDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiResultChangesEndpoint> provideResultChangesDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -81,8 +81,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPITournamentsEndpoint> provideAllTournamentsEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiTournamentsEndpoint> provideAllTournamentsEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -90,8 +90,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPISportsEndpoint> provideSportsEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiSportsEndpoint> provideSportsEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -100,8 +100,8 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     @Named("DateScheduleEndpointDataProvider")
-    private DataProvider<SAPIScheduleEndpoint> provideDateScheduleEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiScheduleEndpoint> provideDateScheduleEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -111,7 +111,7 @@ public class DataProvidersModule extends AbstractModule {
     @Provides
     @Named("TournamentScheduleProvider")
     private DataProvider<Object> provideTournamentScheduleEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -124,8 +124,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPIPlayerProfileEndpoint> providePlayerProfileEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiPlayerProfileEndpoint> providePlayerProfileEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -133,8 +133,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPICompetitorProfileEndpoint> provideCompetitorProfileEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiCompetitorProfileEndpoint> provideCompetitorProfileEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -147,8 +147,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPISimpleTeamProfileEndpoint> provideSimpleTeamProfileEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiSimpleTeamProfileEndpoint> provideSimpleTeamProfileEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -161,8 +161,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPITournamentSeasons> provideTournamentSeasonsEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiTournamentSeasons> provideTournamentSeasonsEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -175,8 +175,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPIMatchTimelineEndpoint> provideMatchTimelineEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiMatchTimelineEndpoint> provideMatchTimelineEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -195,8 +195,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPISportCategoriesEndpoint> provideSportCategoriesEndpointProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiSportCategoriesEndpoint> provideSportCategoriesEndpointProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -204,8 +204,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPILotteries> provideLotteriesDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiLotteries> provideLotteriesDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -213,8 +213,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPIDrawSummary> provideDrawSummaryProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiDrawSummary> provideDrawSummaryProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -222,8 +222,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPIDrawFixtures> provideDrawFixtureProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiDrawFixtures> provideDrawFixtureProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -231,8 +231,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPILotterySchedule> provideLotteryScheduleProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiLotterySchedule> provideLotteryScheduleProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -241,8 +241,8 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     @Named("ListSportEventsDataProvider")
-    private DataProvider<SAPIScheduleEndpoint> provideListSportEventsProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiScheduleEndpoint> provideListSportEventsProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -255,8 +255,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SAPISportTournamentsEndpoint> provideSportTournamentsEndpointDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiSportTournamentsEndpoint> provideSportTournamentsEndpointDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -264,23 +264,8 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    @Singleton
-    private DataProvider<Producers> providesProducersDataProvider(
-        SDKInternalConfiguration configuration,
-        LogHttpDataFetcher logHttpDataFetcher,
-        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
-    ) {
-        return new DataProvider<>(
-            "/descriptions/producers.xml",
-            configuration,
-            logHttpDataFetcher,
-            deserializer
-        );
-    }
-
-    @Provides
-    private DataProvider<SAPIStagePeriodEndpoint> periodSummaryDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<SapiStagePeriodEndpoint> periodSummaryDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -295,8 +280,8 @@ public class DataProvidersModule extends AbstractModule {
 
     //Helpers:
 
-    private static DataProvider<SAPIFixturesEndpoint> fixturesEndpointProvider(
-        SDKInternalConfiguration cfg,
+    private static DataProvider<SapiFixturesEndpoint> fixturesEndpointProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         Deserializer deserializer,
         String filename
@@ -315,7 +300,7 @@ public class DataProvidersModule extends AbstractModule {
         );
     }
 
-    private static String baseUrl(SDKInternalConfiguration cfg) {
+    private static String baseUrl(SdkInternalConfiguration cfg) {
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
         return httpHttps + "://" + cfg.getApiHostAndPort() + "/v1";
     }

@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.sportradar.uf.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
@@ -50,7 +50,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     @Inject
     FeedMessageValidatorImpl(
         MarketDescriptionProvider marketDescriptionProvider,
-        SDKInternalConfiguration configuration,
+        SdkInternalConfiguration configuration,
         NamedValuesProvider namedValuesProvider
     ) {
         Preconditions.checkNotNull(marketDescriptionProvider);
@@ -74,24 +74,24 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
-        if (message instanceof UFOddsChange) {
-            return validateOddsChange((UFOddsChange) message, rkInfo);
-        } else if (message instanceof UFBetStop) {
-            return validateBetStop((UFBetStop) message, rkInfo);
-        } else if (message instanceof UFBetSettlement) {
-            return validateBetSettlement((UFBetSettlement) message, rkInfo);
-        } else if (message instanceof UFBetCancel) {
-            return validateBetCancel((UFBetCancel) message, rkInfo);
-        } else if (message instanceof UFSnapshotComplete) {
-            return validateSnapshotComplete((UFSnapshotComplete) message);
-        } else if (message instanceof UFAlive) {
-            return validateAlive((UFAlive) message);
-        } else if (message instanceof UFFixtureChange) {
-            return validateFixtureChange((UFFixtureChange) message, rkInfo);
-        } else if (message instanceof UFRollbackBetSettlement) {
-            return validateRollbackBetSettlement((UFRollbackBetSettlement) message, rkInfo);
-        } else if (message instanceof UFRollbackBetCancel) {
-            return validateRollbackBetCancel((UFRollbackBetCancel) message, rkInfo);
+        if (message instanceof UfOddsChange) {
+            return validateOddsChange((UfOddsChange) message, rkInfo);
+        } else if (message instanceof UfBetStop) {
+            return validateBetStop((UfBetStop) message, rkInfo);
+        } else if (message instanceof UfBetSettlement) {
+            return validateBetSettlement((UfBetSettlement) message, rkInfo);
+        } else if (message instanceof UfBetCancel) {
+            return validateBetCancel((UfBetCancel) message, rkInfo);
+        } else if (message instanceof UfSnapshotComplete) {
+            return validateSnapshotComplete((UfSnapshotComplete) message);
+        } else if (message instanceof UfAlive) {
+            return validateAlive((UfAlive) message);
+        } else if (message instanceof UfFixtureChange) {
+            return validateFixtureChange((UfFixtureChange) message, rkInfo);
+        } else if (message instanceof UfRollbackBetSettlement) {
+            return validateRollbackBetSettlement((UfRollbackBetSettlement) message, rkInfo);
+        } else if (message instanceof UfRollbackBetCancel) {
+            return validateRollbackBetCancel((UfRollbackBetCancel) message, rkInfo);
         }
 
         throw new IllegalArgumentException(
@@ -100,13 +100,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFOddsChange} message
+     * Validates the provided {@link UfOddsChange} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateOddsChange(UFOddsChange message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateOddsChange(UfOddsChange message, RoutingKeyInfo rkInfo) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -141,7 +141,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
             return result;
         }
 
-        for (UFOddsChangeMarket market : message.getOdds().getMarket()) {
+        for (UfOddsChangeMarket market : message.getOdds().getMarket()) {
             if (!checkSpecifiers(market.getId(), message.getProduct(), market.getSpecifiers())) {
                 result = ValidationResult.ProblemsDetected;
             }
@@ -150,7 +150,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
                 continue;
             }
 
-            for (UFOddsChangeMarket.UFOutcome outcome : market.getOutcome()) {
+            for (UfOddsChangeMarket.UfOutcome outcome : market.getOutcome()) {
                 if (
                     outcome.getActive() != null &&
                     outcome.getActive().value() != 1 &&
@@ -169,13 +169,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFBetStop} message
+     * Validates the provided {@link UfBetStop} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateBetStop(UFBetStop message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateBetStop(UfBetStop message, RoutingKeyInfo rkInfo) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -193,13 +193,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFBetSettlement} message
+     * Validates the provided {@link UfBetSettlement} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateBetSettlement(UFBetSettlement message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateBetSettlement(UfBetSettlement message, RoutingKeyInfo rkInfo) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -217,7 +217,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         }
 
         ValidationResult result = ValidationResult.Success;
-        for (UFBetSettlementMarket ufBetSettlementMarket : message.getOutcomes().getMarket()) {
+        for (UfBetSettlementMarket ufBetSettlementMarket : message.getOutcomes().getMarket()) {
             if (
                 !checkSpecifiers(
                     ufBetSettlementMarket.getId(),
@@ -233,13 +233,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFBetCancel} message
+     * Validates the provided {@link UfBetCancel} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateBetCancel(UFBetCancel message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateBetCancel(UfBetCancel message, RoutingKeyInfo rkInfo) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -252,14 +252,14 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFRollbackBetSettlement} message
+     * Validates the provided {@link UfRollbackBetSettlement} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
     private ValidationResult validateRollbackBetSettlement(
-        UFRollbackBetSettlement message,
+        UfRollbackBetSettlement message,
         RoutingKeyInfo rkInfo
     ) {
         Preconditions.checkNotNull(message);
@@ -274,13 +274,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFRollbackBetCancel} message
+     * Validates the provided {@link UfRollbackBetCancel} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateRollbackBetCancel(UFRollbackBetCancel message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateRollbackBetCancel(UfRollbackBetCancel message, RoutingKeyInfo rkInfo) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -293,13 +293,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFFixtureChange} message
+     * Validates the provided {@link UfFixtureChange} message
      *
      * @param message the message object to validate
      * @param rkInfo the associated routing key information
      * @return the validation result
      */
-    private ValidationResult validateFixtureChange(UFFixtureChange message, RoutingKeyInfo rkInfo) {
+    private ValidationResult validateFixtureChange(UfFixtureChange message, RoutingKeyInfo rkInfo) {
         Preconditions.checkNotNull(message);
         Preconditions.checkNotNull(rkInfo);
 
@@ -312,24 +312,24 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates the provided {@link UFSnapshotComplete} message
+     * Validates the provided {@link UfSnapshotComplete} message
      *
      * @param message the message object to validate
      * @return the validation result
      */
-    private ValidationResult validateSnapshotComplete(UFSnapshotComplete message) {
+    private ValidationResult validateSnapshotComplete(UfSnapshotComplete message) {
         Preconditions.checkNotNull(message);
 
         return ValidationResult.Success;
     }
 
     /**
-     * Validates the provided {@link UFAlive} message
+     * Validates the provided {@link UfAlive} message
      *
      * @param message the message object to validate
      * @return the validation result
      */
-    private ValidationResult validateAlive(UFAlive message) {
+    private ValidationResult validateAlive(UfAlive message) {
         Preconditions.checkNotNull(message);
 
         if (message.getSubscribed() < 0) {
@@ -340,13 +340,13 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     }
 
     /**
-     * Validates a list of basic {@link UFMarket}s
+     * Validates a list of basic {@link UfMarket}s
      *
      * @param market the list of markets that needs to be validated
      * @param producerId the associated producer id
      * @return the validation result
      */
-    private ValidationResult validateBasicMarkets(List<UFMarket> market, int producerId) {
+    private ValidationResult validateBasicMarkets(List<UfMarket> market, int producerId) {
         if (market == null) {
             return ValidationResult.Failure;
         }
@@ -356,7 +356,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
         }
 
         ValidationResult result = ValidationResult.Success;
-        for (UFMarket ufMarket : market) {
+        for (UfMarket ufMarket : market) {
             if (!checkSpecifiers(ufMarket.getId(), producerId, ufMarket.getSpecifiers())) {
                 result = ValidationResult.ProblemsDetected;
             }

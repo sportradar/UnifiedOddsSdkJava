@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.uf.datamodel.UFEventStatusStatus;
+import com.sportradar.uf.datamodel.UfEventStatusStatus;
 
 /**
  * Possible competition statuses. This is a fixed set of states that are the same for any sport
@@ -95,7 +95,7 @@ public enum EventStatus {
         return Unknown;
     }
 
-    public static EventStatus valueOfMessageStatus(UFEventStatusStatus status) {
+    public static EventStatus valueOfMessageStatus(UfEventStatusStatus status) {
         switch (status) {
             case NOT_STARTED:
                 return NotStarted;
@@ -119,15 +119,5 @@ public enum EventStatus {
      */
     public String getApiName() {
         return apiName;
-    }
-
-    /**
-     * @deprecated in favour of {@link #getApiName()}
-     *
-     * @return the (not more valid) API id
-     */
-    @Deprecated
-    public int getApiId() {
-        return apiId;
     }
 }

@@ -10,7 +10,7 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,16 +22,16 @@ public class BookingManagerImpl implements BookingManager {
 
     private static final Logger executionLogger = LoggerFactory.getLogger(BookingManagerImpl.class);
     private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkClientInteractionLog.class
+        LoggerDefinitions.UfSdkClientInteractionLog.class
     );
     private final HttpHelper httpHelper;
-    private final SDKInternalConfiguration configuration;
+    private final SdkInternalConfiguration configuration;
     private final SportEventCache sportEventCache;
 
     @Inject
     BookingManagerImpl(
         SportEventCache sportEventCache,
-        SDKInternalConfiguration configuration,
+        SdkInternalConfiguration configuration,
         HttpHelper httpHelper
     ) {
         Preconditions.checkNotNull(sportEventCache);
@@ -44,13 +44,13 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     /**
-     * Performs a request on the API which books the event associated with the provided {@link URN} identifier
+     * Performs a request on the API which books the event associated with the provided {@link Urn} identifier
      *
-     * @param eventId the {@link URN} identifier of the event which needs to be booked
+     * @param eventId the {@link Urn} identifier of the event which needs to be booked
      * @return <code>true</code> if the booking was successful; otherwise <code>false</code>
      */
     @Override
-    public boolean bookLiveOddsEvent(URN eventId) throws CommunicationException {
+    public boolean bookLiveOddsEvent(Urn eventId) throws CommunicationException {
         Preconditions.checkNotNull(eventId);
 
         clientInteractionLogger.info("BookingManager.bookLiveOddsEvent({})", eventId);

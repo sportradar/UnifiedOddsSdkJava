@@ -3,7 +3,6 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
-import static com.sportradar.utils.Urns.SportEvents.urnForAnyTournament;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.junit.Assert.assertEquals;
@@ -11,15 +10,15 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
+import com.sportradar.utils.Urn;
 import org.junit.Test;
 
 public class DataRouterManagerImplRequestingProbabilityCalculationTest {
@@ -27,9 +26,9 @@ public class DataRouterManagerImplRequestingProbabilityCalculationTest {
     private static final String NON_NULL_URL = "http://nonNullUrl.com";
     private final DataProvider probabilityCalculations = mock(DataProvider.class);
     private final DataRouterManager manager = new DataRouterManagerImpl(
-        mock(SDKInternalConfiguration.class),
-        mock(SDKTaskScheduler.class),
-        mock(SDKProducerManager.class),
+        mock(SdkInternalConfiguration.class),
+        mock(SdkTaskScheduler.class),
+        mock(SdkProducerManager.class),
         mock(DataRouter.class),
         mock(DataProvider.class),
         mock(DataProvider.class),

@@ -9,13 +9,13 @@ import com.google.common.cache.Cache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.caching.impl.SportEventCacheImpl;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.impl.MappingTypeProvider;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 public class SportEvenCacheToProxyDataRouterManagerOnly {
 
@@ -54,12 +54,12 @@ public class SportEvenCacheToProxyDataRouterManagerOnly {
         }
 
         @Provides
-        public SDKInternalConfiguration mockSdkConfig() {
-            return mock(SDKInternalConfiguration.class);
+        public SdkInternalConfiguration mockSdkConfig() {
+            return mock(SdkInternalConfiguration.class);
         }
 
         @Provides
-        public Cache<URN, SportEventCI> mockGuavaCache() {
+        public Cache<Urn, SportEventCi> mockGuavaCache() {
             return mock(Cache.class);
         }
     }

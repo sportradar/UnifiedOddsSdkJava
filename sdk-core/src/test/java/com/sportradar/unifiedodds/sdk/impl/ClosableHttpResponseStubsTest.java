@@ -20,8 +20,7 @@ public class ClosableHttpResponseStubsTest {
     @Test
     public void shouldCreateHttpOk() throws IOException {
         val httpOk = ClosableHttpResponseStubs.httpOk(NO_CONTENT);
-
-        assertEquals(HTTP_OK, httpOk.getStatusLine().getStatusCode());
+        assertEquals(HTTP_OK, httpOk.getCode());
     }
 
     @Test
@@ -45,7 +44,7 @@ public class ClosableHttpResponseStubsTest {
 
         val response = ClosableHttpResponseStubs.emptyResponseWithCode(httpCode, NO_CONTENT);
 
-        assertEquals(httpCode, response.getStatusLine().getStatusCode());
+        assertEquals(httpCode, response.getCode());
     }
 
     @Test

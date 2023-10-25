@@ -11,7 +11,7 @@ public interface ExportableCacheItem {
     /**
      * Export item's properties
      *
-     * @return An {@link ExportableCI} instance containing all relevant properties
+     * @return An {@link ExportableCi} instance containing all relevant properties
      */
-    ExportableCI export();
+    ExportableCi export();
 }

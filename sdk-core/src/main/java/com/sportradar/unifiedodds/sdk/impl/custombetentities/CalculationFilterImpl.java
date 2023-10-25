@@ -6,8 +6,8 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelectionsFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
@@ -28,7 +28,7 @@ public class CalculationFilterImpl implements CalculationFilter {
     private final List<AvailableSelectionsFilter> availableSelectionsList;
     private final Date generatedAt;
 
-    public CalculationFilterImpl(CAPIFilteredCalculationResponse calculation) {
+    public CalculationFilterImpl(CapiFilteredCalculationResponse calculation) {
         Preconditions.checkNotNull(calculation);
         Preconditions.checkNotNull(calculation.getCalculation());
 

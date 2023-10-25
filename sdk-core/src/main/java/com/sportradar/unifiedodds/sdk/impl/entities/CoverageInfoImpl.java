@@ -6,8 +6,8 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.unifiedodds.sdk.caching.ci.CoverageInfoCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.CoverageInfoCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCoverageInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.CoverageInfo;
 import com.sportradar.unifiedodds.sdk.entities.CoveredFrom;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class CoverageInfoImpl implements CoverageInfo {
         this.coveredFrom = mapCoveredFrom(coveredFrom);
     }
 
-    CoverageInfoImpl(CoverageInfoCI ci) {
+    CoverageInfoImpl(CoverageInfoCi ci) {
         Preconditions.checkNotNull(ci);
         this.level = ci.getLevel();
         this.isLive = ci.isLive();
@@ -63,7 +63,7 @@ public class CoverageInfoImpl implements CoverageInfo {
         this.coveredFrom = ci.getCoveredFrom();
     }
 
-    CoverageInfoImpl(ExportableCoverageInfoCI exportable) {
+    CoverageInfoImpl(ExportableCoverageInfoCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.level = exportable.getLevel();
         this.isLive = exportable.isLive();
@@ -147,8 +147,8 @@ public class CoverageInfoImpl implements CoverageInfo {
         }
     }
 
-    public ExportableCoverageInfoCI export() {
-        return new ExportableCoverageInfoCI(
+    public ExportableCoverageInfoCi export() {
+        return new ExportableCoverageInfoCi(
             level,
             isLive,
             includes != null ? new ArrayList<>(includes) : null,

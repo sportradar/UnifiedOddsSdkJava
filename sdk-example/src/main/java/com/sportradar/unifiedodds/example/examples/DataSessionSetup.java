@@ -8,10 +8,10 @@ import com.sportradar.unifiedodds.example.common.DataMessageListener;
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.OddsFeed;
 import com.sportradar.unifiedodds.sdk.ProducerManager;
+import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
 import java.util.Locale;
@@ -23,24 +23,24 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({ "MagicNumber" })
 public class DataSessionSetup {
 
-    private final OddsFeed oddsFeed;
-    private final OddsFeedConfiguration configuration;
+    private final UofSdk uofSdk;
+    private final UofConfiguration configuration;
 
     public DataSessionSetup(String token) {
-        logEntry("Running the OddsFeed SDK data example - single session");
+        logEntry("Running the UofSdk SDK data example - single session");
 
         logEntry("Building the configuration using the provided token");
         configuration =
-            OddsFeed
-                .getOddsFeedConfigurationBuilder()
+            UofSdk
+                .getUofConfigurationBuilder()
                 .setAccessToken(token)
                 .selectEnvironment(Environment.GlobalIntegration)
-                .setSdkNodeId(SdkConstants.NODE_ID)
-                .setDefaultLocale(Locale.ENGLISH)
+                .setNodeId(SdkConstants.NODE_ID)
+                .setDefaultLanguage(Locale.ENGLISH)
                 .build();
 
-        logEntry("Creating a new OddsFeed instance");
-        oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);
+        logEntry("Creating a new UofSdk instance");
+        uofSdk = new UofSdk(new GlobalEventsListener(), configuration);
     }
 
     public void run(boolean doRecoveryFromTimestamp) throws IOException, InitException, InterruptedException {
@@ -49,24 +49,24 @@ public class DataSessionSetup {
         }
 
         logEntry("Building a simple session which will receive all messages");
-        oddsFeed
+        uofSdk
             .getSessionBuilder()
             .setMessageInterest(MessageInterest.AllMessages)
             .setListener(
-                new DataMessageListener("SingleSessionSetup", configuration.getDesiredLocales(), true, true)
+                new DataMessageListener("SingleSessionSetup", configuration.getLanguages(), true, true)
             )
             .build();
 
         logEntry("Opening the feed instance");
         logEntry("Feed instance will remain open for 30 minutes");
-        oddsFeed.open();
+        uofSdk.open();
 
         logEntry("Example successfully started");
 
         Thread.sleep(1000 * 60 * 30L);
 
         logEntry("Closing the odds feed instance (30min elapsed)");
-        oddsFeed.close();
+        uofSdk.close();
 
         logEntry("SingleSessionSetup example finished");
         logEntry("");
@@ -82,7 +82,7 @@ public class DataSessionSetup {
         long recoveryFromTimestamp =
             System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(2, TimeUnit.HOURS);
 
-        ProducerManager producerManager = oddsFeed.getProducerManager();
+        ProducerManager producerManager = uofSdk.getProducerManager();
 
         producerManager
             .getActiveProducers()

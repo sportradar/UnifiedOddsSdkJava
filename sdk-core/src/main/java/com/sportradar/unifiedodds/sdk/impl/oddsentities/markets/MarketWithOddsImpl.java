@@ -4,9 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import com.sportradar.uf.datamodel.UFFavourite;
-import com.sportradar.uf.datamodel.UFMarketMetadata;
-import com.sportradar.uf.datamodel.UFMarketStatus;
+import com.sportradar.uf.datamodel.UfFavourite;
+import com.sportradar.uf.datamodel.UfMarketMetadata;
+import com.sportradar.uf.datamodel.UfMarketStatus;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.List;
@@ -35,9 +35,9 @@ class MarketWithOddsImpl extends MarketImpl implements MarketWithOdds {
         Map<String, String> extendedSpecifiers,
         MarketDefinition marketDefinition,
         Locale defaultLocale,
-        UFMarketStatus status,
-        UFFavourite favourite,
-        UFMarketMetadata marketMetadata,
+        UfMarketStatus status,
+        UfFavourite favourite,
+        UfMarketMetadata marketMetadata,
         List<OutcomeOdds> outcomes
     ) {
         super(id, nameProvider, specifiersMap, extendedSpecifiers, marketDefinition, defaultLocale);
@@ -48,7 +48,7 @@ class MarketWithOddsImpl extends MarketImpl implements MarketWithOdds {
         }
         this.status = stat;
 
-        this.favourite = favourite != null && favourite == UFFavourite.YES;
+        this.favourite = favourite != null && favourite == UfFavourite.YES;
         this.marketMetadata = marketMetadata == null ? null : new MarketMetadataImpl(marketMetadata);
         this.outcomeOdds = outcomes;
     }

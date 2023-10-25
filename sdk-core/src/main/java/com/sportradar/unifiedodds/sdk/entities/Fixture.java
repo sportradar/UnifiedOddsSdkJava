@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -82,11 +82,11 @@ public interface Fixture {
     Reference getReferences();
 
     /**
-     * Returns the {@link URN} identifier of the replacement event
+     * Returns the {@link Urn} identifier of the replacement event
      *
-     * @return the {@link URN} identifier of the replacement event
+     * @return the {@link Urn} identifier of the replacement event
      */
-    URN getReplacedBy();
+    Urn getReplacedBy();
 
     /**
      * Returns the list of all {@link ScheduledStartTimeChange} to start time
@@ -98,15 +98,11 @@ public interface Fixture {
      * Returns an id of the parent stage associated with the current instance
      * @return id of the parent stage associated with the current instance
      */
-    default URN getParentStageId() {
-        return null;
-    }
+    Urn getParentStageId();
 
     /**
      * Returns the list specifying the additional parent ids associated with the current instance
      * @return the list specifying the additional parent ids associated with the current instance
      */
-    default List<URN> getAdditionalParentsIds() {
-        return null;
-    }
+    List<Urn> getAdditionalParentsIds();
 }

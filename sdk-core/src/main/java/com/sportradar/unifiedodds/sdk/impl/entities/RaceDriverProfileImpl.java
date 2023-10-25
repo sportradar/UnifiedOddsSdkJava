@@ -5,21 +5,21 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.RaceDriverProfileCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.RaceDriverProfileCi;
 import com.sportradar.unifiedodds.sdk.entities.Car;
 import com.sportradar.unifiedodds.sdk.entities.RaceDriverProfile;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * A basic implementation of the {@link RaceDriverProfile}
  */
 public class RaceDriverProfileImpl implements RaceDriverProfile {
 
-    private final URN raceDriverId;
-    private final URN raceTeamId;
+    private final Urn raceDriverId;
+    private final Urn raceTeamId;
     private final Car car;
 
-    public RaceDriverProfileImpl(RaceDriverProfileCI raceDriver) {
+    public RaceDriverProfileImpl(RaceDriverProfileCi raceDriver) {
         Preconditions.checkNotNull(raceDriver);
 
         this.raceDriverId = raceDriver.getRaceDriverId();
@@ -33,7 +33,7 @@ public class RaceDriverProfileImpl implements RaceDriverProfile {
      * @return the race driver id
      */
     @Override
-    public URN getRaceDriverId() {
+    public Urn getRaceDriverId() {
         return raceDriverId;
     }
 
@@ -43,7 +43,7 @@ public class RaceDriverProfileImpl implements RaceDriverProfile {
      * @return the race team id
      */
     @Override
-    public URN getRaceTeamId() {
+    public Urn getRaceTeamId() {
         return raceTeamId;
     }
 

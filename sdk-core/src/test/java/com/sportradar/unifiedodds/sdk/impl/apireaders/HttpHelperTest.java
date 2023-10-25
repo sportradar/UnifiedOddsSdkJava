@@ -1,6 +1,7 @@
 /*
  * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
  */
+
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,15 +11,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper.ResponseData;
+import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
 import java.io.IOException;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -31,15 +31,17 @@ public class HttpHelperTest {
 
     public static class WhenIoExceptionHappensDuringPost {
 
-        private final SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        private final Deserializer deserialiser = mock(Deserializer.class);
-        private HttpHelper httpHelper = new HttpHelper(config, httpClient, deserialiser);
+        private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
+        private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
+        private HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
 
         @Test
         public void urlShouldBePreservedWhenIoExceptionHappensDuringPost() throws IOException {
             String providedUrl = "https://providedUrl.com";
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(IOException.class);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(IOException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.post(providedUrl),
@@ -51,7 +53,8 @@ public class HttpHelperTest {
 
         @Test
         public void noStatusCodeShouldBePreservedWhenIoExceptionHappensDuringPost() throws IOException {
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(IOException.class);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(IOException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.post(ANY_URL),
@@ -64,7 +67,8 @@ public class HttpHelperTest {
         @Test
         public void rootCauseShouldBePreservedWhenIoExceptionHappensDuringPost() throws IOException {
             IOException ioException = new IOException();
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(ioException);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(ioException);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.post(ANY_URL),
@@ -77,7 +81,8 @@ public class HttpHelperTest {
         @Test
         public void messageShouldExplainThatIoExceptionHappensDuringHttpCall() throws IOException {
             IOException ioException = new IOException();
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(ioException);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(ioException);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.post(ANY_URL),
@@ -90,15 +95,17 @@ public class HttpHelperTest {
 
     public static class WhenIoExceptionHappensDuringPut {
 
-        private final SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        private final Deserializer deserialiser = mock(Deserializer.class);
-        private HttpHelper httpHelper = new HttpHelper(config, httpClient, deserialiser);
+        private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
+        private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
+        private HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
 
         @Test
         public void urlShouldBePreserved() throws IOException {
             String providedUrl = "https://providedUrl.com";
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(IOException.class);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(IOException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.put(providedUrl),
@@ -110,7 +117,8 @@ public class HttpHelperTest {
 
         @Test
         public void noStatusCodeShouldBePreserved() throws IOException {
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(IOException.class);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(IOException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.put(ANY_URL),
@@ -123,7 +131,8 @@ public class HttpHelperTest {
         @Test
         public void rootCauseShouldBePreserved() throws IOException {
             IOException ioException = new IOException();
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(ioException);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(ioException);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.put(ANY_URL),
@@ -136,7 +145,8 @@ public class HttpHelperTest {
         @Test
         public void messageShouldExplainTheProblem() throws IOException {
             IOException ioException = new IOException();
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(ioException);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(ioException);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.put(ANY_URL),
@@ -149,15 +159,17 @@ public class HttpHelperTest {
 
     public static class WhenIoExceptionHappensDuringDelete {
 
-        private final SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        private final Deserializer deserialiser = mock(Deserializer.class);
-        private HttpHelper httpHelper = new HttpHelper(config, httpClient, deserialiser);
+        private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
+        private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
+        private HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
 
         @Test
         public void urlShouldBePreserved() throws IOException {
             String providedUrl = "https://providedUrl.com";
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(IOException.class);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(IOException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.delete(providedUrl),
@@ -169,7 +181,8 @@ public class HttpHelperTest {
 
         @Test
         public void noStatusCodeShouldBePreserved() throws IOException {
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(IOException.class);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(IOException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.delete(ANY_URL),
@@ -182,7 +195,8 @@ public class HttpHelperTest {
         @Test
         public void rootCauseShouldBePreserved() throws IOException {
             IOException ioException = new IOException();
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(ioException);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(ioException);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.delete(ANY_URL),
@@ -195,7 +209,8 @@ public class HttpHelperTest {
         @Test
         public void messageShouldExplainTheProblem() throws IOException {
             IOException ioException = new IOException();
-            when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(ioException);
+            when(httpClient.execute(any(HttpUriRequest.class), any(HttpClientResponseHandler.class)))
+                .thenThrow(ioException);
 
             CommunicationException exception = catchThrowableOfType(
                 () -> httpHelper.delete(ANY_URL),

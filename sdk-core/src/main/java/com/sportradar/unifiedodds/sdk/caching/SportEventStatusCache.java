@@ -4,30 +4,30 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 
 /**
- * Defines methods implemented by classes used to cache {@link SportEventStatusDTO} instances
+ * Defines methods implemented by classes used to cache {@link SportEventStatusDto} instances
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
+@SuppressWarnings({ "LineLength" })
 public interface SportEventStatusCache {
     /**
      * Returns the status of the event associated with the provided identifier. If the instance associated with
-     * the specified event is not found, a {@link SportEventStatusCI} instance indicating a 'not started' event is returned.
+     * the specified event is not found, a {@link SportEventStatusCi} instance indicating a 'not started' event is returned.
      *
      * @param eventId the event identifier
      * @param makeApiCall should the API call be made if necessary
-     * @return a {@link SportEventStatusCI} instance describing the last known event status
+     * @return a {@link SportEventStatusCi} instance describing the last known event status
      */
-    SportEventStatusCI getSportEventStatusCI(URN eventId, boolean makeApiCall);
+    SportEventStatusCi getSportEventStatusCi(Urn eventId, boolean makeApiCall);
 
     /**
      * Purges the sport event status associated with the provided event id
      *
      * @param id the id of the event that you want to purge the sport event status
      */
-    void purgeSportEventStatus(URN id);
+    void purgeSportEventStatus(Urn id);
 
     /**
      * Adds the event identifier for timeline ignore
@@ -36,5 +36,5 @@ public interface SportEventStatusCache {
      * @param producerId the producer identifier
      * @param messageType type of the feed message
      */
-    void addEventIdForTimelineIgnore(URN eventId, int producerId, String messageType);
+    void addEventIdForTimelineIgnore(Urn eventId, int producerId, String messageType);
 }

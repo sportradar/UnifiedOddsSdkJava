@@ -1,22 +1,22 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPIPeriodStatus;
+import com.sportradar.uf.sportsapi.datamodel.SapiPeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorResult;
 import com.sportradar.unifiedodds.sdk.entities.PeriodCompetitorResult;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodCompetitorResultImpl implements PeriodCompetitorResult {
 
-    private final URN id;
+    private final Urn id;
     private final List<CompetitorResult> competitorResults;
 
-    public PeriodCompetitorResultImpl(SAPIPeriodStatus.SAPICompetitor sapiCompetitor) {
+    public PeriodCompetitorResultImpl(SapiPeriodStatus.SapiCompetitor sapiCompetitor) {
         Preconditions.checkNotNull(sapiCompetitor);
 
-        id = URN.parse(sapiCompetitor.getId());
+        id = Urn.parse(sapiCompetitor.getId());
         competitorResults = new ArrayList<>();
         if (sapiCompetitor.getResult() != null) {
             sapiCompetitor
@@ -31,7 +31,7 @@ public class PeriodCompetitorResultImpl implements PeriodCompetitorResult {
      * @return the competitor id
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 

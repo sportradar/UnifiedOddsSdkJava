@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ public interface PeriodCompetitorResult {
      * Returns the competitor id
      * @return the competitor id
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the list of the competitor results

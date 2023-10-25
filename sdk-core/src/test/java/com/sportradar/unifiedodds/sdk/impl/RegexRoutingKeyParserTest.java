@@ -2,7 +2,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class RegexRoutingKeyParserTest {
 
         RoutingKeyInfo sportId = parser.getRoutingKeyInfo(key);
 
-        assertEquals(sportId.getSportId(), URN.parse("sr:sport:5"));
+        assertEquals(sportId.getSportId(), Urn.parse("sr:sport:5"));
     }
 
     @Test
@@ -26,7 +26,7 @@ public class RegexRoutingKeyParserTest {
 
         RoutingKeyInfo sportId = parser.getRoutingKeyInfo(key);
 
-        assertEquals(sportId.getSportId(), URN.parse("sr:sport:6"));
+        assertEquals(sportId.getSportId(), Urn.parse("sr:sport:6"));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +32,7 @@ public class TestingDataProvider<T> extends DataProvider<T> {
     public TestingDataProvider(Supplier<InputStream> streamFactory) {
         super(
             "",
-            Mockito.mock(SDKInternalConfiguration.class),
+            Mockito.mock(SdkInternalConfiguration.class),
             Mockito.mock(LogHttpDataFetcher.class),
             Mockito.mock(Deserializer.class)
         );

@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
@@ -27,7 +27,7 @@ public class RoutingKeyBuilderTests {
     private static final String SNAPSHOT_COMPLETE_ROUTING_KEY_WITH_NODE_ID =
         "-.-.-.snapshot_complete.-.-.-." + SDK_NODE_ID;
 
-    private Map<Integer, Entry<MessageInterest, Set<URN>>> createdSessions = new HashMap<>();
+    private Map<Integer, Entry<MessageInterest, Set<Urn>>> createdSessions = new HashMap<>();
     private Map<Integer, List<String>> validationMap = new HashMap<>();
 
     @Before
@@ -495,14 +495,14 @@ public class RoutingKeyBuilderTests {
         return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
 
-    private static SDKInternalConfiguration getMockedCfg() {
-        SDKInternalConfiguration c = Mockito.mock(SDKInternalConfiguration.class);
+    private static SdkInternalConfiguration getMockedCfg() {
+        SdkInternalConfiguration c = Mockito.mock(SdkInternalConfiguration.class);
         Mockito.when(c.getSdkNodeId()).thenReturn(null);
         return c;
     }
 
-    private static SDKInternalConfiguration getMockedCfgWithNodeId() {
-        SDKInternalConfiguration c = getMockedCfg();
+    private static SdkInternalConfiguration getMockedCfgWithNodeId() {
+        SdkInternalConfiguration c = getMockedCfg();
         Mockito.when(c.getSdkNodeId()).thenReturn(SDK_NODE_ID);
         return c;
     }

@@ -8,12 +8,12 @@ import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.OddsFeed;
-import com.sportradar.unifiedodds.sdk.ReplayOddsFeed;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.UofSdk;
+import com.sportradar.unifiedodds.sdk.UofSdkForReplay;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -23,22 +23,22 @@ import java.util.Locale;
 @SuppressWarnings({ "MagicNumber" })
 public class ReplaySessionSetup {
 
-    private final ReplayOddsFeed oddsFeed;
+    private final UofSdkForReplay oddsFeed;
 
     public ReplaySessionSetup(String token) {
-        logEntry("Running the OddsFeed SDK Basic example - single session with replay server");
+        logEntry("Running the UofSdk SDK Basic example - single session with replay server");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed
-            .getOddsFeedConfigurationBuilder()
+        UofConfiguration configuration = UofSdk
+            .getUofConfigurationBuilder()
             .setAccessToken(token)
             .selectReplay()
-            .setSdkNodeId(SdkConstants.NODE_ID)
-            .setDefaultLocale(Locale.ENGLISH)
+            .setNodeId(SdkConstants.NODE_ID)
+            .setDefaultLanguage(Locale.ENGLISH)
             .build();
 
-        logEntry("Creating a new ReplayOddsFeed instance");
-        oddsFeed = new ReplayOddsFeed(new GlobalEventsListener(), configuration);
+        logEntry("Creating a new UofSdkForReplay instance");
+        oddsFeed = new UofSdkForReplay(new GlobalEventsListener(), configuration);
     }
 
     public void run() throws IOException, InitException, InterruptedException {
@@ -51,8 +51,8 @@ public class ReplaySessionSetup {
 
         ReplayManager replayManager = oddsFeed.getReplayManager();
 
-        URN eventId = URN.parse("sr:match:12089842");
-        URN eventId1 = URN.parse("sr:match:12089826");
+        Urn eventId = Urn.parse("sr:match:12089842");
+        Urn eventId1 = Urn.parse("sr:match:12089826");
 
         logEntry(String.format("Adding 2 events to the replay queue[%s,%s]", eventId, eventId1));
         replayManager.addSportEventToReplay(eventId);

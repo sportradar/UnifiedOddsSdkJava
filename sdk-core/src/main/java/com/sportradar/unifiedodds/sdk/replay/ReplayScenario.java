@@ -11,7 +11,7 @@ import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +53,7 @@ public class ReplayScenario {
     /**
      * A {@link List} of events that are present in the replay scenario
      */
-    private final List<URN> associatedEventIds;
+    private final List<Urn> associatedEventIds;
 
     /**
      * The {@link ExceptionHandlingStrategy} that is associated with the current SDK instance
@@ -86,7 +86,7 @@ public class ReplayScenario {
                 : scenario
                     .getEvent()
                     .stream()
-                    .map(eId -> URN.parse(eId.getId()))
+                    .map(eId -> Urn.parse(eId.getId()))
                     .collect(Collectors.toList());
 
         sportEntityFactory = entityFactory;

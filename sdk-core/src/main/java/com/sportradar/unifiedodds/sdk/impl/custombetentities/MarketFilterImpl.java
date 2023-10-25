@@ -6,10 +6,10 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredMarketType;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredOutcomeType;
-import com.sportradar.uf.custombet.datamodel.CAPIMarketType;
-import com.sportradar.uf.custombet.datamodel.CAPIOutcomeType;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredMarketType;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredOutcomeType;
+import com.sportradar.uf.custombet.datamodel.CapiMarketType;
+import com.sportradar.uf.custombet.datamodel.CapiOutcomeType;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import com.sportradar.unifiedodds.sdk.custombetentities.MarketFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.OutcomeFilter;
@@ -40,7 +40,7 @@ public class MarketFilterImpl implements MarketFilter {
      */
     private final Boolean isConflict;
 
-    MarketFilterImpl(CAPIFilteredMarketType market) {
+    MarketFilterImpl(CapiFilteredMarketType market) {
         Preconditions.checkNotNull(market);
 
         this.id = market.getId();

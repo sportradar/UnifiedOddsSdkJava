@@ -14,16 +14,6 @@ import java.util.Optional;
  */
 public interface Competition extends SportEvent {
     /**
-     * Returns the competition name
-     * The name of {@link Stage} objects is the "name" attribute from the fixture endpoint.
-     * The name of {@link Match} objects is composed from the home and away competitor(eg. Home vs Away)
-     *
-     * @param locale the {@link Locale} in which the name should be provided
-     * @return the competition name if available; otherwise null
-     */
-    String getName(Locale locale);
-
-    /**
      * Returns a {@link CompetitionStatus} containing information about the progress of the sport event
      * associated with the current instance
      *

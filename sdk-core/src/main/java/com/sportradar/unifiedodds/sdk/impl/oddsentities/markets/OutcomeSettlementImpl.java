@@ -4,8 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import com.sportradar.uf.datamodel.UFResult;
-import com.sportradar.uf.datamodel.UFVoidFactor;
+import com.sportradar.uf.datamodel.UfResult;
+import com.sportradar.uf.datamodel.UfVoidFactor;
 import com.sportradar.unifiedodds.sdk.impl.markets.NameProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult;
@@ -19,7 +19,6 @@ import java.util.Locale;
 @SuppressWarnings({ "ParameterNumber" })
 class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
 
-    private final boolean isWinning;
     private final double voidFactor;
     private final double deadHeatFactor;
     private final OutcomeResult outcomeResult;
@@ -29,12 +28,11 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
         NameProvider nameProvider,
         OutcomeDefinition outcomeDefinition,
         Locale defaultLocale,
-        UFResult result,
-        UFVoidFactor voidFactor,
+        UfResult result,
+        UfVoidFactor voidFactor,
         Double deadHeatFactor
     ) {
         super(id, nameProvider, outcomeDefinition, defaultLocale);
-        this.isWinning = result == UFResult.WON;
         this.voidFactor = voidFactor == null ? 0.0 : voidFactor.value();
         this.deadHeatFactor = deadHeatFactor == null ? 1 : deadHeatFactor;
 
@@ -52,17 +50,6 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
                 outcomeResult = OutcomeResult.Lost;
                 break;
         }
-    }
-
-    /**
-     *
-     * @return true if this outcome is a win, false if it is a loss
-     * @deprecated in favour of {@link #getOutcomeResult()}
-     */
-    @Deprecated
-    @Override
-    public boolean isWinning() {
-        return isWinning;
     }
 
     /**

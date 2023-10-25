@@ -8,14 +8,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.ObservableDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
 import com.sportradar.utils.SdkHelper;
@@ -49,7 +49,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
     private static final Logger logger = LoggerFactory.getLogger(InvariantMarketDescriptionCache.class);
 
-    private final Cache<String, MarketDescriptionCI> cache;
+    private final Cache<String, MarketDescriptionCi> cache;
     private final DataProvider<MarketDescriptions> dataProvider;
     private final ObservableDataProvider<MarketDescriptions> additionalMappingsProvider;
     private final MappingValidatorFactory mappingValidatorFactory;
@@ -59,11 +59,11 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     private boolean hasTimerElapsedOnce;
 
     public InvariantMarketDescriptionCache(
-        Cache<String, MarketDescriptionCI> cache,
+        Cache<String, MarketDescriptionCi> cache,
         DataProvider<MarketDescriptions> dataProvider,
         ObservableDataProvider<MarketDescriptions> additionalMappingsProvider,
         MappingValidatorFactory mappingValidatorFactory,
-        SDKTaskScheduler scheduler,
+        SdkTaskScheduler scheduler,
         List<Locale> prefetchLocales
     ) {
         Preconditions.checkNotNull(cache);
@@ -97,7 +97,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         Preconditions.checkArgument(marketId > 0);
 
         String processingCacheId = String.valueOf(marketId);
-        MarketDescriptionCI cachedItem = getMarketInternal(processingCacheId, locales);
+        MarketDescriptionCi cachedItem = getMarketInternal(processingCacheId, locales);
 
         return new MarketDescriptionImpl(cachedItem, locales);
     }
@@ -130,7 +130,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
     @Override
     public void updateCacheItem(int marketId, String variant) {
-        MarketDescriptionCI description = cache.getIfPresent(String.valueOf(marketId));
+        MarketDescriptionCi description = cache.getIfPresent(String.valueOf(marketId));
         if (description != null) {
             description.setLastDataReceived(new Date());
         }
@@ -142,7 +142,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         Preconditions.checkArgument(!locales.isEmpty());
 
         // ensure all locales are present & fetch them if needed
-        MarketDescriptionCI cachedItem = getMarketInternal("1", locales);
+        MarketDescriptionCi cachedItem = getMarketInternal("1", locales);
 
         return cache
             .asMap()
@@ -190,12 +190,12 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         }
     }
 
-    private MarketDescriptionCI getMarketInternal(String id, List<Locale> locales)
+    private MarketDescriptionCi getMarketInternal(String id, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        MarketDescriptionCI description = cache.getIfPresent(id);
+        MarketDescriptionCi description = cache.getIfPresent(id);
         if (description != null && getMissingLocales(description, locales).isEmpty()) {
             return description;
         }
@@ -254,10 +254,10 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
             .getMarket()
             .forEach(market -> {
                 String processingCacheItemId = String.valueOf(market.getId());
-                MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
+                MarketDescriptionCi cachedItem = cache.getIfPresent(processingCacheItemId);
                 if (createNew || cachedItem == null) {
                     cachedItem =
-                        new MarketDescriptionCI(
+                        new MarketDescriptionCi(
                             market,
                             mappingValidatorFactory,
                             locale,
@@ -299,7 +299,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
 
         markets.forEach(m -> {
             String processingCacheItemId = String.valueOf(m.getId());
-            MarketDescriptionCI cachedItem = cache.getIfPresent(processingCacheItemId);
+            MarketDescriptionCi cachedItem = cache.getIfPresent(processingCacheItemId);
             if (cachedItem == null) {
                 if (additionalMappingsProvider.logErrors()) {
                     logger.warn("Handling additional mappings for unknown market: {}", m.getId());
@@ -328,7 +328,7 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
         onTimerElapsed();
     }
 
-    private List<Locale> getMissingLocales(MarketDescriptionCI item, List<Locale> requiredLocales) {
+    private List<Locale> getMissingLocales(MarketDescriptionCi item, List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
         Preconditions.checkArgument(!requiredLocales.isEmpty());
 

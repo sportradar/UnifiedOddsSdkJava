@@ -1,22 +1,22 @@
-# all the configuration properties are optional, for a more detailed description check the "ConfigurationAccessTokenSetter" docs
+# all the configuration properties are optional, for detailed description check the "ConfigurationAccessTokenSetter"
 
 # the access token provided by Sportradar
 uf.sdk.accessToken=
 
-# the default locale (en)
-uf.sdk.defaultLocale=en
+# the default language (en)
+uf.sdk.defaultLanguage=en
 
-# the desired locales, separated with comma (es,fr)
-uf.sdk.desiredLocales=
-
-# the api host
-uf.sdk.apiHost=
+# the desired languages, separated with comma (es,fr)
+uf.sdk.desiredLanguages=
 
 # the messaging host
 uf.sdk.messagingHost=
 
 # the messaging port
 uf.sdk.messagingPort=
+
+# an indication if the connection to the messaging broker should use ssl (true/false)
+uf.sdk.messagingUseSsl=
 
 # the messaging username
 uf.sdk.messagingUsername=
@@ -27,23 +27,17 @@ uf.sdk.messagingPassword=
 # the messaging virtual host
 uf.sdk.messagingVirtualHost=
 
-# an indication if the request to the API should use ssl (true/false)
-uf.sdk.useApiSsl=
+# the api host
+uf.sdk.apiHost=
 
-# an indication if the connection to the messaging broker should use ssl (true/false)
-uf.sdk.useMessagingSsl=
+# the api port
+uf.sdk.apiPort=
+
+# an indication if the request to the API should use ssl (true/false)
+uf.sdk.apiUseSsl=
 
 # a list of producer identifiers that should be automatically disabled, separated with comma (1,2,4)
 uf.sdk.disabledProducers=
-
-# the maximum inactivity seconds between alive messages
-uf.sdk.maxInactivitySeconds=
-
-# the maximum recovery time - minutes
-uf.sdk.maxRecoveryTime=
-
-# an indication if the sdk should connect to the staging environment (true/false) (deprecated with the introduction of the new builder)
-uf.sdk.useStaging=
 
 # the node id which should be used by the SDK
 uf.sdk.nodeId=
@@ -52,4 +46,4 @@ uf.sdk.nodeId=
 uf.sdk.exceptionHandlingStrategy=
 
 # a value indicating to which unified feed environment sdk should connect (Environment enum value)
-uf.sdk.ufEnvironment=
+uf.sdk.environment=

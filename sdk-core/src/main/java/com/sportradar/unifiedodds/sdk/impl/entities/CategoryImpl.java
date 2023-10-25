@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.entities.Category;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.entities.Tournament;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -28,12 +28,12 @@ public class CategoryImpl extends CategorySummaryImpl implements Category {
     /**
      * Initializes a new instance of the {@link CategoryImpl}
      *
-     * @param id - an {@link URN} uniquely identifying the current {@link Category} instance
+     * @param id - an {@link Urn} uniquely identifying the current {@link Category} instance
      * @param names - a {@link Map} containing translated category name
      * @param tournaments - a {@link List} of tournaments which belong to the current {@link Category} instance
      * @param countryCode - a {@link String} representation of a country code
      */
-    public CategoryImpl(URN id, Map<Locale, String> names, List<SportEvent> tournaments, String countryCode) {
+    public CategoryImpl(Urn id, Map<Locale, String> names, List<SportEvent> tournaments, String countryCode) {
         super(id, names, countryCode);
         Preconditions.checkNotNull(tournaments);
 

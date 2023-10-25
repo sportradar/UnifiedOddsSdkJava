@@ -38,13 +38,13 @@ public enum ProducerStatusReason {
     ProcessingQueueDelayViolation,
 
     /**
-     * Indicates that the {@link ProducerDown} message was dispatched due to information received
+     * Indicates that the {@link ProducerStatusReason} message was dispatched due to information received
      * from the feed
      */
     Other,
 
     /**
-     * Indicates that the {@link ProducerDown} message was dispatched due to the loss of connection
+     * Indicates that the {@link ProducerStatusReason} message was dispatched due to the loss of connection
      * to the server.
      */
     ConnectionDown,

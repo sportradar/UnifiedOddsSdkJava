@@ -4,12 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.MatchCI;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.MatchCi;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
@@ -18,11 +19,8 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
 import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
-import com.sportradar.utils.URN;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import com.sportradar.utils.Urn;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +30,10 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassDataAbstractionCoupling",
         "ClassFanOutComplexity",
         "ConstantName",
         "LambdaBodyLength",
-        "LineLength",
         "ParameterNumber",
         "UnnecessaryParentheses",
     }
@@ -79,8 +75,8 @@ public class MatchImpl extends SportEventImpl implements Match {
     /**
      * Initializes a new instance of the {@link MatchImpl}
      *
-     * @param id A {@link URN} uniquely identifying the sport event associated with the current instance
-     * @param sportId A {@link URN} uniquely identifying the sport to which the match is related
+     * @param id A {@link Urn} uniquely identifying the sport event associated with the current instance
+     * @param sportId A {@link Urn} uniquely identifying the sport to which the match is related
      * @param sportEventCache A {@link SportEventCache} instance used to access the associated cache items
      * @param statusFactory A {@link SportEventStatusFactory} instance used to build status entities
      * @param sportEntityFactory A {@link SportEntityFactory} instance used to construct {@link Tournament} instances
@@ -88,8 +84,8 @@ public class MatchImpl extends SportEventImpl implements Match {
      * @param exceptionHandlingStrategy the exception handling strategy that should be used by the instance
      */
     public MatchImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         SportEventCache sportEventCache,
         SportEventStatusFactory statusFactory,
         SportEntityFactory sportEntityFactory,
@@ -100,7 +96,7 @@ public class MatchImpl extends SportEventImpl implements Match {
         Preconditions.checkNotNull(statusFactory);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(sportEntityFactory);
-        Preconditions.checkNotNull(locales);
+        Preconditions.checkNotNull(locales, "locales");
 
         this.sportEventCache = sportEventCache;
         this.locales = locales;
@@ -159,7 +155,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public BookingStatus getBookingStatus() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getBookingStatus", null);
@@ -176,14 +172,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public Venue getVenue() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getVenue", null);
             return null;
         }
 
-        VenueCI venue = cacheItem.getVenue(locales);
+        VenueCi venue = cacheItem.getVenue(locales);
 
         return venue == null ? null : new VenueImpl(venue, locales);
     }
@@ -197,14 +193,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public SportEventConditions getConditions() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getConditions", null);
             return null;
         }
 
-        SportEventConditionsCI conditions = cacheItem.getConditions(locales);
+        SportEventConditionsCi conditions = cacheItem.getConditions(locales);
 
         return conditions == null ? null : new SportEventConditionsImpl(conditions, locales);
     }
@@ -218,14 +214,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public List<Competitor> getCompetitors() {
-        MatchCI matchCI = loadMatchCI();
+        MatchCi matchCi = loadMatchCi();
 
-        if (matchCI == null) {
+        if (matchCi == null) {
             handleException("getCompetitors", null);
             return null;
         }
 
-        List<URN> competitors = matchCI.getCompetitorIds(locales);
+        List<Urn> competitors = matchCi.getCompetitorIds(locales);
 
         if (competitors == null) {
             return null;
@@ -238,10 +234,10 @@ public class MatchImpl extends SportEventImpl implements Match {
                     try {
                         return sportEntityFactory.buildCompetitor(
                             c,
-                            provideCompetitorQualifier(matchCI, c),
-                            provideCompetitorDivision(matchCI, c),
-                            provideCompetitorVirtual(matchCI, c),
-                            matchCI,
+                            provideCompetitorQualifier(matchCi, c),
+                            provideCompetitorDivision(matchCi, c),
+                            provideCompetitorVirtual(matchCi, c),
+                            matchCi,
                             locales
                         );
                     } catch (ObjectNotFoundException e) {
@@ -264,14 +260,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public SeasonInfo getSeason() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getSeason", null);
             return null;
         }
 
-        SeasonCI season = cacheItem.getSeason(locales);
+        SeasonCi season = cacheItem.getSeason(locales);
 
         return season == null ? null : new SeasonInfoImpl(season, locales);
     }
@@ -284,14 +280,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public Round getTournamentRound() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getTournamentRound", null);
             return null;
         }
 
-        RoundCI tournamentRound = cacheItem.getTournamentRound(locales);
+        RoundCi tournamentRound = cacheItem.getTournamentRound(locales);
 
         return tournamentRound == null ? null : new RoundImpl(tournamentRound, locales);
     }
@@ -350,7 +346,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public LongTermEvent getTournament() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getTournament", null);
@@ -390,10 +386,9 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public String getName(Locale locale) {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
-            handleException("getName", null);
             return null;
         }
 
@@ -407,7 +402,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      * @return - the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         if (super.getSportId() != null) {
             return super.getSportId();
         }
@@ -434,7 +429,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public Date getScheduledTime() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getScheduledTime", null);
@@ -453,7 +448,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public Date getScheduledEndTime() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getScheduledEndTime", null);
@@ -466,12 +461,13 @@ public class MatchImpl extends SportEventImpl implements Match {
     /**
      * Returns the {@link Boolean} specifying if the start time to be determined is set for the current instance
      *
-     * @return if available, the {@link Boolean} specifying if the start time to be determined is set for the current instance
+     * @return if available, the {@link Boolean} specifying if the
+     * start time to be determined is set for the current instance
      */
     @SuppressWarnings("java:S2447") // Null should not be returned from a "Boolean" method
     @Override
     public Boolean isStartTimeTbd() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getScheduledEndTime", null);
@@ -482,13 +478,13 @@ public class MatchImpl extends SportEventImpl implements Match {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
-        MatchCI cacheItem = loadMatchCI();
+    public Urn getReplacedBy() {
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getScheduledEndTime", null);
@@ -506,7 +502,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public Fixture getFixture() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getFixture", null);
@@ -525,7 +521,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public EventTimeline getEventTimeline(Locale locale) {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getEventTimeline", null);
@@ -539,7 +535,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return null;
         }
 
-        EventTimelineCI eventTimeline = cacheItem.getEventTimeline(locale, true);
+        EventTimelineCi eventTimeline = cacheItem.getEventTimeline(locale, true);
 
         return eventTimeline == null ? null : new EventTimelineImpl(eventTimeline);
     }
@@ -552,7 +548,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public Optional<EventTimeline> getEventTimelineIfPresent(Locale locale) {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getEventTimeline", null);
@@ -566,7 +562,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return Optional.empty();
         }
 
-        EventTimelineCI eventTimeline = cacheItem.getEventTimeline(locale, false);
+        EventTimelineCi eventTimeline = cacheItem.getEventTimeline(locale, false);
 
         return eventTimeline == null ? Optional.empty() : Optional.of(new EventTimelineImpl(eventTimeline));
     }
@@ -578,14 +574,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public DelayedInfo getDelayedInfo() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getDelayedInfo", null);
             return null;
         }
 
-        DelayedInfoCI delayedInfo = cacheItem.getDelayedInfo(locales);
+        DelayedInfoCi delayedInfo = cacheItem.getDelayedInfo(locales);
 
         return delayedInfo == null ? null : new DelayedInfoImpl(delayedInfo, locales);
     }
@@ -597,14 +593,14 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public CoverageInfo getCoverageInfo() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getCoverageInfo", null);
             return null;
         }
 
-        CoverageInfoCI coverageInfo = cacheItem.getCoverageInfo(locales);
+        CoverageInfoCi coverageInfo = cacheItem.getCoverageInfo(locales);
 
         return coverageInfo == null ? null : new CoverageInfoImpl(coverageInfo);
     }
@@ -615,7 +611,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public String getLiveOdds() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getLiveOdds", null);
@@ -631,7 +627,7 @@ public class MatchImpl extends SportEventImpl implements Match {
      */
     @Override
     public SportEventType getSportEventType() {
-        MatchCI cacheItem = loadMatchCI();
+        MatchCi cacheItem = loadMatchCi();
 
         if (cacheItem == null) {
             handleException("getSportEventType", null);
@@ -639,6 +635,20 @@ public class MatchImpl extends SportEventImpl implements Match {
         }
 
         return cacheItem.getSportEventType(locales);
+    }
+
+    @Override
+    public SportSummary getSport() {
+        Urn sportId = getSportId();
+        if (sportId != null) {
+            try {
+                return sportEntityFactory.buildSport(sportId, locales);
+            } catch (ObjectNotFoundException e) {
+                handleException("Sport could not be loaded", e);
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -680,17 +690,38 @@ public class MatchImpl extends SportEventImpl implements Match {
      *
      * @return the associated cache item
      */
-    private MatchCI loadMatchCI() {
+    private MatchCi loadMatchCi() {
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(id);
-            if (eventCacheItem instanceof MatchCI) {
-                return (MatchCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof MatchCi) {
+                return (MatchCi) eventCacheItem;
             }
             handleException("loadMatchCI, CI type miss-match", null);
         } catch (CacheItemNotFoundException e) {
             handleException("loadMatchCI, CI not found", e);
         }
         return null;
+    }
+
+    private <T> T fromMatchCi(Function<MatchCi, T> acquiringAction) {
+        T nullAsErrorSignalWhenSdkCatchesErrors = null;
+        return loadMatchCiRespectingErrorStrategy()
+            .map(acquiringAction)
+            .orElse(nullAsErrorSignalWhenSdkCatchesErrors);
+    }
+
+    private Optional<MatchCi> loadMatchCiRespectingErrorStrategy() {
+        try {
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof MatchCi) {
+                return Optional.of((MatchCi) eventCacheItem);
+            }
+            handleException("loadMatchCI, CI type miss-match", null);
+            return Optional.empty();
+        } catch (CacheItemNotFoundException e) {
+            handleException("loadMatchCI, CI not found", e);
+            return Optional.empty();
+        }
     }
 
     /**
@@ -717,21 +748,21 @@ public class MatchImpl extends SportEventImpl implements Match {
         }
     }
 
-    private static String provideCompetitorQualifier(MatchCI ci, URN competitorId) {
+    private static String provideCompetitorQualifier(MatchCi ci, Urn competitorId) {
         Preconditions.checkNotNull(ci);
         Preconditions.checkNotNull(competitorId);
 
         return ci.getCompetitorsQualifiers() == null ? null : ci.getCompetitorsQualifiers().get(competitorId);
     }
 
-    private static Integer provideCompetitorDivision(MatchCI ci, URN competitorId) {
+    private static Integer provideCompetitorDivision(MatchCi ci, Urn competitorId) {
         Preconditions.checkNotNull(ci);
         Preconditions.checkNotNull(competitorId);
 
         return ci.getCompetitorsDivisions() == null ? null : ci.getCompetitorsDivisions().get(competitorId);
     }
 
-    private static Boolean provideCompetitorVirtual(MatchCI ci, URN competitorId) {
+    private static Boolean provideCompetitorVirtual(MatchCi ci, Urn competitorId) {
         Preconditions.checkNotNull(ci);
         Preconditions.checkNotNull(competitorId);
 

@@ -4,8 +4,8 @@
 
 package com.sportradar.unifiedodds.example.common;
 
-import com.sportradar.unifiedodds.sdk.OddsFeedListener;
-import com.sportradar.unifiedodds.sdk.OddsFeedSession;
+import com.sportradar.unifiedodds.sdk.UofListener;
+import com.sportradar.unifiedodds.sdk.UofSession;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.Locale;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings(
     { "ClassFanOutComplexity", "LineLength", "NeedBraces", "OneStatementPerLine", "ParameterName" }
 )
-public class MessageListener implements OddsFeedListener {
+public class MessageListener implements UofListener {
 
     private final Logger logger;
 
@@ -33,7 +33,7 @@ public class MessageListener implements OddsFeedListener {
      * @param oddsChanges the odds changes message
      */
     @Override
-    public void onOddsChange(OddsFeedSession sender, OddsChange<SportEvent> oddsChanges) {
+    public void onOddsChange(UofSession sender, OddsChange<SportEvent> oddsChanges) {
         SportEvent event = oddsChanges.getEvent();
         logger.info("Received odds change for: " + event);
 
@@ -65,7 +65,7 @@ public class MessageListener implements OddsFeedListener {
                         "Outcome " +
                         outcomeDesc +
                         " has odds " +
-                        outcomeOdds.getOdds() +
+                        outcomeOdds.getOdds(null) +
                         " " +
                         outcomeOdds.getProbability()
                     );
@@ -81,7 +81,7 @@ public class MessageListener implements OddsFeedListener {
      * @param betStop the betstop message
      */
     @Override
-    public void onBetStop(OddsFeedSession sender, BetStop<SportEvent> betStop) {
+    public void onBetStop(UofSession sender, BetStop<SportEvent> betStop) {
         logger.info("Received betstop for sport event " + betStop.getEvent());
     }
 
@@ -97,14 +97,14 @@ public class MessageListener implements OddsFeedListener {
      * @param clearBets the BetSettlement message
      */
     @Override
-    public void onBetSettlement(OddsFeedSession sender, BetSettlement<SportEvent> clearBets) {
+    public void onBetSettlement(UofSession sender, BetSettlement<SportEvent> clearBets) {
         logger.info("Received bet settlement for sport event " + clearBets.getEvent());
 
         // Iterate through the betsettlements for each market
         for (MarketWithSettlement marketSettlement : clearBets.getMarkets()) {
             // Then iterate through the result for each outcome (win or loss)
             for (OutcomeSettlement result : marketSettlement.getOutcomeSettlements()) {
-                if (result.isWinning()) logger.info(
+                if (result.getOutcomeResult().equals(OutcomeResult.Won)) logger.info(
                     "Outcome " + result.getId() + " is a win"
                 ); else logger.info("Outcome " + result.getId() + " is a loss");
             }
@@ -121,7 +121,7 @@ public class MessageListener implements OddsFeedListener {
      */
     @Override
     public void onRollbackBetSettlement(
-        OddsFeedSession sender,
+        UofSession sender,
         RollbackBetSettlement<SportEvent> rollbackBetSettlement
     ) {
         logger.info("Received rollback betsettlement for sport event " + rollbackBetSettlement.getEvent());
@@ -137,7 +137,7 @@ public class MessageListener implements OddsFeedListener {
      *        specifying which markets were cancelled
      */
     @Override
-    public void onBetCancel(OddsFeedSession sender, BetCancel<SportEvent> betCancel) {
+    public void onBetCancel(UofSession sender, BetCancel<SportEvent> betCancel) {
         logger.info("Received bet cancel for sport event " + betCancel.getEvent());
     }
 
@@ -151,13 +151,13 @@ public class MessageListener implements OddsFeedListener {
      *        specifying erroneous cancellations
      */
     @Override
-    public void onRollbackBetCancel(OddsFeedSession sender, RollbackBetCancel<SportEvent> rbBetCancel) {
+    public void onRollbackBetCancel(UofSession sender, RollbackBetCancel<SportEvent> rbBetCancel) {
         logger.info("Received rollback betcancel for sport event " + rbBetCancel.getEvent());
     }
 
     /**
      * If there are important fixture updates you will receive fixturechange message. The thinking
-     * is that most fixture updates are queried by you yourself using the SportInfoManager. However,
+     * is that most fixture updates are queried by you yourself using the SportDataProvider. However,
      * if there are important/urgent changes you will also receive a fixture change message (e.g. if
      * a match gets delayed, or if Sportradar for some reason needs to stop live coverage of a match
      * etc.). This message allows you to promptly respond to such changes
@@ -167,32 +167,8 @@ public class MessageListener implements OddsFeedListener {
      *        of fixture change
      */
     @Override
-    public void onFixtureChange(OddsFeedSession sender, FixtureChange<SportEvent> fixtureChange) {
+    public void onFixtureChange(UofSession sender, FixtureChange<SportEvent> fixtureChange) {
         logger.info("Received fixture change for sport event " + fixtureChange.getEvent());
-    }
-
-    /**
-     * This handler is called when the SDK detects that it has problems parsing a certain message.
-     * The handler can decide to take some custom action (shutting down everything etc. doing some
-     * special analysis of the raw message content etc) or just ignore the message. The SDK itself
-     * will always log that it has received an unparseable message and will ignore the message so a
-     * typical implementation can leave this handler empty.
-     *
-     * @deprecated in favour of {{@link #onUnparsableMessage(OddsFeedSession, UnparsableMessage)}} from v2.0.11
-     *
-     * @param sender the session
-     * @param rawMessage the raw message received from Betradar
-     * @param event if the SDK was able to extract the event this message is for it will be here
-     *        otherwise null
-     */
-    @Override
-    @Deprecated
-    public void onUnparseableMessage(OddsFeedSession sender, byte[] rawMessage, SportEvent event) {
-        if (event != null) {
-            logger.info("Problems deserializing received message for event " + event.getId());
-        } else {
-            logger.info("Problems deserializing received message"); // probably a system message deserialization failure
-        }
     }
 
     /**
@@ -206,7 +182,7 @@ public class MessageListener implements OddsFeedListener {
      * @since v2.0.11
      */
     @Override
-    public void onUnparsableMessage(OddsFeedSession sender, UnparsableMessage unparsableMessage) {
+    public void onUnparsableMessage(UofSession sender, UnparsableMessage unparsableMessage) {
         Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
 
         if (unparsableMessage.getEvent() != null) {
@@ -217,4 +193,7 @@ public class MessageListener implements OddsFeedListener {
             logger.info("Problems detected on received message"); // probably a system message deserialization failure
         }
     }
+
+    @Override
+    public void onUserUnhandledException(UofSession sender, Exception exception) {}
 }

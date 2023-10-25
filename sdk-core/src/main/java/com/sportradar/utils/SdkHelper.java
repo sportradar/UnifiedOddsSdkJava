@@ -5,21 +5,22 @@
 package com.sportradar.utils;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.sportsapi.datamodel.SAPITeam;
-import com.sportradar.uf.sportsapi.datamodel.SAPITeamCompetitor;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiTeam;
+import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.apache.http.client.utils.DateUtils;
+import org.apache.hc.client5.http.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,20 +118,20 @@ public final class SdkHelper {
      * @param currentCompetitorsReferences competitor references
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> parseCompetitorsReferences(
-        List<SAPITeam> competitors,
-        Map<URN, ReferenceIdCI> currentCompetitorsReferences
+    public static Map<Urn, ReferenceIdCi> parseCompetitorsReferences(
+        List<SapiTeam> competitors,
+        Map<Urn, ReferenceIdCi> currentCompetitorsReferences
     ) {
         if (competitors == null) {
             return currentCompetitorsReferences;
         }
 
-        Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
+        Map<Urn, ReferenceIdCi> competitorsReferences = currentCompetitorsReferences == null
             ? new HashMap<>()
             : new HashMap<>(currentCompetitorsReferences);
-        for (SAPITeam competitor : competitors) {
+        for (SapiTeam competitor : competitors) {
             if (competitor.getReferenceIds() != null) {
-                ReferenceIdCI newReferenceId = new ReferenceIdCI(
+                ReferenceIdCi newReferenceId = new ReferenceIdCi(
                     competitor
                         .getReferenceIds()
                         .getReferenceId()
@@ -143,9 +144,9 @@ public final class SdkHelper {
                         )
                 );
 
-                URN competitorId = URN.parse(competitor.getId());
+                Urn competitorId = Urn.parse(competitor.getId());
                 if (competitorsReferences.containsKey(competitorId)) {
-                    ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
+                    ReferenceIdCi oldReference = competitorsReferences.get(competitorId);
                     oldReference.merge(newReferenceId.getReferenceIds());
                     competitorsReferences.put(competitorId, newReferenceId);
                 } else {
@@ -164,20 +165,20 @@ public final class SdkHelper {
      * @param currentCompetitorsReferences competitor references
      * @return map of references per competitor id
      */
-    public static Map<URN, ReferenceIdCI> parseTeamCompetitorsReferences(
-        List<SAPITeamCompetitor> competitors,
-        Map<URN, ReferenceIdCI> currentCompetitorsReferences
+    public static Map<Urn, ReferenceIdCi> parseTeamCompetitorsReferences(
+        List<SapiTeamCompetitor> competitors,
+        Map<Urn, ReferenceIdCi> currentCompetitorsReferences
     ) {
         if (competitors == null) {
             return currentCompetitorsReferences;
         }
 
-        Map<URN, ReferenceIdCI> competitorsReferences = currentCompetitorsReferences == null
+        Map<Urn, ReferenceIdCi> competitorsReferences = currentCompetitorsReferences == null
             ? new HashMap<>()
             : currentCompetitorsReferences;
-        for (SAPITeam competitor : competitors) {
+        for (SapiTeam competitor : competitors) {
             if (competitor.getReferenceIds() != null) {
-                ReferenceIdCI newReferenceId = new ReferenceIdCI(
+                ReferenceIdCi newReferenceId = new ReferenceIdCi(
                     competitor
                         .getReferenceIds()
                         .getReferenceId()
@@ -190,9 +191,9 @@ public final class SdkHelper {
                         )
                 );
 
-                URN competitorId = URN.parse(competitor.getId());
+                Urn competitorId = Urn.parse(competitor.getId());
                 if (competitorsReferences.containsKey(competitorId)) {
-                    ReferenceIdCI oldReference = competitorsReferences.get(competitorId);
+                    ReferenceIdCi oldReference = competitorsReferences.get(competitorId);
                     oldReference.merge(newReferenceId.getReferenceIds());
                     competitorsReferences.put(competitorId, newReferenceId);
                 } else {
@@ -254,9 +255,9 @@ public final class SdkHelper {
         }
 
         try {
-            Date date = DateUtils.parseDate(dateString);
-            if (date != null) {
-                return date;
+            Instant instant = DateUtils.parseStandardDate(dateString);
+            if (instant != null) {
+                return Date.from(instant);
             }
         } catch (Exception e) {}
 

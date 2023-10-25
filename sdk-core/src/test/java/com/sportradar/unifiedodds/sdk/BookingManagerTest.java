@@ -17,10 +17,13 @@ import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
+import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.MessageAndActionExtractor;
 import com.sportradar.unifiedodds.sdk.shared.TestHttpHelper;
-import com.sportradar.utils.URN;
-import org.apache.http.HttpStatus;
-import org.apache.http.impl.client.CloseableHttpClient;
+import com.sportradar.utils.Urn;
+import lombok.val;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,13 +33,14 @@ public class BookingManagerTest {
 
     private final String eventUrl = "https://null/v1/liveodds/booking-calendar/events/sr:match:12345/book";
 
-    private final URN eventId = URN.parse("sr:match:12345");
+    private final Urn eventId = Urn.parse("sr:match:12345");
     private final SportEventCache sportEventCache = mock(SportEventCache.class);
-    private final SDKInternalConfiguration configInternal = mock(SDKInternalConfiguration.class);
+    private final SdkInternalConfiguration configInternal = mock(SdkInternalConfiguration.class);
     private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
     private final Injector injector = Guice.createInjector(
         Modules.override(new MockedMasterModule()).with(new TestingModule())
     );
+    private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
     private BookingManager bookingManager;
     private TestHttpHelper testHttpHelper;
 
@@ -46,7 +50,8 @@ public class BookingManagerTest {
             Key.get(Deserializer.class, Names.named("SportsApiJaxbDeserializer"))
         );
         when(configInternal.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
-        testHttpHelper = new TestHttpHelper(configInternal, httpClient, deserializer);
+        val messageExtractor = new MessageAndActionExtractor(deserializer);
+        testHttpHelper = new TestHttpHelper(configInternal, httpClient, messageExtractor, userAgent);
         bookingManager = new BookingManagerImpl(sportEventCache, configInternal, testHttpHelper);
     }
 

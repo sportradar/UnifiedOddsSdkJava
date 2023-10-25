@@ -10,7 +10,7 @@ import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.di.TestingModule;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +25,7 @@ public class ProducerManagerTest {
         Modules.override(new MockedMasterModule()).with(new TestingModule())
     );
 
-    private static final SDKProducerManager producerManager = injector.getInstance(SDKProducerManager.class);
+    private static final SdkProducerManager producerManager = injector.getInstance(SdkProducerManager.class);
 
     @Test
     public void getAvailableProducers() {

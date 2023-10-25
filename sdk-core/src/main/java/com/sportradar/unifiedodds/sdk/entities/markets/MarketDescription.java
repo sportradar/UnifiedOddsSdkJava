@@ -67,16 +67,6 @@ public interface MarketDescription {
     List<MarketAttribute> getAttributes();
 
     /**
-     * Returns the market attribute "includes_outcomes_of_type"
-     *
-     * @return the market attribute "includes_outcomes_of_type"
-     *
-     * @deprecated in favour of {{@link #getOutcomeType()}} from v2.0.19
-     */
-    @Deprecated
-    String getIncludesOutcomesOfType();
-
-    /**
      * Returns a {@link List} of groups to which the market belongs to. Market groups are used to
      * perform batch market operations, ex. betstop messages may have an indication for which group of markets
      * the betstop message is valid

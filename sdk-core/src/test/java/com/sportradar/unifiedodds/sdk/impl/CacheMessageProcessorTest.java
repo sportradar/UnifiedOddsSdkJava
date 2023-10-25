@@ -5,7 +5,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import static org.mockito.Mockito.*;
 
-import com.sportradar.uf.datamodel.UFFixtureChange;
+import com.sportradar.uf.datamodel.UfFixtureChange;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CacheMessageProcessor;
@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.ProcessedFixtureC
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.shared.TestProducersProvider;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.HashMap;
 import java.util.Map;
 import junitparams.JUnitParamsRunner;
@@ -26,14 +26,14 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitParamsRunner.class)
 public class CacheMessageProcessorTest {
 
-    private final URN eventId = URN.parse("sr:match:1234");
+    private final Urn eventId = Urn.parse("sr:match:1234");
     private final MessageTimestamp timestamp = mock(MessageTimestamp.class);
     private final SportEventStatusCache sportEventStatusCache = mock(SportEventStatusCache.class);
     private final SportEventCache sportEventCache = mock(SportEventCache.class);
     private final ProcessedFixtureChangesTracker fixtureChangesTracker = mock(
         ProcessedFixtureChangesTracker.class
     );
-    private final SDKProducerManager producerManager = mock(SDKProducerManager.class);
+    private final SdkProducerManager producerManager = mock(SdkProducerManager.class);
     private CacheMessageProcessor cacheMessageProcessor;
     private final TestProducersProvider producersProvider = new TestProducersProvider();
     private final Map<Integer, Producer> producerMap = new HashMap<>();
@@ -67,11 +67,11 @@ public class CacheMessageProcessorTest {
         final String routingKeyStr = "hi.pre.live.fixture_change.40.sr:match.1234.-";
         final RoutingKeyInfo routingKey = new RoutingKeyInfo(
             routingKeyStr,
-            URN.parse("sr:sport:40"),
+            Urn.parse("sr:sport:40"),
             eventId
         );
         Assert.assertNotNull(routingKey);
-        UFFixtureChange fixtureChange = new UFFixtureChange();
+        UfFixtureChange fixtureChange = new UfFixtureChange();
         fixtureChange.setEventId(routingKey.getEventId().toString());
         fixtureChange.setProduct(1);
         Assert.assertEquals(eventId.toString(), fixtureChange.getEventId());
@@ -92,11 +92,11 @@ public class CacheMessageProcessorTest {
         final String routingKeyStr = "hi.pre.live.fixture_change.40.sr:match.1234.-";
         final RoutingKeyInfo routingKey = new RoutingKeyInfo(
             routingKeyStr,
-            URN.parse("sr:sport:40"),
+            Urn.parse("sr:sport:40"),
             eventId
         );
         Assert.assertNotNull(routingKey);
-        UFFixtureChange fixtureChange = new UFFixtureChange();
+        UfFixtureChange fixtureChange = new UfFixtureChange();
         fixtureChange.setEventId(routingKey.getEventId().toString());
         fixtureChange.setProduct(virtualProducerId);
         Assert.assertEquals(eventId.toString(), fixtureChange.getEventId());

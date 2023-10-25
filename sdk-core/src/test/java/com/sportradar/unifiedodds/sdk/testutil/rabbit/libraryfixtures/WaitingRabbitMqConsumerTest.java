@@ -3,9 +3,9 @@
  */
 package com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue.createSignallingOnPollingQueue;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures.WaitingRabbitMqConsumerDi.createWaitingRabbitMqConsumerFactory;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,8 +20,6 @@ import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPe
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.FluentExecutor;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue;
 import java.time.Instant;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
 import org.junit.Rule;
@@ -52,7 +50,7 @@ public class WaitingRabbitMqConsumerTest {
 
         consumer.handleDelivery(any, anyEnvelope, anyProperties, anyBody);
 
-        assertThat(consumer.waitForDelivery()).isPresent();
+        assertThat(consumer.waitForFirstDelivery()).isPresent();
     }
 
     @Test
@@ -66,7 +64,7 @@ public class WaitingRabbitMqConsumerTest {
             consumer.handleDelivery(any, anyEnvelope, anyProperties, anyBody);
         });
 
-        assertThat(consumer.waitForDelivery()).isPresent();
+        assertThat(consumer.waitForFirstDelivery()).isPresent();
     }
 
     @Test
@@ -76,7 +74,7 @@ public class WaitingRabbitMqConsumerTest {
         val envelopeSent = mock(Envelope.class);
         consumer.handleDelivery(any, envelopeSent, anyProperties, anyBody);
 
-        val delivery = consumer.waitForDelivery().get();
+        val delivery = consumer.waitForFirstDelivery().get();
         assertSame(envelopeSent, delivery.getEnvelope());
     }
 
@@ -87,7 +85,7 @@ public class WaitingRabbitMqConsumerTest {
         val propertiesSent = mock(AMQP.BasicProperties.class);
         consumer.handleDelivery(any, anyEnvelope, propertiesSent, anyBody);
 
-        val delivery = consumer.waitForDelivery().get();
+        val delivery = consumer.waitForFirstDelivery().get();
         assertSame(propertiesSent, delivery.getProperties());
     }
 
@@ -98,7 +96,7 @@ public class WaitingRabbitMqConsumerTest {
         val bodySent = new byte[] { 'b', 'o', 'd', 'y' };
         consumer.handleDelivery(any, anyEnvelope, anyProperties, bodySent);
 
-        val delivery = consumer.waitForDelivery().get();
+        val delivery = consumer.waitForFirstDelivery().get();
         assertSame(bodySent, delivery.getBody());
     }
 
@@ -112,8 +110,21 @@ public class WaitingRabbitMqConsumerTest {
             timeUtils.fastForwardSeconds(2);
         });
 
-        assertThatThrownBy(() -> consumer.waitForDelivery())
+        assertThatThrownBy(() -> consumer.waitForFirstDelivery())
             .isInstanceOf(AssertionError.class)
             .hasMessageContaining("Message was not received");
+    }
+
+    @Test
+    public void shouldReceiveOnlyFirstDeliveryInCaseMultipleDeliveriesOccurred() {
+        val consumer = createWaitingRabbitMqConsumerFactory().expectingMessage();
+        val firstEnvelope = mock(Envelope.class);
+        val secondEnvelope = mock(Envelope.class);
+
+        consumer.handleDelivery(any, firstEnvelope, anyProperties, anyBody);
+        consumer.handleDelivery(any, secondEnvelope, anyProperties, anyBody);
+
+        val delivery = consumer.waitForFirstDelivery().get();
+        assertSame(firstEnvelope, delivery.getEnvelope());
     }
 }

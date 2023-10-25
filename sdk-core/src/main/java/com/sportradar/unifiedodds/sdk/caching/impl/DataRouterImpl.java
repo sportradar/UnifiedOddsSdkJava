@@ -5,17 +5,17 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,16 +45,16 @@ public class DataRouterImpl implements DataRouter {
     private List<DataRouterListener> dataListeners;
 
     @Override
-    public void onSummaryFetched(URN requestedId, Object data, Locale locale, CacheItem requester) {
+    public void onSummaryFetched(Urn requestedId, Object data, Locale locale, CacheItem requester) {
         Preconditions.checkNotNull(requestedId);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
 
-        if (data instanceof SAPITournamentInfoEndpoint) {
-            SAPITournamentInfoEndpoint endpoint = (SAPITournamentInfoEndpoint) data;
+        if (data instanceof SapiTournamentInfoEndpoint) {
+            SapiTournamentInfoEndpoint endpoint = (SapiTournamentInfoEndpoint) data;
 
-            URN trnId = URN.parse(endpoint.getTournament().getId());
-            URN seasonId = endpoint.getSeason() == null ? null : URN.parse(endpoint.getSeason().getId());
+            Urn trnId = Urn.parse(endpoint.getTournament().getId());
+            Urn seasonId = endpoint.getSeason() == null ? null : Urn.parse(endpoint.getSeason().getId());
             dataListeners.forEach(l ->
                 l.onTournamentInfoEndpointFetched(requestedId, trnId, seasonId, endpoint, locale, requester)
             );
@@ -71,10 +71,10 @@ public class DataRouterImpl implements DataRouter {
                         .getGroup()
                         .forEach(gr -> dispatchTournamentCompetitors(gr.getCompetitor(), locale, requester))
                 );
-        } else if (data instanceof SAPIMatchSummaryEndpoint) {
-            SAPIMatchSummaryEndpoint endpoint = (SAPIMatchSummaryEndpoint) data;
+        } else if (data instanceof SapiMatchSummaryEndpoint) {
+            SapiMatchSummaryEndpoint endpoint = (SapiMatchSummaryEndpoint) data;
 
-            URN matchId = URN.parse(endpoint.getSportEvent().getId());
+            Urn matchId = Urn.parse(endpoint.getSportEvent().getId());
             dataListeners.forEach(l -> l.onMatchSummaryEndpointFetched(matchId, endpoint, locale, requester));
             dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
             Optional
@@ -84,20 +84,20 @@ public class DataRouterImpl implements DataRouter {
                 .ofNullable(endpoint.getSportEventStatus())
                 .ifPresent(c ->
                     onSportEventStatusFetched(
-                        URN.parse(endpoint.getSportEvent().getId()),
-                        new SportEventStatusDTO(
+                        Urn.parse(endpoint.getSportEvent().getId()),
+                        new SportEventStatusDto(
                             c,
                             endpoint.getStatistics(),
                             provideHomeAway(endpoint.getSportEvent())
                         ),
                         endpoint.getSportEvent().getStatus(),
-                        "SAPIMatchSummaryEndpoint"
+                        "SapiMatchSummaryEndpoint"
                     )
                 );
-        } else if (data instanceof SAPIStageSummaryEndpoint) {
-            SAPIStageSummaryEndpoint endpoint = ((SAPIStageSummaryEndpoint) data);
+        } else if (data instanceof SapiStageSummaryEndpoint) {
+            SapiStageSummaryEndpoint endpoint = ((SapiStageSummaryEndpoint) data);
 
-            URN stageId = URN.parse(endpoint.getSportEvent().getId());
+            Urn stageId = Urn.parse(endpoint.getSportEvent().getId());
             dataListeners.forEach(l -> l.onStageSummaryEndpointFetched(stageId, endpoint, locale, requester));
             dispatchTournament(endpoint.getSportEvent().getTournament(), locale);
             Optional
@@ -107,10 +107,10 @@ public class DataRouterImpl implements DataRouter {
                 .ofNullable(endpoint.getSportEventStatus())
                 .ifPresent(c ->
                     onSportEventStatusFetched(
-                        URN.parse(endpoint.getSportEvent().getId()),
-                        new SportEventStatusDTO(c),
+                        Urn.parse(endpoint.getSportEvent().getId()),
+                        new SportEventStatusDto(c),
                         endpoint.getSportEvent().getStatus(),
-                        "SAPIStageSummaryEndpoint"
+                        "SapiStageSummaryEndpoint"
                     )
                 );
         } else {
@@ -123,7 +123,7 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onFixtureFetched(URN fixtureId, SAPIFixture fixture, Locale locale, CacheItem requester) {
+    public void onFixtureFetched(Urn fixtureId, SapiFixture fixture, Locale locale, CacheItem requester) {
         Preconditions.checkNotNull(fixtureId);
         Preconditions.checkNotNull(fixture);
         Preconditions.checkNotNull(locale);
@@ -140,8 +140,8 @@ public class DataRouterImpl implements DataRouter {
 
     @Override
     public void onDrawSummaryFetched(
-        URN drawId,
-        SAPIDrawSummary endpoint,
+        Urn drawId,
+        SapiDrawSummary endpoint,
         Locale locale,
         CacheItem requester
     ) {
@@ -151,7 +151,7 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(requester);
 
         if (endpoint.getDrawFixture().getLottery() != null) {
-            URN lotteryId = URN.parse(endpoint.getDrawFixture().getLottery().getId());
+            Urn lotteryId = Urn.parse(endpoint.getDrawFixture().getLottery().getId());
             dataListeners.forEach(l ->
                 l.onLotteryFetched(lotteryId, endpoint.getDrawFixture().getLottery(), locale, requester)
             );
@@ -162,8 +162,8 @@ public class DataRouterImpl implements DataRouter {
 
     @Override
     public void onDrawFixtureFetched(
-        URN drawId,
-        SAPIDrawFixture endpoint,
+        Urn drawId,
+        SapiDrawFixture endpoint,
         Locale locale,
         CacheItem requester
     ) {
@@ -173,7 +173,7 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(requester);
 
         if (endpoint.getLottery() != null) {
-            URN lotteryId = URN.parse(endpoint.getLottery().getId());
+            Urn lotteryId = Urn.parse(endpoint.getLottery().getId());
             dataListeners.forEach(l -> l.onLotteryFetched(lotteryId, endpoint.getLottery(), locale, requester)
             );
         }
@@ -182,27 +182,27 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onAllTournamentsListFetched(SAPITournamentsEndpoint endpoint, Locale locale) {
+    public void onAllTournamentsListFetched(SapiTournamentsEndpoint endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
         endpoint
             .getTournament()
             .forEach(tournament -> {
-                URN trnId = URN.parse(tournament.getId());
+                Urn trnId = Urn.parse(tournament.getId());
                 dataListeners.forEach(l -> l.onTournamentExtendedFetched(trnId, tournament, locale));
             });
     }
 
     @Override
-    public void onAllLotteriesListFetched(SAPILotteries endpoint, Locale locale) {
+    public void onAllLotteriesListFetched(SapiLotteries endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
         endpoint
             .getLottery()
             .forEach(lottery -> {
-                URN lotteryId = URN.parse(lottery.getId());
+                Urn lotteryId = Urn.parse(lottery.getId());
                 dataListeners.forEach(l -> l.onLotteryFetched(lotteryId, lottery, locale, null));
             });
     }
@@ -212,10 +212,10 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
-        if (endpoint instanceof SAPITournamentSchedule) {
-            dispatchTournamentSchedule((SAPITournamentSchedule) endpoint, locale);
-        } else if (endpoint instanceof SAPIRaceScheduleEndpoint) {
-            dispatchTournamentSchedule((SAPIRaceScheduleEndpoint) endpoint, locale);
+        if (endpoint instanceof SapiTournamentSchedule) {
+            dispatchTournamentSchedule((SapiTournamentSchedule) endpoint, locale);
+        } else if (endpoint instanceof SapiRaceScheduleEndpoint) {
+            dispatchTournamentSchedule((SapiRaceScheduleEndpoint) endpoint, locale);
         } else {
             logger.warn(
                 "Received unsupported tournament schedule endpoint object[{}], locale:{}",
@@ -226,12 +226,12 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onLotteryScheduleFetched(SAPILotterySchedule endpoint, Locale locale, CacheItem requester) {
+    public void onLotteryScheduleFetched(SapiLotterySchedule endpoint, Locale locale, CacheItem requester) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
-        SAPILottery lottery = endpoint.getLottery();
-        URN parse = URN.parse(lottery.getId());
+        SapiLottery lottery = endpoint.getLottery();
+        Urn parse = Urn.parse(lottery.getId());
         dataListeners.forEach(l -> l.onLotteryFetched(parse, lottery, locale, requester));
 
         if (endpoint.getDrawEvents() != null && endpoint.getDrawEvents().getDrawEvent() != null) {
@@ -239,14 +239,14 @@ public class DataRouterImpl implements DataRouter {
                 .getDrawEvents()
                 .getDrawEvent()
                 .forEach(draw -> {
-                    URN drawId = URN.parse(draw.getId());
+                    Urn drawId = Urn.parse(draw.getId());
                     dataListeners.forEach(l -> l.onDrawFetched(drawId, draw, locale, requester));
                 });
         }
     }
 
     @Override
-    public void onDateScheduleFetched(SAPIScheduleEndpoint endpoint, Locale locale) {
+    public void onDateScheduleFetched(SapiScheduleEndpoint endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
@@ -254,24 +254,24 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onSportsListFetched(SAPISportsEndpoint endpoint, Locale locale) {
+    public void onSportsListFetched(SapiSportsEndpoint endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
         endpoint
             .getSport()
             .forEach(sport ->
-                dataListeners.forEach(l -> l.onSportFetched(URN.parse(sport.getId()), sport, locale))
+                dataListeners.forEach(l -> l.onSportFetched(Urn.parse(sport.getId()), sport, locale))
             );
     }
 
     @Override
     public void onPlayerFetched(
-        URN playerId,
-        SAPIPlayerExtended data,
+        Urn playerId,
+        SapiPlayerExtended data,
         Locale locale,
         CacheItem requester,
-        URN competitorId
+        Urn competitorId
     ) {
         Preconditions.checkNotNull(playerId);
         Preconditions.checkNotNull(data);
@@ -282,8 +282,8 @@ public class DataRouterImpl implements DataRouter {
 
     @Override
     public void onCompetitorFetched(
-        URN competitorId,
-        SAPICompetitorProfileEndpoint data,
+        Urn competitorId,
+        SapiCompetitorProfileEndpoint data,
         Locale locale,
         CacheItem requester
     ) {
@@ -291,19 +291,19 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
 
-        SAPIRaceDriverProfile raceDriverProfile = data.getRaceDriverProfile();
+        SapiRaceDriverProfile raceDriverProfile = data.getRaceDriverProfile();
         if (raceDriverProfile != null) {
-            SAPITeam raceDriver = raceDriverProfile.getRaceDriver();
+            SapiTeam raceDriver = raceDriverProfile.getRaceDriver();
             if (raceDriver != null) {
                 dataListeners.forEach(l ->
-                    l.onTeamFetched(URN.parse(raceDriver.getId()), raceDriver, locale, requester)
+                    l.onTeamFetched(Urn.parse(raceDriver.getId()), raceDriver, locale, requester)
                 );
             }
 
-            SAPITeam raceTeam = raceDriverProfile.getRaceTeam();
+            SapiTeam raceTeam = raceDriverProfile.getRaceTeam();
             if (raceTeam != null) {
                 dataListeners.forEach(l ->
-                    l.onTeamFetched(URN.parse(raceTeam.getId()), raceTeam, locale, requester)
+                    l.onTeamFetched(Urn.parse(raceTeam.getId()), raceTeam, locale, requester)
                 );
             }
         }
@@ -315,11 +315,11 @@ public class DataRouterImpl implements DataRouter {
                     .getPlayer()
                     .forEach(p ->
                         this.onPlayerFetched(
-                                URN.parse(p.getId()),
+                                Urn.parse(p.getId()),
                                 p,
                                 locale,
                                 requester,
-                                URN.parse(data.getCompetitor().getId())
+                                Urn.parse(data.getCompetitor().getId())
                             )
                     )
             );
@@ -329,8 +329,8 @@ public class DataRouterImpl implements DataRouter {
 
     @Override
     public void onSimpleTeamFetched(
-        URN competitorId,
-        SAPISimpleTeamProfileEndpoint data,
+        Urn competitorId,
+        SapiSimpleTeamProfileEndpoint data,
         Locale locale,
         CacheItem requester
     ) {
@@ -342,7 +342,7 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onTournamentSeasonsFetched(URN tournamentId, SAPITournamentSeasons data, Locale locale) {
+    public void onTournamentSeasonsFetched(Urn tournamentId, SapiTournamentSeasons data, Locale locale) {
         Preconditions.checkNotNull(tournamentId);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(locale);
@@ -352,8 +352,8 @@ public class DataRouterImpl implements DataRouter {
 
     @Override
     public void onMatchTimelineFetched(
-        URN matchId,
-        SAPIMatchTimelineEndpoint endpoint,
+        Urn matchId,
+        SapiMatchTimelineEndpoint endpoint,
         Locale locale,
         CacheItem requester
     ) {
@@ -370,41 +370,41 @@ public class DataRouterImpl implements DataRouter {
             .ofNullable(endpoint.getSportEventStatus())
             .ifPresent(c ->
                 onSportEventStatusFetched(
-                    URN.parse(endpoint.getSportEvent().getId()),
-                    new SportEventStatusDTO(c, null, provideHomeAway(endpoint.getSportEvent())),
+                    Urn.parse(endpoint.getSportEvent().getId()),
+                    new SportEventStatusDto(c, null, provideHomeAway(endpoint.getSportEvent())),
                     endpoint.getSportEvent().getStatus(),
-                    "SAPIMatchTimelineEndpoint"
+                    "SapiMatchTimelineEndpoint"
                 )
             );
     }
 
     @Override
     public void onSportEventStatusFetched(
-        URN eventId,
-        SportEventStatusDTO data,
+        Urn eventId,
+        SportEventStatusDto statusDto,
         String statusOnEvent,
         String source
     ) {
         Preconditions.checkNotNull(eventId);
-        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(statusDto);
 
-        dataListeners.forEach(l -> l.onSportEventStatusFetched(eventId, data, statusOnEvent, source));
+        dataListeners.forEach(l -> l.onSportEventStatusFetched(eventId, statusDto, statusOnEvent, source));
     }
 
     @Override
     public void onSportCategoriesFetched(
-        SAPISportCategoriesEndpoint endpoint,
+        SapiSportCategoriesEndpoint endpoint,
         Locale locale,
         CacheItem requester
     ) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
-        URN sportId = URN.parse(endpoint.getSport().getId());
+        Urn sportId = Urn.parse(endpoint.getSport().getId());
         dataListeners.forEach(l -> l.onSportCategoriesFetched(sportId, endpoint, locale, requester));
     }
 
     @Override
-    public void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections) {
+    public void onAvailableSelectionsFetched(Urn id, CapiAvailableSelections availableSelections) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(availableSelections);
         dataListeners.forEach(l -> l.onAvailableSelectionsFetched(id, availableSelections));
@@ -413,7 +413,7 @@ public class DataRouterImpl implements DataRouter {
     @Override
     public void onCalculateProbabilityFetched(
         List<Selection> selections,
-        CAPICalculationResponse calculation
+        CapiCalculationResponse calculation
     ) {
         Preconditions.checkNotNull(selections);
         Preconditions.checkNotNull(calculation);
@@ -423,7 +423,7 @@ public class DataRouterImpl implements DataRouter {
     @Override
     public void onCalculateProbabilityFilterFetched(
         List<Selection> selections,
-        CAPIFilteredCalculationResponse calculation
+        CapiFilteredCalculationResponse calculation
     ) {
         Preconditions.checkNotNull(selections);
         Preconditions.checkNotNull(calculation);
@@ -431,7 +431,7 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onListSportEventsFetched(SAPIScheduleEndpoint endpoint, Locale locale) {
+    public void onListSportEventsFetched(SapiScheduleEndpoint endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
@@ -439,7 +439,7 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onSportTournamentsFetched(URN sportId, SAPISportTournamentsEndpoint endpoint, Locale locale) {
+    public void onSportTournamentsFetched(Urn sportId, SapiSportTournamentsEndpoint endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);
 
@@ -457,14 +457,14 @@ public class DataRouterImpl implements DataRouter {
             .getTournament()
             .forEach(tournament ->
                 dataListeners.forEach(l ->
-                    l.onTournamentFetched(URN.parse(tournament.getId()), tournament, locale)
+                    l.onTournamentFetched(Urn.parse(tournament.getId()), tournament, locale)
                 )
             );
     }
 
-    private void dispatchTournamentSchedule(SAPIRaceScheduleEndpoint endpoint, Locale locale) {
+    private void dispatchTournamentSchedule(SapiRaceScheduleEndpoint endpoint, Locale locale) {
         if (endpoint.getTournament() != null) {
-            URN trnId = URN.parse(endpoint.getTournament().getId());
+            Urn trnId = Urn.parse(endpoint.getTournament().getId());
             dataListeners.forEach(l -> l.onTournamentFetched(trnId, endpoint.getTournament(), locale));
         }
 
@@ -473,12 +473,12 @@ public class DataRouterImpl implements DataRouter {
         }
     }
 
-    private void dispatchTournamentSchedule(SAPITournamentSchedule endpoint, Locale locale) {
+    private void dispatchTournamentSchedule(SapiTournamentSchedule endpoint, Locale locale) {
         if (endpoint.getTournament() != null) {
             endpoint
                 .getTournament()
                 .forEach(t -> {
-                    URN trnId = URN.parse(t.getId());
+                    Urn trnId = Urn.parse(t.getId());
                     dataListeners.forEach(l -> l.onTournamentExtendedFetched(trnId, t, locale));
                 });
         }
@@ -490,7 +490,7 @@ public class DataRouterImpl implements DataRouter {
         }
     }
 
-    private void dispatchSportEvents(List<SAPISportEvent> sportEvents, Locale locale) {
+    private void dispatchSportEvents(List<SapiSportEvent> sportEvents, Locale locale) {
         Preconditions.checkNotNull(locale);
 
         if (sportEvents == null || sportEvents.isEmpty()) {
@@ -498,7 +498,7 @@ public class DataRouterImpl implements DataRouter {
         }
 
         sportEvents.forEach(se -> {
-            dataListeners.forEach(l -> l.onSportEventFetched(URN.parse(se.getId()), se, locale));
+            dataListeners.forEach(l -> l.onSportEventFetched(Urn.parse(se.getId()), se, locale));
             if (se.getTournament() != null) {
                 dispatchTournament(se.getTournament(), locale);
             }
@@ -508,28 +508,28 @@ public class DataRouterImpl implements DataRouter {
         });
     }
 
-    private void dispatchTournament(SAPITournament tournament, Locale locale) {
+    private void dispatchTournament(SapiTournament tournament, Locale locale) {
         Preconditions.checkNotNull(tournament);
         Preconditions.checkNotNull(locale);
 
-        URN tournamentId = URN.parse(tournament.getId());
+        Urn tournamentId = Urn.parse(tournament.getId());
         dataListeners.forEach(l -> l.onTournamentFetched(tournamentId, tournament, locale));
     }
 
     private void dispatchChildSportEvents(
-        List<SAPISportEventChildren.SAPISportEvent> sportEvents,
+        List<SapiSportEventChildren.SapiSportEvent> sportEvents,
         Locale locale
     ) {
         Preconditions.checkNotNull(sportEvents);
         Preconditions.checkNotNull(locale);
 
         sportEvents.forEach(se ->
-            dataListeners.forEach(l -> l.onChildSportEventFetched(URN.parse(se.getId()), se, locale))
+            dataListeners.forEach(l -> l.onChildSportEventFetched(Urn.parse(se.getId()), se, locale))
         );
     }
 
     private void dispatchEventCompetitors(
-        List<SAPITeamCompetitor> competitors,
+        List<SapiTeamCompetitor> competitors,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -537,13 +537,13 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(dataLocale);
 
         competitors.forEach(c -> {
-            URN parsedId = URN.parse(c.getId());
+            Urn parsedId = Urn.parse(c.getId());
             dataListeners.forEach(l -> l.onTeamFetched(parsedId, c, dataLocale, requester));
         });
     }
 
     private void dispatchTournamentCompetitors(
-        List<SAPITeam> competitors,
+        List<SapiTeam> competitors,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -551,7 +551,7 @@ public class DataRouterImpl implements DataRouter {
         Preconditions.checkNotNull(dataLocale);
 
         competitors.forEach(c -> {
-            URN parsedId = URN.parse(c.getId());
+            Urn parsedId = Urn.parse(c.getId());
             dataListeners.forEach(l -> l.onTeamFetched(parsedId, c, dataLocale, requester));
         });
     }
@@ -562,7 +562,7 @@ public class DataRouterImpl implements DataRouter {
      * @param se the sport event from which the valid competitors should be provided
      * @return a map containing valid home/away competitor identifiers
      */
-    private Map<HomeAway, String> provideHomeAway(SAPISportEvent se) {
+    private Map<HomeAway, String> provideHomeAway(SapiSportEvent se) {
         Preconditions.checkNotNull(se);
 
         if (se.getCompetitors() == null) {
@@ -573,14 +573,14 @@ public class DataRouterImpl implements DataRouter {
             return null;
         }
 
-        List<SAPITeamCompetitor> competitors = se.getCompetitors().getCompetitor();
+        List<SapiTeamCompetitor> competitors = se.getCompetitors().getCompetitor();
 
-        SAPITeamCompetitor home = competitors
+        SapiTeamCompetitor home = competitors
             .stream()
             .filter(c -> c.getQualifier().equals("home"))
             .findAny()
             .orElse(null);
-        SAPITeamCompetitor away = competitors
+        SapiTeamCompetitor away = competitors
             .stream()
             .filter(c -> c.getQualifier().equals("away"))
             .findAny()

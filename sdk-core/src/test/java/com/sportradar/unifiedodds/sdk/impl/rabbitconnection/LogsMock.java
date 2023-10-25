@@ -3,11 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.junit.Assert.fail;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.read.ListAppender;
 import lombok.val;
 import org.slf4j.Logger;
@@ -39,6 +39,17 @@ public class LogsMock {
             }
         }
         fail("Could not find log line that matches: " + text);
+    }
+
+    public void verifyLoggedLineContainingAll(String... tokens) {
+        for (ILoggingEvent loggingEvent : appender.list) {
+            if (
+                asList(tokens).stream().allMatch(token -> loggingEvent.getFormattedMessage().contains(token))
+            ) {
+                return;
+            }
+        }
+        fail("Could not find log line that matches: " + asList(tokens));
     }
 
     public void verifyNotLoggedLineContaining(final String text) {

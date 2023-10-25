@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
-import com.sportradar.uf.sportsapi.datamodel.SAPIMatchTimelineEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
@@ -14,7 +14,7 @@ import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -22,19 +22,19 @@ import java.util.Locale;
 public class NoOpDataRouterManager implements DataRouterManager {
 
     @Override
-    public void requestSummaryEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestSummaryEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public void requestFixtureEndpoint(Locale locale, URN id, boolean useCachedProvider, CacheItem requester)
+    public void requestFixtureEndpoint(Locale locale, Urn id, boolean useCachedProvider, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public void requestDrawSummary(Locale locale, URN id, CacheItem requester)
+    public void requestDrawSummary(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public void requestDrawFixture(Locale locale, URN id, CacheItem requester)
+    public void requestDrawFixture(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
@@ -44,56 +44,56 @@ public class NoOpDataRouterManager implements DataRouterManager {
     public void requestAllSportsEndpoint(Locale locale) throws CommunicationException {}
 
     @Override
-    public List<URN> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult)
+    public List<Urn> requestAllLotteriesEndpoint(Locale locale, Boolean requireResult)
         throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestEventsFor(Locale locale, URN tournamentId) throws CommunicationException {
+    public List<Urn> requestEventsFor(Locale locale, Urn tournamentId) throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestEventsFor(Locale locale, Date date) throws CommunicationException {
+    public List<Urn> requestEventsFor(Locale locale, Date date) throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestLotterySchedule(Locale locale, URN lotteryId, CacheItem requester)
+    public List<Urn> requestLotterySchedule(Locale locale, Urn lotteryId, CacheItem requester)
         throws CommunicationException {
         return null;
     }
 
     @Override
-    public void requestPlayerProfileEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestPlayerProfileEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public void requestCompetitorEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestCompetitorEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public void requestSimpleTeamEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestSimpleTeamEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public List<URN> requestSeasonsFor(Locale locale, URN tournamentId) throws CommunicationException {
+    public List<Urn> requestSeasonsFor(Locale locale, Urn tournamentId) throws CommunicationException {
         return null;
     }
 
     @Override
-    public SAPIMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, URN id, CacheItem requester)
+    public SapiMatchTimelineEndpoint requestEventTimelineEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {
         return null;
     }
 
     @Override
-    public void requestSportCategoriesEndpoint(Locale locale, URN id, CacheItem requester)
+    public void requestSportCategoriesEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
 
     @Override
-    public AvailableSelections requestAvailableSelections(URN id) throws CommunicationException {
+    public AvailableSelections requestAvailableSelections(Urn id) throws CommunicationException {
         return null;
     }
 
@@ -109,34 +109,34 @@ public class NoOpDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public List<FixtureChange> requestFixtureChanges(Date after, URN sportId, Locale locale)
+    public List<FixtureChange> requestFixtureChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<ResultChange> requestResultChanges(Date after, URN sportId, Locale locale)
+    public List<ResultChange> requestResultChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestListSportEvents(Locale locale, int startIndex, int limit)
+    public List<Urn> requestListSportEvents(Locale locale, int startIndex, int limit)
         throws CommunicationException {
         return null;
     }
 
     @Override
-    public List<URN> requestAvailableTournamentsFor(Locale locale, URN sportId)
+    public List<Urn> requestAvailableTournamentsFor(Locale locale, Urn sportId)
         throws CommunicationException {
         return null;
     }
 
     @Override
     public List<PeriodStatus> requestPeriodSummary(
-        URN id,
+        Urn id,
         Locale locale,
-        List<URN> competitorIds,
+        List<Urn> competitorIds,
         List<Integer> periods
     ) throws CommunicationException {
         return null;

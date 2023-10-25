@@ -5,9 +5,9 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.RoundCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.RoundCi;
 import com.sportradar.unifiedodds.sdk.entities.Round;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,22 +16,21 @@ import java.util.stream.Collectors;
 /**
  * Provides basic tournament round information
  */
-@SuppressWarnings({ "AbbreviationAsWordInName" })
 public class RoundImpl implements Round {
 
-    private final RoundCI roundCI;
+    private final RoundCi roundCi;
     private final List<Locale> locales;
 
     /**
      * Initializes a new instance of {@link RoundImpl}
      *
-     * @param roundCI - a {@link RoundCI} used to make the instance
+     * @param roundCi - a {@link RoundCi} used to make the instance
      * @param locales - a {@link List} of locales which are supported by the instance
      */
-    RoundImpl(RoundCI roundCI, List<Locale> locales) {
-        Preconditions.checkNotNull(roundCI);
+    RoundImpl(RoundCi roundCi, List<Locale> locales) {
+        Preconditions.checkNotNull(roundCi);
 
-        this.roundCI = roundCI;
+        this.roundCi = roundCi;
         this.locales = locales;
     }
 
@@ -42,7 +41,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getType() {
-        return roundCI.getType();
+        return roundCi.getType();
     }
 
     /**
@@ -52,7 +51,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public Integer getNumber() {
-        return roundCI.getNumber();
+        return roundCi.getNumber();
     }
 
     /**
@@ -66,7 +65,7 @@ public class RoundImpl implements Round {
         if (!locales.contains(locale)) {
             return null;
         }
-        return roundCI.getName(locale);
+        return roundCi.getName(locale);
     }
 
     /**
@@ -79,34 +78,8 @@ public class RoundImpl implements Round {
     public Map<Locale, String> getNames() {
         return locales
             .stream()
-            .filter(l -> roundCI.getName(l) != null)
-            .collect(Collectors.toMap(k -> k, roundCI::getName));
-    }
-
-    /**
-     * Returns the name of the group associated with the current round
-     *
-     * @return - the name of the group associated with the current round
-     */
-    @Override
-    public String getGroupName() {
-        if (locales.isEmpty()) {
-            return null;
-        }
-        return roundCI.getGroupName(locales.get(0));
-    }
-
-    /**
-     * Returns the name of the group associated with the current round
-     *
-     * @return - the name of the group associated with the current round
-     */
-    @Override
-    public String getGroupName(Locale locale) {
-        if (!locales.contains(locale)) {
-            return null;
-        }
-        return roundCI.getGroupName(locale);
+            .filter(l -> roundCi.getName(l) != null)
+            .collect(Collectors.toMap(k -> k, roundCi::getName));
     }
 
     /**
@@ -120,7 +93,7 @@ public class RoundImpl implements Round {
         if (!locales.contains(locale)) {
             return null;
         }
-        return roundCI.getPhaseOrGroupLongName(locale);
+        return roundCi.getPhaseOrGroupLongName(locale);
     }
 
     /**
@@ -130,7 +103,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getOtherMatchId() {
-        return roundCI.getOtherMatchId();
+        return roundCi.getOtherMatchId();
     }
 
     /**
@@ -142,7 +115,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public Integer getCupRoundMatches() {
-        return roundCI.getCupRoundMatches();
+        return roundCi.getCupRoundMatches();
     }
 
     /**
@@ -154,7 +127,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public Integer getCupRoundMatchNumber() {
-        return roundCI.getCupRoundMatchNumber();
+        return roundCi.getCupRoundMatchNumber();
     }
 
     /**
@@ -164,7 +137,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public Integer getBetradarId() {
-        return roundCI.getBetradarId();
+        return roundCi.getBetradarId();
     }
 
     /**
@@ -173,8 +146,8 @@ public class RoundImpl implements Round {
      * @return - the id of the group associated with the current round
      */
     @Override
-    public URN getGroupId() {
-        return roundCI.getGroupId();
+    public Urn getGroupId() {
+        return roundCi.getGroupId();
     }
 
     /**
@@ -183,7 +156,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getPhase() {
-        return roundCI.getPhase();
+        return roundCi.getPhase();
     }
 
     /**
@@ -193,7 +166,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getGroup() {
-        return roundCI.getGroup();
+        return roundCi.getGroup();
     }
 
     /**
@@ -203,7 +176,7 @@ public class RoundImpl implements Round {
      */
     @Override
     public String getBetradarName() {
-        return roundCI.getBetradarName();
+        return roundCi.getBetradarName();
     }
 
     /**
@@ -213,6 +186,6 @@ public class RoundImpl implements Round {
      */
     @Override
     public String toString() {
-        return "RoundImpl{" + "roundCI=" + roundCI + ", locales=" + locales + '}';
+        return "RoundImpl{" + "roundCI=" + roundCi + ", locales=" + locales + '}';
     }
 }

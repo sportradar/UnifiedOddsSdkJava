@@ -5,19 +5,19 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Defines methods used to build selections
  */
 public interface CustomBetSelectionBuilder {
     /**
-     * Sets event id to the provided {@link URN}
+     * Sets event id to the provided {@link Urn}
      *
-     * @param eventId the {@link URN} representing the event id
+     * @param eventId the {@link Urn} representing the event id
      * @return the {@link CustomBetSelectionBuilder} instance used to set additional values
      */
-    CustomBetSelectionBuilder setEventId(URN eventId);
+    CustomBetSelectionBuilder setEventId(Urn eventId);
 
     /**
      * Sets market id to the provided value
@@ -53,11 +53,11 @@ public interface CustomBetSelectionBuilder {
     /**
      * Builds and returns a {@link Selection} instance
      *
-     * @param eventId the {@link URN} representing the event id
+     * @param eventId the {@link Urn} representing the event id
      * @param marketId the value representing the market id
      * @param specifiers the value representing the specifiers
      * @param outcomeId the value representing the outcome id
      * @return the constructed {@link Selection} instance
      */
-    Selection build(URN eventId, int marketId, String specifiers, String outcomeId);
+    Selection build(Urn eventId, int marketId, String specifiers, String outcomeId);
 }

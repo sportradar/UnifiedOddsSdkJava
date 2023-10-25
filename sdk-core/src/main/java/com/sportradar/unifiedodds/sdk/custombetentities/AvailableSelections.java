@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.custombetentities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
@@ -12,10 +12,10 @@ import java.util.List;
  */
 public interface AvailableSelections {
     /**
-     * Returns the {@link URN} of the event
-     * @return the {@link URN} of the event
+     * Returns the {@link Urn} of the event
+     * @return the {@link Urn} of the event
      */
-    URN getEvent();
+    Urn getEvent();
 
     /**
      * Returns the list of markets for this event

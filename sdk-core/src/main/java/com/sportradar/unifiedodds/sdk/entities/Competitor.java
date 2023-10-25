@@ -152,4 +152,6 @@ public interface Competitor extends Player {
     default String getShortName() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
+
+    Division getDivision();
 }

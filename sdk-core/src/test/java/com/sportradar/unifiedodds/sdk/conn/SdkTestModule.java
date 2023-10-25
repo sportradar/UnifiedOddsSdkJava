@@ -1,5 +1,7 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -7,28 +9,26 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.SportsInfoManager;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.impl.TestingDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.TestingSummaryDataProvider;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SportDataProvider;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.MessageAndActionExtractor;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.shared.TestHttpHelper;
 import java.util.Optional;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.mockito.Mockito;
 
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity" })
+@SuppressWarnings({ "ClassFanOutComplexity" })
 public class SdkTestModule implements Module {
 
-    private Optional<SportsInfoManager> sportsInfoManager;
+    private Optional<SportDataProvider> sportDataProvider;
 
     public SdkTestModule() {}
 
-    public SdkTestModule(Optional<SportsInfoManager> sportsInfoManager) {
-        this.sportsInfoManager = sportsInfoManager;
+    public SdkTestModule(Optional<SportDataProvider> sportDataProvider) {
+        this.sportDataProvider = sportDataProvider;
     }
 
     @Override
@@ -45,11 +45,12 @@ public class SdkTestModule implements Module {
     @Singleton
     @Named("RecoveryHttpHelper")
     private HttpHelper provideRecoveryHttpHelper(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
-        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+        MessageAndActionExtractor messageExtractor,
+        UserAgentProvider userAgentProvider
     ) {
-        return new TestHttpHelper(config, httpClient, apiDeserializer);
+        return new TestHttpHelper(config, httpClient, messageExtractor, userAgentProvider);
     }
 
     @Provides
@@ -80,14 +81,14 @@ public class SdkTestModule implements Module {
 
     @Provides
     @Singleton
-    protected DataProvider<SAPICompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {
+    protected DataProvider<SapiCompetitorProfileEndpoint> providesCompetitorProfileEndpointProvider() {
         return new TestingDataProvider<>("test/rest/profiles/en.competitor.3700.xml");
     }
 
     @Provides
     @Singleton
     @Named("ListSportEventsDataProvider")
-    protected DataProvider<SAPIScheduleEndpoint> providesScheduleEndpointProvider() {
+    protected DataProvider<SapiScheduleEndpoint> providesScheduleEndpointProvider() {
         return new TestingDataProvider<>("test/rest/events.xml");
     }
 
@@ -101,7 +102,7 @@ public class SdkTestModule implements Module {
     @Provides
     @Singleton
     @Named("DateScheduleEndpointDataProvider")
-    protected DataProvider<SAPIScheduleEndpoint> providesDateScheduleProvider() {
+    protected DataProvider<SapiScheduleEndpoint> providesDateScheduleProvider() {
         return new TestingDataProvider<>("test/rest/schedule.en.xml");
     }
 
@@ -125,7 +126,7 @@ public class SdkTestModule implements Module {
 
     @Provides
     @Singleton
-    protected DataProvider<SAPILotterySchedule> providesLotteryScheduleProvider() {
+    protected DataProvider<SapiLotterySchedule> providesLotteryScheduleProvider() {
         return new TestingDataProvider<>("test/rest/wns/lottery_schedule.en.xml");
     }
 }

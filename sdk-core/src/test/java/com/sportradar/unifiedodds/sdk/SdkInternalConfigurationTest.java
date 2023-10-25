@@ -3,57 +3,79 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
+import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
+import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+@SuppressWarnings("ClassFanOutComplexity")
 @RunWith(JUnitParamsRunner.class)
 public class SdkInternalConfigurationTest {
 
-    private final SDKConfigurationPropertiesReader propertiesReader = mock(
-        SDKConfigurationPropertiesReader.class
+    public static final Duration ANY_DURATION = Duration.ofHours(4);
+    public static final Locale ANY_LANGUAGE = Locale.CANADA_FRENCH;
+    private final Map<String, String> yamlFileContent = new HashMap<>();
+    private final Map<String, String> propsFileContent = new HashMap<>();
+    private final WhoAmIReader whoAmIReader = emptyBookmakerDetailsReader();
+    private final ProducerDataProvider producerDataProvider = providerOfSingleEmptyProducer();
+    private final TokenSetter buildFromPropsFile = new TokenSetterImpl(
+        new StubSdkConfigurationPropertiesReader(propsFileContent),
+        new StubSdkConfigurationYamlReader(yamlFileContent),
+        anyConfig -> whoAmIReader,
+        anyConfig -> producerDataProvider
     );
-    private final SDKConfigurationYamlReader ymlReader = mock(SDKConfigurationYamlReader.class);
-    private final OddsFeedConfiguration config = mock(OddsFeedConfiguration.class);
+
+    private final SdkConfigurationPropertiesReader propertiesReader = mock(
+        SdkConfigurationPropertiesReader.class
+    );
+
+    private final SdkConfigurationYamlReader ymlReader = mock(SdkConfigurationYamlReader.class);
+    private final UofConfigurationStub config = new UofConfigurationStub();
 
     @Test
     public void shouldNotInstantiateWithNullConfiguration() {
-        assertThatThrownBy(() -> new SDKInternalConfiguration(null, propertiesReader, ymlReader))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(null, propertiesReader, ymlReader))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("cfg");
 
-        assertThatThrownBy(() -> new SDKInternalConfiguration(null, false, propertiesReader, ymlReader))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(null, false, propertiesReader, ymlReader))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("cfg");
     }
 
     @Test
     public void shouldNotInstantiateWithNullPropertiesReader() {
-        assertThatThrownBy(() -> new SDKInternalConfiguration(config, null, ymlReader))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(config, null, ymlReader))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("sdkConfigurationPropertiesReader");
 
-        assertThatThrownBy(() -> new SDKInternalConfiguration(config, false, null, ymlReader))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(config, false, null, ymlReader))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("sdkConfigurationPropertiesReader");
     }
 
     @Test
     public void shouldNotInstantiateWithNullYmlReader() {
-        assertThatThrownBy(() -> new SDKInternalConfiguration(config, propertiesReader, null))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(config, propertiesReader, null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("sdkConfigurationYamlReader");
 
-        assertThatThrownBy(() -> new SDKInternalConfiguration(config, false, propertiesReader, null))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(config, false, propertiesReader, null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("sdkConfigurationYamlReader");
     }
@@ -61,25 +83,39 @@ public class SdkInternalConfigurationTest {
     @Test
     @Parameters(method = "everyEnvironment")
     public void shouldPreserveMessagingHostInWhenInEnvironmentOf(final Environment environment) {
-        val messagingHost = "rabbit.com";
-        when(config.getMessagingHost()).thenReturn(messagingHost);
-        when(config.getEnvironment()).thenReturn(environment);
+        final String host = "rabbit.com";
 
-        val internalConfig = new SDKInternalConfiguration(config, propertiesReader, ymlReader);
+        val internalConfig = new SdkInternalConfiguration(
+            buildFromPropsFile
+                .setAccessToken("any")
+                .selectCustom()
+                .setDefaultLanguage(ANY_LANGUAGE)
+                .setMessagingHost(host)
+                .build(),
+            propertiesReader,
+            ymlReader
+        );
 
-        assertEquals(messagingHost, internalConfig.getMessagingHost());
+        assertEquals(host, internalConfig.getMessagingHost());
     }
 
     @Test
     public void shouldPreserveMessagingHostIfReplaySession() {
-        val messagingHost = "rabbit.com";
-        when(config.getMessagingHost()).thenReturn(messagingHost);
-        when(config.getEnvironment()).thenReturn(Environment.Replay);
+        val host = "rabbit.com";
+        config.setRabbit(new UofRabbitConfigurationStub().setHost(host));
+        config.setEnvironment(Environment.Replay);
+        ((UofProducerConfigurationStub) config.getProducer()).setInactivitySeconds(ANY_DURATION);
+        ((UofProducerConfigurationStub) config.getProducer()).setMaxRecoveryTime(ANY_DURATION);
+        ((UofProducerConfigurationStub) config.getProducer()).setMinIntervalBetweenRecoveryRequests(
+                ANY_DURATION
+            );
+        ((UofApiConfigurationStub) config.getApi()).setHttpClientTimeout(ANY_DURATION);
+        ((UofApiConfigurationStub) config.getApi()).setHttpClientRecoveryTimeout(ANY_DURATION);
         val replaySession = true;
 
-        val internalConfig = new SDKInternalConfiguration(config, replaySession, propertiesReader, ymlReader);
+        val internalConfig = new SdkInternalConfiguration(config, replaySession, propertiesReader, ymlReader);
 
-        assertEquals(messagingHost, internalConfig.getMessagingHost());
+        assertEquals(host, internalConfig.getMessagingHost());
     }
 
     private Object[] everyEnvironment() {

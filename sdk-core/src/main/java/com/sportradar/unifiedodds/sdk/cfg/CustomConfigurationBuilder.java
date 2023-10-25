@@ -11,26 +11,34 @@ public interface CustomConfigurationBuilder extends RecoveryConfigurationBuilder
     /**
      * Set the host name of the Sports API server
      *
-     * @param apiHost the host name of the Sports API server
+     * @param host the host name of the Sports API server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
-    CustomConfigurationBuilder setApiHost(String apiHost);
+    CustomConfigurationBuilder setApiHost(String host);
 
     /**
      * Set the port of the Sports API server
      *
-     * @param apiPort the port of the Sports API server
+     * @param port the port of the Sports API server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
-    CustomConfigurationBuilder setApiPort(int apiPort);
+    CustomConfigurationBuilder setApiPort(int port);
+
+    /**
+     * Sets the value specifying whether SSL should be used to communicate with Sports API
+     *
+     * @param useSsl the value specifying whether SSL should be used to communicate with Sports API
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    CustomConfigurationBuilder setApiUseSsl(boolean useSsl);
 
     /**
      * Sets the host name of the AMQP server
      *
-     * @param messagingHost the host name of the AMQP server
+     * @param host the host name of the AMQP server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
-    CustomConfigurationBuilder setMessagingHost(String messagingHost);
+    CustomConfigurationBuilder setMessagingHost(String host);
 
     /**
      * Sets a custom port used to connect to AMQP broker
@@ -65,18 +73,10 @@ public interface CustomConfigurationBuilder extends RecoveryConfigurationBuilder
     CustomConfigurationBuilder setMessagingPassword(String password);
 
     /**
-     * Sets the value specifying whether SSL should be used to communicate with Sports API
-     *
-     * @param useApiSsl the value specifying whether SSL should be used to communicate with Sports API
-     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
-     */
-    CustomConfigurationBuilder useApiSsl(boolean useApiSsl);
-
-    /**
      * Sets the value specifying whether SSL should be used to communicate with the messaging server
      *
-     * @param useMessagingSsl the value specifying whether SSL should be used to communicate with the messaging server
+     * @param useSsl the value specifying whether SSL should be used to communicate with the messaging server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
-    CustomConfigurationBuilder useMessagingSsl(boolean useMessagingSsl);
+    CustomConfigurationBuilder setMessagingUseSsl(boolean useSsl);
 }

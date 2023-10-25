@@ -15,9 +15,7 @@ public interface ChannelMessageConsumer {
      *
      * @param messageConsumer the parsed/prepared messages
      */
-    default void open(MessageConsumer messageConsumer) {
-        // NO-OP mode, this is an optional method that should be implemented only if the implementation requires it
-    }
+    void open(MessageConsumer messageConsumer);
 
     /**
      * Consumes the provided message payload

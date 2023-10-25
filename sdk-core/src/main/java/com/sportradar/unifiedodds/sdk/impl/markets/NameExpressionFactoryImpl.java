@@ -9,7 +9,7 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -95,7 +95,7 @@ public class NameExpressionFactoryImpl implements NameExpressionFactory {
         if ("server".equals(operand)) {
             return new CompetitorProfileExpression(profileCache, operandDefinition);
         }
-        URN id = URN.parse(operandDefinition.getStringValue());
+        Urn id = Urn.parse(operandDefinition.getStringValue());
         if (id.getType().equals("player")) {
             return new PlayerProfileExpression(profileCache, operandDefinition);
         } else {

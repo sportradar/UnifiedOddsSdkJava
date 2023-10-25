@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.di;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.inject.Guice;
@@ -8,166 +10,263 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.google.inject.util.Modules;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawFixtures;
-import com.sportradar.uf.sportsapi.datamodel.SAPIDrawSummary;
-import com.sportradar.uf.sportsapi.datamodel.SAPIFixturesEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SAPILotteries;
-import com.sportradar.uf.sportsapi.datamodel.SAPILotterySchedule;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.uf.sportsapi.datamodel.SapiDrawFixtures;
+import com.sportradar.uf.sportsapi.datamodel.SapiDrawSummary;
+import com.sportradar.uf.sportsapi.datamodel.SapiFixturesEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SapiLotteries;
+import com.sportradar.uf.sportsapi.datamodel.SapiLotterySchedule;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationImpl;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import java.util.Locale;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 @SuppressWarnings({ "ConstantName", "InnerTypeLast", "MagicNumber", "VisibilityModifier" })
 public class DataProvidersModuleTest {
 
-    private static final String API_HOST = "api.betradar.com";
-    private static final int API_PORT = 80;
+    private static final String HTTP_PREFIX = "http://";
+    private static final String HTTPS_PREFIX = "https://";
+    private static final int NODE_ID = 314;
     private static final String EVENT_ID = "sr:match:12345";
     private static final String WNS_EVENT_ID = "wns:draw:12345";
     private static final Locale locale = Locale.ENGLISH;
-    private static final int NODE_ID = 314;
+    private static final String REPLAY_PATH_PREFIX = "/v1/replay/";
 
-    private SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
+    private StubUofConfiguration config = new StubUofConfiguration();
+    private SdkInternalConfiguration internalConfig = mock(SdkInternalConfiguration.class);
 
-    private final Injector injector = new TestInjectorFactory(config).create();
+    private Injector injector;
 
-    private final Injector dataProviderInjector = Guice.createInjector(
-        Modules.override(new MockedMasterModule(config)).with(new DataProvidersModule())
-    );
+    private Injector dataProviderInjector;
     private FixtureProviders fixtureProviders;
 
-    @Test
-    public void fixtureEndpointReplayFeed() {
-        initConfig(API_PORT);
-        when(config.isReplaySession()).thenReturn(true);
+    public void setup(Environment environment, int nodeId, boolean useSsl) {
+        config = new StubUofConfiguration();
+        config.setEnvironment(environment);
+        config.resetNbrSetEnvironmentCalled();
+        config.setNodeId(nodeId);
+        ((UofApiConfigurationImpl) config.getApi()).useSsl(useSsl);
 
-        fixtureProviders = injector.getInstance(FixtureProviders.class);
+        injector = new TestInjectorFactory(internalConfig, config).create();
 
-        assertEquals(
-            "http://api.betradar.com/v1/replay/sports/en/sport_events/sr:match:12345/fixture.xml?node_id=314",
-            fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID)
-        );
+        dataProviderInjector =
+            Guice.createInjector(
+                Modules
+                    .override(new MockedMasterModule(internalConfig, config))
+                    .with(new DataProvidersModule())
+            );
     }
 
     @Test
-    public void fixtureEndpointIntegrationFeed() {
-        initConfig(API_PORT);
+    public void fixtureEndpointIsInjectedReplayPath() {
+        setup(Environment.Replay, NODE_ID, true);
+        when(internalConfig.isReplaySession()).thenReturn(true);
 
         fixtureProviders = injector.getInstance(FixtureProviders.class);
 
-        assertEquals(
-            "http://api.betradar.com/v1/sports/en/sport_events/sr:match:12345/fixture.xml",
-            fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID)
-        );
+        assertThat(fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID))
+            .contains(REPLAY_PATH_PREFIX);
     }
 
     @Test
-    public void fixtureChangeEndpointReplayFeed() {
-        initConfig(API_PORT);
-        when(config.isReplaySession()).thenReturn(true);
+    public void fixtureEndpointIsInjectedNodeIdWhenReplaying() {
+        setup(Environment.Replay, NODE_ID, true);
+        when(internalConfig.isReplaySession()).thenReturn(true);
+        when(internalConfig.getSdkNodeId()).thenReturn(314);
 
         fixtureProviders = injector.getInstance(FixtureProviders.class);
 
-        assertEquals(
-            "http://api.betradar.com/v1/replay/sports/en/sport_events/sr:match:12345/fixture.xml?node_id=314",
-            fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID)
-        );
+        assertThat(fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID))
+            .contains("node_id=" + NODE_ID);
     }
 
     @Test
-    public void fixtureChangeEndpointIntegrationFeed() {
-        initConfig(API_PORT);
+    public void fixtureEndpointInvokesCorrespondingEndpointWhenReplaying() {
+        setup(Environment.Replay, NODE_ID, true);
+        when(internalConfig.isReplaySession()).thenReturn(true);
+        when(internalConfig.getSdkNodeId()).thenReturn(314);
 
         fixtureProviders = injector.getInstance(FixtureProviders.class);
 
-        assertEquals(
-            "http://api.betradar.com/v1/sports/en/sport_events/sr:match:12345/fixture_change_fixture.xml",
-            fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID)
-        );
+        assertThat(fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID))
+            .contains("/sports/en/sport_events/sr:match:12345/fixture.xml");
     }
 
     @Test
-    public void should_include_port_in_url() {
-        initConfig(8080);
+    public void fixtureEndpointNotIncludesNodeIdWhenNotReplayingEvenIfItIsConfigured() {
+        setup(Environment.Integration, 0, true);
 
         fixtureProviders = injector.getInstance(FixtureProviders.class);
 
-        assertEquals(
-            "http://api.betradar.com:8080/v1/sports/en/sport_events/sr:match:12345/fixture_change_fixture.xml",
-            fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID)
-        );
+        assertThat(fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID))
+            .doesNotContainPattern("node_id");
+    }
+
+    @Test
+    public void fixtureEndpointNotInvokeReplayWhenNotReplaying() {
+        setup(Environment.Integration, 0, true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID))
+            .doesNotContainPattern(REPLAY_PATH_PREFIX);
+    }
+
+    @Test
+    public void fixtureEndpointInvokesCorrespondingEndpoint() {
+        setup(Environment.Replay, NODE_ID, true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureProvider.getFinalUrl(locale, EVENT_ID))
+            .contains("/sports/en/sport_events/sr:match:12345/fixture.xml");
+    }
+
+    @Test
+    public void fixtureChangeEndpointIsInjectedReplayPath() {
+        setup(Environment.Replay, NODE_ID, true);
+        when(internalConfig.isReplaySession()).thenReturn(true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID))
+            .contains(REPLAY_PATH_PREFIX);
+    }
+
+    @Test
+    public void fixtureChangeEndpointIsInjectedNodeIdWhenReplaying() {
+        setup(Environment.Replay, NODE_ID, true);
+        when(internalConfig.isReplaySession()).thenReturn(true);
+        when(internalConfig.getSdkNodeId()).thenReturn(314);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID))
+            .contains("node_id=" + NODE_ID);
+    }
+
+    @Test
+    public void fixtureChangeIsRedirectedToFixtureEndpointOnlyWhenInReplay() {
+        setup(Environment.Replay, NODE_ID, true);
+        when(internalConfig.isReplaySession()).thenReturn(true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID))
+            .contains("/sports/en/sport_events/sr:match:12345/fixture.xml");
+    }
+
+    @Test
+    public void fixtureChangeEndpointNotIncludesNodeIdWhenNotReplayingEvenIfItIsConfigured() {
+        setup(Environment.Integration, 0, true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID))
+            .doesNotContainPattern("node_id");
+    }
+
+    @Test
+    public void fixtureChangeEndpointNotInvokeReplayWhenNotReplaying() {
+        setup(Environment.Integration, 0, true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID))
+            .doesNotContainPattern(REPLAY_PATH_PREFIX);
+    }
+
+    @Test
+    public void fixtureChangeInvokesCorrespondingEndpoint() {
+        setup(Environment.Integration, 0, true);
+
+        fixtureProviders = injector.getInstance(FixtureProviders.class);
+
+        assertThat(fixtureProviders.fixtureChangeFixtureEndpoint.getFinalUrl(locale, EVENT_ID))
+            .contains("/sports/en/sport_events/sr:match:12345/fixture_change_fixture.xml");
     }
 
     @Test
     public void dataProvidersModuleShouldProvideCorrectWorldNumberServiceSchedulesEndpoint() {
-        initConfig(API_PORT);
+        setup(Environment.Production, 0, true);
 
-        DataProvider<SAPILotterySchedule> sapiLotteryScheduleDataProvider = dataProviderInjector.getInstance(
+        DataProvider<SapiLotterySchedule> sapiLotteryScheduleDataProvider = dataProviderInjector.getInstance(
             SapiLotteryProvider.class
         )
             .sapiLotteryScheduleProvider;
 
-        String expected = "http://api.betradar.com/v1/wns/en/lotteries/" + WNS_EVENT_ID + "/schedule.xml";
-
-        assertEquals(expected, sapiLotteryScheduleDataProvider.getFinalUrl(locale, WNS_EVENT_ID));
+        assertThat(sapiLotteryScheduleDataProvider.getFinalUrl(locale, WNS_EVENT_ID))
+            .endsWith("/v1/wns/en/lotteries/" + WNS_EVENT_ID + "/schedule.xml");
     }
 
     @Test
     public void dataProvidersModuleShouldProvideCorrectWorldNumberServiceLotteriesEndpoint() {
-        initConfig(API_PORT);
+        setup(Environment.Production, 0, false);
+        when(internalConfig.getApiHostAndPort()).thenReturn("api.betradar.com");
 
-        DataProvider<SAPILotteries> sapiLotteriesDataProvider = dataProviderInjector.getInstance(
+        String host = EnvironmentManager.getApiHost(Environment.Production);
+
+        DataProvider<SapiLotteries> sapiLotteriesDataProvider = dataProviderInjector.getInstance(
             SapiLotteryProvider.class
         )
             .sapiLotteriesProvider;
 
-        String expectedEndpointPath = "http://api.betradar.com/v1/wns/en/lotteries.xml";
+        String expectedEndpointPath = HTTP_PREFIX + host + "/v1/wns/en/lotteries.xml";
         assertEquals(expectedEndpointPath, sapiLotteriesDataProvider.getFinalUrl(locale, ""));
     }
 
     @Test
     public void dataProvidersModuleShouldProvideCorrectWorldNumberServiceFixtureEndpointPath() {
-        initConfig(API_PORT);
+        setup(Environment.Integration, 0, true);
+        when(internalConfig.getApiHostAndPort()).thenReturn("stgapi.betradar.com");
+        when(internalConfig.getUseApiSsl()).thenReturn(true);
 
-        DataProvider<SAPIDrawFixtures> sapiDrawFixturesDataProvider = dataProviderInjector.getInstance(
+        String host = EnvironmentManager.getApiHost(Environment.Integration);
+
+        DataProvider<SapiDrawFixtures> sapiDrawFixturesDataProvider = dataProviderInjector.getInstance(
             SapiLotteryProvider.class
         )
             .sapiDrawFixturesProvider;
 
         String expectedEndpointPath =
-            "http://" + API_HOST + "/v1/wns/en/sport_events/" + WNS_EVENT_ID + "/fixture.xml";
+            HTTPS_PREFIX + host + "/v1/wns/en/sport_events/" + WNS_EVENT_ID + "/fixture.xml";
 
         assertEquals(expectedEndpointPath, sapiDrawFixturesDataProvider.getFinalUrl(locale, WNS_EVENT_ID));
     }
 
     @Test
     public void dataProvidersModuleShouldProvideCorrectWorldNumberServiceSummaryEndpointPath() {
-        initConfig(API_PORT);
+        setup(Environment.Production, 0, true);
+        when(internalConfig.getApiHostAndPort()).thenReturn("api.betradar.com");
+        when(internalConfig.getUseApiSsl()).thenReturn(true);
 
-        DataProvider<SAPIDrawSummary> sapiDrawSummaryDataProvider = dataProviderInjector.getInstance(
+        String host = EnvironmentManager.getApiHost(Environment.Production);
+
+        DataProvider<SapiDrawSummary> sapiDrawSummaryDataProvider = dataProviderInjector.getInstance(
             SapiLotteryProvider.class
         )
             .sapiDrawSummaryProvider;
 
         String expectedEndpointPath =
-            "http://" + API_HOST + "/v1/wns/en/sport_events/" + WNS_EVENT_ID + "/summary.xml";
+            HTTPS_PREFIX + host + "/v1/wns/en/sport_events/" + WNS_EVENT_ID + "/summary.xml";
 
         assertEquals(expectedEndpointPath, sapiDrawSummaryDataProvider.getFinalUrl(locale, WNS_EVENT_ID));
     }
 
     private static class FixtureProviders {
 
-        DataProvider<SAPIFixturesEndpoint> fixtureProvider;
-        DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureEndpoint;
+        DataProvider<SapiFixturesEndpoint> fixtureProvider;
+        DataProvider<SapiFixturesEndpoint> fixtureChangeFixtureEndpoint;
 
         @Inject
         FixtureProviders(
-            @Named("FixtureEndpointDataProvider") DataProvider<SAPIFixturesEndpoint> fixtureEndpoint,
+            @Named("FixtureEndpointDataProvider") DataProvider<SapiFixturesEndpoint> fixtureEndpoint,
             @Named(
                 "FixtureChangeFixtureEndpointDataProvider"
-            ) DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtureEndpoint
+            ) DataProvider<SapiFixturesEndpoint> fixtureChangeFixtureEndpoint
         ) {
             this.fixtureProvider = fixtureEndpoint;
             this.fixtureChangeFixtureEndpoint = fixtureChangeFixtureEndpoint;
@@ -176,29 +275,22 @@ public class DataProvidersModuleTest {
 
     private static class SapiLotteryProvider {
 
-        DataProvider<SAPILotterySchedule> sapiLotteryScheduleProvider;
-        DataProvider<SAPILotteries> sapiLotteriesProvider;
-        DataProvider<SAPIDrawFixtures> sapiDrawFixturesProvider;
-        DataProvider<SAPIDrawSummary> sapiDrawSummaryProvider;
+        DataProvider<SapiLotterySchedule> sapiLotteryScheduleProvider;
+        DataProvider<SapiLotteries> sapiLotteriesProvider;
+        DataProvider<SapiDrawFixtures> sapiDrawFixturesProvider;
+        DataProvider<SapiDrawSummary> sapiDrawSummaryProvider;
 
         @Inject
         SapiLotteryProvider(
-            DataProvider<SAPILotterySchedule> sapiLotteryScheduleProvider,
-            DataProvider<SAPILotteries> sapiLotteriesProvider,
-            DataProvider<SAPIDrawFixtures> sapiDrawFixturesProvider,
-            DataProvider<SAPIDrawSummary> sapiDrawSummaryProvider
+            DataProvider<SapiLotterySchedule> sapiLotteryScheduleProvider,
+            DataProvider<SapiLotteries> sapiLotteriesProvider,
+            DataProvider<SapiDrawFixtures> sapiDrawFixturesProvider,
+            DataProvider<SapiDrawSummary> sapiDrawSummaryProvider
         ) {
             this.sapiLotteryScheduleProvider = sapiLotteryScheduleProvider;
             this.sapiLotteriesProvider = sapiLotteriesProvider;
             this.sapiDrawFixturesProvider = sapiDrawFixturesProvider;
             this.sapiDrawSummaryProvider = sapiDrawSummaryProvider;
         }
-    }
-
-    private void initConfig(int port) {
-        when(config.getAPIHost()).thenReturn(API_HOST);
-        when(config.getAPIPort()).thenReturn(port);
-        when(config.getApiHostAndPort()).thenReturn(API_HOST + (port == 80 ? "" : ":" + port));
-        when(config.getSdkNodeId()).thenReturn(NODE_ID);
     }
 }

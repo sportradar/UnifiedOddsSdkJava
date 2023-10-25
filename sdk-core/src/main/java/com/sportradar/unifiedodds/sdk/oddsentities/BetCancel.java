@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 
@@ -37,9 +37,9 @@ public interface BetCancel<T extends SportEvent> extends MarketMessage<T> {
     Date getEndTime();
 
     /**
-     * If the market was cancelled because of a migration from a different sport event, it gets a {@link URN} specifying the sport event from which the market has migrated.
+     * If the market was cancelled because of a migration from a different sport event, it gets a {@link Urn} specifying the sport event from which the market has migrated.
      *
-     * @return the {@link URN} identifier of the superceded event
+     * @return the {@link Urn} identifier of the superceded event
      */
     String getSupercededBy();
 

@@ -12,14 +12,6 @@ package com.sportradar.unifiedodds.sdk.oddsentities;
 @SuppressWarnings({ "OverloadMethodsDeclarationOrder" })
 public interface OutcomeOdds extends OutcomeProbabilities {
     /**
-     * The odds for this outcome in this market
-     *
-     * @return the odds for this outcome in this market in decimal
-     * @deprecated from v2.0.13 in favour of {@link #getOdds(OddsDisplayType)}
-     */
-    double getOdds();
-
-    /**
      * Indicates if the outcome is {@link PlayerOutcomeOdds} instance
      *
      * @return <code>true</code> if the current outcome is a player outcome, otherwise <code>false</code>
@@ -28,11 +20,9 @@ public interface OutcomeOdds extends OutcomeProbabilities {
 
     /**
      * Gets the odds in specified format
-     * Note: default method will be merged in next major version scheduled for January 2019
+     *
      * @param oddsDisplayType display type of the odds (default: @link OddsDisplayType.Decimal)
      * @return the odds for this outcome in this market in wanted format
      */
-    default Double getOdds(OddsDisplayType oddsDisplayType) {
-        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
-    }
+    Double getOdds(OddsDisplayType oddsDisplayType);
 }

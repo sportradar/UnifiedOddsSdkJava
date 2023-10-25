@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Defines methods implemented by classes that can consume messages
@@ -34,7 +34,7 @@ public interface MessageConsumer {
      * @param rawMessage - the raw message payload
      * @param eventId - if available the related sport event id; otherwise null
      */
-    void onMessageDeserializationFailed(byte[] rawMessage, URN eventId);
+    void onMessageDeserializationFailed(byte[] rawMessage, Urn eventId);
 
     /**
      * Returns a {@link String} which describes the consumer

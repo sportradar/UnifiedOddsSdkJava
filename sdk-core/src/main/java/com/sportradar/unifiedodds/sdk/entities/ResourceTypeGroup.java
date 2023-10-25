@@ -4,10 +4,10 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
- * Enumerates groups of resources represented by the {@link URN}
+ * Enumerates groups of resources represented by the {@link Urn}
  */
 @SuppressWarnings({ "NoEnumTrailingComma" })
 public enum ResourceTypeGroup {

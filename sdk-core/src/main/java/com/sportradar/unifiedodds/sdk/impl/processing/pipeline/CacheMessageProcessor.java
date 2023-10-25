@@ -5,22 +5,22 @@
 package com.sportradar.unifiedodds.sdk.impl.processing.pipeline;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.uf.datamodel.UFBetSettlement;
-import com.sportradar.uf.datamodel.UFBetStop;
-import com.sportradar.uf.datamodel.UFFixtureChange;
-import com.sportradar.uf.datamodel.UFOddsChange;
+import com.sportradar.uf.datamodel.UfBetSettlement;
+import com.sportradar.uf.datamodel.UfBetStop;
+import com.sportradar.uf.datamodel.UfFixtureChange;
+import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterListener;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * A {@link FeedMessageProcessor} implementation which is used in the message processing pipeline
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "ClassFanOutComplexity", "HiddenField" })
+@SuppressWarnings({ "ClassFanOutComplexity", "HiddenField" })
 public class CacheMessageProcessor implements FeedMessageProcessor {
 
     /**
@@ -71,7 +71,7 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         SportEventStatusCache sportEventStatusCache,
         SportEventCache sportEventCache,
         ProcessedFixtureChangesTracker processedFixtureChangesTracker,
-        SDKProducerManager producerManager
+        SdkProducerManager producerManager
     ) {
         Preconditions.checkNotNull(sportEventStatusCache);
         Preconditions.checkNotNull(sportEventCache);
@@ -107,34 +107,34 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         RoutingKeyInfo routingKeyInfo,
         MessageTimestamp timestamp
     ) {
-        if (message instanceof UFOddsChange) {
-            UFOddsChange fm = (UFOddsChange) message;
+        if (message instanceof UfOddsChange) {
+            UfOddsChange fm = (UfOddsChange) message;
             sportEventStatusCache.addEventIdForTimelineIgnore(
-                URN.parse(fm.getEventId()),
+                Urn.parse(fm.getEventId()),
                 fm.getProduct(),
                 fm.getClass().getSimpleName()
             );
             processOddsChangeMessage(fm);
-        } else if (message instanceof UFFixtureChange) {
-            UFFixtureChange fm = (UFFixtureChange) message;
+        } else if (message instanceof UfFixtureChange) {
+            UfFixtureChange fm = (UfFixtureChange) message;
             sportEventStatusCache.addEventIdForTimelineIgnore(
-                URN.parse(fm.getEventId()),
+                Urn.parse(fm.getEventId()),
                 fm.getProduct(),
                 fm.getClass().getSimpleName()
             );
             processFixtureChangeMessage(fm);
-        } else if (message instanceof UFBetStop) {
-            UFBetStop fm = (UFBetStop) message;
+        } else if (message instanceof UfBetStop) {
+            UfBetStop fm = (UfBetStop) message;
             sportEventStatusCache.addEventIdForTimelineIgnore(
-                URN.parse(fm.getEventId()),
+                Urn.parse(fm.getEventId()),
                 fm.getProduct(),
                 fm.getClass().getSimpleName()
             );
             processBetStopMessage(fm);
-        } else if (message instanceof UFBetSettlement) {
-            UFBetSettlement fm = (UFBetSettlement) message;
+        } else if (message instanceof UfBetSettlement) {
+            UfBetSettlement fm = (UfBetSettlement) message;
             sportEventStatusCache.addEventIdForTimelineIgnore(
-                URN.parse(fm.getEventId()),
+                Urn.parse(fm.getEventId()),
                 fm.getProduct(),
                 fm.getClass().getSimpleName()
             );
@@ -156,14 +156,14 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         this.nextMessageProcessor = nextMessageProcessor;
     }
 
-    private void processFixtureChangeMessage(UFFixtureChange message) {
+    private void processFixtureChangeMessage(UfFixtureChange message) {
         Preconditions.checkNotNull(message);
 
         if (processedFixtureChangesTracker.onFixtureChangeReceived(message)) {
             return;
         }
 
-        URN relatedEventId = URN.parse(message.getEventId());
+        Urn relatedEventId = Urn.parse(message.getEventId());
 
         sportEventCache.purgeCacheItem(relatedEventId);
         sportEventStatusCache.purgeSportEventStatus(relatedEventId);
@@ -172,27 +172,27 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         }
     }
 
-    private void processOddsChangeMessage(UFOddsChange message) {
+    private void processOddsChangeMessage(UfOddsChange message) {
         Preconditions.checkNotNull(message);
 
         if (message.getSportEventStatus() == null) {
             return;
         }
 
-        URN eventId = URN.parse(message.getEventId());
-        SportEventStatusDTO sportEventStatusDTO = new SportEventStatusDTO(message.getSportEventStatus());
+        Urn eventId = Urn.parse(message.getEventId());
+        SportEventStatusDto sportEventStatusDto = new SportEventStatusDto(message.getSportEventStatus());
         ((DataRouterListener) sportEventStatusCache).onSportEventStatusFetched(
                 eventId,
-                sportEventStatusDTO,
+                sportEventStatusDto,
                 null,
-                "UFOddsChange"
+                "UfOddsChange"
             );
     }
 
-    private void processBetStopMessage(UFBetStop message) {
+    private void processBetStopMessage(UfBetStop message) {
         Preconditions.checkNotNull(message);
 
-        URN relatedEventId = URN.parse(message.getEventId());
+        Urn relatedEventId = Urn.parse(message.getEventId());
 
         sportEventStatusCache.purgeSportEventStatus(relatedEventId);
 
@@ -201,17 +201,17 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         }
     }
 
-    private void processBetSettlementMessage(UFBetSettlement message) {
+    private void processBetSettlementMessage(UfBetSettlement message) {
         Preconditions.checkNotNull(message);
 
-        URN relatedEventId = URN.parse(message.getEventId());
+        Urn relatedEventId = Urn.parse(message.getEventId());
 
         if (isDrawEvent(relatedEventId)) {
             sportEventCache.purgeCacheItem(relatedEventId);
         }
     }
 
-    private static boolean isDrawEvent(URN eventId) {
+    private static boolean isDrawEvent(Urn eventId) {
         Preconditions.checkNotNull(eventId);
 
         return eventId.getType() != null && eventId.getType().equals("draw");

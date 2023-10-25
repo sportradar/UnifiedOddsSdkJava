@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk-parent</artifactId>
-    <version>2.0.61</version>
+    <version>3.0.0</version>
     <packaging>pom</packaging>
     <name>Unified Odds Feed SDK - parent</name>
     <description>UnifiedFeed SDK is a client library that enables easier integration with the Betradar XML feeds. SDK exposes XML feed service interface in a more user-friendly way and isolates the client from having to do XML feed parsing, proper connection handling, error recovery, event queuing, data caching and dispatching. It also makes a client solution more stable and robust when it comes to feed handling, especially with the release of new and updated XML feed versions.</description>
@@ -26,17 +26,17 @@
 
         <dataModel.version>1.0.69</dataModel.version>
         <rabbitMQ.version>3.6.0</rabbitMQ.version>
-        <apache.httpComponents.version>4.5.1</apache.httpComponents.version>
-        <slf4j.version>1.7.13</slf4j.version>
-        <logback.version>1.2.3</logback.version>
+        <apache.httpComponents.version>4.5.14</apache.httpComponents.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <logback.version>1.3.8</logback.version>
         <junit.version>4.12</junit.version>
         <junitparams.version>1.1.1</junitparams.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.5.1</mockito.version>
-        <guava.version>21.0</guava.version>
+        <guava.version>31.1-jre</guava.version>
         <guice.version>4.0</guice.version>
         <icu4j.version>57.1</icu4j.version>
-        <snake.yaml.version>1.20</snake.yaml.version>
+        <snake.yaml.version>1.31</snake.yaml.version>
         <org.springframework.spring-web.version>5.3.9</org.springframework.spring-web.version>
     </properties>
 

@@ -7,9 +7,9 @@ package com.sportradar.unifiedodds.example.examples;
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
-import com.sportradar.unifiedodds.sdk.OddsFeed;
+import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.OddsFeedConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -20,22 +20,22 @@ import java.util.stream.Collectors;
 @SuppressWarnings({ "LambdaBodyLength", "LineLength", "MethodLength", "VariableDeclarationUsageDistance" })
 public class AvailableMarketsPrinter {
 
-    private final OddsFeed oddsFeed;
+    private final UofSdk uofSdk;
 
     public AvailableMarketsPrinter(String token) {
-        logEntry("Running the OddsFeed SDK Basic example - multiple session");
+        logEntry("Running the UofSdk SDK Basic example - multiple session");
 
         logEntry("Building the configuration using the provided token");
-        OddsFeedConfiguration configuration = OddsFeed
-            .getOddsFeedConfigurationBuilder()
+        UofConfiguration configuration = UofSdk
+            .getUofConfigurationBuilder()
             .setAccessToken(token)
             .selectEnvironment(Environment.GlobalIntegration)
-            .setSdkNodeId(SdkConstants.NODE_ID)
-            .setDefaultLocale(Locale.ENGLISH)
+            .setNodeId(SdkConstants.NODE_ID)
+            .setDefaultLanguage(Locale.ENGLISH)
             .build();
 
-        logEntry("Creating a new OddsFeed instance");
-        oddsFeed = new OddsFeed(new GlobalEventsListener(), configuration);
+        logEntry("Creating a new UofSdk instance");
+        uofSdk = new UofSdk(new GlobalEventsListener(), configuration);
 
         logEntry("The odds feed instance was created, the API data is now available");
     }
@@ -45,7 +45,7 @@ public class AvailableMarketsPrinter {
     }
 
     public void print(boolean printMappings) {
-        MarketDescriptionManager marketDescriptionManager = oddsFeed.getMarketDescriptionManager();
+        MarketDescriptionManager marketDescriptionManager = uofSdk.getMarketDescriptionManager();
 
         logEntry("");
         logEntry("Listing static market descriptions");

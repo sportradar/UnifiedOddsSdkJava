@@ -16,7 +16,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "CatchParameterName",
         "ClassFanOutComplexity",
         "ConstantName",
@@ -57,17 +56,17 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     /**
      * A {@link Cache} used to store player profiles
      */
-    private final Cache<URN, PlayerProfileCI> playerCache;
+    private final Cache<Urn, PlayerProfileCi> playerCache;
 
     /**
      * A {@link Cache} used to store competitor profiles
      */
-    private final Cache<URN, CompetitorCI> competitorCache;
+    private final Cache<Urn, CompetitorCi> competitorCache;
 
     /**
      * A {@link Cache} used to store simpleteam competitor profiles
      */
-    private final Cache<URN, CompetitorCI> simpleTeamCache;
+    private final Cache<Urn, CompetitorCi> simpleTeamCache;
 
     /**
      * The {@link DataRouterManager} instance used to initiate data requests
@@ -82,9 +81,9 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     public ProfileCacheImpl(
         CacheItemFactory cacheItemFactory,
         DataRouterManager dataRouterManager,
-        Cache<URN, PlayerProfileCI> playerCache,
-        Cache<URN, CompetitorCI> competitorCache,
-        Cache<URN, CompetitorCI> simpleTeamCache
+        Cache<Urn, PlayerProfileCi> playerCache,
+        Cache<Urn, CompetitorCi> competitorCache,
+        Cache<Urn, CompetitorCi> simpleTeamCache
     ) {
         Preconditions.checkNotNull(cacheItemFactory);
         Preconditions.checkNotNull(dataRouterManager);
@@ -100,40 +99,40 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     }
 
     /**
-     * Returns a {@link PlayerProfileCI} associated with the provided {@link URN}
+     * Returns a {@link PlayerProfileCi} associated with the provided {@link Urn}
      *
-     * @param id the unique {@link URN} identifier of the player
+     * @param id the unique {@link Urn} identifier of the player
      * @param locales a {@link List} of locales in which the data is required
      * @param possibleAssociatedCompetitorIds a list of possible associated competitors, used to prefetch competitor profiles
-     * @return a {@link PlayerProfileCI} associated with the provided {@link URN}
+     * @return a {@link PlayerProfileCi} associated with the provided {@link Urn}
      */
     @Override
-    public PlayerProfileCI getPlayerProfile(
-        URN id,
+    public PlayerProfileCi getPlayerProfile(
+        Urn id,
         List<Locale> locales,
-        List<URN> possibleAssociatedCompetitorIds
+        List<Urn> possibleAssociatedCompetitorIds
     ) throws CacheItemNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
-        PlayerProfileCI playerProfileCI = playerCache.getIfPresent(id);
-        if (playerProfileCI != null) {
+        PlayerProfileCi playerProfileCi = playerCache.getIfPresent(id);
+        if (playerProfileCi != null) {
             List<Locale> missingLocales = SdkHelper.findMissingLocales(
-                playerProfileCI.getCachedLocales(),
+                playerProfileCi.getCachedLocales(),
                 locales
             );
             if (missingLocales.isEmpty()) {
-                return playerProfileCI;
+                return playerProfileCi;
             }
 
             // try to fetch for competitor, to avoid requests by each player
-            if (playerProfileCI.getCompetitorId() != null) {
-                CompetitorCI competitorCI = competitorCache.getIfPresent(playerProfileCI.getCompetitorId());
-                if (competitorCI != null) {
+            if (playerProfileCi.getCompetitorId() != null) {
+                CompetitorCi competitorCi = competitorCache.getIfPresent(playerProfileCi.getCompetitorId());
+                if (competitorCi != null) {
                     boolean period = Period
                         .between(
-                            competitorCI
+                            competitorCi
                                 .getLastTimeCompetitorProfileIsFetched()
                                 .toInstant()
                                 .atZone(ZoneId.systemDefault())
@@ -142,19 +141,19 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
                         )
                         .isNegative();
                     List<Locale> missingCompetitorLocales = SdkHelper.findMissingLocales(
-                        competitorCI.getCultureCompetitorProfileFetched(),
+                        competitorCi.getCultureCompetitorProfileFetched(),
                         missingLocales
                     );
                     if (period || !missingCompetitorLocales.isEmpty()) {
                         logger.debug(
                             "Fetching competitor profile for competitor {} instead of player {} for languages=[{}].",
-                            competitorCI.getId(),
-                            playerProfileCI.getId(),
+                            competitorCi.getId(),
+                            playerProfileCi.getId(),
                             missingLocales
                         );
 
                         try {
-                            List<URN> compId = Collections.singletonList(competitorCI.getId());
+                            List<Urn> compId = Collections.singletonList(competitorCi.getId());
                             prefetchCompetitors(compId, locales);
                         } catch (CommunicationException ce) {
                             // ignored
@@ -163,9 +162,9 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
                 }
             }
 
-            playerProfileCI = playerCache.getIfPresent(id);
-            if (playerProfileCI != null) {
-                return playerProfileCI;
+            playerProfileCi = playerCache.getIfPresent(id);
+            if (playerProfileCi != null) {
+                return playerProfileCi;
             }
         }
 
@@ -192,7 +191,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
                 id,
                 () -> {
                     logger.info("Player Cache miss for[{}], providing CI", id);
-                    return cacheItemFactory.buildPlayerProfileCI(id, null);
+                    return cacheItemFactory.buildPlayerProfileCi(id, null);
                 }
             );
         } catch (ExecutionException e) {
@@ -201,14 +200,14 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     }
 
     /**
-     * Returns a {@link CompetitorCI} associated with the provided {@link URN}
+     * Returns a {@link CompetitorCi} associated with the provided {@link Urn}
      *
-     * @param id the unique {@link URN} identifier of the competitor
+     * @param id the unique {@link Urn} identifier of the competitor
      * @param locales a {@link List} of locales in which the data is required
-     * @return a {@link CompetitorCI} associated with the provided {@link URN}
+     * @return a {@link CompetitorCi} associated with the provided {@link Urn}
      */
     @Override
-    public CompetitorCI getCompetitorProfile(URN id, List<Locale> locales) throws CacheItemNotFoundException {
+    public CompetitorCi getCompetitorProfile(Urn id, List<Locale> locales) throws CacheItemNotFoundException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
@@ -219,7 +218,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
                     id,
                     () -> {
                         logger.info("Competitor Cache miss for[{}], providing CI", id);
-                        return cacheItemFactory.buildCompetitorProfileCI(id);
+                        return cacheItemFactory.buildCompetitorProfileCi(id);
                     }
                 );
         } catch (ExecutionException e) {
@@ -233,7 +232,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
      * @param competitorId the identifier of the cache item to purge
      */
     @Override
-    public void purgeCompetitorProfileCacheItem(URN competitorId) {
+    public void purgeCompetitorProfileCacheItem(Urn competitorId) {
         Preconditions.checkNotNull(competitorId);
 
         provideRightCompetitorCacheFor(competitorId).invalidate(competitorId);
@@ -245,7 +244,7 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
      * @param playerId the identifier of the cache item to purge
      */
     @Override
-    public void purgePlayerProfileCacheItem(URN playerId) {
+    public void purgePlayerProfileCacheItem(Urn playerId) {
         Preconditions.checkNotNull(playerId);
 
         playerCache.invalidate(playerId);
@@ -257,12 +256,12 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
      * @param possibleAssociatedCompetitorIds a {@link List} of competitor ids
      * @param locales the {@link Locale}s which should be pre-fetched
      */
-    private void prefetchCompetitors(List<URN> possibleAssociatedCompetitorIds, List<Locale> locales)
+    private void prefetchCompetitors(List<Urn> possibleAssociatedCompetitorIds, List<Locale> locales)
         throws CommunicationException {
         Preconditions.checkNotNull(possibleAssociatedCompetitorIds);
         Preconditions.checkNotNull(locales);
 
-        for (URN competitorId : possibleAssociatedCompetitorIds) {
+        for (Urn competitorId : possibleAssociatedCompetitorIds) {
             boolean isSimpleTeam =
                 competitorId.isSimpleTeam() ||
                 competitorId.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE);
@@ -278,39 +277,39 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
 
     @Override
     public void onPlayerFetched(
-        URN id,
-        SAPIPlayerExtended data,
+        Urn id,
+        SapiPlayerExtended data,
         Locale dataLocale,
         CacheItem requester,
-        URN competitorId
+        Urn competitorId
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
-        PlayerProfileCI profileCI = playerCache.getIfPresent(id);
+        PlayerProfileCi profileCi = playerCache.getIfPresent(id);
 
-        if (requester != null && !Equivalence.identity().equivalent(profileCI, requester)) {
-            if (requester instanceof PlayerProfileCI) {
-                ((PlayerProfileCI) requester).merge(data, dataLocale, competitorId);
+        if (requester != null && !Equivalence.identity().equivalent(profileCi, requester)) {
+            if (requester instanceof PlayerProfileCi) {
+                ((PlayerProfileCi) requester).merge(data, dataLocale, competitorId);
             } else {
                 requester.merge(data, dataLocale);
             }
         }
 
-        if (profileCI == null) {
-            playerCache.put(id, cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale, competitorId));
+        if (profileCi == null) {
+            playerCache.put(id, cacheItemFactory.buildPlayerProfileCi(id, data, dataLocale, competitorId));
         } else {
-            profileCI.merge(data, dataLocale, competitorId);
+            profileCi.merge(data, dataLocale, competitorId);
         }
     }
 
     public void onPlayerCompetitorFetched(
-        URN id,
-        SAPIPlayerCompetitor data,
+        Urn id,
+        SapiPlayerCompetitor data,
         Locale dataLocale,
         CacheItem requester,
-        URN competitorId
+        Urn competitorId
     ) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
@@ -319,27 +318,27 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         if (id.getType().equalsIgnoreCase("competitor")) {
             handleOnCompetitorDataReceived(id, data, dataLocale, requester);
         } else {
-            PlayerProfileCI profileCI = playerCache.getIfPresent(id);
+            PlayerProfileCi profileCi = playerCache.getIfPresent(id);
 
-            if (requester != null && !Equivalence.identity().equivalent(profileCI, requester)) {
+            if (requester != null && !Equivalence.identity().equivalent(profileCi, requester)) {
                 requester.merge(data, dataLocale);
             }
 
-            if (profileCI == null) {
+            if (profileCi == null) {
                 playerCache.put(
                     id,
-                    cacheItemFactory.buildPlayerProfileCI(id, data, dataLocale, competitorId)
+                    cacheItemFactory.buildPlayerProfileCi(id, data, dataLocale, competitorId)
                 );
             } else {
-                profileCI.merge(data, dataLocale);
+                profileCi.merge(data, dataLocale);
             }
         }
     }
 
     @Override
     public void onCompetitorFetched(
-        URN id,
-        SAPICompetitorProfileEndpoint data,
+        Urn id,
+        SapiCompetitorProfileEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -354,20 +353,20 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
             data.getPlayers().getPlayer() != null &&
             !data.getPlayers().getPlayer().isEmpty()
         ) {
-            for (SAPIPlayerExtended player : data.getPlayers().getPlayer()) {
+            for (SapiPlayerExtended player : data.getPlayers().getPlayer()) {
                 onPlayerFetched(
-                    URN.parse(player.getId()),
+                    Urn.parse(player.getId()),
                     player,
                     dataLocale,
                     requester,
-                    URN.parse(data.getCompetitor().getId())
+                    Urn.parse(data.getCompetitor().getId())
                 );
             }
         }
     }
 
     @Override
-    public void onTeamFetched(URN id, SAPITeam data, Locale dataLocale, CacheItem requester) {
+    public void onTeamFetched(Urn id, SapiTeam data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
@@ -379,8 +378,8 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
 
     @Override
     public void onSimpleTeamFetched(
-        URN id,
-        SAPISimpleTeamProfileEndpoint data,
+        Urn id,
+        SapiSimpleTeamProfileEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {
@@ -389,21 +388,21 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         Preconditions.checkNotNull(dataLocale);
 
         handleOnCompetitorDataReceived(id, data, dataLocale, requester);
-        SAPITeam team = data.getCompetitor();
+        SapiTeam team = data.getCompetitor();
 
         fetchPlayersFromTeam(dataLocale, requester, team);
     }
 
-    private void fetchPlayersFromTeam(Locale dataLocale, CacheItem requester, SAPITeam team) {
+    private void fetchPlayersFromTeam(Locale dataLocale, CacheItem requester, SapiTeam team) {
         if (
             team.getPlayers() != null &&
             team.getPlayers().getPlayer() != null &&
             !team.getPlayers().getPlayer().isEmpty()
         ) {
-            for (SAPIPlayerCompetitor player : team.getPlayers().getPlayer()) {
-                URN competitorId = Strings.isNullOrEmpty(team.getId()) ? null : URN.parse(team.getId());
+            for (SapiPlayerCompetitor player : team.getPlayers().getPlayer()) {
+                Urn competitorId = Strings.isNullOrEmpty(team.getId()) ? null : Urn.parse(team.getId());
                 onPlayerCompetitorFetched(
-                    URN.parse(player.getId()),
+                    Urn.parse(player.getId()),
                     player,
                     dataLocale,
                     requester,
@@ -413,55 +412,55 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
         }
     }
 
-    private <T> void handleOnCompetitorDataReceived(URN id, T data, Locale dataLocale, CacheItem requester) {
+    private <T> void handleOnCompetitorDataReceived(Urn id, T data, Locale dataLocale, CacheItem requester) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
-        CompetitorCI profileCI = provideRightCompetitorCacheFor(id).getIfPresent(id);
+        CompetitorCi profileCi = provideRightCompetitorCacheFor(id).getIfPresent(id);
 
-        if (requester != null && !Equivalence.identity().equivalent(profileCI, requester)) {
+        if (requester != null && !Equivalence.identity().equivalent(profileCi, requester)) {
             requester.merge(data, dataLocale);
         }
 
-        if (profileCI == null) {
+        if (profileCi == null) {
             createNewCacheEntry(id, data, dataLocale);
         } else {
-            profileCI.merge(data, dataLocale);
+            profileCi.merge(data, dataLocale);
         }
     }
 
-    private <T> void createNewCacheEntry(URN id, T data, Locale dataLocale) {
+    private <T> void createNewCacheEntry(Urn id, T data, Locale dataLocale) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(data);
         Preconditions.checkNotNull(dataLocale);
 
-        if (data instanceof SAPITeam) {
+        if (data instanceof SapiTeam) {
             provideRightCompetitorCacheFor(id)
-                .put(id, cacheItemFactory.buildCompetitorProfileCI(id, (SAPITeam) data, dataLocale));
-        } else if (data instanceof SAPICompetitorProfileEndpoint) {
+                .put(id, cacheItemFactory.buildCompetitorProfileCi(id, (SapiTeam) data, dataLocale));
+        } else if (data instanceof SapiCompetitorProfileEndpoint) {
             provideRightCompetitorCacheFor(id)
                 .put(
                     id,
-                    cacheItemFactory.buildCompetitorProfileCI(
+                    cacheItemFactory.buildCompetitorProfileCi(
                         id,
-                        (SAPICompetitorProfileEndpoint) data,
+                        (SapiCompetitorProfileEndpoint) data,
                         dataLocale
                     )
                 );
-        } else if (data instanceof SAPIPlayerCompetitor) {
+        } else if (data instanceof SapiPlayerCompetitor) {
             provideRightCompetitorCacheFor(id)
                 .put(
                     id,
-                    cacheItemFactory.buildCompetitorProfileCI(id, (SAPIPlayerCompetitor) data, dataLocale)
+                    cacheItemFactory.buildCompetitorProfileCi(id, (SapiPlayerCompetitor) data, dataLocale)
                 );
-        } else if (data instanceof SAPISimpleTeamProfileEndpoint) {
+        } else if (data instanceof SapiSimpleTeamProfileEndpoint) {
             provideRightCompetitorCacheFor(id)
                 .put(
                     id,
-                    cacheItemFactory.buildCompetitorProfileCI(
+                    cacheItemFactory.buildCompetitorProfileCi(
                         id,
-                        (SAPISimpleTeamProfileEndpoint) data,
+                        (SapiSimpleTeamProfileEndpoint) data,
                         dataLocale
                     )
                 );
@@ -471,12 +470,12 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     }
 
     /**
-     * Selects and provides the proper cache for the provided {@link URN} identifier
+     * Selects and provides the proper cache for the provided {@link Urn} identifier
      *
-     * @param id the {@link URN} identifier for which the cache is needed
+     * @param id the {@link Urn} identifier for which the cache is needed
      * @return the right cache for the provided id
      */
-    private Cache<URN, CompetitorCI> provideRightCompetitorCacheFor(URN id) {
+    private Cache<Urn, CompetitorCi> provideRightCompetitorCacheFor(Urn id) {
         Preconditions.checkNotNull(id);
 
         if (id.isSimpleTeam() || id.toString().startsWith(UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE)) {
@@ -489,10 +488,10 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     /**
      * Exports current items in the cache
      *
-     * @return List of {@link ExportableCI} containing all the items currently in the cache
+     * @return List of {@link ExportableCi} containing all the items currently in the cache
      */
     @Override
-    public List<ExportableCI> exportItems() {
+    public List<ExportableCi> exportItems() {
         return Stream
             .concat(
                 Stream.concat(
@@ -508,31 +507,31 @@ public class ProfileCacheImpl implements ProfileCache, DataRouterListener, Expor
     /**
      * Imports provided items into the cache
      *
-     * @param items List of {@link ExportableCI} to be inserted into the cache
+     * @param items List of {@link ExportableCi} to be inserted into the cache
      */
     @Override
-    public void importItems(List<ExportableCI> items) {
-        for (ExportableCI item : items) {
-            if (item instanceof ExportablePlayerProfileCI) {
-                PlayerProfileCI playerProfileCI = cacheItemFactory.buildPlayerProfileCI(
-                    (ExportablePlayerProfileCI) item
+    public void importItems(List<ExportableCi> items) {
+        for (ExportableCi item : items) {
+            if (item instanceof ExportablePlayerProfileCi) {
+                PlayerProfileCi playerProfileCi = cacheItemFactory.buildPlayerProfileCi(
+                    (ExportablePlayerProfileCi) item
                 );
-                PlayerProfileCI ifPresentPlayerProfile = playerCache.getIfPresent(playerProfileCI.getId());
+                PlayerProfileCi ifPresentPlayerProfile = playerCache.getIfPresent(playerProfileCi.getId());
                 if (ifPresentPlayerProfile == null) {
-                    playerCache.put(playerProfileCI.getId(), playerProfileCI);
+                    playerCache.put(playerProfileCi.getId(), playerProfileCi);
                 } else {
-                    ifPresentPlayerProfile.merge(playerProfileCI, null);
+                    ifPresentPlayerProfile.merge(playerProfileCi, null);
                 }
-            } else if (item instanceof ExportableCompetitorCI) {
-                CompetitorCI competitorCI = cacheItemFactory.buildCompetitorProfileCI(
-                    (ExportableCompetitorCI) item
+            } else if (item instanceof ExportableCompetitorCi) {
+                CompetitorCi competitorCi = cacheItemFactory.buildCompetitorProfileCi(
+                    (ExportableCompetitorCi) item
                 );
-                Cache<URN, CompetitorCI> cache = provideRightCompetitorCacheFor(competitorCI.getId());
-                CompetitorCI ifPresentCompetitor = cache.getIfPresent(competitorCI.getId());
+                Cache<Urn, CompetitorCi> cache = provideRightCompetitorCacheFor(competitorCi.getId());
+                CompetitorCi ifPresentCompetitor = cache.getIfPresent(competitorCi.getId());
                 if (ifPresentCompetitor == null) {
-                    cache.put(competitorCI.getId(), competitorCI);
+                    cache.put(competitorCi.getId(), competitorCi);
                 } else {
-                    ifPresentCompetitor.merge(competitorCI, null);
+                    ifPresentCompetitor.merge(competitorCi, null);
                 }
             }
         }

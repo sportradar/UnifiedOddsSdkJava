@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.exceptions;
 /**
  * The following exception gets thrown when a requested object is not found
  */
-public class ObjectNotFoundException extends OddsFeedSdkException {
+public class ObjectNotFoundException extends UofSdkException {
 
     public ObjectNotFoundException(String message) {
         super(message);

@@ -12,7 +12,7 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.markets.InvariantMarketDescriptionCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
@@ -43,15 +43,16 @@ import org.slf4j.LoggerFactory;
         "LineLength",
         "MethodLength",
         "VariableDeclarationUsageDistance",
+        "MagicNumber",
     }
 )
 public class MarketManagerImpl implements MarketDescriptionManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MarketManagerImpl.class);
     private static final Logger interactionLogger = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkClientInteractionLog.class
+        LoggerDefinitions.UfSdkClientInteractionLog.class
     );
-    private final SDKInternalConfiguration config;
+    private final SdkInternalConfiguration config;
     private final MarketDescriptionProvider marketDescriptionProvider;
     private final InvariantMarketDescriptionCache invariantMarketDescriptionCache;
     private final VariantDescriptionCache variantMarketDescriptionListCache;
@@ -60,7 +61,7 @@ public class MarketManagerImpl implements MarketDescriptionManager {
 
     @Inject
     public MarketManagerImpl(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         MarketDescriptionProvider marketDescriptionProvider,
         @Named("InvariantMarketCache") InvariantMarketDescriptionCache invariantMarketDescriptionCache,
         VariantDescriptionCache variantMarketDescriptionListCache,
@@ -278,6 +279,19 @@ public class MarketManagerImpl implements MarketDescriptionManager {
     @Override
     public void deleteVariantMarketDescriptionFromCache(int marketId, String variantValue) {
         variantMarketDescriptionCache.deleteCacheItem(marketId, variantValue);
+    }
+
+    @Override
+    public long parallelPrefetchVariantMarketDescriptions(List<? extends Market> markets) {
+        return parallelPrefetchVariantMarketDescriptions(markets, true, 100);
+    }
+
+    @Override
+    public long parallelPrefetchVariantMarketDescriptions(
+        List<? extends Market> markets,
+        boolean onlyVariantMarkets
+    ) {
+        return parallelPrefetchVariantMarketDescriptions(markets, onlyVariantMarkets, 100);
     }
 
     /**

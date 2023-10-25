@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 /**
  * The following exception gets thrown when a communication error gets detected(API request failure,...)
  */
-public class CommunicationException extends SDKInternalException {
+public class CommunicationException extends SdkInternalException {
 
     private final String url;
     private final int httpStatusCode;

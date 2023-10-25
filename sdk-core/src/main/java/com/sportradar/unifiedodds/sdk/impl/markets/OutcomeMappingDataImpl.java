@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.OutcomeMappingCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.OutcomeMappingCi;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import java.util.Locale;
 import java.util.Map;
@@ -17,12 +17,12 @@ import java.util.Map;
  */
 public class OutcomeMappingDataImpl implements OutcomeMappingData {
 
-    private final OutcomeMappingCI outcomeMapping;
+    private final OutcomeMappingCi outcomeMapping;
     private final Map<Locale, String> names;
     private final String outcomeId;
     private final String producerOutcomeId;
 
-    OutcomeMappingDataImpl(OutcomeMappingCI m) {
+    OutcomeMappingDataImpl(OutcomeMappingCi m) {
         Preconditions.checkNotNull(m);
 
         outcomeMapping = m;

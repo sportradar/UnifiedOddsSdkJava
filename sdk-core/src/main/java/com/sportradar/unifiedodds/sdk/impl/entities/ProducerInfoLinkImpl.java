@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoLinkCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoLinkCi;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
 
 /**
@@ -34,7 +34,7 @@ public class ProducerInfoLinkImpl implements ProducerInfoLink {
         this.name = name;
     }
 
-    ProducerInfoLinkImpl(ExportableProducerInfoLinkCI exportable) {
+    ProducerInfoLinkImpl(ExportableProducerInfoLinkCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.reference = exportable.getReference();
         this.name = exportable.getName();
@@ -70,7 +70,7 @@ public class ProducerInfoLinkImpl implements ProducerInfoLink {
         return "ProducerInfoLinkImpl{" + "reference='" + reference + '\'' + ", name='" + name + '\'' + '}';
     }
 
-    public ExportableProducerInfoLinkCI export() {
-        return new ExportableProducerInfoLinkCI(reference, name);
+    public ExportableProducerInfoLinkCi export() {
+        return new ExportableProducerInfoLinkCi(reference, name);
     }
 }

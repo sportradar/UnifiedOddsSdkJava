@@ -4,53 +4,53 @@ Unified Feed SDK 2.x
 The Unified Odds SDK provides a simple and efficient way to access Sportradar's odds and sport information for a bookmaker.
 It combines subscription of messages and RESTful API calls into a unified Java interface that hides most of the complexity including recovery.
 
-### A Basic way to use the OddsFeed
+### A Basic way to use the UofSdk
 
 First you need to implement the SDK event listeners that will receive callbacks for each message/event.
-* [OddsFeedListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/OddsFeedListener.html)
-* [SDKGlobalEventsListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/SDKGlobalEventsListener.html)
+* [UofListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofListener.html)
+* [UofGlobalEventsListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofGlobalEventsListener.html)
 
 Then to actually connect and start receiving messages you do the following:
 ```java
-MyOddsFeedListener listener = new MyOddsFeedListener();
-MySDKGlobalEventsListener globalEventsListener = new MySDKGlobalEventsListener();
+MyUofListener listener = new MyUofListener();
+MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
-OddsFeedConfiguration config = OddsFeed.getConfigurationBuilder().setAccessToken("your-token").build();
+UofConfiguration config = UofSdk.getConfigurationBuilder().setAccessToken("your-token").build();
 
-OddsFeed oddsFeed = new OddsFeed(globalEventsListener, config);
+UofSdk uofSdk = new UofSdk(globalEventsListener, config);
 
-OddsFeedSessionBuilder sessionBuilder = oddsFeed.getSessionBuilder();
+UofSessionBuilder sessionBuilder = uofSdk.getSessionBuilder();
 sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.AllMessages).build();
 
-oddsFeed.open();
+uofSdk.open();
 ```
 
-See: [OddsFeed](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/OddsFeed.html),
-[OddsFeedSessionBuilder](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/OddsFeedSessionBuilder.html),
-[SDKGlobalEventsListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/SDKGlobalEventsListener.html)
-and [OddsFeedListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/OddsFeedListener.html)
+See: [UofSdk](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofSdk.html),
+[UofSessionBuilder](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofSessionBuilder.html),
+[UofGlobalEventsListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofGlobalEventsListener.html)
+and [UofListener](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofListener.html)
 
 That should be it!
 
-If you want to get available sport events, active tournaments, or all sports you can get the [SportsInfoManager](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/SportsInfoManager.html)
-from the main [OddsFeed](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/OddsFeed.html) instance:
+If you want to get available sport events, active tournaments, or all sports you can get the [SportDataProvider](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
+from the main [UofSdk](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofSdk.html) instance:
 ```java
-SportsInfoManager sportsInfoManager = oddsFeed.getSportsInfoManager();
+SportDataProvider sportDataProvider = uofSdk.getSportDataProvider();
 // Get all sports, translated in the desired locales
-for (Sport sport : sportsInfoManager.getSports()) {
+for (Sport sport : sportDataProvider.getSports()) {
 
 }
 // Get all soccer active tournaments, the returned data will be translated in the desired locales
-for (SportEvent tournament : sportsInfoManager.getActiveTournaments("soccer")) {
+for (SportEvent tournament : sportDataProvider.getActiveTournaments("soccer")) {
 
 }
 // Get all competitions scheduled for today
-for (SportEvent sportEvent : sportsInfoManager.getCompetitionsFor(new Date())) {
+for (SportEvent sportEvent : sportDataProvider.getCompetitionsFor(new Date())) {
 
 }
 
 // Get all live competitions
-for (SportEvent sportEvent : sportsInfoManager.getLiveCompetitions()) {
+for (SportEvent sportEvent : sportDataProvider.getLiveCompetitions()) {
 
 }
 ```
@@ -68,18 +68,18 @@ is considered low-priority,
 [OddsChange](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/oddsentities/OddsChange.html) is considered high-priority).
 To create two different sessions for the high and low-priority messages you do the following:
 ```java
-MyOddsFeedListener listener = new MyOddsFeedListener();
-MySDKGlobalEventsListener globalEventsListener = new MySDKGlobalEventsListener();
+MyUofListener listener = new MyUofListener();
+MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
-OddsFeedConfiguration config = OddsFeed.getConfigurationBuilder().setAccessToken("your-token").build();
+UofConfiguration config = UofSdk.getConfigurationBuilder().setAccessToken("your-token").build();
 
-OddsFeed oddsFeed = new OddsFeed(globalEventsListener, config);
+UofSdk uofSdk = new UofSdk(globalEventsListener, config);
 
-OddsFeedSessionBuilder sessionBuilder = oddsFeed.getSessionBuilder();
+UofSessionBuilder sessionBuilder = uofSdk.getSessionBuilder();
 sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.HiPrioMessagesOnly).build();
 sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.LoPrioMessagesOnly).build();
 
-oddsFeed.open();
+uofSdk.open();
 ```
 
 Note that the same listener is used for both channels, but when creating the two different sessions, different
@@ -106,12 +106,12 @@ when the game ends, but only after 15minutes or even later after the game confir
 ### Localization
 By default all the data is available in English. You can add additional desired "prefetch" languages
 and set the default locale with the use of the
-[OddsFeedConfigurationBuilder](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/cfg/OddsFeedConfigurationBuilder.html)
-([addDesiredLocales](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/cfg/OddsFeedConfigurationBuilder.html#addDesiredLocales-java.util.List-),
-[setDefaultLocale](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/cfg/OddsFeedConfigurationBuilder.html#setDefaultLocale-java.util.Locale-)).
+[UofConfigurationBuilder](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html)
+([addDesiredLocales](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#addDesiredLocales-java.util.List-),
+[setDefaultLocale](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#setDefaultLocale-java.util.Locale-)).
 If you need to access a locale that was not specified as the default locale and neither added to the desired locales
 list, you can still access the locale translated content trough the
-[SportsInfoManager](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/SportsInfoManager.html)
+[SportDataProvider](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
 and
 [MarketDescriptionManager](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html).
 
@@ -132,7 +132,7 @@ message per producer, so the SDK performs the recovery for the missed messages(t
 message can not be more than 3 days). You can do this trough the
 [ProducerManager](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/ProducerManager.html)
 available on the
-[OddsFeed](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/OddsFeed.html)
+[UofSdk](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/UofSdk.html)
 instance. If the last processed message timestamp is not provided, the SDK will perform a
 full recovery, beware: with a full recovery you do not recover any lost
 [BetSettlement](http://sdk.sportradar.com/content/unifiedfeedsdk/java2/javadoc/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html)
@@ -141,12 +141,12 @@ messages!
 // as an example, we set the last message received timestamp to 2 days ago for the producer with the id 1(LiveOdds)
 Calendar cal = Calendar.getInstance();
 cal.add(Calendar.DATE, -2);
-ProducerManager producerManager = oddsFeed.getProducerManager();
+ProducerManager producerManager = uofSdk.getProducerManager();
 producerManager.setProducerLastMessageTimestamp(1, cal.getTime().getTime());
 
 // session creation,...
 
-oddsFeed.open(); // finally we open the feed
+uofSdk.open(); // finally we open the feed
 ```
 
 ### Further reading

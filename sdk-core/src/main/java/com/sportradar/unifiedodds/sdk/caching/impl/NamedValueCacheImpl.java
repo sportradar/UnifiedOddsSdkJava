@@ -6,11 +6,11 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.caching.NamedValueCache;
-import com.sportradar.unifiedodds.sdk.caching.ci.NamedValueCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.NamedValueCi;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SDKTaskScheduler;
+import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.unifiedodds.sdk.impl.entities.NamedValueImpl;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,16 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The default implementation of the {@link NamedValueCache} used to cache {@link NamedValue} objects
  */
-@SuppressWarnings(
-    {
-        "AbbreviationAsWordInName",
-        "ConstantName",
-        "ExplicitInitialization",
-        "IllegalCatch",
-        "LineLength",
-        "MagicNumber",
-    }
-)
+@SuppressWarnings({ "ConstantName", "ExplicitInitialization", "IllegalCatch", "LineLength", "MagicNumber" })
 public class NamedValueCacheImpl implements NamedValueCache {
 
     /**
@@ -57,9 +48,9 @@ public class NamedValueCacheImpl implements NamedValueCache {
      * Initializes a new instance of {@link NamedValueCacheImpl}
      *
      * @param dataProvider - the {@link DataProvider} which is used to retrieve {@link NamedValue}
-     * @param scheduler - the {@link SDKTaskScheduler} used to perform repeating cache tasks
+     * @param scheduler - the {@link SdkTaskScheduler} used to perform repeating cache tasks
      */
-    public NamedValueCacheImpl(DataProvider dataProvider, SDKTaskScheduler scheduler) {
+    public NamedValueCacheImpl(DataProvider dataProvider, SdkTaskScheduler scheduler) {
         Preconditions.checkNotNull(dataProvider);
 
         this.dataProvider = dataProvider;
@@ -117,10 +108,10 @@ public class NamedValueCacheImpl implements NamedValueCache {
             return false;
         }
 
-        List<NamedValueCI> namedValueCIS = NamedValueCI.mapToNamedValuesCI(fetch);
-        namedValueCIS.forEach(fetchedVal -> namedValues.put(fetchedVal.getId(), fetchedVal.getDescription()));
+        List<NamedValueCi> namedValueCis = NamedValueCi.mapToNamedValuesCi(fetch);
+        namedValueCis.forEach(fetchedVal -> namedValues.put(fetchedVal.getId(), fetchedVal.getDescription()));
 
-        cacheLog.info("{} {} retrieved", namedValueCIS.size(), fetch.getClass().getName());
+        cacheLog.info("{} {} retrieved", namedValueCis.size(), fetch.getClass().getName());
         return true;
     }
 

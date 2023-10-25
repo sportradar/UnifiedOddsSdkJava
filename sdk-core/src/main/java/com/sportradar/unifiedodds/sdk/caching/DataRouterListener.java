@@ -4,13 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk.caching;
 
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDTO;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,114 +20,114 @@ import java.util.Locale;
  */
 @SuppressWarnings({ "ClassFanOutComplexity" })
 public interface DataRouterListener {
-    default void onSportEventFetched(URN id, SAPISportEvent data, Locale dataLocale) {}
+    default void onSportEventFetched(Urn id, SapiSportEvent data, Locale dataLocale) {}
 
     default void onChildSportEventFetched(
-        URN id,
-        SAPISportEventChildren.SAPISportEvent data,
+        Urn id,
+        SapiSportEventChildren.SapiSportEvent data,
         Locale dataLocale
     ) {}
 
-    default void onTournamentFetched(URN id, SAPITournament data, Locale locale) {}
+    default void onTournamentFetched(Urn id, SapiTournament data, Locale locale) {}
 
-    default void onTournamentExtendedFetched(URN id, SAPITournamentExtended data, Locale dataLocale) {}
+    default void onTournamentExtendedFetched(Urn id, SapiTournamentExtended data, Locale dataLocale) {}
 
     default void onTournamentInfoEndpointFetched(
-        URN requestedId,
-        URN tournamentId,
-        URN seasonId,
-        SAPITournamentInfoEndpoint data,
+        Urn requestedId,
+        Urn tournamentId,
+        Urn seasonId,
+        SapiTournamentInfoEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
     default void onStageSummaryEndpointFetched(
-        URN id,
-        SAPIStageSummaryEndpoint data,
+        Urn id,
+        SapiStageSummaryEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
     default void onMatchSummaryEndpointFetched(
-        URN id,
-        SAPIMatchSummaryEndpoint data,
+        Urn id,
+        SapiMatchSummaryEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
-    default void onFixtureFetched(URN id, SAPIFixture data, Locale dataLocale, CacheItem requester) {}
+    default void onFixtureFetched(Urn id, SapiFixture data, Locale dataLocale, CacheItem requester) {}
 
-    default void onSportFetched(URN sportId, SAPISport sport, Locale dataLocale) {}
+    default void onSportFetched(Urn sportId, SapiSport sport, Locale dataLocale) {}
 
     default void onSportCategoriesFetched(
-        URN sportId,
-        SAPISportCategoriesEndpoint data,
+        Urn sportId,
+        SapiSportCategoriesEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
-    default void onTeamFetched(URN id, SAPITeam data, Locale dataLocale, CacheItem requester) {}
+    default void onTeamFetched(Urn id, SapiTeam data, Locale dataLocale, CacheItem requester) {}
 
     default void onPlayerFetched(
-        URN id,
-        SAPIPlayerExtended data,
+        Urn id,
+        SapiPlayerExtended data,
         Locale dataLocale,
         CacheItem requester,
-        URN competitorId
+        Urn competitorId
     ) {}
 
     default void onCompetitorFetched(
-        URN id,
-        SAPICompetitorProfileEndpoint data,
+        Urn id,
+        SapiCompetitorProfileEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
     default void onSimpleTeamFetched(
-        URN id,
-        SAPISimpleTeamProfileEndpoint data,
+        Urn id,
+        SapiSimpleTeamProfileEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
     default void onMatchTimelineFetched(
-        URN id,
-        SAPIMatchTimelineEndpoint data,
+        Urn id,
+        SapiMatchTimelineEndpoint data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
-    default void onLotteryFetched(URN id, SAPILottery data, Locale locale, CacheItem requester) {}
+    default void onLotteryFetched(Urn id, SapiLottery data, Locale locale, CacheItem requester) {}
 
     default void onDrawSummaryEndpointFetched(
-        URN id,
-        SAPIDrawSummary data,
+        Urn id,
+        SapiDrawSummary data,
         Locale dataLocale,
         CacheItem requester
     ) {}
 
-    default void onDrawFixtureFetched(URN id, SAPIDrawFixture data, Locale locale, CacheItem requester) {}
+    default void onDrawFixtureFetched(Urn id, SapiDrawFixture data, Locale locale, CacheItem requester) {}
 
-    default void onDrawFetched(URN id, SAPIDrawEvent data, Locale locale, CacheItem requester) {}
+    default void onDrawFetched(Urn id, SapiDrawEvent data, Locale locale, CacheItem requester) {}
 
     default void onSportEventStatusFetched(
-        URN id,
-        SportEventStatusDTO data,
+        Urn id,
+        SportEventStatusDto data,
         String statusOnEvent,
         String source
     ) {}
 
-    default void onAvailableSelectionsFetched(URN id, CAPIAvailableSelections availableSelections) {}
+    default void onAvailableSelectionsFetched(Urn id, CapiAvailableSelections availableSelections) {}
 
     default void onCalculateProbabilityFetched(
         List<Selection> selections,
-        CAPICalculationResponse calculation
+        CapiCalculationResponse calculation
     ) {}
 
     default void onCalculateProbabilityFilterFetched(
         List<Selection> selections,
-        CAPIFilteredCalculationResponse calculation
+        CapiFilteredCalculationResponse calculation
     ) {}
 
-    default void onSportTournamentsFetched(URN id, SAPISportTournamentsEndpoint data, Locale locale) {}
+    default void onSportTournamentsFetched(Urn id, SapiSportTournamentsEndpoint data, Locale locale) {}
 }

@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableStreamingChannelCI;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableStreamingChannelCi;
 import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
 
 /**
@@ -34,7 +34,7 @@ public class StreamingChannelImpl implements StreamingChannel {
         this.name = name;
     }
 
-    StreamingChannelImpl(ExportableStreamingChannelCI exportable) {
+    StreamingChannelImpl(ExportableStreamingChannelCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.id = exportable.getId();
         this.name = exportable.getName();
@@ -70,7 +70,7 @@ public class StreamingChannelImpl implements StreamingChannel {
         return "StreamingChannelImpl{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 
-    public ExportableStreamingChannelCI export() {
-        return new ExportableStreamingChannelCI(id, name);
+    public ExportableStreamingChannelCi export() {
+        return new ExportableStreamingChannelCi(id, name);
     }
 }

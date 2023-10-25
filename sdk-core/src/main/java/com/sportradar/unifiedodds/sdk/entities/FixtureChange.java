@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 
 /**
@@ -12,11 +12,11 @@ import java.util.Date;
  */
 public interface FixtureChange {
     /**
-     * Returns the {@link URN} instance specifying the sport event
+     * Returns the {@link Urn} instance specifying the sport event
      *
-     * @return - the {@link URN} instance specifying the sport event
+     * @return - the {@link Urn} instance specifying the sport event
      */
-    URN getSportEventId();
+    Urn getSportEventId();
 
     /**
      * Returns the {@link Date} instance specifying the last update time

@@ -7,9 +7,9 @@
   <jaxb:bindings schemaLocation="../../../target/schemas/v1/endpoints/unified/competitor_profile.xsd"> 
     <jaxb:schemaBindings>
 		<jaxb:nameXmlTransform>
-			<jaxb:typeName prefix="SAPI"/>
-			<jaxb:anonymousTypeName prefix="SAPI"/>
-			<jaxb:elementName prefix="SAPI"/>
+			<jaxb:typeName prefix="Sapi"/>
+			<jaxb:anonymousTypeName prefix="Sapi"/>
+			<jaxb:elementName prefix="Sapi"/>
 		</jaxb:nameXmlTransform>
 	</jaxb:schemaBindings>   
   </jaxb:bindings>

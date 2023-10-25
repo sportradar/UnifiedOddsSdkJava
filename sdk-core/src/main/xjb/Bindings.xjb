@@ -14,9 +14,9 @@
 
     <jaxb:schemaBindings>
 		<jaxb:nameXmlTransform>
-			<jaxb:typeName prefix="UF"/>
-			<jaxb:anonymousTypeName prefix="UF"/>
-			<jaxb:elementName prefix="UF"/>
+			<jaxb:typeName prefix="Uf"/>
+			<jaxb:anonymousTypeName prefix="Uf"/>
+			<jaxb:elementName prefix="Uf"/>
 		</jaxb:nameXmlTransform>
 	</jaxb:schemaBindings>   
 	

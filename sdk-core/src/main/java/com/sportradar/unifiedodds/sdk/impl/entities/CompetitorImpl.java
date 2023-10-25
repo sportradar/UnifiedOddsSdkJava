@@ -9,12 +9,12 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.*;
 import com.sportradar.unifiedodds.sdk.impl.ManagerImpl;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "DeclarationOrder",
@@ -37,18 +36,19 @@ import org.slf4j.LoggerFactory;
         "NeedBraces",
         "ParameterNumber",
         "VisibilityModifier",
+        "classDataAbstractionCoupling",
     }
 )
 public class CompetitorImpl implements Competitor {
 
     private static final Logger logger = LoggerFactory.getLogger(CompetitorImpl.class);
-    private final URN competitorId;
+    private final Urn competitorId;
     private final ProfileCache profileCache;
     private final List<Locale> locales;
     private final SportEntityFactory sportEntityFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
-    private ReferenceIdCI referenceIdCI;
-    private final SportEventCI sportEventCI;
+    private ReferenceIdCi referenceIdCi;
+    private final SportEventCi sportEventCi;
     protected String TeamQualifier;
     protected Integer TeamDivision;
     protected Boolean IsVirtual;
@@ -64,14 +64,14 @@ public class CompetitorImpl implements Competitor {
      * @param profileCache the cache instance used to retrieve the cached data
      * @param eventCompetitorsReferences the list of competitors and associated references
      * @param isVirtual indication if the competitor is marked as virtual
-     * @param locales a {@link List} in which is provided the {@link CompetitorCI}
+     * @param locales a {@link List} in which is provided the {@link CompetitorCi}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      */
     public CompetitorImpl(
-        URN competitorId,
+        Urn competitorId,
         ProfileCache profileCache,
-        Map<URN, ReferenceIdCI> eventCompetitorsReferences,
+        Map<Urn, ReferenceIdCi> eventCompetitorsReferences,
         Boolean isVirtual,
         List<Locale> locales,
         SportEntityFactory sportEntityFactory,
@@ -87,14 +87,14 @@ public class CompetitorImpl implements Competitor {
         this.locales = locales;
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
-        referenceIdCI = null;
-        sportEventCI = null;
+        referenceIdCi = null;
+        sportEventCi = null;
         TeamQualifier = null;
         IsVirtual = isVirtual;
         if (eventCompetitorsReferences != null && !eventCompetitorsReferences.isEmpty()) {
-            ReferenceIdCI q = eventCompetitorsReferences.get(competitorId);
+            ReferenceIdCi q = eventCompetitorsReferences.get(competitorId);
             if (q != null) {
-                referenceIdCI = q;
+                referenceIdCi = q;
             }
         }
     }
@@ -104,16 +104,16 @@ public class CompetitorImpl implements Competitor {
      *
      * @param competitorId the associated competitor id
      * @param profileCache the cache instance used to retrieve the cached data
-     * @param parentSportEventCI the {@link SportEventCI} this {@link CompetitorCI} belongs to
-     * @param locales a {@link List} in which is provided the {@link CompetitorCI}
+     * @param parentSportEventCi the {@link SportEventCi} this {@link CompetitorCi} belongs to
+     * @param locales a {@link List} in which is provided the {@link CompetitorCi}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
      * @param isVirtual indication if the competitor is marked as virtual
      */
     public CompetitorImpl(
-        URN competitorId,
+        Urn competitorId,
         ProfileCache profileCache,
-        SportEventCI parentSportEventCI,
+        SportEventCi parentSportEventCi,
         List<Locale> locales,
         SportEntityFactory sportEntityFactory,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
@@ -129,19 +129,19 @@ public class CompetitorImpl implements Competitor {
         this.locales = locales;
         this.sportEntityFactory = sportEntityFactory;
         this.exceptionHandlingStrategy = exceptionHandlingStrategy;
-        referenceIdCI = null;
-        sportEventCI = parentSportEventCI;
+        referenceIdCi = null;
+        sportEventCi = parentSportEventCi;
         TeamQualifier = null;
         IsVirtual = isVirtual;
     }
 
     /**
-     * Returns the unique {@link URN} identifier representing the current {@link Competitor} instance
+     * Returns the unique {@link Urn} identifier representing the current {@link Competitor} instance
      *
-     * @return - the unique {@link URN} identifier representing the current {@link Competitor} instance
+     * @return - the unique {@link Urn} identifier representing the current {@link Competitor} instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return competitorId;
     }
 
@@ -213,7 +213,7 @@ public class CompetitorImpl implements Competitor {
     @Override
     public Reference getReferences() {
         FetchEventCompetitorsReferenceIds();
-        return referenceIdCI != null ? new ReferenceImpl(referenceIdCI) : null;
+        return referenceIdCi != null ? new ReferenceImpl(referenceIdCi) : null;
     }
 
     /**
@@ -223,7 +223,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getCountryCode() {
-        return loadCacheItem().map(CompetitorCI::getCountryCode).orElse(null);
+        return loadCacheItem().map(CompetitorCi::getCountryCode).orElse(null);
     }
 
     /**
@@ -255,7 +255,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public List<Player> getPlayers() {
-        List<URN> singleton = Collections.singletonList(competitorId);
+        List<Urn> singleton = Collections.singletonList(competitorId);
 
         try {
             return loadCacheItem()
@@ -298,9 +298,9 @@ public class CompetitorImpl implements Competitor {
     @Override
     public List<Jersey> getJerseys() {
         return loadCacheItem()
-            .map(CompetitorCI::getJerseys)
+            .map(CompetitorCi::getJerseys)
             .map(j ->
-                j.stream().map(jerseyCI -> (Jersey) new JerseyImpl(jerseyCI)).collect(Collectors.toList())
+                j.stream().map(jerseyCi -> (Jersey) new JerseyImpl(jerseyCi)).collect(Collectors.toList())
             )
             .orElse(null);
     }
@@ -335,7 +335,7 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getGender() {
-        return loadCacheItem().map(CompetitorCI::getGender).orElse(null);
+        return loadCacheItem().map(CompetitorCi::getGender).orElse(null);
     }
 
     /**
@@ -357,12 +357,12 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getAgeGroup() {
-        return loadCacheItem().map(CompetitorCI::getAgeGroup).orElse(null);
+        return loadCacheItem().map(CompetitorCi::getAgeGroup).orElse(null);
     }
 
     @Override
     public String getState() {
-        return loadCacheItem().map(CompetitorCI::getState).orElse(null);
+        return loadCacheItem().map(CompetitorCi::getState).orElse(null);
     }
 
     /**
@@ -373,7 +373,7 @@ public class CompetitorImpl implements Competitor {
     @Override
     public Sport getSport() {
         return loadCacheItem()
-            .map(CompetitorCI::getSportId)
+            .map(CompetitorCi::getSportId)
             .map(s -> {
                 try {
                     return sportEntityFactory.buildSport(s, locales);
@@ -392,7 +392,7 @@ public class CompetitorImpl implements Competitor {
     @Override
     public CategorySummary getCategory() {
         return loadCacheItem()
-            .map(CompetitorCI::getCategoryId)
+            .map(CompetitorCi::getCategoryId)
             .map(c -> {
                 try {
                     return sportEntityFactory.buildCategory(c, locales);
@@ -410,7 +410,16 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public String getShortName() {
-        return loadCacheItem().map(CompetitorCI::getShortName).orElse(null);
+        return loadCacheItem().map(CompetitorCi::getShortName).orElse(null);
+    }
+
+    @Override
+    public Division getDivision() {
+        return loadCacheItem()
+            .map(competitorCi ->
+                competitorCi.getDivision() != null ? new DivisionImpl(competitorCi.getDivision()) : null
+            )
+            .orElse(null);
     }
 
     /**
@@ -418,7 +427,7 @@ public class CompetitorImpl implements Competitor {
      *
      * @return the associated cache item
      */
-    private Optional<CompetitorCI> loadCacheItem() {
+    private Optional<CompetitorCi> loadCacheItem() {
         try {
             return Optional.ofNullable(profileCache.getCompetitorProfile(competitorId, locales));
         } catch (IllegalCacheStateException | CacheItemNotFoundException e) {
@@ -464,23 +473,23 @@ public class CompetitorImpl implements Competitor {
     protected void FetchEventCompetitorsReferenceIds() {
         reentrantLock.lock();
         try {
-            Map<URN, ReferenceIdCI> competitorsReferences = null;
-            if (sportEventCI != null && sportEventCI instanceof CompetitionCI) {
-                CompetitionCI competitionCI = (CompetitionCI) sportEventCI;
-                competitorsReferences = competitionCI.getCompetitorsReferences();
-            } else if (sportEventCI != null && sportEventCI instanceof TournamentCI) {
-                TournamentCI tournamentCI = (TournamentCI) sportEventCI;
-                competitorsReferences = tournamentCI.getCompetitorsReferences();
+            Map<Urn, ReferenceIdCi> competitorsReferences = null;
+            if (sportEventCi != null && sportEventCi instanceof CompetitionCi) {
+                CompetitionCi competitionCi = (CompetitionCi) sportEventCi;
+                competitorsReferences = competitionCi.getCompetitorsReferences();
+            } else if (sportEventCi != null && sportEventCi instanceof TournamentCi) {
+                TournamentCi tournamentCi = (TournamentCi) sportEventCi;
+                competitorsReferences = tournamentCi.getCompetitorsReferences();
             } else {
-                ReferenceIdCI referenceIdCI = loadCacheItem().map(CompetitorCI::getReferenceId).orElse(null);
-                if (referenceIdCI != null) competitorsReferences =
-                    ImmutableMap.of(competitorId, referenceIdCI);
+                ReferenceIdCi referenceIdCi = loadCacheItem().map(CompetitorCi::getReferenceId).orElse(null);
+                if (referenceIdCi != null) competitorsReferences =
+                    ImmutableMap.of(competitorId, referenceIdCi);
             }
 
             if (competitorsReferences != null && !competitorsReferences.isEmpty()) {
-                ReferenceIdCI q = competitorsReferences.get(competitorId);
+                ReferenceIdCi q = competitorsReferences.get(competitorId);
                 if (q != null) {
-                    referenceIdCI = q;
+                    referenceIdCi = q;
                 }
             }
         } catch (DataRouterStreamException e) {
@@ -493,9 +502,9 @@ public class CompetitorImpl implements Competitor {
     protected void FetchEventCompetitorsQualifiers() {
         reentrantLock.lock();
         try {
-            if (TeamQualifier == null && sportEventCI != null && sportEventCI instanceof MatchCI) {
-                MatchCI matchCI = (MatchCI) sportEventCI;
-                Map<URN, String> competitorsQualifiers = matchCI.getCompetitorsQualifiers();
+            if (TeamQualifier == null && sportEventCi != null && sportEventCi instanceof MatchCi) {
+                MatchCi matchCi = (MatchCi) sportEventCi;
+                Map<Urn, String> competitorsQualifiers = matchCi.getCompetitorsQualifiers();
 
                 if (competitorsQualifiers != null && !competitorsQualifiers.isEmpty()) {
                     TeamQualifier = competitorsQualifiers.get(competitorId);
@@ -511,9 +520,9 @@ public class CompetitorImpl implements Competitor {
     protected void FetchEventCompetitorsDivisions() {
         reentrantLock.lock();
         try {
-            if (TeamDivision == null && sportEventCI != null && sportEventCI instanceof MatchCI) {
-                MatchCI matchCI = (MatchCI) sportEventCI;
-                Map<URN, Integer> competitorsDivisions = matchCI.getCompetitorsDivisions();
+            if (TeamDivision == null && sportEventCi != null && sportEventCi instanceof MatchCi) {
+                MatchCi matchCi = (MatchCi) sportEventCi;
+                Map<Urn, Integer> competitorsDivisions = matchCi.getCompetitorsDivisions();
 
                 if (competitorsDivisions != null && !competitorsDivisions.isEmpty()) {
                     TeamDivision = competitorsDivisions.get(competitorId);
@@ -529,9 +538,9 @@ public class CompetitorImpl implements Competitor {
     protected void FetchEventCompetitorsVirtual() {
         reentrantLock.lock();
         try {
-            if (IsVirtual == null && sportEventCI != null && sportEventCI instanceof MatchCI) {
-                MatchCI matchCI = (MatchCI) sportEventCI;
-                List<URN> competitorsVirtual = matchCI.getCompetitorsVirtual();
+            if (IsVirtual == null && sportEventCi != null && sportEventCi instanceof MatchCi) {
+                MatchCi matchCi = (MatchCi) sportEventCi;
+                List<Urn> competitorsVirtual = matchCi.getCompetitorsVirtual();
 
                 if (competitorsVirtual != null && !competitorsVirtual.isEmpty()) {
                     IsVirtual = competitorsVirtual.contains(competitorId);

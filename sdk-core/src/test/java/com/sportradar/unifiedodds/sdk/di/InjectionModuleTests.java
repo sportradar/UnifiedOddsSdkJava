@@ -1,38 +1,44 @@
 package com.sportradar.unifiedodds.sdk.di;
 
+import static org.mockito.Mockito.mock;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import com.sportradar.uf.datamodel.UFCashout;
+import com.sportradar.uf.datamodel.UfCashout;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.RecoveryManager;
-import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
+import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageFactory;
-import com.sportradar.unifiedodds.sdk.impl.OddsFeedSessionImpl;
+import com.sportradar.unifiedodds.sdk.impl.UofSessionImpl;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
 import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.ProcessedFixtureChangesTracker;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 @SuppressWarnings({ "ClassFanOutComplexity" })
 public class InjectionModuleTests {
 
     @Test
     public void configurationIsResolved() {
-        SDKGlobalEventsListener listener = Mockito.mock(SDKGlobalEventsListener.class);
-        SDKInternalConfiguration config = Mockito.mock(SDKInternalConfiguration.class);
-        Injector injector = Guice.createInjector(new MasterInjectionModule(listener, config, null));
+        UofGlobalEventsListener listener = mock(UofGlobalEventsListener.class);
+        UofConfiguration uofConfiguration = new StubUofConfiguration();
+        Injector injector = Guice.createInjector(
+            new MasterInjectionModule(listener, mock(SdkInternalConfiguration.class), uofConfiguration, null)
+        );
 
-        SDKInternalConfiguration instance = injector.getInstance(SDKInternalConfiguration.class);
+        SdkInternalConfiguration instance = injector.getInstance(SdkInternalConfiguration.class);
 
-        Assert.assertEquals(config, instance);
+        Assert.assertNotNull(instance);
     }
 
     @Test
@@ -77,8 +83,8 @@ public class InjectionModuleTests {
     @Test
     public void provideSessions() {
         Injector injector = createInjector();
-        OddsFeedSessionImpl instance1 = injector.getInstance(OddsFeedSessionImpl.class);
-        OddsFeedSessionImpl instance2 = injector.getInstance(OddsFeedSessionImpl.class);
+        UofSessionImpl instance1 = injector.getInstance(UofSessionImpl.class);
+        UofSessionImpl instance2 = injector.getInstance(UofSessionImpl.class);
         Assert.assertNotNull(instance1);
         Assert.assertNotNull(instance2);
         Assert.assertNotEquals(instance1, instance2);
@@ -124,8 +130,8 @@ public class InjectionModuleTests {
     @Test
     public void providesCashOutDataProvider() {
         Injector injector = createInjector();
-        DataProvider<UFCashout> cashOutDataProvider = injector.getInstance(
-            Key.get(new TypeLiteral<DataProvider<UFCashout>>() {})
+        DataProvider<UfCashout> cashOutDataProvider = injector.getInstance(
+            Key.get(new TypeLiteral<DataProvider<UfCashout>>() {})
         );
         Assert.assertNotNull(cashOutDataProvider);
     }

@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.JerseyCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.JerseyCi;
 import com.sportradar.unifiedodds.sdk.entities.Jersey;
 
 /**
@@ -59,7 +59,7 @@ public class JerseyImpl implements Jersey {
      *
      * @param jersey the CI which will be used to construct the instance
      */
-    JerseyImpl(JerseyCI jersey) {
+    JerseyImpl(JerseyCi jersey) {
         Preconditions.checkNotNull(jersey);
 
         base = jersey.getBase();

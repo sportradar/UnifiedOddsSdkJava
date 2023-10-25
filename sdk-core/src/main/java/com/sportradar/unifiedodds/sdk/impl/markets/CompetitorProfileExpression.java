@@ -6,11 +6,11 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCi;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -34,8 +34,8 @@ public class CompetitorProfileExpression implements NameExpression {
 
     @Override
     public String buildName(Locale locale) {
-        URN competitorId = URN.parse(operand.getStringValue());
-        CompetitorCI competitorProfile;
+        Urn competitorId = Urn.parse(operand.getStringValue());
+        CompetitorCi competitorProfile;
         try {
             competitorProfile = profileCache.getCompetitorProfile(competitorId, Lists.newArrayList(locale));
         } catch (CacheItemNotFoundException | IllegalCacheStateException e) {

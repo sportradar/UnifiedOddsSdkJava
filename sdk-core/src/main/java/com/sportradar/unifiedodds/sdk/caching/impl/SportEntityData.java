@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,9 +16,9 @@ import java.util.Map;
 public abstract class SportEntityData {
 
     /**
-     * The {@link URN} the id of the associated entity
+     * The {@link Urn} the id of the associated entity
      */
-    private final URN id;
+    private final Urn id;
 
     /**
      * A {@link Map} containing translated entity name
@@ -28,10 +28,10 @@ public abstract class SportEntityData {
     /**
      * Initializes a new instance of the {@link SportEntityData} class
      *
-     * @param id - a {@link URN} specifying the id of the associated entity
+     * @param id - a {@link Urn} specifying the id of the associated entity
      * @param names - A {@link Map} containing translated entity name
      */
-    SportEntityData(URN id, Map<Locale, String> names) {
+    SportEntityData(Urn id, Map<Locale, String> names) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(names);
 
@@ -40,11 +40,11 @@ public abstract class SportEntityData {
     }
 
     /**
-     * Returns the {@link URN} the id of the associated entity
+     * Returns the {@link Urn} the id of the associated entity
      *
-     * @return - the {@link URN} the id of the associated entity
+     * @return - the {@link Urn} the id of the associated entity
      */
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -55,5 +55,12 @@ public abstract class SportEntityData {
      */
     public Map<Locale, String> getNames() {
         return names;
+    }
+
+    /**
+     * Provides translated entity names
+     */
+    public String getName(Locale language) {
+        return names.get(language);
     }
 }

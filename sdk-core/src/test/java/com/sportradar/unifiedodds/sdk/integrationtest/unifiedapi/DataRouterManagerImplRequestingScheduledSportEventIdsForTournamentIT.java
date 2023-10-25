@@ -15,21 +15,21 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterManagerImpl;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.*;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
     @Test
     public void genericScheduleNotFoundCaseShouldBeTreatedAsCommunicationIssue() {
-        final URN tournamentUrn = urnForAnyTournament();
+        final Urn tournamentUrn = urnForAnyTournament();
         wireMock.stubFor(
             get(urlPathEqualTo(tournamentScheduleFor(tournamentUrn, inEnglish))).willReturn(notFound())
         );
@@ -66,7 +66,7 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
     @Test
     public void nonParsableXmlShouldResultInCommunicationException() {
-        final URN tournamentUrn = urnForAnyTournament();
+        final Urn tournamentUrn = urnForAnyTournament();
         wireMock.stubFor(
             get(urlPathEqualTo(tournamentScheduleFor(tournamentUrn, inEnglish)))
                 .willReturn(ok("non-xml-response"))
@@ -76,7 +76,7 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
             .isInstanceOf(CommunicationException.class);
     }
 
-    private String tournamentScheduleFor(final URN tournamentUrn, final Locale language) {
+    private String tournamentScheduleFor(final Urn tournamentUrn, final Locale language) {
         return String.format("/v1" + TOURNAMENT_SCHEDULE_PATH_FORMAT, language, tournamentUrn.toString());
     }
 
@@ -93,9 +93,9 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
         @Override
         protected void configure() {
-            bind(SDKInternalConfiguration.class).toInstance(mock(SDKInternalConfiguration.class));
-            bind(SDKTaskScheduler.class).toInstance(mock(SDKTaskScheduler.class));
-            bind(SDKProducerManager.class).toInstance(mock(SDKProducerManager.class));
+            bind(SdkInternalConfiguration.class).toInstance(mock(SdkInternalConfiguration.class));
+            bind(SdkTaskScheduler.class).toInstance(mock(SdkTaskScheduler.class));
+            bind(SdkProducerManager.class).toInstance(mock(SdkProducerManager.class));
             bind(DataRouter.class).toInstance(mock(DataRouter.class));
         }
 
@@ -107,24 +107,24 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
         @Provides
         @Named("FixtureEndpointDataProvider")
-        private DataProvider<SAPIFixturesEndpoint> fixtures() {
+        private DataProvider<SapiFixturesEndpoint> fixtures() {
             return mock(DataProvider.class);
         }
 
         @Provides
         @Named("FixtureChangeFixtureEndpointDataProvider")
-        private DataProvider<SAPIFixturesEndpoint> fixtureChangeFixtures() {
+        private DataProvider<SapiFixturesEndpoint> fixtureChangeFixtures() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPITournamentsEndpoint> tournaments() {
+        private DataProvider<SapiTournamentsEndpoint> tournaments() {
             return mock(DataProvider.class);
         }
 
         @Provides
         @Named("DateScheduleEndpointDataProvider")
-        private DataProvider<SAPIScheduleEndpoint> schedulesByDate() {
+        private DataProvider<SapiScheduleEndpoint> schedulesByDate() {
             return mock(DataProvider.class);
         }
 
@@ -138,20 +138,21 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
                     configWithToken(),
                     HttpClientBuilder.create().build(),
                     mock(UnifiedOddsStatistics.class),
-                    deserializer
+                    new HttpResponseHandler(deserializer),
+                    mock(UserAgentProvider.class)
                 ),
                 deserializer
             );
         }
 
-        private SDKInternalConfiguration configWithToken() {
-            SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private SdkInternalConfiguration configWithToken() {
+            SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
             when(config.getAccessToken()).thenReturn("someToken");
             return config;
         }
 
-        private SDKInternalConfiguration configWiremockHostAndEnglishByDefault() {
-            SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+        private SdkInternalConfiguration configWiremockHostAndEnglishByDefault() {
+            SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
             when(config.getApiHostAndPort()).thenReturn(apiHost);
             when(config.getUseApiSsl()).thenReturn(false);
             when(config.getDefaultLocale()).thenReturn(Locale.ENGLISH);
@@ -159,98 +160,98 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
         }
 
         @Provides
-        private DataProvider<SAPISportsEndpoint> sports() {
+        private DataProvider<SapiSportsEndpoint> sports() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIPlayerProfileEndpoint> playerProfiles() {
+        private DataProvider<SapiPlayerProfileEndpoint> playerProfiles() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPICompetitorProfileEndpoint> competitorProfiles() {
+        private DataProvider<SapiCompetitorProfileEndpoint> competitorProfiles() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPISimpleTeamProfileEndpoint> simpleTeamProfiles() {
+        private DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeamProfiles() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPITournamentSeasons> tournamentSeasons() {
+        private DataProvider<SapiTournamentSeasons> tournamentSeasons() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIMatchTimelineEndpoint> matchTimelines() {
+        private DataProvider<SapiMatchTimelineEndpoint> matchTimelines() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPISportCategoriesEndpoint> sportCategories() {
+        private DataProvider<SapiSportCategoriesEndpoint> sportCategories() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIDrawSummary> drawSummaries() {
+        private DataProvider<SapiDrawSummary> drawSummaries() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIDrawFixtures> drawFixtures() {
+        private DataProvider<SapiDrawFixtures> drawFixtures() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPILotteries> lotteries() {
+        private DataProvider<SapiLotteries> lotteries() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPILotterySchedule> lotterySchedules() {
+        private DataProvider<SapiLotterySchedule> lotterySchedules() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<CAPIAvailableSelections> availableSelections() {
+        private DataProvider<CapiAvailableSelections> availableSelections() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<CAPICalculationResponse> calculations() {
+        private DataProvider<CapiCalculationResponse> calculations() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<CAPIFilteredCalculationResponse> filteredCalculations() {
+        private DataProvider<CapiFilteredCalculationResponse> filteredCalculations() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIFixtureChangesEndpoint> fixtureChanges() {
+        private DataProvider<SapiFixtureChangesEndpoint> fixtureChanges() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIResultChangesEndpoint> resultChanges() {
+        private DataProvider<SapiResultChangesEndpoint> resultChanges() {
             return mock(DataProvider.class);
         }
 
         @Provides
         @Named("ListSportEventsDataProvider")
-        private DataProvider<SAPIScheduleEndpoint> schedules() {
+        private DataProvider<SapiScheduleEndpoint> schedules() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPISportTournamentsEndpoint> sportTournaments() {
+        private DataProvider<SapiSportTournamentsEndpoint> sportTournaments() {
             return mock(DataProvider.class);
         }
 
         @Provides
-        private DataProvider<SAPIStagePeriodEndpoint> stagePeriods() {
+        private DataProvider<SapiStagePeriodEndpoint> stagePeriods() {
             return mock(DataProvider.class);
         }
     }

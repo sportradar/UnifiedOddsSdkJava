@@ -4,7 +4,7 @@ import com.sportradar.uf.custombet.datamodel.*;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.HomeAway;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,45 +30,45 @@ public class RestMessageBuilder {
 
     public static StaticRandom SR;
 
-    public static CAPIEventType getEventType(URN eventId, int nbrMarkets) {
-        List<CAPIMarketType> marketTypes = new ArrayList<>();
+    public static CapiEventType getEventType(Urn eventId, int nbrMarkets) {
+        List<CapiMarketType> marketTypes = new ArrayList<>();
         for (int i = 0; i < nbrMarkets; i++) {
             boolean textOrNbr = SR.B();
             int startNbr = SR.I100();
-            List<CAPIOutcomeType> outcomeTypes = new ArrayList<>();
+            List<CapiOutcomeType> outcomeTypes = new ArrayList<>();
             for (int j = 0; j < SR.I(nbrMarkets + 1); j++) {
-                CAPIOutcomeType outcomeType = new CAPIOutcomeType();
+                CapiOutcomeType outcomeType = new CapiOutcomeType();
                 outcomeType.setId(
                     textOrNbr ? "sr:exact_goals:3+:" + (startNbr + j) : String.valueOf(startNbr + j)
                 );
                 outcomeTypes.add(outcomeType);
             }
 
-            CAPIMarketType marketType = new CAPIMarketType();
+            CapiMarketType marketType = new CapiMarketType();
             marketType.setId(i + 1);
             marketType.setSpecifiers(SR.I100() > 95 ? "total=1" : "");
             marketType.getOutcomes().addAll(outcomeTypes);
             marketTypes.add(marketType);
         }
 
-        CAPIMarketsType marketsType = new CAPIMarketsType();
+        CapiMarketsType marketsType = new CapiMarketsType();
         marketsType.getMarkets().addAll(marketTypes);
 
-        CAPIEventType eventType = new CAPIEventType();
+        CapiEventType eventType = new CapiEventType();
         eventType.setId(eventId.toString());
         eventType.setMarkets(marketsType);
         return eventType;
     }
 
-    public static CAPIFilteredEventType getFilteredEventType(URN eventId, int nbrMarkets) {
-        List<CAPIFilteredMarketType> marketTypes = new ArrayList<>();
+    public static CapiFilteredEventType getFilteredEventType(Urn eventId, int nbrMarkets) {
+        List<CapiFilteredMarketType> marketTypes = new ArrayList<>();
         for (int i = 0; i < nbrMarkets; i++) {
             boolean textOrNbr = SR.B();
             int startNbr = SR.I100();
-            List<CAPIFilteredOutcomeType> outcomeTypes = new ArrayList<>();
+            List<CapiFilteredOutcomeType> outcomeTypes = new ArrayList<>();
             for (int j = 0; j < SR.I(nbrMarkets + 1); j++) {
                 Boolean isConflict = SR.I100() > 20 ? SR.B() : null;
-                CAPIFilteredOutcomeType outcomeType = new CAPIFilteredOutcomeType();
+                CapiFilteredOutcomeType outcomeType = new CapiFilteredOutcomeType();
                 outcomeType.setId(
                     textOrNbr ? "sr:exact_goals:3+:" + (startNbr + j) : String.valueOf(startNbr + j)
                 );
@@ -77,7 +77,7 @@ public class RestMessageBuilder {
             }
 
             Boolean isConflict = SR.I100() > 20 ? SR.B() : null;
-            CAPIFilteredMarketType marketType = new CAPIFilteredMarketType();
+            CapiFilteredMarketType marketType = new CapiFilteredMarketType();
             marketType.setId(i + 1);
             marketType.setSpecifiers(SR.I100() > 95 ? "total=1" : "");
             marketType.getOutcomes().addAll(outcomeTypes);
@@ -85,37 +85,37 @@ public class RestMessageBuilder {
             marketTypes.add(marketType);
         }
 
-        CAPIFilteredMarketsType marketsType = new CAPIFilteredMarketsType();
+        CapiFilteredMarketsType marketsType = new CapiFilteredMarketsType();
         marketsType.getMarkets().addAll(marketTypes);
 
-        CAPIFilteredEventType eventType = new CAPIFilteredEventType();
+        CapiFilteredEventType eventType = new CapiFilteredEventType();
         eventType.setId(eventId.toString());
         eventType.setMarkets(marketsType);
         return eventType;
     }
 
-    public static CAPIAvailableSelections getAvailableSelections(URN eventId, int nbrMarkets) {
-        CAPIAvailableSelections availableSelections = new CAPIAvailableSelections();
+    public static CapiAvailableSelections getAvailableSelections(Urn eventId, int nbrMarkets) {
+        CapiAvailableSelections availableSelections = new CapiAvailableSelections();
         availableSelections.setGeneratedAt(SdkHelper.dateToString(new Date()));
         availableSelections.setEvent(getEventType(eventId, nbrMarkets));
         return availableSelections;
     }
 
-    public static CAPICalculationResponse getCalculationResponse(URN eventId, int nbrSelections) {
-        List<CAPIEventType> eventTypes = new ArrayList<>();
+    public static CapiCalculationResponse getCalculationResponse(Urn eventId, int nbrSelections) {
+        List<CapiEventType> eventTypes = new ArrayList<>();
         for (int i = 0; i < nbrSelections; i++) {
-            CAPIEventType eventType = getEventType(eventId, SR.I(10));
+            CapiEventType eventType = getEventType(eventId, SR.I(10));
             eventTypes.add(eventType);
         }
 
-        CAPIAvailableSelectionsAfterCalculationType availableSelections = new CAPIAvailableSelectionsAfterCalculationType();
+        CapiAvailableSelectionsAfterCalculationType availableSelections = new CapiAvailableSelectionsAfterCalculationType();
         availableSelections.getEvents().addAll(eventTypes);
 
-        CAPICalculationResultType calculation = new CAPICalculationResultType();
+        CapiCalculationResultType calculation = new CapiCalculationResultType();
         calculation.setOdds(SR.D(100));
         calculation.setProbability(SR.D0());
 
-        CAPICalculationResponse calculationResponse = new CAPICalculationResponse();
+        CapiCalculationResponse calculationResponse = new CapiCalculationResponse();
         calculationResponse.setGeneratedAt(SdkHelper.dateToString(new Date()));
         calculationResponse.setAvailableSelections(availableSelections);
         calculationResponse.setCalculation(calculation);
@@ -123,24 +123,24 @@ public class RestMessageBuilder {
         return calculationResponse;
     }
 
-    public static CAPIFilteredCalculationResponse getFilteredCalculationResponse(
-        URN eventId,
+    public static CapiFilteredCalculationResponse getFilteredCalculationResponse(
+        Urn eventId,
         int nbrSelections
     ) {
-        List<CAPIFilteredEventType> eventTypes = new ArrayList<>();
+        List<CapiFilteredEventType> eventTypes = new ArrayList<>();
         for (int i = 0; i < nbrSelections; i++) {
-            CAPIFilteredEventType eventType = getFilteredEventType(eventId, SR.I(10));
+            CapiFilteredEventType eventType = getFilteredEventType(eventId, SR.I(10));
             eventTypes.add(eventType);
         }
 
-        CAPIAvailableSelectionsFilteredOutcomesType availableSelections = new CAPIAvailableSelectionsFilteredOutcomesType();
+        CapiAvailableSelectionsFilteredOutcomesType availableSelections = new CapiAvailableSelectionsFilteredOutcomesType();
         availableSelections.getEvents().addAll(eventTypes);
 
-        CAPIFilteredCalculationResultType calculation = new CAPIFilteredCalculationResultType();
+        CapiFilteredCalculationResultType calculation = new CapiFilteredCalculationResultType();
         calculation.setOdds(SR.D(100));
         calculation.setProbability(SR.D0());
 
-        CAPIFilteredCalculationResponse calculationResponse = new CAPIFilteredCalculationResponse();
+        CapiFilteredCalculationResponse calculationResponse = new CapiFilteredCalculationResponse();
         calculationResponse.setGeneratedAt(SdkHelper.dateToString(new Date()));
         calculationResponse.setAvailableSelections(availableSelections);
         calculationResponse.setCalculation(calculation);
@@ -148,16 +148,16 @@ public class RestMessageBuilder {
         return calculationResponse;
     }
 
-    public static SAPISportCategoriesEndpoint getSportCategories(
+    public static SapiSportCategoriesEndpoint getSportCategories(
         int sportId,
         int categoryCount,
         int categoryFactor
     ) {
         int newSportId = SR.getId(sportId);
         int newCategoryCount = SR.getId(categoryCount, SR.I100());
-        SAPISportCategoriesEndpoint result = new SAPISportCategoriesEndpoint();
+        SapiSportCategoriesEndpoint result = new SapiSportCategoriesEndpoint();
         result.setSport(getSport(newSportId));
-        SAPICategories categories = new SAPICategories();
+        SapiCategories categories = new SapiCategories();
         for (int i = 1; i < newCategoryCount + 1; i++) {
             categories.getCategory().add(getCategory(i * categoryFactor));
         }
@@ -165,37 +165,37 @@ public class RestMessageBuilder {
         return result;
     }
 
-    public static SAPISport getSport(int id) {
+    public static SapiSport getSport(int id) {
         int newId = SR.getId(id);
-        SAPISport sport = new SAPISport();
-        sport.setId(URN.parse("sr:sport:" + newId).toString());
+        SapiSport sport = new SapiSport();
+        sport.setId(Urn.parse("sr:sport:" + newId).toString());
         sport.setName("Sport " + newId);
         return sport;
     }
 
-    public static SAPICategory getCategory(int id) {
+    public static SapiCategory getCategory(int id) {
         int newId = SR.getId(id);
-        SAPICategory category = new SAPICategory();
-        category.setId(URN.parse("sr:category:" + newId).toString());
+        SapiCategory category = new SapiCategory();
+        category.setId(Urn.parse("sr:category:" + newId).toString());
         category.setName("Category " + newId);
         category.setCountryCode(SR.S100());
         return category;
     }
 
-    public static SAPITournamentLength getTournamentLength(Instant startDate, Instant endDate) {
+    public static SapiTournamentLength getTournamentLength(Instant startDate, Instant endDate) {
         Instant newStartDate = startDate == null ? Instant.now().minus(30, ChronoUnit.DAYS) : startDate;
         Instant newEndDate = endDate == null ? Instant.now().plus(30, ChronoUnit.DAYS) : endDate;
-        SAPITournamentLength tournamentLength = new SAPITournamentLength();
+        SapiTournamentLength tournamentLength = new SapiTournamentLength();
         tournamentLength.setStartDate(Helper.getCalendar(newStartDate));
         tournamentLength.setEndDate(Helper.getCalendar(newEndDate));
         return tournamentLength;
     }
 
-    public static SAPITournament getTournament(int id, int sportId, int categoryId) {
+    public static SapiTournament getTournament(int id, int sportId, int categoryId) {
         int newId = SR.getId(id);
         int newSportId = SR.getId(sportId);
         int newCategoryId = SR.getId(categoryId);
-        SAPITournament tournament = new SAPITournament();
+        SapiTournament tournament = new SapiTournament();
         tournament.setId("sr:tournament:" + newId);
         tournament.setName("Tournament " + newId);
         tournament.setSport(getSport(newSportId));
@@ -206,9 +206,9 @@ public class RestMessageBuilder {
         return tournament;
     }
 
-    public static SAPITeamCompetitor getTeamCompetitor(int id, HomeAway homeAway) {
+    public static SapiTeamCompetitor getTeamCompetitor(int id, HomeAway homeAway) {
         int newId = SR.getId(id);
-        SAPITeamCompetitor teamCompetitor = new SAPITeamCompetitor();
+        SapiTeamCompetitor teamCompetitor = new SapiTeamCompetitor();
         teamCompetitor.setId("sr:competitor:" + newId);
         teamCompetitor.setName("TeanCompetitor " + newId);
         teamCompetitor.setCountryCode("uk");
@@ -218,18 +218,18 @@ public class RestMessageBuilder {
         return teamCompetitor;
     }
 
-    public static SAPIFixture getFixture(int eventId, int sportId, int categoryId) {
+    public static SapiFixture getFixture(int eventId, int sportId, int categoryId) {
         int newEventId = SR.getId(eventId);
         int newSportId = SR.getId(sportId);
         int newCategoryId = SR.getId(categoryId);
-        SAPIFixture fixture = new SAPIFixture();
+        SapiFixture fixture = new SapiFixture();
         fixture.setId("sr:match:" + newEventId);
         fixture.setName("Match " + newEventId);
         fixture.setScheduled(Helper.getCalendar(Instant.now()));
         fixture.setStartTime(fixture.getScheduled());
         fixture.setScheduledEnd(Helper.getCalendar(Instant.now().plus(1, ChronoUnit.HOURS)));
         fixture.setTournament(getTournament(123456, newSportId, newCategoryId));
-        fixture.setCompetitors(new SAPISportEventCompetitors());
+        fixture.setCompetitors(new SapiSportEventCompetitors());
         fixture.getCompetitors().getCompetitor().add(getTeamCompetitor(111, HomeAway.Home));
         fixture.getCompetitors().getCompetitor().add(getTeamCompetitor(222, HomeAway.Away));
         return fixture;

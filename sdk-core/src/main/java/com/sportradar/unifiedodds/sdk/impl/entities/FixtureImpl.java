@@ -7,16 +7,16 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sportradar.uf.sportsapi.datamodel.SAPICoverage;
-import com.sportradar.uf.sportsapi.datamodel.SAPIFixture;
-import com.sportradar.uf.sportsapi.datamodel.SAPIInfo;
-import com.sportradar.uf.sportsapi.datamodel.SAPIReferenceIds;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCI;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableFixtureCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiCoverage;
+import com.sportradar.uf.sportsapi.datamodel.SapiFixture;
+import com.sportradar.uf.sportsapi.datamodel.SapiInfo;
+import com.sportradar.uf.sportsapi.datamodel.SapiReferenceIds;
+import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableFixtureCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,22 +98,22 @@ public class FixtureImpl implements Fixture {
     private final Boolean startTimeTbd;
 
     /**
-     * The {@link URN} identifier of the replacement event
+     * The {@link Urn} identifier of the replacement event
      */
-    private final URN replacedBy;
+    private final Urn replacedBy;
 
     private final List<ScheduledStartTimeChange> scheduledStartTimeChanges;
 
-    private final URN parentId;
+    private final Urn parentId;
 
-    private final List<URN> additionalParentsIds;
+    private final List<Urn> additionalParentsIds;
 
     /**
      * Initializes a new instance of the {@link FixtureImpl}
      *
-     * @param fixture - {@link SAPIFixture} used to create the new instance
+     * @param fixture - {@link SapiFixture} used to create the new instance
      */
-    public FixtureImpl(SAPIFixture fixture) {
+    public FixtureImpl(SapiFixture fixture) {
         Preconditions.checkNotNull(fixture);
 
         this.startTime = fixture.getStartTime() == null ? null : SdkHelper.toDate(fixture.getStartTime());
@@ -138,9 +138,9 @@ public class FixtureImpl implements Fixture {
 
         startTimeTbd = fixture.isStartTimeTbd();
 
-        URN urnReplacedBy;
+        Urn urnReplacedBy;
         try {
-            urnReplacedBy = fixture.getReplacedBy() == null ? null : URN.parse(fixture.getReplacedBy());
+            urnReplacedBy = fixture.getReplacedBy() == null ? null : Urn.parse(fixture.getReplacedBy());
         } catch (UnsupportedUrnFormatException e) {
             logger.warn(
                 "Fixture[{}] 'replaced by' is malformed -> {}",
@@ -159,7 +159,7 @@ public class FixtureImpl implements Fixture {
                     .getExtraInfo()
                     .getInfo()
                     .stream()
-                    .collect(ImmutableMap.toImmutableMap(SAPIInfo::getKey, SAPIInfo::getValue));
+                    .collect(ImmutableMap.toImmutableMap(SapiInfo::getKey, SapiInfo::getValue));
         this.tvChannels =
             fixture.getTvChannels() == null
                 ? null
@@ -185,7 +185,7 @@ public class FixtureImpl implements Fixture {
                         .getCoverageInfo()
                         .getCoverage()
                         .stream()
-                        .map(SAPICoverage::getIncludes)
+                        .map(SapiCoverage::getIncludes)
                         .collect(Collectors.toList()),
                     fixture.getCoverageInfo().getCoveredFrom()
                 );
@@ -195,15 +195,15 @@ public class FixtureImpl implements Fixture {
             fixture.getReferenceIds() == null
                 ? null
                 : new ReferenceImpl(
-                    new ReferenceIdCI(
+                    new ReferenceIdCi(
                         fixture
                             .getReferenceIds()
                             .getReferenceId()
                             .stream()
                             .collect(
                                 Collectors.toMap(
-                                    SAPIReferenceIds.SAPIReferenceId::getName,
-                                    SAPIReferenceIds.SAPIReferenceId::getValue
+                                    SapiReferenceIds.SapiReferenceId::getName,
+                                    SapiReferenceIds.SapiReferenceId::getValue
                                 )
                             )
                     )
@@ -223,19 +223,19 @@ public class FixtureImpl implements Fixture {
                         )
                     )
                     .collect(ImmutableList.toImmutableList());
-        this.parentId = fixture.getParent() == null ? null : URN.parse(fixture.getParent().getId());
+        this.parentId = fixture.getParent() == null ? null : Urn.parse(fixture.getParent().getId());
         this.additionalParentsIds =
             fixture.getAdditionalParents() != null && !fixture.getAdditionalParents().getParent().isEmpty()
                 ? fixture
                     .getAdditionalParents()
                     .getParent()
                     .stream()
-                    .map(m -> URN.parse(m.getId()))
+                    .map(m -> Urn.parse(m.getId()))
                     .collect(ImmutableList.toImmutableList())
                 : null;
     }
 
-    public FixtureImpl(ExportableFixtureCI exportable) {
+    public FixtureImpl(ExportableFixtureCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.startTime = exportable.getStartTime();
         this.startTimeConfirmed = exportable.isStartTimeConfirmed();
@@ -256,10 +256,10 @@ public class FixtureImpl implements Fixture {
             exportable.getProducerInfo() != null ? new ProducerInfoImpl(exportable.getProducerInfo()) : null;
         this.references =
             exportable.getReferences() != null
-                ? new ReferenceImpl(new ReferenceIdCI(exportable.getReferences()))
+                ? new ReferenceImpl(new ReferenceIdCi(exportable.getReferences()))
                 : null;
         this.startTimeTbd = exportable.getStartTimeTbd();
-        this.replacedBy = exportable.getReplacedBy() != null ? URN.parse(exportable.getReplacedBy()) : null;
+        this.replacedBy = exportable.getReplacedBy() != null ? Urn.parse(exportable.getReplacedBy()) : null;
         this.scheduledStartTimeChanges =
             exportable.getScheduledStartTimeChanges() != null
                 ? exportable
@@ -271,14 +271,14 @@ public class FixtureImpl implements Fixture {
         this.parentId =
             exportable.getParentId() == null || exportable.getParentId().isEmpty()
                 ? null
-                : URN.parse(exportable.getParentId());
+                : Urn.parse(exportable.getParentId());
         this.additionalParentsIds =
             exportable.getAdditionalParentsIds() == null || exportable.getAdditionalParentsIds().isEmpty()
                 ? null
                 : exportable
                     .getAdditionalParentsIds()
                     .stream()
-                    .map(m -> URN.parse(m))
+                    .map(m -> Urn.parse(m))
                     .collect(ImmutableList.toImmutableList());
     }
 
@@ -377,12 +377,12 @@ public class FixtureImpl implements Fixture {
     }
 
     /**
-     * Returns the {@link URN} identifier of the replacement event
+     * Returns the {@link Urn} identifier of the replacement event
      *
-     * @return the {@link URN} identifier of the replacement event
+     * @return the {@link Urn} identifier of the replacement event
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return replacedBy;
     }
 
@@ -401,7 +401,7 @@ public class FixtureImpl implements Fixture {
      * @return id of the parent stage associated with the current instance
      */
     @Override
-    public URN getParentStageId() {
+    public Urn getParentStageId() {
         return parentId;
     }
 
@@ -410,7 +410,7 @@ public class FixtureImpl implements Fixture {
      * @return the list specifying the additional parent ids associated with the current instance
      */
     @Override
-    public List<URN> getAdditionalParentsIds() {
+    public List<Urn> getAdditionalParentsIds() {
         return additionalParentsIds;
     }
 
@@ -445,8 +445,8 @@ public class FixtureImpl implements Fixture {
         );
     }
 
-    public ExportableFixtureCI export() {
-        return new ExportableFixtureCI(
+    public ExportableFixtureCi export() {
+        return new ExportableFixtureCi(
             startTime,
             startTimeConfirmed,
             nextLiveTime,

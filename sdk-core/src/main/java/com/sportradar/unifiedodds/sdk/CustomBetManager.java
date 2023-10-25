@@ -9,7 +9,7 @@ import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
@@ -25,12 +25,12 @@ public interface CustomBetManager {
 
     /**
      * Returns an {@link AvailableSelections} instance providing the available selections
-     * for the event associated with the provided {@link URN} identifier
+     * for the event associated with the provided {@link Urn} identifier
      *
-     * @param eventId the {@link URN} identifier of the event for which the available selections should be returned
+     * @param eventId the {@link Urn} identifier of the event for which the available selections should be returned
      * @return an {@link AvailableSelections} providing the the available selections of the associated event
      */
-    AvailableSelections getAvailableSelections(URN eventId) throws CommunicationException;
+    AvailableSelections getAvailableSelections(Urn eventId) throws CommunicationException;
 
     /**
      * Returns an {@link Calculation} instance providing the probability for the specified selections

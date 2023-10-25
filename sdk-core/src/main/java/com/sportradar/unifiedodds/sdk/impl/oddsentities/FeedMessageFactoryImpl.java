@@ -10,11 +10,10 @@ import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.impl.FeedMessageFactory;
-import com.sportradar.unifiedodds.sdk.impl.SDKProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import com.sportradar.utils.URN;
-import lombok.NonNull;
+import com.sportradar.utils.Urn;
 
 /**
  * Created on 22/06/2017.
@@ -25,27 +24,20 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
 
     private final MarketFactory marketFactory;
     private final NamedValuesProvider namedValuesProvider;
-    private final SDKProducerManager producerManager;
+    private final SdkProducerManager producerManager;
 
     @Inject
     public FeedMessageFactoryImpl(
-        @NonNull final MarketFactory marketFactory,
-        @NonNull final NamedValuesProvider namedValuesProvider,
-        @NonNull final SDKProducerManager producerManager
+        final MarketFactory marketFactory,
+        final NamedValuesProvider namedValuesProvider,
+        final SdkProducerManager producerManager
     ) {
+        Preconditions.checkNotNull(marketFactory, "marketFactory");
+        Preconditions.checkNotNull(namedValuesProvider, "namedValuesProvider");
+        Preconditions.checkNotNull(producerManager, "producerManager");
         this.marketFactory = marketFactory;
         this.namedValuesProvider = namedValuesProvider;
         this.producerManager = producerManager;
-    }
-
-    @Override
-    public ProducerUp buildProducerUp(int producerId, ProducerUpReason reason, long timestamp) {
-        return new ProducerUpImpl(producerManager.getProducer(producerId), reason, timestamp);
-    }
-
-    @Override
-    public ProducerDown buildProducerDown(int producerId, ProducerDownReason reason, long timestamp) {
-        return new ProducerDownImpl(producerManager.getProducer(producerId), reason, timestamp);
     }
 
     @Override
@@ -70,7 +62,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         int producerId,
         long requestId,
         Long after,
-        URN eventId,
+        Urn eventId,
         String message,
         long timestamp
     ) {
@@ -87,7 +79,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> BetStop<T> buildBetStop(
         T sportEvent,
-        UFBetStop message,
+        UfBetStop message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
@@ -103,7 +95,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> FixtureChange<T> buildFixtureChange(
         T sportEvent,
-        UFFixtureChange message,
+        UfFixtureChange message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
@@ -119,7 +111,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> BetSettlement<T> buildBetSettlement(
         T sportEvent,
-        UFBetSettlement message,
+        UfBetSettlement message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
@@ -136,7 +128,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> RollbackBetSettlement<T> buildRollbackBetSettlement(
         T sportEvent,
-        UFRollbackBetSettlement message,
+        UfRollbackBetSettlement message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
@@ -153,10 +145,11 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> OddsChange<T> buildOddsChange(
         T sportEvent,
-        @NonNull final UFOddsChange message,
+        final UfOddsChange message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
+        Preconditions.checkNotNull(message, "message");
         return new OddsChangeImpl<>(
             sportEvent,
             message,
@@ -171,7 +164,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> RollbackBetCancel<T> buildRollbackBetCancel(
         T sportEvent,
-        UFRollbackBetCancel message,
+        UfRollbackBetCancel message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
@@ -188,7 +181,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> BetCancel<T> buildBetCancel(
         T sportEvent,
-        UFBetCancel message,
+        UfBetCancel message,
         byte[] rawMessage,
         MessageTimestamp timestamp
     ) {
@@ -205,7 +198,7 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
     @Override
     public <T extends SportEvent> CashOutProbabilities<T> buildCashOutProbabilities(
         T sportEvent,
-        UFCashout cashoutData,
+        UfCashout cashoutData,
         MessageTimestamp timestamp
     ) {
         return new CashOutProbabilitiesImpl<>(

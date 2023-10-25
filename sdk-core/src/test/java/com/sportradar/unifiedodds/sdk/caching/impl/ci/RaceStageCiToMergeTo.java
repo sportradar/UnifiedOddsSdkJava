@@ -3,21 +3,21 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
-import com.sportradar.unifiedodds.sdk.caching.StageCI;
+import com.sportradar.unifiedodds.sdk.caching.StageCi;
 
 class RaceStageCiToMergeTo {
 
-    private StageCI value;
+    private StageCi value;
 
-    private RaceStageCiToMergeTo(StageCI value) {
+    private RaceStageCiToMergeTo(StageCi value) {
         this.value = value;
     }
 
-    static RaceStageCiToMergeTo into(StageCI target) {
+    static RaceStageCiToMergeTo into(StageCi target) {
         return new RaceStageCiToMergeTo(target);
     }
 
-    StageCI getValue() {
+    StageCi getValue() {
         return value;
     }
 }

@@ -4,52 +4,17 @@
 
 package com.sportradar.unifiedodds.example.common;
 
-import com.sportradar.unifiedodds.sdk.SDKGlobalEventsListener;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDown;
+import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
-import com.sportradar.unifiedodds.sdk.oddsentities.ProducerUp;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.oddsentities.RecoveryInitiated;
+import com.sportradar.utils.Urn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({ "LineLength" })
-public class GlobalEventsListener implements SDKGlobalEventsListener {
+public class GlobalEventsListener implements UofGlobalEventsListener {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-
-    /**
-     * Invoked when a producer serving messages via the feed is down
-     * (the SDK detected an invalid producer state)
-     *
-     * @param producerDown A {@link ProducerDown} instance
-     *        specifying the associated producer and reason
-     *
-     * @deprecated from v2.0.8 in favour of {@link #onProducerStatusChange(ProducerStatus)}
-     */
-    @Override
-    public void onProducerDown(ProducerDown producerDown) {
-        logger.warn(
-            "Received producer down, reason: {}. Need to deactivate markets on all sport events currently handled by {}",
-            producerDown.getReason(),
-            producerDown.getProducer()
-        );
-    }
-
-    /**
-     * Invoked when a producer gets reawaken and the SDK gets up in sync with it
-     *
-     * @param producerUp the object containing information about the producer status update
-     *
-     * @deprecated from v2.0.8 in favour of {@link #onProducerStatusChange(ProducerStatus)}
-     */
-    @Override
-    public void onProducerUp(ProducerUp producerUp) {
-        logger.info(
-            "Received producer up, reason: {}. Need to activate/validate/check all available markets currently handled by {}",
-            producerUp.getReason(),
-            producerUp.getProducer()
-        );
-    }
 
     /**
      * Invoked when the producer status changes, some examples:
@@ -76,6 +41,9 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
         );
     }
 
+    @Override
+    public void onRecoveryInitiated(RecoveryInitiated recoveryInitiated) {}
+
     /**
      * Invoked when a connection to the feed is closed
      */
@@ -91,7 +59,7 @@ public class GlobalEventsListener implements SDKGlobalEventsListener {
      * @param requestId the identifier of the recovery request
      */
     @Override
-    public void onEventRecoveryCompleted(URN eventId, long requestId) {
+    public void onEventRecoveryCompleted(Urn eventId, long requestId) {
         logger.info("Received onEventRecoveryCompleted for event[{}], requestId: {}", eventId, requestId);
     }
 

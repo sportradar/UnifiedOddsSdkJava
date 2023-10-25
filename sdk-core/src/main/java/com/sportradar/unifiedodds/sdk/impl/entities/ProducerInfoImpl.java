@@ -6,10 +6,10 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfo;
-import com.sportradar.uf.sportsapi.datamodel.SAPIProductInfoLinks;
-import com.sportradar.uf.sportsapi.datamodel.SAPIStreamingChannels;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoCI;
+import com.sportradar.uf.sportsapi.datamodel.SapiProductInfo;
+import com.sportradar.uf.sportsapi.datamodel.SapiProductInfoLinks;
+import com.sportradar.uf.sportsapi.datamodel.SapiStreamingChannels;
+import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableProducerInfoCi;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfo;
 import com.sportradar.unifiedodds.sdk.entities.ProducerInfoLink;
 import com.sportradar.unifiedodds.sdk.entities.StreamingChannel;
@@ -68,7 +68,7 @@ public class ProducerInfoImpl implements ProducerInfo {
      *
      * @param productInfo - a product info data
      */
-    ProducerInfoImpl(SAPIProductInfo productInfo) {
+    ProducerInfoImpl(SapiProductInfo productInfo) {
         this.isAutoTraded = productInfo.getIsAutoTraded() != null;
         this.isInHostedStatistics = productInfo.getIsInHostedStatistics() != null;
         this.isInLiveCenterSoccer = productInfo.getIsInLiveCenterSoccer() != null;
@@ -82,7 +82,7 @@ public class ProducerInfoImpl implements ProducerInfo {
         this.streamingChannels = streamingChannels == null ? null : ImmutableList.copyOf(streamingChannels);
     }
 
-    ProducerInfoImpl(ExportableProducerInfoCI exportable) {
+    ProducerInfoImpl(ExportableProducerInfoCi exportable) {
         Preconditions.checkNotNull(exportable);
         this.isAutoTraded = exportable.isAutoTraded();
         this.isInHostedStatistics = exportable.isInHostedStatistics();
@@ -108,12 +108,12 @@ public class ProducerInfoImpl implements ProducerInfo {
     }
 
     /**
-     * Prepares the {@link SAPIProductInfoLinks} entities for further use in the {@link FixtureImpl}
+     * Prepares the {@link SapiProductInfoLinks} entities for further use in the {@link FixtureImpl}
      *
-     * @param links - the {@link SAPIProductInfoLinks} instance that should be prepped for further use
+     * @param links - the {@link SapiProductInfoLinks} instance that should be prepped for further use
      * @return - a {@link List} of processed {@link ProducerInfoLink} entities
      */
-    private List<ProducerInfoLink> prepareProductLinks(SAPIProductInfoLinks links) {
+    private List<ProducerInfoLink> prepareProductLinks(SapiProductInfoLinks links) {
         return links == null
             ? null
             : links
@@ -124,12 +124,12 @@ public class ProducerInfoImpl implements ProducerInfo {
     }
 
     /**
-     * Prepares the {@link SAPIStreamingChannels} entities for further use in the {@link FixtureImpl}
+     * Prepares the {@link SapiStreamingChannels} entities for further use in the {@link FixtureImpl}
      *
-     * @param streamingChannels - the {@link SAPIStreamingChannels} instance that should be prepped for further use
+     * @param streamingChannels - the {@link SapiStreamingChannels} instance that should be prepped for further use
      * @return - a {@link List} of processed {@link StreamingChannel} entities
      */
-    private List<StreamingChannel> prepareProductStreams(SAPIStreamingChannels streamingChannels) {
+    private List<StreamingChannel> prepareProductStreams(SapiStreamingChannels streamingChannels) {
         return streamingChannels == null
             ? null
             : streamingChannels
@@ -245,8 +245,8 @@ public class ProducerInfoImpl implements ProducerInfo {
         );
     }
 
-    public ExportableProducerInfoCI export() {
-        return new ExportableProducerInfoCI(
+    public ExportableProducerInfoCi export() {
+        return new ExportableProducerInfoCi(
             isAutoTraded,
             isInHostedStatistics,
             isInLiveCenterSoccer,

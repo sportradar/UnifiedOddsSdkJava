@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCI;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketMappingCi;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketMappingData;
@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,8 +34,7 @@ public class MarketMappingDataImpl implements MarketMappingData {
     private static final Logger logger = LoggerFactory.getLogger(MarketMappingDataImpl.class);
     private final int marketTypeId;
     private final Integer marketSubTypeId;
-    private final int producerId;
-    private final URN sportId;
+    private final Urn sportId;
     private final String sovTemplate;
     private final String validFor;
     private final MappingValidator mappingValidator;
@@ -47,12 +46,11 @@ public class MarketMappingDataImpl implements MarketMappingData {
     private final Set<Integer> producerIds;
 
     // constructor used to build static mapping data
-    MarketMappingDataImpl(MarketMappingCI mm) {
+    MarketMappingDataImpl(MarketMappingCi mm) {
         Preconditions.checkNotNull(mm);
 
         marketTypeId = mm.getMarketTypeId();
         marketSubTypeId = mm.getMarketSubTypeId();
-        producerId = mm.getProducerId();
         producerIds = mm.getProducerIds();
         sportId = mm.getSportId();
         sovTemplate = mm.getSovTemplate();
@@ -73,17 +71,12 @@ public class MarketMappingDataImpl implements MarketMappingData {
     }
 
     @Override
-    public int getProducerId() {
-        return producerId;
-    }
-
-    @Override
     public Set<Integer> getProducerIds() {
         return producerIds;
     }
 
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         return sportId;
     }
 
@@ -161,7 +154,7 @@ public class MarketMappingDataImpl implements MarketMappingData {
     }
 
     @Override
-    public boolean canMap(int producerId, URN sportId, Map<String, String> specifiers) {
+    public boolean canMap(int producerId, Urn sportId, Map<String, String> specifiers) {
         if (
             (producerIds == null || !producerIds.contains(producerId)) ||
             (this.sportId != null && !this.sportId.equals(sportId))

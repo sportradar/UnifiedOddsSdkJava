@@ -7,16 +7,16 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.TournamentCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
+import com.sportradar.unifiedodds.sdk.caching.TournamentCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings(
     {
-        "AbbreviationAsWordInName",
         "ClassFanOutComplexity",
         "ConstantName",
         "LineLength",
@@ -65,16 +64,16 @@ public class SeasonImpl extends SportEventImpl implements Season {
     /**
      * Initializes a new {@link SeasonImpl} instance
      *
-     * @param id an {@link URN} uniquely identifying the season associated with the current instance
-     * @param sportId an {@link URN} identifying the sport to which the season belongs
+     * @param id an {@link Urn} uniquely identifying the season associated with the current instance
+     * @param sportId an {@link Urn} identifying the sport to which the season belongs
      * @param locales a {@link List} of all languages for this instance
      * @param sportEventCache a {@link SportEventCache} instance used to retrieve sport events
      * @param sportEntityFactory a {@link SportEntityFactory} instance used to construct {@link Competition} instances
      * @param exceptionHandlingStrategy the desired exception handling strategy
      */
     public SeasonImpl(
-        URN id,
-        URN sportId,
+        Urn id,
+        Urn sportId,
         List<Locale> locales,
         SportEventCache sportEventCache,
         SportEntityFactory sportEntityFactory,
@@ -100,9 +99,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public String getName(Locale locale) {
-        SeasonCI seasonCI = provideSeasonCI();
+        SeasonCi seasonCi = provideSeasonCi();
 
-        return seasonCI != null ? seasonCI.getName(locale) : null;
+        return seasonCi != null ? seasonCi.getName(locale) : null;
     }
 
     /**
@@ -114,9 +113,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public Date getScheduledTime() {
-        SeasonCI seasonCI = provideSeasonCI();
+        SeasonCi seasonCi = provideSeasonCi();
 
-        return seasonCI != null ? seasonCI.getStartDate() : null;
+        return seasonCi != null ? seasonCi.getStartDate() : null;
     }
 
     /**
@@ -128,9 +127,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public Date getScheduledEndTime() {
-        SeasonCI seasonCI = provideSeasonCI();
+        SeasonCi seasonCi = provideSeasonCi();
 
-        return seasonCI != null ? seasonCI.getEndDate() : null;
+        return seasonCi != null ? seasonCi.getEndDate() : null;
     }
 
     /**
@@ -144,12 +143,12 @@ public class SeasonImpl extends SportEventImpl implements Season {
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return null;
     }
 
@@ -161,7 +160,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public SeasonCoverage getSeasonCoverage() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
@@ -180,7 +179,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public List<Group> getGroups() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
@@ -203,7 +202,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public List<Competition> getSchedule() {
-        List<URN> eventIds = null;
+        List<Urn> eventIds = null;
         try {
             for (Locale l : locales) {
                 eventIds = sportEventCache.getEventIds(id, l);
@@ -231,7 +230,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public Round getCurrentRound() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
@@ -250,9 +249,9 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public String getYear() {
-        SeasonCI seasonCI = provideSeasonCI();
+        SeasonCi seasonCi = provideSeasonCi();
 
-        return seasonCI == null ? null : seasonCI.getYear();
+        return seasonCi == null ? null : seasonCi.getYear();
     }
 
     /**
@@ -262,14 +261,14 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public TournamentInfo getTournamentInfo() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
             return null;
         }
 
-        SeasonCI season = seasonEndpointCi.getSeason(locales);
+        SeasonCi season = seasonEndpointCi.getSeason(locales);
         if (season == null) {
             handleException("TournamentCI.getSeason missing", null);
             return null;
@@ -280,11 +279,11 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        TournamentCI tournamentCI = null;
+        TournamentCi tournamentCi = null;
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(season.getTournamentId());
-            if (eventCacheItem instanceof TournamentCI) {
-                tournamentCI = (TournamentCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(season.getTournamentId());
+            if (eventCacheItem instanceof TournamentCi) {
+                tournamentCi = (TournamentCi) eventCacheItem;
             } else {
                 handleException("getTournamentInfo - Invalid cache item type", null);
             }
@@ -293,13 +292,13 @@ public class SeasonImpl extends SportEventImpl implements Season {
             return null;
         }
 
-        if (tournamentCI == null) {
+        if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
             return null;
         }
 
         return new TournamentInfoImpl(
-            tournamentCI,
+            tournamentCi,
             sportEventCache,
             sportEntityFactory,
             locales,
@@ -316,7 +315,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public List<Competitor> getCompetitors() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
@@ -344,7 +343,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public SportSummary getSport() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
@@ -371,7 +370,7 @@ public class SeasonImpl extends SportEventImpl implements Season {
      */
     @Override
     public TournamentCoverage getTournamentCoverage() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);
@@ -390,12 +389,12 @@ public class SeasonImpl extends SportEventImpl implements Season {
      * @return the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         if (super.getSportId() != null) {
             return super.getSportId();
         }
 
-        TournamentCI tournamentCi = loadSeasonEndpointCI();
+        TournamentCi tournamentCi = loadSeasonEndpointCi();
 
         if (tournamentCi == null) {
             handleException("TournamentCI missing", null);
@@ -470,11 +469,11 @@ public class SeasonImpl extends SportEventImpl implements Season {
      *
      * @return the associated cache item
      */
-    private TournamentCI loadSeasonEndpointCI() {
+    private TournamentCi loadSeasonEndpointCi() {
         try {
-            SportEventCI eventCacheItem = sportEventCache.getEventCacheItem(id);
-            if (eventCacheItem instanceof TournamentCI) {
-                return (TournamentCI) eventCacheItem;
+            SportEventCi eventCacheItem = sportEventCache.getEventCacheItem(id);
+            if (eventCacheItem instanceof TournamentCi) {
+                return (TournamentCi) eventCacheItem;
             }
             handleException("loadSeasonEndpointCI, CI type miss-match", null);
         } catch (CacheItemNotFoundException e) {
@@ -484,12 +483,12 @@ public class SeasonImpl extends SportEventImpl implements Season {
     }
 
     /**
-     * Provides the associated {@link SeasonCI} item
+     * Provides the associated {@link SeasonCi} item
      *
-     * @return the associated {@link SeasonCI} item
+     * @return the associated {@link SeasonCi} item
      */
-    private SeasonCI provideSeasonCI() {
-        TournamentCI seasonEndpointCi = loadSeasonEndpointCI();
+    private SeasonCi provideSeasonCi() {
+        TournamentCi seasonEndpointCi = loadSeasonEndpointCi();
 
         if (seasonEndpointCi == null) {
             handleException("TournamentCI missing", null);

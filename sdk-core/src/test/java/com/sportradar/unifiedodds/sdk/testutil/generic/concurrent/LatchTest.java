@@ -12,11 +12,22 @@ import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 public class LatchTest {
 
+    public static final int ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH = 3;
+
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
+
+    @Rule
+    public Timeout timeout = new Timeout(
+        ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH,
+        TimeUnit.SECONDS
+    );
+
     private final TimeUtilsStub.Factory timeUtilsStubs = TimeUtilsStub.threadSafe(
         new AtomicActionPerformer()
     );

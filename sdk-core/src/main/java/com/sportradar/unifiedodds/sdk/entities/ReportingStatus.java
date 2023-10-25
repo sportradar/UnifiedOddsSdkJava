@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.uf.datamodel.UFReportingStatus;
+import com.sportradar.uf.datamodel.UfReportingStatus;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -50,7 +50,7 @@ public enum ReportingStatus {
      * @param status - the sport event status received as a message
      * @return - if the received sport event status is in a known state, the mapped state; otherwise {@link #Unknown}
      */
-    public static ReportingStatus valueFromMessageStatus(UFReportingStatus status) {
+    public static ReportingStatus valueFromMessageStatus(UfReportingStatus status) {
         if (status != null) {
             Optional<ReportingStatus> first = Arrays
                 .stream(ReportingStatus.values())

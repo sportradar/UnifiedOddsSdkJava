@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 
 /**
  * Represents all sport events(races, matches, tournaments, ....)
@@ -15,22 +15,22 @@ import com.sportradar.utils.URN;
 abstract class SportEventImpl implements SportEvent {
 
     /**
-     * An {@link URN} uniquely identifying the tournament associated with the current instance
+     * An {@link Urn} uniquely identifying the tournament associated with the current instance
      */
-    final URN id;
+    final Urn id;
 
     /**
-     * A {@link URN} uniquely identifying the sport to which the event is related
+     * A {@link Urn} uniquely identifying the sport to which the event is related
      */
-    final URN sportId;
+    final Urn sportId;
 
     /**
      * Initializes a new instance of {@link SportEventImpl}
      *
-     * @param id an {@link URN} uniquely identifying the tournament
+     * @param id an {@link Urn} uniquely identifying the tournament
      * @param sportId the identifier of the sport to which the event belongs
      */
-    SportEventImpl(URN id, URN sportId) {
+    SportEventImpl(Urn id, Urn sportId) {
         Preconditions.checkNotNull(id);
 
         this.id = id;
@@ -38,12 +38,12 @@ abstract class SportEventImpl implements SportEvent {
     }
 
     /**
-     * Returns an {@link URN} uniquely identifying the tournament associated with the current instance
+     * Returns an {@link Urn} uniquely identifying the tournament associated with the current instance
      *
-     * @return - an {@link URN} uniquely identifying the tournament associated with the current instance
+     * @return - an {@link Urn} uniquely identifying the tournament associated with the current instance
      */
     @Override
-    public URN getId() {
+    public Urn getId() {
         return id;
     }
 
@@ -53,7 +53,7 @@ abstract class SportEventImpl implements SportEvent {
      * @return - the unique sport identifier to which this event is associated
      */
     @Override
-    public URN getSportId() {
+    public Urn getSportId() {
         return sportId;
     }
 }

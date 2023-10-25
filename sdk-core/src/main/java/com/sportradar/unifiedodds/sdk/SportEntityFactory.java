@@ -4,17 +4,17 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import com.sportradar.unifiedodds.sdk.caching.SportEventCI;
+import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Defines methods implemented by classes used to build {@link Sport} and {@link Tournament} instances.
  */
-@SuppressWarnings({ "AbbreviationAsWordInName", "LineLength" })
+@SuppressWarnings({ "LineLength" })
 public interface SportEntityFactory {
     /**
      * Builds a {@link List} of available {@link Sport} instances
@@ -28,12 +28,12 @@ public interface SportEntityFactory {
     /**
      * Builds a {@link Sport} instance with the provided data
      *
-     * @param sportId - the {@link URN} sport identifier
+     * @param sportId - the {@link Urn} sport identifier
      * @param locales - a {@link List} of locales specifying the languages used in the returned instance
      * @return - the constructed {@link Sport} instance
      * @throws ObjectNotFoundException if the requested sport failed to build or was not found
      */
-    Sport buildSport(URN sportId, List<Locale> locales) throws ObjectNotFoundException;
+    Sport buildSport(Urn sportId, List<Locale> locales) throws ObjectNotFoundException;
 
     /**
      * Builds the associated category summary
@@ -43,7 +43,7 @@ public interface SportEntityFactory {
      * @return a {@link CategorySummary} associated with the current instance
      * @throws ObjectNotFoundException if the category CI could not be found
      */
-    CategorySummary buildCategory(URN id, List<Locale> locales) throws ObjectNotFoundException;
+    CategorySummary buildCategory(Urn id, List<Locale> locales) throws ObjectNotFoundException;
 
     /**
      * Builds the associated category sport summary
@@ -53,61 +53,61 @@ public interface SportEntityFactory {
      * @return a {@link SportSummary} associated with the current instance
      * @throws ObjectNotFoundException if the category CI could not be found
      */
-    SportSummary buildSportForCategory(URN categoryId, List<Locale> locales) throws ObjectNotFoundException;
+    SportSummary buildSportForCategory(Urn categoryId, List<Locale> locales) throws ObjectNotFoundException;
 
     /**
      * Builds the {@link Competition} derived class based on the provided data
      *
-     * @param id - the {@link URN} specifying the identifier of the sport event
+     * @param id - the {@link Urn} specifying the identifier of the sport event
      * @param locales - a {@link List} of locales specifying the languages used in the returned instance
      * @param buildBasicEventImpl - an indication if the basic event entity should be built if the mapping type is unknown
      * @return - the constructed object which is derived from the {@link Competition}
      * @throws ObjectNotFoundException if the requested sport event object could not be provided(failure built, api request errors,..)
      */
-    SportEvent buildSportEvent(URN id, List<Locale> locales, boolean buildBasicEventImpl)
+    SportEvent buildSportEvent(Urn id, List<Locale> locales, boolean buildBasicEventImpl)
         throws ObjectNotFoundException;
 
     /**
      * Builds the {@link SportEvent} derived class based on the provided data
      *
-     * @param id - the {@link URN} specifying the identifier of the sport event
-     * @param sportId - the {@link URN} specifying the sport type of the event
+     * @param id - the {@link Urn} specifying the identifier of the sport event
+     * @param sportId - the {@link Urn} specifying the sport type of the event
      * @param locales - a {@link List} of locales specifying the languages used in the returned instance
      * @param buildBasicEventImpl - an indication if the basic event entity should be built if the mapping type is unknown
      * @return - the constructed object
      * @throws ObjectNotFoundException if the requested sport event object could not be provided(failure built, api request errors,..)
      */
-    SportEvent buildSportEvent(URN id, URN sportId, List<Locale> locales, boolean buildBasicEventImpl)
+    SportEvent buildSportEvent(Urn id, Urn sportId, List<Locale> locales, boolean buildBasicEventImpl)
         throws ObjectNotFoundException;
 
     /**
      * Builds a list of {@link Competition} derived classes based on the provided data
      *
-     * @param ids - the list of {@link URN} specifying the identifier of the sport events to be built
+     * @param ids - the list of {@link Urn} specifying the identifier of the sport events to be built
      * @param locales - a {@link List} of locales specifying the languages used in the returned instance
      * @return - the constructed objects
      * @throws ObjectNotFoundException if the requested sport event objects could not be provided(failure built, api request errors,..)
      */
-    List<Competition> buildSportEvents(List<URN> ids, List<Locale> locales) throws ObjectNotFoundException;
+    List<Competition> buildSportEvents(List<Urn> ids, List<Locale> locales) throws ObjectNotFoundException;
 
     /**
-     * Builds a {@link Competitor} instance associated with the provided {@link URN}
+     * Builds a {@link Competitor} instance associated with the provided {@link Urn}
      *
      * @param id the competitor identifier
      * @param qualifier the competitor qualifier (if available)     *
      * @param division the competitor division (if available)
      * @param isVirtual indication if the competitor is marked as virtual
-     * @param parentSportEventCI the parent {@link SportEventCI} this {@link Competitor} belongs to
+     * @param parentSportEventCi the parent {@link SportEventCi} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed object
      * @throws ObjectNotFoundException if the requested instance could not be provided
      */
     Competitor buildCompetitor(
-        URN id,
+        Urn id,
         String qualifier,
         Integer division,
         Boolean isVirtual,
-        SportEventCI parentSportEventCI,
+        SportEventCi parentSportEventCi,
         List<Locale> locales
     ) throws ObjectNotFoundException;
 
@@ -116,13 +116,13 @@ public interface SportEntityFactory {
      * <i>Notice: a {@link com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException} is thrown if any problems are encountered</i>
      *
      * @param competitorIds the ids representing the instances that should be built
-     * @param parentSportEventCI the parent {@link com.sportradar.unifiedodds.sdk.caching.SportEventCI} this {@link Competitor} belongs to
+     * @param parentSportEventCi the parent {@link SportEventCi} this {@link Competitor} belongs to
      * @param locales the {@link Locale}s in which the data should be available
      * @return the constructed objects
      */
     List<Competitor> buildStreamCompetitors(
-        List<URN> competitorIds,
-        SportEventCI parentSportEventCI,
+        List<Urn> competitorIds,
+        SportEventCi parentSportEventCi,
         List<Locale> locales
     );
 
@@ -134,6 +134,6 @@ public interface SportEntityFactory {
      * @return the constructed object
      * @throws ObjectNotFoundException  if the requested instance could not be provided
      */
-    PlayerProfile buildPlayerProfile(URN id, List<Locale> locales, List<URN> possibleAssociatedCompetitorIds)
+    PlayerProfile buildPlayerProfile(Urn id, List<Locale> locales, List<Urn> possibleAssociatedCompetitorIds)
         throws ObjectNotFoundException;
 }

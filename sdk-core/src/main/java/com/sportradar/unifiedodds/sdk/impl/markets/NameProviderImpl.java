@@ -7,8 +7,8 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.CompetitorCI;
-import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCI;
+import com.sportradar.unifiedodds.sdk.caching.CompetitorCi;
+import com.sportradar.unifiedodds.sdk.caching.PlayerProfileCi;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.Competition;
@@ -23,7 +23,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.SdkHelper;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -65,7 +65,7 @@ public class NameProviderImpl implements NameProvider {
     private final Map<String, String> marketSpecifiers;
     private final int producerId;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
-    private final Supplier<List<URN>> competitorList;
+    private final Supplier<List<Urn>> competitorList;
 
     private Date lastReload = new Date(0);
 
@@ -308,15 +308,15 @@ public class NameProviderImpl implements NameProvider {
             .collect(Collectors.toMap(l -> l, l -> new ArrayList<>(idParts.length)));
 
         for (String idPart : idParts) {
-            URN profileId;
+            Urn profileId;
             try {
-                profileId = URN.parse(idPart);
+                profileId = Urn.parse(idPart);
             } catch (UnsupportedUrnFormatException ex) {
                 throw new UnsupportedUrnFormatException("OutcomeId=" + idPart + " is not a valid URN", ex);
             }
 
             if (idPart.startsWith(PLAYER_PROFILE_MARKET_PREFIX)) {
-                PlayerProfileCI playerProfile = profileCache.getPlayerProfile(
+                PlayerProfileCi playerProfile = profileCache.getPlayerProfile(
                     profileId,
                     locales,
                     competitorList.get()
@@ -328,7 +328,7 @@ public class NameProviderImpl implements NameProvider {
                 idPart.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX) ||
                 idPart.startsWith(SIMPLETEAM_PROFILE_MARKET_PREFIX)
             ) {
-                CompetitorCI competitorProfile = profileCache.getCompetitorProfile(profileId, locales);
+                CompetitorCi competitorProfile = profileCache.getCompetitorProfile(profileId, locales);
                 for (Locale locale : locales) {
                     names.get(locale).add(competitorProfile.getNames(locales).get(locale));
                 }
@@ -458,7 +458,7 @@ public class NameProviderImpl implements NameProvider {
         }
     }
 
-    private static List<URN> provideSportEventCompetitorIds(SportEvent sportEvent) {
+    private static List<Urn> provideSportEventCompetitorIds(SportEvent sportEvent) {
         Preconditions.checkNotNull(sportEvent);
 
         if (sportEvent instanceof Competition) {

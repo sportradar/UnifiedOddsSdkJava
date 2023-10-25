@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.Locale;
 
@@ -18,10 +18,10 @@ public class SportEventGenericImpl extends SportEventImpl implements SportEvent 
     /**
      * Initializes a new instance of {@link SportEventGenericImpl}
      *
-     * @param id an {@link URN} uniquely identifying the tournament
+     * @param id an {@link Urn} uniquely identifying the tournament
      * @param sportId the identifier of the sport to which the event belongs
      */
-    public SportEventGenericImpl(URN id, URN sportId) {
+    public SportEventGenericImpl(Urn id, Urn sportId) {
         super(id, sportId);
     }
 
@@ -71,12 +71,12 @@ public class SportEventGenericImpl extends SportEventImpl implements SportEvent 
     }
 
     /**
-     * Returns the {@link URN} specifying the replacement sport event for the current instance
+     * Returns the {@link Urn} specifying the replacement sport event for the current instance
      *
-     * @return if available, the {@link URN} specifying the replacement sport event for the current instance
+     * @return if available, the {@link Urn} specifying the replacement sport event for the current instance
      */
     @Override
-    public URN getReplacedBy() {
+    public Urn getReplacedBy() {
         return null;
     }
 }

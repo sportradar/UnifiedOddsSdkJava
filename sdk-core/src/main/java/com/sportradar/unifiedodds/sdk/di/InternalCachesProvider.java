@@ -2,9 +2,9 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import com.google.common.cache.Cache;
 import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCI;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCI;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
+import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCi;
+import com.sportradar.utils.Urn;
 import java.io.Closeable;
 import java.util.Date;
 
@@ -14,29 +14,29 @@ import java.util.Date;
  * @author e.roznik
  */
 public interface InternalCachesProvider extends Closeable {
-    Cache<URN, SportCI> getSportDataCache();
+    Cache<Urn, SportCi> getSportDataCache();
 
-    Cache<URN, CategoryCI> getCategoryDataCache();
+    Cache<Urn, CategoryCi> getCategoryDataCache();
 
-    Cache<URN, SportEventCI> getSportEventCache();
+    Cache<Urn, SportEventCi> getSportEventCache();
 
-    Cache<URN, PlayerProfileCI> getPlayerProfileCache();
+    Cache<Urn, PlayerProfileCi> getPlayerProfileCache();
 
-    Cache<URN, CompetitorCI> getCompetitorCache();
+    Cache<Urn, CompetitorCi> getCompetitorCache();
 
-    Cache<URN, CompetitorCI> getSimpleTeamCompetitorCache();
+    Cache<Urn, CompetitorCi> getSimpleTeamCompetitorCache();
 
-    Cache<String, SportEventStatusCI> getSportEventStatusCache();
+    Cache<String, SportEventStatusCi> getSportEventStatusCache();
 
-    Cache<String, MarketDescriptionCI> getInvariantMarketCache();
+    Cache<String, MarketDescriptionCi> getInvariantMarketCache();
 
-    Cache<String, MarketDescriptionCI> getVariantMarketCache();
+    Cache<String, MarketDescriptionCi> getVariantMarketCache();
 
     Cache<String, String> getDispatchedFixtureChanges();
 
-    Cache<String, VariantDescriptionCI> getVariantDescriptionCache();
+    Cache<String, VariantDescriptionCi> getVariantDescriptionCache();
 
-    Cache<URN, Date> getFixtureTimestampCache();
+    Cache<Urn, Date> getFixtureTimestampCache();
 
     Cache<String, Date> getIgnoreEventsTimelineCache();
 }

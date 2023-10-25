@@ -10,7 +10,6 @@ import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.EventMessage;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-import lombok.NonNull;
 
 /**
  * Created on 22/06/2017.
@@ -25,12 +24,15 @@ abstract class EventMessageImpl<T extends SportEvent> implements EventMessage<T>
     private final Long requestId;
 
     EventMessageImpl(
-        @NonNull final T sportEvent,
-        @NonNull final byte[] rawMessage,
+        final T sportEvent,
+        final byte[] rawMessage,
         Producer producer,
-        @NonNull final MessageTimestamp timestamp,
+        final MessageTimestamp timestamp,
         Long requestId
     ) {
+        Preconditions.checkNotNull(sportEvent, "sportEvent");
+        Preconditions.checkNotNull(rawMessage, "rawMessage");
+        Preconditions.checkNotNull(timestamp, "timestamp");
         this.producer = producer;
         this.timestamp =
             new MessageTimestampImpl(
@@ -82,14 +84,6 @@ abstract class EventMessageImpl<T extends SportEvent> implements EventMessage<T>
     @Override
     public Producer getProducer() {
         return producer;
-    }
-
-    /**
-     * @return when was this message created in milliseconds since EPOCH UTC
-     */
-    @Override
-    public long getTimestamp() {
-        return timestamp.getCreated();
     }
 
     /**

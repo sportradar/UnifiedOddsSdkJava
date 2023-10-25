@@ -2,13 +2,15 @@ package com.sportradar.unifiedodds.sdk.shared;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
+import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.impl.apireaders.MessageAndActionExtractor;
 import java.util.*;
-import org.apache.http.HttpStatus;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.HttpStatus;
 
 @SuppressWarnings(
     {
@@ -57,11 +59,12 @@ public class TestHttpHelper extends HttpHelper {
 
     @Inject
     public TestHttpHelper(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
-        @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer
+        MessageAndActionExtractor messageExtractor,
+        UserAgentProvider userAgentProvider
     ) {
-        super(config, httpClient, apiDeserializer);
+        super(config, httpClient, messageExtractor, userAgentProvider);
         UriReplacements = new HashMap<>();
         PostResponses = new ArrayList<>();
         PutResponses = new ArrayList<>();

@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
-import com.sportradar.uf.datamodel.UFMarketStatus;
+import com.sportradar.uf.datamodel.UfMarketStatus;
 
 /**
  * MarketStatus describes the status for a market (line) and it can be in one of three states
@@ -27,7 +27,7 @@ public enum MarketStatus {
     Cancelled,
     HandedOver;
 
-    public static MarketStatus fromFeedValue(UFMarketStatus status) {
+    public static MarketStatus fromFeedValue(UfMarketStatus status) {
         if (status == null) {
             return MarketStatus.Active;
         } else {

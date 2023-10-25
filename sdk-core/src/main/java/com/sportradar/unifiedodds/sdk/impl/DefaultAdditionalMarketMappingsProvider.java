@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 
 /**
@@ -19,7 +19,7 @@ public final class DefaultAdditionalMarketMappingsProvider
 
     @Inject
     DefaultAdditionalMarketMappingsProvider(
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         LogHttpDataFetcher logHttpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {

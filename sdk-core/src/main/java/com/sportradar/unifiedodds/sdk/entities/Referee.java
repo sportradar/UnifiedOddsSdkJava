@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public interface Referee {
      *
      * @return - the unique identifier of the current {@link Referee} instance
      */
-    URN getId();
+    Urn getId();
 
     /**
      * Returns the name of the referee represented by the current {@link Referee} instance

@@ -8,9 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.OperationManager;
-import com.sportradar.unifiedodds.sdk.SDKConnectionStatusListener;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.RuntimeConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 public class ConfiguredConnectionFactoryTest {
 
     private static final String ANY = "any";
-    private final SDKInternalConfiguration config = createSuitableConfig();
+    private final SdkInternalConfiguration config = createSuitableConfig();
 
     private final ConnectionFactory rabbitConnectionFactory = mock(ConnectionFactory.class);
 
@@ -47,7 +47,7 @@ public class ConfiguredConnectionFactoryTest {
         rabbitConnectionFactory,
         config,
         ANY,
-        mock(SDKConnectionStatusListener.class),
+        mock(SdkConnectionStatusListener.class),
         executorService,
         timeUtils
     );
@@ -64,7 +64,7 @@ public class ConfiguredConnectionFactoryTest {
                     null,
                     config,
                     ANY,
-                    mock(SDKConnectionStatusListener.class),
+                    mock(SdkConnectionStatusListener.class),
                     mock(ExecutorService.class),
                     timeUtils
                 )
@@ -80,7 +80,7 @@ public class ConfiguredConnectionFactoryTest {
                     rabbitConnectionFactory,
                     null,
                     ANY,
-                    mock(SDKConnectionStatusListener.class),
+                    mock(SdkConnectionStatusListener.class),
                     mock(ExecutorService.class),
                     timeUtils
                 )
@@ -112,7 +112,7 @@ public class ConfiguredConnectionFactoryTest {
                     rabbitConnectionFactory,
                     config,
                     ANY,
-                    mock(SDKConnectionStatusListener.class),
+                    mock(SdkConnectionStatusListener.class),
                     null,
                     timeUtils
                 )
@@ -128,7 +128,7 @@ public class ConfiguredConnectionFactoryTest {
                     rabbitConnectionFactory,
                     config,
                     ANY,
-                    mock(SDKConnectionStatusListener.class),
+                    mock(SdkConnectionStatusListener.class),
                     mock(ExecutorService.class),
                     null
                 )
@@ -233,7 +233,7 @@ public class ConfiguredConnectionFactoryTest {
             rabbitConnectionFactory,
             config,
             version,
-            mock(SDKConnectionStatusListener.class),
+            mock(SdkConnectionStatusListener.class),
             mock(ExecutorService.class),
             timeUtils
         );
@@ -355,7 +355,7 @@ public class ConfiguredConnectionFactoryTest {
             rabbitConnectionFactory,
             config,
             ANY,
-            mock(SDKConnectionStatusListener.class),
+            mock(SdkConnectionStatusListener.class),
             executorService,
             timeUtils
         );
@@ -372,7 +372,7 @@ public class ConfiguredConnectionFactoryTest {
             rabbitConnectionFactory,
             config,
             ANY,
-            mock(SDKConnectionStatusListener.class),
+            mock(SdkConnectionStatusListener.class),
             executorService,
             timeUtils
         );
@@ -391,10 +391,10 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldSetConfiguredTimeout() throws Exception {
-        try (final val operationManager = Mockito.mockStatic(OperationManager.class)) {
+        try (final val operationManager = Mockito.mockStatic(RuntimeConfiguration.class)) {
             final int configuredTimeoutSeconds = 5;
             operationManager
-                .when(OperationManager::getRabbitConnectionTimeout)
+                .when(RuntimeConfiguration::getRabbitConnectionTimeout)
                 .thenReturn(configuredTimeoutSeconds);
 
             configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
@@ -408,9 +408,9 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldSetConfiguredHeartbeat() throws Exception {
-        try (final val operationManager = Mockito.mockStatic(OperationManager.class)) {
+        try (final val operationManager = Mockito.mockStatic(RuntimeConfiguration.class)) {
             final int configuredHeartbeat = 30;
-            operationManager.when(OperationManager::getRabbitHeartbeat).thenReturn(configuredHeartbeat);
+            operationManager.when(RuntimeConfiguration::getRabbitHeartbeat).thenReturn(configuredHeartbeat);
 
             configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
 
@@ -436,8 +436,8 @@ public class ConfiguredConnectionFactoryTest {
         verification.accept(captor.getValue());
     }
 
-    private static SDKInternalConfiguration createSuitableConfig() {
-        SDKInternalConfiguration config = mock(SDKInternalConfiguration.class);
+    private static SdkInternalConfiguration createSuitableConfig() {
+        SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         when(config.getAccessToken()).thenReturn("anyAccessToken");
         return config;
     }

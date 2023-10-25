@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.sportradar.unifiedodds.sdk.entities.Assist;
 import com.sportradar.unifiedodds.sdk.entities.Player;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,11 +26,11 @@ public class AssistImpl extends PlayerImpl implements Assist {
     /**
      * Initializes a new instance of the {@link AssistImpl} class
      *
-     * @param id    - the unique {@link URN} identifier representing the current {@link Player} instance
+     * @param id    - the unique {@link Urn} identifier representing the current {@link Player} instance
      * @param names - a {@link Map} containing the available player name translations
      * @param type  - a {@link String} specifying the type of the assist
      */
-    public AssistImpl(URN id, Map<Locale, String> names, String type) {
+    public AssistImpl(Urn id, Map<Locale, String> names, String type) {
         super(id, names);
         this.type = type;
     }

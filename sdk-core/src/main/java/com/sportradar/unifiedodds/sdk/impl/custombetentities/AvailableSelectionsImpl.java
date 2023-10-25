@@ -6,12 +6,12 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPIEventType;
-import com.sportradar.uf.custombet.datamodel.CAPIMarketsType;
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiEventType;
+import com.sportradar.uf.custombet.datamodel.CapiMarketsType;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 
 /**
@@ -21,9 +21,9 @@ import java.util.List;
 public class AvailableSelectionsImpl implements AvailableSelections {
 
     /**
-     * An {@link URN} specifying the id of the event
+     * An {@link Urn} specifying the id of the event
      */
-    private final URN event;
+    private final Urn event;
 
     /**
      * An {@link List} specifying available markets for the event
@@ -32,12 +32,12 @@ public class AvailableSelectionsImpl implements AvailableSelections {
 
     private final String generatedAt;
 
-    public AvailableSelectionsImpl(CAPIAvailableSelections availableSelections) {
+    public AvailableSelectionsImpl(CapiAvailableSelections availableSelections) {
         Preconditions.checkNotNull(availableSelections);
 
-        this.event = URN.parse(availableSelections.getEvent().getId());
+        this.event = Urn.parse(availableSelections.getEvent().getId());
 
-        CAPIMarketsType markets = availableSelections.getEvent().getMarkets();
+        CapiMarketsType markets = availableSelections.getEvent().getMarkets();
         this.markets =
             (markets != null)
                 ? markets.getMarkets().stream().map(MarketImpl::new).collect(ImmutableList.toImmutableList())
@@ -46,12 +46,12 @@ public class AvailableSelectionsImpl implements AvailableSelections {
         this.generatedAt = availableSelections.getGeneratedAt();
     }
 
-    public AvailableSelectionsImpl(CAPIEventType eventType, String generatedAt) {
+    public AvailableSelectionsImpl(CapiEventType eventType, String generatedAt) {
         Preconditions.checkNotNull(eventType);
 
-        this.event = URN.parse(eventType.getId());
+        this.event = Urn.parse(eventType.getId());
 
-        CAPIMarketsType markets = eventType.getMarkets();
+        CapiMarketsType markets = eventType.getMarkets();
         this.markets =
             (markets != null)
                 ? markets.getMarkets().stream().map(MarketImpl::new).collect(ImmutableList.toImmutableList())
@@ -61,7 +61,7 @@ public class AvailableSelectionsImpl implements AvailableSelections {
     }
 
     @Override
-    public URN getEvent() {
+    public Urn getEvent() {
         return event;
     }
 

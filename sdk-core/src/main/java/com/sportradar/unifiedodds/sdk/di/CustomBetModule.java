@@ -8,12 +8,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
-import com.sportradar.uf.custombet.datamodel.CAPIAvailableSelections;
-import com.sportradar.uf.custombet.datamodel.CAPICalculationResponse;
-import com.sportradar.uf.custombet.datamodel.CAPIFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilder;
 import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilderImpl;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
@@ -32,8 +32,8 @@ public class CustomBetModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<CAPIAvailableSelections> providesAvailableSelectionsDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<CapiAvailableSelections> providesAvailableSelectionsDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -41,8 +41,8 @@ public class CustomBetModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<CAPICalculationResponse> providesCalculateProbabilityDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<CapiCalculationResponse> providesCalculateProbabilityDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
     ) {
@@ -50,8 +50,8 @@ public class CustomBetModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<CAPIFilteredCalculationResponse> providesCalculateProbabilityFilterDataProvider(
-        SDKInternalConfiguration cfg,
+    private DataProvider<CapiFilteredCalculationResponse> providesCalculateProbabilityFilterDataProvider(
+        SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,
         @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
     ) {

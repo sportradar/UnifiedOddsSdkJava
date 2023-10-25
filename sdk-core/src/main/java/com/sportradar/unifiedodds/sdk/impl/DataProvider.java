@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderStreamException;
@@ -15,9 +15,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 /**
  * The generic class used to get various data from the Unified API endpoints
@@ -36,7 +36,7 @@ public class DataProvider<TOut> {
 
     public DataProvider(
         String uriFormat,
-        SDKInternalConfiguration config,
+        SdkInternalConfiguration config,
         HttpDataFetcher logHttpDataFetcher,
         Deserializer deserializer
     ) {

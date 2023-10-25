@@ -6,8 +6,8 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.impl.SportsInfoManagerImpl;
-import com.sportradar.utils.URN;
+import com.sportradar.unifiedodds.sdk.impl.SportDataProviderImpl;
+import com.sportradar.utils.Urn;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -19,8 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
-import org.yaml.snakeyaml.error.Mark;
 
 @SuppressWarnings(
     {
@@ -44,12 +42,12 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
     private class EventUpdate {
 
-        URN id;
+        Urn id;
         Date updated;
         SportEvent sportEvent;
         boolean isFixture;
 
-        public EventUpdate(URN id, Date updated, SportEvent sportEvent, boolean isFixture) {
+        public EventUpdate(Urn id, Date updated, SportEvent sportEvent, boolean isFixture) {
             this.id = id;
             this.updated = updated;
             this.sportEvent = sportEvent;
@@ -59,11 +57,11 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
     private static final Logger executionLogger = LoggerFactory.getLogger(EventChangeManagerImpl.class);
     private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
-        LoggerDefinitions.UFSdkClientInteractionLog.class
+        LoggerDefinitions.UfSdkClientInteractionLog.class
     );
-    private final SDKInternalConfiguration configuration;
+    private final SdkInternalConfiguration configuration;
+    private final SportDataProviderImpl sportDataProvider;
     private final SportEventCache sportEventCache;
-    private final SportsInfoManagerImpl sportsInfoManager;
     private final ScheduledExecutorService fixtureTaskScheduler;
     private final ScheduledExecutorService resultTaskScheduler;
     private ScheduledFuture<?> fixtureFuture;
@@ -81,15 +79,15 @@ public class EventChangeManagerImpl implements EventChangeManager {
 
     @Inject
     EventChangeManagerImpl(
-        SportsInfoManager sportsInfoManager,
+        SportDataProvider sportDataProvider,
         SportEventCache sportEventCache,
-        SDKInternalConfiguration configuration
+        SdkInternalConfiguration configuration
     ) {
-        Preconditions.checkNotNull(sportsInfoManager);
+        Preconditions.checkNotNull(sportDataProvider);
         Preconditions.checkNotNull(sportEventCache);
         Preconditions.checkNotNull(configuration);
 
-        this.sportsInfoManager = (SportsInfoManagerImpl) sportsInfoManager;
+        this.sportDataProvider = (SportDataProviderImpl) sportDataProvider;
         this.sportEventCache = sportEventCache;
         this.configuration = configuration;
         this.fixtureTaskScheduler = Executors.newScheduledThreadPool(1);
@@ -317,11 +315,11 @@ public class EventChangeManagerImpl implements EventChangeManager {
             List<FixtureChange> changes;
             if (lastFixtureChange == null) {
                 executionLogger.info("Invoking getFixtureChanges. After=null");
-                changes = sportsInfoManager.getFixtureChanges(configuration.getDefaultLocale());
+                changes = sportDataProvider.getFixtureChanges(configuration.getDefaultLocale());
             } else {
                 executionLogger.info("Invoking getFixtureChanges. After={}", lastFixtureChange);
                 changes =
-                    sportsInfoManager.getFixtureChanges(
+                    sportDataProvider.getFixtureChanges(
                         lastFixtureChange,
                         null,
                         configuration.getDefaultLocale()
@@ -355,7 +353,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
                     }
                 }
                 sportEventCache.purgeCacheItem(fixtureChange.getSportEventId());
-                SportEvent sportEvent = sportsInfoManager.getSportEventForEventChange(
+                SportEvent sportEvent = sportDataProvider.getSportEventForEventChange(
                     fixtureChange.getSportEventId()
                 );
                 eventUpdates.add(
@@ -400,11 +398,11 @@ public class EventChangeManagerImpl implements EventChangeManager {
             List<ResultChange> changes;
             if (lastResultChange == null) {
                 executionLogger.info("Invoking getResultChanges. After=null");
-                changes = sportsInfoManager.getResultChanges(configuration.getDefaultLocale());
+                changes = sportDataProvider.getResultChanges(configuration.getDefaultLocale());
             } else {
                 executionLogger.info("Invoking getResultChanges. After={}", lastFixtureChange);
                 changes =
-                    sportsInfoManager.getResultChanges(
+                    sportDataProvider.getResultChanges(
                         lastFixtureChange,
                         null,
                         configuration.getDefaultLocale()
@@ -438,7 +436,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
                     }
                 }
                 sportEventCache.purgeCacheItem(resultChange.getSportEventId());
-                SportEvent sportEvent = sportsInfoManager.getSportEventForEventChange(
+                SportEvent sportEvent = sportDataProvider.getSportEventForEventChange(
                     resultChange.getSportEventId()
                 );
                 eventUpdates.add(

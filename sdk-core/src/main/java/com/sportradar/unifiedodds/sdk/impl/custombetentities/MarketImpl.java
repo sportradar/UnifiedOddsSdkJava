@@ -6,8 +6,8 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CAPIMarketType;
-import com.sportradar.uf.custombet.datamodel.CAPIOutcomeType;
+import com.sportradar.uf.custombet.datamodel.CapiMarketType;
+import com.sportradar.uf.custombet.datamodel.CapiOutcomeType;
 import com.sportradar.unifiedodds.sdk.custombetentities.Market;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class MarketImpl implements Market {
      */
     private final List<String> outcomes;
 
-    MarketImpl(CAPIMarketType market) {
+    MarketImpl(CapiMarketType market) {
         Preconditions.checkNotNull(market);
 
         this.id = market.getId();
@@ -40,7 +40,7 @@ public class MarketImpl implements Market {
             market
                 .getOutcomes()
                 .stream()
-                .map(CAPIOutcomeType::getId)
+                .map(CapiOutcomeType::getId)
                 .collect(ImmutableList.toImmutableList());
     }
 

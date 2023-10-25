@@ -11,11 +11,7 @@ package com.sportradar.unifiedodds.sdk;
 public interface SnapshotRequestManager {
     void scheduleRequest(SnapshotRequest request);
 
-    default void requestCompleted(SnapshotCompleted completed) {
-        // NO-OP default method
-    }
+    void requestCompleted(SnapshotCompleted completed);
 
-    default void requestFailed(SnapshotFailed failed) {
-        // NO-OP default method
-    }
+    void requestFailed(SnapshotFailed failed);
 }

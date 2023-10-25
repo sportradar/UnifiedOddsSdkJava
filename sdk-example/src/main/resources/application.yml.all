@@ -1,5 +1,5 @@
-# all the configuration properties are optional, for a more detailed description check the "ConfigurationAccessTokenSetter" docs
----
+# all the configuration properties are optional, for detailed description check the "ConfigurationAccessTokenSetter"
+
 sportradar:
   sdk:
     uf:
@@ -7,14 +7,10 @@ sportradar:
       accessToken:
       # the node id which should be used by the SDK
       nodeId:
-      # the maximum inactivity seconds between alive messages
-      maxInactivitySeconds:
-      # the maximum recovery time - minutes
-      maxRecoveryTime:
-      # the default locale
-      defaultLocale:
-      # a list of the desired locales[en, it, de,...]
-      desiredLocales:
+      # the default language
+      defaultLanguage:
+      # a comma delimited list of the desired languages [en,it,de,...]
+      desiredLanguages:
         -
       # message broker related properties
       messaging:
@@ -24,18 +20,18 @@ sportradar:
         password:
         virtualHost:
       # an indication if the connection to the messaging broker should use ssl (boolean)
-      useMessagingSsl:
+      messagingUseSsl:
       # the api host
       apiHost:
       # the api port
       apiPort:
       # an indication if the request to the API should use ssl (boolean)
-      useApiSsl:
-      # a list of producer identifiers that should be automatically disabled[3,4,...]
+      apiUseSsl:
+      # a comma delimited list of producer identifiers that should be automatically disabled [3,4,...]
       disabledProducers:
         -
       # the exception handling strategy that should be used through the SDK (throw/catch)
       exceptionHandlingStrategy:
 
       # a value indicating to which unified feed environment sdk should connect
-      ufEnvironment:
+      environment:

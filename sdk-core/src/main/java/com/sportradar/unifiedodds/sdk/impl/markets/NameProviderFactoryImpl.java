@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SDKInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
@@ -29,7 +29,7 @@ public class NameProviderFactoryImpl implements NameProviderFactory {
         MarketDescriptionProvider descriptorProvider,
         ProfileCache profileCache,
         NameExpressionFactory expressionFactory,
-        SDKInternalConfiguration cfg
+        SdkInternalConfiguration cfg
     ) {
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(profileCache);

@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.caching;
 import com.sportradar.unifiedodds.sdk.caching.impl.SportData;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,13 +25,13 @@ public interface SportsDataCache {
     List<SportData> getSports(List<Locale> locales) throws IllegalCacheStateException;
 
     /**
-     * Returns a {@link SportData} instance representing the sport associated with the provided {@link URN} identifier
+     * Returns a {@link SportData} instance representing the sport associated with the provided {@link Urn} identifier
      *
-     * @param sportId a {@link URN} specifying the id of the sport
+     * @param sportId a {@link Urn} specifying the id of the sport
      * @param locales a {@link List} of {@link Locale} specifying the languages in which the data is returned
      * @return a {@link SportData} containing information about the requested sport
      */
-    SportData getSport(URN sportId, List<Locale> locales)
+    SportData getSport(Urn sportId, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException;
 
     /**
@@ -43,6 +43,6 @@ public interface SportsDataCache {
      * @throws IllegalCacheStateException if the cache load failed
      * @throws CacheItemNotFoundException if the cache item could not be found - category does not exists in the cache/api
      */
-    CategoryCI getCategory(URN categoryId, List<Locale> locales)
+    CategoryCi getCategory(Urn categoryId, List<Locale> locales)
         throws IllegalCacheStateException, CacheItemNotFoundException;
 }

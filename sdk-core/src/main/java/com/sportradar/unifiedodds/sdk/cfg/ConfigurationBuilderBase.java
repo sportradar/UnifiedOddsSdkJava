@@ -38,18 +38,18 @@ public interface ConfigurationBuilderBase<T> {
     /**
      * Sets the default language for the translatable data
      *
-     * @param defaultLocale a {@link Locale} which will be used as default
+     * @param defaultLanguage a {@link Locale} which will be used as default
      * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
      */
-    T setDefaultLocale(Locale defaultLocale);
+    T setDefaultLanguage(Locale defaultLanguage);
 
     /**
      * Sets the languages in which translatable data is available
      *
-     * @param supportedLocales a {@link List} of {@link Locale}s in which translatable data should be available
+     * @param desiredLanguages a {@link List} of {@link Locale}s in which translatable data should be available
      * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
      */
-    T setDesiredLocales(List<Locale> supportedLocales);
+    T setDesiredLanguages(List<Locale> desiredLanguages);
 
     /**
      * Sets the value specifying how exceptions thrown in the SDK are handled
@@ -66,7 +66,7 @@ public interface ConfigurationBuilderBase<T> {
      * @param nodeId the node id to be set
      * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
      */
-    T setSdkNodeId(int nodeId);
+    T setNodeId(int nodeId);
 
     /**
      * Specifies the producers which should be disabled (i.e. no recovery, messages get discarded, ...)
@@ -77,59 +77,9 @@ public interface ConfigurationBuilderBase<T> {
     T setDisabledProducers(List<Integer> producerIds);
 
     /**
-     * Builds and returns a {@link OddsFeedConfiguration} instance
+     * Builds and returns a {@link UofConfigurationImpl} instance
      *
-     * @return the constructed {@link OddsFeedConfiguration} instance
+     * @return the constructed {@link UofConfigurationImpl} instance
      */
-    OddsFeedConfiguration build();
-
-    /**
-     * Sets the timeout which should be used on HTTP requests(seconds)
-     *
-     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
-     */
-    T setHttpClientTimeout(Integer httpClientTimeout);
-
-    /**
-     * Sets connection pool size for http client.
-     * Should be set to low value to avoid resource overuse.
-     * Default: 20
-     *
-     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
-     */
-    T setHttpClientMaxConnTotal(Integer httpClientMaxConnTotal);
-
-    /**
-     * Sets maximum number of concurrent connections per route for http client.
-     * Should be set to low value to avoid resource overuse.
-     * Default: 15
-     *
-     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
-     */
-    T setHttpClientMaxConnPerRoute(Integer httpClientMaxConnPerRoute);
-
-    /**
-     * Sets the timeout which should be used on HTTP requests for recovery endpoints(seconds)
-     *
-     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
-     */
-    T setRecoveryHttpClientTimeout(Integer recoveryHttpClientTimeout);
-
-    /**
-     * Sets connection pool size for recovery http client.
-     * Should be set to low value to avoid resource overuse.
-     * Default: 20
-     *
-     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
-     */
-    T setRecoveryHttpClientMaxConnTotal(Integer recoveryHttpClientMaxConnTotal);
-
-    /**
-     * Sets maximum number of concurrent connections per route for recovery http client
-     * Should be set to low value to avoid resource overuse.
-     * Default: 15
-     *
-     * @return a {@link ConfigurationBuilderBase} derived instance used to set general configuration properties
-     */
-    T setRecoveryHttpClientMaxConnPerRoute(Integer recoveryHttpClientMaxConnPerRoute);
+    UofConfiguration build();
 }

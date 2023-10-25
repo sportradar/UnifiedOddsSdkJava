@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.entities.Category;
 import com.sportradar.unifiedodds.sdk.entities.Sport;
-import com.sportradar.utils.URN;
+import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,12 +27,12 @@ public class SportImpl extends SportSummaryImpl implements Sport {
     /**
      * Initializes a new instance of {@link SportImpl}
      *
-     * @param id - an {@link URN} uniquely identifying the sport represented by the current instance
+     * @param id - an {@link Urn} uniquely identifying the sport represented by the current instance
      * @param names - a {@link Map} containing translated sport names
      * @param categories - a {@link List} representing categories
      *                     which belong to the sport represented by the current instance
      */
-    public SportImpl(URN id, Map<Locale, String> names, List<Category> categories) {
+    public SportImpl(Urn id, Map<Locale, String> names, List<Category> categories) {
         super(id, names);
         Preconditions.checkNotNull(categories);
 
