@@ -33,7 +33,7 @@
         <junitparams.version>1.1.1</junitparams.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.5.1</mockito.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <guice.version>4.0</guice.version>
         <icu4j.version>57.1</icu4j.version>
         <snake.yaml.version>1.31</snake.yaml.version>
