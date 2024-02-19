@@ -4,6 +4,7 @@
 package com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures;
 
 import static java.util.Optional.ofNullable;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.rabbitmq.client.AMQP;
@@ -39,6 +40,11 @@ public class WaitingRabbitMqConsumer extends NoOpConsumer {
         val message = ofNullable(receivedMessages.poll(1, TimeUnit.SECONDS));
         assertTrue("Message was not received", message.isPresent());
         return message;
+    }
+
+    public void waitExpectingNoDelivery() {
+        val message = ofNullable(receivedMessages.poll(1, TimeUnit.SECONDS));
+        assertFalse("Message was received", message.isPresent());
     }
 
     public static class Factory {

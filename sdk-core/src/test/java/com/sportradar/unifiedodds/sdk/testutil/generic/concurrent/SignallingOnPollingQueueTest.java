@@ -6,12 +6,13 @@ package com.sportradar.unifiedodds.sdk.testutil.generic.concurrent;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.WaiterForEvents.WaitingStatus.EVENT_HAPPENED;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.WaiterForEvents.WaitingStatus.EVENT_NOT_HAPPENED;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.WaiterForEvents.createWaiterForEvents;
+import static com.sportradar.utils.time.TimeInterval.seconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.recovery.TimeUtilsStub;
+import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
@@ -38,7 +39,7 @@ public class SignallingOnPollingQueueTest {
     @After
     public void tearUpStartedCallables() {
         final int enoughSecondsForWaitersToFinish = 3;
-        timeUtils.fastForwardSeconds(enoughSecondsForWaitersToFinish);
+        timeUtils.tick(seconds(enoughSecondsForWaitersToFinish));
     }
 
     @Test
@@ -48,6 +49,16 @@ public class SignallingOnPollingQueueTest {
         queue.add(element);
 
         assertEquals(element, queue.poll(1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void shouldRemoveElementAfterSuccessfulPolling() {
+        val queue = new SignallingOnPollingQueue(timeUtils, createWaiterForEvents());
+        queue.add(element);
+
+        queue.poll(1, TimeUnit.SECONDS);
+
+        assertThat(queue).isEmpty();
     }
 
     @Test
@@ -68,7 +79,7 @@ public class SignallingOnPollingQueueTest {
 
         executor.executeInAnotherThread(() -> {
             queue.getWaiterForStartingToPoll().await(1, TimeUnit.SECONDS);
-            timeUtils.fastForwardSeconds(2);
+            timeUtils.tick(seconds(2));
         });
 
         assertThat(queue.poll(1, TimeUnit.SECONDS)).isNull();

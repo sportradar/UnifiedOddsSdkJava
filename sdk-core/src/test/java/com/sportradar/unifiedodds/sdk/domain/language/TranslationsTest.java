@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
+import com.sportradar.utils.domain.names.Languages;
 import com.sportradar.utils.domain.names.Names;
 import java.util.HashMap;
 import java.util.Locale;

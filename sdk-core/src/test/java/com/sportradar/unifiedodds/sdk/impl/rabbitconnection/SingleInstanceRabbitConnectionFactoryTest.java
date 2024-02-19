@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import static com.sportradar.utils.time.TimeInterval.minutes;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -13,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.utils.time.EpochMillis;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -120,7 +122,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
 
     @Test
     public void initiallyNoConnectionShouldBeCreated() {
-        assertFalse(factory.isConnectionOpen());
+        assertFalse(factory.isConnectionHealthy());
         assertEquals(0, factory.getConnectionStarted());
         assertTrue(factory.canConnectionOpen());
     }
@@ -130,7 +132,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         throws IOException {
         factory.close(false);
 
-        assertFalse(factory.isConnectionOpen());
+        assertFalse(factory.isConnectionHealthy());
         assertEquals(0, factory.getConnectionStarted());
         assertTrue(factory.canConnectionOpen());
     }
@@ -140,7 +142,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         throws IOException {
         factory.close(true);
 
-        assertFalse(factory.isConnectionOpen());
+        assertFalse(factory.isConnectionHealthy());
         assertEquals(0, factory.getConnectionStarted());
         assertFalse(factory.canConnectionOpen());
     }
@@ -162,7 +164,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         Connection connection = at(NOON.get(), () -> factory.getConnection());
 
         assertNotNull(CONNECTION_WAS_NULL, connection);
-        assertTrue("connection should be open", factory.isConnectionOpen());
+        assertTrue("connection should be open", factory.isConnectionHealthy());
         assertEquals(NOON.get(), factory.getConnectionStarted());
         assertTrue(CONNECTION_SHOULD_BE_ABLE_TO_OPEN, factory.canConnectionOpen());
     }
@@ -172,7 +174,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class))).thenReturn(openConnection);
 
         at(NOON.get(), () -> factory.getConnection());
-        Connection connection = at(NOON.plusMinutes(1), () -> factory.getConnection());
+        Connection connection = at(NOON.plus(minutes(1)).get(), () -> factory.getConnection());
 
         assertNotNull(CONNECTION_WAS_NULL, connection);
         assertEquals(NOON.get(), factory.getConnectionStarted());
@@ -186,7 +188,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         at(NOON.get(), () -> factory.getConnection());
         factory.close(false);
 
-        assertFalse("connection should be closed", factory.isConnectionOpen());
+        assertFalse("connection should be closed", factory.isConnectionHealthy());
         assertEquals(NO_CONNECTION_TIMESTAMP, factory.getConnectionStarted());
         assertTrue(CONNECTION_SHOULD_BE_ABLE_TO_OPEN, factory.canConnectionOpen());
     }
@@ -199,7 +201,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         at(NOON.get(), () -> factory.getConnection());
         factory.close(true);
 
-        assertFalse("connection should be closed", factory.isConnectionOpen());
+        assertFalse("connection should be closed", factory.isConnectionHealthy());
         assertEquals(NO_CONNECTION_TIMESTAMP, factory.getConnectionStarted());
         assertFalse("connection should not be able to open", factory.canConnectionOpen());
     }
@@ -226,11 +228,11 @@ public class SingleInstanceRabbitConnectionFactoryTest {
 
         at(NOON.get(), () -> factory.getConnection());
         factory.close(false);
-        Connection connection = at(NOON.plusMinutes(1), () -> factory.getConnection());
+        Connection connection = at(NOON.plus(minutes(1)).get(), () -> factory.getConnection());
 
         assertNotNull(CONNECTION_WAS_NULL, connection);
-        assertTrue("connection should be open", factory.isConnectionOpen());
-        assertEquals(NOON.plusMinutes(1), factory.getConnectionStarted());
+        assertTrue("connection should be open", factory.isConnectionHealthy());
+        assertEquals(NOON.plus(minutes(1)).get(), factory.getConnectionStarted());
         assertTrue(CONNECTION_SHOULD_BE_ABLE_TO_OPEN, factory.canConnectionOpen());
     }
 
@@ -241,7 +243,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         at(NOON.get(), () -> factory.getConnection());
         openConnection.getControlApi().closeInitiatedByRabbitMq();
 
-        assertFalse("connection was open", factory.isConnectionOpen());
+        assertFalse("connection was open", factory.isConnectionHealthy());
     }
 
     @Test
@@ -250,7 +252,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
 
         at(NOON.get(), () -> factory.getConnection());
         factory.close(true);
-        Connection connection = at(NOON.plusMinutes(1), () -> factory.getConnection());
+        Connection connection = at(NOON.plus(minutes(1)).get(), () -> factory.getConnection());
 
         assertNull("connection was not null", connection);
     }

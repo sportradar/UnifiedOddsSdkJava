@@ -229,7 +229,7 @@ public class SingleInstanceAmqpConnectionFactory implements AmqpConnectionFactor
     }
 
     @Override
-    public synchronized boolean isConnectionOpen() {
+    public synchronized boolean isConnectionHealthy() {
         return this.connection != null && this.connection.isOpen();
     }
 

@@ -3,9 +3,12 @@
  */
 package com.sportradar.utils;
 
+import static java.util.Arrays.asList;
+
 import com.sportradar.utils.domain.UniqueObjects;
 import java.util.Random;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import lombok.val;
 
 public class Urns {
@@ -46,6 +49,17 @@ public class Urns {
         public static Urn urnForAnyStage() {
             String anyId = "338";
             return Urn.parse("sr:stage:" + anyId);
+        }
+
+        public static Urn any() {
+            val urns = asList(
+                urnForAnyStage(),
+                urnForAnySimpleTournament(),
+                urnForAnyTournament(),
+                urnForAnySeason(),
+                getForAnyMatch()
+            );
+            return urns.get(RANDOM.nextInt(urns.size()));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
+import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,7 +73,9 @@ public class RabbitProducer {
         testProducersProvider = producersProvider;
         Messages = Collections.synchronizedList(new ArrayList());
         ProducersAlive = new HashMap<>();
-        feedMessageBuilder = new FeedMessageBuilder(1);
+        GlobalVariables variables = new GlobalVariables();
+        variables.setProducer(ProducerId.LIVE_ODDS);
+        feedMessageBuilder = new FeedMessageBuilder(ProducerId.LIVE_ODDS, SportEvent.ANY);
         isRunning = false;
 
         try {
@@ -95,7 +98,7 @@ public class RabbitProducer {
             ManagementClient.closeConnection(connectionInfo.getName(), "cleanup");
         }
 
-        val vhostLocation = VhostLocation.at(Constants.RABBIT_IP, Constants.UF_VIRTUALHOST);
+        val vhostLocation = VhostLocation.at(RABBIT_BASE_URL, Constants.UF_VIRTUALHOST);
         val exchangeLocation = ExchangeLocation.at(vhostLocation, Constants.UF_EXCHANGE);
         val adminCredentials = Credentials.with(Constants.ADMIN_USERNAME, Constants.ADMIN_PASSWORD);
         val factory = new ConnectionFactory();
@@ -156,11 +159,7 @@ public class RabbitProducer {
         }
 
         when(time.now()).thenReturn(timestamp);
-        try {
-            producer.send(msgBody, routingKey);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        producer.send(msgBody, routingKey);
         String result = String.format(
             "Generated:%s, Routing: %s, Msg: %s",
             new Date(timestamp),
@@ -227,14 +226,18 @@ public class RabbitProducer {
     private void sendPeriodicAliveForProducer(int producerId, int periodInMs) {
         try {
             Thread.sleep(periodInMs == 0 ? 5000 : periodInMs);
-            while (ProducersAlive.containsKey(producerId)) {
-                UfAlive msgAlive = feedMessageBuilder.buildAlive(producerId, new Date(), true);
-                send(msgAlive, "-.-.-.alive.-.-.-.-", msgAlive.getTimestamp());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        while (ProducersAlive.containsKey(producerId)) {
+            try {
                 int sleep = periodInMs > 0 ? periodInMs : new Random().nextInt(10000);
                 Thread.sleep(sleep);
+                UfAlive msgAlive = feedMessageBuilder.buildAlive(producerId, new Date(), true);
+                send(msgAlive, "-.-.-.alive.-.-.-.-", msgAlive.getTimestamp());
+            } catch (Exception ex) {
+                Helper.writeToOutput("Error: " + ex.getMessage());
             }
-        } catch (Exception ex) {
-            Helper.writeToOutput("Error: " + ex.getMessage());
         }
     }
 

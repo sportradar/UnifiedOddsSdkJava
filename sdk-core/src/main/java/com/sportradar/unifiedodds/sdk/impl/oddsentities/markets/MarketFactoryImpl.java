@@ -80,13 +80,12 @@ public class MarketFactoryImpl implements MarketFactory {
 
         Map<String, String> specifiersMap = parseSpecifiers(market.getSpecifiers());
 
-        MarketDescription marketDescriptor;
+        MarketDescription marketDescriptor = null;
         try {
             marketDescriptor =
                 getMarketDescription(market.getId(), sportEvent.getSportId(), specifiersMap, producerId);
         } catch (CacheItemNotFoundException e) {
             logger.warn("Failed to build market with id:{}, reason:", market.getId(), e);
-            return Optional.empty();
         }
 
         return Optional.of(
@@ -96,6 +95,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 specifiersMap,
                 parseSpecifiers(market.getExtendedSpecifiers()),
                 new MarketDefinitionImpl(
+                    market.getId(),
                     sportEvent,
                     marketDescriptor,
                     sportEvent.getSportId(),
@@ -121,13 +121,12 @@ public class MarketFactoryImpl implements MarketFactory {
 
         Map<String, String> specifiersMap = parseSpecifiers(market.getSpecifiers());
 
-        MarketDescription marketDescriptor;
+        MarketDescription marketDescriptor = null;
         try {
             marketDescriptor =
                 getMarketDescription(market.getId(), sportEvent.getSportId(), specifiersMap, producerId);
         } catch (CacheItemNotFoundException e) {
             logger.warn("Failed to build marketWithOdds id={}, reason:", market.getId(), e);
-            return Optional.empty();
         }
 
         NameProvider nameProvider = nameProviderFactory.buildNameProvider(
@@ -144,6 +143,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 specifiersMap,
                 parseSpecifiers(market.getExtendedSpecifiers()),
                 new MarketDefinitionImpl(
+                    market.getId(),
                     sportEvent,
                     marketDescriptor,
                     sportEvent.getSportId(),
@@ -158,6 +158,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 market.getFavourite(),
                 market.getMarketMetadata(),
                 buildOddsOutcomes(
+                    market.getId(),
                     marketDescriptor,
                     nameProvider,
                     sportEvent,
@@ -180,13 +181,12 @@ public class MarketFactoryImpl implements MarketFactory {
 
         Map<String, String> specifiersMap = parseSpecifiers(market.getSpecifiers());
 
-        MarketDescription marketDescriptor;
+        MarketDescription marketDescriptor = null;
         try {
             marketDescriptor =
                 getMarketDescription(market.getId(), sportEvent.getSportId(), specifiersMap, producerId);
         } catch (CacheItemNotFoundException e) {
             logger.warn("Failed to build marketWithSettlement id={}, reason:", market.getId(), e);
-            return Optional.empty();
         }
 
         NameProvider nameProvider = nameProviderFactory.buildNameProvider(
@@ -203,6 +203,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 specifiersMap,
                 parseSpecifiers(market.getExtendedSpecifiers()),
                 new MarketDefinitionImpl(
+                    market.getId(),
                     sportEvent,
                     marketDescriptor,
                     sportEvent.getSportId(),
@@ -215,7 +216,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 defaultLocale,
                 market.getVoidReason(),
                 buildSettlementOutcomes(
-                    marketDescriptor,
+                    market.getId(),
                     nameProvider,
                     sportEvent,
                     producerId,
@@ -238,13 +239,12 @@ public class MarketFactoryImpl implements MarketFactory {
 
         Map<String, String> specifiersMap = parseSpecifiers(market.getSpecifiers());
 
-        MarketDescription marketDescriptor;
+        MarketDescription marketDescriptor = null;
         try {
             marketDescriptor =
                 getMarketDescription(market.getId(), sportEvent.getSportId(), specifiersMap, producerId);
         } catch (CacheItemNotFoundException e) {
             logger.warn("Failed to build marketWithProbabilities id={}, reason:", market.getId(), e);
-            return Optional.empty();
         }
 
         NameProvider nameProvider = nameProviderFactory.buildNameProvider(
@@ -261,6 +261,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 specifiersMap,
                 parseSpecifiers(market.getExtendedSpecifiers()),
                 new MarketDefinitionImpl(
+                    market.getId(),
                     sportEvent,
                     marketDescriptor,
                     sportEvent.getSportId(),
@@ -273,7 +274,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 defaultLocale,
                 market.getStatus(),
                 buildProbabilityOutcomes(
-                    marketDescriptor,
+                    market.getId(),
                     nameProvider,
                     sportEvent,
                     producerId,
@@ -293,13 +294,12 @@ public class MarketFactoryImpl implements MarketFactory {
 
         Map<String, String> specifiersMap = parseSpecifiers(market.getSpecifiers());
 
-        MarketDescription marketDescriptor;
+        MarketDescription marketDescriptor = null;
         try {
             marketDescriptor =
                 getMarketDescription(market.getId(), sportEvent.getSportId(), specifiersMap, producerId);
         } catch (CacheItemNotFoundException e) {
             logger.warn("Failed to build buildMarketCancel id={}, reason:", market.getId(), e);
-            return Optional.empty();
         }
 
         return Optional.of(
@@ -309,6 +309,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 specifiersMap,
                 parseSpecifiers(market.getExtendedSpecifiers()),
                 new MarketDefinitionImpl(
+                    market.getId(),
                     sportEvent,
                     marketDescriptor,
                     sportEvent.getSportId(),
@@ -367,7 +368,9 @@ public class MarketFactoryImpl implements MarketFactory {
         );
     }
 
+    @SuppressWarnings("ParameterNumber")
     private List<OutcomeOdds> buildOddsOutcomes(
+        int marketId,
         MarketDescription md,
         NameProvider nameProvider,
         SportEvent sportEvent,
@@ -383,13 +386,13 @@ public class MarketFactoryImpl implements MarketFactory {
         for (UfOddsChangeMarket.UfOutcome o : outcomes) {
             OutcomeOdds outcomeOdds;
 
-            if (isValidPlayerOutcome(sportEvent, md.getId(), o.getId(), o.getTeam())) {
+            if (isValidPlayerOutcome(sportEvent, md, o.getId(), o.getTeam())) {
                 outcomeOdds =
                     new PlayerOutcomeOddsImpl(
                         o.getId(),
                         nameProvider,
                         new OutcomeDefinitionImpl(
-                            md,
+                            marketId,
                             o.getId(),
                             sportEvent.getSportId(),
                             producerId,
@@ -412,7 +415,7 @@ public class MarketFactoryImpl implements MarketFactory {
                         o.getId(),
                         nameProvider,
                         new OutcomeDefinitionImpl(
-                            md,
+                            marketId,
                             o.getId(),
                             sportEvent.getSportId(),
                             producerId,
@@ -436,7 +439,7 @@ public class MarketFactoryImpl implements MarketFactory {
     }
 
     private List<OutcomeSettlement> buildSettlementOutcomes(
-        MarketDescription md,
+        int marketId,
         NameProvider nameProvider,
         SportEvent sportEvent,
         int producerId,
@@ -453,7 +456,7 @@ public class MarketFactoryImpl implements MarketFactory {
                 o.getId(),
                 nameProvider,
                 new OutcomeDefinitionImpl(
-                    md,
+                    marketId,
                     o.getId(),
                     sportEvent.getSportId(),
                     producerId,
@@ -475,7 +478,7 @@ public class MarketFactoryImpl implements MarketFactory {
     }
 
     private List<OutcomeProbabilities> buildProbabilityOutcomes(
-        MarketDescription md,
+        int marketId,
         NameProvider nameProvider,
         SportEvent sportEvent,
         int producerId,
@@ -493,7 +496,7 @@ public class MarketFactoryImpl implements MarketFactory {
                     o.getId(),
                     nameProvider,
                     new OutcomeDefinitionImpl(
-                        md,
+                        marketId,
                         o.getId(),
                         sportEvent.getSportId(),
                         producerId,
@@ -513,7 +516,7 @@ public class MarketFactoryImpl implements MarketFactory {
 
     private boolean isValidPlayerOutcome(
         SportEvent sportEvent,
-        int marketId,
+        MarketDescription marketDescription,
         String outcomeId,
         Integer outcomeTeamIndication
     ) {
@@ -526,7 +529,7 @@ public class MarketFactoryImpl implements MarketFactory {
             logger.warn(
                 "Received invalid player outcome, sport event is not a match. SportEventId:{}, marketId:{}, outcomeId:{}, outcomeTeamIndication:{}",
                 sportEvent.getId(),
-                marketId,
+                marketDescription != null ? marketDescription.getId() : null,
                 outcomeId,
                 outcomeTeamIndication
             );

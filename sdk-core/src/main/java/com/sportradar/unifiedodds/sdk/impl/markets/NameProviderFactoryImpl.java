@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import java.util.Map;
 
 /**
@@ -23,22 +24,26 @@ public class NameProviderFactoryImpl implements NameProviderFactory {
     private final ProfileCache profileCache;
     private final NameExpressionFactory expressionFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
+    private final TimeUtils time;
 
     @Inject
     public NameProviderFactoryImpl(
         MarketDescriptionProvider descriptorProvider,
         ProfileCache profileCache,
         NameExpressionFactory expressionFactory,
-        SdkInternalConfiguration cfg
+        SdkInternalConfiguration cfg,
+        TimeUtils time
     ) {
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(expressionFactory);
+        Preconditions.checkNotNull(time);
 
         this.descriptorProvider = descriptorProvider;
         this.profileCache = profileCache;
         this.expressionFactory = expressionFactory;
         this.exceptionHandlingStrategy = cfg.getExceptionHandlingStrategy();
+        this.time = time;
     }
 
     @Override
@@ -56,7 +61,8 @@ public class NameProviderFactoryImpl implements NameProviderFactory {
             marketId,
             specifiers,
             producerId,
-            exceptionHandlingStrategy
+            exceptionHandlingStrategy,
+            time
         );
     }
 }

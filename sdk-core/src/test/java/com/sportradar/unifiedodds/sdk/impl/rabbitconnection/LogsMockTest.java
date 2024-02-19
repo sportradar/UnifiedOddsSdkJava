@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import junitparams.JUnitParamsRunner;
@@ -37,6 +38,7 @@ public class LogsMockTest {
             LoggerFactory.getLogger(TargetClass.class).info(SPECIFIED_LOG_LINE);
 
             logsMock.verifyLoggedLineContaining(SPECIFIED_LOG_LINE);
+            assertThat(logsMock.loggedLineContains(SPECIFIED_LOG_LINE)).isTrue();
         }
 
         @Test
@@ -48,10 +50,11 @@ public class LogsMockTest {
             assertThatThrownBy(() -> logsMock.verifyLoggedLineContaining(SPECIFIED_LOG_LINE))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining(COULD_NOT_FIND_LOG_LINE_THAT_MATCHES);
+            assertThat(logsMock.loggedLineContains(SPECIFIED_LOG_LINE)).isFalse();
         }
 
         @Test
-        public void shouldFailtToValidateIfRequestedLogNotPresent() {
+        public void shouldFailToValidateIfRequestedLogNotPresent() {
             final val logsMock = LogsMock.createCapturingFor(TargetClass.class);
 
             LoggerFactory.getLogger(TargetClass.class).info(SPECIFIED_LOG_LINE);
@@ -59,6 +62,7 @@ public class LogsMockTest {
             assertThatThrownBy(() -> logsMock.verifyLoggedLineContaining("requestedText"))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining(COULD_NOT_FIND_LOG_LINE_THAT_MATCHES);
+            assertThat(logsMock.loggedLineContains("requestedText")).isFalse();
         }
 
         @Test
@@ -75,6 +79,7 @@ public class LogsMockTest {
             LoggerFactory.getLogger(TargetClass.class).info(line2);
 
             logsMock.verifyLoggedLineContaining(SPECIFIED_LOG_LINE);
+            assertThat(logsMock.loggedLineContains(SPECIFIED_LOG_LINE)).isTrue();
         }
     }
 

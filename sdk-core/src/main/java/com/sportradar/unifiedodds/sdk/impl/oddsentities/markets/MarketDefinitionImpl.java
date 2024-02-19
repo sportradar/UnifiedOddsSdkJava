@@ -37,8 +37,10 @@ class MarketDefinitionImpl implements MarketDefinition {
     private final MarketDescriptionProvider descriptorProvider;
     private final Locale defaultLocale;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
+    private final int marketId;
 
     MarketDefinitionImpl(
+        int marketId,
         SportEvent sportEvent,
         MarketDescription marketDescriptor,
         Urn sportId,
@@ -49,13 +51,13 @@ class MarketDefinitionImpl implements MarketDefinition {
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
         Preconditions.checkNotNull(sportEvent);
-        Preconditions.checkNotNull(marketDescriptor);
         Preconditions.checkNotNull(sportId);
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkArgument(producerId > 0);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
+        this.marketId = marketId;
         this.sportEvent = sportEvent;
         this.marketDescriptor = marketDescriptor;
         this.sportId = sportId;
@@ -68,7 +70,17 @@ class MarketDefinitionImpl implements MarketDefinition {
 
     @Override
     public String getOutcomeType() {
-        return marketDescriptor.getOutcomeType();
+        if (marketDescriptor != null) {
+            return marketDescriptor.getOutcomeType();
+        } else {
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+                throw new ObjectNotFoundException(
+                    "The requested translated name template could not be found"
+                );
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
@@ -82,7 +94,7 @@ class MarketDefinitionImpl implements MarketDefinition {
         try {
             translatedDescriptor =
                 descriptorProvider.getMarketDescription(
-                    this.marketDescriptor.getId(),
+                    marketId,
                     specifiersMap,
                     Collections.singletonList(locale),
                     false
@@ -101,19 +113,35 @@ class MarketDefinitionImpl implements MarketDefinition {
 
     @Override
     public List<String> getGroups() {
-        return marketDescriptor.getGroups();
+        if (marketDescriptor != null) {
+            return marketDescriptor.getGroups();
+        } else {
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+                throw new ObjectNotFoundException("The requested groups could not be found");
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
     public Map<String, String> getAttributes() {
-        if (marketDescriptor.getAttributes() == null) {
-            return null;
-        }
+        if (marketDescriptor != null) {
+            if (marketDescriptor.getAttributes() == null) {
+                return null;
+            }
 
-        return marketDescriptor
-            .getAttributes()
-            .stream()
-            .collect(Collectors.toMap(MarketAttribute::getName, MarketAttribute::getDescription));
+            return marketDescriptor
+                .getAttributes()
+                .stream()
+                .collect(Collectors.toMap(MarketAttribute::getName, MarketAttribute::getDescription));
+        } else {
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+                throw new ObjectNotFoundException("The requested attributes could not be found");
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
@@ -135,7 +163,7 @@ class MarketDefinitionImpl implements MarketDefinition {
         try {
             completeDescriptor =
                 descriptorProvider.getMarketDescription(
-                    this.marketDescriptor.getId(),
+                    marketId,
                     specifiersMap,
                     Collections.singletonList(locale),
                     false

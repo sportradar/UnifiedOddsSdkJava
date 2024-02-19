@@ -1,6 +1,12 @@
-### Unified Feed SDK 2.x changelog
+### Unified Feed SDK 3.x changelog
 
-**3.0.0 (2023-XX-YY)**
+**3.1.0 (2024-02-19)**
+* SDK can be used in a construct close-with-resources
+* recovering after network outages no longer causes message duplication 
+* Markets are no longer excluded from messages handed over to the listener when descriptions of markets are unavailable
+* Fix: faulty market descriptions are attempted to be re-fetched irrespective from exception handling strategy configured
+
+**3.0.0 (2023-10-24)**
 * Consistent casing used in naming in java code as per Google java style guidelines (refer to Migration Guide)
 * Upgrading Apache http client library from 4 to 5
 * methods getName/s exposed more consistently in classes: categoryData, sportData, currentSeason, drawResult, manager, tournamentInfo

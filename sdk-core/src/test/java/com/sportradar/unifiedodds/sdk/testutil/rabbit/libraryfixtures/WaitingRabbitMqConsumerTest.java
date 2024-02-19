@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue.createSignallingOnPollingQueue;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures.WaitingRabbitMqConsumerDi.createWaitingRabbitMqConsumerFactory;
+import static com.sportradar.utils.time.TimeInterval.seconds;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,10 +16,10 @@ import static org.mockito.Mockito.mock;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
-import com.sportradar.unifiedodds.sdk.impl.recovery.TimeUtilsStub;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.FluentExecutor;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue;
+import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
@@ -107,7 +108,7 @@ public class WaitingRabbitMqConsumerTest {
 
         executor.executeInAnotherThread(() -> {
             queue.getWaiterForStartingToPoll().await(1, TimeUnit.SECONDS);
-            timeUtils.fastForwardSeconds(2);
+            timeUtils.tick(seconds(2));
         });
 
         assertThatThrownBy(() -> consumer.waitForFirstDelivery())
@@ -126,5 +127,20 @@ public class WaitingRabbitMqConsumerTest {
 
         val delivery = consumer.waitForFirstDelivery().get();
         assertSame(firstEnvelope, delivery.getEnvelope());
+    }
+
+    @Test
+    public void shouldBeAbleToReceiveAnotherDelivery() {
+        val consumer = createWaitingRabbitMqConsumerFactory().expectingMessage();
+        val firstEnvelope = mock(Envelope.class);
+        val secondEnvelope = mock(Envelope.class);
+
+        consumer.handleDelivery(any, firstEnvelope, anyProperties, anyBody);
+        consumer.handleDelivery(any, secondEnvelope, anyProperties, anyBody);
+
+        consumer.waitForFirstDelivery().get();
+        val delivery = consumer.waitForFirstDelivery().get();
+
+        assertSame(secondEnvelope, delivery.getEnvelope());
     }
 }

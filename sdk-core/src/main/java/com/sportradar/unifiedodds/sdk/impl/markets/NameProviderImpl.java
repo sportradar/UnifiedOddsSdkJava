@@ -21,6 +21,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.Urn;
@@ -66,8 +67,9 @@ public class NameProviderImpl implements NameProvider {
     private final int producerId;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
     private final Supplier<List<Urn>> competitorList;
+    private final TimeUtils time;
 
-    private Date lastReload = new Date(0);
+    private long lastReload;
 
     NameProviderImpl(
         MarketDescriptionProvider descriptorProvider,
@@ -77,8 +79,10 @@ public class NameProviderImpl implements NameProvider {
         int marketId,
         Map<String, String> marketSpecifiers,
         int producerId,
-        ExceptionHandlingStrategy exceptionHandlingStrategy
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        TimeUtils time
     ) {
+        this.time = time;
         Preconditions.checkNotNull(descriptorProvider);
         Preconditions.checkNotNull(profileCache);
         Preconditions.checkNotNull(expressionFactory);
@@ -100,7 +104,12 @@ public class NameProviderImpl implements NameProvider {
 
     @Override
     public String getMarketName(Locale locale) {
-        return getMarketNames(Collections.singletonList(locale)).get(locale);
+        Map<Locale, String> nameTranslations = getMarketNames(Collections.singletonList(locale));
+        if (nameTranslations != null) {
+            return nameTranslations.get(locale);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -176,7 +185,13 @@ public class NameProviderImpl implements NameProvider {
     public String getOutcomeName(String outcomeId, Locale locale) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(outcomeId));
         Preconditions.checkNotNull(locale);
-        return getOutcomeNames(outcomeId, Collections.singletonList(locale)).get(locale);
+
+        Map<Locale, String> outcomeNames = getOutcomeNames(outcomeId, Collections.singletonList(locale));
+        if (outcomeNames != null) {
+            return outcomeNames.get(locale);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -205,7 +220,7 @@ public class NameProviderImpl implements NameProvider {
 
         MarketDescription marketDescription = getMarketDescriptionForOutcome(outcomeId, locales, true);
         if (marketDescription == null) {
-            return Collections.emptyMap();
+            return null;
         }
 
         Optional<OutcomeDescription> optDesc = marketDescription
@@ -412,49 +427,29 @@ public class NameProviderImpl implements NameProvider {
         List<Locale> locales,
         Exception ex
     ) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(message));
-        Preconditions.checkNotNull(locales);
-
-        StringBuilder sb = new StringBuilder("An error occurred while generating the name for event=[")
-            .append(sportEvent)
-            .append("], market=[");
-        String specifierString = marketSpecifiers == null
-            ? "null"
-            : marketSpecifiers
-                .entrySet()
-                .stream()
-                .map(e -> "{" + e.getKey() + "}={" + e.getValue() + "}")
-                .collect(Collectors.joining("|"));
-        sb.append(" MarketId=").append(marketId);
-        sb.append(" Specifiers=[").append(specifierString).append("]");
-
-        if (outcomeId != null) {
-            sb.append(" OutcomeId=").append(outcomeId);
-        }
-
-        sb.append("]");
-
-        sb.append(" Locale=").append(locales.toString());
-
-        if (nameDescriptor != null) {
-            sb.append(" Retrieved nameDescriptor=[").append(nameDescriptor).append("]");
-        }
-
-        sb.append("]. Additional message: ").append(message);
-
+        String statusMessage = new StatusMessage(
+            sportEvent,
+            marketId,
+            marketSpecifiers,
+            message,
+            outcomeId,
+            nameDescriptor,
+            locales
+        )
+            .toString();
         if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
             if (ex != null) {
-                throw new NameGenerationException(sb.toString(), ex);
+                throw new NameGenerationException(statusMessage, ex);
             } else {
-                throw new NameGenerationException(sb.toString());
+                throw new NameGenerationException(statusMessage);
             }
         } else {
             if (ex != null) {
-                logger.warn(sb.toString(), ex);
+                logger.warn(statusMessage, ex);
             } else {
-                logger.warn(sb.toString());
+                logger.warn(statusMessage);
             }
-            return Collections.emptyMap();
+            return null;
         }
     }
 
@@ -499,15 +494,20 @@ public class NameProviderImpl implements NameProvider {
 
         if (marketDescription.getOutcomes() == null || marketDescription.getOutcomes().isEmpty()) {
             if (firstTime) {
-                handleErrorCondition(
-                    "Retrieved market descriptor is lacking outcomes",
-                    outcomeId,
-                    null,
-                    locales,
-                    null
+                logger.warn(
+                    new StatusMessage(
+                        sportEvent,
+                        marketId,
+                        marketSpecifiers,
+                        "Retrieved market descriptor is lacking outcomes",
+                        outcomeId,
+                        null,
+                        locales
+                    )
+                        .toString()
                 );
                 if (canReload()) {
-                    handleErrorCondition("Reloading market description", outcomeId, null, locales, null);
+                    logger.warn("Reloading market description");
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     return getMarketDescriptionForOutcome(outcomeId, locales, false);
                 } else {
@@ -534,15 +534,20 @@ public class NameProviderImpl implements NameProvider {
             !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()
         ) {
             if (firstTime) {
-                handleErrorCondition(
-                    "Retrieved market descriptor is missing outcome",
-                    outcomeId,
-                    null,
-                    locales,
-                    null
+                logger.warn(
+                    new StatusMessage(
+                        sportEvent,
+                        marketId,
+                        marketSpecifiers,
+                        "Retrieved market descriptor is missing outcome",
+                        outcomeId,
+                        null,
+                        locales
+                    )
+                        .toString()
                 );
                 if (canReload()) {
-                    handleErrorCondition("Reloading market description", outcomeId, null, locales, null);
+                    logger.warn("Reloading market description");
                     descriptorProvider.reloadMarketDescription(marketId, marketSpecifiers);
                     return getMarketDescriptionForOutcome(outcomeId, locales, false);
                 } else {
@@ -563,14 +568,77 @@ public class NameProviderImpl implements NameProvider {
     }
 
     private boolean canReload() {
-        Date date = new Date();
+        long currentTimestamp = time.now();
         boolean allow =
-            Math.abs(date.getTime() - lastReload.getTime()) /
-            1000 >
-            SdkHelper.MarketDescriptionMinFetchInterval;
+            Math.abs(currentTimestamp - lastReload) / 1000 > SdkHelper.MarketDescriptionMinFetchInterval;
         if (allow) {
-            lastReload = date;
+            lastReload = currentTimestamp;
         }
         return allow;
+    }
+
+    static class StatusMessage {
+
+        private final SportEvent sportEvent;
+        private final int marketId;
+        private final Map<String, String> marketSpecifiers;
+        private final String message;
+        private final String outcomeId;
+        private final String outcomeName;
+        private final List<Locale> locales;
+
+        StatusMessage(
+            SportEvent sportEvent,
+            int marketId,
+            Map<String, String> marketSpecifiers,
+            String message,
+            String outcomeId,
+            String outcomeName,
+            List<Locale> locales
+        ) {
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(message));
+            Preconditions.checkNotNull(sportEvent);
+            Preconditions.checkNotNull(locales);
+            Preconditions.checkArgument(marketId > 0);
+            this.sportEvent = sportEvent;
+            this.marketId = marketId;
+            this.marketSpecifiers = marketSpecifiers;
+            this.message = message;
+            this.outcomeId = outcomeId;
+            this.outcomeName = outcomeName;
+            this.locales = locales;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("An error occurred while generating the name for event=[")
+                .append(sportEvent)
+                .append("], market=[");
+            String specifierString = marketSpecifiers == null
+                ? "null"
+                : marketSpecifiers
+                    .entrySet()
+                    .stream()
+                    .map(e -> "{" + e.getKey() + "}={" + e.getValue() + "}")
+                    .collect(Collectors.joining("|"));
+            sb.append(" MarketId=").append(marketId);
+            sb.append(" Specifiers=[").append(specifierString).append("]");
+
+            if (outcomeId != null) {
+                sb.append(" OutcomeId=").append(outcomeId);
+            }
+
+            sb.append("]");
+
+            sb.append(" Locale=").append(locales);
+
+            if (outcomeName != null) {
+                sb.append(" Retrieved nameDescriptor=[").append(outcomeName).append("]");
+            }
+
+            sb.append("]. Additional message: ").append(message);
+
+            return sb.toString();
+        }
     }
 }

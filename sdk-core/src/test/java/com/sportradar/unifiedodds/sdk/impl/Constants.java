@@ -1,5 +1,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
+import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
+
 @SuppressWarnings({ "HideUtilityClassConstructor" })
 public class Constants {
 
@@ -25,7 +27,14 @@ public class Constants {
     // local rabbit data for tests
     public static final String ADMIN_USERNAME = "guest";
     public static final String ADMIN_PASSWORD = "guest";
+    public static final String TOXIPROXY_IP = "toxiproxy";
+    public static final BaseUrl TOXIPROXY_BASE_URL = BaseUrl.of(TOXIPROXY_IP, 8474);
     public static final String RABBIT_IP = "rabbit";
+    public static final BaseUrl RABBIT_MANAGEMENT_BASE_URL = BaseUrl.of(Constants.RABBIT_IP, 15672);
+    public static final int PROXIED_RABBIT_PORT = 8089;
+    public static final BaseUrl PROXIED_RABBIT_BASE_URL = BaseUrl.of(TOXIPROXY_IP, PROXIED_RABBIT_PORT);
+    public static final BaseUrl RABBIT_BASE_URL = BaseUrl.of(RABBIT_IP, 5672);
+    public static final BaseUrl RABBIT_BASE_URL_WITHIN_DOCKER_NETWORK = BaseUrl.of(TOXIPROXY_IP, 5672);
     public static final String SDK_USERNAME = "testuser";
     public static final String SDK_PASSWORD = "testpass";
     public static final String UF_EXCHANGE = "unifiedfeed";

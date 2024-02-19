@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -122,6 +122,12 @@
             <groupId>com.rabbitmq</groupId>
             <artifactId>http-client</artifactId>
             <version>${rabbitMQ.http.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.rekawek.toxiproxy</groupId>
+            <artifactId>toxiproxy-java</artifactId>
+            <version>2.1.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -239,7 +245,12 @@
             <version>2.12.5</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -778,7 +789,19 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>pre-integration-test</id>
+                        <id>require-toxiproxy-unless-toxiproxy-tests-skipped</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipITs}</skip>
+                            <mainClass>com.sportradar.unifiedodds.sdk.integrationtest.preconditions.PreconditionsForProxiedRabbitIntegrationTests</mainClass>
+                            <classpathScope>test</classpathScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>require-rabbit-unless-IT-skipped</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>java</goal>

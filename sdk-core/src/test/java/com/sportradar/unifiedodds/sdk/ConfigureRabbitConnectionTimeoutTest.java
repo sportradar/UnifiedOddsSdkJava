@@ -17,7 +17,7 @@ import com.sportradar.unifiedodds.sdk.cfg.StubSdkConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
 import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
+import com.sportradar.utils.domain.names.Languages;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;

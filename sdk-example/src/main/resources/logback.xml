@@ -147,6 +147,8 @@
         <appender-ref ref="STDOUT" />
     </root>
 
+    <logger name="org.apache.hc" level="OFF" />
+
     <!-- execution log -->
     <logger name="com.sportradar.unifiedodds" level="${UF_SDK_LOG_LEVEL}" additivity="false">
         <appender-ref ref="SdkExecutionLogFileAppender" />

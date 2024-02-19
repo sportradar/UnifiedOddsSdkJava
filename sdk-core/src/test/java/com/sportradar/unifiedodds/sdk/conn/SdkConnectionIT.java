@@ -66,13 +66,14 @@ public class SdkConnectionIT {
     private UofConfiguration config;
     private UofConnListener sdkListener;
     private Scenario.Factory scenario;
+
     private final Client rabbitMqClient = createRabbitMqClient(
         RABBIT_IP,
         with(ADMIN_USERNAME, ADMIN_PASSWORD),
         Client::new
     );
     private RabbitMqUserSetup rabbitMqUserSetup = RabbitMqUserSetup.create(
-        VhostLocation.at(RABBIT_IP, UF_VIRTUALHOST),
+        VhostLocation.at(RABBIT_BASE_URL, UF_VIRTUALHOST),
         rabbitMqClient
     );
 
@@ -106,7 +107,10 @@ public class SdkConnectionIT {
         sdkListener = new UofConnListener();
         scenario = new Scenario.Factory(sdkListener);
         feed = new TestFeed(sdkListener, config, sdkListener);
-        feedMessageBuilder = new FeedMessageBuilder(1);
+        GlobalVariables variables = new GlobalVariables();
+
+        feedMessageBuilder =
+            new FeedMessageBuilder(ProducerId.LIVE_ODDS, com.sportradar.unifiedodds.sdk.conn.SportEvent.ANY);
 
         // establish connection to the test rabbit server for rabbit producer
         TestProducersProvider testProducersProvider = new TestProducersProvider();
@@ -163,7 +167,7 @@ public class SdkConnectionIT {
     }
 
     @Test
-    public void normalRunTest() throws InitException, IOException {
+    public void normalRunTest() throws InitException, IOException, InterruptedException {
         // setup for producer 1
         // open feed and check that recovery was done
         // wait till snapshotComplete arrives and check if all good
@@ -363,7 +367,7 @@ public class SdkConnectionIT {
             w -> checkProducerRecovery(producerId, false),
             "Producer recovery info is not null",
             1000,
-            10000
+            20000
         );
         producer = feed.getProducerManager().getProducer(producerId);
 
@@ -493,7 +497,7 @@ public class SdkConnectionIT {
             w -> checkProducerRecovery(producerId1, false),
             "Producer 1 recovery info is not null",
             1000,
-            10000
+            20000
         );
         waitAndCheckTillTimeout(
             w -> checkProducerRecovery(producerId3, false),
@@ -700,7 +704,7 @@ public class SdkConnectionIT {
             w -> checkProducerRecovery(producerId1, false),
             "Producer 1 recovery info is not null",
             1000,
-            10000
+            20000
         );
         waitAndCheckTillTimeout(
             w -> checkProducerRecovery(producerId3, false),
@@ -1539,7 +1543,7 @@ public class SdkConnectionIT {
             w -> checkProducerRecovery(producerId, false),
             "Producer recovery info is not null",
             1000,
-            10000
+            20000
         );
         producer = feed.getProducerManager().getProducer(producerId);
 

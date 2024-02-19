@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk;
 import static com.sportradar.unifiedodds.sdk.ConfigureEnvironmentTest.ToolsForTests.SdkInternalConfigurationAssertions.assertThat;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Custom;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Integration;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Production;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
 import static com.sportradar.unifiedodds.sdk.cfg.Environments.getNonReplayEnvironments;
 import static com.sportradar.unifiedodds.sdk.cfg.Environments.getReplayEnvironments;
@@ -15,13 +14,10 @@ import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.e
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
+import com.sportradar.utils.domain.names.Languages;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;

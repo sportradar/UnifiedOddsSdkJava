@@ -26,4 +26,6 @@ public interface ChannelMessageConsumer {
      * @param receivedAt - the time when message was received (in milliseconds since EPOCH UTC)
      */
     void onMessageReceived(String routingKey, byte[] body, AMQP.BasicProperties properties, long receivedAt);
+
+    String getConsumerDescription();
 }

@@ -17,16 +17,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiVenue;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import com.sportradar.utils.domain.UniqueObjects;
+import com.sportradar.utils.domain.names.Languages;
 import com.sportradar.utils.domain.names.Names;
 import java.util.Locale;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.val;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;

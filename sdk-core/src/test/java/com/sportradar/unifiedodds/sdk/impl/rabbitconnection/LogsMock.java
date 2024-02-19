@@ -33,12 +33,18 @@ public class LogsMock {
     }
 
     public void verifyLoggedLineContaining(final String text) {
+        if (!loggedLineContains(text)) {
+            fail("Could not find log line that matches: " + text);
+        }
+    }
+
+    public boolean loggedLineContains(String text) {
         for (ILoggingEvent loggingEvent : appender.list) {
             if (loggingEvent.getFormattedMessage().contains(text)) {
-                return;
+                return true;
             }
         }
-        fail("Could not find log line that matches: " + text);
+        return false;
     }
 
     public void verifyLoggedLineContainingAll(String... tokens) {

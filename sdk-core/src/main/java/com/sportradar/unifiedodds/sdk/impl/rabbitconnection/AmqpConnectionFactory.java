@@ -38,7 +38,7 @@ public interface AmqpConnectionFactory {
      *
      * @return the status of the connection
      */
-    boolean isConnectionOpen();
+    boolean isConnectionHealthy();
 
     /**
      * Get the timestamp when the connection started

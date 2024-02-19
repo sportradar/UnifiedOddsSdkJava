@@ -9,7 +9,6 @@ import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.VhostLo
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.codehaus.groovy.runtime.InvokerHelper.asList;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -81,7 +80,7 @@ public class RabbitMqUserSetupTest {
 
     @Test
     public void shouldCreateVhost() throws Exception {
-        val userSetup = create(at(any, virtualHost), rabbitClient);
+        val userSetup = create(at(BaseUrl.any(), virtualHost), rabbitClient);
 
         userSetup.setupUser(with(username, password));
 
@@ -90,7 +89,7 @@ public class RabbitMqUserSetupTest {
 
     @Test
     public void shouldSetPermissionsOnGivenVirtualHost() throws Exception {
-        val userSetup = create(at(any, virtualHost), rabbitClient);
+        val userSetup = create(at(BaseUrl.any(), virtualHost), rabbitClient);
         val permissionsCaptor = ArgumentCaptor.forClass(UserPermissions.class);
 
         userSetup.setupUser(Credentials.any());
@@ -168,7 +167,7 @@ public class RabbitMqUserSetupTest {
 
     @Test
     public void shouldDeleteCreatedVhost() throws Exception {
-        val userSetup = create(VhostLocation.at(any, virtualHost), rabbitClient);
+        val userSetup = create(VhostLocation.at(BaseUrl.any(), virtualHost), rabbitClient);
 
         userSetup.setupUser(with(username, password));
         userSetup.revertChangesMade();
@@ -180,7 +179,7 @@ public class RabbitMqUserSetupTest {
     @Parameters({ "user1,user2" })
     public void shouldDeleteVhostOnceEvenIfMultipleUsersAreDeleted(final String user1, final String user2)
         throws Exception {
-        val userSetup = create(VhostLocation.at(any, virtualHost), rabbitClient);
+        val userSetup = create(VhostLocation.at(BaseUrl.any(), virtualHost), rabbitClient);
 
         userSetup.setupUser(with(user1, password));
         userSetup.setupUser(with(user2, password));
@@ -191,7 +190,7 @@ public class RabbitMqUserSetupTest {
 
     @Test
     public void shouldNotDeleteDeletedVhostWhenRevertingMultipleTimes() throws Exception {
-        val userSetup = create(VhostLocation.at(any, virtualHost), rabbitClient);
+        val userSetup = create(VhostLocation.at(BaseUrl.any(), virtualHost), rabbitClient);
 
         userSetup.setupUser(with(username, password));
         userSetup.revertChangesMade();

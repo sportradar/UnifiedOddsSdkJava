@@ -8,13 +8,11 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.*;
-import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
+import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ChannelStatus.UnderlyingConnectionStatus;
 import com.sportradar.utils.SdkHelper;
+import com.sportradar.utils.thread.sleep.Sleep;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -78,17 +76,19 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
     /**
      * Connection factory for getting new channel
      */
-    private AmqpConnectionFactory connectionFactory;
+    private final AmqpConnectionFactory connectionFactory;
 
     /**
      * A {@link Channel} instance used by this instance
      */
     private Channel channel;
 
+    private LastMessageTimestampPreservingConsumer consumer;
+
     /**
      * An indication if the current channel should be opened
      */
-    private boolean shouldBeOpened = false;
+    private boolean isChannelBeingSupervised = false;
 
     private LocalDateTime channelLastMessage;
 
@@ -100,7 +100,9 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
 
     private long channelStarted;
 
-    private TimeUtils timeUtils;
+    private final TimeUtils timeUtils;
+
+    private final Sleep sleep;
 
     /**
      * Initializes a new instance of the {@link RabbitMqChannelImpl}
@@ -117,12 +119,14 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         WhoAmIReader whoAmIReader,
         @Named("version") String sdkVersion,
         AmqpConnectionFactory connectionFactory,
-        TimeUtils timeUtils
+        TimeUtils timeUtils,
+        Sleep sleep
     ) {
         Preconditions.checkNotNull(rabbitMqSystemListener);
         Preconditions.checkNotNull(whoAmIReader);
         Preconditions.checkNotNull(connectionFactory);
         Preconditions.checkNotNull(timeUtils);
+        Preconditions.checkNotNull(sleep);
 
         this.rabbitMqSystemListener = rabbitMqSystemListener;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
@@ -131,6 +135,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         this.channelLastMessage = LocalDateTime.MIN;
         this.channelStarted = 0;
         this.timeUtils = timeUtils;
+        this.sleep = sleep;
     }
 
     /**
@@ -151,11 +156,11 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         Preconditions.checkArgument(!routingKeys.isEmpty());
         Preconditions.checkNotNull(channelMessageConsumer);
 
-        if (shouldBeOpened) {
+        if (isChannelBeingSupervised) {
             return;
         }
 
-        this.shouldBeOpened = true;
+        this.isChannelBeingSupervised = true;
         this.routingKeys = routingKeys;
         this.channelMessageConsumer = channelMessageConsumer;
         this.messageInterest = messageInterest;
@@ -187,6 +192,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
                     return;
                 }
                 channel = conn.createChannel();
+                consumer = new LastMessageTimestampPreservingConsumer(channel);
             } catch (Exception e) {
                 logger.error(String.format("Error creating channel: %s", e.getMessage()), e);
                 return;
@@ -198,41 +204,6 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             logger.debug("Binding queue={} with routingKey={}", qName, routingKey);
             channel.queueBind(qName, UF_EXCHANGE, routingKey);
         }
-
-        DefaultConsumer consumer = new DefaultConsumer(channel) {
-            @Override
-            public synchronized void handleDelivery(
-                String tag,
-                Envelope envelope,
-                AMQP.BasicProperties properties,
-                byte[] body
-            ) {
-                MDC.setContextMap(sdkMdcContextDescription);
-                try {
-                    channelLastMessage =
-                        LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(timeUtils.now()),
-                            ZoneId.systemDefault()
-                        );
-                    channelMessageConsumer.onMessageReceived(
-                        envelope.getRoutingKey(),
-                        body,
-                        properties,
-                        new TimeUtilsImpl().now()
-                    );
-                } catch (Exception e) {
-                    logger.error(
-                        String.format(
-                            "An exception occurred while processing AMQP message. Routing key: '%s', body: '%s'",
-                            envelope.getRoutingKey(),
-                            body == null ? "null" : new String(body)
-                        ),
-                        e
-                    );
-                }
-                MDC.clear();
-            }
-        };
 
         channel.addShutdownListener(rabbitMqSystemListener);
         ((Recoverable) channel).addRecoveryListener(rabbitMqSystemListener);
@@ -262,14 +233,14 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
      */
     @Override
     public synchronized void close() throws IOException {
-        if (!shouldBeOpened) {
+        if (!isChannelBeingSupervised) {
             if (connectionFactory != null && connectionFactory.canConnectionOpen()) {
                 logger.warn("Attempting to close an already closed channel");
             }
             return;
         }
 
-        shouldBeOpened = false;
+        isChannelBeingSupervised = false;
         channelLastMessage = LocalDateTime.MIN;
         channelClosePure();
     }
@@ -321,7 +292,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             : 1; // to avoid long overflow
         channelStartedDiff = Math.abs(channelStartedDiff / 1000);
         if (channelLastMessage == LocalDateTime.MIN && channelStarted > 0 && channelStartedDiff >= 180) {
-            String isOpen = connectionFactory.isConnectionOpen() ? "s" : "";
+            String isOpen = connectionFactory.isConnectionHealthy() ? "s" : "";
             logger.warn(
                 "There were no message{} in more then {}s for the channel with channelNumber: {} ({}). Last message arrived: {}. Recreating channel...",
                 isOpen,
@@ -341,7 +312,7 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             : 1; // to avoid long overflow
         lastMessageDiff = Math.abs(lastMessageDiff / 1000);
         if (channelLastMessage != LocalDateTime.MIN && lastMessageDiff >= 180) {
-            String isOpen = connectionFactory.isConnectionOpen() ? "s" : "";
+            String isOpen = connectionFactory.isConnectionHealthy() ? "s" : "";
             logger.warn(
                 "There were no message{} in more then {}s for the channel with channelNumber: {} ({}). Last message arrived: {}",
                 isOpen,
@@ -350,35 +321,45 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
                 messageInterest,
                 channelLastMessage
             );
-            int channelNumber = channel == null ? 0 : channel.getChannelNumber();
+            onlyIfConnectionHealthyRestartConnectionAndChannel();
+        }
+    }
 
-            if (connectionFactory.getConnectionStarted() < channelStarted) {
-                channelClosePure();
-                logger.info("Resetting connection for the channel with channelNumber: {}", channelNumber);
-                try {
-                    synchronized (connectionFactory) {
-                        if (connectionFactory.isConnectionOpen()) {
-                            // Throws rabbit AlreadyClosedException which is a RuntimeException
-                            connectionFactory.close(false);
-                        }
-                    }
-                } catch (Throwable e) {
-                    String msg = String.format("Error closing connection: %s", e.getMessage());
-                    logger.error(msg, e);
-                } finally {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        // Do nothing
-                        logger.warn("Interrupted!", e);
-                    }
-                }
-                logger.info(
-                    "Resetting connection finished for the channel with channelNumber: {}",
-                    channelNumber
-                );
+    private void onlyIfConnectionHealthyRestartConnectionAndChannel() {
+        boolean connectionStopped;
+        synchronized (connectionFactory) {
+            if (connectionFactory.isConnectionHealthy()) {
+                logManualReconnection(() -> {
+                    channelClosePure();
+                    closeConnection();
+                });
+                connectionStopped = true;
+            } else {
+                connectionStopped = false;
             }
+        }
+        if (connectionStopped) {
+            sleep.millis(5000);
             restartChannel();
+        }
+    }
+
+    private void logManualReconnection(Runnable reconnect) {
+        int channelNumber = channel == null ? 0 : channel.getChannelNumber();
+        logger.info("Resetting connection for the channel with channelNumber: {}", channelNumber);
+
+        reconnect.run();
+
+        logger.info("Resetting connection finished for the channel with channelNumber: {}", channelNumber);
+    }
+
+    private void closeConnection() {
+        try {
+            // Throws rabbit AlreadyClosedException which is a RuntimeException
+            connectionFactory.close(false);
+        } catch (Throwable e) {
+            String msg = String.format("Error closing connection: %s", e.getMessage());
+            logger.error(msg, e);
         }
     }
 
@@ -386,11 +367,13 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
         try {
             if (channel != null && channel.isOpen()) {
                 ((Recoverable) channel).removeRecoveryListener(rabbitMqSystemListener);
+                consumer.close();
                 channel.close();
             }
         } catch (TimeoutException | IOException e) {
             logger.error(String.format("Error closing channel: %s", e.getMessage()));
         } finally {
+            consumer = null;
             channel = null;
             channelStarted = 0;
         }
@@ -403,6 +386,60 @@ public class RabbitMqChannelImpl implements OnDemandChannelSupervisor {
             initChannelQueue(routingKeys, messageInterest);
         } catch (IOException e) {
             logger.error(String.format("Error creating channel: %s", e.getMessage()));
+        }
+    }
+
+    private class LastMessageTimestampPreservingConsumer extends DefaultConsumer {
+
+        private volatile boolean isConsumerOpen = true;
+
+        public LastMessageTimestampPreservingConsumer(Channel channel) {
+            super(channel);
+        }
+
+        public void close() {
+            isConsumerOpen = false;
+        }
+
+        @Override
+        public synchronized void handleDelivery(
+            String tag,
+            Envelope envelope,
+            AMQP.BasicProperties properties,
+            byte[] body
+        ) {
+            MDC.setContextMap(sdkMdcContextDescription);
+            try {
+                if (isConsumerOpen) {
+                    channelLastMessage =
+                        LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(timeUtils.now()),
+                            ZoneId.systemDefault()
+                        );
+                    channelMessageConsumer.onMessageReceived(
+                        envelope.getRoutingKey(),
+                        body,
+                        properties,
+                        new TimeUtilsImpl().now()
+                    );
+                } else {
+                    MessageTrafficLogger.logReceivedOnClosedChannel(
+                        channelMessageConsumer.getConsumerDescription(),
+                        envelope.getRoutingKey(),
+                        body
+                    );
+                }
+            } catch (Exception e) {
+                logger.error(
+                    String.format(
+                        "An exception occurred while processing AMQP message. Routing key: '%s', body: '%s'",
+                        envelope.getRoutingKey(),
+                        body == null ? "null" : new String(body)
+                    ),
+                    e
+                );
+            }
+            MDC.clear();
         }
     }
 }

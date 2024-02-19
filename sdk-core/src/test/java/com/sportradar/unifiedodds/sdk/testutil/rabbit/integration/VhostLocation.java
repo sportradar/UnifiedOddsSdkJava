@@ -3,28 +3,29 @@
  */
 package com.sportradar.unifiedodds.sdk.testutil.rabbit.integration;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class VhostLocation {
 
-    private String host;
+    @NonNull
+    private BaseUrl baseUrl;
+
+    @NonNull
     private String virtualHostname;
 
-    private VhostLocation(@NonNull final String host, @NonNull final String virtualHostname) {
-        this.host = host;
-        this.virtualHostname = virtualHostname;
-    }
-
-    public static VhostLocation at(final String host, final String virtualHostname) {
-        return new VhostLocation(host, virtualHostname);
+    public static VhostLocation at(final BaseUrl baseUrl, final String virtualHostname) {
+        return new VhostLocation(baseUrl, virtualHostname);
     }
 
     public static VhostLocation any() {
-        return at("someHost", "someVirtualHostname");
+        return at(BaseUrl.any(), "someVirtualHostname");
     }
 
-    public String getHost() {
-        return host;
+    public BaseUrl getBaseUrl() {
+        return baseUrl;
     }
 
     public String getVirtualHostname() {

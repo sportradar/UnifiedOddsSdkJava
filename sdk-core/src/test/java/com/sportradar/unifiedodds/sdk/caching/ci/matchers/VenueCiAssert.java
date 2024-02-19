@@ -14,6 +14,7 @@ import com.sportradar.utils.domain.names.TranslationHolder;
 import java.util.Arrays;
 import lombok.val;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 
 public class VenueCiAssert extends AbstractAssert<VenueCiAssert, VenueCi> {
 
@@ -28,11 +29,9 @@ public class VenueCiAssert extends AbstractAssert<VenueCiAssert, VenueCi> {
     public VenueCiAssert containsOnlyCoursesWithIds(Urn... ids) {
         val idList = ofNullable(ids).map(Arrays::asList).orElse(singletonList(null));
         for (int i = 0; i < idList.size(); i++) {
-            org.assertj.core.api.Assertions
-                .assertThat(actual.getCourses().get(i).getId())
-                .isEqualTo(idList.get(i));
+            Assertions.assertThat(actual.getCourses().get(i).getId()).isEqualTo(idList.get(i));
         }
-        org.assertj.core.api.Assertions.assertThat(actual.getCourses()).hasSize(idList.size());
+        Assertions.assertThat(actual.getCourses()).hasSize(idList.size());
         return this;
     }
 
@@ -49,7 +48,7 @@ public class VenueCiAssert extends AbstractAssert<VenueCiAssert, VenueCi> {
     }
 
     public VenueCiAssert containsAmountOfCourses(int amount) {
-        org.assertj.core.api.Assertions.assertThat(actual.getCourses()).hasSize(amount);
+        Assertions.assertThat(actual.getCourses()).hasSize(amount);
         return this;
     }
 }

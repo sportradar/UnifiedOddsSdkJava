@@ -18,7 +18,7 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
+import com.sportradar.utils.domain.names.Languages;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.val;

@@ -15,7 +15,7 @@ import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableRaceStageCi;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterManagers;
 import com.sportradar.unifiedodds.sdk.testutil.guava.libraryfixtures.Caches;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
+import com.sportradar.utils.domain.names.Languages;
 import java.util.*;
 import lombok.val;
 

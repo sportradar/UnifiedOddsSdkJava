@@ -1,75 +1,83 @@
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.Envelope;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.rabbitmq.client.*;
+import com.sportradar.utils.time.EpochMillis;
 import java.io.IOException;
-import org.mockito.ArgumentCaptor;
-import org.mockito.verification.VerificationMode;
+import java.util.concurrent.TimeoutException;
+import lombok.AllArgsConstructor;
 
 @SuppressWarnings({ "LambdaBodyLength" })
-public interface ChannelFixture extends RecoverableChannel {
-    void sendMessageAt(long epochMillis);
+public class ChannelFixture extends NoOpRecoverableChannel {
 
-    void verifyInitiated(VerificationMode times);
+    private Consumer consumer;
+    private int initiatedTimes;
+    private int closedTimes;
+    private boolean isOpen;
 
-    class Holder {
+    public ChannelFixture() {}
 
-        private ChannelFixture channel;
+    void sendMessage() throws IOException {
+        consumer.handleDelivery("any", mock(Envelope.class), mock(AMQP.BasicProperties.class), new byte[] {});
+    }
 
-        Holder(TimeUtils timeUtils) throws IOException {
-            stubInitiationBehaviour();
-            setupControlMethods(timeUtils);
+    void verifyInitiatedTimes(int expectedTimes) {
+        assertThat(initiatedTimes).isEqualTo(expectedTimes);
+    }
+
+    void verifyClosedTimes(int expectedTimes) {
+        assertThat(closedTimes).isEqualTo(expectedTimes);
+    }
+
+    @Override
+    @SuppressWarnings("HiddenField")
+    public String basicConsume(String s, boolean b, String s1, Consumer consumer) throws IOException {
+        verifyChannelIsClosed();
+        initiatedTimes++;
+        isOpen = true;
+        this.consumer = consumer;
+        return null;
+    }
+
+    @Override
+    public AMQP.Queue.DeclareOk queueDeclare() throws IOException {
+        return new QueueDeclareOk("anyName");
+    }
+
+    @Override
+    public void close() throws IOException, TimeoutException {
+        verifyChannelIsOpen();
+        isOpen = false;
+        closedTimes++;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    private void verifyChannelIsClosed() {
+        if (isOpen) {
+            throw new IllegalStateException("channel is already open");
         }
+    }
 
-        private void setupControlMethods(TimeUtils timeUtils) {
-            sendMessageAt(timeUtils);
-
-            verifyInitiated();
+    private void verifyChannelIsOpen() {
+        if (!isOpen) {
+            throw new IllegalStateException("channel is already closed");
         }
+    }
 
-        private void stubInitiationBehaviour() throws IOException {
-            channel = mock(ChannelFixture.class);
-            AMQP.Queue.DeclareOk declareQueue = mock(AMQP.Queue.DeclareOk.class);
-            when(channel.queueDeclare()).thenReturn(declareQueue);
-            when(declareQueue.getQueue()).thenReturn("any");
-        }
+    @AllArgsConstructor
+    public static class QueueDeclareOk extends DeclareOkAllOperationsUnsupported {
 
-        private void sendMessageAt(TimeUtils timeUtils) {
-            doAnswer(invocationOnMock -> {
-                    ArgumentCaptor<Consumer> messageConsumer = ArgumentCaptor.forClass(Consumer.class);
-                    verify(channel)
-                        .basicConsume(anyString(), anyBoolean(), anyString(), messageConsumer.capture());
-                    when(timeUtils.now()).thenReturn(invocationOnMock.getArgument(0));
-                    messageConsumer
-                        .getValue()
-                        .handleDelivery(
-                            "any",
-                            mock(Envelope.class),
-                            mock(AMQP.BasicProperties.class),
-                            new byte[] {}
-                        );
-                    return null;
-                })
-                .when(channel)
-                .sendMessageAt(anyLong());
-        }
+        private final String name;
 
-        private void verifyInitiated() {
-            doAnswer(invocationOnMock -> {
-                    verify(channel, invocationOnMock.getArgument(0))
-                        .basicConsume(any(), anyBoolean(), anyString(), any());
-                    return null;
-                })
-                .when(channel)
-                .verifyInitiated(any());
-        }
-
-        ChannelFixture get() {
-            return channel;
+        @Override
+        public String getQueue() {
+            return name;
         }
     }
 }

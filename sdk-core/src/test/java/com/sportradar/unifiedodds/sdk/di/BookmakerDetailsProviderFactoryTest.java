@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.impl.LogHttpDataFetcher;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
+import com.sportradar.utils.domain.names.Languages;
 import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
