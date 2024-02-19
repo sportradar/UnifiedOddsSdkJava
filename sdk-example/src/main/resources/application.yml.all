@@ -1,4 +1,4 @@
-# all the configuration properties are optional, for detailed description check the "ConfigurationAccessTokenSetter"
+# all the configuration properties are optional, for detailed description check the "TokenSetter"
 
 sportradar:
   sdk:
@@ -11,27 +11,25 @@ sportradar:
       defaultLanguage:
       # a comma delimited list of the desired languages [en,it,de,...]
       desiredLanguages:
-        -
-      # message broker related properties
-      messaging:
-        host:
-        port:
-        username:
-        password:
-        virtualHost:
-      # an indication if the connection to the messaging broker should use ssl (boolean)
-      messagingUseSsl:
-      # the api host
-      apiHost:
-      # the api port
-      apiPort:
-      # an indication if the request to the API should use ssl (boolean)
-      apiUseSsl:
       # a comma delimited list of producer identifiers that should be automatically disabled [3,4,...]
       disabledProducers:
-        -
-      # the exception handling strategy that should be used through the SDK (throw/catch)
+      # the exception handling strategy that should be used through the SDK (Throw/Catch)
       exceptionHandlingStrategy:
-
       # a value indicating to which unified feed environment sdk should connect
+      # (Integration, Production, Custom, Replay,
+      # GlobalReplay, GlobalProduction, GlobalIntegration,
+      # ProxySingapore, ProxyTokyo)
       environment:
+
+      # message broker related properties - only used when setting Custom environment
+      messagingHost:
+      messagingPort:
+      messagingUsername:
+      messagingPassword:
+      messagingVirtualHost:
+      messagingUseSsl:
+
+      # the api host related properties - only used when setting Custom environment
+      apiHost:
+      apiPort:
+      apiUseSsl:

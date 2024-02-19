@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
+import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -29,12 +30,11 @@ public class BasicUofSdkExampleMain {
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
         UofConfiguration config = UofSdk
             .getUofConfigurationBuilder()
-            .setAccessToken("tkIQxFhK84x4QdgPXR")
+            .setAccessToken("your-staging-token-here")
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID)
             .setDefaultLanguage(Locale.ENGLISH)
             .build();
-
         // create the new feed
         UofSdk uofSdk = new UofSdk(new GlobalEventsListener(), config);
 

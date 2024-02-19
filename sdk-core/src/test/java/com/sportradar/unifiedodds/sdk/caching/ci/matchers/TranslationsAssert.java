@@ -8,6 +8,7 @@ import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.TranslationHolder;
 import java.util.Locale;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 
 public class TranslationsAssert extends AbstractAssert<TranslationsAssert, Translations> {
 
@@ -22,14 +23,14 @@ public class TranslationsAssert extends AbstractAssert<TranslationsAssert, Trans
     public TranslationsAssert hasTranslation(TranslationHolder translation) {
         Locale language = translation.getLanguage();
         String word = translation.getWord();
-        org.assertj.core.api.Assertions.assertThat(actual.getFor(language)).isEqualTo(word);
-        org.assertj.core.api.Assertions.assertThat(actual.export().get(language)).isEqualTo(word);
+        Assertions.assertThat(actual.getFor(language)).isEqualTo(word);
+        Assertions.assertThat(actual.export().get(language)).isEqualTo(word);
         return this;
     }
 
     public TranslationsAssert isNotTranslatedTo(LanguageHolder language) {
-        org.assertj.core.api.Assertions.assertThat(actual.getFor(language.get())).isNull();
-        org.assertj.core.api.Assertions.assertThat(actual.export().get(language.get())).isNull();
+        Assertions.assertThat(actual.getFor(language.get())).isNull();
+        Assertions.assertThat(actual.export().get(language.get())).isNull();
         return this;
     }
 }

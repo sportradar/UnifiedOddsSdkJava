@@ -10,6 +10,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.VoidCallables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
@@ -53,10 +54,21 @@ public class RabbitMqProducer implements AutoCloseable {
         connection.close();
     }
 
-    public void send(String message, String routingKey) throws IOException {
-        byte[] body = message.getBytes(StandardCharsets.UTF_8);
-        val properties = asProperties(time.now());
-        channel.basicPublish(exchangeName, routingKey, properties, body);
+    public void send(String message, String routingKey) {
+        rethrowExceptions(() -> {
+            byte[] body = message.getBytes(StandardCharsets.UTF_8);
+            val properties = asProperties(time.now());
+            channel.basicPublish(exchangeName, routingKey, properties, body);
+        });
+    }
+
+    @SuppressWarnings("IllegalCatch")
+    private void rethrowExceptions(VoidCallables.ThrowingRunnable thrower) {
+        try {
+            thrower.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static AMQP.BasicProperties asProperties(long timestamp) {
@@ -70,7 +82,8 @@ public class RabbitMqProducer implements AutoCloseable {
     private Connection createConnection(Credentials credentials, VhostLocation vhostLocation)
         throws IOException, TimeoutException {
         factory.setVirtualHost(vhostLocation.getVirtualHostname());
-        factory.setHost(vhostLocation.getHost());
+        factory.setHost(vhostLocation.getBaseUrl().getHost());
+        factory.setPort(vhostLocation.getBaseUrl().getPort());
         factory.setUsername(credentials.getUsername());
         factory.setPassword(credentials.getPassword());
         return factory.newConnection();

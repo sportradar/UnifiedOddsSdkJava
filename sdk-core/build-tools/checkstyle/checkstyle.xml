@@ -1669,7 +1669,8 @@
             <property name="excludedClasses" value="ArrayIndexOutOfBoundsException,
             Class, Object, Override, Void, void,
             Deprecated, SafeVarargs, SuppressWarnings,
-            val, var,
+            val, var, NonNull, AllArgsConstructor, NoArgsConstructor, RequiredArgsConstructor, AccessLevel,
+            Getter, Setter,
             Exception, IllegalArgumentException, IllegalStateException,
             IndexOutOfBoundsException, InterruptedException, NullPointerException,
             RuntimeException, SecurityException, UnsupportedOperationException, Throwable,
@@ -1688,7 +1689,9 @@
             Assertions,
             Mockito, ArgumentMatchers"/>
         </module>
-        <module name="ClassTypeParameterName"/>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="^[A-Z]{1,}$"/>
+        </module>
         <module name="CommentsIndentation"/>
         <module name="ConstantName"/>
         <module name="CovariantEquals"/>

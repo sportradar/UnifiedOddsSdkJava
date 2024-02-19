@@ -10,9 +10,9 @@ import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiHole;
 import com.sportradar.uf.sportsapi.datamodel.SapiVenue;
 import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
+import com.sportradar.utils.domain.names.Languages;
 import org.junit.Test;
 
 public class VenueImplTest {

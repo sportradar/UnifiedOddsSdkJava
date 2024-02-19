@@ -16,14 +16,17 @@ public class VhostLocationTest {
 
     @Test
     public void hostShouldNotBeNull() {
-        assertThatThrownBy(() -> VhostLocation.at(null, any))
+        final int anyPort = 987;
+        assertThatThrownBy(() -> {
+                VhostLocation.at(BaseUrl.of(null, anyPort), any);
+            })
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("host");
     }
 
     @Test
     public void virtualHostnameShouldNotBeNull() {
-        assertThatThrownBy(() -> VhostLocation.at(any, null))
+        assertThatThrownBy(() -> VhostLocation.at(BaseUrl.any(), null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("virtualHostname");
     }
@@ -31,18 +34,19 @@ public class VhostLocationTest {
     @Test
     public void shouldPreserveHost() {
         val host = "internet.com";
-        assertEquals(host, VhostLocation.at(host, any).getHost());
+        final int anyPort = 987;
+        assertEquals(host, VhostLocation.at(BaseUrl.of(host, anyPort), any).getBaseUrl().getHost());
     }
 
     @Test
     public void shouldPreserveVirtualHost() {
         val vhost = "/unified";
-        assertEquals(vhost, VhostLocation.at(any, vhost).getVirtualHostname());
+        assertEquals(vhost, VhostLocation.at(BaseUrl.any(), vhost).getVirtualHostname());
     }
 
     @Test
     public void shouldCreateAnyVhostLocation() {
-        assertNotNull(VhostLocation.any().getHost());
+        assertNotNull(VhostLocation.any().getBaseUrl().getHost());
         assertNotNull(VhostLocation.any().getVirtualHostname());
     }
 }

@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.integrationtest.externalrabbit;
 
+import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertNotNull;
@@ -29,9 +30,9 @@ public class RabbitMqUserSetupIT {
     );
     private final Credentials producerCredentials = Credentials.with("producer1", "producer1_P4ssw0rd");
 
-    private final VhostLocation vhostLocation = VhostLocation.at(Constants.RABBIT_IP, "/testhost");
+    private final VhostLocation vhostLocation = VhostLocation.at(RABBIT_BASE_URL, "/testhost");
     private final Client rabbitClient = createRabbitMqClient(
-        vhostLocation.getHost(),
+        vhostLocation.getBaseUrl().getHost(),
         adminCredentials,
         Client::new
     );
@@ -91,7 +92,7 @@ public class RabbitMqUserSetupIT {
         final Connection connection;
         val factory = new ConnectionFactory();
         factory.setVirtualHost(vhostLocation.getVirtualHostname());
-        factory.setHost(vhostLocation.getHost());
+        factory.setHost(vhostLocation.getBaseUrl().getHost());
         factory.setUsername(credentials.getUsername());
         factory.setPassword(credentials.getPassword());
         connection = factory.newConnection();

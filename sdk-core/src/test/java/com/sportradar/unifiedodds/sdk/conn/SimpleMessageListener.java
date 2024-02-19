@@ -251,7 +251,7 @@ public class SimpleMessageListener implements UofListener {
      */
     @Override
     public void onUnparsableMessage(UofSession sender, UnparsableMessage unparsableMessage) {
-        Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
+        com.sportradar.unifiedodds.sdk.oddsentities.Producer possibleProducer = unparsableMessage.getProducer(); // the SDK will try to provide the origin of the message
         String message = String.format(
             "[%s]: event=%s, data=%s",
             listenerVersion,
@@ -283,7 +283,11 @@ public class SimpleMessageListener implements UofListener {
     @Override
     public void onUserUnhandledException(UofSession sender, Exception exception) {}
 
-    private void logBaseMessageData(Message message, SportEvent event, Producer producer) {
+    private void logBaseMessageData(
+        Message message,
+        SportEvent event,
+        com.sportradar.unifiedodds.sdk.oddsentities.Producer producer
+    ) {
         logger.info(
             "Received " +
             message.getClass().getSimpleName() +

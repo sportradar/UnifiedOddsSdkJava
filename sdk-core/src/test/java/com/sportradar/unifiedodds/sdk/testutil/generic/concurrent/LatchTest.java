@@ -3,11 +3,12 @@
  */
 package com.sportradar.unifiedodds.sdk.testutil.generic.concurrent;
 
+import static com.sportradar.utils.time.TimeInterval.seconds;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.recovery.TimeUtilsStub;
+import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class LatchTest {
         val timeUtils = timeUtilsStubs.withCurrentTime(instantAtMidnight);
         val latch = new Latch(1, timeUtils);
 
-        Executors.newFixedThreadPool(1).submit(() -> timeUtils.fastForwardSeconds(2));
+        Executors.newFixedThreadPool(1).submit(() -> timeUtils.tick(seconds(2)));
 
         assertFalse(latch.await(1, TimeUnit.SECONDS));
     }
@@ -68,7 +69,7 @@ public class LatchTest {
 
     private void tearUpStartedCallables(TimeUtilsStub timeUtils) {
         int enoughSecondsForCallablesToFinish = 2;
-        timeUtils.fastForwardSeconds(enoughSecondsForCallablesToFinish);
+        timeUtils.tick(seconds(enoughSecondsForCallablesToFinish));
     }
 
     @Test

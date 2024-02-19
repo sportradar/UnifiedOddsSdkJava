@@ -3,7 +3,14 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
-import static org.junit.Assert.assertFalse;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.AmqpConnectionFactoryFake.initiallyProvides;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ConnectionToBeProvided.ChannelsToBeCreated.creating;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ConnectionToBeProvided.ConnectionHealth.HEALTHY;
+import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ConnectionToBeProvided.ConnectionHealth.UNHEALTHY_AUTO_RECOVERING;
+import static com.sportradar.utils.thread.sleep.SleepMock.onSleepDo;
+import static com.sportradar.utils.time.TimeInterval.minutes;
+import static com.sportradar.utils.time.TimeInterval.seconds;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -11,392 +18,515 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.impl.MessageConsumer;
 import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.RabbitMqChannelSupervisors.Builder;
+import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
+import com.sportradar.utils.thread.sleep.Sleep;
+import com.sportradar.utils.time.EpochMillis;
+import com.sportradar.utils.time.TimeInterval;
+import com.sportradar.utils.time.TimeUtilsStub;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.time.Instant;
 import java.util.concurrent.TimeoutException;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({ "ClassFanOutComplexity", "HiddenField" })
+@RunWith(Enclosed.class)
+@SuppressWarnings({ "ClassFanOutComplexity", "HiddenField", "VariableDeclarationUsageDistance" })
 public class RabbitMqChannelImplTest {
 
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
-    private static final String ANY = "any";
     private static final EpochMillis MIDNIGHT = new EpochMillis(MIDNIGHT_TIMESTAMP_MILLIS);
-    private Logger logger;
-    private ListAppender<ILoggingEvent> appender;
 
-    private TimeUtils timeUtils = mock(TimeUtils.class);
+    public static class OnInitiation {
 
-    private ChannelFixture channel = new ChannelFixture.Holder(timeUtils).get();
+        private final TimeUtilsStub time = TimeUtilsStub
+            .threadSafe(new AtomicActionPerformer())
+            .withCurrentTime(Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS));
+        private final ChannelFixture channel = new ChannelFixture();
+        private final Channel anyChannel = new NoOpRecoverableChannel();
 
-    public RabbitMqChannelImplTest() throws IOException {}
+        private final ConnectionToBeProvided.Factory connection = new ConnectionToBeProvided.Factory(time);
 
-    @Before
-    public void setup() throws Exception {
-        // Sort out logging interception
-        logger = LoggerFactory.getLogger(RabbitMqChannelImpl.class);
-        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
-        appender = new ListAppender();
-        logbackLogger.addAppender(appender);
-        appender.start();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldNotBeInstantiatedWithNullTimeUtils()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            "anyVersion",
-            mock(AmqpConnectionFactory.class),
-            null
-        );
-    }
-
-    @Test
-    public void rabbitMqChannelShouldBeCreatedOnOpeningSupervisor()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            mock(TimeUtils.class)
-        );
-
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-
-        channel.verifyInitiated(times(1));
-    }
-
-    @Test
-    public void rabbitMqChannelShouldNotBeCreatedIfConnectionWasUnavailableWhenOpeningSupervisor()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        AmqpConnectionFactory connectionFactory = mock(AmqpConnectionFactory.class);
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            mock(TimeUtils.class)
-        );
-
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        //ensuring no exception is thrown
-    }
-
-    @Test
-    public void rabbitMqChannelShouldBeCreatedOnInspectionIfChannelIsNotYetCreated()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = mock(AmqpConnectionFactory.class);
-        when(connectionFactory.getConnection()).thenReturn(null, connection);
-        when(connectionFactory.canConnectionOpen()).thenReturn(true);
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            mock(TimeUtils.class)
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(1));
-    }
-
-    @Test
-    public void rabbitMqChannelShouldNotBeCreatedOnInspectionIfChannelIsAlreadyCreated()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(1));
-    }
-
-    @Test
-    public void rabbitMqChannelShouldNotBeRestartedOnInspectionIfItIsNotUsingStaleConnection()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(1));
-    }
-
-    @Test
-    public void rabbitMqChannelShouldBeRestartedOnInspectionIfItIsUsingStaleConnection()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.minusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(2));
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void rabbitMqChannelShouldBeRestartedOnInspectionIfItHasNeverEverReceivedAnyMessageAndIsIdleFor3minutes()
-        throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        long pastMidnight1Minute = MIDNIGHT.plusMinutes(1);
-        long pastMidnight4Minutes = MIDNIGHT.plusMinutes(4);
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        when(timeUtils.now()).thenReturn(pastMidnight1Minute, pastMidnight4Minutes);
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(2));
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void shouldBeRestartedOnInspectionIfItHasEverReceivedSomeMessageButIsIdleFor3minutesAndConnectionIsClosed()
-        throws IOException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        anotherChannelCloses(connectionFactory);
-        channel.sendMessageAt(MIDNIGHT.plusMinutes(4));
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(7));
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(2));
-    }
-
-    private static void anotherChannelCloses(AmqpConnectionFactory connectionFactory) throws IOException {
-        connectionFactory.close(false);
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void shouldBeRestartedOnInspectionIfItHasEverReceivedSomeMessageButIsIdleFor3minutesAndConnectionIsOpen()
-        throws IOException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        channel.sendMessageAt(MIDNIGHT.plusMinutes(4));
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(7));
-
-        supervisor.checkStatus();
-
-        channel.verifyInitiated(times(2));
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void shouldCloseConnectionOnInspectionIfItHasEverReceivedSomeMessageButIsIdleFor3minutesAndConnectionIsOpen()
-        throws IOException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        channel.sendMessageAt(MIDNIGHT.plusMinutes(4));
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(7));
-
-        supervisor.checkStatus();
-
-        assertFalse("connection should have been closed", connectionFactory.isConnectionOpen());
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void shouldNotCloseAlreadyClosedConnectionOnInspectionIfItHasEverReceivedSomeMessageButIsIdleFor3minutes()
-        throws IOException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs.holdingConnectionCreatedAt(
-            MIDNIGHT.get(),
-            connection
-        );
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        channel.sendMessageAt(MIDNIGHT.plusMinutes(4));
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(7));
-
-        supervisor.checkStatus();
-
-        assertFalse("connection should have been closed", connectionFactory.isConnectionOpen());
-        assertDoesNotContainLogLine("Error closing connection:");
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void connectionClosureDueToIoExceptionShouldBeLogged() throws IOException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs
-            .holdingConnectionCreatedAt(MIDNIGHT.get(), connection)
-            .onCloseThrowing(new IOException());
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        channel.sendMessageAt(MIDNIGHT.plusMinutes(4));
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(7));
-
-        supervisor.checkStatus();
-
-        assertContainsLogLine("Error closing connection:");
-    }
-
-    @Test
-    @SuppressWarnings("MagicNumber")
-    public void connectionClosureDueToRuntimeExceptionShouldBeLogged() throws IOException {
-        Connection connection = mock(Connection.class);
-        when(connection.createChannel()).thenReturn(channel);
-        AmqpConnectionFactory connectionFactory = AmqpConnectionFactoryStubs
-            .holdingConnectionCreatedAt(MIDNIGHT.get(), connection)
-            .onCloseThrowing(new IllegalArgumentException());
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(1));
-        OnDemandChannelSupervisor supervisor = new RabbitMqChannelImpl(
-            mock(RabbitMqSystemListener.class),
-            mock(WhoAmIReader.class),
-            ANY,
-            connectionFactory,
-            timeUtils
-        );
-        supervisor.open(Arrays.asList(ANY), mock(ChannelMessageConsumer.class), ANY);
-        channel.sendMessageAt(MIDNIGHT.plusMinutes(4));
-        when(timeUtils.now()).thenReturn(MIDNIGHT.plusMinutes(7));
-
-        supervisor.checkStatus();
-
-        assertContainsLogLine("Error closing connection:");
-    }
-
-    private void assertContainsLogLine(final String text) {
-        for (ILoggingEvent loggingEvent : appender.list) {
-            if (loggingEvent.getFormattedMessage().contains(text)) {
-                return;
-            }
+        @Test(expected = NullPointerException.class)
+        public void shouldNotBeInstantiatedWithNullTimeUtils() {
+            new RabbitMqChannelImpl(
+                mock(RabbitMqSystemListener.class),
+                mock(WhoAmIReader.class),
+                "anyVersion",
+                mock(AmqpConnectionFactory.class),
+                null,
+                mock(Sleep.class)
+            );
         }
-        fail("Could not find log line that matches: " + text);
+
+        @Test(expected = NullPointerException.class)
+        public void shouldNotBeInstantiatedWithNullSleep() {
+            new RabbitMqChannelImpl(
+                mock(RabbitMqSystemListener.class),
+                mock(WhoAmIReader.class),
+                "anyVersion",
+                mock(AmqpConnectionFactory.class),
+                mock(TimeUtils.class),
+                null
+            );
+        }
+
+        @Test
+        public void rabbitMqChannelShouldBeCreatedOnOpeningSupervisor() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            new RabbitMqChannelSupervisors.Builder().with(connectionFactory).opened();
+
+            channel.verifyInitiatedTimes(1);
+        }
+
+        @Test
+        public void rabbitMqChannelShouldNotBeCreatedIfConnectionWasUnavailableWhenOpeningSupervisor()
+            throws IOException {
+            new RabbitMqChannelSupervisors.Builder().with(mock(AmqpConnectionFactory.class)).opened();
+            //ensuring no exception is thrown
+        }
     }
 
-    private void assertDoesNotContainLogLine(final String text) {
-        for (ILoggingEvent loggingEvent : appender.list) {
-            if (loggingEvent.getFormattedMessage().contains(text)) {
-                fail("Found log line that matches: " + text);
+    public static class OnInspection {
+
+        public static final TimeInterval IDLE_INTERVAL = minutes(3);
+        public static final TimeInterval LESS_THAN_IDLE_INTERVAL = IDLE_INTERVAL.minus(seconds(1));
+        private ListAppender<ILoggingEvent> appender;
+
+        private final TimeUtilsStub time = TimeUtilsStub
+            .threadSafe(new AtomicActionPerformer())
+            .withCurrentTime(Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS));
+
+        private final ChannelFixture channel = new ChannelFixture();
+
+        private final ConnectionToBeProvided.Factory connection = new ConnectionToBeProvided.Factory(time);
+
+        @Before
+        public void setup() throws Exception {
+            // Sort out logging interception
+            Logger logger = LoggerFactory.getLogger(RabbitMqChannelImpl.class);
+            ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
+            appender = new ListAppender<>();
+            logbackLogger.addAppender(appender);
+            appender.start();
+        }
+
+        @Test
+        public void createsChannelIfIsNotCreatedYet()
+            throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+            Connection connection = mock(Connection.class);
+            when(connection.createChannel()).thenReturn(channel);
+            AmqpConnectionFactory connectionFactory = mock(AmqpConnectionFactory.class);
+            when(connectionFactory.getConnection()).thenReturn(null, connection);
+            when(connectionFactory.canConnectionOpen()).thenReturn(true);
+            val channelSupervisor = new Builder().with(connectionFactory).opened();
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(1);
+        }
+
+        @Test
+        public void doesNotRecreateChannelOnEachInspection() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+
+            channelSupervisor.checkStatus();
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(1);
+        }
+
+        @Test
+        public void doesNotRestartChannelIfItIsNotUsingStaleConnection() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(1);
+        }
+
+        @Test
+        public void restartsChannelIfItIsUsingStaleConnection()
+            throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            time.tick();
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+            anotherChannelSupervisorRestartsConnection(connectionFactory);
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(2);
+            channel.verifyClosedTimes(1);
+        }
+
+        @Test
+        public void channelReceivesMessage()
+            throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+            val consumer = new CountingMessagesConsumer();
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(consumer).with(connectionFactory).with(time).opened();
+            time.tick();
+
+            channel.sendMessage();
+
+            consumer.verifyMessagesReceived(1);
+        }
+
+        @Test
+        public void discardsMessagesReceivedFromChannelClosedDueToOperatingOnStaleConnection()
+            throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+            val channelToBeClosed = new ChannelFixture();
+            val consumer = new CountingMessagesConsumer();
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channelToBeClosed)));
+            time.tick();
+            val channelSupervisor = new Builder().with(consumer).with(connectionFactory).with(time).opened();
+            time.tick();
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+            anotherChannelSupervisorRestartsConnection(connectionFactory);
+
+            channelSupervisor.checkStatus();
+            channelToBeClosed.sendMessage();
+
+            consumer.verifyNoMessagesReceived();
+        }
+
+        private static void anotherChannelSupervisorRestartsConnection(
+            AmqpConnectionFactoryFake connectionFactory
+        ) throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
+            connectionFactory.close(false);
+            connectionFactory.getConnection();
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void restartsChannelIfItHasNeverReceivedAnyMessagesAndIsIdleFor3minutes() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            time.tick(IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(2);
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void messagesReceivedFromClosedChannelsDoesNotResetCountingTowards3minutesThresholdOfIdleness()
+            throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
+            ChannelFixture channelToBeClosed = new ChannelFixture();
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channelToBeClosed)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            time.tick();
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+            anotherChannelSupervisorRestartsConnection(connectionFactory);
+
+            channelSupervisor.checkStatus();
+
+            time.tick(IDLE_INTERVAL.minus(seconds(5)));
+            channelToBeClosed.sendMessage();
+
+            time.tick(seconds(5));
+            channelSupervisor.checkStatus();
+
+            channel.verifyClosedTimes(1);
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void notRestartsChannelIfItHasNeverReceivedAnyMessagesAndIsIdleForLessThan3minutes()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            time.tick(LESS_THAN_IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(1);
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void notRestartsChannelWhichHasEverReceivedMessagesButIsIdleFor3minutesIfConnectionIsAutoRecovering()
+            throws IOException {
+            val connectionFactory = initiallyProvides(
+                connection.whichIs(UNHEALTHY_AUTO_RECOVERING, creating(channel))
+            );
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(1);
+            channel.verifyClosedTimes(0);
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void restartsChannelAlongWithConnectionIfChannelHasEverReceivedAnyMessagesButIsIdleFor3minutes()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick(seconds(1));
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(2);
+            assertThat(connectionFactory.getConnectionStarted())
+                .isEqualTo(MIDNIGHT.plus(IDLE_INTERVAL.plus(seconds(1))).get());
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void notRestartsNeitherChannelNorConnectionIfChannelHasEverReceivedMessagesButIsIdleForLessThan3minutes()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(LESS_THAN_IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(1);
+            assertThat(connectionFactory.getConnectionStarted()).isEqualTo(MIDNIGHT.get());
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void leavesSomeTimeGapBetweenRestartingConnectionAndRestartingChannel() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            Sleep sleep = onSleepDo(() -> {
+                assertThat(connectionFactory.hasConnection()).isFalse();
+                assertThat(channel.isOpen()).isFalse();
+            });
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).with(sleep).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            verify(sleep).millis(5000);
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void idleFor3MinutesChannelWhichHasEverReceivedAnyMessagesCausesHealthyConnectionToBeRestarted()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            assertThat(connectionFactory.hasConnection()).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void leaveUnhealthyConnectionToAutoRecoverIfChannelHasEverReceivedAnyMessagesButIsIdleFor3minutes()
+            throws IOException {
+            val connectionFactory = initiallyProvides(
+                connection.whichIs(UNHEALTHY_AUTO_RECOVERING, creating(channel))
+            );
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            assertThat(connectionFactory.hasConnection()).isTrue();
+            assertThat(connectionFactory.isConnectionHealthy()).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void restartsConnectionIfItBecomesHealthyWhenChannelHasEverReceivedAnyMessagesButIsIdleOver3minutes()
+            throws IOException {
+            val connection = this.connection.whichIs(UNHEALTHY_AUTO_RECOVERING, creating(channel));
+            val connectionFactory = initiallyProvides(connection);
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            channelSupervisor.checkStatus();
+
+            connection.setHealth(HEALTHY);
+            channelSupervisor.checkStatus();
+
+            assertThat(connectionFactory.hasConnection()).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void notClosesAlreadyClosedConnectionIfChannelHasEverReceivedAnyMessagesButIsIdleFor3minutes()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.close(false);
+
+            channelSupervisor.checkStatus();
+
+            connectionFactory.assertThatAlreadyClosedConnectionWasNotClosedAgain();
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void afterRestartingConnectionNotEntersIntoConnectionRestartingLoop() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick(seconds(1));
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+
+            channelSupervisor.checkStatus();
+            channelSupervisor.checkStatus();
+
+            assertThat(connectionFactory.hasConnection()).isTrue();
+            assertThat(connectionFactory.getConnectionStarted())
+                .isEqualTo(MIDNIGHT.plus(IDLE_INTERVAL.plus(seconds(1))).get());
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void afterRestartingConnectionAlongWithChannelNotEnterIntoChannelRestartingLoop()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+
+            channelSupervisor.checkStatus();
+            channelSupervisor.checkStatus();
+
+            channel.verifyInitiatedTimes(2);
+            channel.verifyClosedTimes(1);
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void connectionIsRestartedAgainIfTheUnfavourableScenarioHappensInSubsequent3Minutes()
+            throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
+            channelSupervisor.checkStatus();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+            connectionFactory.afterClosingStarts(connection.absent());
+
+            channelSupervisor.checkStatus();
+
+            assertThat(connectionFactory.hasConnection()).isFalse();
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void connectionClosureDueToIoExceptionShouldBeLogged() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)))
+                .onCloseThrowing(new IOException());
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            assertContainsLogLine("Error closing connection:");
+        }
+
+        @Test
+        @SuppressWarnings("MagicNumber")
+        public void connectionClosureDueToRuntimeExceptionShouldBeLogged() throws IOException {
+            val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)))
+                .onCloseThrowing(new IllegalArgumentException());
+            time.tick();
+            val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
+            channel.sendMessage();
+            time.tick(IDLE_INTERVAL);
+
+            channelSupervisor.checkStatus();
+
+            assertContainsLogLine("Error closing connection:");
+        }
+
+        private void assertContainsLogLine(final String text) {
+            for (ILoggingEvent loggingEvent : appender.list) {
+                if (loggingEvent.getFormattedMessage().contains(text)) {
+                    return;
+                }
+            }
+            fail("Could not find log line that matches: " + text);
+        }
+
+        public static class CountingMessagesConsumer implements ChannelMessageConsumer {
+
+            private int count;
+
+            @Override
+            public void open(MessageConsumer messageConsumer) {}
+
+            @Override
+            public void onMessageReceived(
+                String routingKey,
+                byte[] body,
+                AMQP.BasicProperties properties,
+                long receivedAt
+            ) {
+                count++;
+            }
+
+            @Override
+            public String getConsumerDescription() {
+                return null;
+            }
+
+            public void verifyNoMessagesReceived() {
+                assertThat(count).isZero();
+            }
+
+            public void verifyMessagesReceived(int expectedMessageCount) {
+                assertThat(count).isEqualTo(expectedMessageCount);
             }
         }
     }

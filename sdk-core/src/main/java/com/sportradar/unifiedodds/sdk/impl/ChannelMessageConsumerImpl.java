@@ -286,6 +286,11 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo, timestamp);
     }
 
+    @Override
+    public String getConsumerDescription() {
+        return messageConsumer.getConsumerDescription();
+    }
+
     private void dispatchUnparsableMessage(String msg, byte[] body, Urn eventId, MessageTimestamp timestamp) {
         logger.warn(msg);
         messageConsumer.onMessageDeserializationFailed(body, eventId);

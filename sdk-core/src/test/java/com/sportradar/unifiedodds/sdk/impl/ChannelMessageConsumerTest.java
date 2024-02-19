@@ -167,7 +167,17 @@ public class ChannelMessageConsumerTest {
             .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any());
     }
 
-    //Helpers:
+    @Test
+    public void getsConsumerDescription() {
+        MessageConsumer msgConsumer = Mockito.mock(MessageConsumer.class);
+        chanMsgConsumer.open(msgConsumer);
+
+        byte[] data = new byte[] { 1, 2, 3, 4 }; //this can't be deserialized
+
+        chanMsgConsumer.onMessageReceived("routing_key", data, null, 0L);
+
+        Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.eq(data), Mockito.any());
+    }
 
     private byte[] oddsChangeBytes() throws Exception {
         return Files.readAllBytes(

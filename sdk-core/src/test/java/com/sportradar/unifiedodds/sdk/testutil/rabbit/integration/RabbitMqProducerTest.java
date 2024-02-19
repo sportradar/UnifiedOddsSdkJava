@@ -16,8 +16,8 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.recovery.TimeUtilsStub;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
+import com.sportradar.utils.time.TimeUtilsStub;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.TimeoutException;
@@ -34,7 +34,11 @@ public class RabbitMqProducerTest {
     private final Connection connection = mock(Connection.class);
     private final ConnectionFactory factory = stubSingleChannelFactory(connection, channel);
     private final Credentials user = Credentials.with("GivenUsername", "GivenPassword");
-    private final VhostLocation vhostLocation = VhostLocation.at("GivenHost", "GivenVhost");
+    private final int givenPort = 987;
+    private final VhostLocation vhostLocation = VhostLocation.at(
+        BaseUrl.of("GivenHost", givenPort),
+        "GivenVhost"
+    );
 
     private final Instant instantAtMidnight = ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS);
     private final TimeUtilsStub time = TimeUtilsStub
@@ -88,7 +92,8 @@ public class RabbitMqProducerTest {
         connectDeclaringExchange(at(vhostLocation, any), Credentials.any(), factory, time);
 
         verify(factory).setVirtualHost(vhostLocation.getVirtualHostname());
-        verify(factory).setHost(vhostLocation.getHost());
+        verify(factory).setHost(vhostLocation.getBaseUrl().getHost());
+        verify(factory).setPort(vhostLocation.getBaseUrl().getPort());
     }
 
     @Test

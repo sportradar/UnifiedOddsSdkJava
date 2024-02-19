@@ -27,7 +27,7 @@ public class RabbitMqConsumersTest {
     private final String exchange = "givenExchange";
     private final String queueName = "givenQueueName";
     private final Credentials user = Credentials.with("GivenUsername", "GivenPassword");
-    private final VhostLocation vhostLocation = VhostLocation.at("GivenHost", "GivenVhost");
+    private final VhostLocation vhostLocation = VhostLocation.at(BaseUrl.any(), "GivenVhost");
     private final Connection connection = mock(Connection.class);
     private final Channel channel = ChannelMocks.createDeclaringQueue(queueName);
     private final ConnectionFactory factory = stubSingleChannelFactory(connection, channel);
@@ -68,7 +68,7 @@ public class RabbitMqConsumersTest {
         connectToExchange(at(vhostLocation, any), Credentials.any(), factory);
 
         verify(factory).setVirtualHost(vhostLocation.getVirtualHostname());
-        verify(factory).setHost(vhostLocation.getHost());
+        verify(factory).setHost(vhostLocation.getBaseUrl().getHost());
     }
 
     @Test

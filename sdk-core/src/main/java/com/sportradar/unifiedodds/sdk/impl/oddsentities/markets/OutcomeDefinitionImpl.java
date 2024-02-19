@@ -24,7 +24,6 @@ import java.util.Map;
 @SuppressWarnings({ "ParameterNumber" })
 class OutcomeDefinitionImpl implements OutcomeDefinition {
 
-    private final MarketDescription marketDescription;
     private final String outcomeId;
     private final Urn sportId;
     private final int producerId;
@@ -32,9 +31,10 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
     private final Locale defaultLocale;
     private final MarketDescriptionProvider descriptorProvider;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
+    private final int marketId;
 
     OutcomeDefinitionImpl(
-        MarketDescription md,
+        int marketId,
         String outcomeId,
         Urn sportId,
         int producerId,
@@ -43,7 +43,6 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
-        Preconditions.checkNotNull(md);
         Preconditions.checkNotNull(sportId);
         Preconditions.checkNotNull(defaultLocale);
         Preconditions.checkNotNull(descriptorProvider);
@@ -51,7 +50,7 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
         Preconditions.checkArgument(producerId > 0);
         Preconditions.checkNotNull(exceptionHandlingStrategy);
 
-        this.marketDescription = md;
+        this.marketId = marketId;
         this.outcomeId = outcomeId;
         this.sportId = sportId;
         this.producerId = producerId;
@@ -95,7 +94,7 @@ class OutcomeDefinitionImpl implements OutcomeDefinition {
 
     private MarketDescription provideDynamicVariantMarket(Locale locale) throws CacheItemNotFoundException {
         return descriptorProvider.getMarketDescription(
-            this.marketDescription.getId(),
+            marketId,
             specifiersMap,
             Lists.newArrayList(locale),
             true

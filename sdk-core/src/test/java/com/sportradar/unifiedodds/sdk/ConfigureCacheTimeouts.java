@@ -10,15 +10,13 @@ import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.Environments;
 import com.sportradar.unifiedodds.sdk.cfg.StubSdkConfigurationPropertiesReader;
 import com.sportradar.unifiedodds.sdk.cfg.StubSdkConfigurationYamlReader;
 import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
 import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.testutil.javautil.Languages;
-import java.util.Locale;
+import com.sportradar.utils.domain.names.Languages;
 import java.util.Map;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;

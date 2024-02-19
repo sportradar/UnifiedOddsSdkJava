@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
         "VisibilityModifier",
     }
 )
-public class UofSdk {
+public class UofSdk implements AutoCloseable {
 
     /**
      * The logger instance used for the UofSdk logs
@@ -520,6 +520,7 @@ public class UofSdk {
      *
      * @throws IOException if the AMQP connection closure fails
      */
+    @Override
     public void close() throws IOException {
         if (!this.feedOpened) {
             logger.warn("Invoked close on already closed UofSdk instance");

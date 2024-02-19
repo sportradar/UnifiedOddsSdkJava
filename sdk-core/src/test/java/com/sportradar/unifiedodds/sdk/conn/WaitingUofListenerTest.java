@@ -4,17 +4,18 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue.createSignallingOnPollingQueue;
+import static com.sportradar.utils.time.TimeInterval.seconds;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.UofSession;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.impl.recovery.TimeUtilsStub;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.FluentExecutor;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue;
+import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.*;
 import lombok.val;
@@ -67,7 +68,7 @@ public class WaitingUofListenerTest {
 
         executor.executeInAnotherThread(() -> {
             queue.getWaiterForStartingToPoll().await(2, TimeUnit.SECONDS);
-            timeUtils.fastForwardSeconds(2);
+            timeUtils.tick(seconds(2));
         });
 
         assertThatThrownBy(() -> listener.waitForOddsChange())

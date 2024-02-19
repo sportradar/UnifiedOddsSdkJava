@@ -30,6 +30,7 @@ public class SignallingOnPollingQueue<T> extends LinkedBlockingQueue<T> {
         while (timeUtils.now() < startPollingTimestamp + unit.toMillis(timeout)) {
             val element = peek();
             if (element != null) {
+                poll();
                 return element;
             }
         }

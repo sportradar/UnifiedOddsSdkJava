@@ -3,13 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk.integrationtest.preconditions;
 
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_MANAGEMENT_BASE_URL;
+import static com.sportradar.unifiedodds.sdk.integrationtest.preconditions.SystemProperties.isBooleanSystemPropertySet;
 
 public class PreconditionsForIntegrationTests {
 
-    private static final int RABBITMQ_MANAGEMENT_PORT = 15672;
     private static final String MAVEN_SKIP_TESTS = "skipTests";
     private static final String MAVEN_SKIP_ITS = "skipITs";
 
@@ -23,34 +21,21 @@ public class PreconditionsForIntegrationTests {
         if (shouldMavenRunIntegrationTests()) {
             if (!isRabbitMqServerUp()) {
                 throw new IllegalStateException(
-                    "Running integration tests require RabbitMQ server management interface to be running on port: " +
-                    RABBITMQ_MANAGEMENT_PORT +
-                    ", however the port or not opened. " +
-                    "Start RabbitMQ server or execute unit tests only e.g. mvn clean test " +
-                    "(NOT RECOMMENDED: or skip integration tests via adding -DskipITs in maven build)"
+                    "Running integration tests require RabbitMQ server management interface to be running on: " +
+                    RABBIT_MANAGEMENT_BASE_URL.get() +
+                    ", however the port is not opened. " +
+                    "Start RabbitMQ server or execute unit tests only e.g. mvn clean test. " +
+                    "NOT RECOMMENDED: or skip integration tests via adding -DskipITs in maven build"
                 );
             }
         }
     }
 
     private static boolean isRabbitMqServerUp() {
-        return new RabbitMqConnectionChecker(RABBITMQ_MANAGEMENT_PORT).isServerUp();
+        return new ConnectionChecker(RABBIT_MANAGEMENT_BASE_URL).isServerUp();
     }
 
     private static boolean shouldMavenRunIntegrationTests() {
         return !isBooleanSystemPropertySet(MAVEN_SKIP_TESTS) && !isBooleanSystemPropertySet(MAVEN_SKIP_ITS);
-    }
-
-    private static boolean isBooleanSystemPropertySet(String name) {
-        String value = System.getProperty(name);
-        return Optional.ofNullable(value).map(toBoolean()).filter(isTrue()).orElse(false);
-    }
-
-    private static Predicate<Boolean> isTrue() {
-        return v -> v;
-    }
-
-    private static Function<String, Boolean> toBoolean() {
-        return Boolean::valueOf;
     }
 }
