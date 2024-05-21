@@ -3,9 +3,6 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.unifiedodds.sdk.domain.language.Translations;
@@ -19,12 +16,12 @@ import java.util.stream.Collectors;
 import lombok.val;
 import lombok.var;
 
-public final class MarketDescriptions {
+public final class MarketDescriptionFactory {
 
-    private MarketDescriptions() {}
+    private MarketDescriptionFactory() {}
 
     public static MarketDescription namesOf(DescMarket sapiMarketDesc, LanguageHolder language) {
-        return MarketDescriptions.NameFocused.singleMarketFrom(Maps.of(language.get(), sapiMarketDesc));
+        return MarketDescriptionFactory.NameFocused.singleMarketFrom(Maps.of(language.get(), sapiMarketDesc));
     }
 
     public static MarketDescription namesOf(
@@ -33,9 +30,13 @@ public final class MarketDescriptions {
         DescMarket sapiMarketDesc2,
         LanguageHolder language2
     ) {
-        return MarketDescriptions.NameFocused.singleMarketFrom(
+        return MarketDescriptionFactory.NameFocused.singleMarketFrom(
             Maps.of(language1.get(), sapiMarketDesc1, language2.get(), sapiMarketDesc2)
         );
+    }
+
+    public static OutcomeDescription getOutcomeDescription(String outcomeId, MarketDescription description) {
+        return description.getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst().get();
     }
 
     static class NameFocused {

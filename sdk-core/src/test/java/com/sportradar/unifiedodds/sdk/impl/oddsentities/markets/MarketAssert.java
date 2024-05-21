@@ -32,7 +32,7 @@ public class MarketAssert extends AbstractAssert<MarketAssert, Market> {
         return this;
     }
 
-    public MarketAssert nameIsNotBackedByMarketDescriptionForDefaultLanguage(
+    public MarketAssert getNameForDefault(
         Locale aLanguage,
         ExpectationTowardsSdkErrorHandlingStrategy errorHandling
     ) {
@@ -48,7 +48,7 @@ public class MarketAssert extends AbstractAssert<MarketAssert, Market> {
         return this;
     }
 
-    public MarketAssert nameIsNotBackedByMarketDescriptionForNonDefaultLanguage(
+    public MarketAssert getNameForGiven(
         Locale aLanguage,
         ExpectationTowardsSdkErrorHandlingStrategy errorHandling
     ) {
@@ -65,7 +65,11 @@ public class MarketAssert extends AbstractAssert<MarketAssert, Market> {
     private void resultsInMarketDescriptionNotFoundWhen(Runnable runnable) {
         assertThatThrownBy(runnable::run)
             .isInstanceOf(NameGenerationException.class)
-            .hasMessageContaining("Failed to retrieve market name descriptor");
+            .message()
+            .containsAnyOf(
+                "Failed to retrieve market name descriptor",
+                "Retrieved market descriptor does not contain name descriptor in the specified languages"
+            );
     }
 
     private void assertThatIsNull(Object result) {

@@ -1,21 +1,20 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import static com.sportradar.unifiedodds.sdk.impl.Constants.ODDS_CHANGE_KEY;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.*;
+import com.google.inject.name.Names;
 import com.google.inject.util.Modules;
+import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.di.TestingModule;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import javax.xml.bind.JAXBContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -23,15 +22,26 @@ import org.mockito.Mockito;
 @SuppressWarnings({ "MagicNumber", "VisibilityModifier" })
 public class ChannelMessageConsumerTest {
 
+    private static final String ROUTING_KEY = "routing_key";
+
     final Injector injector = Guice.createInjector(
         Modules.override(new MockedMasterModule()).with(new TestingModule())
     );
 
     ChannelMessageConsumer chanMsgConsumer;
+    private JAXBContext messagingJaxbContext;
 
     @Before
     public void setup() {
-        chanMsgConsumer = injector.getInstance(ChannelMessageConsumer.class);
+        messagingJaxbContext =
+            spy(injector.getInstance(Key.get(JAXBContext.class, Names.named("MessageJAXBContext"))));
+        chanMsgConsumer =
+            new ChannelMessageConsumerImpl(
+                injector.getInstance(RoutingKeyParser.class),
+                injector.getInstance(SdkInternalConfiguration.class),
+                injector.getInstance(SdkProducerManager.class),
+                messagingJaxbContext
+            );
     }
 
     @Test
@@ -109,7 +119,7 @@ public class ChannelMessageConsumerTest {
         byte[] data = oddsChangeBytes();
 
         //Execute
-        chanMsgConsumer.onMessageReceived("routing_key", data, null, 0L);
+        chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
 
         //Verify
         Mockito
@@ -126,7 +136,7 @@ public class ChannelMessageConsumerTest {
         byte[] data = new byte[] { 1, 2, 3, 4 }; //this can't be deserialized
 
         //Execute
-        chanMsgConsumer.onMessageReceived("routing_key", data, null, 0L);
+        chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
 
         //Verify
         Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.eq(data), Mockito.any());
@@ -157,7 +167,7 @@ public class ChannelMessageConsumerTest {
         }
 
         executor.invokeAll(callableTasks);
-        finished.await();
+        finished.await(30, TimeUnit.SECONDS);
 
         executor.shutdownNow();
 
@@ -174,9 +184,24 @@ public class ChannelMessageConsumerTest {
 
         byte[] data = new byte[] { 1, 2, 3, 4 }; //this can't be deserialized
 
-        chanMsgConsumer.onMessageReceived("routing_key", data, null, 0L);
+        chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
 
         Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.eq(data), Mockito.any());
+    }
+
+    @Test
+    public void unmarshallerCleanedUpOnClose() throws Exception {
+        MessageConsumer msgConsumer = Mockito.mock(MessageConsumer.class);
+        chanMsgConsumer.open(msgConsumer);
+
+        byte[] data = new byte[] { 1, 2, 3, 4 }; //this can't be deserialized
+        chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
+
+        chanMsgConsumer.close();
+
+        chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
+
+        verify(messagingJaxbContext, times(2)).createUnmarshaller();
     }
 
     private byte[] oddsChangeBytes() throws Exception {

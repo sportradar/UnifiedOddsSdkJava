@@ -1,5 +1,10 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.2.0 (2024-05-15)**
+* feat: Improved Variant Market handling when API call is not successful or has some faulty data (i.e. missing outcome name or missing market name)
+* fix: CustomBet API error responses are properly extracted and available for analysis either in logs or in the exception message (dependent on the configured exception handling strategy)
+* fix: Environment.GlobalReplay works properly with production token. API host is updated to production during the bookmaker discovery call. 
+
 **3.1.0 (2024-02-19)**
 * SDK can be used in a construct close-with-resources
 * recovering after network outages no longer causes message duplication 

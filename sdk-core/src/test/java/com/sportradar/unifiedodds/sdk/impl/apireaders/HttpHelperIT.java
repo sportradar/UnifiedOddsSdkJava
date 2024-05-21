@@ -42,7 +42,7 @@ public class HttpHelperIT {
         Key.get(Deserializer.class, Names.named("SportsApiJaxbDeserializer"))
     );
     private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
-    private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor(apiDeserializer);
+    private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor();
     private final HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
 
     private final String anyPath = "/path/resource";

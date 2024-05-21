@@ -42,7 +42,6 @@ public class SdkInternalConfiguration {
     private final int httpClientTimeout;
     private final int recoveryHttpClientTimeout;
     private final List<Integer> disabledProducers;
-    private final boolean simpleVariantCaching;
     private final Set<String> schedulerTasksToSkip;
     private final String messagingVirtualHost;
     private String apiHost;
@@ -103,7 +102,6 @@ public class SdkInternalConfiguration {
         recoveryHttpClientMaxConnPerRoute = cfg.getApi().getHttpClientMaxConnPerRoute();
 
         cleanTrafficLogEntries = false;
-        simpleVariantCaching = false;
 
         schedulerTasksToSkip = new HashSet<>();
     }
@@ -306,15 +304,6 @@ public class SdkInternalConfiguration {
     }
 
     /**
-     * Returns an indication if the variants should be cached in a more simpler manner
-     *
-     * @return <code>true</code>
-     */
-    public boolean getSimpleVariantCaching() {
-        return simpleVariantCaching;
-    }
-
-    /**
      * Returns a set of task names that should be skipped
      *
      * @return a set of task names that should be skipped
@@ -401,7 +390,6 @@ public class SdkInternalConfiguration {
             .add("recoveryHttpClientMaxConnTotal=" + recoveryHttpClientMaxConnTotal)
             .add("recoveryHttpClientMaxConnPerRoute=" + recoveryHttpClientMaxConnPerRoute)
             .add("disabledProducers=" + disabledProducers)
-            .add("simpleVariantCaching=" + simpleVariantCaching)
             .add("schedulerTasksToSkip=" + schedulerTasksToSkip)
             .add("messagingVirtualHost='" + messagingVirtualHost + "'")
             .add("apiHost='" + apiHost + "'")

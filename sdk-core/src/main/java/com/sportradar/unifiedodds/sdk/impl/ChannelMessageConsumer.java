@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.rabbitmq.client.AMQP;
+import java.io.IOException;
 
 /**
  * Defines methods implemented by classes that can handle message payloads
@@ -28,4 +29,10 @@ public interface ChannelMessageConsumer {
     void onMessageReceived(String routingKey, byte[] body, AMQP.BasicProperties properties, long receivedAt);
 
     String getConsumerDescription();
+
+    /**
+     * Closes the channel and does the resource cleanup
+     *
+     */
+    void close() throws IOException;
 }

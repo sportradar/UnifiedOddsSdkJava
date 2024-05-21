@@ -11,6 +11,7 @@ import static com.sportradar.utils.thread.sleep.SleepMock.onSleepDo;
 import static com.sportradar.utils.time.TimeInterval.minutes;
 import static com.sportradar.utils.time.TimeInterval.seconds;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -91,10 +92,11 @@ public class RabbitMqChannelImplTest {
         }
 
         @Test
-        public void rabbitMqChannelShouldNotBeCreatedIfConnectionWasUnavailableWhenOpeningSupervisor()
-            throws IOException {
-            new RabbitMqChannelSupervisors.Builder().with(mock(AmqpConnectionFactory.class)).opened();
-            //ensuring no exception is thrown
+        public void rabbitMqChannelShouldNotBeCreatedIfConnectionWasUnavailableWhenOpeningSupervisor() {
+            assertThatNoException()
+                .isThrownBy(() -> {
+                    new RabbitMqChannelSupervisors.Builder().with(mock(AmqpConnectionFactory.class)).opened();
+                });
         }
     }
 
@@ -520,6 +522,9 @@ public class RabbitMqChannelImplTest {
             public String getConsumerDescription() {
                 return null;
             }
+
+            @Override
+            public void close() throws IOException {}
 
             public void verifyNoMessagesReceived() {
                 assertThat(count).isZero();

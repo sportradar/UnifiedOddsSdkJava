@@ -1,29 +1,49 @@
 package com.sportradar.unifiedodds.sdk;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
+
 import org.junit.Test;
 
-@SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
+@SuppressWarnings({ "MagicNumber", "MultipleStringLiterals", "LambdaBodyLength" })
 public class ThreadInterruptTest {
 
     @Test
     public void test_interrupt() {
-        Thread t = new Thread(this::run);
-        System.out.println(
-            "Name : " + t.getName() + ", state : " + t.getState() + ", interrupted? " + t.isInterrupted()
-        );
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            System.out.println(
-                "Name : " + t.getName() + ", state : " + t.getState() + ", interrupted? " + t.isInterrupted()
-            );
-            throw new RuntimeException(e);
-        }
+        assertThatNoException()
+            .isThrownBy(() -> {
+                Thread t = new Thread(this::run);
+                System.out.println(
+                    "Name : " +
+                    t.getName() +
+                    ", state : " +
+                    t.getState() +
+                    ", interrupted? " +
+                    t.isInterrupted()
+                );
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    System.out.println(
+                        "Name : " +
+                        t.getName() +
+                        ", state : " +
+                        t.getState() +
+                        ", interrupted? " +
+                        t.isInterrupted()
+                    );
+                    throw new RuntimeException(e);
+                }
 
-        System.out.println(
-            "Name : " + t.getName() + ", state : " + t.getState() + ", interrupted? " + t.isInterrupted()
-        );
+                System.out.println(
+                    "Name : " +
+                    t.getName() +
+                    ", state : " +
+                    t.getState() +
+                    ", interrupted? " +
+                    t.isInterrupted()
+                );
+            });
     }
 
     public void run() {

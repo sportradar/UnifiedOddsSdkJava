@@ -17,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.Urn;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -312,5 +313,10 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         }
 
         return messageJaxbUnmarshaller.get();
+    }
+
+    @Override
+    public void close() throws IOException {
+        messageJaxbUnmarshaller.remove();
     }
 }

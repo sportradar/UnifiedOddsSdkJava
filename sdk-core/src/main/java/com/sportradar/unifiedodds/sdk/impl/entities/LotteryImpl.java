@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.LotteryCi;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
@@ -13,7 +14,6 @@ import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.StreamWrapperException;
-import com.sportradar.unifiedodds.sdk.impl.SportEntityFactoryImpl;
 import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +42,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
 
     private final List<Locale> locales;
     private final SportEventCache sportEventCache;
-    private final SportEntityFactoryImpl sportEntityFactory;
+    private final SportEntityFactory sportEntityFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     public LotteryImpl(
@@ -50,7 +50,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
         Urn sportId,
         List<Locale> locales,
         SportEventCache sportEventCache,
-        SportEntityFactoryImpl sportEntityFactory,
+        SportEntityFactory sportEntityFactory,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
         super(id, sportId);
@@ -314,7 +314,7 @@ public class LotteryImpl extends SportEventImpl implements Lottery {
             return null;
         }
 
-        return lotteryCi.isStartTimeTbd().isPresent() ? lotteryCi.isStartTimeTbd().get() : null;
+        return lotteryCi.isStartTimeTbd().orElse(null);
     }
 
     /**

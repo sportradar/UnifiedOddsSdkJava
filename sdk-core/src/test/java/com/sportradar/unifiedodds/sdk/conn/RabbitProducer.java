@@ -75,7 +75,8 @@ public class RabbitProducer {
         ProducersAlive = new HashMap<>();
         GlobalVariables variables = new GlobalVariables();
         variables.setProducer(ProducerId.LIVE_ODDS);
-        feedMessageBuilder = new FeedMessageBuilder(ProducerId.LIVE_ODDS, SportEvent.ANY);
+        variables.setSportEventUrn(SportEvent.MATCH);
+        feedMessageBuilder = new FeedMessageBuilder(variables);
         isRunning = false;
 
         try {

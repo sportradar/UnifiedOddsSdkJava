@@ -4,113 +4,99 @@
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import com.sportradar.uf.sportsapi.datamodel.APIPageNotFound;
+import com.google.common.base.Charsets;
+import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.Response;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import lombok.val;
-import org.junit.Test;
+import javax.xml.bind.JAXB;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class MessageAndActionExtractorTest {
 
-    private final Deserializer apiDeserializer = mock(Deserializer.class);
+    private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor();
 
-    private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor(apiDeserializer);
-
-    @Test
-    public void extractsMessageFromResponse() throws DeserializationException {
-        val message = "some message";
-        when(apiDeserializer.deserialize(any())).thenReturn(responseWithMessage(message));
-
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "No data for the event: sr:match:123:prematch",
+            "No data for the event: sr:match:123:prematch, bookmakerId: 16281",
+        }
+    )
+    public void extractsMessageFromCustomBetResponse(String message) {
+        String parsedMessage = messageExtractor.parse(customBetResponse(message));
 
         assertThat(parsedMessage).isEqualTo(message);
     }
 
-    @Test
-    public void extractsActionAsMessageFromResponse() throws DeserializationException {
-        val action = "some action";
-        when(apiDeserializer.deserialize(any())).thenReturn(responseWithAction(action));
+    @ParameterizedTest
+    @ValueSource(strings = { "Content not found: null", "some other message" })
+    public void extractsMessageFromSportsApiResponse(String message) {
+        String parsedMessage = messageExtractor.parse(sportsApiResponse(message));
 
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
+        assertThat(parsedMessage).isEqualTo(message);
+    }
 
-        assertThat(parsedMessage).isEqualTo(action);
+    @ParameterizedTest
+    @ValueSource(strings = { "missing info", "no such player" })
+    public void concatenateMessageAndActionFromResponseIfBothAvailable(String action) {
+        String parsedMessage = messageExtractor.parse(sportsApiResponse("msg for " + action, action));
+
+        assertThat(parsedMessage).isEqualTo("msg for " + action + ", " + action);
     }
 
     @Test
-    public void concatenateMessageAndActionFromResponseIfBothAvailable() throws DeserializationException {
-        when(apiDeserializer.deserialize(any())).thenReturn(responseWithMessageAndAction("msg", "action"));
-
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
-
-        assertThat(parsedMessage).isEqualTo("msg, action");
-    }
-
-    @Test
-    public void extractsEmptyMessageIfNoMessageReceived() throws DeserializationException {
-        when(apiDeserializer.deserialize(any())).thenReturn(new Response());
-
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
+    public void extractsEmptyMessageIfNoMessageReceivedForSportsApi() {
+        String parsedMessage = messageExtractor.parse(sportsApiResponse(null));
 
         assertThat(parsedMessage).isEmpty();
     }
 
     @Test
-    public void parsesMessageWhenPageIsNotFound() throws DeserializationException {
-        val message = "some message";
-        when(apiDeserializer.deserialize(any())).thenReturn(pageNotFoundWithMessage(message));
+    public void extractsEmptyMessageIfNoMessageReceivedForCustomBetApi() {
+        String parsedMessage = messageExtractor.parse(customBetResponse(null));
 
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
-
-        assertThat(parsedMessage).isEqualTo(message);
+        assertThat(parsedMessage).isEmpty();
     }
 
     @Test
-    public void onParsingUnexpectedClassReturnsItsNameAsPartOfMessage() throws DeserializationException {
-        Object unexpectedParsedType = new Object();
-        when(apiDeserializer.deserialize(any())).thenReturn(unexpectedParsedType);
-
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
-
-        assertThat(parsedMessage).contains("Unknown").contains("Object");
-    }
-
-    @Test
-    public void failedParsingIsIndicatedWithMessage() throws DeserializationException {
-        when(apiDeserializer.deserialize(any())).thenThrow(DeserializationException.class);
-
-        String parsedMessage = messageExtractor.parse(mock(InputStream.class));
+    public void failedParsingIsIndicatedWithMessage() {
+        String parsedMessage = messageExtractor.parse(jsonResponse());
 
         assertThat(parsedMessage).isEqualTo("No specific message");
     }
 
-    private APIPageNotFound pageNotFoundWithMessage(String message) {
-        APIPageNotFound response = new APIPageNotFound();
+    private InputStream customBetResponse(String message) {
+        CapiResponse response = new CapiResponse();
         response.setMessage(message);
-        return response;
+        return asInputStream(response);
     }
 
-    private Response responseWithMessage(String message) {
+    private InputStream sportsApiResponse(String message) {
         Response response = new Response();
         response.setMessage(message);
-        return response;
+        return asInputStream(response);
     }
 
-    private Response responseWithAction(String action) {
-        Response response = new Response();
-        response.setAction(action);
-        return response;
-    }
-
-    private Response responseWithMessageAndAction(String message, String action) {
+    private InputStream sportsApiResponse(String message, String action) {
         Response response = new Response();
         response.setMessage(message);
         response.setAction(action);
-        return response;
+        return asInputStream(response);
+    }
+
+    private static ByteArrayInputStream asInputStream(Object response) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        JAXB.marshal(response, output);
+        return new ByteArrayInputStream(output.toByteArray());
+    }
+
+    private InputStream jsonResponse() {
+        String response = "{\"a\": 1111}";
+        return new ByteArrayInputStream(response.getBytes(Charsets.UTF_8));
     }
 }

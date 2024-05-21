@@ -49,7 +49,11 @@ public class MarketDescriptionImpl implements MarketDescription {
         id = cachedItem.getId();
         outcomeType = cachedItem.getOutcomeType();
         groups = cachedItem.getGroups();
-        names = locales.stream().collect(ImmutableMap.toImmutableMap(k -> k, cachedItem::getName));
+        names =
+            locales
+                .stream()
+                .filter(locale -> cachedItem.getName(locale) != null)
+                .collect(ImmutableMap.toImmutableMap(k -> k, cachedItem::getName));
 
         descriptions =
             locales

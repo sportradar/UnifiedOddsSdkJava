@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.ci.markets;
 
 import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.FREETEXT_VARIANT_VALUE;
 import static com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants.OUTCOMETEXT_VARIANT_VALUE;
+import static java.lang.String.format;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -17,6 +18,7 @@ import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.SdkHelper;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +71,12 @@ public class MarketDescriptionCi {
 
         id = market.getId();
         names = new ConcurrentHashMap<>();
-        names.put(locale, market.getName());
+        Optional
+            .ofNullable(market.getName())
+            .filter(name -> !Strings.isNullOrEmpty(name))
+            .ifPresent(name -> names.put(locale, name));
+        logIfMarketIsFaulty(market, locale);
+
         outcomeType = combineOutcomeType(market.getOutcomeType(), market.getIncludesOutcomesOfType());
         variant = market.getVariant();
         descriptions = new ConcurrentHashMap<>();
@@ -93,6 +100,7 @@ public class MarketDescriptionCi {
                     .stream()
                     .map(o -> new MarketOutcomeCi(o, locale))
                     .collect(Collectors.toList());
+        logFaultyOutcomes(locale);
 
         mappings =
             market.getMappings() == null
@@ -132,11 +140,54 @@ public class MarketDescriptionCi {
         this.lastDataReceived = new Date();
     }
 
+    private void logFaultyOutcomes(Locale language) {
+        if (outcomes != null) {
+            outcomes
+                .stream()
+                .filter(hasMissingName(language))
+                .forEach(o ->
+                    logger.warn(
+                        format(
+                            "Cached market description without outcome name: " +
+                            "market id = %d, variant id = %s, outcome id = %s, language = %s ",
+                            id,
+                            variant,
+                            o.getId(),
+                            language
+                        )
+                    )
+                );
+        }
+    }
+
+    private static Predicate<MarketOutcomeCi> hasMissingName(Locale language) {
+        return o -> Strings.isNullOrEmpty(o.getName(language));
+    }
+
+    private void logIfMarketIsFaulty(DescMarket market, Locale language) {
+        if (Strings.isNullOrEmpty(market.getName())) {
+            logger.warn(
+                format(
+                    "Cached market description without name: " +
+                    "market id = %d, variant id = %s, language = %s ",
+                    market.getId(),
+                    market.getVariant(),
+                    language
+                )
+            );
+        }
+    }
+
     public void merge(DescMarket market, Locale locale) {
         Preconditions.checkNotNull(market);
         Preconditions.checkNotNull(locale);
 
-        names.put(locale, market.getName());
+        Optional
+            .ofNullable(market.getName())
+            .filter(name -> !Strings.isNullOrEmpty(name))
+            .ifPresent(name -> names.put(locale, name));
+        logIfMarketIsFaulty(market, locale);
+
         outcomeType = combineOutcomeType(market.getOutcomeType(), market.getIncludesOutcomesOfType());
         variant = market.getVariant();
         if (!Strings.isNullOrEmpty(market.getDescription())) {
@@ -170,6 +221,7 @@ public class MarketDescriptionCi {
                         );
                     }
                 });
+            logFaultyOutcomes(locale);
         }
 
         if (market.getMappings() != null) {

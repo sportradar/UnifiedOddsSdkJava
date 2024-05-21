@@ -27,9 +27,7 @@ public class HttpDataFetcherLoggersIT {
     public final WireMockRule wireMockRule = new WireMockRule();
 
     private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-    private final HttpResponseHandler httpResponseHandler = new HttpResponseHandler(
-        new DeserializerImpl(JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel"))
-    );
+    private final HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
     private final SportsApiXmlResponseProvider xmlResponseProvider = new SportsApiXmlResponseProvider();
 
     public HttpDataFetcherLoggersIT() throws JAXBException {}

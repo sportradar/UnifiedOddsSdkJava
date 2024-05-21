@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
+import static java.util.Arrays.asList;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
@@ -176,7 +178,8 @@ public class WhoAmIReader {
             return;
         }
 
-        BookmakerDetails bookmakerDetails = config.getEnvironment() == Environment.Replay
+        BookmakerDetails bookmakerDetails = asList(Environment.GlobalReplay, Environment.Replay)
+                .contains(config.getEnvironment())
             ? fetchReplayBookmakerDetails()
             : fetchBookmakerDetails();
 

@@ -3,8 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
-import static com.sportradar.unifiedodds.sdk.conn.OddEvenMarket.EVEN_OUTCOME_ID;
-import static com.sportradar.unifiedodds.sdk.conn.OddEvenMarket.ODD_OUTCOME_ID;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.EVEN_OUTCOME_ID;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.ODD_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.entities.SportEvents.any;
 import static com.sportradar.utils.domain.markets.MarketIds.anyMarketId;
 import static com.sportradar.utils.domain.specifiers.MarketSpecifiers.anySpecifiers;

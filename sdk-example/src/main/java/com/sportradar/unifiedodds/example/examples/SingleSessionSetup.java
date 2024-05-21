@@ -6,15 +6,12 @@ package com.sportradar.unifiedodds.example.examples;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
-import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.ProducerManager;
 import com.sportradar.unifiedodds.sdk.UofSdk;
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,18 +22,14 @@ public class SingleSessionSetup {
 
     private final UofSdk uofSdk;
 
-    public SingleSessionSetup(String token) {
+    public SingleSessionSetup() {
         logEntry("Running the UofSdk SDK Basic example - single session");
 
         logEntry("Building the configuration using the provided token");
-        UofConfiguration configuration = UofSdk
-            .getUofConfigurationBuilder()
-            .setAccessToken(token)
-            .selectEnvironment(Environment.GlobalIntegration)
-            .setNodeId(SdkConstants.NODE_ID)
-            .setDefaultLanguage(Locale.ENGLISH)
-            .build();
 
+        UofConfiguration configuration = UofSdk.getUofConfigurationBuilder().buildConfigFromSdkProperties();
+
+        logEntry(configuration.toString());
         logEntry("Creating a new UofSdk instance");
         uofSdk = new UofSdk(new GlobalEventsListener(), configuration);
     }

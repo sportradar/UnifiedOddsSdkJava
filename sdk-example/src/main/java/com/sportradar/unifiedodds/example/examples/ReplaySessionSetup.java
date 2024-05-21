@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.example.examples;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
-import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.UofSdkForReplay;
@@ -15,7 +14,6 @@ import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.utils.Urn;
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * A basic example demonstrating on how to start the SDK with a single session and perform replay operations
@@ -25,16 +23,16 @@ public class ReplaySessionSetup {
 
     private final UofSdkForReplay oddsFeed;
 
-    public ReplaySessionSetup(String token) {
+    public ReplaySessionSetup() {
         logEntry("Running the UofSdk SDK Basic example - single session with replay server");
 
         logEntry("Building the configuration using the provided token");
+
         UofConfiguration configuration = UofSdk
             .getUofConfigurationBuilder()
-            .setAccessToken(token)
-            .selectReplay()
-            .setNodeId(SdkConstants.NODE_ID)
-            .setDefaultLanguage(Locale.ENGLISH)
+            .setAccessTokenFromApplicationYaml()
+            .selectCustom() // needs to be present, it seems
+            .loadConfigFromApplicationYml()
             .build();
 
         logEntry("Creating a new UofSdkForReplay instance");

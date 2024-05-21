@@ -30,4 +30,21 @@ public class RandomIntegerTest {
         assertThat(integers).hasSize(rangeInclusive);
         assertThat(integers).containsOnly(lowestValue, midValue, highestValue);
     }
+
+    @Test
+    public void generatesValuesFromRange() {
+        final int lowestValue = 5;
+        final int midValue = 6;
+        final int highestValue = 7;
+        final int range = 3;
+
+        List<Integer> integers = Stream
+            .generate(() -> RandomInteger.fromRange(lowestValue, highestValue + 1))
+            .limit(sampleSize)
+            .distinct()
+            .collect(Collectors.toList());
+
+        assertThat(integers).hasSize(range);
+        assertThat(integers).containsOnly(lowestValue, midValue, highestValue);
+    }
 }

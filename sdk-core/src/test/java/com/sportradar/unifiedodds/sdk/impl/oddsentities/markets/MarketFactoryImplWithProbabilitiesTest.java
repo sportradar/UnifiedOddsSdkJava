@@ -3,12 +3,13 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptions.namesOf;
+import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionFactory.namesOf;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.*;
-import static com.sportradar.unifiedodds.sdk.conn.OddEvenMarket.EVEN_OUTCOME_ID;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.evenOutcomeDescription;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.oddEvenDescription;
-import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.oddEven;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.evenOutcomeDescription;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.removeAllOutcomesFrom;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.oddEvenMarket;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.EVEN_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert.assertThat;
@@ -30,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.conn.OddEvenMarket;
+import com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions;
+import com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds;
 import com.sportradar.unifiedodds.sdk.entities.SportEvents;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithProbabilities;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeProbabilities;
@@ -59,12 +61,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
     private MarketFactoryImplWithProbabilitiesTest() {}
 
     private static OutcomeProbabilities getEvenOutcomeFrom(MarketWithProbabilities market) {
-        return market.getOutcomeProbabilities().stream().filter(OddEvenMarket::isEven).findFirst().get();
-    }
-
-    private static DescMarket removeAllOutcomesFrom(DescMarket oddEvenDescription) {
-        oddEvenDescription.getOutcomes().getOutcome().clear();
-        return oddEvenDescription;
+        return market.getOutcomeProbabilities().stream().filter(OddEvenMarketIds::isEven).findFirst().get();
     }
 
     private static DescMarket removeEvenOutcomeFrom(DescMarket oddEvenDescription) {
@@ -89,7 +86,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
         @Parameters(method = "exceptionHandlingStrategies")
         public void marketNameRetrievalFailsForDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
+            ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
         ) {
             val aLanguage = Languages.any();
             val marketFactory = stubbingOutSportEventAndCaches()
@@ -99,18 +96,17 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
-            assertThat(market)
-                .nameIsNotBackedByMarketDescriptionForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+            assertThat(market).getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
         }
 
         @Test
         @Parameters(method = "exceptionHandlingStrategies")
         public void marketNameRetrievalFailsForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
+            ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
@@ -121,11 +117,10 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
-            assertThat(market)
-                .nameIsNotBackedByMarketDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
+            assertThat(market).getNameForGiven(langB, willFailRespectingSdkStrategy);
         }
 
         @Test
@@ -143,7 +138,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), nonPremiumCricketProducerId)
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), nonPremiumCricketProducerId)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -169,7 +164,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), PREMIUM_CRICKET_PRODUCER_ID)
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), PREMIUM_CRICKET_PRODUCER_ID)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -199,7 +194,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), nonPremiumCricketProducerId)
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), nonPremiumCricketProducerId)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -226,7 +221,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), PREMIUM_CRICKET_PRODUCER_ID)
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), PREMIUM_CRICKET_PRODUCER_ID)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -253,7 +248,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             val oneOfOutcomes = market.getOutcomeProbabilities().get(0);
@@ -276,7 +271,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             val oneOfOutcomes = market.getOutcomeProbabilities().get(0);
@@ -301,7 +296,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = market.getOutcomeProbabilities().get(0);
 
@@ -324,7 +319,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = market.getOutcomeProbabilities().get(0);
 
@@ -369,7 +364,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val faultyDescription = removeAllOutcomesFrom(oddEvenDescription());
+            val faultyDescription = removeAllOutcomesFrom(oddEvenMarketDescription());
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(providing(in(aLanguage), namesOf(faultyDescription, in(aLanguage))))
                 .withDefaultLanguage(aLanguage)
@@ -377,7 +372,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
@@ -393,7 +388,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
-            val faultyDescription = removeAllOutcomesFrom(oddEvenDescription());
+            val faultyDescription = removeAllOutcomesFrom(oddEvenMarketDescription());
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(providing(in(langB), namesOf(faultyDescription, in(langB))))
                 .withDefaultLanguage(langA)
@@ -401,7 +396,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
@@ -416,7 +411,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val language = Languages.any();
-            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenDescription()), in(language));
+            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenMarketDescription()), in(language));
             val descriptionProvider = providing(in(language), faultyDescription);
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(descriptionProvider)
@@ -426,7 +421,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             val outcome = getEvenOutcomeFrom(market);
@@ -438,8 +433,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
         @Test
         public void reloadingMarketsRepairsMissingOutcome() {
             val language = ENGLISH;
-            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenDescription()), in(language));
-            val repairedDescription = namesOf(oddEvenDescription(), in(language));
+            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenMarketDescription()), in(language));
+            val repairedDescription = namesOf(oddEvenMarketDescription(), in(language));
             val descriptionProvider = providing(
                 in(language),
                 faultyDescription,
@@ -453,7 +448,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             val outcome = getEvenOutcomeFrom(market);
@@ -468,7 +463,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
         ) {
             val language = Languages.any();
-            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenDescription()), in(language));
+            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenMarketDescription()), in(language));
             val descriptionProvider = providing(in(language), faultyDescription);
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(descriptionProvider)
@@ -478,7 +473,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
             getName(outcome);
@@ -495,7 +490,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
         ) {
             val language = Languages.any();
-            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenDescription()), in(language));
+            val faultyDescription = namesOf(removeAllOutcomesFrom(oddEvenMarketDescription()), in(language));
             val descriptionProvider = providing(in(language), faultyDescription);
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(descriptionProvider)
@@ -505,7 +500,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
             getName(outcome);
@@ -516,7 +511,12 @@ public class MarketFactoryImplWithProbabilitiesTest {
         }
 
         private OutcomeProbabilities getEvenOutcomeFrom(MarketWithProbabilities market) {
-            return market.getOutcomeProbabilities().stream().filter(OddEvenMarket::isEven).findFirst().get();
+            return market
+                .getOutcomeProbabilities()
+                .stream()
+                .filter(OddEvenMarketIds::isEven)
+                .findFirst()
+                .get();
         }
 
         private Object[] exceptionHandlingStrategies() {
@@ -544,7 +544,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val faultyDescription = removeEvenOutcomeFrom(oddEvenDescription());
+            val faultyDescription = removeEvenOutcomeFrom(oddEvenMarketDescription());
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(providing(in(aLanguage), namesOf(faultyDescription, in(aLanguage))))
                 .withDefaultLanguage(aLanguage)
@@ -552,7 +552,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
@@ -568,7 +568,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
-            val faultyDescription = removeEvenOutcomeFrom(oddEvenDescription());
+            val faultyDescription = removeEvenOutcomeFrom(oddEvenMarketDescription());
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(providing(in(langB), namesOf(faultyDescription, in(langB))))
                 .withDefaultLanguage(langA)
@@ -576,7 +576,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
@@ -591,7 +591,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val language = Languages.any();
-            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenDescription()), in(language));
+            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenMarketDescription()), in(language));
             val descriptionProvider = providing(in(language), faultyDescription);
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(descriptionProvider)
@@ -601,7 +601,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             val outcome = getEvenOutcomeFrom(market);
@@ -613,8 +613,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
         @Test
         public void reloadingMarketsRepairsMissingOutcome() {
             val language = ENGLISH;
-            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenDescription()), in(language));
-            val repairedDescription = namesOf(oddEvenDescription(), in(language));
+            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenMarketDescription()), in(language));
+            val repairedDescription = namesOf(oddEvenMarketDescription(), in(language));
             val descriptionProvider = providing(
                 in(language),
                 faultyDescription,
@@ -628,7 +628,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             val outcome = getEvenOutcomeFrom(market);
@@ -643,7 +643,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
         ) {
             val language = Languages.any();
-            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenDescription()), in(language));
+            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenMarketDescription()), in(language));
             val descriptionProvider = providing(in(language), faultyDescription);
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(descriptionProvider)
@@ -653,7 +653,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
             getName(outcome);
@@ -670,7 +670,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
         ) {
             val language = Languages.any();
-            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenDescription()), in(language));
+            val faultyDescription = namesOf(removeEvenOutcomeFrom(oddEvenMarketDescription()), in(language));
             val descriptionProvider = providing(in(language), faultyDescription);
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(descriptionProvider)
@@ -680,7 +680,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
             getName(outcome);
@@ -722,9 +722,9 @@ public class MarketFactoryImplWithProbabilitiesTest {
             val langB = ENGLISH;
 
             val marketDescription = namesOf(
-                oddEvenDescription(langA),
+                oddEvenMarketDescription(langA),
                 in(langA),
-                removeEvenOutcomeFrom(oddEvenDescription(langB)),
+                removeEvenOutcomeFrom(oddEvenMarketDescription(langB)),
                 in(langB)
             );
             val marketFactory = stubbingOutSportEventAndCaches()
@@ -734,7 +734,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
@@ -750,7 +750,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
-            val faultyDescription = removeEvenOutcomeFrom(oddEvenDescription());
+            val faultyDescription = removeEvenOutcomeFrom(oddEvenMarketDescription());
             val marketFactory = stubbingOutSportEventAndCaches()
                 .with(providing(in(langB), namesOf(faultyDescription, in(langB))))
                 .withDefaultLanguage(langA)
@@ -758,7 +758,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
@@ -768,78 +768,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
         @Test
         @Parameters(method = "exceptionHandlingStrategies")
-        public void outcomeNameRetrievalFailsInSpiteOfReloadOfMarkets(
-            ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
-        ) {
-            val langA = FRENCH;
-            val langB = ENGLISH;
-
-            val marketDescription = namesOf(
-                oddEvenDescription(langA),
-                in(langA),
-                removeEvenOutcomeFrom(oddEvenDescription(langB)),
-                in(langB)
-            );
-            val descriptionProvider = providing(in(langA), in(langB), marketDescription);
-            val marketFactory = stubbingOutSportEventAndCaches()
-                .with(descriptionProvider)
-                .withDefaultLanguage(langB)
-                .with(exceptionHandlingStrategy)
-                .with(time)
-                .build();
-
-            val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
-                .get();
-            val outcome = getEvenOutcomeFrom(market);
-
-            assertThat(outcome)
-                .nameIsNotBackedByOutcomeDescriptionForDefaultLanguage(langB, willRespectSdkStrategy);
-            descriptionProvider.verifyDescriptionWasReloaded();
-        }
-
-        @Test
-        public void reloadingMarketsRepairsUntranslatedOutcome() {
-            val langA = FRENCH;
-            val langB = ENGLISH;
-
-            val faultyDescription = namesOf(
-                oddEvenDescription(langA),
-                in(langA),
-                removeEvenOutcomeFrom(oddEvenDescription(langB)),
-                in(langB)
-            );
-            val repairedDescription = namesOf(
-                oddEvenDescription(langA),
-                in(langA),
-                oddEvenDescription(langB),
-                in(langB)
-            );
-            val descriptionProvider = providing(
-                in(langA),
-                in(langB),
-                faultyDescription,
-                andAfterReloading(in(langA), in(langB), repairedDescription)
-            );
-            val marketFactory = stubbingOutSportEventAndCaches()
-                .with(descriptionProvider)
-                .withDefaultLanguage(langB)
-                .with(time)
-                .build();
-
-            val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
-                .get();
-            val outcome = getEvenOutcomeFrom(market);
-
-            assertThat(outcome)
-                .hasNameInDefaultLanguage(of(evenOutcomeDescription(langB).getName(), in(langB)));
-        }
-
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
-        public void reloadingOfMarketsAreThrottledTo1CallPer30secondsTimeframe(
+        public void marketsAreNotReloaded(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
         ) {
@@ -847,9 +776,9 @@ public class MarketFactoryImplWithProbabilitiesTest {
             val langB = ENGLISH;
 
             val marketDescription = namesOf(
-                oddEvenDescription(langA),
+                oddEvenMarketDescription(langA),
                 in(langA),
-                removeEvenOutcomeFrom(oddEvenDescription(langB)),
+                removeEvenOutcomeFrom(oddEvenMarketDescription(langB)),
                 in(langB)
             );
             val descriptionProvider = providing(in(langA), in(langB), marketDescription);
@@ -861,48 +790,14 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
             getName(outcome);
             time.tick(CIRCUIT_BREAKER_OPEN_PERIOD.minus(seconds(1)));
             getName(outcome);
 
-            descriptionProvider.verifyDescriptionWasReloadedTimes(1);
-        }
-
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
-        public void throttlingAllowsToReloadMarketsAgainAfter30secondsTimeframePasses(
-            ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy notUsed
-        ) {
-            val langA = FRENCH;
-            val langB = ENGLISH;
-
-            val marketDescription = namesOf(
-                oddEvenDescription(langA),
-                in(langA),
-                removeEvenOutcomeFrom(oddEvenDescription(langB)),
-                in(langB)
-            );
-            val descriptionProvider = providing(in(langA), in(langB), marketDescription);
-            val marketFactory = stubbingOutSportEventAndCaches()
-                .with(descriptionProvider)
-                .withDefaultLanguage(langB)
-                .with(exceptionHandlingStrategy)
-                .with(time)
-                .build();
-
-            val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
-                .get();
-            val outcome = getEvenOutcomeFrom(market);
-            getName(outcome);
-            time.tick(CIRCUIT_BREAKER_OPEN_PERIOD.plus(seconds(1)));
-            getName(outcome);
-
-            descriptionProvider.verifyDescriptionWasReloadedTimes(2);
+            descriptionProvider.verifyDescriptionWasReloadedTimes(0);
         }
 
         private Object[] exceptionHandlingStrategies() {
@@ -923,15 +818,15 @@ public class MarketFactoryImplWithProbabilitiesTest {
             val langB = uniqueLanguages.getOne();
 
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(langB), namesOf(oddEvenDescription(), in(langB))))
+                .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
-            assertThat(market).hasName(of(oddEvenDescription().getName(), in(langB)));
+            assertThat(market).hasName(of(oddEvenMarketDescription().getName(), in(langB)));
         }
 
         @Test
@@ -940,33 +835,35 @@ public class MarketFactoryImplWithProbabilitiesTest {
             val langB = uniqueLanguages.getOne();
 
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(langB), namesOf(oddEvenDescription(), in(langB))))
+                .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
 
             assertThat(market.getMarketDefinition().getNameTemplate(langB))
-                .isEqualTo(oddEvenDescription().getName());
+                .isEqualTo(oddEvenMarketDescription().getName());
         }
 
         @Test
         public void outcomeHasNameForDefaultLanguage() {
             val aLanguage = Languages.any();
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(aLanguage), namesOf(oddEvenDescription(), in(aLanguage))))
+                .with(providing(in(aLanguage), namesOf(oddEvenMarketDescription(), in(aLanguage))))
                 .withDefaultLanguage(aLanguage)
                 .build();
 
             val market = marketFactory
-                .buildMarketWithProbabilities(SportEvents.any(), oddEven(), anyProducerId())
+                .buildMarketWithProbabilities(SportEvents.any(), oddEvenMarket(), anyProducerId())
                 .get();
             val outcome = getEvenOutcomeFrom(market);
 
             assertThat(outcome)
-                .hasNameInDefaultLanguage(of(evenOutcomeDescription().getName(), in(aLanguage)));
+                .hasNameInDefaultLanguage(
+                    of(SapiMarketDescriptions.OddEven.evenOutcomeDescription().getName(), in(aLanguage))
+                );
         }
     }
 }

@@ -21,12 +21,6 @@ import org.slf4j.LoggerFactory;
 public class HttpResponseHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpResponseHandler.class);
-    private final Deserializer apiDeserializer;
-
-    @Inject
-    public HttpResponseHandler(@Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
-        this.apiDeserializer = apiDeserializer;
-    }
 
     HttpData extractHttpDataFromHttpResponse(ClassicHttpResponse httpResponse, String path) {
         try {
@@ -77,8 +71,7 @@ public class HttpResponseHandler {
 
     private String logAndReturnErrorMessage(ClassicHttpResponse httpResponse, String path)
         throws IOException {
-        String errorMessage = new MessageAndActionExtractor(apiDeserializer)
-            .parse(httpResponse.getEntity().getContent());
+        String errorMessage = new MessageAndActionExtractor().parse(httpResponse.getEntity().getContent());
         LOGGER.warn(
             "Bad API response: " +
             httpResponse.getVersion() +

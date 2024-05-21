@@ -138,7 +138,7 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
                     configWithToken(),
                     HttpClientBuilder.create().build(),
                     mock(UnifiedOddsStatistics.class),
-                    new HttpResponseHandler(deserializer),
+                    new HttpResponseHandler(),
                     mock(UserAgentProvider.class)
                 ),
                 deserializer

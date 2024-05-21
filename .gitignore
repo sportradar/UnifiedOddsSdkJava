@@ -82,3 +82,4 @@ application.yml
 
 # logs
 *.log.gz
+/local-environment/uf-api-proxy/node_modules/

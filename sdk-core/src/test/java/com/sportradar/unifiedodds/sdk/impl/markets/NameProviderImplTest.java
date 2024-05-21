@@ -3,21 +3,23 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.markets;
 
-import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategies.anyErrorHandlingStrategy;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Catch;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
+import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionFactory.namesOf;
+import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProviders.subbingOutCaches;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.noMarketDescribingProvider;
+import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.providing;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.impl.markets.NameProviders.usingFactory;
-import static com.sportradar.utils.domain.markets.MarketIds.anyMarketId;
+import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.Languages.anyLanguages;
-import static com.sportradar.utils.domain.producers.ProducerIds.anyProducerId;
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
+import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
@@ -51,20 +53,38 @@ public class NameProviderImplTest {
 
     @Test
     public void throwsOnMarketNotFoundWhenSdkConfiguredToThrow() throws CacheItemNotFoundException {
-        val marketDescriptorProvider = mock(MarketDescriptionProvider.class);
-        when(marketDescriptorProvider.getMarketDescription(anyInt(), anyMap(), anyList(), anyBoolean()))
-            .thenThrow(CacheItemNotFoundException.class);
         val nameProvider = usingFactory()
-            .withMarketDescriptorProvider(marketDescriptorProvider)
+            .withMarketDescriptorProvider(subbingOutCaches().build())
             .withExceptionHandlingStrategy(Throw)
             .construct();
 
-        assertThatThrownBy(() -> nameProvider.getMarketNames(anyLanguages()))
+        assertThatThrownBy(() -> nameProvider.getMarketNames(singletonList(Languages.any())))
             .isInstanceOf(NameGenerationException.class)
             .hasMessageContaining("Failed to retrieve market name descriptor");
         assertThatThrownBy(() -> nameProvider.getMarketName(Languages.any()))
             .isInstanceOf(NameGenerationException.class)
             .hasMessageContaining("Failed to retrieve market name descriptor");
+    }
+
+    @Test
+    public void returnsNullOnMarketMissingNameWhenSdkConfiguredToCatch() {
+        val aLanguage = ENGLISH;
+        val nameProvider = usingFactory()
+            .withMarketDescriptorProvider(
+                providing(
+                    in(aLanguage),
+                    namesOf(nullifyName(oddEvenMarketDescription(aLanguage)), in(aLanguage))
+                )
+            )
+            .withExceptionHandlingStrategy(Catch)
+            .construct();
+
+        assertThat(nameProvider.getMarketName(aLanguage)).isNull();
+    }
+
+    private DescMarket nullifyName(DescMarket market) {
+        market.setName("");
+        return market;
     }
 
     @Test

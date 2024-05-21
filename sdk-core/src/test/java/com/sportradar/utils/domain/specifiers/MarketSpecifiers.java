@@ -4,8 +4,10 @@
 package com.sportradar.utils.domain.specifiers;
 
 import static com.sportradar.utils.generic.testing.RandomObjectPicker.pickOneRandomlyFrom;
-import static java.util.Collections.emptyMap;
 
+import com.google.common.collect.ImmutableMap;
+import com.sportradar.unifiedodds.sdk.conn.Identifiable;
+import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,5 +24,9 @@ public final class MarketSpecifiers {
         val twoSpecifiers = Maps.of("total", "2.5", "hcp", "-0.5");
 
         return pickOneRandomlyFrom(noSpecifiers, oneSpecifier, twoSpecifiers);
+    }
+
+    public static Map<String, String> variant(Identifiable variant) {
+        return ImmutableMap.of(UnifiedFeedConstants.VARIANT_DESCRIPTION_NAME, variant.id());
     }
 }

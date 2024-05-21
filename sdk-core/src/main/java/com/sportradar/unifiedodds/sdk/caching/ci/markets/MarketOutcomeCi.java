@@ -56,7 +56,7 @@ public class MarketOutcomeCi {
         Preconditions.checkNotNull(o);
         Preconditions.checkNotNull(locale);
 
-        names.put(locale, o.getName());
+        names.put(locale, o.getName() != null ? o.getName() : "");
         if (!Strings.isNullOrEmpty(o.getDescription())) {
             descriptions.put(locale, o.getDescription());
         }

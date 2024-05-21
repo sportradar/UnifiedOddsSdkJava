@@ -48,20 +48,6 @@ public class ConfigureMtsSpecificTest {
     }
 
     @Test
-    public void configuringSimpleVariantCachingIsNoLongerNecessaryAsMtsIsNotUsingIt() {
-        UofConfiguration config = buildFromPropsFile
-            .setAccessToken("any")
-            .selectCustom()
-            .setDefaultLanguage(anyLanguage)
-            .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
-
-        assertEquals(false, internalConfig.getSimpleVariantCaching());
-        assertEquals(false, internalConfigForReplay.getSimpleVariantCaching());
-    }
-
-    @Test
     public void configuringSchedulerTasksToSkipIsNoLongerNecessaryAsMtsIsNotUsingIt() {
         UofConfiguration config = buildFromPropsFile
             .setAccessToken("any")

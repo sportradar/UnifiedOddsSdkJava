@@ -28,13 +28,7 @@ public class BasicUofSdkExampleMain {
         //      - as a system property(JVM argument -Duf.accesstoken=<your-access-token>)
         //        and than invoking setAccessTokenFromSystemVar on the builder
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
-        UofConfiguration config = UofSdk
-            .getUofConfigurationBuilder()
-            .setAccessToken("your-staging-token-here")
-            .selectEnvironment(Environment.GlobalIntegration)
-            .setNodeId(SdkConstants.NODE_ID)
-            .setDefaultLanguage(Locale.ENGLISH)
-            .build();
+        UofConfiguration config = UofSdk.getUofConfigurationBuilder().buildConfigFromSdkProperties();
         // create the new feed
         UofSdk uofSdk = new UofSdk(new GlobalEventsListener(), config);
 

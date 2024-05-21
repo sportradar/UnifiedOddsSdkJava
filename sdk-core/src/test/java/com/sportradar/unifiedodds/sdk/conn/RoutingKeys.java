@@ -7,25 +7,19 @@ import static java.lang.String.format;
 
 public class RoutingKeys {
 
-    private final ProducerId producerId;
-    private final Sport sport;
-    private final SportEvent sportEvent;
-    private final int nodeId;
+    private final GlobalVariables globalVariables;
 
-    public RoutingKeys(ProducerId producerId, Sport sport, SportEvent sportEvent, int nodeId) {
-        this.producerId = producerId;
-        this.sport = sport;
-        this.sportEvent = sportEvent;
-        this.nodeId = nodeId;
+    public RoutingKeys(GlobalVariables globalVariables) {
+        this.globalVariables = globalVariables;
     }
 
     public String liveOddsChange() {
         return format(
             "hi.-.live.odds_change.%d.sr:%s.%d.%s",
-            sport.getUrn().getId(),
-            sportEvent.getUrn().getType(),
-            sportEvent.getUrn().getId(),
-            nodeId
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getUrn().getType(),
+            globalVariables.getSportEventUrn().getUrn().getId(),
+            globalVariables.getNodeId()
         );
     }
 }

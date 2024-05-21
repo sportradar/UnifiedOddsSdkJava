@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -69,6 +70,8 @@ public class ConnectionFixtureTest {
     @Test
     public void closingConnectionWithoutRegisteredShutdownListenerShouldSucceed() {
         connection.getControlApi().closeInitiatedByRabbitMq();
+
+        assertFalse(connection.isOpen());
     }
 
     @Test
@@ -84,7 +87,10 @@ public class ConnectionFixtureTest {
 
     @Test
     public void blockingConnectionWithoutRegisteredListenerShouldSucceed() throws IOException {
-        connection.getControlApi().blockDueTo("reason");
+        assertThatNoException()
+            .isThrownBy(() -> {
+                connection.getControlApi().blockDueTo("reason");
+            });
     }
 
     @Test

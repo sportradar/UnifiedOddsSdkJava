@@ -416,8 +416,8 @@ public class NameProviderImpl implements NameProvider {
         Locale locale,
         Exception ex
     ) {
-        return handleErrorCondition(message, outcomeId, nameDescriptor, Collections.singletonList(locale), ex)
-            .get(locale);
+        handleErrorCondition(message, outcomeId, nameDescriptor, Collections.singletonList(locale), ex);
+        return null;
     }
 
     private Map<Locale, String> handleErrorCondition(
@@ -529,10 +529,7 @@ public class NameProviderImpl implements NameProvider {
             .stream()
             .filter(o -> o.getId().equals(outcomeId))
             .findFirst();
-        if (
-            !optDesc.isPresent() ||
-            !SdkHelper.findMissingLocales(optDesc.get().getLocales(), locales).isEmpty()
-        ) {
+        if (!optDesc.isPresent()) {
             if (firstTime) {
                 logger.warn(
                     new StatusMessage(

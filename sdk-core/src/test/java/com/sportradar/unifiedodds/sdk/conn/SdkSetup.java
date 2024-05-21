@@ -71,6 +71,21 @@ public final class SdkSetup {
         return this;
     }
 
+    public UofSdk withoutFeed() throws InitException {
+        UofConfiguration config = UofSdk
+            .getUofConfigurationBuilder()
+            .setAccessToken(sdkCredentials.getUsername())
+            .selectCustom()
+            .setApiUseSsl(false)
+            .setApiHost(sportsApiBaseUrl.get())
+            .setDefaultLanguage(defaultLanguage.orElse(Languages.any()))
+            .setExceptionHandlingStrategy(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()))
+            .setNodeId(nodeId)
+            .build();
+
+        return createSdk(config);
+    }
+
     public UofSdk withOpenedFeed() throws InitException {
         UofConfiguration config = UofSdk
             .getUofConfigurationBuilder()

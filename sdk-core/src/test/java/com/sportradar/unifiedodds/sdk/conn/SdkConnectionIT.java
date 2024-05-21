@@ -108,9 +108,9 @@ public class SdkConnectionIT {
         scenario = new Scenario.Factory(sdkListener);
         feed = new TestFeed(sdkListener, config, sdkListener);
         GlobalVariables variables = new GlobalVariables();
-
-        feedMessageBuilder =
-            new FeedMessageBuilder(ProducerId.LIVE_ODDS, com.sportradar.unifiedodds.sdk.conn.SportEvent.ANY);
+        variables.setProducer(ProducerId.LIVE_ODDS);
+        variables.setSportEventUrn(com.sportradar.unifiedodds.sdk.conn.SportEvent.ANY);
+        feedMessageBuilder = new FeedMessageBuilder(variables);
 
         // establish connection to the test rabbit server for rabbit producer
         TestProducersProvider testProducersProvider = new TestProducersProvider();

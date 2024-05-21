@@ -338,7 +338,6 @@ public class MarketManagerImpl implements MarketDescriptionManager {
             );
             threadPool.invokeAll(tasks);
         } catch (InterruptedException e) {
-            e.printStackTrace();
             Thread.currentThread().interrupt();
         } catch (Exception ex) {
             interactionLogger.error("Error prefetching variant market descriptions.", ex);
