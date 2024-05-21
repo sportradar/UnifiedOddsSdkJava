@@ -8,8 +8,11 @@ import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Catch;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
 import static com.sportradar.unifiedodds.sdk.impl.entities.MatchAssertions.assertThat;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
+import static java.util.Optional.ofNullable;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
@@ -27,9 +30,11 @@ import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.*;
+import java.util.function.Supplier;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.val;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -345,6 +350,69 @@ public class MatchImplTest {
         private MatchCi createMatchCiWithTranslatedName(Map<Locale, String> translatedName) {
             val matchCi = mock(MatchCi.class);
             when(matchCi.getNames(new ArrayList<>(translatedName.keySet()))).thenReturn(translatedName);
+            return matchCi;
+        }
+    }
+
+    @RunWith(JUnitParamsRunner.class)
+    public static class StartTimeTbd {
+
+        private static final String UNDER_20_EN = "Under 20";
+        private static final Urn MATCH_URN = Urns.SportEvents.getForAnyMatch();
+        private static final Urn ANY_SPORT_URN = Urns.Sports.urnForAnySport();
+        private static final ExceptionHandlingStrategy ANY_EXCEPTION_HANDLING = Throw;
+        private final SportEntityFactory entityFactory = mock(SportEntityFactory.class);
+        private final SportEventCache sportEventCache = mock(SportEventCache.class);
+        private final SportEventStatusFactory statusFactory = mock(SportEventStatusFactory.class);
+        private final Locale language = ENGLISH;
+        private MatchImpl match;
+
+        @Before
+        public void createMatch() {
+            match =
+                new MatchImpl(
+                    MATCH_URN,
+                    ANY_SPORT_URN,
+                    sportEventCache,
+                    statusFactory,
+                    entityFactory,
+                    singletonList(language),
+                    ANY_EXCEPTION_HANDLING
+                );
+        }
+
+        @Test
+        public void startTimeTbdNull() throws Exception {
+            MatchCi matchCi = matchCi(of(language, UNDER_20_EN), withStartTimeTbd(null));
+            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+
+            assertThat(match.isStartTimeTbd()).isNull();
+        }
+
+        @Test
+        public void startTimeIsToBeDefined() throws Exception {
+            MatchCi matchCi = matchCi(of(language, UNDER_20_EN), withStartTimeTbd(true));
+            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+
+            assertThat(match.isStartTimeTbd()).isTrue();
+        }
+
+        @Test
+        public void startTimeIsNotToBeDefined() throws Exception {
+            MatchCi matchCi = matchCi(of(language, UNDER_20_EN), withStartTimeTbd(false));
+            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+
+            assertThat(match.isStartTimeTbd()).isFalse();
+        }
+
+        private Supplier<Boolean> withStartTimeTbd(Boolean timestampTbd) {
+            return () -> timestampTbd;
+        }
+
+        private MatchCi matchCi(Map<Locale, String> translatedName, Supplier<Boolean> timestampTbd) {
+            val matchCi = mock(MatchCi.class);
+            when(matchCi.getNames(new ArrayList<>(translatedName.keySet()))).thenReturn(translatedName);
+            when(matchCi.isStartTimeTbd()).thenReturn(ofNullable(timestampTbd.get()));
             return matchCi;
         }
     }

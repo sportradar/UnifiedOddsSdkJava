@@ -21,6 +21,7 @@ import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +165,8 @@ public class TournamentImpl extends SportEventImpl implements Tournament {
             return null;
         }
 
-        return tournamentCi.isStartTimeTbd().isPresent() ? tournamentCi.isStartTimeTbd().get() : null;
+        Optional<Boolean> startTimeTbd = tournamentCi.isStartTimeTbd();
+        return startTimeTbd.orElse(null);
     }
 
     /**

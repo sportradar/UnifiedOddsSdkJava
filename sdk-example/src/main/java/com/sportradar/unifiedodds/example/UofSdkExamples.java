@@ -61,12 +61,14 @@ public class UofSdkExamples {
 
         String selection = getConsoleInput();
 
-        System.out.println("Please enter a valid Unified Feed token for integration environment:");
+        boolean isReplayEnvironment = selection.equals("7");
+        String environment = isReplayEnvironment ? "Replay" : "Integration";
+        System.out.println("Please enter a valid Unified Feed token for '" + environment + "' environment:");
         String token = getConsoleInput();
 
         switch (selection) {
             case "1":
-                SingleSessionSetup singleSessionSetup = new SingleSessionSetup(token);
+                SingleSessionSetup singleSessionSetup = new SingleSessionSetup();
                 singleSessionSetup.run(false);
                 break;
             case "2":
@@ -74,7 +76,7 @@ public class UofSdkExamples {
                 multiSessionSetup.run();
                 break;
             case "3":
-                SingleSessionSetup singleSessionSetupRecovery = new SingleSessionSetup(token);
+                SingleSessionSetup singleSessionSetupRecovery = new SingleSessionSetup();
                 singleSessionSetupRecovery.run(true);
                 break;
             case "4":
@@ -90,7 +92,7 @@ public class UofSdkExamples {
                 availableMarketsPrinterMappings.print(true);
                 break;
             case "7":
-                ReplaySessionSetup replaySessionSetup = new ReplaySessionSetup(token);
+                ReplaySessionSetup replaySessionSetup = new ReplaySessionSetup();
                 replaySessionSetup.run();
                 break;
             case "8":

@@ -6,7 +6,8 @@ package com.sportradar.unifiedodds.sdk.conn;
 import com.sportradar.utils.Urn;
 
 public enum Sport {
-    FOOTBALL(Urn.parse("sr:sport:1"));
+    FOOTBALL(Urn.parse("sr:sport:1")),
+    FUTSAL(Urn.parse("sr:sport:29"));
 
     private final Urn urn;
 

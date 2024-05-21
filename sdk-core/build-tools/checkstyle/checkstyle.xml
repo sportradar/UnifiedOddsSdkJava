@@ -35,6 +35,14 @@
         <property name="files" value=".*src[\\/](?!test[\\/])"/>
     </module>
     <module name="SuppressionSingleFilter">
+        <property name="id" value="InnerTypeLastRegular"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]).*Test.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="id" value="InnerTypeLastRegular"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]).*IT.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
         <property name="files" value="[/\\]target[/\\]"/>
         <property name="checks" value=".*"/>
     </module>
@@ -225,6 +233,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="VariantMarketDescriptionCacheTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="SportEventCacheImpl.java"/>
     </module>
     <module name="SuppressionSingleFilter">
@@ -330,6 +342,10 @@
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
         <property name="files" value="LogLineParser.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SapiMarketDescriptions.java"/>
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="LineLength"/>
@@ -1644,6 +1660,18 @@
         <property name="checks" value="Header"/>
         <property name="files" value="LogEntryModelTest.java"/>
     </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="MethodLength"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]).*IT.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="MethodLength"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]).*Test.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SapiMarketDescriptions.java"/>
+    </module>
 
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
@@ -1721,7 +1749,6 @@
             <property name="ignoreSetter" value="true"/>
             <property name="setterCanReturnItsClass" value="true"/>
         </module>
-        <module name="HideUtilityClassConstructor"/>
         <module name="IllegalCatch"/>
         <module name="IllegalIdentifierName"/>
         <module name="IllegalImport"/>
@@ -1730,7 +1757,9 @@
         <module name="IllegalToken"/>
         <module name="IllegalType"/>
         <module name="InnerAssignment"/>
-        <module name="InnerTypeLast"/>
+        <module name="InnerTypeLast">
+            <property name="id" value="InnerTypeLastRegular"/>
+        </module>
         <module name="InterfaceIsType"/>
         <module name="InterfaceTypeParameterName"/>
         <module name="JavaNCSS"/>

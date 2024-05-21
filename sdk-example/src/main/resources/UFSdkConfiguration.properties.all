@@ -1,15 +1,35 @@
 # all the configuration properties are optional, for detailed description check the "ConfigurationAccessTokenSetter"
 
+# ==== MANDATORY PROPERTIES ====
+
 # the access token provided by Sportradar
 uf.sdk.accessToken=
 
 # the default language (en)
 uf.sdk.defaultLanguage=en
 
+# the node id which should be used by the SDK
+uf.sdk.nodeId=
+
+# ==== COMMON PROPERTIES ====
+
 # the desired languages, separated with comma (es,fr)
 uf.sdk.desiredLanguages=
 
-# the messaging host
+# a list of producer identifiers that should be automatically disabled, separated with comma (1,2,4)
+uf.sdk.disabledProducers=
+
+# the exception handling strategy that should be used trough the SDK (throw/catch)
+uf.sdk.exceptionHandlingStrategy=
+
+# a value indicating to which unified feed environment sdk should connect (Environment enum value)
+uf.sdk.environment=
+
+# ==== CUSTOM CONFIGURATION ====
+
+# Normally, the following properties should not be set in production environment.
+
+# rabbit server connection host without scheme
 uf.sdk.messagingHost=
 
 # the messaging port
@@ -18,32 +38,17 @@ uf.sdk.messagingPort=
 # an indication if the connection to the messaging broker should use ssl (true/false)
 uf.sdk.messagingUseSsl=
 
-# the messaging username
+# the messaging username (if left empty, it is replaced with access token)
 uf.sdk.messagingUsername=
 
-# the messaging password
 uf.sdk.messagingPassword=
 
-# the messaging virtual host
+# the messaging virtual host (populated from whoami.xml endpoint)
 uf.sdk.messagingVirtualHost=
 
-# the api host
 uf.sdk.apiHost=
 
-# the api port
 uf.sdk.apiPort=
 
 # an indication if the request to the API should use ssl (true/false)
 uf.sdk.apiUseSsl=
-
-# a list of producer identifiers that should be automatically disabled, separated with comma (1,2,4)
-uf.sdk.disabledProducers=
-
-# the node id which should be used by the SDK
-uf.sdk.nodeId=
-
-# the exception handling strategy that should be used trough the SDK (throw/catch)
-uf.sdk.exceptionHandlingStrategy=
-
-# a value indicating to which unified feed environment sdk should connect (Environment enum value)
-uf.sdk.environment=

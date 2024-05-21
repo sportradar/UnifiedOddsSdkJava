@@ -9,6 +9,7 @@ import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
+import com.sportradar.unifiedodds.sdk.domain.language.Languages;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
@@ -92,14 +93,14 @@ public class InvariantMarketDescriptionCache implements MarketDescriptionCache {
     }
 
     @Override
-    public MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales)
+    public MarketDescription getMarketDescriptor(int marketId, String variant, Languages.BestEffort locales)
         throws IllegalCacheStateException, CacheItemNotFoundException {
         Preconditions.checkArgument(marketId > 0);
 
         String processingCacheId = String.valueOf(marketId);
-        MarketDescriptionCi cachedItem = getMarketInternal(processingCacheId, locales);
+        MarketDescriptionCi cachedItem = getMarketInternal(processingCacheId, locales.getLanguages());
 
-        return new MarketDescriptionImpl(cachedItem, locales);
+        return new MarketDescriptionImpl(cachedItem, locales.getLanguages());
     }
 
     @Override

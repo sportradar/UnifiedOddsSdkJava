@@ -4,48 +4,47 @@
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.sportradar.uf.sportsapi.datamodel.APIPageNotFound;
-import com.sportradar.uf.sportsapi.datamodel.Response;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
-import com.sportradar.unifiedodds.sdk.impl.Deserializer;
 import java.io.InputStream;
+import java.util.Optional;
+import javax.xml.bind.DataBindingException;
+import javax.xml.bind.JAXB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class MessageAndActionExtractor {
 
-    private Deserializer apiDeserializer;
-
-    @Inject
-    public MessageAndActionExtractor(@Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer) {
-        Preconditions.checkNotNull(apiDeserializer);
-
-        this.apiDeserializer = apiDeserializer;
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageAndActionExtractor.class);
 
     public String parse(InputStream httpResponseContent) {
-        Preconditions.checkNotNull(apiDeserializer);
         Preconditions.checkNotNull(httpResponseContent);
-
-        String errMsg;
         try {
-            Object deserializedResponse = apiDeserializer.deserialize(httpResponseContent);
-            if (deserializedResponse instanceof APIPageNotFound) {
-                errMsg = ((APIPageNotFound) deserializedResponse).getMessage();
-            } else if (deserializedResponse instanceof Response) {
-                Response response = (Response) deserializedResponse;
-                errMsg =
-                    Concatenator
-                        .separatingWith(", ")
-                        .appendIfNotNull(response.getMessage())
-                        .appendIfNotNull(response.getAction())
-                        .retrieve();
-            } else {
-                errMsg = "Unknown response format, " + deserializedResponse.getClass().getName();
-            }
-        } catch (DeserializationException e) {
-            errMsg = "No specific message";
+            Element deserializedResponse = (Element) JAXB.unmarshal(httpResponseContent, Object.class);
+            return extractMessageFromXml(deserializedResponse);
+        } catch (DataBindingException | ClassCastException e) {
+            LOGGER.warn("Failed to parse the response as XML", e);
+            return "No specific message";
         }
-        return errMsg;
+    }
+
+    private static String extractMessageFromXml(Element element) {
+        Optional<String> message = getTextContentFromFirstChildElement(element, "message");
+        Optional<String> action = getTextContentFromFirstChildElement(element, "action");
+        return Concatenator
+            .separatingWith(", ")
+            .appendIfNotNull(message.orElse(null))
+            .appendIfNotNull(action.orElse(null))
+            .retrieve();
+    }
+
+    private static Optional<String> getTextContentFromFirstChildElement(Element element, String tagName) {
+        NodeList children = element.getElementsByTagName(tagName);
+        return Optional
+            .of(children)
+            .filter(ch -> ch.getLength() > 0)
+            .map(ch -> ch.item(0))
+            .map(Node::getTextContent);
     }
 }

@@ -4,17 +4,21 @@
 
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
+import static java.lang.String.format;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
+import com.sportradar.unifiedodds.sdk.domain.language.Languages;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.impl.markets.MarketDescriptionImpl;
 import com.sportradar.utils.SdkHelper;
@@ -22,6 +26,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +38,13 @@ import org.slf4j.LoggerFactory;
 public class VariantMarketDescriptionCache implements MarketDescriptionCache {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantMarketDescriptionCache.class);
+    private static final String CACHE_KEY_SEPARATOR = "_";
     private final Cache<String, MarketDescriptionCi> cache;
     private final DataProvider<MarketDescriptions> dataProvider;
     private final MappingValidatorFactory mappingValidatorFactory;
     private final ReentrantLock lock = new ReentrantLock();
-    private final boolean simpleVariantCaching;
+    private final TimeUtils time;
+    private final Config config;
     private Map<String, Date> fetchedVariants = new ConcurrentHashMap<>();
     private Date lastTimeFetchedVariantsWereCleared;
 
@@ -44,24 +52,33 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         Cache<String, MarketDescriptionCi> cache,
         DataProvider<MarketDescriptions> dataProvider,
         MappingValidatorFactory mappingValidatorFactory,
-        boolean simpleVariantCaching
+        TimeUtils time,
+        Config config
     ) {
         Preconditions.checkNotNull(cache);
         Preconditions.checkNotNull(dataProvider);
         Preconditions.checkNotNull(mappingValidatorFactory);
+        Preconditions.checkNotNull(time);
+        Preconditions.checkNotNull(config);
 
         this.cache = cache;
         this.dataProvider = dataProvider;
         this.mappingValidatorFactory = mappingValidatorFactory;
-        this.simpleVariantCaching = simpleVariantCaching;
-        this.lastTimeFetchedVariantsWereCleared = new Date();
+        this.time = time;
+        this.config = config;
+        this.lastTimeFetchedVariantsWereCleared = new Date(time.now());
     }
 
     @Override
-    public MarketDescription getMarketDescriptor(int marketId, String variant, List<Locale> locales)
-        throws CacheItemNotFoundException, IllegalCacheStateException {
+    public MarketDescription getMarketDescriptor(
+        int marketId,
+        String variant,
+        Languages.BestEffort bestEffort
+    ) throws CacheItemNotFoundException {
         Preconditions.checkArgument(marketId > 0);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(variant));
+        Preconditions.checkNotNull(bestEffort);
+        List<Locale> locales = bestEffort.getLanguages();
         Preconditions.checkNotNull(locales);
         Preconditions.checkArgument(!locales.isEmpty());
 
@@ -76,26 +93,26 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             throw new CacheItemNotFoundException("The requested market descriptor could not be found", e);
         }
 
-        List<Locale> missingLocales;
+        List<Locale> localesToFetch;
         try {
             lock.lock();
-            missingLocales = getMissingLocales(marketCi, locales);
+            localesToFetch = missingOrFaultyLanguages(locales, marketCi);
         } finally {
             lock.unlock();
         }
 
-        if (!missingLocales.isEmpty()) {
+        if (!localesToFetch.isEmpty()) {
             try {
                 lock.lock();
-                if (!isFetchingAllowed(marketId, variant, missingLocales)) {
-                    return new MarketDescriptionImpl(marketCi, locales);
-                }
-                missingLocales = getMissingLocales(marketCi, locales);
-                if (!missingLocales.isEmpty()) {
-                    loadMarketDescriptorData(marketCi, marketId, variant, missingLocales);
-
-                    for (Locale l : missingLocales) {
-                        fetchedVariants.put(getFetchedVariantsKey(marketId, variant, l), new Date());
+                localesToFetch = missingOrFaultyLanguages(locales, marketCi);
+                if (!localesToFetch.isEmpty()) {
+                    try {
+                        loadMarketDescriptorData(marketCi, marketId, variant, localesToFetch);
+                    } catch (IllegalCacheStateException e) {
+                        logger.info(
+                            format("variant market[%d %s] failed to be loaded", marketId, variant),
+                            e
+                        );
                     }
                 }
             } finally {
@@ -104,6 +121,30 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         }
 
         return new MarketDescriptionImpl(marketCi, locales);
+    }
+
+    private static List<Locale> missingOrFaultyLanguages(List<Locale> locales, MarketDescriptionCi marketCi) {
+        return locales
+            .stream()
+            .filter(l -> missingLanguages(l, marketCi) || faultyLanguage(l, marketCi))
+            .collect(Collectors.toList());
+    }
+
+    private static boolean faultyLanguage(Locale l, MarketDescriptionCi marketCi) {
+        boolean languageIsFaulty = marketCi.getName(l) == null || anyOutcomeIsMissingName(l, marketCi);
+        return marketCi.getCachedLocales().contains(l) && languageIsFaulty;
+    }
+
+    private static boolean anyOutcomeIsMissingName(Locale l, MarketDescriptionCi marketCi) {
+        if (marketCi.getOutcomes() != null) {
+            return marketCi.getOutcomes().stream().map(o -> o.getName(l)).anyMatch(""::equals);
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean missingLanguages(Locale l, MarketDescriptionCi marketCi) {
+        return !marketCi.getCachedLocales().contains(l);
     }
 
     @Override
@@ -117,7 +158,21 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         if (cache.asMap().containsKey(cacheId)) {
             logger.debug("Delete variant market: {}", cacheId);
             cache.invalidate(cacheId);
+            invalidateFetchedVariants(marketId, variant);
         }
+    }
+
+    private void invalidateFetchedVariants(int marketId, String variant) {
+        String marketDescriptionCacheKey = getCacheKey(marketId, variant);
+        Set<String> fetchedVariantsCacheKeys = fetchedVariants.keySet();
+        fetchedVariantsCacheKeys
+            .stream()
+            .filter(startingWith(marketDescriptionCacheKey))
+            .forEach(fetchedVariants::remove);
+    }
+
+    private Predicate<String> startingWith(String cacheKeyPrefix) {
+        return v -> v.startsWith(cacheKeyPrefix + CACHE_KEY_SEPARATOR);
     }
 
     @Override
@@ -139,20 +194,20 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(variant));
         Preconditions.checkArgument(!locales.isEmpty());
 
+        if (!isFetchingAllowed(marketId, variant, locales)) {
+            throw new IllegalCacheStateException(
+                format("Fetching of variant market[%d %s] data is throttled", marketId, variant)
+            );
+        }
+
         try {
             for (Locale mLoc : locales) {
+                fetchedVariants.put(getFetchedVariantsKey(marketId, variant, mLoc), new Date(time.now()));
                 MarketDescriptions data = dataProvider.getData(mLoc, String.valueOf(marketId), variant);
-                if (data == null || data.getMarket().size() != 1) {
-                    throw new IllegalCacheStateException(
-                        "Received variant market[" +
-                        marketId +
-                        " " +
-                        variant +
-                        "] response with invalid market entry count"
-                    );
-                }
 
-                String cacheId = getCacheKey(marketId, variant);
+                validateExactlyOneMarketReceived(marketId, variant, data);
+                validateMarketHasNonZeroId(marketId, variant, data);
+
                 DescMarket descMarket = data.getMarket().get(0);
                 if (existingMarketDescriptor == null) {
                     existingMarketDescriptor =
@@ -170,29 +225,52 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
             return existingMarketDescriptor;
         } catch (DataProviderException ex) {
             throw new IllegalCacheStateException(
-                "An error occurred while fetching variant market[" + marketId + " " + variant + "] data",
+                format("An error occurred while fetching variant market[%d, %s] data", marketId, variant),
                 ex
             );
         }
     }
 
-    private String getCacheKey(int id, String variant) {
-        if (simpleVariantCaching) {
-            return variant;
+    private static void validateExactlyOneMarketReceived(
+        int marketId,
+        String variant,
+        MarketDescriptions data
+    ) throws IllegalCacheStateException {
+        if (data == null || data.getMarket().size() != 1) {
+            throw new IllegalCacheStateException(
+                format(
+                    "Received variant market[%d, %s] response with invalid market entry count",
+                    marketId,
+                    variant
+                )
+            );
         }
-
-        return id + "_" + variant;
     }
 
-    private List<Locale> getMissingLocales(MarketDescriptionCi item, List<Locale> requiredLocales) {
-        Preconditions.checkNotNull(requiredLocales);
-        Preconditions.checkArgument(!requiredLocales.isEmpty());
-
-        if (item == null) {
-            return requiredLocales;
+    private static void validateMarketHasNonZeroId(
+        int marketId,
+        String variant,
+        MarketDescriptions descriptions
+    ) throws IllegalCacheStateException {
+        List<DescMarket> markets = descriptions.getMarket();
+        if (markets.size() == 1 && hasIdZero(markets.get(0))) {
+            throw new IllegalCacheStateException(
+                format(
+                    "For requested variant market[%d, %s] received a response with invalid market[id=%d]",
+                    marketId,
+                    variant,
+                    markets.get(0).getId()
+                )
+            );
         }
+    }
 
-        return SdkHelper.findMissingLocales(item.getCachedLocales(), requiredLocales);
+    private static boolean hasIdZero(DescMarket descMarket) {
+        return descMarket != null && descMarket.getId() == 0;
+    }
+
+    private String getCacheKey(int id, String variant) {
+        return id + CACHE_KEY_SEPARATOR + variant;
     }
 
     private boolean isFetchingAllowed(int marketId, String variant, List<Locale> locales) {
@@ -205,16 +283,16 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     }
 
     private boolean isFetchingAllowed(int marketId, String variant, Locale locale) {
-        if (fetchedVariants.size() > 1000) {
+        if (fetchedVariants.size() > config.getNumberOfVariantsToStartAggressiveCleanUpMemoryFrom()) {
             clearFetchedVariants();
         }
 
         String cacheKey = getFetchedVariantsKey(marketId, variant, locale);
-        if (!fetchedVariants.containsKey(cacheKey)) {
+        Date date = fetchedVariants.get(cacheKey);
+        if (date == null) {
             return true;
         }
-        Date date = fetchedVariants.get(cacheKey);
-        if (SdkHelper.getTimeDifferenceInSeconds(new Date(), date) > 30) {
+        if (SdkHelper.getTimeDifferenceInSeconds(new Date(time.now()), date) > 30) {
             return true;
         }
         clearFetchedVariants();
@@ -223,23 +301,36 @@ public class VariantMarketDescriptionCache implements MarketDescriptionCache {
     }
 
     private String getFetchedVariantsKey(int marketId, String variant, Locale locale) {
-        return getCacheKey(marketId, variant) + "_" + locale;
+        return getCacheKey(marketId, variant) + CACHE_KEY_SEPARATOR + locale;
     }
 
     /**
      * clear records from fetchedVariants once a min
      */
     private void clearFetchedVariants() {
-        if (SdkHelper.getTimeDifferenceInSeconds(new Date(), lastTimeFetchedVariantsWereCleared) > 60) {
+        if (
+            SdkHelper.getTimeDifferenceInSeconds(new Date(time.now()), lastTimeFetchedVariantsWereCleared) >
+            60
+        ) {
             Set<String> keys = fetchedVariants.keySet();
 
             for (String key : keys) {
                 Date currDate = fetchedVariants.get(key);
-                if (SdkHelper.getTimeDifferenceInSeconds(new Date(), currDate) > 30) {
+                if (
+                    currDate != null &&
+                    SdkHelper.getTimeDifferenceInSeconds(new Date(time.now()), currDate) > 30
+                ) {
                     fetchedVariants.remove(key);
                 }
             }
-            lastTimeFetchedVariantsWereCleared = new Date();
+            lastTimeFetchedVariantsWereCleared = new Date(time.now());
+        }
+    }
+
+    public static class Config {
+
+        public int getNumberOfVariantsToStartAggressiveCleanUpMemoryFrom() {
+            return 1000;
         }
     }
 }

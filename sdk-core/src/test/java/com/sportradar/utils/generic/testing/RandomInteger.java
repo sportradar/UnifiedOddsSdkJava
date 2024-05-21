@@ -10,4 +10,8 @@ public final class RandomInteger {
     public static int fromRangeInclusive(int min, int max) {
         return min + (int) (Math.random() * (max - min + 1));
     }
+
+    public static int fromRange(int min, int max) {
+        return min + (int) (Math.random() * (max - min));
+    }
 }

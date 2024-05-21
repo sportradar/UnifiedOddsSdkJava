@@ -5,6 +5,7 @@ import com.sportradar.uf.datamodel.UfBetStop;
 import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.uf.datamodel.UfOddsChangeMarket;
 import com.sportradar.uf.datamodel.UfSnapshotComplete;
+import com.sportradar.unifiedodds.sdk.conn.GlobalVariables;
 import com.sportradar.unifiedodds.sdk.conn.ProducerId;
 import com.sportradar.unifiedodds.sdk.conn.SportEvent;
 import java.util.Date;
@@ -16,12 +17,10 @@ import lombok.val;
 @SuppressWarnings({ "ParameterAssignment", "ClassDataAbstractionCoupling", "MagicNumber" })
 public class FeedMessageBuilder {
 
-    private final ProducerId producerId;
-    private final SportEvent sportEvent;
+    private final GlobalVariables globalVariables;
 
-    public FeedMessageBuilder(ProducerId producerId, SportEvent sportEvent) {
-        this.producerId = producerId;
-        this.sportEvent = sportEvent;
+    public FeedMessageBuilder(GlobalVariables globalVariables) {
+        this.globalVariables = globalVariables;
     }
 
     /**
@@ -39,7 +38,7 @@ public class FeedMessageBuilder {
 
         UfOddsChange message = new UfOddsChange();
         message.setEventId(eventId == null ? "sr:match:1000" : "sr:match:" + eventId);
-        message.setProduct(productId == null ? producerId.get() : productId);
+        message.setProduct(productId == null ? globalVariables.getProducer().get() : productId);
         message.setTimestamp(timestamp == null ? new Date().getTime() : timestamp.getTime());
         message.setRequestId(requestId);
 
@@ -50,8 +49,8 @@ public class FeedMessageBuilder {
         UfOddsChange.UfOdds odds = new UfOddsChange.UfOdds();
         odds.getMarket().add(market);
         val oddsChange = new UfOddsChange();
-        oddsChange.setProduct(producerId.get());
-        oddsChange.setEventId(sportEvent.getUrn().toString());
+        oddsChange.setProduct(globalVariables.getProducer().get());
+        oddsChange.setEventId(globalVariables.getSportEventUrn().getUrn().toString());
         oddsChange.setTimestamp(new Date().getTime());
         oddsChange.setOdds(odds);
         return Helper.serializeToJaxbXml(oddsChange);
@@ -164,7 +163,7 @@ public class FeedMessageBuilder {
 
         UfBetStop message = new UfBetStop();
         message.setEventId(eventId == null ? "sr:match:1000" : "sr:match:" + eventId);
-        message.setProduct(productId == null ? producerId.get() : productId);
+        message.setProduct(productId == null ? globalVariables.getProducer().get() : productId);
         message.setTimestamp(timestamp == null ? new Date().getTime() : timestamp.getTime());
         message.setRequestId(requestId);
 
@@ -180,7 +179,7 @@ public class FeedMessageBuilder {
      */
     public UfAlive buildAlive(Integer productId, Date timestamp, boolean subscribed) {
         UfAlive message = new UfAlive();
-        message.setProduct(productId == null ? producerId.get() : productId);
+        message.setProduct(productId == null ? globalVariables.getProducer().get() : productId);
         message.setTimestamp(timestamp == null ? new Date().getTime() : timestamp.getTime());
         message.setSubscribed(subscribed ? 1 : 0);
 
@@ -215,7 +214,7 @@ public class FeedMessageBuilder {
      */
     public UfSnapshotComplete buildSnapshotComplete(Integer productId, long requestId, Date timestamp) {
         UfSnapshotComplete message = new UfSnapshotComplete();
-        message.setProduct(productId == null ? producerId.get() : productId);
+        message.setProduct(productId == null ? globalVariables.getProducer().get() : productId);
         message.setTimestamp(timestamp == null ? new Date().getTime() : timestamp.getTime());
         message.setRequestId(requestId);
 

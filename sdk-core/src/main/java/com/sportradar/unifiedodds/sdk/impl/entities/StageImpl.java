@@ -457,7 +457,7 @@ public class StageImpl extends SportEventImpl implements Stage {
             return null;
         }
 
-        return cacheItem.isStartTimeTbd().isPresent() ? cacheItem.isStartTimeTbd().get() : null;
+        return cacheItem.isStartTimeTbd().orElse(null);
     }
 
     /**

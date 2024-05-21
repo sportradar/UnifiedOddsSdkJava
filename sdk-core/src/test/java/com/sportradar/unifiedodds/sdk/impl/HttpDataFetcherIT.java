@@ -29,9 +29,7 @@ public abstract class HttpDataFetcherIT {
     private final String anyPath = "/some/path";
 
     private final int anyErrorResponseCode = 404;
-    private final HttpResponseHandler httpResponseHandler = new HttpResponseHandler(
-        new DeserializerImpl(JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel"))
-    );
+    private final HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
     private final SportsApiXmlResponseProvider xmlResponseProvider = new SportsApiXmlResponseProvider();
     private HttpDataFetcher httpFetcher = createHttpDataFetcher(
         mock(SdkInternalConfiguration.class),

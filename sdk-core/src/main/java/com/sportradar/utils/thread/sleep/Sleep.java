@@ -15,6 +15,7 @@ public class Sleep {
             Thread.sleep(amount);
         } catch (InterruptedException e) {
             LOGGER.warn("Interrupted", e);
+            Thread.currentThread().interrupt();
         }
     }
 }

@@ -33,7 +33,7 @@ public class DataWrapper<T> {
     private final Map<String, String> headers;
     private final ZonedDateTime serverResponseTime;
 
-    DataWrapper(T data, Header[] headers) {
+    public DataWrapper(T data, Header[] headers) {
         this.data = data;
 
         if (headers != null) {

@@ -96,11 +96,6 @@ public class HttpClientModule implements Module {
         @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer,
         UserAgentProvider userAgentProvider
     ) {
-        return new HttpHelper(
-            config,
-            httpClient,
-            new MessageAndActionExtractor(apiDeserializer),
-            userAgentProvider
-        );
+        return new HttpHelper(config, httpClient, new MessageAndActionExtractor(), userAgentProvider);
     }
 }

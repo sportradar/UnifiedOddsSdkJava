@@ -474,7 +474,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return null;
         }
 
-        return cacheItem.isStartTimeTbd().isPresent() ? cacheItem.isStartTimeTbd().get() : null;
+        return cacheItem.isStartTimeTbd().orElse(null);
     }
 
     /**

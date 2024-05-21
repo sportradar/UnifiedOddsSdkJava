@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.caching.ci.markets.VariantDescriptionCi;
+import com.sportradar.unifiedodds.sdk.domain.language.Languages;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CachingException;
@@ -62,7 +63,8 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
 
         MarketDescription marketDescriptor;
         try {
-            marketDescriptor = invariantMarketCache.getMarketDescriptor(marketId, null, locales);
+            marketDescriptor =
+                invariantMarketCache.getMarketDescriptor(marketId, null, new Languages.BestEffort(locales));
         } catch (CachingException e) {
             throw new CacheItemNotFoundException(
                 "Market descriptor with id " + marketId + " could not be found",
@@ -145,10 +147,12 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
         MarketDescription marketDescriptor,
         String variantValue
     ) {
-        MarketDescription dynamicVariantMarketDescription;
         try {
-            dynamicVariantMarketDescription =
-                variantMarketCache.getMarketDescriptor(marketId, variantValue, locales);
+            return variantMarketCache.getMarketDescriptor(
+                marketId,
+                variantValue,
+                new Languages.BestEffort(locales)
+            );
         } catch (CachingException e) {
             logger.warn(
                 "There was an error providing the explicit variant market descriptor -> marketId:{}, variantValue: {}, locales: {}",
@@ -159,8 +163,6 @@ public class MarketDescriptionProviderImpl implements MarketDescriptionProvider 
             );
             return marketDescriptor;
         }
-
-        return dynamicVariantMarketDescription;
     }
 
     private static boolean isMarketPlayerProps(MarketDescription marketDescriptor) {

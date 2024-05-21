@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>3.1.0</version>
+    <version>3.3.0-SNAPSHOT</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -56,7 +56,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- TODO rabbitMQ.version is 3.6.0 in parent pom, but 3.6.0 and 3.12.0 here -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <rabbitMQ.version>5.17.0</rabbitMQ.version>
         <apache.httpComponents.version>5.2.1</apache.httpComponents.version>
         <slf4j.version>2.0.7</slf4j.version>
@@ -278,7 +279,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>

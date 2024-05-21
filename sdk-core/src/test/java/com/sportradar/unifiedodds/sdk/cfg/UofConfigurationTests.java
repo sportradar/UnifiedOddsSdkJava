@@ -4,14 +4,23 @@
 
 package com.sportradar.unifiedodds.sdk.cfg;
 
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
+import static com.sportradar.unifiedodds.sdk.cfg.UofConfigurations.BuilderViaFileStubbingOutDataProvidersAndReaders.viaFileStubbingOutDataProvidersAndReaders;
+import static com.sportradar.unifiedodds.sdk.cfg.UofConfigurations.BuilderViaJavaStubbingOutDataProvidersAndReaders.viaJavaStubbingOutDataProvidersAndReaders;
+import static com.sportradar.unifiedodds.sdk.impl.BookmakerDetailsDataProvider.providing;
 import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.readerProvidingBookmaker;
+import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.conn.SapiBookmakerDetails;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
@@ -117,7 +126,7 @@ public class UofConfigurationTests {
 
     @Test
     public void setLanguages() {
-        final List<Locale> newValue = Arrays.asList(Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN);
+        final List<Locale> newValue = Arrays.asList(ENGLISH, Locale.FRENCH, Locale.GERMAN);
         config.setLanguages(newValue);
 
         Assert.assertNotNull(config.getLanguages());
@@ -126,7 +135,7 @@ public class UofConfigurationTests {
 
     @Test
     public void setLanguagesSavesOnlyUniqueValues() {
-        final List<Locale> newValue = Arrays.asList(Locale.ENGLISH, Locale.ENGLISH, Locale.ENGLISH);
+        final List<Locale> newValue = Arrays.asList(ENGLISH, ENGLISH, ENGLISH);
         config.setLanguages(newValue);
 
         Assert.assertEquals(1, config.getLanguages().size());
@@ -134,7 +143,7 @@ public class UofConfigurationTests {
 
     @Test
     public void setLanguagesSavesOnlyUniqueValuesWhenCalledMultipleTimes() {
-        final List<Locale> newValue = Arrays.asList(Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN);
+        final List<Locale> newValue = Arrays.asList(ENGLISH, Locale.FRENCH, Locale.GERMAN);
         config.setLanguages(newValue);
         config.setLanguages(newValue);
 
@@ -143,7 +152,7 @@ public class UofConfigurationTests {
 
     @Test
     public void setLanguagesCanNotRemovePreviouslySavedValues() {
-        final List<Locale> newValue = Arrays.asList(Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN);
+        final List<Locale> newValue = Arrays.asList(ENGLISH, Locale.FRENCH, Locale.GERMAN);
         config.setLanguages(newValue);
 
         Assert.assertEquals(newValue.size(), config.getLanguages().size());
@@ -155,7 +164,7 @@ public class UofConfigurationTests {
 
     @Test
     public void setLanguagesOverridesNewValues() {
-        final List<Locale> newValues = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+        final List<Locale> newValues = Arrays.asList(ENGLISH, Locale.GERMAN);
         final List<Locale> newValues2 = Arrays.asList(Locale.FRENCH, Locale.GERMAN, Locale.ITALY);
         config.setLanguages(newValues);
 
@@ -171,7 +180,7 @@ public class UofConfigurationTests {
         final String accessToken = "myAccessToken";
         config.setAccessToken(accessToken);
 
-        final List<Locale> newValues = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+        final List<Locale> newValues = Arrays.asList(ENGLISH, Locale.GERMAN);
         config.setLanguages(newValues);
         Assert.assertEquals(newValues.size(), config.getLanguages().size());
         Assert.assertNull(config.getDefaultLanguage());
@@ -188,13 +197,13 @@ public class UofConfigurationTests {
         final String accessToken = "myAccessToken";
         config.setAccessToken(accessToken);
 
-        config.setDefaultLanguage(Locale.ENGLISH);
-        Assert.assertEquals(Locale.ENGLISH, config.getDefaultLanguage());
+        config.setDefaultLanguage(ENGLISH);
+        Assert.assertEquals(ENGLISH, config.getDefaultLanguage());
         Assert.assertEquals(0, config.getLanguages().size());
 
         config.validateMinimumSettings();
 
-        Assert.assertEquals(Locale.ENGLISH, config.getDefaultLanguage());
+        Assert.assertEquals(ENGLISH, config.getDefaultLanguage());
         Assert.assertEquals(1, config.getLanguages().size());
         Assert.assertEquals(config.getDefaultLanguage(), config.getLanguages().stream().findFirst().get());
     }
@@ -204,7 +213,7 @@ public class UofConfigurationTests {
         final String accessToken = "myAccessToken";
         config.setAccessToken(accessToken);
 
-        final List<Locale> newValues = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+        final List<Locale> newValues = Arrays.asList(ENGLISH, Locale.GERMAN);
         final Locale defaultLocale = Locale.FRENCH;
         config.setLanguages(newValues);
         config.setDefaultLanguage(defaultLocale);
@@ -220,7 +229,7 @@ public class UofConfigurationTests {
 
     @Test(expected = InvalidParameterException.class)
     public void validateMinimumSettings_MissingAccessToken() {
-        final List<Locale> newValues = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+        final List<Locale> newValues = Arrays.asList(ENGLISH, Locale.GERMAN);
         config.setLanguages(newValues);
         Assert.assertNull(config.getDefaultLanguage());
         Assert.assertEquals(newValues.size(), config.getLanguages().size());
@@ -494,6 +503,172 @@ public class UofConfigurationTests {
             Duration.ofMillis(1),
             configuration.getBookmakerDetails().getServerTimeDifference()
         );
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenIsUsedToReplay() throws DataProviderException {
+        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withReplay(Replay)
+            .build();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenIsUsedToReplay() throws DataProviderException {
+        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withReplay(Replay)
+            .build();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenIsUsedToReplayViaNoArgCall()
+        throws DataProviderException {
+        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withReplay()
+            .build();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenIsUsedToReplayViaNoArgCall()
+        throws DataProviderException {
+        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withReplay()
+            .build();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenIsUsedForGlobalReplay()
+        throws DataProviderException {
+        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withReplay(GlobalReplay)
+            .build();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenIsUsedForGlobalReplay()
+        throws DataProviderException {
+        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withReplay(GlobalReplay)
+            .build();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenInPropsFileIsUsedToReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withProps(p -> p.with(Replay))
+            .buildFromProps();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenInPropsFileIsUsedToReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withProps(p -> p.with(Replay))
+            .buildFromProps();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenInPropsFileIsUsedForGlobalReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withProps(p -> p.with(GlobalReplay))
+            .buildFromProps();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenInPropsFileIsUsedForGlobalReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withProps(p -> p.with(GlobalReplay))
+            .buildFromProps();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenInYamlFileIsUsedToReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withYaml(p -> p.with(Replay))
+            .buildFromYaml();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenInYamlFileIsUsedToReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withYaml(p -> p.with(Replay))
+            .buildFromYaml();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
+    }
+
+    @Test
+    public void integrationApiHostIsSetWhenIntegrationTokenInYamlFileIsUsedForGlobalReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withYaml(p -> p.with(GlobalReplay))
+            .buildFromYaml();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
+    }
+
+    @Test
+    public void productionApiHostIsSetWhenProductionTokenInYamlFileIsUsedForGlobalReplay()
+        throws DataProviderException {
+        val configuration = viaFileStubbingOutDataProvidersAndReaders()
+            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
+            .withYaml(p -> p.with(GlobalReplay))
+            .buildFromYaml();
+
+        assertThat(configuration.getApi().getHost())
+            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
     }
 
     @Test

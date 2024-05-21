@@ -3,11 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptions.namesOf;
+import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionFactory.namesOf;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.noMarketDescribingProvider;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.providing;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.oddEvenDescription;
-import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithSettlementOutcomes.oddEvenWhereWonOdd;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithSettlementOutcomes.oddEvenMarketWhereWonOdd;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert.assertThat;
@@ -18,14 +18,11 @@ import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFac
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.OutcomeAssert.assertThat;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.TranslationHolder.of;
-import static com.sportradar.utils.domain.names.TranslationHolder.with;
 import static com.sportradar.utils.domain.producers.ProducerIds.PREMIUM_CRICKET_PRODUCER_ID;
 import static com.sportradar.utils.domain.producers.ProducerIds.anyProducerId;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.entities.SportEvents;
 import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
@@ -52,7 +49,7 @@ public class MarketFactoryImplWithSettlementTest {
         @Parameters(method = "exceptionHandlingStrategies")
         public void marketNameRetrievalFailsInDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
+            ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
         ) {
             val aLanguage = Languages.any();
             val marketFactory = stubbingOutSportEventAndCaches()
@@ -62,11 +59,10 @@ public class MarketFactoryImplWithSettlementTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
 
-            assertThat(market)
-                .nameIsNotBackedByMarketDescriptionForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+            assertThat(market).getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
         }
 
         @Test
@@ -84,11 +80,10 @@ public class MarketFactoryImplWithSettlementTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
 
-            assertThat(market)
-                .nameIsNotBackedByMarketDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
+            assertThat(market).getNameForGiven(langB, willRespectSdkStrategy);
         }
 
         @Test
@@ -108,7 +103,7 @@ public class MarketFactoryImplWithSettlementTest {
             val market = marketFactory
                 .buildMarketWithSettlement(
                     SportEvents.any(),
-                    oddEvenWhereWonOdd(),
+                    oddEvenMarketWhereWonOdd(),
                     nonPremiumCricketProducerId
                 )
                 .get();
@@ -138,7 +133,7 @@ public class MarketFactoryImplWithSettlementTest {
             val market = marketFactory
                 .buildMarketWithSettlement(
                     SportEvents.any(),
-                    oddEvenWhereWonOdd(),
+                    oddEvenMarketWhereWonOdd(),
                     PREMIUM_CRICKET_PRODUCER_ID
                 )
                 .get();
@@ -172,7 +167,7 @@ public class MarketFactoryImplWithSettlementTest {
             val market = marketFactory
                 .buildMarketWithSettlement(
                     SportEvents.any(),
-                    oddEvenWhereWonOdd(),
+                    oddEvenMarketWhereWonOdd(),
                     nonPremiumCricketProducerId
                 )
                 .get();
@@ -203,7 +198,7 @@ public class MarketFactoryImplWithSettlementTest {
             val market = marketFactory
                 .buildMarketWithSettlement(
                     SportEvents.any(),
-                    oddEvenWhereWonOdd(),
+                    oddEvenMarketWhereWonOdd(),
                     PREMIUM_CRICKET_PRODUCER_ID
                 )
                 .get();
@@ -232,7 +227,7 @@ public class MarketFactoryImplWithSettlementTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
 
             val oneOfOutcomes = market.getOutcomeSettlements().get(0);
@@ -255,7 +250,7 @@ public class MarketFactoryImplWithSettlementTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
 
             val oneOfOutcomes = market.getOutcomeSettlements().get(0);
@@ -280,7 +275,7 @@ public class MarketFactoryImplWithSettlementTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
             val outcome = market.getOutcomeSettlements().get(0);
 
@@ -303,7 +298,7 @@ public class MarketFactoryImplWithSettlementTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
             val outcome = market.getOutcomeSettlements().get(0);
 
@@ -341,15 +336,15 @@ public class MarketFactoryImplWithSettlementTest {
             val langB = uniqueLanguages.getOne();
 
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(langB), namesOf(oddEvenDescription(), in(langB))))
+                .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
 
-            assertThat(market).hasName(of(oddEvenDescription().getName(), in(langB)));
+            assertThat(market).hasName(of(oddEvenMarketDescription().getName(), in(langB)));
         }
 
         @Test
@@ -358,16 +353,16 @@ public class MarketFactoryImplWithSettlementTest {
             val langB = uniqueLanguages.getOne();
 
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(langB), namesOf(oddEvenDescription(), in(langB))))
+                .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
 
             val market = marketFactory
-                .buildMarketWithSettlement(SportEvents.any(), oddEvenWhereWonOdd(), anyProducerId())
+                .buildMarketWithSettlement(SportEvents.any(), oddEvenMarketWhereWonOdd(), anyProducerId())
                 .get();
 
             assertThat(market.getMarketDefinition().getNameTemplate(langB))
-                .isEqualTo(oddEvenDescription().getName());
+                .isEqualTo(oddEvenMarketDescription().getName());
         }
     }
 }

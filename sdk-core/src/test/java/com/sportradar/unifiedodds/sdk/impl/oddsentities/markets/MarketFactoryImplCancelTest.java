@@ -3,11 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
-import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptions.namesOf;
+import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionFactory.namesOf;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.noMarketDescribingProvider;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.providing;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.oddEvenDescription;
-import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.Simple.oddEven;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.Simple.oddEvenMarket;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert.assertThat;
@@ -17,14 +17,11 @@ import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketDef
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactories.BuilderStubbingOutSportEventAndCaches.stubbingOutSportEventAndCaches;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.TranslationHolder.of;
-import static com.sportradar.utils.domain.names.TranslationHolder.with;
 import static com.sportradar.utils.domain.producers.ProducerIds.PREMIUM_CRICKET_PRODUCER_ID;
 import static com.sportradar.utils.domain.producers.ProducerIds.anyProducerId;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.entities.SportEvents;
 import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
@@ -51,7 +48,7 @@ public class MarketFactoryImplCancelTest {
         @Parameters(method = "exceptionHandlingStrategies")
         public void marketNameRetrievalFailsInDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
+            ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
         ) {
             val aLanguage = Languages.any();
             val marketFactory = stubbingOutSportEventAndCaches()
@@ -60,17 +57,18 @@ public class MarketFactoryImplCancelTest {
                 .with(exceptionHandlingStrategy)
                 .build();
 
-            val market = marketFactory.buildMarketCancel(SportEvents.any(), oddEven(), anyProducerId()).get();
+            val market = marketFactory
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), anyProducerId())
+                .get();
 
-            assertThat(market)
-                .nameIsNotBackedByMarketDescriptionForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+            assertThat(market).getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
         }
 
         @Test
         @Parameters(method = "exceptionHandlingStrategies")
         public void marketNameRetrievalFailsInNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
-            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
+            ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
@@ -80,10 +78,11 @@ public class MarketFactoryImplCancelTest {
                 .withDefaultLanguage(langA)
                 .build();
 
-            val market = marketFactory.buildMarketCancel(SportEvents.any(), oddEven(), anyProducerId()).get();
+            val market = marketFactory
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), anyProducerId())
+                .get();
 
-            assertThat(market)
-                .nameIsNotBackedByMarketDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
+            assertThat(market).getNameForGiven(langB, willFailRespectingSdkStrategy);
         }
 
         @Test
@@ -101,7 +100,7 @@ public class MarketFactoryImplCancelTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketCancel(SportEvents.any(), oddEven(), nonPremiumCricketProducerId)
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), nonPremiumCricketProducerId)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -127,7 +126,7 @@ public class MarketFactoryImplCancelTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketCancel(SportEvents.any(), oddEven(), PREMIUM_CRICKET_PRODUCER_ID)
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), PREMIUM_CRICKET_PRODUCER_ID)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -157,7 +156,7 @@ public class MarketFactoryImplCancelTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketCancel(SportEvents.any(), oddEven(), nonPremiumCricketProducerId)
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), nonPremiumCricketProducerId)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -184,7 +183,7 @@ public class MarketFactoryImplCancelTest {
                 .build();
 
             val market = marketFactory
-                .buildMarketCancel(SportEvents.any(), oddEven(), PREMIUM_CRICKET_PRODUCER_ID)
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), PREMIUM_CRICKET_PRODUCER_ID)
                 .get();
 
             val definition = market.getMarketDefinition();
@@ -227,13 +226,15 @@ public class MarketFactoryImplCancelTest {
             val langB = uniqueLanguages.getOne();
 
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(langB), namesOf(oddEvenDescription(), in(langB))))
+                .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
 
-            val market = marketFactory.buildMarketCancel(SportEvents.any(), oddEven(), anyProducerId()).get();
+            val market = marketFactory
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), anyProducerId())
+                .get();
 
-            assertThat(market).hasName(of(oddEvenDescription().getName(), in(langB)));
+            assertThat(market).hasName(of(oddEvenMarketDescription().getName(), in(langB)));
         }
 
         @Test
@@ -242,14 +243,16 @@ public class MarketFactoryImplCancelTest {
             val langB = uniqueLanguages.getOne();
 
             val marketFactory = stubbingOutSportEventAndCaches()
-                .with(providing(in(langB), namesOf(oddEvenDescription(), in(langB))))
+                .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
 
-            val market = marketFactory.buildMarketCancel(SportEvents.any(), oddEven(), anyProducerId()).get();
+            val market = marketFactory
+                .buildMarketCancel(SportEvents.any(), oddEvenMarket(), anyProducerId())
+                .get();
 
             assertThat(market.getMarketDefinition().getNameTemplate(langB))
-                .isEqualTo(oddEvenDescription().getName());
+                .isEqualTo(oddEvenMarketDescription().getName());
         }
     }
 }

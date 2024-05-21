@@ -223,7 +223,8 @@ public class CachingModule extends AbstractModule {
         SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer,
-        MappingValidatorFactory mappingFactory
+        MappingValidatorFactory mappingFactory,
+        TimeUtils timeUtils
     ) {
         return new VariantMarketDescriptionCache(
             internalCachesProvider.getVariantMarketCache(),
@@ -234,7 +235,8 @@ public class CachingModule extends AbstractModule {
                 deserializer
             ),
             mappingFactory,
-            cfg.getSimpleVariantCaching()
+            timeUtils,
+            new VariantMarketDescriptionCache.Config()
         );
     }
 

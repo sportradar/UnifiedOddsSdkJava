@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.impl.recovery;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -574,8 +575,11 @@ public class RecoveryManagerTests {
 
     @Test
     public void recoveyStartedCallbacksShouldNotFail() {
-        recoveryManager.handleRecoveryStarted(mock(Recoverable.class));
-        recoveryManager.handleTopologyRecoveryStarted(mock(Recoverable.class));
+        assertThatNoException()
+            .isThrownBy(() -> {
+                recoveryManager.handleRecoveryStarted(mock(Recoverable.class));
+                recoveryManager.handleTopologyRecoveryStarted(mock(Recoverable.class));
+            });
     }
 
     @Test

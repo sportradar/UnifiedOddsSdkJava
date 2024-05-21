@@ -26,13 +26,11 @@ public class HttpResponseHandlerTest {
 
     private static final String ANY_RESPONSE_BODY = "any";
     private static final String EMPTY_RESPONSE_BODY = "";
-    private final Deserializer deserializer = mock(Deserializer.class);
-    private final HttpResponseHandler responseHandler = new HttpResponseHandler(deserializer);
+    private final HttpResponseHandler responseHandler = new HttpResponseHandler();
 
     private final CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
     private final String path = "/any/path";
     private final int successfulResponseCode = 200;
-    private final String noMessageErrorString = "no message";
     private final int failedResponseCode = 404;
     private final String anySuccessfulResponseMessage = "successful response";
     private final String whoAmIPath = "/whoami.xml";
@@ -61,8 +59,7 @@ public class HttpResponseHandlerTest {
     }
 
     @Test
-    public void shouldReturnHttpDataForFailedWhoAmIRequestWithForbiddenStatusCode()
-        throws IOException, ParseException, CommunicationException {
+    public void shouldReturnHttpDataForFailedWhoAmIRequestWithForbiddenStatusCode() throws Exception {
         final int forbiddenStatus = 403;
         String forbiddenResponseString = "forbidden";
         setupHttpResponseAndHttpEntity(forbiddenStatus, forbiddenResponseString);
@@ -74,12 +71,12 @@ public class HttpResponseHandlerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenWhoAmIRequestFailsAndNotForbiddenStatus()
-        throws IOException, DeserializationException {
+    public void shouldThrowExceptionWhenWhoAmIRequestFailsAndNotForbiddenStatus() throws Exception {
         String anyFailedResponseMessage = "failed response";
-        setupHttpResponseAndHttpEntity(failedResponseCode, anyFailedResponseMessage);
-
-        when(deserializer.deserialize(any())).thenReturn(createResponseWithMessage(anyFailedResponseMessage));
+        setupHttpResponseAndHttpEntity(
+            failedResponseCode,
+            "<response><message>" + anyFailedResponseMessage + "</message></response>"
+        );
 
         String expectedExceptionCauseMessage = createExpectedExceptionMessage(
             failedResponseCode,
@@ -92,11 +89,12 @@ public class HttpResponseHandlerTest {
 
     @Test
     public void failingDueToEmptyResponseContainsExplanatoryMessage() throws IOException {
+        String noMessageErrorFromHttpResponseHandler = "no message";
         setupHttpResponseAndHttpEntity(successfulResponseCode, EMPTY_RESPONSE_BODY);
 
         String expectedExceptionCauseMessage = createExpectedExceptionMessage(
             successfulResponseCode,
-            noMessageErrorString
+            noMessageErrorFromHttpResponseHandler
         );
 
         assertThatThrownBy(() -> responseHandler.extractHttpDataFromHttpResponse(httpResponse, path))
@@ -126,15 +124,16 @@ public class HttpResponseHandlerTest {
     }
 
     @Test
-    public void shouldThrowExceptionForFailedResponse() throws DeserializationException, IOException {
-        String someFailedResponseString = "failed response";
-        setupHttpResponseAndHttpEntity(failedResponseCode, someFailedResponseString);
-
-        when(deserializer.deserialize(any())).thenReturn(createResponseWithMessage(someFailedResponseString));
+    public void shouldThrowExceptionForFailedResponse() throws Exception {
+        String errorMessage = "failed response";
+        setupHttpResponseAndHttpEntity(
+            failedResponseCode,
+            "<response><message>" + errorMessage + "</message></response>"
+        );
 
         String expectedExceptionCauseMessage = createExpectedExceptionMessage(
             failedResponseCode,
-            someFailedResponseString
+            errorMessage
         );
 
         assertThatThrownBy(() -> responseHandler.extractHttpDataFromHttpResponse(httpResponse, path))
@@ -142,16 +141,14 @@ public class HttpResponseHandlerTest {
     }
 
     @Test
-    public void failingDueToUnexpectedHttpCodeCarriesExplanatoryMessage()
-        throws IOException, DeserializationException {
+    public void failingDueToUnexpectedHttpCodeCarriesExplanatoryMessage() throws Exception {
         String emptyResponseString = "";
+        String noMessageErrorFromMessageAndActionExtractor = "No specific message";
         setupHttpResponseAndHttpEntity(failedResponseCode, emptyResponseString);
 
-        when(deserializer.deserialize(any())).thenReturn(createResponseWithMessage(emptyResponseString));
-
         String expectedExceptionCauseMessage = createExpectedExceptionMessage(
             failedResponseCode,
-            noMessageErrorString
+            noMessageErrorFromMessageAndActionExtractor
         );
 
         assertThatThrownBy(() -> responseHandler.extractHttpDataFromHttpResponse(httpResponse, path))
@@ -159,10 +156,8 @@ public class HttpResponseHandlerTest {
     }
 
     @Test
-    public void failingDueToUnexpectedHttpCodePreservesStatusCode()
-        throws IOException, DeserializationException {
+    public void failingDueToUnexpectedHttpCodePreservesStatusCode() throws Exception {
         setupHttpResponseAndHttpEntity(failedResponseCode, ANY_RESPONSE_BODY);
-        when(deserializer.deserialize(any())).thenReturn(createResponseWithMessage(ANY_RESPONSE_BODY));
 
         val exception = catchThrowableOfType(
             () -> responseHandler.extractHttpDataFromHttpResponse(httpResponse, path),
@@ -173,9 +168,8 @@ public class HttpResponseHandlerTest {
     }
 
     @Test
-    public void failingDueToUnexpectedHttpCodePreservesUrl() throws IOException, DeserializationException {
+    public void failingDueToUnexpectedHttpCodePreservesUrl() throws Exception {
         setupHttpResponseAndHttpEntity(failedResponseCode, ANY_RESPONSE_BODY);
-        when(deserializer.deserialize(any())).thenReturn(createResponseWithMessage(ANY_RESPONSE_BODY));
 
         val exception = catchThrowableOfType(
             () -> responseHandler.extractHttpDataFromHttpResponse(httpResponse, path),

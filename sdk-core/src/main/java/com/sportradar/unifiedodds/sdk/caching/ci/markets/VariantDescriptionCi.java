@@ -4,12 +4,16 @@
 
 package com.sportradar.unifiedodds.sdk.caching.ci.markets;
 
+import static java.lang.String.format;
+
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
 import com.sportradar.utils.SdkHelper;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,7 @@ public class VariantDescriptionCi {
                         .collect(Collectors.toList())
                 )
                 .orElse(Collections.emptyList());
+        logFaultyOutcomes(dataLocale);
 
         mappings =
             Optional
@@ -75,6 +80,27 @@ public class VariantDescriptionCi {
 
         this.sourceCache = sourceCache;
         this.lastDataReceived = new Date();
+    }
+
+    private void logFaultyOutcomes(Locale language) {
+        outcomes
+            .stream()
+            .filter(hasMissingName(language))
+            .forEach(o ->
+                logger.warn(
+                    format(
+                        "Cached variant description without outcome name: " +
+                        "variant id = %s, outcome id = %s, language = %s ",
+                        id,
+                        o.getId(),
+                        language
+                    )
+                )
+            );
+    }
+
+    private static Predicate<MarketOutcomeCi> hasMissingName(Locale language) {
+        return o -> Strings.isNullOrEmpty(o.getName(language));
     }
 
     public String getId() {
@@ -112,6 +138,7 @@ public class VariantDescriptionCi {
                     }
                     any.ifPresent(marketOutcomeCi -> marketOutcomeCi.merge(map(o), dataLocale));
                 });
+            logFaultyOutcomes(dataLocale);
         }
 
         if (market.getMappings() != null) {

@@ -151,7 +151,7 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
             return null;
         }
 
-        return tournamentCi.isStartTimeTbd().isPresent() ? tournamentCi.isStartTimeTbd().get() : null;
+        return tournamentCi.isStartTimeTbd().orElse(null);
     }
 
     /**

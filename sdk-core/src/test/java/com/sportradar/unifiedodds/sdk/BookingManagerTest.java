@@ -50,7 +50,7 @@ public class BookingManagerTest {
             Key.get(Deserializer.class, Names.named("SportsApiJaxbDeserializer"))
         );
         when(configInternal.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
-        val messageExtractor = new MessageAndActionExtractor(deserializer);
+        val messageExtractor = new MessageAndActionExtractor();
         testHttpHelper = new TestHttpHelper(configInternal, httpClient, messageExtractor, userAgent);
         bookingManager = new BookingManagerImpl(sportEventCache, configInternal, testHttpHelper);
     }

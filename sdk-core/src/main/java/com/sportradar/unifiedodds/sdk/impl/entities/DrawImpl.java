@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.DrawCi;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
@@ -32,7 +33,7 @@ public class DrawImpl extends SportEventImpl implements Draw {
 
     private final List<Locale> locales;
     private final SportEventCache sportEventCache;
-    private final SportEntityFactoryImpl sportEntityFactory;
+    private final SportEntityFactory sportEntityFactory;
     private final ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     public DrawImpl(
@@ -40,7 +41,7 @@ public class DrawImpl extends SportEventImpl implements Draw {
         Urn sportId,
         List<Locale> locales,
         SportEventCache sportEventCache,
-        SportEntityFactoryImpl sportEntityFactory,
+        SportEntityFactory sportEntityFactory,
         ExceptionHandlingStrategy exceptionHandlingStrategy
     ) {
         super(id, sportId);
@@ -202,7 +203,7 @@ public class DrawImpl extends SportEventImpl implements Draw {
             return null;
         }
 
-        return drawCi.isStartTimeTbd().isPresent() ? drawCi.isStartTimeTbd().get() : null;
+        return drawCi.isStartTimeTbd().orElse(null);
     }
 
     /**

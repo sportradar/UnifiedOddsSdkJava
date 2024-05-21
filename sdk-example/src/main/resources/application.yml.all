@@ -17,8 +17,7 @@ sportradar:
       exceptionHandlingStrategy:
       # a value indicating to which unified feed environment sdk should connect
       # (Integration, Production, Custom, Replay,
-      # GlobalReplay, GlobalProduction, GlobalIntegration,
-      # ProxySingapore, ProxyTokyo)
+      # GlobalReplay, GlobalProduction, GlobalIntegration)
       environment:
 
       # message broker related properties - only used when setting Custom environment

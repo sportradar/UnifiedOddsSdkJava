@@ -39,7 +39,6 @@ public class ExportableCompleteRoundCi implements Serializable {
         List<Locale> cachedLocales
     ) {
         this.names = names;
-        this.groupNames = groupNames;
         this.phaseOrGroupLongNames = phaseOrGroupLongNames;
         this.type = type;
         this.group = group;

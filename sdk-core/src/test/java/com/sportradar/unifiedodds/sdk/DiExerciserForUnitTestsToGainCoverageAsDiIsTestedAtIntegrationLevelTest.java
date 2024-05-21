@@ -7,11 +7,13 @@ package com.sportradar.unifiedodds.sdk;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
 import java.util.Locale;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +32,7 @@ public class DiExerciserForUnitTestsToGainCoverageAsDiIsTestedAtIntegrationLevel
     @Test
     public void forArgumentlessConfigurationBuilderFactoryMethodAsItEffectivelyDoesDi() {
         Locale anyLanguage = Locale.ENGLISH;
-        againstWiremock(
+        val config = againstWiremock(
             UofSdk
                 .getUofConfigurationBuilder()
                 .setAccessToken("any")
@@ -38,12 +40,15 @@ public class DiExerciserForUnitTestsToGainCoverageAsDiIsTestedAtIntegrationLevel
                 .setDefaultLanguage(anyLanguage)
         )
             .build();
+
+        assertThat(config).isNotNull();
     }
 
     @Test
     public void forConfigurationBuilderFactoryMethodWithUserSpecifiedFilesAsItEffectivelyDoesDi() {
         Locale anyLanguage = Locale.ENGLISH;
-        againstWiremock(
+
+        val config = againstWiremock(
             UofSdk
                 .getUofConfigurationBuilder("UFSdkConfiguration.properties", "any")
                 .setAccessToken("any")
@@ -51,6 +56,8 @@ public class DiExerciserForUnitTestsToGainCoverageAsDiIsTestedAtIntegrationLevel
                 .setDefaultLanguage(anyLanguage)
         )
             .build();
+
+        assertThat(config).isNotNull();
     }
 
     private CustomConfigurationBuilder againstWiremock(CustomConfigurationBuilder builder) {
