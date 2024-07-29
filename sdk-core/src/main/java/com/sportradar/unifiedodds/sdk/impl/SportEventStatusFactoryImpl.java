@@ -29,7 +29,7 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
     private final NamedValuesProvider namedValuesProvider;
 
     @Inject
-    SportEventStatusFactoryImpl(
+    public SportEventStatusFactoryImpl(
         SportEventStatusCache sportEventStatusCache,
         NamedValuesProvider namedValuesProvider
     ) {
@@ -57,7 +57,7 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
     ) {
         Preconditions.checkNotNull(eventId);
 
-        SportEventStatusCi statusCi = provideSportEventStatusCi(eventId, makeApiCall);
+        SportEventStatusCi statusCi = sportEventStatusCache.getSportEventStatusCi(eventId, makeApiCall);
 
         if (statusCi == null) {
             return (T) null;
@@ -72,11 +72,5 @@ public class SportEventStatusFactoryImpl implements SportEventStatusFactory {
         } else {
             return (T) new CompetitionStatusImpl(statusCi);
         }
-    }
-
-    private SportEventStatusCi provideSportEventStatusCi(Urn eventId, boolean makeApiCall) {
-        Preconditions.checkNotNull(eventId);
-
-        return sportEventStatusCache.getSportEventStatusCi(eventId, makeApiCall);
     }
 }

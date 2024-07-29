@@ -11,7 +11,12 @@ import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 
 /**
  * Provides methods used to access soccer status information
+ *
+ *  @deprecated Soccer was considered a special sport, and the only sport exposing statistics
+ *    however currently @MatchStatus also provides total and period statistics,
+ *    making this class redundant
  */
+@Deprecated
 public class SoccerStatusImpl extends MatchStatusImpl implements SoccerStatus {
 
     private final SportEventStatusCi statusCi;

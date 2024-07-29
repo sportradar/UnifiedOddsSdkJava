@@ -21,7 +21,7 @@ public class MappingTypeProviderImpl implements MappingTypeProvider {
     private static Logger logger = LoggerFactory.getLogger(MappingTypeProviderImpl.class);
 
     @Inject
-    MappingTypeProviderImpl() {
+    public MappingTypeProviderImpl() {
         // nothing yet - mapping is statically available within the SDK
     }
 

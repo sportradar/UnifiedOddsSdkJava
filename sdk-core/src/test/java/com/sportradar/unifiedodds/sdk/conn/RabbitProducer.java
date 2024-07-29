@@ -82,8 +82,8 @@ public class RabbitProducer {
         try {
             ClientParameters parameters = new ClientParameters()
                 .url("http://" + Constants.RABBIT_IP + ":15672/api/")
-                .username("guest")
-                .password("guest");
+                .username(Constants.ADMIN_USERNAME)
+                .password(Constants.ADMIN_PASSWORD);
             ManagementClient = new Client(parameters);
         } catch (Exception ex) {
             Helper.writeToOutput(ex.getMessage());

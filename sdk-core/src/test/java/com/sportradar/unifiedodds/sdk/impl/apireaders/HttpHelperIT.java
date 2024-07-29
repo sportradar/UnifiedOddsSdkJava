@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -30,7 +31,7 @@ import org.junit.Test;
 public class HttpHelperIT {
 
     @Rule
-    public final WireMockRule wireMockRule = new WireMockRule();
+    public final WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
     private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
     private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
@@ -58,7 +59,9 @@ public class HttpHelperIT {
                         .withStatus(anySuccessfulResponseCode)
                 )
         );
-        HttpHelper.ResponseData actualResponseData = httpHelper.post("http://localhost:8080" + anyPath);
+        HttpHelper.ResponseData actualResponseData = httpHelper.post(
+            "http://localhost:" + wireMockRule.port() + anyPath
+        );
 
         String expectedMessage = "success";
         HttpHelper.ResponseData expectedResponseData = new HttpHelper.ResponseData(
@@ -80,7 +83,9 @@ public class HttpHelperIT {
                 )
         );
 
-        HttpHelper.ResponseData actualResponseData = httpHelper.post("http://localhost:8080" + anyPath);
+        HttpHelper.ResponseData actualResponseData = httpHelper.post(
+            "http://localhost:" + wireMockRule.port() + anyPath
+        );
 
         String emptyResponseString = "Content not found: null";
         HttpHelper.ResponseData expectedResponseData = new HttpHelper.ResponseData(

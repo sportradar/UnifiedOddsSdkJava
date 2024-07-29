@@ -1,5 +1,8 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.3.0 (2024-07-29)**
+* feat: Enabled accessing match statistics on MatchStatus received via Match.getStatus object (beside Soccer also supports Kabaddi statistics)
+
 **3.2.0 (2024-05-15)**
 * feat: Improved Variant Market handling when API call is not successful or has some faulty data (i.e. missing outcome name or missing market name)
 * fix: CustomBet API error responses are properly extracted and available for analysis either in logs or in the exception message (dependent on the configured exception handling strategy)

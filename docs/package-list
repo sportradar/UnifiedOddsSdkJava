@@ -1,0 +1,15 @@
+com.sportradar.unifiedodds.sdk
+com.sportradar.unifiedodds.sdk.cfg
+com.sportradar.unifiedodds.sdk.custombetentities
+com.sportradar.unifiedodds.sdk.domain.language
+com.sportradar.unifiedodds.sdk.entities
+com.sportradar.unifiedodds.sdk.entities.markets
+com.sportradar.unifiedodds.sdk.entities.status
+com.sportradar.unifiedodds.sdk.exceptions
+com.sportradar.unifiedodds.sdk.extended
+com.sportradar.unifiedodds.sdk.oddsentities
+com.sportradar.unifiedodds.sdk.replay
+com.sportradar.utils
+com.sportradar.utils.jacoco
+com.sportradar.utils.stream.optional
+com.sportradar.utils.thread.sleep
