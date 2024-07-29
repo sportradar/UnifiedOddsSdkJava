@@ -38,7 +38,7 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     private final Cache<Urn, Date> fixtureTimestampCache;
 
     @Inject
-    CacheItemFactoryImpl(
+    public CacheItemFactoryImpl(
         DataRouterManager dataRouterManager,
         SdkInternalConfiguration configuration,
         Cache<Urn, Date> fixtureTimestampCache

@@ -18,6 +18,7 @@ import static org.junit.Assume.assumeThat;
 
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
+import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
@@ -32,8 +33,8 @@ import org.junit.Test;
 @SuppressWarnings({ "ClassFanOutComplexity", "MultipleStringLiterals" })
 public class RabbitMqProducerConsumerIT {
 
-    private static final String DEFAULT_ADMIN_USERNAME_IN_DOCKER_IMAGE = "guest";
-    private static final String DEFAULT_ADMIN_PASSWORD_IN_DOCKER_IMAGE = "guest";
+    private static final String DEFAULT_ADMIN_USERNAME_IN_DOCKER_IMAGE = ADMIN_USERNAME;
+    private static final String DEFAULT_ADMIN_PASSWORD_IN_DOCKER_IMAGE = ADMIN_PASSWORD;
     private static final int ENOUGH_TIME_FOR_CONSUMER_TO_REESTABLISH_CONNECTION = 5000;
     private final Credentials producerCredentials = Credentials.with("producer1", "producer1_P4ssw0rd");
     private final Credentials consumerCredentials = Credentials.with("consumer1", "consumer1_P4ssw0rd");

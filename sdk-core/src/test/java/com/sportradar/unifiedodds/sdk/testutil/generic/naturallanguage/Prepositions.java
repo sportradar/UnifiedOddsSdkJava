@@ -25,6 +25,14 @@ public class Prepositions {
         return object;
     }
 
+    public static <T> T on(T object) {
+        return object;
+    }
+
+    public static <T> T via(T object) {
+        return object;
+    }
+
     public static <T> T with(T object) {
         return object;
     }

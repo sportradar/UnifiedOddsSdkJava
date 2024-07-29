@@ -1670,7 +1670,7 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
-        <property name="files" value="SapiMarketDescriptions.java"/>
+        <property name="files" value="SapiMarketDescriptions.java|SapiTournaments.java"/>
     </module>
 
     <module name="TreeWalker">

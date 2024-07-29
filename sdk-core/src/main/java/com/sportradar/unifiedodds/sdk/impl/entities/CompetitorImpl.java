@@ -67,7 +67,10 @@ public class CompetitorImpl implements Competitor {
      * @param locales a {@link List} in which is provided the {@link CompetitorCi}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
+     *
+     * @deprecated not used
      */
+    @Deprecated
     public CompetitorImpl(
         Urn competitorId,
         ProfileCache profileCache,

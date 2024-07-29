@@ -17,8 +17,8 @@ public class RoutingKeys {
         return format(
             "hi.-.live.odds_change.%d.sr:%s.%d.%s",
             globalVariables.getSportUrn().getUrn().getId(),
-            globalVariables.getSportEventUrn().getUrn().getType(),
-            globalVariables.getSportEventUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId(),
             globalVariables.getNodeId()
         );
     }

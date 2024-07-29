@@ -22,8 +22,8 @@ import org.junit.Test;
 
 public class RabbitMqUserSetupIT {
 
-    public static final String DEFAULT_ADMIN_USERNAME_IN_DOCKER_IMAGE = "guest";
-    public static final String DEFAULT_ADMIN_PASSWORD_IN_DOCKER_IMAGE = "guest";
+    public static final String DEFAULT_ADMIN_USERNAME_IN_DOCKER_IMAGE = Constants.ADMIN_USERNAME;
+    public static final String DEFAULT_ADMIN_PASSWORD_IN_DOCKER_IMAGE = Constants.ADMIN_PASSWORD;
     private final Credentials adminCredentials = Credentials.with(
         DEFAULT_ADMIN_USERNAME_IN_DOCKER_IMAGE,
         DEFAULT_ADMIN_PASSWORD_IN_DOCKER_IMAGE

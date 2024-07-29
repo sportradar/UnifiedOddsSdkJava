@@ -25,15 +25,13 @@ public class PeriodStatisticsDto {
         periodName = p.getName();
 
         teamStatisticDtoS =
-            (p.getTeams() != null)
-                ? p
-                    .getTeams()
-                    .get(0)
-                    .getTeam()
-                    .stream()
-                    .map(t -> new TeamStatisticsDto(t, homeAwayMap))
-                    .collect(Collectors.toList())
-                : null;
+            p
+                .getTeams()
+                .get(0)
+                .getTeam()
+                .stream()
+                .map(t -> new TeamStatisticsDto(t, homeAwayMap))
+                .collect(Collectors.toList());
     }
 
     public String getPeriodName() {

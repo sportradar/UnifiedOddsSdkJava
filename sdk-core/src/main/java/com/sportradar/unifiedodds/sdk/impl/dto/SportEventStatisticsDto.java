@@ -36,9 +36,7 @@ public class SportEventStatisticsDto {
         totalStatisticsDtos =
             (
                     statistics.getTotals() != null &&
-                    statistics.getTotals().getTeams() != null &&
                     statistics.getTotals().getTeams().size() == 1 &&
-                    statistics.getTotals().getTeams().get(0).getTeam() != null &&
                     statistics.getTotals().getTeams().get(0).getTeam().size() == 2
                 )
                 ? statistics
@@ -52,7 +50,7 @@ public class SportEventStatisticsDto {
                 : null;
 
         periodStatisticDtos =
-            (statistics.getPeriods() != null && statistics.getPeriods().getPeriod() != null)
+            (statistics.getPeriods() != null)
                 ? statistics
                     .getPeriods()
                     .getPeriod()

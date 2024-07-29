@@ -58,7 +58,7 @@ public class SportEventCiTest {
 
         SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
         CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
-            DataRouterManagerBuilder.create().setDataRouter(dataRouter).setSummaries(summaries).build(),
+            DataRouterManagerBuilder.create().with(dataRouter).withSummaries(summaries).build(),
             config,
             mock(Cache.class)
         );
@@ -101,7 +101,7 @@ public class SportEventCiTest {
         SportEventCacheImpl cache = SportEventCacheImplConstructor.create(
             ciFactory,
             MappingTypeProviderImplConstructor.create(),
-            DataRouterManagerBuilder.create().setDataRouter(dataRouter).setSummaries(summaries).build(),
+            DataRouterManagerBuilder.create().with(dataRouter).withSummaries(summaries).build(),
             langConfig,
             CacheBuilder.newBuilder().build()
         );
@@ -127,7 +127,7 @@ public class SportEventCiTest {
 
         SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
         CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
-            DataRouterManagerBuilder.create().setDataRouter(dataRouter).setSummaries(summaries).build(),
+            DataRouterManagerBuilder.create().with(dataRouter).withSummaries(summaries).build(),
             config,
             mock(Cache.class)
         );
@@ -157,11 +157,7 @@ public class SportEventCiTest {
 
         SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
         CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
-            DataRouterManagerBuilder
-                .create()
-                .setDataRouter(dataRouter)
-                .setLotterySchedules(lotterySchedules)
-                .build(),
+            DataRouterManagerBuilder.create().with(dataRouter).setLotterySchedules(lotterySchedules).build(),
             config,
             mock(Cache.class)
         );

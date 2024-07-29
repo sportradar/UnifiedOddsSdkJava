@@ -12,6 +12,7 @@ import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCi;
 import com.sportradar.unifiedodds.sdk.entities.EventClock;
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
 import com.sportradar.unifiedodds.sdk.entities.PeriodScore;
+import com.sportradar.unifiedodds.sdk.entities.status.MatchStatistics;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.unifiedodds.sdk.impl.entities.PeriodScoreImpl;
 import java.math.BigDecimal;
@@ -122,6 +123,13 @@ public class MatchStatusImpl extends CompetitionStatusImpl implements MatchStatu
     @Override
     public BigDecimal getAwayScore() {
         return statusCi.getAwayScore();
+    }
+
+    @Override
+    public MatchStatistics getStatistics() {
+        return statusCi.getSportEventStatisticsDto() == null
+            ? null
+            : new MatchStatisticsImpl(statusCi.getSportEventStatisticsDto());
     }
 
     /**

@@ -1,10 +1,6 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
-import com.sportradar.uf.datamodel.UfAlive;
-import com.sportradar.uf.datamodel.UfBetStop;
-import com.sportradar.uf.datamodel.UfOddsChange;
-import com.sportradar.uf.datamodel.UfOddsChangeMarket;
-import com.sportradar.uf.datamodel.UfSnapshotComplete;
+import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.conn.GlobalVariables;
 import com.sportradar.unifiedodds.sdk.conn.ProducerId;
 import com.sportradar.unifiedodds.sdk.conn.SportEvent;
@@ -50,9 +46,20 @@ public class FeedMessageBuilder {
         odds.getMarket().add(market);
         val oddsChange = new UfOddsChange();
         oddsChange.setProduct(globalVariables.getProducer().get());
-        oddsChange.setEventId(globalVariables.getSportEventUrn().getUrn().toString());
+        oddsChange.setEventId(globalVariables.getSportEventUrn().toString());
         oddsChange.setTimestamp(new Date().getTime());
         oddsChange.setOdds(odds);
+        return Helper.serializeToJaxbXml(oddsChange);
+    }
+
+    public String oddsChange(UfSportEventStatus status) {
+        UfOddsChange.UfOdds odds = new UfOddsChange.UfOdds();
+        val oddsChange = new UfOddsChange();
+        oddsChange.setProduct(globalVariables.getProducer().get());
+        oddsChange.setEventId(globalVariables.getSportEventUrn().toString());
+        oddsChange.setTimestamp(new Date().getTime());
+        oddsChange.setOdds(odds);
+        oddsChange.setSportEventStatus(status);
         return Helper.serializeToJaxbXml(oddsChange);
     }
 

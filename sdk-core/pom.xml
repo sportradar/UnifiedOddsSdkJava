@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.3.0</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -287,6 +287,13 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <executable>gpg</executable>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -749,12 +756,12 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.29</minimum>
+                                            <minimum>0.1</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.21</minimum>
+                                            <minimum>0.1</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

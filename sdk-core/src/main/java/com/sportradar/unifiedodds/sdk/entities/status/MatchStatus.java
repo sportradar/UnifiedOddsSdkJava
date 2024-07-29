@@ -14,6 +14,7 @@ import java.util.Locale;
 /**
  * Defines methods used to access match specific status attributes
  */
+@SuppressWarnings("MultipleStringLiterals")
 public interface MatchStatus extends CompetitionStatus {
     /**
      * Returns an {@link EventClock} instance describing the timings in the current event
@@ -64,6 +65,10 @@ public interface MatchStatus extends CompetitionStatus {
      * @return the score of the away competitor competing on the associated sport event
      */
     BigDecimal getAwayScore();
+
+    default MatchStatistics getStatistics() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns the penalty score of the home competitor competing on the associated sport event (for Ice Hockey)

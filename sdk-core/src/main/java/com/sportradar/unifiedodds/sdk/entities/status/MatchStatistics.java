@@ -4,7 +4,13 @@
 
 package com.sportradar.unifiedodds.sdk.entities.status;
 
+import java.util.List;
+
 /**
  * Defines methods to access match specific statistics
  */
-public interface MatchStatistics extends CompetitionStatistics {}
+public interface MatchStatistics extends CompetitionStatistics {
+    List<TeamStatistics> getTotalStatistics();
+
+    List<PeriodStatistics> getPeriodStatistics();
+}
