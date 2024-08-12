@@ -7,7 +7,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xmlunit.matchers.EvaluateXPathMatcher;
 
 @SuppressWarnings({ "DeclarationOrder", "LineLength" })

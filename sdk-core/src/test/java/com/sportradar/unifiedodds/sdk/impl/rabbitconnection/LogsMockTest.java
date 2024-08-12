@@ -6,15 +6,13 @@ package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.LoggerFactory;
 
-@RunWith(Enclosed.class)
 public class LogsMockTest {
 
     private static final String SPECIFIED = "specified";
@@ -28,8 +26,8 @@ public class LogsMockTest {
 
     private LogsMockTest() {}
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class VerifyLoggedLineContaining {
+    @Nested
+    public class VerifyLoggedLineContaining {
 
         @Test
         public void shouldStartCaptureLogsForGivenClass() {
@@ -65,8 +63,8 @@ public class LogsMockTest {
             assertThat(logsMock.loggedLineContains("requestedText")).isFalse();
         }
 
-        @Test
-        @Parameters(
+        @ParameterizedTest
+        @CsvSource(
             { SPECIFIED_LOG_LINE + ", " + UNRELATED_LOG_LINE, UNRELATED_LOG_LINE + ", " + SPECIFIED_LOG_LINE }
         )
         public void shouldVerifyPresenceOfLogsInQuestionInMultilineLogStream(
@@ -83,8 +81,8 @@ public class LogsMockTest {
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class VerifyLoggedLineContainingAll {
+    @Nested
+    public class VerifyLoggedLineContainingAll {
 
         @Test
         public void shouldStartCaptureLogsForGivenClass() {
@@ -130,8 +128,8 @@ public class LogsMockTest {
                 .hasMessageContaining(COULD_NOT_FIND_LOG_LINE_THAT_MATCHES);
         }
 
-        @Test
-        @Parameters(
+        @ParameterizedTest
+        @CsvSource(
             { SPECIFIED_LOG_LINE + ", " + UNRELATED_LOG_LINE, UNRELATED_LOG_LINE + ", " + SPECIFIED_LOG_LINE }
         )
         public void shouldVerifyPresenceOfLogsInQuestionInMultilineLog(
@@ -156,8 +154,8 @@ public class LogsMockTest {
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class VerifyLoggedExceptionMessageContaining {
+    @Nested
+    public class VerifyLoggedExceptionMessageContaining {
 
         @Test
         public void shouldVerifyExceptionMessageLoggedContainsSpecifiedText() {
@@ -168,8 +166,8 @@ public class LogsMockTest {
             logsMock.verifyLoggedExceptionMessageContaining(SPECIFIED_LOG_LINE);
         }
 
-        @Test
-        @Parameters(
+        @ParameterizedTest
+        @CsvSource(
             { SPECIFIED_LOG_LINE + ", " + UNRELATED_LOG_LINE, UNRELATED_LOG_LINE + ", " + SPECIFIED_LOG_LINE }
         )
         public void shouldVerifyExceptionMessageLoggedContainsSpecifiedTextInMultilineLogStream(
@@ -207,8 +205,8 @@ public class LogsMockTest {
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class VerifyNotLoggedLineContaining {
+    @Nested
+    public class VerifyNotLoggedLineContaining {
 
         @Test
         public void shouldVerifyAbsenceOfLogLineInQuestion() {
@@ -230,8 +228,8 @@ public class LogsMockTest {
                 .hasMessageContaining("Could find log line that matches");
         }
 
-        @Test
-        @Parameters(
+        @ParameterizedTest
+        @CsvSource(
             { SPECIFIED_LOG_LINE + ", " + UNRELATED_LOG_LINE, UNRELATED_LOG_LINE + ", " + SPECIFIED_LOG_LINE }
         )
         public void shouldFailToVerifyAbsenceOfLogLineInQuestionIfItWasPresentInMultiLineLogStream(

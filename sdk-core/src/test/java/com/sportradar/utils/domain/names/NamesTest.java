@@ -6,14 +6,13 @@ package com.sportradar.utils.domain.names;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.generationassert.DataGenerationAssert.assertThatGeneratesDistinctAndNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class NamesTest {
 
-    public static class AnyName {
+    @Nested
+    public class AnyName {
 
         @Test
         public void generatedNotEmptyName() {
@@ -29,7 +28,8 @@ public class NamesTest {
         }
     }
 
-    public static class EnglishName {
+    @Nested
+    public class EnglishName {
 
         @Test
         public void generatedNameStartingWithLiteralEnglish() {
@@ -44,7 +44,8 @@ public class NamesTest {
         }
     }
 
-    public static class FrenchName {
+    @Nested
+    public class FrenchName {
 
         @Test
         public void generatedNameStartingWithLiteralFrench() {

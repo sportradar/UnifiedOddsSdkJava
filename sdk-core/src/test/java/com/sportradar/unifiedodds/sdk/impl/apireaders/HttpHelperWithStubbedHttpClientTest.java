@@ -16,14 +16,12 @@ import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.shared.CloseableHttpClientFixture;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
 import java.io.IOException;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.apache.hc.core5.http.ProtocolException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 public abstract class HttpHelperWithStubbedHttpClientTest {
 
     private static final String ANY_MESSAGE = "anyMessage";
@@ -141,12 +139,12 @@ public abstract class HttpHelperWithStubbedHttpClientTest {
         assertThat(actualResponseData.getStatusCode()).isEqualTo(httpClientError);
     }
 
-    private Object[] successfulHttpCodes() {
+    private static Object[] successfulHttpCodes() {
         return new Object[][] { { HTTP_OK }, { HTTP_ACCEPTED } };
     }
 
-    @Test
-    @Parameters(method = "successfulHttpCodes")
+    @ParameterizedTest
+    @MethodSource("successfulHttpCodes")
     public void shouldIndicateWhetherHttpCodeWasSuccessful(int successfulHttpCode)
         throws CommunicationException, IOException {
         httpClient.setupHttpResponseAndHttpEntity(

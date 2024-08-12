@@ -22,7 +22,7 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import java.util.Locale;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "ConstantName", "InnerTypeLast", "MagicNumber", "VisibilityModifier" })
 public class DataProvidersModuleTest {

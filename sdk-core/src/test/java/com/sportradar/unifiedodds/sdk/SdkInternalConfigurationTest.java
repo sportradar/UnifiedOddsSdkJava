@@ -17,14 +17,12 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("ClassFanOutComplexity")
-@RunWith(JUnitParamsRunner.class)
 public class SdkInternalConfigurationTest {
 
     public static final Duration ANY_DURATION = Duration.ofHours(4);
@@ -80,8 +78,8 @@ public class SdkInternalConfigurationTest {
             .hasMessageContaining("sdkConfigurationYamlReader");
     }
 
-    @Test
-    @Parameters(method = "everyEnvironment")
+    @ParameterizedTest
+    @MethodSource("everyEnvironment")
     public void shouldPreserveMessagingHostInWhenInEnvironmentOf(final Environment environment) {
         final String host = "rabbit.com";
 
@@ -118,7 +116,7 @@ public class SdkInternalConfigurationTest {
         assertEquals(host, internalConfig.getMessagingHost());
     }
 
-    private Object[] everyEnvironment() {
+    private static Object[] everyEnvironment() {
         return Environment.values();
     }
 }

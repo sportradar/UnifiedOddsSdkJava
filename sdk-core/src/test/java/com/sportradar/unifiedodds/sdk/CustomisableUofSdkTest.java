@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CustomisableUofSdkTest {
 

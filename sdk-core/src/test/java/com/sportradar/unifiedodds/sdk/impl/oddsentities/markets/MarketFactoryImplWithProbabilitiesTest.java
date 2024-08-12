@@ -46,15 +46,20 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class MarketFactoryImplWithProbabilitiesTest {
+
+    public static final String EXCEPTION_HANDLING_STRATEGIES =
+        "com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImplWithProbabilitiesTest" +
+        "#exceptionHandlingStrategies";
+    public static final String NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES =
+        "com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImplWithProbabilitiesTest" +
+        "#nonPremiumCricketProducerIdsAndExceptionHandlingStrategies";
 
     public static final TimeInterval CIRCUIT_BREAKER_OPEN_PERIOD = seconds(30);
 
@@ -77,13 +82,32 @@ public class MarketFactoryImplWithProbabilitiesTest {
         ignoringExceptions(() -> outcome.getName());
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class WhenMarketIsNotBackedWithMarketDescription {
+    private static Object[] nonPremiumCricketProducerIdsAndExceptionHandlingStrategies() {
+        return Arrays
+            .stream(ProducerIds.nonPremiumCricketProducerIds())
+            .flatMap(id ->
+                Stream.of(
+                    new Object[] { id, ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
+                    new Object[] { id, ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS }
+                )
+            )
+            .toArray(Object[]::new);
+    }
+
+    private static Object[] exceptionHandlingStrategies() {
+        return new Object[][] {
+            { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
+            { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
+        };
+    }
+
+    @Nested
+    public class WhenMarketIsNotBackedWithMarketDescription {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketNameRetrievalFailsForDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
@@ -102,8 +126,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
             assertThat(market).getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketNameRetrievalFailsForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
@@ -123,8 +147,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
             assertThat(market).getNameForGiven(langB, willFailRespectingSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "nonPremiumCricketProducerIdsAndExceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForDefaultLanguage(
             int nonPremiumCricketProducerId,
             ExceptionHandlingStrategy exceptionHandlingStrategy,
@@ -150,8 +174,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 );
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForDefaultLanguageForPremiumCricketProducer(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -178,8 +202,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
             assertThat(definition.getValidMappings(aLanguage)).isEmpty();
         }
 
-        @Test
-        @Parameters(method = "nonPremiumCricketProducerIdsAndExceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForNonDefaultLanguage(
             int nonPremiumCricketProducerId,
             ExceptionHandlingStrategy exceptionHandlingStrategy,
@@ -206,8 +230,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 );
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForPremiumCricketProducerForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -234,8 +258,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
             assertThat(definition.getValidMappings(anotherLanguage)).isEmpty();
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeDefinitionIsNotDescribedForDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -256,8 +280,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .methodsBackedByMarketDescriptionFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeDefinitionIsNotDescribedForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -282,8 +306,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 );
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsInDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -304,8 +328,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByMarketDescriptionForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsInNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -326,29 +350,10 @@ public class MarketFactoryImplWithProbabilitiesTest {
             assertThat(outcome)
                 .nameIsNotBackedByMarketDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
         }
-
-        private Object[] nonPremiumCricketProducerIdsAndExceptionHandlingStrategies() {
-            return Arrays
-                .stream(ProducerIds.nonPremiumCricketProducerIds())
-                .flatMap(id ->
-                    Stream.of(
-                        new Object[] { id, ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                        new Object[] { id, ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS }
-                    )
-                )
-                .toArray(Object[]::new);
-        }
-
-        private Object[] exceptionHandlingStrategies() {
-            return new Object[][] {
-                { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
-            };
-        }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class WhenMarketDescriptionHasNoOutcomes {
+    @Nested
+    public class WhenMarketDescriptionHasNoOutcomes {
 
         private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
         private final TimeUtilsStub time = TimeUtilsStub
@@ -357,8 +362,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFails(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -380,8 +385,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByOutcomeDescriptionForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -404,8 +409,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByOutcomeDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsDueToMissingOutcomeInSpiteOfReloadOfMarkets(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -456,8 +461,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .hasNameInDefaultLanguage(of(evenOutcomeDescription(language).getName(), in(language)));
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void reloadingOfMarketsAreThrottledTo1CallPer30secondsTimeframe(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
@@ -483,8 +488,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
             descriptionProvider.verifyDescriptionWasReloadedTimes(1);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void throttlingAllowsToReloadMarketsAgainAfter30secondsTimeframePasses(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
@@ -518,17 +523,10 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .findFirst()
                 .get();
         }
-
-        private Object[] exceptionHandlingStrategies() {
-            return new Object[][] {
-                { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
-            };
-        }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class WhenMarketDescriptionIsMissingOutcome {
+    @Nested
+    public class WhenMarketDescriptionIsMissingOutcome {
 
         private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
         private final TimeUtilsStub time = TimeUtilsStub
@@ -537,8 +535,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFails(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -560,8 +558,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByOutcomeDescriptionForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -584,8 +582,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByOutcomeDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsDueToMissingOutcomeInSpiteOfReloadOfMarkets(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -636,8 +634,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .hasNameInDefaultLanguage(of(evenOutcomeDescription(language).getName(), in(language)));
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void reloadingOfMarketsAreThrottledTo1CallPer30secondsTimeframe(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
@@ -663,8 +661,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
             descriptionProvider.verifyDescriptionWasReloadedTimes(1);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void throttlingAllowsToReloadMarketsAgainAfter30secondsTimeframePasses(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
@@ -693,17 +691,10 @@ public class MarketFactoryImplWithProbabilitiesTest {
         private OutcomeProbabilities getEvenOutcomeFrom(MarketWithProbabilities market) {
             return market.getOutcomeProbabilities().get(1);
         }
-
-        private Object[] exceptionHandlingStrategies() {
-            return new Object[][] {
-                { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
-            };
-        }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class WhenMarketDescriptionIsMissingOutcomeTranslation {
+    @Nested
+    public class WhenMarketDescriptionIsMissingOutcomeTranslation {
 
         private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
         private final TimeUtilsStub time = TimeUtilsStub
@@ -712,8 +703,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFails(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -742,8 +733,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByOutcomeDescriptionForDefaultLanguage(langB, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void outcomeNameRetrievalFailsForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -766,8 +757,8 @@ public class MarketFactoryImplWithProbabilitiesTest {
                 .nameIsNotBackedByOutcomeDescriptionForNonDefaultLanguage(langB, willRespectSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketsAreNotReloaded(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy notUsed
@@ -799,16 +790,10 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
             descriptionProvider.verifyDescriptionWasReloadedTimes(0);
         }
-
-        private Object[] exceptionHandlingStrategies() {
-            return new Object[][] {
-                { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
-            };
-        }
     }
 
-    public static class WhenMarketIsBackedWithMarketDescription {
+    @Nested
+    public class WhenMarketIsBackedWithMarketDescription {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 

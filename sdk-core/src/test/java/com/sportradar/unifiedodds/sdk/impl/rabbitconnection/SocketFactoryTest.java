@@ -8,7 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 public class SocketFactoryTest {
 
@@ -19,7 +20,8 @@ public class SocketFactoryTest {
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
     private final CountDownLatch serverSocketCreated = new CountDownLatch(1);
 
-    @Test(timeout = HALF_SECOND)
+    @Test
+    @Timeout(value = HALF_SECOND, unit = TimeUnit.MILLISECONDS)
     public void shouldOpenSocketAtSpecifiedPort()
         throws ExecutionException, InterruptedException, TimeoutException, IOException {
         Future<?> socketOpened = executorService.submit(() -> {

@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class VoidCallablesTest {
 

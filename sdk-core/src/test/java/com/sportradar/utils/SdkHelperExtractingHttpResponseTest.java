@@ -6,11 +6,8 @@ package com.sportradar.utils;
 import static com.sportradar.utils.SdkHelper.extractHttpResponseMessage;
 import static org.junit.Assert.assertEquals;
 
-import junitparams.JUnitParamsRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnitParamsRunner.class)
 public class SdkHelperExtractingHttpResponseTest {
 
     public static final String EMPTY = "";

@@ -9,14 +9,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class LanguagesTest {
 
-    public static class SingleLanguage {
+    @Nested
+    public class SingleLanguage {
 
         private final int sampleSize = 100;
         private List<Locale> languages = Stream

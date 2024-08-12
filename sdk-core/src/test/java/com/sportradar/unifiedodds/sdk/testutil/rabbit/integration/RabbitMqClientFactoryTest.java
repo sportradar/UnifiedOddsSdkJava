@@ -13,7 +13,7 @@ import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
 import com.sportradar.unifiedodds.sdk.testutil.generic.functional.ThrowingFunction;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RabbitMqClientFactoryTest {
 

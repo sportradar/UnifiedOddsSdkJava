@@ -11,7 +11,7 @@ import com.rabbitmq.client.BlockedCallback;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.UnblockedCallback;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SdkConnectionTest {
 

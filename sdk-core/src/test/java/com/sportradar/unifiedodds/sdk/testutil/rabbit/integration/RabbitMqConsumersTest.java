@@ -18,7 +18,7 @@ import com.sportradar.unifiedodds.sdk.testutil.rabbit.libraryfixtures.NoOpConsum
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class RabbitMqConsumersTest {

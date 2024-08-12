@@ -10,12 +10,10 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiBasicEvent;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class TimelineEventCiTest {
 
     @Test
@@ -42,8 +40,8 @@ public class TimelineEventCiTest {
         validateScore(timelineEvent, expectedHomeScore, expectedAwayScore);
     }
 
-    @Test
-    @Parameters(method = "nonNumberScores")
+    @ParameterizedTest
+    @MethodSource("nonNumberScores")
     public void shouldThrowWhenScoresAreNotNumbers(String homeScore, String awayScore) {
         assertThatThrownBy(() -> new TimelineEventCi(createWithScores(homeScore, awayScore)))
             .isInstanceOf(IllegalArgumentException.class);
@@ -73,7 +71,7 @@ public class TimelineEventCiTest {
         assertEquals(expectedAwayScore, timelineEventCi.getAwayScore().doubleValue(), scoreDelta);
     }
 
-    private Object[] nonNumberScores() {
+    private static Object[] nonNumberScores() {
         return new Object[] { new String[] { "HomeScore", "1.0" }, new String[] { "1.0", "AwayScore" } };
     }
 }

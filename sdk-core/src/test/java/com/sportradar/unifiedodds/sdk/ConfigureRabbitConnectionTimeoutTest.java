@@ -21,7 +21,7 @@ import com.sportradar.utils.domain.names.Languages;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 

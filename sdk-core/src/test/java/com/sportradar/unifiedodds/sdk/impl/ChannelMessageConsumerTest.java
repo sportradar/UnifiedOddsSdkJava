@@ -1,6 +1,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import static com.sportradar.unifiedodds.sdk.impl.Constants.ODDS_CHANGE_KEY;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import com.google.inject.*;
@@ -15,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import javax.xml.bind.JAXBContext;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 @SuppressWarnings({ "MagicNumber", "VisibilityModifier" })
@@ -31,7 +32,7 @@ public class ChannelMessageConsumerTest {
     ChannelMessageConsumer chanMsgConsumer;
     private JAXBContext messagingJaxbContext;
 
-    @Before
+    @BeforeEach
     public void setup() {
         messagingJaxbContext =
             spy(injector.getInstance(Key.get(JAXBContext.class, Names.named("MessageJAXBContext"))));
@@ -74,11 +75,12 @@ public class ChannelMessageConsumerTest {
         Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.any(), Mockito.any());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void throwsOnReceiveEventsBeforeReceiverIsOpened() throws Exception {
         byte[] data = oddsChangeBytes();
 
-        chanMsgConsumer.onMessageReceived(ODDS_CHANGE_KEY, data, null, 0L);
+        assertThatThrownBy(() -> chanMsgConsumer.onMessageReceived(ODDS_CHANGE_KEY, data, null, 0L))
+            .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class ChannelMessageConsumerTest {
             .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void throwsForNullRoutingKey() throws Exception {
         //Prepare
         MessageConsumer msgConsumer = Mockito.mock(MessageConsumer.class);
@@ -106,8 +108,8 @@ public class ChannelMessageConsumerTest {
 
         byte[] data = oddsChangeBytes();
 
-        //Execute
-        chanMsgConsumer.onMessageReceived(null, data, null, 0L);
+        assertThatThrownBy(() -> chanMsgConsumer.onMessageReceived(null, data, null, 0L))
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test

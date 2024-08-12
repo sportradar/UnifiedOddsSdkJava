@@ -25,12 +25,10 @@ import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.LogsMock;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Collections;
 import java.util.Locale;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
     private static final String ERROR_ON_PROVIDING_TOURNAMENT =
@@ -48,17 +46,18 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         return producers;
     }
 
-    public static class RequestingAllTournaments {
+    @Nested
+    public class RequestingAllTournaments {
 
-        private static final String NON_NULL_URL = "http://nonNullUrl.com";
-        private static final Locale PREFETCHED_LANGUAGE = Locale.CHINA;
+        private final String nonNullUrl = "http://nonNullUrl.com";
+        private final Locale prefetchedLanguage = Locale.CHINA;
         private final DataProvider allTournaments = mock(DataProvider.class);
         private DataRouterManager manager;
 
-        @Before
+        @BeforeEach
         public void setupPrefetchedLanguage() {
             SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
-            when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
+            when(configuration.getDesiredLocales()).thenReturn(asList(prefetchedLanguage));
             manager =
                 new DataRouterManagerImpl(
                     configuration,
@@ -95,14 +94,14 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Test
         public void providerFailureShouldResultInExceptionExplainingThat() throws DataProviderException {
-            when(allTournaments.getData(PREFETCHED_LANGUAGE)).thenThrow(DataProviderException.class);
+            when(allTournaments.getData(prefetchedLanguage)).thenThrow(DataProviderException.class);
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllTournamentsForAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllTournamentsForAllSportsEndpoint(prefetchedLanguage),
                 CommunicationException.class
             );
 
             assertEquals(
-                "Error executing all tournaments list request for locale=" + PREFETCHED_LANGUAGE,
+                "Error executing all tournaments list request for locale=" + prefetchedLanguage,
                 exception.getMessage()
             );
             assertThat(exception.getMessage()).contains(ERROR_ON_PROVIDING_TOURNAMENT);
@@ -113,10 +112,10 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
             String providedUrl = "https://summaryUrl.com";
             DataProviderException dataProviderException = mock(DataProviderException.class);
             when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(providedUrl);
-            when(allTournaments.getData(PREFETCHED_LANGUAGE)).thenThrow(dataProviderException);
+            when(allTournaments.getData(prefetchedLanguage)).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllTournamentsForAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllTournamentsForAllSportsEndpoint(prefetchedLanguage),
                 CommunicationException.class
             );
 
@@ -127,13 +126,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         public void providerFailureShouldResultInExceptionIndicatingHttpCode() throws DataProviderException {
             final int httpCode = 304;
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(dataProviderException.tryExtractCommunicationExceptionHttpStatusCode(anyInt()))
                 .thenReturn(httpCode);
             when(allTournaments.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllTournamentsForAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllTournamentsForAllSportsEndpoint(prefetchedLanguage),
                 CommunicationException.class
             );
 
@@ -143,11 +142,11 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void providerFailureShouldResultInExceptionPreservingCause() throws DataProviderException {
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(allTournaments.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllTournamentsForAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllTournamentsForAllSportsEndpoint(prefetchedLanguage),
                 CommunicationException.class
             );
 
@@ -155,18 +154,19 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         }
     }
 
-    public static class RequestingAllLotteries {
+    @Nested
+    public class RequestingAllLotteries {
 
-        private static final boolean MAKE_API_CALL = true;
-        private static final String NON_NULL_URL = "http://nonNullUrl.com";
-        private static final Locale PREFETCHED_LANGUAGE = Locale.CHINA;
+        private final boolean makeApiCall = true;
+        private final String nonNullUrl = "http://nonNullUrl.com";
+        private final Locale prefetchedLanguage = Locale.CHINA;
         private final DataProvider allLotteries = mock(DataProvider.class);
         private DataRouterManager manager;
 
-        @Before
+        @BeforeEach
         public void setupPrefetchedLanguageAndEnableWns() {
             SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
-            when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
+            when(configuration.getDesiredLocales()).thenReturn(asList(prefetchedLanguage));
             final int wnsProducerId = 7;
             SdkProducerManager wnsProducer = producersWithSingleEnabledProducer(wnsProducerId);
             manager =
@@ -205,14 +205,14 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Test
         public void providerFailureShouldResultInExceptionExplainingThat() throws DataProviderException {
-            when(allLotteries.getData(PREFETCHED_LANGUAGE)).thenThrow(DataProviderException.class);
+            when(allLotteries.getData(prefetchedLanguage)).thenThrow(DataProviderException.class);
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllLotteriesEndpoint(PREFETCHED_LANGUAGE, MAKE_API_CALL),
+                () -> manager.requestAllLotteriesEndpoint(prefetchedLanguage, makeApiCall),
                 CommunicationException.class
             );
 
             assertEquals(
-                "Error executing all lotteries list request for locale=" + PREFETCHED_LANGUAGE,
+                "Error executing all lotteries list request for locale=" + prefetchedLanguage,
                 exception.getMessage()
             );
             assertThat(exception.getMessage()).contains(ERROR_ON_PROVIDING_LOTTERIES);
@@ -223,10 +223,10 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
             String providedUrl = "https://summaryUrl.com";
             DataProviderException dataProviderException = mock(DataProviderException.class);
             when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(providedUrl);
-            when(allLotteries.getData(PREFETCHED_LANGUAGE)).thenThrow(dataProviderException);
+            when(allLotteries.getData(prefetchedLanguage)).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllLotteriesEndpoint(PREFETCHED_LANGUAGE, MAKE_API_CALL),
+                () -> manager.requestAllLotteriesEndpoint(prefetchedLanguage, makeApiCall),
                 CommunicationException.class
             );
 
@@ -237,13 +237,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         public void providerFailureShouldResultInExceptionIndicatingHttpCode() throws DataProviderException {
             final int httpCode = 304;
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(dataProviderException.tryExtractCommunicationExceptionHttpStatusCode(anyInt()))
                 .thenReturn(httpCode);
             when(allLotteries.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllLotteriesEndpoint(PREFETCHED_LANGUAGE, MAKE_API_CALL),
+                () -> manager.requestAllLotteriesEndpoint(prefetchedLanguage, makeApiCall),
                 CommunicationException.class
             );
 
@@ -253,11 +253,11 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void providerFailureShouldResultInExceptionPreservingCause() throws DataProviderException {
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(allLotteries.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllLotteriesEndpoint(PREFETCHED_LANGUAGE, MAKE_API_CALL),
+                () -> manager.requestAllLotteriesEndpoint(prefetchedLanguage, makeApiCall),
                 CommunicationException.class
             );
 
@@ -265,17 +265,18 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         }
     }
 
-    public static class RequestingAllSports {
+    @Nested
+    public class RequestingAllSports {
 
-        private static final String NON_NULL_URL = "http://nonNullUrl.com";
-        private static final Locale PREFETCHED_LANGUAGE = Locale.CHINA;
+        private final String nonNullUrl = "http://nonNullUrl.com";
+        private final Locale prefetchedLangauge = Locale.CHINA;
         private final DataProvider allSports = mock(DataProvider.class);
         private DataRouterManager manager;
 
-        @Before
+        @BeforeEach
         public void setupPrefetchedLanguage() {
             SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
-            when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
+            when(configuration.getDesiredLocales()).thenReturn(asList(prefetchedLangauge));
             manager =
                 new DataRouterManagerImpl(
                     configuration,
@@ -312,14 +313,14 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
         @Test
         public void providerFailureShouldResultInExceptionExplainingThat() throws DataProviderException {
-            when(allSports.getData(PREFETCHED_LANGUAGE)).thenThrow(DataProviderException.class);
+            when(allSports.getData(prefetchedLangauge)).thenThrow(DataProviderException.class);
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllSportsEndpoint(prefetchedLangauge),
                 CommunicationException.class
             );
 
             assertEquals(
-                "Error execution all sports request for locale=" + PREFETCHED_LANGUAGE,
+                "Error execution all sports request for locale=" + prefetchedLangauge,
                 exception.getMessage()
             );
             assertThat(exception.getMessage()).contains(ERROR_ON_PROVIDING_SPORTS);
@@ -330,10 +331,10 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
             String providedUrl = "https://summaryUrl.com";
             DataProviderException dataProviderException = mock(DataProviderException.class);
             when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(providedUrl);
-            when(allSports.getData(PREFETCHED_LANGUAGE)).thenThrow(dataProviderException);
+            when(allSports.getData(prefetchedLangauge)).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllSportsEndpoint(prefetchedLangauge),
                 CommunicationException.class
             );
 
@@ -344,13 +345,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         public void providerFailureShouldResultInExceptionIndicatingHttpCode() throws DataProviderException {
             final int httpCode = 304;
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(dataProviderException.tryExtractCommunicationExceptionHttpStatusCode(anyInt()))
                 .thenReturn(httpCode);
             when(allSports.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllSportsEndpoint(prefetchedLangauge),
                 CommunicationException.class
             );
 
@@ -360,11 +361,11 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void providerFailureShouldResultInExceptionPreservingCause() throws DataProviderException {
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(allSports.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestAllSportsEndpoint(PREFETCHED_LANGUAGE),
+                () -> manager.requestAllSportsEndpoint(prefetchedLangauge),
                 CommunicationException.class
             );
 
@@ -372,18 +373,19 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         }
     }
 
-    public static class RefreshingCaches {
+    @Nested
+    public class RefreshingCaches {
 
-        private static final Locale PREFETCHED_LANGUAGE = Locale.CHINA;
+        private final Locale prefetchedLangauge = Locale.CHINA;
         private final DataProvider allTournaments = mock(DataProvider.class);
         private final DataProvider allSports = mock(DataProvider.class);
         private final DataProvider allLotteries = mock(DataProvider.class);
         private DataRouterManagerImpl manager;
 
-        @Before
+        @BeforeEach
         public void setupPrefetchedLanguage() {
             SdkInternalConfiguration configuration = mock(SdkInternalConfiguration.class);
-            when(configuration.getDesiredLocales()).thenReturn(asList(PREFETCHED_LANGUAGE));
+            when(configuration.getDesiredLocales()).thenReturn(asList(prefetchedLangauge));
             final int wnsProducerId = 7;
             manager =
                 new DataRouterManagerImpl(
@@ -422,13 +424,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void failureDueToProvidingTournamentsShouldBeLogged() throws DataProviderException {
             LogsMock logsMock = LogsMock.createCapturingFor(DataRouterManagerImpl.class);
-            when(allTournaments.getData(PREFETCHED_LANGUAGE)).thenThrow(DataProviderException.class);
+            when(allTournaments.getData(prefetchedLangauge)).thenThrow(DataProviderException.class);
 
             manager.onSportsDataTimerElapsed();
 
             logsMock.verifyLoggedLineContaining(
                 "An exception occurred while attempting to fetch tournament list data for: [" +
-                PREFETCHED_LANGUAGE.getLanguage()
+                prefetchedLangauge.getLanguage()
             );
             logsMock.verifyLoggedExceptionMessageContaining(ERROR_ON_PROVIDING_TOURNAMENT);
         }
@@ -436,13 +438,13 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void failureDueToProvidingSportsShouldBeLogged() throws DataProviderException {
             LogsMock logsMock = LogsMock.createCapturingFor(DataRouterManagerImpl.class);
-            when(allSports.getData(PREFETCHED_LANGUAGE)).thenThrow(DataProviderException.class);
+            when(allSports.getData(prefetchedLangauge)).thenThrow(DataProviderException.class);
 
             manager.onSportsDataTimerElapsed();
 
             logsMock.verifyLoggedLineContaining(
                 "An exception occurred while attempting to fetch tournament list data for: [" +
-                PREFETCHED_LANGUAGE.getLanguage()
+                prefetchedLangauge.getLanguage()
             );
             logsMock.verifyLoggedExceptionMessageContaining(ERROR_ON_PROVIDING_SPORTS);
         }
@@ -450,7 +452,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void failureDueToProvidingLotteriesShouldBeLogged() throws DataProviderException {
             LogsMock logsMock = LogsMock.createCapturingFor(DataRouterManagerImpl.class);
-            when(allLotteries.getData(PREFETCHED_LANGUAGE)).thenThrow(DataProviderException.class);
+            when(allLotteries.getData(prefetchedLangauge)).thenThrow(DataProviderException.class);
 
             manager.onSportsDataTimerElapsed();
 
@@ -463,7 +465,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
         @Test
         public void noFailureWhileProvidingLotteriesShouldNotBeLogged() throws DataProviderException {
             LogsMock logsMock = LogsMock.createCapturingFor(DataRouterManagerImpl.class);
-            when(allLotteries.getData(PREFETCHED_LANGUAGE)).thenReturn(new SapiLotteries());
+            when(allLotteries.getData(prefetchedLangauge)).thenReturn(new SapiLotteries());
 
             manager.onSportsDataTimerElapsed();
 

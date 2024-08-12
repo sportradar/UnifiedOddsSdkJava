@@ -3,11 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
-import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.ConfigurationItself.SdkInternalConfigurationAssertions.DoesHaveExplicitPortInTheUrl.EXPLICIT_PORT_IN_THE_URL;
-import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.ConfigurationItself.SdkInternalConfigurationAssertions.DoesHaveExplicitPortInTheUrl.IMPLICIT_DEFAULT_HTTP_PORT_80_IN_THE_URL;
-import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.ConfigurationItself.SdkInternalConfigurationAssertions.assertThat;
-import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.ConfigurationItself.UofConfigurationAssertions.DoesIncludeReplayHost.AND_DEFAULT_REPLAY_HOST_URI_WITH_REPLAY_PATH_PREFIX;
-import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.ConfigurationItself.UofConfigurationAssertions.assertThat;
+import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.SdkInternalConfigurationAssertions.DoesHaveExplicitPortInTheUrl.EXPLICIT_PORT_IN_THE_URL;
+import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.SdkInternalConfigurationAssertions.DoesHaveExplicitPortInTheUrl.IMPLICIT_DEFAULT_HTTP_PORT_80_IN_THE_URL;
+import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.SdkInternalConfigurationAssertions.assertThat;
+import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.UofConfigurationAssertions.DoesIncludeReplayHost.AND_DEFAULT_REPLAY_HOST_URI_WITH_REPLAY_PATH_PREFIX;
+import static com.sportradar.unifiedodds.sdk.ConfigureApiHostAndPortTest.UofConfigurationAssertions.assertThat;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Integration;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Production;
 import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
@@ -27,18 +27,18 @@ import java.util.Locale;
 import java.util.Map;
 import lombok.val;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
+@SuppressWarnings("ClassFanOutComplexity")
 public class ConfigureApiHostAndPortTest {
 
     private static final String REPLAY_HOST = "stgapi.betradar.com";
     private static final String REPLAY_PATH_PREFIX = "/v1/replay";
     private static final String ANY_TOKEN = "any";
 
-    public static class ConfigurationItself {
+    @Nested
+    public class ConfigurationItself {
 
         private final boolean replayMode = true;
         private final Locale anyLanguage = Locale.FRENCH;
@@ -158,94 +158,93 @@ public class ConfigureApiHostAndPortTest {
                 .hasHostAndPort(REPLAY_HOST, 0, IMPLICIT_DEFAULT_HTTP_PORT_80_IN_THE_URL);
         }
 
-        private static SdkConfigurationYamlReader anyYaml() {
+        private SdkConfigurationYamlReader anyYaml() {
             return mock(SdkConfigurationYamlReader.class);
         }
 
-        private static SdkConfigurationPropertiesReader anyProps() {
+        private SdkConfigurationPropertiesReader anyProps() {
             return mock(SdkConfigurationPropertiesReader.class);
         }
+    }
 
-        public static class UofConfigurationAssertions {
+    public static class UofConfigurationAssertions {
 
-            private final UofConfiguration configuration;
+        private final UofConfiguration configuration;
 
-            public UofConfigurationAssertions(UofConfiguration configuration) {
-                this.configuration = configuration;
-            }
-
-            public static UofConfigurationAssertions assertThat(UofConfiguration configuration) {
-                return new UofConfigurationAssertions(configuration);
-            }
-
-            public UofConfigurationAssertions hasHostAndPort(
-                String host,
-                int port,
-                DoesIncludeReplayHost doesIncludeReplayHost
-            ) {
-                assertEquals(host, configuration.getApi().getHost());
-                assertEquals(port, configuration.getApi().getPort());
-                doesIncludeReplayHost.verify(configuration);
-                return this;
-            }
-
-            static enum DoesIncludeReplayHost {
-                AND_DEFAULT_REPLAY_HOST_URI_WITH_REPLAY_PATH_PREFIX;
-
-                void verify(UofConfiguration configuration) {
-                    assertEquals(REPLAY_HOST + REPLAY_PATH_PREFIX, configuration.getApi().getReplayHost());
-                }
-            }
+        public UofConfigurationAssertions(UofConfiguration configuration) {
+            this.configuration = configuration;
         }
 
-        public static class SdkInternalConfigurationAssertions {
+        public static UofConfigurationAssertions assertThat(UofConfiguration configuration) {
+            return new UofConfigurationAssertions(configuration);
+        }
 
-            private final SdkInternalConfiguration configuration;
+        public UofConfigurationAssertions hasHostAndPort(
+            String host,
+            int port,
+            DoesIncludeReplayHost doesIncludeReplayHost
+        ) {
+            assertEquals(host, configuration.getApi().getHost());
+            assertEquals(port, configuration.getApi().getPort());
+            doesIncludeReplayHost.verify(configuration);
+            return this;
+        }
 
-            public SdkInternalConfigurationAssertions(SdkInternalConfiguration configuration) {
-                this.configuration = configuration;
-            }
+        static enum DoesIncludeReplayHost {
+            AND_DEFAULT_REPLAY_HOST_URI_WITH_REPLAY_PATH_PREFIX;
 
-            public static SdkInternalConfigurationAssertions assertThat(
-                SdkInternalConfiguration configuration
-            ) {
-                return new SdkInternalConfigurationAssertions(configuration);
-            }
-
-            public SdkInternalConfigurationAssertions hasHostAndPort(
-                String host,
-                int port,
-                DoesHaveExplicitPortInTheUrl doesHaveExplicitPortInTheUrl
-            ) {
-                assertEquals(host, configuration.getApiHost());
-                assertEquals(port, configuration.getApiPort());
-                doesHaveExplicitPortInTheUrl.verify(configuration, host, port);
-                return this;
-            }
-
-            static enum DoesHaveExplicitPortInTheUrl {
-                IMPLICIT_DEFAULT_HTTP_PORT_80_IN_THE_URL {
-                    @Override
-                    void verify(SdkInternalConfiguration configuration, String host, int port) {
-                        assertEquals(host, configuration.getApiHostAndPort());
-                    }
-                },
-                EXPLICIT_PORT_IN_THE_URL {
-                    @Override
-                    void verify(SdkInternalConfiguration configuration, String host, int port) {
-                        assertEquals(host + ":" + port, configuration.getApiHostAndPort());
-                    }
-                };
-
-                abstract void verify(SdkInternalConfiguration configuration, String host, int port);
+            void verify(UofConfiguration configuration) {
+                assertEquals(REPLAY_HOST + REPLAY_PATH_PREFIX, configuration.getApi().getReplayHost());
             }
         }
     }
 
-    public static class ApiHostUpdater {
+    public static class SdkInternalConfigurationAssertions {
 
-        private static final String INTEGRATION_API_HOST = EnvironmentManager.getApiHost(Integration);
-        private static final String PRODUCTION_API_HOST = EnvironmentManager.getApiHost(Production);
+        private final SdkInternalConfiguration configuration;
+
+        public SdkInternalConfigurationAssertions(SdkInternalConfiguration configuration) {
+            this.configuration = configuration;
+        }
+
+        public static SdkInternalConfigurationAssertions assertThat(SdkInternalConfiguration configuration) {
+            return new SdkInternalConfigurationAssertions(configuration);
+        }
+
+        public SdkInternalConfigurationAssertions hasHostAndPort(
+            String host,
+            int port,
+            DoesHaveExplicitPortInTheUrl doesHaveExplicitPortInTheUrl
+        ) {
+            assertEquals(host, configuration.getApiHost());
+            assertEquals(port, configuration.getApiPort());
+            doesHaveExplicitPortInTheUrl.verify(configuration, host, port);
+            return this;
+        }
+
+        static enum DoesHaveExplicitPortInTheUrl {
+            IMPLICIT_DEFAULT_HTTP_PORT_80_IN_THE_URL {
+                @Override
+                void verify(SdkInternalConfiguration configuration, String host, int port) {
+                    assertEquals(host, configuration.getApiHostAndPort());
+                }
+            },
+            EXPLICIT_PORT_IN_THE_URL {
+                @Override
+                void verify(SdkInternalConfiguration configuration, String host, int port) {
+                    assertEquals(host + ":" + port, configuration.getApiHostAndPort());
+                }
+            };
+
+            abstract void verify(SdkInternalConfiguration configuration, String host, int port);
+        }
+    }
+
+    @Nested
+    public class ApiHostUpdater {
+
+        private final String integrationApiHost = EnvironmentManager.getApiHost(Integration);
+        private final String productionApiHost = EnvironmentManager.getApiHost(Production);
         private final boolean nonReplayMode = false;
         private final Locale anyLanguage = Locale.FRENCH;
         private final Map<String, String> yamlFileContent = new HashMap<>();
@@ -259,11 +258,11 @@ public class ConfigureApiHostAndPortTest {
             anyConfig -> producerDataProvider
         );
 
-        private static SdkConfigurationYamlReader anyYaml() {
+        private SdkConfigurationYamlReader anyYaml() {
             return mock(SdkConfigurationYamlReader.class);
         }
 
-        private static SdkConfigurationPropertiesReader anyProps() {
+        private SdkConfigurationPropertiesReader anyProps() {
             return mock(SdkConfigurationPropertiesReader.class);
         }
 
@@ -285,11 +284,11 @@ public class ConfigureApiHostAndPortTest {
                 anyYaml()
             );
 
-            Assertions.assertThat(config.getApi().getHost()).isEqualTo(INTEGRATION_API_HOST);
-            Assertions.assertThat(internalConfig.getApiHost()).isEqualTo(INTEGRATION_API_HOST);
+            Assertions.assertThat(config.getApi().getHost()).isEqualTo(integrationApiHost);
+            Assertions.assertThat(internalConfig.getApiHost()).isEqualTo(integrationApiHost);
             Assertions
                 .assertThat(internalConfigForNonReplayExplicitly.getApiHost())
-                .isEqualTo(INTEGRATION_API_HOST);
+                .isEqualTo(integrationApiHost);
         }
 
         @Test
@@ -310,11 +309,11 @@ public class ConfigureApiHostAndPortTest {
                 anyYaml()
             );
 
-            Assertions.assertThat(config.getApi().getHost()).isEqualTo(PRODUCTION_API_HOST);
-            Assertions.assertThat(internalConfig.getApiHost()).isEqualTo(PRODUCTION_API_HOST);
+            Assertions.assertThat(config.getApi().getHost()).isEqualTo(productionApiHost);
+            Assertions.assertThat(internalConfig.getApiHost()).isEqualTo(productionApiHost);
             Assertions
                 .assertThat(internalConfigForNonReplayExplicitly.getApiHost())
-                .isEqualTo(PRODUCTION_API_HOST);
+                .isEqualTo(productionApiHost);
         }
 
         private com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater createUpdaterFrom(
@@ -325,7 +324,7 @@ public class ConfigureApiHostAndPortTest {
                 .getInstance(com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater.class);
         }
 
-        public static class ConfigurationProvidingModule extends AbstractModule {
+        public class ConfigurationProvidingModule extends AbstractModule {
 
             private UofConfiguration configuration;
 

@@ -12,13 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class SslProtocolsProviderTest {
 
     private final SslProtocolsProvider sslProtocolsProvider = new SslProtocolsProvider();
@@ -78,8 +76,8 @@ public class SslProtocolsProviderTest {
         assertEquals(expectedOrder, providedOrder);
     }
 
-    @Test
-    @Parameters(
+    @ParameterizedTest
+    @CsvSource(
         { "TLSv1.1, protocolA, protocolC", "protocolB, TLSv1.1, protocolC", "protocolB, protocolA, TLSv1.1" }
     )
     public void shouldReverseOrderIfOnlyOneTlsVersionIsInOriginalListToPreserveLegacyBehaviour(
@@ -95,8 +93,8 @@ public class SslProtocolsProviderTest {
         assertEquals(expectedOrder, providedOrder);
     }
 
-    @Test
-    @Parameters({ "TLSv1, TLSv1.1", "TLSv1.1, TLSv1.2", "TLSv1, TLSv1.2" })
+    @ParameterizedTest
+    @CsvSource({ "TLSv1, TLSv1.1", "TLSv1.1, TLSv1.2", "TLSv1, TLSv1.2" })
     public void shouldProvideNewerTlsFirstEvenIfOriginalOrderIsOpposite(final String p1, final String p2)
         throws NoSuchAlgorithmException {
         String[] originalOrder = new String[] { p1, p2 };
@@ -107,8 +105,8 @@ public class SslProtocolsProviderTest {
         assertEquals(expectedOrder, providedOrder);
     }
 
-    @Test
-    @Parameters({ "TLSv1.1, TLSv1", "TLSv1.2, TLSv1.1", "TLSv1.2, TLSv1" })
+    @ParameterizedTest
+    @CsvSource({ "TLSv1.1, TLSv1", "TLSv1.2, TLSv1.1", "TLSv1.2, TLSv1" })
     public void shouldProvideNewerTlsFirstWhenOriginalOrderDoesNotNeedToBeModified(
         final String p1,
         final String p2
@@ -121,8 +119,8 @@ public class SslProtocolsProviderTest {
         assertEquals(expectedOrder, providedOrder);
     }
 
-    @Test
-    @Parameters({ "TLSv1.1, TLSv1, protocolA", "TLSv1.2, protocolB, TLSv1.1", "protocolC, TLSv1.2, TLSv1" })
+    @ParameterizedTest
+    @CsvSource({ "TLSv1.1, TLSv1, protocolA", "TLSv1.2, protocolB, TLSv1.1", "protocolC, TLSv1.2, TLSv1" })
     public void shouldProvideNewerTlsFirstInNonOnlyTlsListWhenOriginalOrderDoesNotNeedToBeModified(
         final String p1,
         final String p2,
@@ -136,8 +134,8 @@ public class SslProtocolsProviderTest {
         assertEquals(expectedOrder, providedOrder);
     }
 
-    @Test
-    @Parameters({ "TLSv1, TLSv1.1, protocolA", "TLSv1.1, protocolB, TLSv1.2", "protocolC, TLSv1, TLSv1.2" })
+    @ParameterizedTest
+    @CsvSource({ "TLSv1, TLSv1.1, protocolA", "TLSv1.1, protocolB, TLSv1.2", "protocolC, TLSv1, TLSv1.2" })
     public void shouldProvideNewerTlsFirstInNonOnlyTlsListWhenOriginalOrderIsOpposite(
         final String p1,
         final String p2,

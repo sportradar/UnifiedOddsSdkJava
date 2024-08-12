@@ -13,9 +13,8 @@ import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 public class LatchTest {
 
@@ -23,17 +22,12 @@ public class LatchTest {
 
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
 
-    @Rule
-    public Timeout timeout = new Timeout(
-        ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH,
-        TimeUnit.SECONDS
-    );
-
     private final TimeUtilsStub.Factory timeUtilsStubs = TimeUtilsStub.threadSafe(
         new AtomicActionPerformer()
     );
 
     @Test
+    @Timeout(ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH)
     public void shouldSucceedIfNotTimedOut() throws InterruptedException {
         Instant instantAtMidnight = Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS);
         val timeUtils = timeUtilsStubs.withCurrentTime(instantAtMidnight);
@@ -45,6 +39,7 @@ public class LatchTest {
     }
 
     @Test
+    @Timeout(ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH)
     public void shouldFailIfTimedOut() {
         Instant instantAtMidnight = Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS);
         val timeUtils = timeUtilsStubs.withCurrentTime(instantAtMidnight);
@@ -56,6 +51,7 @@ public class LatchTest {
     }
 
     @Test
+    @Timeout(ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH)
     public void shouldIndicateLatchHasStartedWaiting() throws InterruptedException {
         Instant instantAtMidnight = Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS);
         val timeUtils = timeUtilsStubs.withCurrentTime(instantAtMidnight);
@@ -73,6 +69,7 @@ public class LatchTest {
     }
 
     @Test
+    @Timeout(ALL_TESTS_FINISH_INSTANTLY_BUT_STILL_GIVING_ENOUGH_TIME_TO_FINISH)
     public void shouldNotIndicateLatchHasStartedWaitingWhenItIsNot() {
         val latch = new Latch(1, mock(TimeUtils.class));
 

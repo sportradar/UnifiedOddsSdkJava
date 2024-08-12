@@ -32,7 +32,7 @@ public class CarImpl implements Car {
      */
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     /**
@@ -42,7 +42,7 @@ public class CarImpl implements Car {
      */
     @Override
     public String getChassis() {
-        return null;
+        return chassis;
     }
 
     /**
@@ -52,6 +52,6 @@ public class CarImpl implements Car {
      */
     @Override
     public String getEngineName() {
-        return null;
+        return engineName;
     }
 }

@@ -19,7 +19,7 @@ import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDivisionCi;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.matchers.Any;
 
 public class CompetitorCiImplTest {

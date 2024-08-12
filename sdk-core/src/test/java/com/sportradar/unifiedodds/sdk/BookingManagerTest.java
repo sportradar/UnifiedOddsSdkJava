@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,8 +26,8 @@ import lombok.val;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "ConstantName", "MagicNumber", "ClassFanOutComplexity" })
 public class BookingManagerTest {
@@ -44,7 +45,7 @@ public class BookingManagerTest {
     private BookingManager bookingManager;
     private TestHttpHelper testHttpHelper;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Deserializer deserializer = injector.getInstance(
             Key.get(Deserializer.class, Names.named("SportsApiJaxbDeserializer"))

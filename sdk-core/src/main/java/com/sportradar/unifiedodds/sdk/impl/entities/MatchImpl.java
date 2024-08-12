@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.caching.MatchCi;
@@ -392,7 +393,7 @@ public class MatchImpl extends SportEventImpl implements Match {
             return null;
         }
 
-        return cacheItem.getNames(locales).get(locale);
+        return cacheItem.getNames(ImmutableList.of(locale)).get(locale);
     }
 
     /**

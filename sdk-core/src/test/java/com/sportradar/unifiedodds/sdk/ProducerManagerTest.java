@@ -3,6 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 
 import com.google.inject.Guice;
@@ -14,7 +16,7 @@ import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "ConstantName", "MagicNumber" })
 public class ProducerManagerTest {
@@ -80,13 +82,12 @@ public class ProducerManagerTest {
         assertEquals(timestamp, producerManager.getProducer(PID).getTimestampForRecovery());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void throwsWhenTimestampLargerThanMaxRecoveryWindow() {
         long timestamp = System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS);
 
-        producerManager.setProducerRecoveryFromTimestamp(PID, timestamp);
-
-        assertEquals(timestamp, producerManager.getProducer(PID).getTimestampForRecovery());
+        assertThatThrownBy(() -> producerManager.setProducerRecoveryFromTimestamp(PID, timestamp))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

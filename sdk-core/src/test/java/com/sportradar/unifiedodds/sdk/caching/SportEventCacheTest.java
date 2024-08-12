@@ -18,8 +18,8 @@ import com.sportradar.utils.Urn;
 import java.util.*;
 import lombok.val;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "VisibilityModifier" })
 public class SportEventCacheTest {
@@ -32,7 +32,7 @@ public class SportEventCacheTest {
 
     private SportEventCache cache;
 
-    @Before
+    @BeforeEach
     public void setup() {
         val config = configurationWithAnyLanguageThrowingOnErrors();
         injector = new TestInjectorFactory(config, new StubUofConfiguration()).create();

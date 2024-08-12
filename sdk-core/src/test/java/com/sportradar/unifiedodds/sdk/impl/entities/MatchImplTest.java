@@ -31,28 +31,34 @@ import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.*;
 import java.util.function.Supplier;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class MatchImplTest {
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class Name {
+    public static final String TRANSLATIONS =
+        "com.sportradar.unifiedodds.sdk.impl.entities.MatchImplTest#translations";
 
-        private static final Locale ANY_LANGUAGE = ENGLISH;
-        private static final String UNDER_20_EN = "Under 20";
-        private static final String UNDER_20_FR = "moins de 20 ans";
-        private static final Urn MATCH_URN = Urns.SportEvents.getForAnyMatch();
-        private static final Urn ANY_SPORT_URN = Urns.Sports.urnForAnySport();
-        private static final ExceptionHandlingStrategy ANY_EXCEPTION_HANDLING = Throw;
-        private static final String MATCH_IMPL = "MatchImpl";
-        private static final String CI_TYPE_MISS_MATCH = "CI type miss-match";
+    private static final String UNDER_20_EN = "Under 20";
+    private static final String UNDER_20_FR = "moins de 20 ans";
+
+    private static Object[] translations() {
+        return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
+    }
+
+    @Nested
+    public class Name {
+
+        private final Locale anyLanguage = ENGLISH;
+        private final Urn matchUrn = Urns.SportEvents.getForAnyMatch();
+        private final Urn anySportUrn = Urns.Sports.urnForAnySport();
+        private final ExceptionHandlingStrategy anyExceptionHandling = Throw;
+        private final String matchImpl = "MatchImpl";
+        private final String ciTypeMissMatch = "CI type miss-match";
         private final SportEntityFactory entityFactory = mock(SportEntityFactory.class);
         private final SportEventCache sportEventCache = mock(SportEventCache.class);
         private final SportEventStatusFactory statusFactory = mock(SportEventStatusFactory.class);
@@ -61,13 +67,13 @@ public class MatchImplTest {
         public void doesNotConstructNullLanguages() {
             assertThatThrownBy(() ->
                     new MatchImpl(
-                        MATCH_URN,
-                        ANY_SPORT_URN,
+                        matchUrn,
+                        anySportUrn,
                         sportEventCache,
                         statusFactory,
                         entityFactory,
                         null,
-                        ANY_EXCEPTION_HANDLING
+                        anyExceptionHandling
                     )
                 )
                 .isInstanceOf(NullPointerException.class)
@@ -76,124 +82,124 @@ public class MatchImplTest {
 
         @Test
         public void throwsWhenNoCacheItemIsAcquiredAndSdkThrowsErrors() throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(null);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(null);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 Throw
             );
 
-            assertThatThrownBy(() -> match.getName(ANY_LANGUAGE))
+            assertThatThrownBy(() -> match.getName(anyLanguage))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessageContaining(MATCH_IMPL)
-                .hasMessageContaining(CI_TYPE_MISS_MATCH);
+                .hasMessageContaining(matchImpl)
+                .hasMessageContaining(ciTypeMissMatch);
         }
 
         @Test
         public void returnsNullWhenNoCacheItemIsAcquiredAndSdkCatchesErrors()
             throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(null);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(null);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 Catch
             );
 
-            assertNull(match.getName(ANY_LANGUAGE));
+            assertNull(match.getName(anyLanguage));
         }
 
         @Test
         public void sdkCatchesErrorsByDefaultHenceReturnsNullWhenNoCacheItemIsAcquired()
             throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(null);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(null);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 null
             );
 
-            assertNull(match.getName(ANY_LANGUAGE));
+            assertNull(match.getName(anyLanguage));
         }
 
         @Test
         public void throwsWhenNonMatchCiIsAcquiredAndSdkThrowsErrors() throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(mock(DrawCi.class));
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(mock(DrawCi.class));
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 Throw
             );
 
-            assertThatThrownBy(() -> match.getName(ANY_LANGUAGE))
+            assertThatThrownBy(() -> match.getName(anyLanguage))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessageContaining(MATCH_IMPL)
-                .hasMessageContaining(CI_TYPE_MISS_MATCH);
+                .hasMessageContaining(matchImpl)
+                .hasMessageContaining(ciTypeMissMatch);
         }
 
         @Test
         public void returnsNullWhenNonMatchCiIsAcquiredAndSdkCatchesErrors()
             throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(mock(DrawCi.class));
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(mock(DrawCi.class));
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 Catch
             );
 
-            assertNull(match.getName(ANY_LANGUAGE));
+            assertNull(match.getName(anyLanguage));
         }
 
         @Test
         public void sdkCatchesErrorsByDefaultHenceReturnsNullWhenNonMatchCiIsAcquiredAndSdkCatchesErrors()
             throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(mock(DrawCi.class));
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(mock(DrawCi.class));
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 null
             );
 
-            assertNull(match.getName(ANY_LANGUAGE));
+            assertNull(match.getName(anyLanguage));
         }
 
         @Test
         public void throwsWhenMatchCiIsNotFoundAndSdkThrowsErrors() throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenThrow(CacheItemNotFoundException.class);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenThrow(CacheItemNotFoundException.class);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 Throw
             );
 
-            assertThatThrownBy(() -> match.getName(ANY_LANGUAGE))
+            assertThatThrownBy(() -> match.getName(anyLanguage))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessageContaining("loadMatchCI, CI not found")
                 .hasRootCauseInstanceOf(CacheItemNotFoundException.class);
@@ -201,72 +207,71 @@ public class MatchImplTest {
 
         @Test
         public void returnsNullMatchCiIsNotFoundAndSdkCatchesErrors() throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenThrow(CacheItemNotFoundException.class);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenThrow(CacheItemNotFoundException.class);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 Catch
             );
 
-            assertNull(match.getName(ANY_LANGUAGE));
+            assertNull(match.getName(anyLanguage));
         }
 
         @Test
         public void sdkCatchesErrorsByDefaultHenceReturnsNullMatchCiIsNotFoundAndSdkCatchesErrors()
             throws CacheItemNotFoundException {
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenThrow(CacheItemNotFoundException.class);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenThrow(CacheItemNotFoundException.class);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
-                asList(ANY_LANGUAGE),
+                asList(anyLanguage),
                 null
             );
 
-            assertNull(match.getName(ANY_LANGUAGE));
+            assertNull(match.getName(anyLanguage));
         }
 
         @Test
-        public void getsNoTranslationsIfNoneIsConfiguredThoughSomeAreAvailable()
-            throws CacheItemNotFoundException {
+        public void getsRequestTranslationIfNoneIsConfigured() throws CacheItemNotFoundException {
             val matchCi = createMatchCiWithTranslatedName(of(ENGLISH, UNDER_20_EN));
             List<Locale> noConfiguredLanguages = asList();
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
                 noConfiguredLanguages,
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
-            assertThat(match).hasNameNotTranslatedTo(ENGLISH);
+            assertThat(match).hasNameTranslated(ENGLISH, UNDER_20_EN);
         }
 
         @Test
-        public void getsNoTranslationsIfConfiguredAndAvailableOnesNotIntersect()
+        public void getsNoTranslationsIfRequestedTranslationIsNotAvailable()
             throws CacheItemNotFoundException {
             val matchCi = createMatchCiWithTranslatedName(of(ENGLISH, UNDER_20_EN));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
                 asList(FRENCH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
-            assertThat(match).hasNameNotTranslatedTo(ENGLISH);
+            assertThat(match).hasNameTranslated(ENGLISH, UNDER_20_EN);
             assertThat(match).hasNameNotTranslatedTo(FRENCH);
         }
 
@@ -275,15 +280,15 @@ public class MatchImplTest {
             throws CacheItemNotFoundException {
             Map<Locale, String> noTranslationsAvailable = Collections.emptyMap();
             val matchCi = createMatchCiWithTranslatedName(noTranslationsAvailable);
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
                 asList(ENGLISH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(match).hasNameNotTranslatedTo(ENGLISH);
@@ -292,55 +297,51 @@ public class MatchImplTest {
         @Test
         public void getsNoTranslationIfDesiredOneIsUnavailable() throws CacheItemNotFoundException {
             val matchCi = createMatchCiWithTranslatedName(of(ENGLISH, UNDER_20_EN));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
                 asList(ENGLISH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(match).hasNameNotTranslatedTo(FRENCH);
         }
 
-        @Test
-        @Parameters(method = "translations")
+        @ParameterizedTest
+        @MethodSource(TRANSLATIONS)
         public void getsTheOnlyTranslationAvailable(Locale language, String translation)
             throws CacheItemNotFoundException {
             val matchCi = createMatchCiWithTranslatedName(of(language, translation));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
                 asList(language),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(match).hasNameTranslated(language, translation);
         }
 
-        private Object[] translations() {
-            return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
-        }
-
         @Test
         public void getsMultipleTranslationsAvailable() throws CacheItemNotFoundException {
             val matchCi = createMatchCiWithTranslatedName(of(ENGLISH, UNDER_20_EN, FRENCH, UNDER_20_FR));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
             Match match = new MatchImpl(
-                MATCH_URN,
-                ANY_SPORT_URN,
+                matchUrn,
+                anySportUrn,
                 sportEventCache,
                 statusFactory,
                 entityFactory,
                 asList(ENGLISH, FRENCH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(match).hasNameTranslated(ENGLISH, UNDER_20_EN);
@@ -349,42 +350,44 @@ public class MatchImplTest {
 
         private MatchCi createMatchCiWithTranslatedName(Map<Locale, String> translatedName) {
             val matchCi = mock(MatchCi.class);
-            when(matchCi.getNames(new ArrayList<>(translatedName.keySet()))).thenReturn(translatedName);
+            translatedName.forEach((key, value) ->
+                when(matchCi.getNames(singletonList(key))).thenReturn(translatedName)
+            );
             return matchCi;
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class StartTimeTbd {
+    @Nested
+    public class StartTimeTbd {
 
         private static final String UNDER_20_EN = "Under 20";
-        private static final Urn MATCH_URN = Urns.SportEvents.getForAnyMatch();
-        private static final Urn ANY_SPORT_URN = Urns.Sports.urnForAnySport();
-        private static final ExceptionHandlingStrategy ANY_EXCEPTION_HANDLING = Throw;
+        private final Urn matchUrn = Urns.SportEvents.getForAnyMatch();
+        private final Urn anySportUrn = Urns.Sports.urnForAnySport();
+        private final ExceptionHandlingStrategy anyExceptionHandling = Throw;
         private final SportEntityFactory entityFactory = mock(SportEntityFactory.class);
         private final SportEventCache sportEventCache = mock(SportEventCache.class);
         private final SportEventStatusFactory statusFactory = mock(SportEventStatusFactory.class);
         private final Locale language = ENGLISH;
         private MatchImpl match;
 
-        @Before
+        @BeforeEach
         public void createMatch() {
             match =
                 new MatchImpl(
-                    MATCH_URN,
-                    ANY_SPORT_URN,
+                    matchUrn,
+                    anySportUrn,
                     sportEventCache,
                     statusFactory,
                     entityFactory,
                     singletonList(language),
-                    ANY_EXCEPTION_HANDLING
+                    anyExceptionHandling
                 );
         }
 
         @Test
         public void startTimeTbdNull() throws Exception {
             MatchCi matchCi = matchCi(of(language, UNDER_20_EN), withStartTimeTbd(null));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
 
             assertThat(match.isStartTimeTbd()).isNull();
         }
@@ -392,7 +395,7 @@ public class MatchImplTest {
         @Test
         public void startTimeIsToBeDefined() throws Exception {
             MatchCi matchCi = matchCi(of(language, UNDER_20_EN), withStartTimeTbd(true));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
 
             assertThat(match.isStartTimeTbd()).isTrue();
         }
@@ -400,7 +403,7 @@ public class MatchImplTest {
         @Test
         public void startTimeIsNotToBeDefined() throws Exception {
             MatchCi matchCi = matchCi(of(language, UNDER_20_EN), withStartTimeTbd(false));
-            when(sportEventCache.getEventCacheItem(MATCH_URN)).thenReturn(matchCi);
+            when(sportEventCache.getEventCacheItem(matchUrn)).thenReturn(matchCi);
 
             assertThat(match.isStartTimeTbd()).isFalse();
         }

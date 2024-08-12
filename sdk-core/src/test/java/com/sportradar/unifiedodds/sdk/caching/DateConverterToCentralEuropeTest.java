@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.ZoneId;
 import java.util.Date;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MagicNumber" })
 public class DateConverterToCentralEuropeTest {

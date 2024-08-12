@@ -8,11 +8,9 @@ import static com.sportradar.utils.time.TimeInterval.seconds;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 @SuppressWarnings({ "MagicNumber", "StaticVariableName" })
 public final class TimeIntervalTest {
 
@@ -23,7 +21,8 @@ public final class TimeIntervalTest {
 
     private TimeIntervalTest() {}
 
-    public static class Minutes {
+    @Nested
+    public class Minutes {
 
         public static final long MILLIS_IN_MINUTE = SECONDS_IN_MINUTE * MILLIS_IN_SECOND;
 
@@ -72,7 +71,8 @@ public final class TimeIntervalTest {
         }
     }
 
-    public static class Seconds {
+    @Nested
+    public class Seconds {
 
         @Test
         public void getsUnderlyingValue() {

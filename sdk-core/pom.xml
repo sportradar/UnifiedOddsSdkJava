@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>3.3.0</version>
+    <version>3.3.1</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -201,7 +201,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.34</version>
             <scope>test</scope>
         </dependency>
         <dependency>

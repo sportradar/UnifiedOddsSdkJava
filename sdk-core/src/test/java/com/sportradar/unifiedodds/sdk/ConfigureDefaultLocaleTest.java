@@ -15,13 +15,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
+@SuppressWarnings("ClassFanOutComplexity")
 public class ConfigureDefaultLocaleTest {
 
     private final boolean replayMode = true;
@@ -38,8 +37,8 @@ public class ConfigureDefaultLocaleTest {
         anyConfig -> producerDataProvider
     );
 
-    @Test
-    @Parameters(method = "allEnvironments")
+    @ParameterizedTest
+    @MethodSource("allEnvironments")
     public void configureViaPropertiesFileIn(Environment environment) {
         propsFileContent.put("uf.sdk.accessToken", anyToken);
         propsFileContent.put("uf.sdk.defaultLanguage", language.toString());
@@ -54,8 +53,8 @@ public class ConfigureDefaultLocaleTest {
         assertEquals(language, internalConfigForReplay.getDefaultLocale());
     }
 
-    @Test
-    @Parameters(method = "allEnvironments")
+    @ParameterizedTest
+    @MethodSource("allEnvironments")
     public void configureViaYmlFileIn(Environment environment) {
         yamlFileContent.put("uf.sdk.accessToken", anyToken);
         yamlFileContent.put("uf.sdk.defaultLanguage", language.toString());

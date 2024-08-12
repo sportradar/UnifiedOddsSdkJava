@@ -6,11 +6,8 @@ package com.sportradar.utils.time;
 import static com.sportradar.utils.time.TimeInterval.minutes;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 @SuppressWarnings({ "MagicNumber", "StaticVariableName" })
 public final class EpochMillisTest {
 

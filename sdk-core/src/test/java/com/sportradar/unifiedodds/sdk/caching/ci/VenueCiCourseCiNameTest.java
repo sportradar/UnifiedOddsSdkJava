@@ -18,20 +18,22 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiVenue;
 import com.sportradar.utils.Urn;
-import com.sportradar.utils.Urns;
 import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
 import com.sportradar.utils.domain.names.Names;
 import java.util.Locale;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class VenueCiCourseCiNameTest {
+
+    public static final String DIFFERENT_LANGUAGES =
+        "com.sportradar.unifiedodds.sdk.caching.ci.VenueCiCourseCiNameTest#differentLanguages";
+    public static final String DIFFERENT_MERGING_LANGUAGES =
+        "com.sportradar.unifiedodds.sdk.caching.ci.VenueCiCourseCiNameTest#differentLanguages";
 
     private static final UniqueObjects<String> UNIQUE_NAMES = unique(() -> Names.any());
     private static final String NAME = UNIQUE_NAMES.getOne();
@@ -70,11 +72,15 @@ public class VenueCiCourseCiNameTest {
         return sapiVenue;
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class GivenNoMergeWillOccurWhenConstructingCi {
+    public static Object[] differentLanguages() {
+        return new Object[][] { { FRENCH }, { ENGLISH } };
+    }
 
-        @Test
-        @Parameters(method = "differentLanguages")
+    @Nested
+    public class GivenNoMergeWillOccurWhenConstructingCi {
+
+        @ParameterizedTest
+        @MethodSource(DIFFERENT_LANGUAGES)
         public void thenCiPreservesName(Locale language) {
             SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithName(NAME));
 
@@ -92,8 +98,8 @@ public class VenueCiCourseCiNameTest {
             assertThat(venueCi).containsCourse(atIndex(0), withNoTranslationTo(ENGLISH));
         }
 
-        @Test
-        @Parameters(method = "differentLanguages")
+        @ParameterizedTest
+        @MethodSource(DIFFERENT_LANGUAGES)
         public void thenCiPreservesNameAfterImportingExportedVenueCi(Locale language) throws Exception {
             SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithName(NAME));
             val venueCi = new VenueCi(sapiVenue, language);
@@ -126,20 +132,16 @@ public class VenueCiCourseCiNameTest {
                 .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
                 .containsCourse(atIndex(1), with(ANOTHER_NAME, in(ENGLISH)));
         }
-
-        public static Object[] differentLanguages() {
-            return new Object[][] { { FRENCH }, { ENGLISH } };
-        }
     }
 
-    @RunWith(Enclosed.class)
-    public static class GivenMergeWillOccur {
+    @Nested
+    public class GivenMergeWillOccur {
 
-        @RunWith(JUnitParamsRunner.class)
-        public static class AndNoCoursesWereProvidedPreviously {
+        @Nested
+        public class AndNoCoursesWereProvidedPreviously {
 
-            @Test
-            @Parameters(method = "differentMergingLanguages")
+            @ParameterizedTest
+            @MethodSource(DIFFERENT_MERGING_LANGUAGES)
             public void thenMergingPreservesName(Locale language) {
                 val venueCi = new VenueCi(sapiVenueWithAnyId(), ENGLISH);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithName(NAME));
@@ -149,8 +151,8 @@ public class VenueCiCourseCiNameTest {
                 assertThat(venueCi).containsCourse(atIndex(0), with(NAME, in(language)));
             }
 
-            @Test
-            @Parameters(method = "differentMergingLanguages")
+            @ParameterizedTest
+            @MethodSource(DIFFERENT_MERGING_LANGUAGES)
             public void thenMergingDiscardsNullName(Locale language) {
                 val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(new SapiCourse());
@@ -160,8 +162,8 @@ public class VenueCiCourseCiNameTest {
                 assertThat(venueCi).containsCourse(atIndex(0), withNoTranslationTo(ENGLISH));
             }
 
-            @Test
-            @Parameters(method = "differentMergingLanguages")
+            @ParameterizedTest
+            @MethodSource(DIFFERENT_MERGING_LANGUAGES)
             public void thenMergingPreservesNamesForMultipleNewCourses(Locale language) {
                 val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(
@@ -175,20 +177,16 @@ public class VenueCiCourseCiNameTest {
                     .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
                     .containsCourse(atIndex(1), with(ANOTHER_NAME, in(ENGLISH)));
             }
-
-            public static Object[] differentMergingLanguages() {
-                return new Object[][] { { ENGLISH }, { FRENCH } };
-            }
         }
 
-        @RunWith(Enclosed.class)
-        public static class AndOneCourseWasProvidedPreviously {
+        @Nested
+        public class AndOneCourseWasProvidedPreviously {
 
-            @RunWith(JUnitParamsRunner.class)
-            public static class WithoutAnyTranslations {
+            @Nested
+            public class WithoutAnyTranslations {
 
-                @Test
-                @Parameters(method = "differentMergingLanguages")
+                @ParameterizedTest
+                @MethodSource(DIFFERENT_MERGING_LANGUAGES)
                 public void thenMergingIntroducesTranslation(Locale language) {
                     SapiVenue oldCourses = sapiVenueWithAnyIdAnd(new SapiCourse());
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
@@ -209,17 +207,13 @@ public class VenueCiCourseCiNameTest {
 
                     assertThat(venueCi).containsCourse(atIndex(0), withNoTranslationTo(ENGLISH));
                 }
-
-                public static Object[] differentMergingLanguages() {
-                    return new Object[][] { { ENGLISH }, { FRENCH } };
-                }
             }
 
-            @RunWith(JUnitParamsRunner.class)
-            public static class WithSingleTranslations {
+            @Nested
+            public class WithSingleTranslations {
 
-                @Test
-                @Parameters(method = "differentLanguages")
+                @ParameterizedTest
+                @MethodSource(DIFFERENT_LANGUAGES)
                 public void thenMergingReplacesNameForSameLanguage(Locale language) {
                     SapiVenue oldCourses = sapiVenueWithAnyIdAnd(sapiCoursesWithName(NAME));
                     val venueCi = new VenueCi(oldCourses, language);
@@ -267,140 +261,138 @@ public class VenueCiCourseCiNameTest {
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
                         .containsCourse(atIndex(0), with(ANOTHER_NAME, in(FRENCH)));
                 }
-
-                public static Object[] differentLanguages() {
-                    return new Object[][] { { ENGLISH }, { FRENCH } };
-                }
             }
         }
 
-        @RunWith(Enclosed.class)
-        public static class AndMultipleCoursesWereProvidedPreviously {
+        @Nested
+        public class AndMultipleCoursesWereProvidedPreviously {
 
-            private static final UniqueObjects<Urn> UNIQUE_IDS = unique(() -> Urns.Venues.urnForAnyVenue());
-            private static final Urn ID = UNIQUE_IDS.getOne();
-            private static final Urn ANOTHER_ID = UNIQUE_IDS.getOne();
+            private final Urn id = Urn.parse("sr:venue:1");
+            private final Urn anotherId = Urn.parse("sr:venue:2");
 
-            private static final String FRENCH_NAME = "French " + UNIQUE_NAMES.getOne();
-            private static final String ANOTHER_FRENCH_NAME = "French " + UNIQUE_NAMES.getOne();
+            private final String frenchName = "French Anapa Mars";
+            private final String anotherFrenchName = "French Daidalos Shyama";
 
-            public static class AndCoursesContainsUniqueIds {
+            @Nested
+            public class AndCoursesContainsUniqueIds {
 
                 @Test
                 public void thenMergingAddsAdditionalTranslationToAllCourses() {
                     SapiVenue oldCourses = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, NAME),
-                        sapiCoursesWithIdAndName(ANOTHER_ID, ANOTHER_NAME)
+                        sapiCoursesWithIdAndName(id, NAME),
+                        sapiCoursesWithIdAndName(anotherId, ANOTHER_NAME)
                     );
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
                     SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, FRENCH_NAME),
-                        sapiCoursesWithIdAndName(ANOTHER_ID, ANOTHER_FRENCH_NAME)
+                        sapiCoursesWithIdAndName(id, frenchName),
+                        sapiCoursesWithIdAndName(anotherId, anotherFrenchName)
                     );
 
                     venueCi.merge(sapiVenue, FRENCH);
 
                     assertThat(venueCi)
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(0), with(FRENCH_NAME, in(FRENCH)))
+                        .containsCourse(atIndex(0), with(frenchName, in(FRENCH)))
                         .containsCourse(atIndex(1), with(ANOTHER_NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(1), with(ANOTHER_FRENCH_NAME, in(FRENCH)));
+                        .containsCourse(atIndex(1), with(anotherFrenchName, in(FRENCH)));
                 }
 
                 @Test
                 public void thenMergingRemovesCourse() {
                     SapiVenue oldCourses = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, NAME),
-                        sapiCoursesWithIdAndName(ANOTHER_ID, ANOTHER_NAME)
+                        sapiCoursesWithIdAndName(id, NAME),
+                        sapiCoursesWithIdAndName(anotherId, ANOTHER_NAME)
                     );
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
-                    SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(ID, FRENCH_NAME));
+                    SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(id, frenchName));
 
                     venueCi.merge(sapiVenue, FRENCH);
 
                     assertThat(venueCi)
                         .containsAmountOfCourses(1)
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(0), with(FRENCH_NAME, in(FRENCH)));
+                        .containsCourse(atIndex(0), with(frenchName, in(FRENCH)));
                 }
 
                 @Test
                 public void thenMergingAddsCourse() {
-                    SapiVenue oldCourses = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(ID, NAME));
+                    SapiVenue oldCourses = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(id, NAME));
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
                     SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, FRENCH_NAME),
-                        sapiCoursesWithIdAndName(ANOTHER_ID, ANOTHER_FRENCH_NAME)
+                        sapiCoursesWithIdAndName(id, frenchName),
+                        sapiCoursesWithIdAndName(anotherId, anotherFrenchName)
                     );
 
                     venueCi.merge(sapiVenue, FRENCH);
 
                     assertThat(venueCi)
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(0), with(FRENCH_NAME, in(FRENCH)))
-                        .containsCourse(atIndex(1), with(ANOTHER_FRENCH_NAME, in(FRENCH)));
+                        .containsCourse(atIndex(0), with(frenchName, in(FRENCH)))
+                        .containsCourse(atIndex(1), with(anotherFrenchName, in(FRENCH)));
                 }
 
                 @Test
                 public void thenMergesByIdNotByOrderOfTheList() {
                     SapiVenue oldCourses = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ANOTHER_ID, ANOTHER_NAME),
-                        sapiCoursesWithIdAndName(ID, NAME)
+                        sapiCoursesWithIdAndName(anotherId, ANOTHER_NAME),
+                        sapiCoursesWithIdAndName(id, NAME)
                     );
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
                     SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, FRENCH_NAME),
-                        sapiCoursesWithIdAndName(ANOTHER_ID, ANOTHER_FRENCH_NAME)
+                        sapiCoursesWithIdAndName(id, frenchName),
+                        sapiCoursesWithIdAndName(anotherId, anotherFrenchName)
                     );
 
                     venueCi.merge(sapiVenue, FRENCH);
 
                     assertThat(venueCi)
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(0), with(FRENCH_NAME, in(FRENCH)))
+                        .containsCourse(atIndex(0), with(frenchName, in(FRENCH)))
                         .containsCourse(atIndex(1), with(ANOTHER_NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(1), with(ANOTHER_FRENCH_NAME, in(FRENCH)));
+                        .containsCourse(atIndex(1), with(anotherFrenchName, in(FRENCH)));
                 }
             }
 
-            public static class AndInflightCoursesContainsDuplicateIds {
+            @Nested
+            public class AndInflightCoursesContainsDuplicateIds {
 
                 @Test
                 public void thenReplicatesPreviousTranslationsToInflightCourses() {
-                    SapiVenue oldCourses = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(ID, NAME));
+                    SapiVenue oldCourses = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(id, NAME));
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
                     SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, FRENCH_NAME),
-                        sapiCoursesWithIdAndName(ID, ANOTHER_FRENCH_NAME)
+                        sapiCoursesWithIdAndName(id, frenchName),
+                        sapiCoursesWithIdAndName(id, anotherFrenchName)
                     );
 
                     venueCi.merge(sapiVenue, FRENCH);
 
                     assertThat(venueCi)
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(0), with(FRENCH_NAME, in(FRENCH)))
+                        .containsCourse(atIndex(0), with(frenchName, in(FRENCH)))
                         .containsCourse(atIndex(1), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(1), with(ANOTHER_FRENCH_NAME, in(FRENCH)));
+                        .containsCourse(atIndex(1), with(anotherFrenchName, in(FRENCH)));
                 }
             }
 
-            public static class AndPreviouslyExistingCoursesContainsDuplicateIds {
+            @Nested
+            public class AndPreviouslyExistingCoursesContainsDuplicateIds {
 
                 @Test
                 public void thenTranslationsAreGatheredOnlyFromFirstOneMeanwhileTranslationsFromOthersAreLost() {
                     SapiVenue oldCourses = sapiVenueWithAnyIdAnd(
-                        sapiCoursesWithIdAndName(ID, NAME),
-                        sapiCoursesWithIdAndName(ID, ANOTHER_NAME)
+                        sapiCoursesWithIdAndName(id, NAME),
+                        sapiCoursesWithIdAndName(id, ANOTHER_NAME)
                     );
                     val venueCi = new VenueCi(oldCourses, ENGLISH);
-                    SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(ID, FRENCH_NAME));
+                    SapiVenue sapiVenue = sapiVenueWithAnyIdAnd(sapiCoursesWithIdAndName(id, frenchName));
 
                     venueCi.merge(sapiVenue, FRENCH);
 
                     assertThat(venueCi)
                         .containsAmountOfCourses(1)
                         .containsCourse(atIndex(0), with(NAME, in(ENGLISH)))
-                        .containsCourse(atIndex(0), with(FRENCH_NAME, in(FRENCH)));
+                        .containsCourse(atIndex(0), with(frenchName, in(FRENCH)));
                 }
             }
         }

@@ -22,23 +22,22 @@ import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class DataRouterManagerImplRequestingFixtureTest {
 
     public static final String SERVER_ERROR = "InternalServerError";
 
     private DataRouterManagerImplRequestingFixtureTest() {}
 
-    public static class WhenUsingCachedProvider {
+    @Nested
+    public class WhenUsingCachedProvider {
 
-        private static final boolean USING_CACHED_PROVIDER = true;
-        private static final String NON_NULL_URL = "http://nonNullUrl.com";
-        private static final Locale ANY_LANGUAGE = Locale.FRENCH;
-        private static final CacheItem ANY_CACHE_ITEM = mock(CacheItem.class);
+        private final boolean usingCachedProvider = true;
+        private final String nonNullUrl = "http://nonNullUrl.com";
+        private final Locale anyLanguage = Locale.FRENCH;
+        private final CacheItem anyCacheItem = mock(CacheItem.class);
         private final DataProvider cachedFixtures = mock(DataProvider.class);
         private final DataRouterManager manager = new DataRouterManagerImpl(
             mock(SdkInternalConfiguration.class),
@@ -80,7 +79,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
             Urn id = urnForAnyTournament();
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestFixtureEndpoint(china, id, USING_CACHED_PROVIDER, ANY_CACHE_ITEM),
+                () -> manager.requestFixtureEndpoint(china, id, usingCachedProvider, anyCacheItem),
                 CommunicationException.class
             );
 
@@ -100,10 +99,10 @@ public class DataRouterManagerImplRequestingFixtureTest {
             CommunicationException exception = catchThrowableOfType(
                 () ->
                     manager.requestFixtureEndpoint(
-                        ANY_LANGUAGE,
+                        anyLanguage,
                         urnForAnyTournament(),
-                        USING_CACHED_PROVIDER,
-                        ANY_CACHE_ITEM
+                        usingCachedProvider,
+                        anyCacheItem
                     ),
                 CommunicationException.class
             );
@@ -116,7 +115,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
             throws DataProviderException {
             final int httpCode = 304;
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(dataProviderException.tryExtractCommunicationExceptionHttpStatusCode(anyInt()))
                 .thenReturn(httpCode);
             when(cachedFixtures.getData(any(), any())).thenThrow(dataProviderException);
@@ -124,10 +123,10 @@ public class DataRouterManagerImplRequestingFixtureTest {
             CommunicationException exception = catchThrowableOfType(
                 () ->
                     manager.requestFixtureEndpoint(
-                        ANY_LANGUAGE,
+                        anyLanguage,
                         urnForAnyTournament(),
-                        USING_CACHED_PROVIDER,
-                        ANY_CACHE_ITEM
+                        usingCachedProvider,
+                        anyCacheItem
                     ),
                 CommunicationException.class
             );
@@ -139,16 +138,16 @@ public class DataRouterManagerImplRequestingFixtureTest {
         public void providerFailureShouldResultInExceptionThrownPreservingCause()
             throws DataProviderException {
             DataProviderException dataProviderException = mock(DataProviderException.class);
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(cachedFixtures.getData(any(), any())).thenThrow(dataProviderException);
 
             CommunicationException exception = catchThrowableOfType(
                 () ->
                     manager.requestFixtureEndpoint(
-                        ANY_LANGUAGE,
+                        anyLanguage,
                         urnForAnyTournament(),
-                        USING_CACHED_PROVIDER,
-                        ANY_CACHE_ITEM
+                        usingCachedProvider,
+                        anyCacheItem
                     ),
                 CommunicationException.class
             );
@@ -157,13 +156,14 @@ public class DataRouterManagerImplRequestingFixtureTest {
         }
     }
 
-    public static class WhenUsingLiveProvider {
+    @Nested
+    public class WhenUsingLiveProvider {
 
-        private static final String ANY_MESSAGE = "anyErrorMessage";
-        private static final boolean USING_LIVE_PROVIDER = false;
-        private static final String NON_NULL_URL = "http://nonNullUrl.com";
-        private static final Locale ANY_LANGUAGE = Locale.FRENCH;
-        private static final CacheItem ANY_CACHE_ITEM = mock(CacheItem.class);
+        private final String anyMessage = "anyErrorMessage";
+        private final boolean usingLiveProvider = false;
+        private final String nonNullUrl = "http://nonNullUrl.com";
+        private final Locale anyLanguage = Locale.FRENCH;
+        private final CacheItem anyCacheItem = mock(CacheItem.class);
         private final DataProvider cachedFixtures = mock(DataProvider.class);
         private final DataProvider fixtures = mock(DataProvider.class);
         private final DataRouterManager manager = new DataRouterManagerImpl(
@@ -202,7 +202,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
         public void notBeingAbleToProvideFixtureDueToServerErrorShouldResultInExceptionThrownExplainingThat()
             throws DataProviderException {
             DataProviderException dataProviderException = new DataProviderException(
-                ANY_MESSAGE,
+                anyMessage,
                 new RuntimeException(SERVER_ERROR)
             );
             when(fixtures.getData(any(), any())).thenThrow(dataProviderException);
@@ -211,7 +211,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
             Urn id = urnForAnyTournament();
 
             CommunicationException exception = catchThrowableOfType(
-                () -> manager.requestFixtureEndpoint(china, id, USING_LIVE_PROVIDER, ANY_CACHE_ITEM),
+                () -> manager.requestFixtureEndpoint(china, id, usingLiveProvider, anyCacheItem),
                 CommunicationException.class
             );
 
@@ -234,10 +234,10 @@ public class DataRouterManagerImplRequestingFixtureTest {
             CommunicationException exception = catchThrowableOfType(
                 () ->
                     manager.requestFixtureEndpoint(
-                        ANY_LANGUAGE,
+                        anyLanguage,
                         urnForAnyTournament(),
-                        USING_LIVE_PROVIDER,
-                        ANY_CACHE_ITEM
+                        usingLiveProvider,
+                        anyCacheItem
                     ),
                 CommunicationException.class
             );
@@ -251,7 +251,7 @@ public class DataRouterManagerImplRequestingFixtureTest {
             DataProviderException dataProviderException = mock(DataProviderException.class);
             when(dataProviderException.getCause()).thenReturn(new RuntimeException(SERVER_ERROR));
             final int httpCode = 304;
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(dataProviderException.tryExtractCommunicationExceptionHttpStatusCode(anyInt()))
                 .thenReturn(httpCode);
             when(fixtures.getData(any(), any())).thenThrow(dataProviderException);
@@ -260,10 +260,10 @@ public class DataRouterManagerImplRequestingFixtureTest {
             CommunicationException exception = catchThrowableOfType(
                 () ->
                     manager.requestFixtureEndpoint(
-                        ANY_LANGUAGE,
+                        anyLanguage,
                         urnForAnyTournament(),
-                        USING_LIVE_PROVIDER,
-                        ANY_CACHE_ITEM
+                        usingLiveProvider,
+                        anyCacheItem
                     ),
                 CommunicationException.class
             );
@@ -276,17 +276,17 @@ public class DataRouterManagerImplRequestingFixtureTest {
             throws DataProviderException {
             DataProviderException dataProviderException = mock(DataProviderException.class);
             when(dataProviderException.getCause()).thenReturn(new RuntimeException(SERVER_ERROR));
-            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
+            when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(nonNullUrl);
             when(fixtures.getData(any(), any())).thenThrow(dataProviderException);
             when(cachedFixtures.getData(any(), any())).thenThrow(DataProviderException.class);
 
             CommunicationException exception = catchThrowableOfType(
                 () ->
                     manager.requestFixtureEndpoint(
-                        ANY_LANGUAGE,
+                        anyLanguage,
                         urnForAnyTournament(),
-                        USING_LIVE_PROVIDER,
-                        ANY_CACHE_ITEM
+                        usingLiveProvider,
+                        anyCacheItem
                     ),
                 CommunicationException.class
             );

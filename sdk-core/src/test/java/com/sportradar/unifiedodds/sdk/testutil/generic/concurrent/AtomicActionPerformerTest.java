@@ -8,7 +8,7 @@ import static junit.framework.TestCase.assertEquals;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AtomicActionPerformerTest {
 

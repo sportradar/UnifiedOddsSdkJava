@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LogFastHttpDataFetcherTest extends HttpDataFetcherTest {
 

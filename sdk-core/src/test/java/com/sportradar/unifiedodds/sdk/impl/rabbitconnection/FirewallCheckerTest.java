@@ -13,8 +13,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FirewallCheckerTest {
 
@@ -27,7 +27,7 @@ public class FirewallCheckerTest {
     private final BodyOnlyFetchingHttpClient httpClient = mock(BodyOnlyFetchingHttpClient.class);
     private final FirewallChecker firewallChecker = new FirewallChecker(socketFactory, httpClient);
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         createSocketsOnDemand();
     }

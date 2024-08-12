@@ -7,18 +7,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class RuntimeConfigurationTest {
 
     public static final String INVALID = "Invalid";
 
     private RuntimeConfigurationTest() {}
 
-    public static class FastHttpClientTimeout {
+    @Nested
+    public class FastHttpClientTimeout {
 
         @Test
         public void notSetsNull() {
@@ -65,10 +64,11 @@ public class RuntimeConfigurationTest {
         }
     }
 
-    @RunWith(Enclosed.class)
-    public static class RabbitConnectionTimeout {
+    @Nested
+    public class RabbitConnectionTimeout {
 
-        public static class MinValue {
+        @Nested
+        public class MinValue {
 
             private final int tenSeconds = 10;
             private final int min = tenSeconds;
@@ -95,7 +95,8 @@ public class RuntimeConfigurationTest {
             }
         }
 
-        public static class MaxValue {
+        @Nested
+        public class MaxValue {
 
             private final int twoMinutes = 120;
             private final int max = twoMinutes;
@@ -123,10 +124,11 @@ public class RuntimeConfigurationTest {
         }
     }
 
-    @RunWith(Enclosed.class)
-    public static class RabbitHeartBeat {
+    @Nested
+    public class RabbitHeartBeat {
 
-        public static class MinValue {
+        @Nested
+        public class MinValue {
 
             private final int tenSeconds = 10;
             private final int min = tenSeconds;
@@ -153,7 +155,8 @@ public class RuntimeConfigurationTest {
             }
         }
 
-        public static class MaxValue {
+        @Nested
+        public class MaxValue {
 
             private final int twoMinutes = 180;
             private final int max = twoMinutes;
@@ -181,7 +184,8 @@ public class RuntimeConfigurationTest {
         }
     }
 
-    public static class IgnoreBetPalTimelineSportEventStatus {
+    @Nested
+    public class IgnoreBetPalTimelineSportEventStatus {
 
         @Test
         public void preservesConfiguredValueToIgnore() {

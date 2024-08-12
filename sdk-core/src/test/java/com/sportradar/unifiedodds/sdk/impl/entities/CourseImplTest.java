@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.CourseCi;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Locale;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CourseImplTest {
 

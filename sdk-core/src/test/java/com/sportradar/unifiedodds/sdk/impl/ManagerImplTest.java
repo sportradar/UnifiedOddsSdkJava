@@ -12,13 +12,11 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCi;
 import java.util.Locale;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class ManagerImplTest {
 
     private static final String UNDER_20_EN = "Under 20";
@@ -34,8 +32,8 @@ public class ManagerImplTest {
         assertThat(manager).hasNameTranslated(FRENCH, UNDER_20_FR);
     }
 
-    @Test
-    @Parameters(method = "translations")
+    @ParameterizedTest
+    @MethodSource("translations")
     public void getsNameInTheOnlyLanguageAvailable(Locale language, String translation) {
         when(managerCi.getNames()).thenReturn(of(language, translation));
         val manager = new ManagerImpl(managerCi);
@@ -43,7 +41,7 @@ public class ManagerImplTest {
         assertThat(manager).hasNameTranslated(language, translation);
     }
 
-    private Object[] translations() {
+    private static Object[] translations() {
         return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
     }
 

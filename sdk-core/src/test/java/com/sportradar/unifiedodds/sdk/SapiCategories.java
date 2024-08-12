@@ -28,4 +28,19 @@ public class SapiCategories {
         category.setCountryCode("USA");
         return category;
     }
+
+    public static SapiCategory england() {
+        SapiCategory category = new SapiCategory();
+        category.setId("sr:category:1");
+        category.setName("England");
+        category.setCountryCode("ENG");
+        return category;
+    }
+
+    public static SapiCategory formula1() {
+        SapiCategory category = new SapiCategory();
+        category.setId("sr:category:36");
+        category.setName("Formula 1");
+        return category;
+    }
 }

@@ -17,13 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
+@SuppressWarnings("ClassFanOutComplexity")
 public class ConfigureExceptionHandlingStrategyTest {
 
     private final boolean replayMode = true;
@@ -39,8 +37,8 @@ public class ConfigureExceptionHandlingStrategyTest {
         anyConfig -> producerDataProvider
     );
 
-    @Test
-    @Parameters(method = "allStrategies")
+    @ParameterizedTest
+    @MethodSource("allStrategies")
     public void configureViaJavaApi(ExceptionHandlingStrategy strategy) {
         UofConfiguration config = buildFromPropsFile
             .setAccessToken("any")
@@ -56,7 +54,7 @@ public class ConfigureExceptionHandlingStrategyTest {
         assertEquals(strategy, internalConfigForReplay.getExceptionHandlingStrategy());
     }
 
-    private Object[] allStrategies() {
+    private static Object[] allStrategies() {
         return new Object[] { ExceptionHandlingStrategy.Throw, ExceptionHandlingStrategy.Catch };
     }
 

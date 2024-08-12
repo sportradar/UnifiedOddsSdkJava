@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ChannelMocksTest {
 

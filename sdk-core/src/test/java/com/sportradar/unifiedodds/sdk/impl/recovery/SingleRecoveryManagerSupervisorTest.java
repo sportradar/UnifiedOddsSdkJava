@@ -23,8 +23,8 @@ import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MagicNumber" })
 public class SingleRecoveryManagerSupervisorTest {
@@ -52,7 +52,7 @@ public class SingleRecoveryManagerSupervisorTest {
 
     private SingleRecoveryManagerSupervisor supervisor;
 
-    @Before
+    @BeforeEach
     public void setupSupervisorForSingleProducer() {
         ProducerData producerData = producerData().active().withId(PRODUCER_ID);
         when(producerDataProvider.getAvailableProducers()).thenReturn(asList(producerData));

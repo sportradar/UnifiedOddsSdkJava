@@ -5,7 +5,6 @@ package com.sportradar.unifiedodds.sdk;
 
 import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
-import static java.util.Arrays.stream;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -16,13 +15,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
+@SuppressWarnings("ClassFanOutComplexity")
 public class ConfigureAccessTokenTest {
 
     private final boolean replayMode = true;
@@ -39,8 +37,8 @@ public class ConfigureAccessTokenTest {
         anyConfig -> producerDataProvider
     );
 
-    @Test
-    @Parameters(method = "allEnvironments")
+    @ParameterizedTest
+    @MethodSource("allEnvironments")
     public void configureViaPropertiesFileIn(Environment environment) {
         propsFileContent.put("uf.sdk.accessToken", accessToken);
         propsFileContent.put("uf.sdk.defaultLanguage", anyLanguage.toString());
@@ -55,8 +53,8 @@ public class ConfigureAccessTokenTest {
         assertEquals(accessToken, internalConfigForReplay.getAccessToken());
     }
 
-    @Test
-    @Parameters(method = "allEnvironments")
+    @ParameterizedTest
+    @MethodSource("allEnvironments")
     public void configureViaYmlFileIn(Environment environment) {
         yamlFileContent.put("uf.sdk.accessToken", accessToken);
         yamlFileContent.put("uf.sdk.defaultLanguage", anyLanguage.toString());

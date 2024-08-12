@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import com.sportradar.unifiedodds.sdk.impl.util.files.ResourceReader;
 import com.sportradar.unifiedodds.sdk.impl.util.javaclass.ClassResolver;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings({ "LineLength", "MagicNumber" })

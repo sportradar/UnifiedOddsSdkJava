@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.equalTo;
 import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.LogsMock;
 import java.util.Optional;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SleepTest {
 

@@ -15,6 +15,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.base.Charsets;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.utils.Urn;
 import java.io.ByteArrayOutputStream;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -25,7 +26,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.http.HttpStatus;
 
-@SuppressWarnings({ "ClassFanOutComplexity", "ClassDataAbstractionCoupling" })
+@SuppressWarnings({ "ClassFanOutComplexity", "ClassDataAbstractionCoupling", "MultipleStringLiterals" })
 public class ApiSimulator {
 
     public static final String XML_DECLARATION =
@@ -152,6 +153,20 @@ public class ApiSimulator {
         );
     }
 
+    public void stubMatchSummaryNotFound(Locale language, Urn id) {
+        stub(
+            HttpStatus.SC_NOT_FOUND,
+            format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id),
+            sapiNotFoundResponse()
+        );
+    }
+
+    private JAXBElement<Response> sapiNotFoundResponse() {
+        val sapiResponse = new Response();
+        sapiResponse.setResponseCode(ResponseCode.NOT_FOUND);
+        return new JAXBElement<>(new QName(UNIFIED_XML_NAMESPACE, "response"), Response.class, sapiResponse);
+    }
+
     public void stubSeasonSummary(Locale language, SapiTournamentInfoEndpoint tournamentInfo) {
         String id = tournamentInfo.getSeason().getId();
         stubTournamentInfo(language, tournamentInfo, id);
@@ -162,16 +177,29 @@ public class ApiSimulator {
         stubTournamentInfo(language, tournamentInfo, id);
     }
 
-    public void stubStageSummary(Locale language, SapiTournamentInfoEndpoint tournamentInfo) {
-        String id = tournamentInfo.getTournament().getId();
-        stubTournamentInfo(language, tournamentInfo, id);
-    }
-
     private void stubTournamentInfo(Locale language, SapiTournamentInfoEndpoint tournamentInfo, String id) {
         val summaryElement = new JAXBElement<>(
             new QName(UNIFIED_XML_NAMESPACE, "tournament_info"),
             SapiTournamentInfoEndpoint.class,
             tournamentInfo
+        );
+        stub(
+            HttpStatus.SC_OK,
+            format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id),
+            summaryElement
+        );
+    }
+
+    public void stubRaceSummary(Locale language, SapiStageSummaryEndpoint stageSummary) {
+        String id = stageSummary.getSportEvent().getId();
+        stubRaceSummary(language, stageSummary, id);
+    }
+
+    private void stubRaceSummary(Locale language, SapiStageSummaryEndpoint stageSummary, String id) {
+        val summaryElement = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "race_summary"),
+            SapiStageSummaryEndpoint.class,
+            stageSummary
         );
         stub(
             HttpStatus.SC_OK,
@@ -301,6 +329,27 @@ public class ApiSimulator {
                 aLanguage.getLanguage(),
                 profile.getCompetitor().getId()
             )
+        );
+    }
+
+    public void stubSportCategories(Locale langA, Sport sport, SapiCategory category) {
+        val categories = new SapiSportCategoriesEndpoint();
+        val sapiSport = new SapiSport();
+        sapiSport.setId(sport.getUrn().toString());
+        sapiSport.setName("Sport (" + sport.getUrn() + ") name in " + langA);
+
+        categories.setSport(sapiSport);
+        categories.setCategories(new SapiCategories());
+        categories.getCategories().getCategory().add(category);
+        val categoriesJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sport_categories"),
+            SapiSportCategoriesEndpoint.class,
+            categories
+        );
+
+        stub(
+            categoriesJaxb,
+            format("/v1/sports/%s/sports/%s/categories.xml", langA.getLanguage(), sport.getUrn())
         );
     }
 }

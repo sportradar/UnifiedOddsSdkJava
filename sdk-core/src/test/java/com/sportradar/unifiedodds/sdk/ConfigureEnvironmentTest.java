@@ -21,16 +21,20 @@ import com.sportradar.utils.domain.names.Languages;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class ConfigureEnvironmentTest {
+
+    public static final String REPLAY_ENVIRONMENTS =
+        "com.sportradar.unifiedodds.sdk.ConfigureEnvironmentTest#replayEnvironments";
+
+    public static final String NON_REPLAY_ENVIRONMENTS =
+        "com.sportradar.unifiedodds.sdk.ConfigureEnvironmentTest#nonReplayEnvironments";
 
     public static final String ANY_TOKEN = "any";
 
@@ -44,11 +48,11 @@ public class ConfigureEnvironmentTest {
         return mock(SdkConfigurationPropertiesReader.class);
     }
 
-    @RunWith(Enclosed.class)
-    public static class ConfigurationItself {
+    @Nested
+    public class ConfigurationItself {
 
-        @RunWith(JUnitParamsRunner.class)
-        public static class ViaPropertiesFile {
+        @Nested
+        public class ViaPropertiesFile {
 
             public static final String ENVIRONMENT_PROPERTY = "uf.sdk.environment";
             private final boolean replayMode = true;
@@ -99,8 +103,8 @@ public class ConfigureEnvironmentTest {
                 assertThat(internalConfigForNonReplayExplicitly).representsNonReplay(Integration);
             }
 
-            @Test
-            @Parameters(method = "nonReplayEnvironments")
+            @ParameterizedTest
+            @MethodSource(NON_REPLAY_ENVIRONMENTS)
             public void configureNonReplayMode(Environment nonReplayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, nonReplayEnvironment.toString());
@@ -118,8 +122,8 @@ public class ConfigureEnvironmentTest {
                 assertThat(internalConfigForNonReplayExplicitly).representsNonReplay(nonReplayEnvironment);
             }
 
-            @Test
-            @Parameters(method = "replayEnvironments")
+            @ParameterizedTest
+            @MethodSource(REPLAY_ENVIRONMENTS)
             public void configureReplayMode(Environment replayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, replayEnvironment.toString());
@@ -135,32 +139,14 @@ public class ConfigureEnvironmentTest {
                 assertThat(internalConfigForReplay).representsReplay();
             }
 
-            public static Object[] replayEnvironments() {
-                return getReplayEnvironments()
-                    .stream()
-                    .map(e -> asSingleElementArray(e))
-                    .toArray(Object[]::new);
-            }
-
-            private static Environment[] asSingleElementArray(Environment e) {
-                return new Environment[] { e };
-            }
-
-            public static Object[] nonReplayEnvironments() {
-                return getNonReplayEnvironments()
-                    .stream()
-                    .map(e -> asSingleElementArray(e))
-                    .toArray(Object[]::new);
-            }
-
             private void configureAnyTokenAndAnyDefaultLanguage(Map<String, String> properties) {
                 properties.put("uf.sdk.accessToken", ANY_TOKEN);
                 properties.put("uf.sdk.defaultLanguage", Languages.any().getISO3Language());
             }
         }
 
-        @RunWith(JUnitParamsRunner.class)
-        public static class ViaYamlFile {
+        @Nested
+        public class ViaYamlFile {
 
             public static final String ENVIRONMENT_PROPERTY = "uf.sdk.environment";
             private final boolean replayMode = true;
@@ -211,8 +197,8 @@ public class ConfigureEnvironmentTest {
                 assertThat(internalConfigForNonReplayExplicitly).representsNonReplay(Integration);
             }
 
-            @Test
-            @Parameters(method = "nonReplayEnvironments")
+            @ParameterizedTest
+            @MethodSource(NON_REPLAY_ENVIRONMENTS)
             public void configureNonReplayMode(Environment nonReplayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, nonReplayEnvironment.toString());
@@ -230,8 +216,8 @@ public class ConfigureEnvironmentTest {
                 assertThat(internalConfigForNonReplayExplicitly).representsNonReplay(nonReplayEnvironment);
             }
 
-            @Test
-            @Parameters(method = "replayEnvironments")
+            @ParameterizedTest
+            @MethodSource(REPLAY_ENVIRONMENTS)
             public void configureReplayMode(Environment replayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, replayEnvironment.toString());
@@ -247,31 +233,14 @@ public class ConfigureEnvironmentTest {
                 assertThat(internalConfigForReplay).representsReplay();
             }
 
-            public static Object[] replayEnvironments() {
-                return getReplayEnvironments()
-                    .stream()
-                    .map(e -> asSingleElementArray(e))
-                    .toArray(Object[]::new);
-            }
-
-            private static Environment[] asSingleElementArray(Environment e) {
-                return new Environment[] { e };
-            }
-
-            public static Object[] nonReplayEnvironments() {
-                return getNonReplayEnvironments()
-                    .stream()
-                    .map(e -> asSingleElementArray(e))
-                    .toArray(Object[]::new);
-            }
-
             private void configureAnyTokenAndAnyDefaultLanguage(Map<String, String> properties) {
                 properties.put("uf.sdk.accessToken", ANY_TOKEN);
                 properties.put("uf.sdk.defaultLanguage", Languages.any().getISO3Language());
             }
         }
 
-        public static class ViaJavaApi {
+        @Nested
+        public class ViaJavaApi {
 
             private final boolean replayMode = true;
             private final boolean nonReplayMode = false;
@@ -377,5 +346,17 @@ public class ConfigureEnvironmentTest {
                 return this;
             }
         }
+    }
+
+    public static Object[] replayEnvironments() {
+        return getReplayEnvironments().stream().map(e -> asSingleElementArray(e)).toArray(Object[]::new);
+    }
+
+    private static Environment[] asSingleElementArray(Environment e) {
+        return new Environment[] { e };
+    }
+
+    public static Object[] nonReplayEnvironments() {
+        return getNonReplayEnvironments().stream().map(e -> asSingleElementArray(e)).toArray(Object[]::new);
     }
 }

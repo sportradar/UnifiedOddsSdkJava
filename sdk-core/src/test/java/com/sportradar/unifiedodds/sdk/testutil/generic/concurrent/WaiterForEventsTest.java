@@ -12,12 +12,9 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import junitparams.JUnitParamsRunner;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnitParamsRunner.class)
 public class WaiterForEventsTest {
 
     @Test

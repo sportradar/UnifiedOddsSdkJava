@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCi;
 import java.math.BigDecimal;
 import java.util.Locale;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TimelineEventImplTest {
 

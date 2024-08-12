@@ -507,6 +507,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
      */
     @Override
     public RaceDriverProfileCi getRaceDriver() {
+        ensureDataLoaded(raceDriverProfile);
         return raceDriverProfile;
     }
 

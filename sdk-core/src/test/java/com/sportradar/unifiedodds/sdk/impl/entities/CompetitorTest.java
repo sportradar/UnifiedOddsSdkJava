@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Optional;
 import lombok.val;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "VisibilityModifier" })
 public class CompetitorTest {

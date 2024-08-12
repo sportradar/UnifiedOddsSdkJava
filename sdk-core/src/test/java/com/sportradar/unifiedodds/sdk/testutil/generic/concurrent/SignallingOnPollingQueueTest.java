@@ -17,16 +17,13 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
 import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
+@Timeout(1)
 public class SignallingOnPollingQueueTest {
 
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
-
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(1);
 
     private final Instant instantAtMidnight = Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS);
     private final Object element = new Object();

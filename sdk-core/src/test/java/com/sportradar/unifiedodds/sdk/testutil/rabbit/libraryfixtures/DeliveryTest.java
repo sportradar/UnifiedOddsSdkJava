@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DeliveryTest {
 

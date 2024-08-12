@@ -15,8 +15,8 @@ import com.sportradar.utils.Urn;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MultipleStringLiterals" })
 public class VenueTest {
@@ -27,7 +27,7 @@ public class VenueTest {
 
     private SapiVenue sapiVenue;
 
-    @Before
+    @BeforeEach
     public void setup() throws DeserializationException {
         SapiScheduleEndpoint sapiSchedule = XmlMessageReader.readMessageFromResource(SCHEDULE_MSG_URI);
 

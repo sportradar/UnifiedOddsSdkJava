@@ -19,16 +19,19 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.utils.domain.names.Languages;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.stubbing.Stubber;
 
-@RunWith(Enclosed.class)
 public class RaceStageCiImplStageTypeTest {
+
+    public static final String SPRINT_STAGES =
+        "com.sportradar.unifiedodds.sdk.caching.impl.ci.RaceStageCiImplStageTypeTest#sprintStages";
+    public static final String RACE_STAGE_WITHOUT_STAGE_TYPE =
+        "com.sportradar.unifiedodds.sdk.caching.impl.ci.RaceStageCiImplStageTypeTest#raceStagesWithoutStageType";
 
     private static final String SAPI_SPRINT_RACE = "sprint_race";
     private static final String SAPI_PRACTICE_RACE = "practice";
@@ -41,49 +44,84 @@ public class RaceStageCiImplStageTypeTest {
         return stageSummary;
     }
 
-    @RunWith(Enclosed.class)
-    public static class GivenStageTypeIsProvidedOnConstruction {
+    public static Object[] sprintStages() throws Exception {
+        return new Object[][] {
+            { usingConstructor().constructFrom(sportEvent(SAPI_SPRINT_RACE)) },
+            { usingConstructor().constructFrom(fixture(SAPI_SPRINT_RACE)) },
+            { usingConstructor().constructFrom(stageSummary(SAPI_SPRINT_RACE)) },
+            { usingConstructor().constructFrom(childSportEvent(SAPI_SPRINT_RACE)) },
+            { usingConstructor().constructFrom(parentStage(SAPI_SPRINT_RACE)) },
+            { reimportedStage(SAPI_SPRINT_RACE) },
+        };
+    }
 
-        private static SapiParentStage parentStage(String type) {
-            SapiParentStage parentStage = new SapiParentStage();
-            parentStage.setStageType(type);
-            return parentStage;
-        }
+    private static SapiParentStage parentStage(String type) {
+        SapiParentStage parentStage = new SapiParentStage();
+        parentStage.setStageType(type);
+        return parentStage;
+    }
 
-        private static SapiSportEventChildren.SapiSportEvent childSportEvent(String type) {
-            SapiSportEventChildren.SapiSportEvent sportEvent = new SapiSportEventChildren.SapiSportEvent();
-            sportEvent.setStageType(type);
-            return sportEvent;
-        }
+    private static SapiSportEventChildren.SapiSportEvent childSportEvent(String type) {
+        SapiSportEventChildren.SapiSportEvent sportEvent = new SapiSportEventChildren.SapiSportEvent();
+        sportEvent.setStageType(type);
+        return sportEvent;
+    }
 
-        private static SapiFixture fixture(String type) {
-            SapiFixture sapiFixture = new SapiFixture();
-            sapiFixture.setStageType(type);
-            return sapiFixture;
-        }
+    private static SapiFixture fixture(String type) {
+        SapiFixture sapiFixture = new SapiFixture();
+        sapiFixture.setStageType(type);
+        return sapiFixture;
+    }
 
-        private static SapiSportEvent sportEvent(String type) {
-            SapiSportEvent sportEvent = new SapiSportEvent();
-            sportEvent.setStageType(type);
-            return sportEvent;
-        }
+    private static SapiSportEvent sportEvent(String type) {
+        SapiSportEvent sportEvent = new SapiSportEvent();
+        sportEvent.setStageType(type);
+        return sportEvent;
+    }
 
-        private static RaceStageCiImpl reimportedStage(String type) throws Exception {
-            SapiParentStage parentStage = new SapiParentStage();
-            parentStage.setStageType(type);
-            val stage = usingConstructor().constructFrom(parentStage);
-            return exportSerializeAndUseConstructorToReimport(stage).construct();
-        }
+    private static RaceStageCiImpl reimportedStage(String type) throws Exception {
+        SapiParentStage parentStage = new SapiParentStage();
+        parentStage.setStageType(type);
+        val stage = usingConstructor().constructFrom(parentStage);
+        return exportSerializeAndUseConstructorToReimport(stage).construct();
+    }
 
-        private static SapiStageSummaryEndpoint stageSummary(String type) {
-            val sapiStageSummary = new SapiStageSummaryEndpoint();
-            SapiSportEvent sportEvent = new SapiSportEvent();
-            sportEvent.setStageType(type);
-            sapiStageSummary.setSportEvent(sportEvent);
-            return sapiStageSummary;
-        }
+    private static SapiStageSummaryEndpoint stageSummary(String type) {
+        val sapiStageSummary = new SapiStageSummaryEndpoint();
+        SapiSportEvent sportEvent = new SapiSportEvent();
+        sportEvent.setStageType(type);
+        sapiStageSummary.setSportEvent(sportEvent);
+        return sapiStageSummary;
+    }
 
-        public static class ThenItIsPreserved {
+    private static Object[] raceStagesWithoutStageType() throws Exception {
+        return new Object[][] {
+            { usingConstructor().constructFrom(new SapiSportEvent()) },
+            { usingConstructor().constructFrom(new SapiFixture()) },
+            { usingConstructor().constructFrom(createEmptySapiStageSummary()) },
+            { usingConstructor().constructFrom(new SapiSportEventChildren.SapiSportEvent()) },
+            { usingConstructor().constructFrom(new SapiParentStage()) },
+            { createReimportedStage() },
+        };
+    }
+
+    private static RaceStageCiImpl createReimportedStage() throws Exception {
+        SapiParentStage anySapiObject = new SapiParentStage();
+        val stage = usingConstructor().constructFrom(anySapiObject);
+        return exportSerializeAndUseConstructorToReimport(stage).construct();
+    }
+
+    private static SapiStageSummaryEndpoint createEmptySapiStageSummary() {
+        val sapiStageSummary = new SapiStageSummaryEndpoint();
+        sapiStageSummary.setSportEvent(new SapiSportEvent());
+        return sapiStageSummary;
+    }
+
+    @Nested
+    public class GivenStageTypeIsProvidedOnConstruction {
+
+        @Nested
+        public class ThenItIsPreserved {
 
             @Test
             public void whenConstructedFromSapSportEvent() {
@@ -130,27 +168,27 @@ public class RaceStageCiImplStageTypeTest {
             }
         }
 
-        @RunWith(JUnitParamsRunner.class)
-        public static class ThenItIsNotRemovedOnSubsequentMerge {
+        @Nested
+        public class ThenItIsNotRemovedOnSubsequentMerge {
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void ofSapiSportEvent(RaceStageCiImpl raceStage) {
                 raceStage.merge(new SapiSportEvent(), Languages.any());
 
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void ofSapiFixture(RaceStageCiImpl raceStage) {
                 raceStage.merge(new SapiFixture(), Languages.any());
 
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void ofSapiStageSummary(RaceStageCiImpl raceStage) {
                 val stage = new SapiStageSummaryEndpoint();
                 stage.setSportEvent(new SapiSportEvent());
@@ -159,98 +197,76 @@ public class RaceStageCiImplStageTypeTest {
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void ofSapiChildSportEvent(RaceStageCiImpl raceStage) {
                 raceStage.merge(new SapiSportEventChildren.SapiSportEvent(), Languages.any());
 
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void whenConstructedFromSapiParentStage(RaceStageCiImpl raceStage) {
                 raceStage.merge(new SapiParentStage(), Languages.any());
 
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
-
-            private Object[] sprintStages() throws Exception {
-                return new Object[][] {
-                    { usingConstructor().constructFrom(sportEvent(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(fixture(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(stageSummary(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(childSportEvent(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(parentStage(SAPI_SPRINT_RACE)) },
-                    { reimportedStage(SAPI_SPRINT_RACE) },
-                };
-            }
         }
 
-        @RunWith(JUnitParamsRunner.class)
-        public static class ThenItIsChangedOnSubsequentMerge {
+        @Nested
+        public class ThenItIsChangedOnSubsequentMerge {
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void fromSapiSportEvent(RaceStageCiImpl sprintRace) {
                 sprintRace.merge(sportEvent(SAPI_PRACTICE_RACE), Languages.any());
 
                 assertThat(sprintRace.getStageType()).isEqualTo(Practice);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void fromSapiFixture(RaceStageCiImpl sprintRace) {
                 sprintRace.merge(fixture(SAPI_PRACTICE_RACE), Languages.any());
 
                 assertThat(sprintRace.getStageType()).isEqualTo(Practice);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void fromSapiStageSummary(RaceStageCiImpl sprintRace) {
                 sprintRace.merge(stageSummary(SAPI_PRACTICE_RACE), Languages.any());
 
                 assertThat(sprintRace.getStageType()).isEqualTo(Practice);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void fromSapiChildSportEvent(RaceStageCiImpl raceStage) {
                 raceStage.merge(childSportEvent(SAPI_PRACTICE_RACE), Languages.any());
 
                 assertThat(raceStage.getStageType()).isEqualTo(Practice);
             }
 
-            @Test
-            @Parameters(method = "sprintStages")
+            @ParameterizedTest
+            @MethodSource(SPRINT_STAGES)
             public void fromSapiParentStage(RaceStageCiImpl raceStage) {
                 raceStage.merge(childSportEvent(SAPI_PRACTICE_RACE), Languages.any());
 
                 assertThat(raceStage.getStageType()).isEqualTo(Practice);
             }
-
-            private Object[] sprintStages() throws Exception {
-                return new Object[][] {
-                    { usingConstructor().constructFrom(sportEvent(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(fixture(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(stageSummary(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(childSportEvent(SAPI_SPRINT_RACE)) },
-                    { usingConstructor().constructFrom(parentStage(SAPI_SPRINT_RACE)) },
-                    { reimportedStage(SAPI_SPRINT_RACE) },
-                };
-            }
         }
     }
 
-    @RunWith(Enclosed.class)
-    public static class GivenStageTypeIsNotAvailableOnConstruction {
+    @Nested
+    public class GivenStageTypeIsNotAvailableOnConstruction {
 
-        @RunWith(JUnitParamsRunner.class)
-        public static class ButSubsequentMergeContainsStageType {
+        @Nested
+        public class ButSubsequentMergeContainsStageType {
 
-            @Test
-            @Parameters(method = "raceStagesWithoutStageType")
+            @ParameterizedTest
+            @MethodSource(RACE_STAGE_WITHOUT_STAGE_TYPE)
             public void whenSubsequentMergeObjectIsSportEvent(RaceStageCiImpl raceStage) {
                 val updatedStage = new SapiSportEvent();
                 updatedStage.setStageType(SAPI_SPRINT_RACE);
@@ -260,8 +276,8 @@ public class RaceStageCiImplStageTypeTest {
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "raceStagesWithoutStageType")
+            @ParameterizedTest
+            @MethodSource(RACE_STAGE_WITHOUT_STAGE_TYPE)
             public void whenSubsequentMergeObjectIsFixture(RaceStageCiImpl raceStage) {
                 val updatedStage = new SapiFixture();
                 updatedStage.setStageType(SAPI_SPRINT_RACE);
@@ -271,8 +287,8 @@ public class RaceStageCiImplStageTypeTest {
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "raceStagesWithoutStageType")
+            @ParameterizedTest
+            @MethodSource(RACE_STAGE_WITHOUT_STAGE_TYPE)
             public void whenSubsequentMergeObjectIsStageSummary(RaceStageCiImpl raceStage) {
                 val updatedStage = new SapiStageSummaryEndpoint();
                 SapiSportEvent stage = new SapiSportEvent();
@@ -284,8 +300,8 @@ public class RaceStageCiImplStageTypeTest {
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "raceStagesWithoutStageType")
+            @ParameterizedTest
+            @MethodSource(RACE_STAGE_WITHOUT_STAGE_TYPE)
             public void whenSubsequentMergeObjectIsChildSportEvent(RaceStageCiImpl raceStage) {
                 val updatedStage = new SapiSportEventChildren.SapiSportEvent();
                 updatedStage.setStageType(SAPI_SPRINT_RACE);
@@ -295,8 +311,8 @@ public class RaceStageCiImplStageTypeTest {
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
 
-            @Test
-            @Parameters(method = "raceStagesWithoutStageType")
+            @ParameterizedTest
+            @MethodSource(RACE_STAGE_WITHOUT_STAGE_TYPE)
             public void whenSubsequentMergeObjectIsParentStage(RaceStageCiImpl raceStage) {
                 val updatedStage = new SapiParentStage();
                 updatedStage.setStageType(SAPI_SPRINT_RACE);
@@ -305,32 +321,10 @@ public class RaceStageCiImplStageTypeTest {
 
                 assertThat(raceStage.getStageType()).isEqualTo(SprintRace);
             }
-
-            private Object[] raceStagesWithoutStageType() throws Exception {
-                return new Object[][] {
-                    { usingConstructor().constructFrom(new SapiSportEvent()) },
-                    { usingConstructor().constructFrom(new SapiFixture()) },
-                    { usingConstructor().constructFrom(createEmptySapiStageSummary()) },
-                    { usingConstructor().constructFrom(new SapiSportEventChildren.SapiSportEvent()) },
-                    { usingConstructor().constructFrom(new SapiParentStage()) },
-                    { createReimportedStage() },
-                };
-            }
-
-            private static RaceStageCiImpl createReimportedStage() throws Exception {
-                SapiParentStage anySapiObject = new SapiParentStage();
-                val stage = usingConstructor().constructFrom(anySapiObject);
-                return exportSerializeAndUseConstructorToReimport(stage).construct();
-            }
-
-            private static SapiStageSummaryEndpoint createEmptySapiStageSummary() {
-                val sapiStageSummary = new SapiStageSummaryEndpoint();
-                sapiStageSummary.setSportEvent(new SapiSportEvent());
-                return sapiStageSummary;
-            }
         }
 
-        public static class FromSummarySourceObject {
+        @Nested
+        public class FromSummarySourceObject {
 
             @Test
             public void thenSummaryIsNotReQueriedAsItIsConsideredToBeSourceOfTruthForStageType()
@@ -346,10 +340,11 @@ public class RaceStageCiImplStageTypeTest {
             }
         }
 
-        @RunWith(Enclosed.class)
-        public static class FromNonSummarySourceObject {
+        @Nested
+        public class FromNonSummarySourceObject {
 
-            public static class ThenSummaryIsQueriedButDueToSomeEdgeCaseDownstreamItIsNotMergedIntoCi {
+            @Nested
+            public class ThenSummaryIsQueriedButDueToSomeEdgeCaseDownstreamItIsNotMergedIntoCi {
 
                 private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
 
@@ -413,7 +408,8 @@ public class RaceStageCiImplStageTypeTest {
                 }
             }
 
-            public static class ThenSummaryIsQueriedAndMergedIntoCiWithStageTypeUpdated {
+            @Nested
+            public class ThenSummaryIsQueriedAndMergedIntoCiWithStageTypeUpdated {
 
                 private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
 
@@ -479,7 +475,7 @@ public class RaceStageCiImplStageTypeTest {
                         .requestSummaryEndpoint(any(), any(), any());
                 }
 
-                private static Stubber does(Runnable action) {
+                private Stubber does(Runnable action) {
                     return doAnswer(args -> {
                         action.run();
                         return null;
@@ -487,10 +483,11 @@ public class RaceStageCiImplStageTypeTest {
                 }
             }
 
-            @RunWith(Enclosed.class)
-            public static class AndSummaryIsQueriedButItFailsDueToCommunicationErrorAndSdkIsConfiguredToThrowErrors {
+            @Nested
+            public class AndSummaryIsQueriedButItFailsDueToCommunicationErrorAndSdkIsConfiguredToThrowErrors {
 
-                public static class ThenErrorIsWrappedAndRethrown {
+                @Nested
+                public class ThenErrorIsWrappedAndRethrown {
 
                     private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
                     private CommunicationException communicationError = new CommunicationException(
@@ -570,10 +567,11 @@ public class RaceStageCiImplStageTypeTest {
                 }
             }
 
-            @RunWith(Enclosed.class)
-            public static class AndSummaryIsQueriedButItFailsDueToCommunicationErrorAndSdkIsConfiguredToCatchErrors {
+            @Nested
+            public class AndSummaryIsQueriedButItFailsDueToCommunicationErrorAndSdkIsConfiguredToCatchErrors {
 
-                public static class ThenSdkDoesNotProvideStageType {
+                @Nested
+                public class ThenSdkDoesNotProvideStageType {
 
                     private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
                     private CommunicationException communicationError = new CommunicationException(

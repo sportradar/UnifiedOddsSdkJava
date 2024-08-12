@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import java.time.Instant;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TimeUtilsStubTest {
 

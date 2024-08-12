@@ -16,14 +16,11 @@ import com.sportradar.unifiedodds.sdk.shared.TestProducersProvider;
 import com.sportradar.utils.Urn;
 import java.util.HashMap;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("checkstyle:ClassFanOutComplexity")
-@RunWith(JUnitParamsRunner.class)
 public class CacheMessageProcessorTest {
 
     private final Urn eventId = Urn.parse("sr:match:1234");
@@ -39,7 +36,7 @@ public class CacheMessageProcessorTest {
     private final Map<Integer, Producer> producerMap = new HashMap<>();
 
     @SuppressWarnings("checkstyle:MagicNumber")
-    @Before
+    @BeforeEach
     public void setup() {
         when(producerManager.getAvailableProducers()).thenReturn(producerMap);
         setupCacheMessageProcessor();

@@ -20,7 +20,7 @@ import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
 import java.util.Locale;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DataRouterManagerImplRequestingSportEventsSublistTest {
 

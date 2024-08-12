@@ -13,7 +13,7 @@ import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import com.sportradar.utils.domain.names.Languages;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class VenueImplTest {
 

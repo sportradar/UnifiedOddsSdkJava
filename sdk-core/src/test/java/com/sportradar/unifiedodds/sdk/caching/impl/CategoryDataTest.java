@@ -15,14 +15,12 @@ import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.apache.groovy.util.Maps;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class CategoryDataTest {
 
     private static final String UNDER_20_EN = "Under 20";
@@ -51,8 +49,8 @@ public class CategoryDataTest {
         assertThat(names.get(FRENCH)).isEqualTo(UNDER_20_FR);
     }
 
-    @Test
-    @Parameters(method = "translations")
+    @ParameterizedTest
+    @MethodSource("translations")
     public void getsNameInDesiredLanguage(Locale language, String translation) {
         val namesInSingleLanguage = Maps.of(language, translation);
         val category = new CategoryData(
@@ -65,7 +63,7 @@ public class CategoryDataTest {
         assertThat(category.getName(language)).isEqualTo(translation);
     }
 
-    private Object[] translations() {
+    private static Object[] translations() {
         return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
     }
 

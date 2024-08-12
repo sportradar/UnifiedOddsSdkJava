@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.sportradar.utils.Urn;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "VisibilityModifier" })
 public class RegexRoutingKeyParserTest {

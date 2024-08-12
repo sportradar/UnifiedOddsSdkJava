@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 import com.sportradar.unifiedodds.sdk.caching.ci.DivisionCi;
 import com.sportradar.unifiedodds.sdk.entities.Division;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DivisionImplTest {
 

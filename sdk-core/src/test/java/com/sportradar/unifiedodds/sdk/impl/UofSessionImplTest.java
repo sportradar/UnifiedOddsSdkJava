@@ -22,13 +22,11 @@ import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("ClassFanOutComplexity")
 public class UofSessionImplTest {
 
@@ -63,11 +61,11 @@ public class UofSessionImplTest {
         dispatchedFixtureChangeCache
     );
 
-    private Object[] everyEnvironment() {
+    private static Object[] everyEnvironment() {
         return Environment.values();
     }
 
-    private Object[] nonReplayEnvironments() {
+    private static Object[] nonReplayEnvironments() {
         return Arrays
             .asList(Environment.values())
             .stream()
@@ -76,12 +74,12 @@ public class UofSessionImplTest {
             .toArray();
     }
 
-    private Object[] replayEnvironments() {
+    private static Object[] replayEnvironments() {
         return new Environment[] { Replay, GlobalReplay };
     }
 
-    @Test
-    @Parameters(method = "everyEnvironment")
+    @ParameterizedTest
+    @MethodSource("everyEnvironment")
     public void validMessagesShouldBeProcessedIn(final Environment environment) throws IOException {
         session.open(anyRoutingKeys, AllMessages, listener, extListener);
         val oddsChange = new UfOddsChange();
@@ -111,8 +109,8 @@ public class UofSessionImplTest {
         verify(processor, times(0)).processMessage(any(), any(), any(), any());
     }
 
-    @Test
-    @Parameters(method = "nonReplayEnvironments")
+    @ParameterizedTest
+    @MethodSource("nonReplayEnvironments")
     public void messagesOfDisabledProducerShouldNotBeProcessedForNonReplayEnvironments(
         final Environment nonReplay
     ) throws IOException {
@@ -126,8 +124,8 @@ public class UofSessionImplTest {
         verify(processor, times(0)).processMessage(any(), any(), any(), any());
     }
 
-    @Test
-    @Parameters(method = "replayEnvironments")
+    @ParameterizedTest
+    @MethodSource("replayEnvironments")
     public void messagesShouldBeProcessedInReplayEnvironmentsEvenWhenProducerIsDown(final Environment replay)
         throws IOException {
         session.open(anyRoutingKeys, AllMessages, listener, extListener);

@@ -15,11 +15,9 @@ import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Locale;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class VenueCiCourseCiTest {
 
     private static final UniqueObjects<Urn> UNIQUE_URNS = unique(() -> urnForAnyVenue());
@@ -48,10 +46,11 @@ public class VenueCiCourseCiTest {
         return sapiVenue;
     }
 
-    @RunWith(Enclosed.class)
-    public static class GivenNoMergeWillOccur {
+    @Nested
+    public class GivenNoMergeWillOccur {
 
-        public static class WhenZeroCoursesAreProvidedOnConstruction {
+        @Nested
+        public class WhenZeroCoursesAreProvidedOnConstruction {
 
             @Test
             public void thenPreservesNoCourses() {
@@ -73,7 +72,8 @@ public class VenueCiCourseCiTest {
             }
         }
 
-        public static class WhenSingleCourseIsProvidedOnConstruction {
+        @Nested
+        public class WhenSingleCourseIsProvidedOnConstruction {
 
             @Test
             public void thenPreservesOneCourse() {
@@ -114,7 +114,8 @@ public class VenueCiCourseCiTest {
             }
         }
 
-        public static class WhenMultipleCoursesAreProvidedOnConstruction {
+        @Nested
+        public class WhenMultipleCoursesAreProvidedOnConstruction {
 
             @Test
             public void thenPreservesThem() {
@@ -175,87 +176,89 @@ public class VenueCiCourseCiTest {
         }
     }
 
-    @RunWith(Enclosed.class)
-    public static class GivenMergeWillOccur {
+    @Nested
+    public class GivenMergeWillOccur {
 
-        public static final Locale LANGUAGE = Languages.any();
+        private final Locale language = Languages.any();
 
-        public static class AndNoCoursesWereProvidedPreviously {
+        @Nested
+        public class AndNoCoursesWereProvidedPreviously {
 
             @Test
             public void whenMergingWith0NewCoursesThenPreserves0Courses() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
 
-                venueCi.merge(sapiVenueWithAnyId(), LANGUAGE);
+                venueCi.merge(sapiVenueWithAnyId(), language);
 
                 assertThat(venueCi.getCourses()).isEmpty();
             }
 
             @Test
             public void whenMergingWithSingleNewCourseThenPreservesThisNewCourse() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID);
             }
 
             @Test
             public void whenMergingWithSingleNewCourseWithoutIdThenPreservesThisNewCourse() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(new SapiCourse());
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(null);
             }
 
             @Test
             public void whenMergingWithMultipleNewCoursesThenPreservesTheseNewCourses() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(
                     sapiCoursesWithId(ID.toString()),
                     sapiCoursesWithId(ANOTHER_ID.toString())
                 );
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID, ANOTHER_ID);
             }
 
             @Test
             public void whenMergingWithMultipleNewCoursesOneOfWhichHasNoIdThenPreservesAllTheseNewCourses() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(
                     sapiCoursesWithId(ID.toString()),
                     new SapiCourse()
                 );
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID, null);
             }
 
             @Test
             public void whenMergingWithMultipleNewCoursesWithoutIdsThenPreservesTheseNewCourses() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(new SapiCourse(), new SapiCourse());
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(null, null);
             }
         }
 
-        public static class AndSomeCoursesWereProvidedPreviously {
+        @Nested
+        public class AndSomeCoursesWereProvidedPreviously {
 
             @Test
             public void whenMergingWith0NewCoursesThenDoesNotReplaceOldOnesIndicatingThatSourceNotKnowsTheState() {
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
-                val venueCi = new VenueCi(sapiVenue, LANGUAGE);
+                val venueCi = new VenueCi(sapiVenue, language);
 
-                venueCi.merge(sapiVenueWithAnyId(), LANGUAGE);
+                venueCi.merge(sapiVenueWithAnyId(), language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID);
             }
@@ -263,10 +266,10 @@ public class VenueCiCourseCiTest {
             @Test
             public void whenMergingSingleCourseContainingSameIdAsInflightRequestThenPreservesThisCourses() {
                 SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID);
             }
@@ -277,13 +280,13 @@ public class VenueCiCourseCiTest {
                     sapiCoursesWithId(ID.toString()),
                     sapiCoursesWithId(ANOTHER_ID.toString())
                 );
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(
                     sapiCoursesWithId(ID.toString()),
                     sapiCoursesWithId(ANOTHER_ID.toString())
                 );
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID, ANOTHER_ID);
             }
@@ -291,13 +294,13 @@ public class VenueCiCourseCiTest {
             @Test
             public void whenInflightRequestContainsCoursesWithCurrentlyNotExistingIdsThanTheyArePreserved() {
                 SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(
                     sapiCoursesWithId(ID.toString()),
                     sapiCoursesWithId(ANOTHER_ID.toString())
                 );
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID, ANOTHER_ID);
             }
@@ -308,10 +311,10 @@ public class VenueCiCourseCiTest {
                     sapiCoursesWithId(ID.toString()),
                     sapiCoursesWithId(ANOTHER_ID.toString())
                 );
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID);
             }
@@ -319,13 +322,13 @@ public class VenueCiCourseCiTest {
             @Test
             public void whenInflightRequestContainsCoursesWithoutIdsAndCiDoesNotHaveSuchOnesThenCiPreservesThem() {
                 SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(
                     sapiCoursesWithId(ID.toString()),
                     new SapiCourse()
                 );
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID, null);
             }
@@ -336,10 +339,10 @@ public class VenueCiCourseCiTest {
                     sapiCoursesWithId(ID.toString()),
                     new SapiCourse()
                 );
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(ID);
             }
@@ -347,10 +350,10 @@ public class VenueCiCourseCiTest {
             @Test
             public void whenInflightRequestContainsOneCoursWithoutIdAndCiHasOneWithoutIdThanTheyAreNotDuplicated() {
                 SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(new SapiCourse());
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(new SapiCourse());
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(null);
             }
@@ -358,10 +361,10 @@ public class VenueCiCourseCiTest {
             @Test
             public void whenInflightRequestContainsMoreCourseWithoutIdThanCiCurrentlyHasThenInflightArePreserved() {
                 SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(new SapiCourse());
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(new SapiCourse(), new SapiCourse());
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(null, null);
             }
@@ -369,10 +372,10 @@ public class VenueCiCourseCiTest {
             @Test
             public void whenInflightRequestContainsLessCourseWithoutIdThanCiCurrentlyHasThenCiDropsRedundantOnes() {
                 SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(new SapiCourse(), new SapiCourse());
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue newCourses = sapiVenueWithAnyIdAndCourses(new SapiCourse());
 
-                venueCi.merge(newCourses, LANGUAGE);
+                venueCi.merge(newCourses, language);
 
                 assertThat(venueCi).containsOnlyCoursesWithIds(null);
             }

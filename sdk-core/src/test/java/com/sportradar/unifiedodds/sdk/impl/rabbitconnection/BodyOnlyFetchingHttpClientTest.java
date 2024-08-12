@@ -5,6 +5,7 @@ package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -24,7 +25,7 @@ public class BodyOnlyFetchingHttpClientTest {
     private static final String SPECIFIED_PATH = "/specifiedPath";
 
     @Rule
-    public final WireMockRule wireMock = new WireMockRule();
+    public final WireMockRule wireMock = new WireMockRule(options().dynamicPort());
 
     private final BodyOnlyFetchingHttpClient httpClient = new BodyOnlyFetchingHttpClient();
 

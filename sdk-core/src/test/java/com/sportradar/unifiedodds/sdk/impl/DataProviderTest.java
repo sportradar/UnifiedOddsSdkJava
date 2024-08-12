@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import java.util.Locale;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DataProviderTest {
 

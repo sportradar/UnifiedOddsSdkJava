@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ClosableHttpResponseStubsTest {
 

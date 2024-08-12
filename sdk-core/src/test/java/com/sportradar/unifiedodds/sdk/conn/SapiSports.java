@@ -248,4 +248,11 @@ public class SapiSports {
         stockCarRacing.setName("Stock Car Racing");
         return stockCarRacing;
     }
+
+    public static SapiSport formula1() {
+        SapiSport formula1 = new SapiSport();
+        formula1.setId("sr:sport:40");
+        formula1.setName("Formula 1");
+        return formula1;
+    }
 }

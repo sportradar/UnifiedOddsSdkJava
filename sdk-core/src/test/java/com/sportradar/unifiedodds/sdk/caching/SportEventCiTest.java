@@ -34,7 +34,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "IllegalCatch", "MagicNumber", "ClassDataAbstractionCoupling" })
 public class SportEventCiTest {

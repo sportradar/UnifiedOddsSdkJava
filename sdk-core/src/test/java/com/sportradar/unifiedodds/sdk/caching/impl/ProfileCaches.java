@@ -17,9 +17,13 @@ import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCi;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactoryImpl;
+import com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer;
+import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.Languages;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -30,8 +34,46 @@ public class ProfileCaches {
         val exported = cache.exportItems();
         assertThat(exported).hasSize(1);
         val serialized = serialize(exported.get(0));
+
+        purge(cache, exported.get(0));
+
         val deserialized = deserialize(serialized);
         cache.importItems(asList((ExportableCompetitorCi) deserialized));
+    }
+
+    @SneakyThrows
+    public static void exportAndImportItemsIn(ProfileCacheImpl cache) {
+        val exported = cache.exportItems();
+        List<byte[]> serialised = serialise(exported);
+
+        purge(exported, cache);
+
+        cache.importItems(deserialise(serialised));
+    }
+
+    private static List<byte[]> serialise(List<ExportableCi> exported) {
+        return exported.stream().map(JavaSerializer::serialize).collect(Collectors.toList());
+    }
+
+    private static List<ExportableCi> deserialise(List<byte[]> serialised) {
+        return serialised
+            .stream()
+            .map(JavaSerializer::deserialize)
+            .map(e -> (ExportableCi) e)
+            .collect(Collectors.toList());
+    }
+
+    private static void purge(List<ExportableCi> exported, ProfileCacheImpl cache) {
+        exported.forEach(e -> purge(cache, e));
+    }
+
+    private static void purge(ProfileCacheImpl cache, ExportableCi exported) {
+        Urn id = Urn.parse(exported.getId());
+        if ("competitor".equals(id.getType())) {
+            cache.purgeCompetitorProfileCacheItem(id);
+        } else {
+            throw new RuntimeException("Expected competitor profile");
+        }
     }
 
     public static class BuilderStubbingOutDataRouterManager {

@@ -20,8 +20,8 @@ import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import java.util.Locale;
 import java.util.function.Consumer;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "MultipleStringLiterals", "VisibilityModifier" })
@@ -35,7 +35,7 @@ public class FeedMessageValidatorTest {
     FeedMessageValidator validator;
     RoutingKeyParser keyParser;
 
-    @Before
+    @BeforeEach
     public void setup() {
         val config = configurationWithAnyDefaultLanguageAndThrowingOnErrors();
         Injector injector = new TestInjectorFactory(config, new StubUofConfiguration()).create();

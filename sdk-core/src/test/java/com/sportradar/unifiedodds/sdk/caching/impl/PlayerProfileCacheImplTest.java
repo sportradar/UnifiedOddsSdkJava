@@ -5,12 +5,21 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import static com.sportradar.unifiedodds.sdk.caching.impl.ProfileCaches.BuilderStubbingOutDataRouterManager.stubbingOutDataRouterManager;
 import static com.sportradar.unifiedodds.sdk.caching.impl.SportEntityFactories.BuilderStubbingOutAllCachesAndStatusFactory.stubbingOutAllCachesAndStatusFactory;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
+import static com.sportradar.unifiedodds.sdk.impl.SummaryDataProviders.providing;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
 import static com.sportradar.utils.Urns.PlayerProfiles.urnForAnyPlayerProfile;
+import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Locale.ENGLISH;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sportradar.uf.sportsapi.datamodel.SapiMatchSummaryEndpoint;
+import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.conn.SapiTeams;
+import com.sportradar.utils.Urn;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 

@@ -14,7 +14,7 @@ import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.util.*;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConfigureDesiredLanguagesTest {
 

@@ -10,15 +10,15 @@ import static org.mockito.Mockito.mock;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class UofSdkForReplayTest {
 
     private final UofGlobalEventsListener listener = mock(UofGlobalEventsListener.class);
     private final UofConfiguration config = new StubUofConfiguration();
 
-    @Before
+    @BeforeEach
     public void setup() {
         ((StubUofConfiguration) config).setEnvironment(Environment.Integration);
         ((StubUofConfiguration) config).resetNbrSetEnvironmentCalled();

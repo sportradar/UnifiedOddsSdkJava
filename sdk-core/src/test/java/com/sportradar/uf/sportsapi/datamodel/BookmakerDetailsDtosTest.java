@@ -8,14 +8,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.ZonedDateTime;
 import javax.xml.datatype.DatatypeConfigurationException;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class BookmakerDetailsDtosTest {
 
-    public static class Bet365 {
+    @Nested
+    public class Bet365 {
 
         private BookmakerDetails bookmaker = BookmakerDetailsDtos.bet365();
 

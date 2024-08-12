@@ -14,7 +14,7 @@ import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MagicNumber" })
 public class ChannelSupervisionSchedulerTest {

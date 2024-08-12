@@ -21,17 +21,19 @@ import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.ArrayList;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class CustomBetManagerImplTest {
 
-    public static class CustomBetManagerImplConstruction {
+    public static final String DISTINCT_TYPES_OF_EXCEPTION =
+        "com.sportradar.unifiedodds.sdk.CustomBetManagerImplTest#distinctTypesOfExceptions";
+
+    @Nested
+    public class CustomBetManagerImplConstruction {
 
         @Test
         public void shouldNotBeCreatedWithNullArguments() {
@@ -44,10 +46,10 @@ public class CustomBetManagerImplTest {
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class RequestingAvailableSelection {
+    @Nested
+    public class RequestingAvailableSelection {
 
-        private static final Urn ANY_URN = Urns.SportEvents.getForAnyMatch();
+        private final Urn anyUrn = Urns.SportEvents.getForAnyMatch();
         private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
         private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
@@ -64,23 +66,23 @@ public class CustomBetManagerImplTest {
             when(dataRouterManager.requestAvailableSelections(any())).thenReturn(selections);
             val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertEquals(selections, customBetManager.getAvailableSelections(ANY_URN));
+            assertEquals(selections, customBetManager.getAvailableSelections(anyUrn));
         }
 
-        @Test
-        @Parameters(method = "distinctTypesOfExceptions")
+        @ParameterizedTest
+        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
         public void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrow(final Class exceptionType)
             throws CommunicationException {
             when(dataRouterManager.requestAvailableSelections(any())).thenThrow(exceptionType);
             when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
             final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertThatThrownBy(() -> customBetManager.getAvailableSelections(ANY_URN))
+            assertThatThrownBy(() -> customBetManager.getAvailableSelections(anyUrn))
                 .isInstanceOf(exceptionType);
         }
 
-        @Test
-        @Parameters(method = "distinctTypesOfExceptions")
+        @ParameterizedTest
+        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
         public void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(
             final Class exceptionType
         ) throws CommunicationException {
@@ -88,19 +90,14 @@ public class CustomBetManagerImplTest {
             when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
             final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertNull(customBetManager.getAvailableSelections(ANY_URN));
-        }
-
-        @Parameters
-        private Object[] distinctTypesOfExceptions() {
-            return new Object[] { RuntimeException.class, CommunicationException.class };
+            assertNull(customBetManager.getAvailableSelections(anyUrn));
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class RequestingProbabilitiesCalculation {
+    @Nested
+    public class RequestingProbabilitiesCalculation {
 
-        private static final List<Selection> ANY_SELECTION = new ArrayList<>();
+        private final List<Selection> anySelection = new ArrayList<>();
         private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
         private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
@@ -117,23 +114,23 @@ public class CustomBetManagerImplTest {
             when(dataRouterManager.requestCalculateProbability(any())).thenReturn(calculation);
             val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertEquals(calculation, customBetManager.calculateProbability(ANY_SELECTION));
+            assertEquals(calculation, customBetManager.calculateProbability(anySelection));
         }
 
-        @Test
-        @Parameters(method = "distinctTypesOfExceptions")
+        @ParameterizedTest
+        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
         public void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrow(final Class exceptionType)
             throws CommunicationException {
             when(dataRouterManager.requestCalculateProbability(any())).thenThrow(exceptionType);
             when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
             final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertThatThrownBy(() -> customBetManager.calculateProbability(ANY_SELECTION))
+            assertThatThrownBy(() -> customBetManager.calculateProbability(anySelection))
                 .isInstanceOf(exceptionType);
         }
 
-        @Test
-        @Parameters(method = "distinctTypesOfExceptions")
+        @ParameterizedTest
+        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
         public void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(
             final Class exceptionType
         ) throws CommunicationException {
@@ -141,19 +138,14 @@ public class CustomBetManagerImplTest {
             when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
             final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertNull(customBetManager.calculateProbability(ANY_SELECTION));
-        }
-
-        @Parameters
-        private Object[] distinctTypesOfExceptions() {
-            return new Object[] { RuntimeException.class, CommunicationException.class };
+            assertNull(customBetManager.calculateProbability(anySelection));
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class RequestingProbabilitiesCalculationMeanwhileClientIsFilteringOutcomes {
+    @Nested
+    public class RequestingProbabilitiesCalculationMeanwhileClientIsFilteringOutcomes {
 
-        private static final List<Selection> ANY_SELECTION = new ArrayList<>();
+        private final List<Selection> anySelection = new ArrayList<>();
         private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
         private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
@@ -171,23 +163,23 @@ public class CustomBetManagerImplTest {
             when(dataRouterManager.requestCalculateProbabilityFilter(any())).thenReturn(calculation);
             val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertEquals(calculation, customBetManager.calculateProbabilityFilter(ANY_SELECTION));
+            assertEquals(calculation, customBetManager.calculateProbabilityFilter(anySelection));
         }
 
-        @Test
-        @Parameters(method = "distinctTypesOfExceptions")
+        @ParameterizedTest
+        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
         public void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrow(final Class exceptionType)
             throws CommunicationException {
             when(dataRouterManager.requestCalculateProbabilityFilter(any())).thenThrow(exceptionType);
             when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
             final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertThatThrownBy(() -> customBetManager.calculateProbabilityFilter(ANY_SELECTION))
+            assertThatThrownBy(() -> customBetManager.calculateProbabilityFilter(anySelection))
                 .isInstanceOf(exceptionType);
         }
 
-        @Test
-        @Parameters(method = "distinctTypesOfExceptions")
+        @ParameterizedTest
+        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
         public void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(
             final Class exceptionType
         ) throws CommunicationException {
@@ -195,12 +187,11 @@ public class CustomBetManagerImplTest {
             when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
             final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
 
-            assertNull(customBetManager.calculateProbabilityFilter(ANY_SELECTION));
+            assertNull(customBetManager.calculateProbabilityFilter(anySelection));
         }
+    }
 
-        @Parameters
-        private Object[] distinctTypesOfExceptions() {
-            return new Object[] { RuntimeException.class, CommunicationException.class };
-        }
+    public static Object[] distinctTypesOfExceptions() {
+        return new Object[] { RuntimeException.class, CommunicationException.class };
     }
 }

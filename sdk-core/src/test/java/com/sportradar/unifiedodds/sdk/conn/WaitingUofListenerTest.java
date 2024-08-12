@@ -19,17 +19,14 @@ import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.*;
 import lombok.val;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
+@Timeout(value = 1, unit = TimeUnit.SECONDS)
 public class WaitingUofListenerTest {
 
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
     private static final Instant INSTANT_AT_MIDNIGHT = Instant.ofEpochMilli(MIDNIGHT_TIMESTAMP_MILLIS);
-
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(1);
 
     private final TimeUtilsStub timeUtils = TimeUtilsStub
         .threadSafe(new AtomicActionPerformer())

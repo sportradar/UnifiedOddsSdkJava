@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import java.util.List;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EnvironmentManagerTest {
 

@@ -19,8 +19,8 @@ import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import com.sportradar.utils.Urn;
 import java.util.*;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings(
     {
@@ -43,7 +43,7 @@ public class TournamentCiTest {
 
     private Injector injector;
 
-    @Before
+    @BeforeEach
     public void setup() {
         //        Mockito.when(config.getDefaultLocale()).thenReturn(LOCALE);
         //

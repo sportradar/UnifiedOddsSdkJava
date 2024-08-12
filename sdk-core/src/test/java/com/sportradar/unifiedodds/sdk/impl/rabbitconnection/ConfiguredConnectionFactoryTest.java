@@ -23,8 +23,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -52,7 +52,7 @@ public class ConfiguredConnectionFactoryTest {
         timeUtils
     );
 
-    @Before
+    @BeforeEach
     public void setAnyTime() {
         when(timeUtils.nowInstant()).thenReturn(Instant.now());
     }

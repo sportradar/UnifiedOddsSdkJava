@@ -10,8 +10,10 @@ import com.sportradar.uf.sportsapi.datamodel.SapiJersey;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Jersey;
 import com.sportradar.utils.domain.names.LanguageHolder;
+import com.sportradar.utils.domain.names.Languages;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 import lombok.val;
 import org.apache.commons.lang3.BooleanUtils;
 import org.assertj.core.api.AbstractAssert;
@@ -19,30 +21,44 @@ import org.assertj.core.api.Assertions;
 
 public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competitor> {
 
-    private final Locale locale;
+    private final Optional<Locale> locale;
 
     protected CompetitorAssert(Competitor competitor, Locale locale) {
         super(competitor, CompetitorAssert.class);
-        this.locale = locale;
+        this.locale = Optional.of(locale);
     }
 
     public static CompetitorAssert assertThat(Competitor competitor, LanguageHolder language) {
         return new CompetitorAssert(competitor, language.get());
     }
 
+    public static CompetitorAssert assertThat(Competitor competitor) {
+        return new CompetitorAssert(competitor, Languages.any());
+    }
+
     public CompetitorAssert isEqualTo(SapiCompetitorProfileEndpoint profile) {
         val competitor = profile.getCompetitor();
-        Assertions.assertThat(actual.getName(locale)).isEqualTo(competitor.getName());
+        Assertions.assertThat(actual.getName(locale.get())).isEqualTo(competitor.getName());
         Assertions.assertThat(actual.getCountryCode()).isEqualTo(competitor.getCountryCode());
-        Assertions.assertThat(actual.getAbbreviation(locale)).isEqualTo(competitor.getAbbreviation());
+        Assertions.assertThat(actual.getAbbreviation(locale.get())).isEqualTo(competitor.getAbbreviation());
         Assertions.assertThat(actual.getGender()).isEqualTo(competitor.getGender());
         Assertions.assertThat(actual.getAgeGroup()).isEqualTo(competitor.getAgeGroup());
         Assertions.assertThat(actual.getShortName()).isEqualTo(competitor.getShortName());
         Assertions.assertThat(actual.getState()).isEqualTo(competitor.getState());
-        Assertions.assertThat(actual.getCountry(locale)).isEqualTo(competitor.getCountry());
+        Assertions.assertThat(actual.getCountry(locale.get())).isEqualTo(competitor.getCountry());
         Assertions.assertThat(actual.isVirtual()).isEqualTo(BooleanUtils.isTrue(competitor.isVirtual()));
         assertJerseyLists(profile);
         assertPlayerLists(profile);
+        return this;
+    }
+
+    public CompetitorAssert isVirtual() {
+        Assertions.assertThat(actual.isVirtual()).isTrue();
+        return this;
+    }
+
+    public CompetitorAssert isNotVirtual() {
+        Assertions.assertThat(actual.isVirtual()).isFalse();
         return this;
     }
 
@@ -68,7 +84,7 @@ public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competito
         val players = actual
             .getPlayers()
             .stream()
-            .map(p -> p.getId() + " - " + p.getName(locale))
+            .map(p -> p.getId() + " - " + p.getName(locale.get()))
             .collect(toList());
         val sapiPlayers = profile
             .getPlayers()

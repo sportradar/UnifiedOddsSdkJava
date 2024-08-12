@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.testutil.generic.functional;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ThrowingFunctionTest {
 

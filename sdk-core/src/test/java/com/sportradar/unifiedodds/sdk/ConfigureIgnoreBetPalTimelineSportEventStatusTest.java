@@ -16,7 +16,7 @@ import com.sportradar.unifiedodds.sdk.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 

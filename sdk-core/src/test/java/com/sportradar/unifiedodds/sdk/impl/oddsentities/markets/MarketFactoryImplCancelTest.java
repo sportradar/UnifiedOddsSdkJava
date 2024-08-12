@@ -29,23 +29,47 @@ import com.sportradar.utils.domain.producers.ProducerIds;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class MarketFactoryImplCancelTest {
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class WhenMarketIsNotBackedWithMarketDescription {
+    public static final String EXCEPTION_HANDLING_STRATEGIES =
+        "com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImplCancelTest" +
+        "#exceptionHandlingStrategies";
+    public static final String NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES =
+        "com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImplCancelTest" +
+        "#nonPremiumCricketProducerIdsAndExceptionHandlingStrategies";
+
+    private static Object[] nonPremiumCricketProducerIdsAndExceptionHandlingStrategies() {
+        return Arrays
+            .stream(ProducerIds.nonPremiumCricketProducerIds())
+            .flatMap(id ->
+                Stream.of(
+                    new Object[] { id, ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
+                    new Object[] { id, ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS }
+                )
+            )
+            .toArray(Object[]::new);
+    }
+
+    private static Object[] exceptionHandlingStrategies() {
+        return new Object[][] {
+            { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
+            { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
+        };
+    }
+
+    @Nested
+    public class WhenMarketIsNotBackedWithMarketDescription {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketNameRetrievalFailsInDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
@@ -64,8 +88,8 @@ public class MarketFactoryImplCancelTest {
             assertThat(market).getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketNameRetrievalFailsInNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
@@ -85,8 +109,8 @@ public class MarketFactoryImplCancelTest {
             assertThat(market).getNameForGiven(langB, willFailRespectingSdkStrategy);
         }
 
-        @Test
-        @Parameters(method = "nonPremiumCricketProducerIdsAndExceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForDefaultLanguage(
             int nonPremiumCricketProducerId,
             ExceptionHandlingStrategy exceptionHandlingStrategy,
@@ -112,8 +136,8 @@ public class MarketFactoryImplCancelTest {
                 );
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForDefaultLanguageForPremiumCricketProducer(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -140,8 +164,8 @@ public class MarketFactoryImplCancelTest {
             assertThat(definition.getValidMappings(aLanguage)).isEmpty();
         }
 
-        @Test
-        @Parameters(method = "nonPremiumCricketProducerIdsAndExceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForNonDefaultLanguage(
             int nonPremiumCricketProducerId,
             ExceptionHandlingStrategy exceptionHandlingStrategy,
@@ -168,8 +192,8 @@ public class MarketFactoryImplCancelTest {
                 );
         }
 
-        @Test
-        @Parameters(method = "exceptionHandlingStrategies")
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
         public void marketDefinitionIsNotDescribedForPremiumCricketProducerForNonDefaultLanguage(
             ExceptionHandlingStrategy exceptionHandlingStrategy,
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
@@ -195,28 +219,10 @@ public class MarketFactoryImplCancelTest {
                 );
             assertThat(definition.getValidMappings(anotherLanguage)).isEmpty();
         }
-
-        private Object[] nonPremiumCricketProducerIdsAndExceptionHandlingStrategies() {
-            return Arrays
-                .stream(ProducerIds.nonPremiumCricketProducerIds())
-                .flatMap(id ->
-                    Stream.of(
-                        new Object[] { id, ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                        new Object[] { id, ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS }
-                    )
-                )
-                .toArray(Object[]::new);
-        }
-
-        private Object[] exceptionHandlingStrategies() {
-            return new Object[][] {
-                { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
-            };
-        }
     }
 
-    public static class WhenMarketIsBackedWithMarketDescription {
+    @Nested
+    public class WhenMarketIsBackedWithMarketDescription {
 
         private final UniqueObjects<Locale> uniqueLanguages = new UniqueObjects<>(() -> Languages.any());
 

@@ -19,7 +19,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DataRouterManagerImplRequestingFilteredProbabilityCalculationTest {
 

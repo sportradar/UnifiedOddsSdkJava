@@ -15,7 +15,7 @@ import java.io.IOException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpDataFetcherLoggersTest {
 

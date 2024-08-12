@@ -7,14 +7,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiHole;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class HoleCiTest {
 
-    public static class WhenConstructedFromDto {
+    @Nested
+    public class WhenConstructedFromDto {
 
         @Test
         public void preserveHoleNumber() {
@@ -39,7 +38,8 @@ public class HoleCiTest {
         }
     }
 
-    public static class WhenReImportedAfterExporting {
+    @Nested
+    public class WhenReImportedAfterExporting {
 
         public static final int ANY = 0;
 

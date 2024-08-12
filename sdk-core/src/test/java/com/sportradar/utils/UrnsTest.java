@@ -10,11 +10,10 @@ import com.sportradar.unifiedodds.sdk.testutil.generic.generationassert.DataGene
 import com.sportradar.utils.domain.UniqueObjects;
 import lombok.val;
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-@RunWith(Enclosed.class)
 public class UrnsTest {
 
     public static final String SR = "sr";
@@ -22,7 +21,8 @@ public class UrnsTest {
 
     private UrnsTest() {}
 
-    public static class CreatesSportUrns {
+    @Nested
+    public class CreatesSportUrns {
 
         @Test
         public void forFootball() {
@@ -44,7 +44,8 @@ public class UrnsTest {
         }
     }
 
-    public static class CreateLotteryUrns {
+    @Nested
+    public class CreateLotteryUrns {
 
         @Test
         public void forAnyLottery() {
@@ -56,7 +57,8 @@ public class UrnsTest {
         }
     }
 
-    public static class CreateSportEventUrns {
+    @Nested
+    public class CreateSportEventUrns {
 
         @Test
         public void forAnyMatch() {
@@ -115,7 +117,8 @@ public class UrnsTest {
         }
     }
 
-    public static class CategoryUrns {
+    @Nested
+    public class CategoryUrns {
 
         @Test
         public void forAnyCategory() {
@@ -127,7 +130,8 @@ public class UrnsTest {
         }
     }
 
-    public static class PlayerProfileUrns {
+    @Nested
+    public class PlayerProfileUrns {
 
         @Test
         public void forAnyPlayerProfile() {
@@ -139,7 +143,8 @@ public class UrnsTest {
         }
     }
 
-    public static class CompetitorProfileUrns {
+    @Nested
+    public class CompetitorProfileUrns {
 
         @Test
         public void forAnyCompetitorProfile() {
@@ -151,7 +156,8 @@ public class UrnsTest {
         }
     }
 
-    public static class VenueUrns {
+    @Nested
+    public class VenueUrns {
 
         @Test
         public void forAnyVenue() {
@@ -170,11 +176,11 @@ public class UrnsTest {
         }
     }
 
-    public static class UniqueUrns {
+    @Nested
+    public class UniqueUrns {
 
-        private static final int ONE_SECOND_IN_MILLIS = 1000;
-
-        @Test(timeout = ONE_SECOND_IN_MILLIS)
+        @Test
+        @Timeout(1)
         public void shouldGenerateUniqueIdsOnly() {
             UniqueObjects uniqueUrns = unique(() -> Urns.Venues.urnForAnyVenue());
             val urn1 = uniqueUrns.getOne();

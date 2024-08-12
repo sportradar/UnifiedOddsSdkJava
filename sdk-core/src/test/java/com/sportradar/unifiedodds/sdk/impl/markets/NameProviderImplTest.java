@@ -28,7 +28,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.utils.domain.names.Languages;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NameProviderImplTest {
 

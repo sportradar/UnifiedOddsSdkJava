@@ -10,8 +10,7 @@ import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ConnectionToB
 import static com.sportradar.utils.thread.sleep.SleepMock.onSleepDo;
 import static com.sportradar.utils.time.TimeInterval.minutes;
 import static com.sportradar.utils.time.TimeInterval.seconds;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -35,21 +34,20 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.concurrent.TimeoutException;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(Enclosed.class)
 @SuppressWarnings({ "ClassFanOutComplexity", "HiddenField", "VariableDeclarationUsageDistance" })
 public class RabbitMqChannelImplTest {
 
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
     private static final EpochMillis MIDNIGHT = new EpochMillis(MIDNIGHT_TIMESTAMP_MILLIS);
 
-    public static class OnInitiation {
+    @Nested
+    public class OnInitiation {
 
         private final TimeUtilsStub time = TimeUtilsStub
             .threadSafe(new AtomicActionPerformer())
@@ -59,28 +57,34 @@ public class RabbitMqChannelImplTest {
 
         private final ConnectionToBeProvided.Factory connection = new ConnectionToBeProvided.Factory(time);
 
-        @Test(expected = NullPointerException.class)
+        @Test
         public void shouldNotBeInstantiatedWithNullTimeUtils() {
-            new RabbitMqChannelImpl(
-                mock(RabbitMqSystemListener.class),
-                mock(WhoAmIReader.class),
-                "anyVersion",
-                mock(AmqpConnectionFactory.class),
-                null,
-                mock(Sleep.class)
-            );
+            assertThatThrownBy(() ->
+                    new RabbitMqChannelImpl(
+                        mock(RabbitMqSystemListener.class),
+                        mock(WhoAmIReader.class),
+                        "anyVersion",
+                        mock(AmqpConnectionFactory.class),
+                        null,
+                        mock(Sleep.class)
+                    )
+                )
+                .isInstanceOf(NullPointerException.class);
         }
 
-        @Test(expected = NullPointerException.class)
+        @Test
         public void shouldNotBeInstantiatedWithNullSleep() {
-            new RabbitMqChannelImpl(
-                mock(RabbitMqSystemListener.class),
-                mock(WhoAmIReader.class),
-                "anyVersion",
-                mock(AmqpConnectionFactory.class),
-                mock(TimeUtils.class),
-                null
-            );
+            assertThatThrownBy(() ->
+                    new RabbitMqChannelImpl(
+                        mock(RabbitMqSystemListener.class),
+                        mock(WhoAmIReader.class),
+                        "anyVersion",
+                        mock(AmqpConnectionFactory.class),
+                        mock(TimeUtils.class),
+                        null
+                    )
+                )
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -100,10 +104,11 @@ public class RabbitMqChannelImplTest {
         }
     }
 
-    public static class OnInspection {
+    @Nested
+    public class OnInspection {
 
-        public static final TimeInterval IDLE_INTERVAL = minutes(3);
-        public static final TimeInterval LESS_THAN_IDLE_INTERVAL = IDLE_INTERVAL.minus(seconds(1));
+        private final TimeInterval idleInterval = minutes(3);
+        private final TimeInterval lessThanIdleInterval = idleInterval.minus(seconds(1));
         private ListAppender<ILoggingEvent> appender;
 
         private final TimeUtilsStub time = TimeUtilsStub
@@ -114,7 +119,7 @@ public class RabbitMqChannelImplTest {
 
         private final ConnectionToBeProvided.Factory connection = new ConnectionToBeProvided.Factory(time);
 
-        @Before
+        @BeforeEach
         public void setup() throws Exception {
             // Sort out logging interception
             Logger logger = LoggerFactory.getLogger(RabbitMqChannelImpl.class);
@@ -210,9 +215,8 @@ public class RabbitMqChannelImplTest {
             consumer.verifyNoMessagesReceived();
         }
 
-        private static void anotherChannelSupervisorRestartsConnection(
-            AmqpConnectionFactoryFake connectionFactory
-        ) throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
+        private void anotherChannelSupervisorRestartsConnection(AmqpConnectionFactoryFake connectionFactory)
+            throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException {
             connectionFactory.close(false);
             connectionFactory.getConnection();
         }
@@ -223,7 +227,7 @@ public class RabbitMqChannelImplTest {
             val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -244,7 +248,7 @@ public class RabbitMqChannelImplTest {
 
             channelSupervisor.checkStatus();
 
-            time.tick(IDLE_INTERVAL.minus(seconds(5)));
+            time.tick(idleInterval.minus(seconds(5)));
             channelToBeClosed.sendMessage();
 
             time.tick(seconds(5));
@@ -260,7 +264,7 @@ public class RabbitMqChannelImplTest {
             val connectionFactory = initiallyProvides(connection.whichIs(creating(channel)));
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
-            time.tick(LESS_THAN_IDLE_INTERVAL);
+            time.tick(lessThanIdleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -277,7 +281,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
 
             channelSupervisor.checkStatus();
@@ -294,14 +298,14 @@ public class RabbitMqChannelImplTest {
             time.tick(seconds(1));
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
 
             channelSupervisor.checkStatus();
 
             channel.verifyInitiatedTimes(2);
             assertThat(connectionFactory.getConnectionStarted())
-                .isEqualTo(MIDNIGHT.plus(IDLE_INTERVAL.plus(seconds(1))).get());
+                .isEqualTo(MIDNIGHT.plus(idleInterval.plus(seconds(1))).get());
         }
 
         @Test
@@ -312,7 +316,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(LESS_THAN_IDLE_INTERVAL);
+            time.tick(lessThanIdleInterval);
             connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
 
             channelSupervisor.checkStatus();
@@ -332,7 +336,7 @@ public class RabbitMqChannelImplTest {
             });
             val channelSupervisor = new Builder().with(connectionFactory).with(time).with(sleep).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -347,7 +351,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -364,7 +368,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -381,7 +385,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             channelSupervisor.checkStatus();
 
             connection.setHealth(HEALTHY);
@@ -398,7 +402,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.close(false);
 
             channelSupervisor.checkStatus();
@@ -413,7 +417,7 @@ public class RabbitMqChannelImplTest {
             time.tick(seconds(1));
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
 
             channelSupervisor.checkStatus();
@@ -421,7 +425,7 @@ public class RabbitMqChannelImplTest {
 
             assertThat(connectionFactory.hasConnection()).isTrue();
             assertThat(connectionFactory.getConnectionStarted())
-                .isEqualTo(MIDNIGHT.plus(IDLE_INTERVAL.plus(seconds(1))).get());
+                .isEqualTo(MIDNIGHT.plus(idleInterval.plus(seconds(1))).get());
         }
 
         @Test
@@ -432,7 +436,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
 
             channelSupervisor.checkStatus();
@@ -450,11 +454,11 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.afterClosingStarts(connection.whichIs(creating(channel)));
             channelSupervisor.checkStatus();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
             connectionFactory.afterClosingStarts(connection.absent());
 
             channelSupervisor.checkStatus();
@@ -470,7 +474,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -485,7 +489,7 @@ public class RabbitMqChannelImplTest {
             time.tick();
             val channelSupervisor = new Builder().with(connectionFactory).with(time).opened();
             channel.sendMessage();
-            time.tick(IDLE_INTERVAL);
+            time.tick(idleInterval);
 
             channelSupervisor.checkStatus();
 
@@ -501,7 +505,7 @@ public class RabbitMqChannelImplTest {
             fail("Could not find log line that matches: " + text);
         }
 
-        public static class CountingMessagesConsumer implements ChannelMessageConsumer {
+        public class CountingMessagesConsumer implements ChannelMessageConsumer {
 
             private int count;
 

@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import lombok.val;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "VisibilityModifier" })
 public class FeedMessageFactoryTest {
@@ -33,7 +33,7 @@ public class FeedMessageFactoryTest {
     byte[] rawMsg = new byte[] {};
     MessageTimestamp timestamp = new MessageTimestampImpl(1);
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         val configuration = configurationWithAnyDefaultLanguageAndThrowingOnErrors();
         Injector injector = new TestInjectorFactory(configuration, new StubUofConfiguration()).create();

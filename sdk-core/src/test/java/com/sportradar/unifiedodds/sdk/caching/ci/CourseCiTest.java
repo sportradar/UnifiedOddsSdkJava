@@ -10,11 +10,9 @@ import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiHole;
 import com.sportradar.utils.domain.names.Languages;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class CourseCiTest {
 
     private static SapiHole dtoHoleWithPar(int par) {
@@ -23,7 +21,8 @@ public class CourseCiTest {
         return sapiHole;
     }
 
-    public static class WhenConstructedFromDto {
+    @Nested
+    public class WhenConstructedFromDto {
 
         @Test
         public void preservesNoHoles() {
@@ -59,7 +58,8 @@ public class CourseCiTest {
         }
     }
 
-    public static class WhenReImportedAfterExporting {
+    @Nested
+    public class WhenReImportedAfterExporting {
 
         @Test
         public void preservesNoHoles() throws Exception {

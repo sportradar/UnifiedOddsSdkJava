@@ -16,14 +16,13 @@ import static org.mockito.Mockito.*;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.domain.UserInfo;
 import com.rabbitmq.http.client.domain.UserPermissions;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
-@RunWith(JUnitParamsRunner.class)
 public class RabbitMqUserSetupTest {
 
     private final String any = "any";
@@ -141,8 +140,8 @@ public class RabbitMqUserSetupTest {
         verify(rabbitClient, times(0)).deleteUser(nullable(String.class));
     }
 
-    @Test
-    @Parameters({ "user1, user2" })
+    @ParameterizedTest
+    @CsvSource({ "user1, user2" })
     public void shouldDelete2CreatedUsers(final String username1, final String username2) throws Exception {
         val userSetup = create(VhostLocation.any(), rabbitClient);
         userSetup.setupUser(with(username1, any));
@@ -175,8 +174,8 @@ public class RabbitMqUserSetupTest {
         verify(rabbitClient).deleteVhost(virtualHost);
     }
 
-    @Test
-    @Parameters({ "user1,user2" })
+    @ParameterizedTest
+    @CsvSource({ "user1, user2" })
     public void shouldDeleteVhostOnceEvenIfMultipleUsersAreDeleted(final String user1, final String user2)
         throws Exception {
         val userSetup = create(VhostLocation.at(BaseUrl.any(), virtualHost), rabbitClient);

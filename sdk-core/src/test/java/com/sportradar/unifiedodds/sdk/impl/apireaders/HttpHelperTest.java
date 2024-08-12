@@ -19,17 +19,16 @@ import java.io.IOException;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class HttpHelperTest {
 
     private static final int NO_STATUS = -1;
     private static final String ANY_URL = "http://anyUrl.com";
 
-    public static class WhenIoExceptionHappensDuringPost {
+    @Nested
+    public class WhenIoExceptionHappensDuringPost {
 
         private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
@@ -93,7 +92,8 @@ public class HttpHelperTest {
         }
     }
 
-    public static class WhenIoExceptionHappensDuringPut {
+    @Nested
+    public class WhenIoExceptionHappensDuringPut {
 
         private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
@@ -157,7 +157,8 @@ public class HttpHelperTest {
         }
     }
 
-    public static class WhenIoExceptionHappensDuringDelete {
+    @Nested
+    public class WhenIoExceptionHappensDuringDelete {
 
         private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);

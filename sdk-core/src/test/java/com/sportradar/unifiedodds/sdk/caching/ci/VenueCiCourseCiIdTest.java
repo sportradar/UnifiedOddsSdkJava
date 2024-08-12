@@ -17,11 +17,9 @@ import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Locale;
 import lombok.val;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class VenueCiCourseCiIdTest {
 
     private VenueCiCourseCiIdTest() {}
@@ -44,19 +42,20 @@ public class VenueCiCourseCiIdTest {
         return sapiVenue;
     }
 
-    public static class GivenNoMergeWillOccur {
+    @Nested
+    public class GivenNoMergeWillOccur {
 
-        private static final UniqueObjects<Urn> UNIQUE_VENUE_IDS = unique(() -> urnForAnyVenue());
-        private static final Urn ID = UNIQUE_VENUE_IDS.getOne();
-        private static final Urn ANOTHER_ID = UNIQUE_VENUE_IDS.getOne();
+        private final UniqueObjects<Urn> uniqueVenueIds = unique(() -> urnForAnyVenue());
+        private final Urn id = uniqueVenueIds.getOne();
+        private final Urn anotherId = uniqueVenueIds.getOne();
 
         @Test
         public void thenCiPreservesIdProvidedOnConstruction() {
-            SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
+            SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(id.toString()));
 
             val venueCi = new VenueCi(sapiVenue, Languages.any());
 
-            assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(ID);
+            assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(id);
         }
 
         @Test
@@ -78,12 +77,12 @@ public class VenueCiCourseCiIdTest {
 
         @Test
         public void thenCiPreservesIdAfterImportingExportedVenueCi() throws Exception {
-            SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
+            SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(id.toString()));
             val venueCi = new VenueCi(sapiVenue, Languages.any());
 
             VenueCi importedVenueCi = VenueCis.exportSerializeAndUseConstructorToReimport(venueCi);
 
-            assertThat(importedVenueCi.getCourses().get(0).getId()).isEqualTo(ID);
+            assertThat(importedVenueCi.getCourses().get(0).getId()).isEqualTo(id);
         }
 
         @Test
@@ -99,98 +98,100 @@ public class VenueCiCourseCiIdTest {
         @Test
         public void thenCiPreservesIdForMultipleCoursesProvidedOnConstruction() {
             SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(
-                sapiCoursesWithId(ID.toString()),
-                sapiCoursesWithId(ANOTHER_ID.toString())
+                sapiCoursesWithId(id.toString()),
+                sapiCoursesWithId(anotherId.toString())
             );
 
             val venueCi = new VenueCi(sapiVenue, Languages.any());
 
-            assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(ID);
-            assertThat(venueCi.getCourses().get(1).getId()).isEqualTo(ANOTHER_ID);
+            assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(id);
+            assertThat(venueCi.getCourses().get(1).getId()).isEqualTo(anotherId);
         }
     }
 
-    @RunWith(Enclosed.class)
-    public static class GivenMergeWillOccur {
+    @Nested
+    public class GivenMergeWillOccur {
 
-        public static final Locale LANGUAGE = Languages.any();
+        private final Locale language = Languages.any();
 
-        private static final UniqueObjects<Urn> UNIQUE_IDS = unique(() -> urnForAnyVenue());
-        private static final Urn ID = UNIQUE_IDS.getOne();
-        private static final Urn ANOTHER_ID = UNIQUE_IDS.getOne();
+        private final UniqueObjects<Urn> uniqueIds = unique(() -> urnForAnyVenue());
+        private final Urn id = uniqueIds.getOne();
+        private final Urn anotherId = uniqueIds.getOne();
 
-        public static class AndNoCoursesWereProvidedPreviously {
+        @Nested
+        public class AndNoCoursesWereProvidedPreviously {
 
             @Test
             public void whenMergingWithSingleNewCourseThenPreservesItsId() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
-                SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
+                SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(id.toString()));
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
-                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(ID);
+                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(id);
             }
 
             @Test
             public void whenMergingWithSingleNewCourseThenPreservesNullId() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(new SapiCourse());
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
                 assertThat(venueCi.getCourses().get(0).getId()).isNull();
             }
 
             @Test
             public void thenInflightVenueToBeMergedMustHaveCoursesWithValidUrnId() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId("invalidUrn"));
 
-                assertThatThrownBy(() -> venueCi.merge(sapiVenue, LANGUAGE))
+                assertThatThrownBy(() -> venueCi.merge(sapiVenue, language))
                     .isInstanceOf(UnsupportedUrnFormatException.class);
             }
 
             @Test
             public void whenMergingWithMultipleNewCourseThenPreservesNewCourseIds() {
-                val venueCi = new VenueCi(sapiVenueWithAnyId(), LANGUAGE);
+                val venueCi = new VenueCi(sapiVenueWithAnyId(), language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(
-                    sapiCoursesWithId(ID.toString()),
-                    sapiCoursesWithId(ANOTHER_ID.toString())
+                    sapiCoursesWithId(id.toString()),
+                    sapiCoursesWithId(anotherId.toString())
                 );
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
-                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(ID);
-                assertThat(venueCi.getCourses().get(1).getId()).isEqualTo(ANOTHER_ID);
+                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(id);
+                assertThat(venueCi.getCourses().get(1).getId()).isEqualTo(anotherId);
             }
         }
 
-        public static class AndSomeCoursesWereProvidedPreviously {
+        @Nested
+        public class AndSomeCoursesWereProvidedPreviously {
 
             @Test
             public void thenMergingPreservesIdsForCoursesAlsoExistingInInflightRequest() {
-                SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
-                SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
+                SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(id.toString()));
+                val venueCi = new VenueCi(oldCourses, language);
+                SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(id.toString()));
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
-                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(ID);
+                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(id);
             }
 
             @Test
             public void thenCreatesIdsForCoursesWhenMergingInCoursesOnlyExistingInInflightRequest() {
-                SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(ID.toString()));
-                val venueCi = new VenueCi(oldCourses, LANGUAGE);
+                SapiVenue oldCourses = sapiVenueWithAnyIdAndCourses(sapiCoursesWithId(id.toString()));
+                val venueCi = new VenueCi(oldCourses, language);
                 SapiVenue sapiVenue = sapiVenueWithAnyIdAndCourses(
-                    sapiCoursesWithId(ID.toString()),
-                    sapiCoursesWithId(ANOTHER_ID.toString())
+                    sapiCoursesWithId(id.toString()),
+                    sapiCoursesWithId(anotherId.toString())
                 );
 
-                venueCi.merge(sapiVenue, LANGUAGE);
+                venueCi.merge(sapiVenue, language);
 
-                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(ID);
-                assertThat(venueCi.getCourses().get(1).getId()).isEqualTo(ANOTHER_ID);
+                assertThat(venueCi.getCourses().get(0).getId()).isEqualTo(id);
+                assertThat(venueCi.getCourses().get(1).getId()).isEqualTo(anotherId);
             }
         }
     }

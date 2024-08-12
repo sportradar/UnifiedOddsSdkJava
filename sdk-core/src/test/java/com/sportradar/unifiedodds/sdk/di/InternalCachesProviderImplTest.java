@@ -18,7 +18,7 @@ import com.sportradar.utils.Urns;
 import java.time.Duration;
 import java.util.function.Consumer;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class InternalCachesProviderImplTest {
 

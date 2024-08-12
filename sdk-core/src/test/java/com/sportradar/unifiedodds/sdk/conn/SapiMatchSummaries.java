@@ -15,6 +15,7 @@ import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
 import java.time.LocalDate;
+import java.util.Locale;
 import lombok.val;
 
 @SuppressWarnings(
@@ -41,9 +42,13 @@ public final class SapiMatchSummaries {
         }
 
         public static SapiMatchSummaryEndpoint soccerMatchGermanyScotlandEuro2024() {
+            return soccerMatchGermanyScotlandEuro2024(Locale.ENGLISH);
+        }
+
+        public static SapiMatchSummaryEndpoint soccerMatchGermanyScotlandEuro2024(Locale language) {
             SapiMatchSummaryEndpoint summary = new SapiMatchSummaryEndpoint();
             summary.setGeneratedAt(XmlGregorianCalendars.now());
-            summary.setSportEvent(germanVsScotlandMatch());
+            summary.setSportEvent(germanVsScotlandMatch(language));
             summary.setSportEventConditions(sportEventConditions());
             summary.setSportEventStatus(sportEventStatus());
             summary.setCoverageInfo(coverageInfo());
@@ -274,7 +279,7 @@ public final class SapiMatchSummaries {
             return referee;
         }
 
-        private static SapiSportEvent germanVsScotlandMatch() {
+        private static SapiSportEvent germanVsScotlandMatch(Locale language) {
             SapiSportEvent event = new SapiSportEvent();
             event.setId(GERMANY_SCOTLAND_MATCH_URN);
             event.setScheduled(forDate(LocalDate.of(2024, 6, 14)));
@@ -282,7 +287,7 @@ public final class SapiMatchSummaries {
             event.setTournamentRound(tournamentRound());
             event.setSeason(season());
             event.setTournament(tournament());
-            event.setCompetitors(germanAndScotlandCompetitors());
+            event.setCompetitors(germanAndScotlandCompetitors(language));
             event.setVenue(munichFootballArena());
             return event;
         }
@@ -321,10 +326,10 @@ public final class SapiMatchSummaries {
             return tournament;
         }
 
-        private static SapiSportEventCompetitors germanAndScotlandCompetitors() {
+        private static SapiSportEventCompetitors germanAndScotlandCompetitors(Locale language) {
             SapiSportEventCompetitors competitors = new SapiSportEventCompetitors();
-            SapiTeamCompetitor germany = germanyCompetitor();
-            SapiTeamCompetitor scotland = scotlandCompetitor();
+            SapiTeamCompetitor germany = germanyCompetitor(language);
+            SapiTeamCompetitor scotland = scotlandCompetitor(language);
             competitors.getCompetitor().add(germany);
             competitors.getCompetitor().add(scotland);
             return competitors;

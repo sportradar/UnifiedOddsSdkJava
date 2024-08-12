@@ -18,13 +18,11 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import java.util.Arrays;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class UofSdkTest {
 
     private final UofGlobalEventsListener listener = mock(UofGlobalEventsListener.class);
@@ -45,8 +43,8 @@ public class UofSdkTest {
             .hasMessageContaining("config");
     }
 
-    @Test
-    @Parameters(method = "nonReplayEnvironments")
+    @ParameterizedTest
+    @MethodSource("nonReplayEnvironments")
     public void replayManagerShouldNotBeAvailableForNonReplayEnvironment(final Environment environment) {
         config.setEnvironment(environment);
 
@@ -55,8 +53,8 @@ public class UofSdkTest {
         assertNull(replayManager);
     }
 
-    @Test
-    @Parameters(method = "replayEnvironments")
+    @ParameterizedTest
+    @MethodSource("replayEnvironments")
     public void replayManagerShouldBeAvailableForReplayEnvironment(final Environment environment) {
         config.setEnvironment(environment);
         val oddsFeed = new InjectorReplacingUofSdk(listener, config, injector);
@@ -68,7 +66,7 @@ public class UofSdkTest {
         assertNotNull(replayManager);
     }
 
-    private Object[] nonReplayEnvironments() {
+    private static Object[] nonReplayEnvironments() {
         return Arrays
             .asList(Environment.values())
             .stream()
@@ -77,7 +75,7 @@ public class UofSdkTest {
             .toArray();
     }
 
-    private Object[] replayEnvironments() {
+    private static Object[] replayEnvironments() {
         return new Environment[] { Replay, GlobalReplay };
     }
 

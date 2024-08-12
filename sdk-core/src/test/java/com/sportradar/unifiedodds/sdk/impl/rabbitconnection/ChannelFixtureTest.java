@@ -13,7 +13,7 @@ import com.sportradar.utils.time.TimeUtilsStub;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.TimeoutException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
 @SuppressWarnings({ "MagicNumber" })

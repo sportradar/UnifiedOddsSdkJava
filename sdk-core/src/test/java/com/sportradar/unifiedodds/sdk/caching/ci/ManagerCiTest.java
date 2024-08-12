@@ -9,14 +9,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiManager;
 import java.util.Locale;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class ManagerCiTest {
 
     private static final String UNDER_20_EN = "Under 20";
@@ -31,15 +29,15 @@ public class ManagerCiTest {
         Assertions.assertThat(manager.getNames().get(FRENCH)).isEqualTo(UNDER_20_FR);
     }
 
-    @Test
-    @Parameters(method = "translations")
+    @ParameterizedTest
+    @MethodSource("translations")
     public void getsNameInTheOnlyLanguageAvailable(Locale language, String translation) {
         val manager = new ManagerCi(namedSapiManager(translation), language);
 
         Assertions.assertThat(manager.getNames().get(language)).isEqualTo(translation);
     }
 
-    private Object[] translations() {
+    private static Object[] translations() {
         return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
     }
 

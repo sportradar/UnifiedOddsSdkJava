@@ -4,7 +4,7 @@ import static com.sportradar.unifiedodds.sdk.impl.recovery.ProducerDataBuilder.p
 import static org.junit.Assert.*;
 
 import com.sportradar.unifiedodds.sdk.impl.ProducerData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MagicNumber" })
 public class ProducerDataBuilderTest {

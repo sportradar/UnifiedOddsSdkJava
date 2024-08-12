@@ -2,7 +2,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals", "LambdaBodyLength" })
 public class ThreadInterruptTest {

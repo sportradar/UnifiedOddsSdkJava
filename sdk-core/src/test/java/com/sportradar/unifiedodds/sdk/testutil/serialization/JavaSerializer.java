@@ -7,12 +7,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import lombok.SneakyThrows;
 
 public class JavaSerializer {
 
     private JavaSerializer() {}
 
-    public static byte[] serialize(Object ob) throws Exception {
+    @SneakyThrows
+    public static byte[] serialize(Object ob) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(ob);
@@ -22,7 +24,8 @@ public class JavaSerializer {
         return result;
     }
 
-    public static <T> T deserialize(byte[] bytes) throws Exception {
+    @SneakyThrows
+    public static <T> T deserialize(byte[] bytes) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
         T object = (T) objectInputStream.readObject();

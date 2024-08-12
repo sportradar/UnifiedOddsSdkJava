@@ -10,7 +10,6 @@ import static java.util.Collections.emptyMap;
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,18 +30,27 @@ import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.apache.groovy.util.Maps;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Enclosed.class)
 public class CurrentSeasonInfoImplTest {
 
-    public static class ScheduledSportEventIdsRetrieval {
+    public static final String TRANSLATIONS =
+        "com.sportradar.unifiedodds.sdk.impl.entities.CurrentSeasonInfoImplTest#translations";
+
+    private static final String UNDER_20_EN = "Under 20";
+    private static final String UNDER_20_FR = "moins de 20 ans";
+
+    private static Object[] translations() {
+        return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
+    }
+
+    @Nested
+    public class ScheduledSportEventIdsRetrieval {
 
         private final SportEntityFactory anyFactory = mock(SportEntityFactory.class);
         private final TournamentCi anyTournamentCi = mock(TournamentCi.class);
@@ -147,13 +155,10 @@ public class CurrentSeasonInfoImplTest {
         }
     }
 
-    @RunWith(JUnitParamsRunner.class)
-    public static class Name {
+    @Nested
+    public class Name {
 
-        private static final String UNDER_20_EN = "Under 20";
-        private static final String UNDER_20_FR = "moins de 20 ans";
-        private static final ExceptionHandlingStrategy ANY_EXCEPTION_HANDLING =
-            ExceptionHandlingStrategy.Throw;
+        private final ExceptionHandlingStrategy anyExceptionHandling = ExceptionHandlingStrategy.Throw;
         private final TournamentCi anyTournamentCi = mock(TournamentCi.class);
         private final SportEventCache anySportEventCache = mock(SportEventCache.class);
         private final SportEntityFactory anyFactory = mock(SportEntityFactory.class);
@@ -169,7 +174,7 @@ public class CurrentSeasonInfoImplTest {
                         anySportEventCache,
                         anyFactory,
                         null,
-                        ANY_EXCEPTION_HANDLING
+                        anyExceptionHandling
                     )
                 )
                 .isInstanceOf(NullPointerException.class)
@@ -188,7 +193,7 @@ public class CurrentSeasonInfoImplTest {
                         anySportEventCache,
                         anyFactory,
                         noLanguages,
-                        ANY_EXCEPTION_HANDLING
+                        anyExceptionHandling
                     )
                 )
                 .isInstanceOf(IllegalArgumentException.class)
@@ -204,7 +209,7 @@ public class CurrentSeasonInfoImplTest {
                 anySportEventCache,
                 anyFactory,
                 asList(ENGLISH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(season).hasNameNotTranslatedTo(ENGLISH);
@@ -218,7 +223,7 @@ public class CurrentSeasonInfoImplTest {
                 anySportEventCache,
                 anyFactory,
                 asList(ENGLISH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(season).hasNameNotTranslatedTo(FRENCH);
@@ -232,15 +237,15 @@ public class CurrentSeasonInfoImplTest {
                 anySportEventCache,
                 anyFactory,
                 asList(FRENCH),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(season).hasNameNotTranslatedTo(FRENCH);
             assertThat(season).hasNameNotTranslatedTo(ENGLISH);
         }
 
-        @Test
-        @Parameters(method = "translations")
+        @ParameterizedTest
+        @MethodSource(TRANSLATIONS)
         public void getsNameInTheOnlyLanguageAvailable(Locale language, String translation) {
             val season = new CurrentSeasonInfoImpl(
                 seasonCiWithName(Maps.of(language, translation)),
@@ -248,14 +253,10 @@ public class CurrentSeasonInfoImplTest {
                 anySportEventCache,
                 anyFactory,
                 asList(language),
-                ANY_EXCEPTION_HANDLING
+                anyExceptionHandling
             );
 
             assertThat(season).hasNameTranslated(language, translation);
-        }
-
-        private Object[] translations() {
-            return new Object[][] { { ENGLISH, UNDER_20_EN }, { FRENCH, UNDER_20_FR } };
         }
 
         @Test

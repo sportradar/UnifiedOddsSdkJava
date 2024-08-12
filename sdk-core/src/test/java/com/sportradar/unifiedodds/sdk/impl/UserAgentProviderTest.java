@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.stream.IntStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UserAgentProviderTest {
 

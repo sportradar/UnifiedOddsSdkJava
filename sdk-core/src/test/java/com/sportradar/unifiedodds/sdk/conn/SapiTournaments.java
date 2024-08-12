@@ -5,11 +5,22 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.SapiCategories.international;
 import static com.sportradar.unifiedodds.sdk.SapiCategories.nascar;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMatch.FullyPopulatedMatch.fullyPopulatedMatchRound;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.FullyPopulatedSeason.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.stockCarRacing;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedCompetitor.fullyPopulatedFootballCompetitor;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Nascar2024.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorLocationInTournamentInfo.COMPETITORS_EVERYWHERE;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_ABSENT;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_PRESENT;
+import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.anyFutureDate;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
+import com.sportradar.utils.Urn;
 import java.time.LocalDate;
 import lombok.val;
 
@@ -827,6 +838,8 @@ public class SapiTournaments {
 
     public static class Nascar2024 {
 
+        public static final String TOURNAMENT_URN = "sr:stage:1158328";
+
         public static SapiTournamentInfoEndpoint replaceFirstCompetitorWithVirtual(
             SapiTournamentInfoEndpoint info
         ) {
@@ -850,7 +863,7 @@ public class SapiTournaments {
 
         private static SapiTournamentExtended tournament() {
             val t = new SapiTournamentExtended();
-            t.setId("sr:stage:1158328");
+            t.setId(TOURNAMENT_URN);
             t.setName("Nascar Cup Series 2024");
             t.setSport(stockCarRacing());
             t.setCategory(nascar());
@@ -887,157 +900,143 @@ public class SapiTournaments {
             competitors.getCompetitor().add(brown());
             return competitors;
         }
+    }
 
-        private static SapiTeam virtualCompetitor() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:677495");
-            team.setName("W50");
-            team.setAbbreviation("W50");
-            team.setVirtual(true);
-            return team;
+    public static class FullyPopulatedTournament {
+
+        public static final String FULLY_POPULATED_TOURNAMENT_URN = "sr:tournament:1";
+
+        public static SapiTournamentInfoEndpoint fullyPopulatedFootballTournamentInfo() {
+            return fullyPopulatedFootballTournamentInfo(COMPETITORS_EVERYWHERE);
         }
 
-        private static SapiTeam truexJr() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:39979");
-            team.setName("Truex Jr, Martin");
-            team.setAbbreviation("TRU");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        public static SapiTournamentInfoEndpoint fullyPopulatedFootballTournamentInfo(
+            CompetitorLocationInTournamentInfo competitorLocation
+        ) {
+            val ti = new SapiTournamentInfoEndpoint();
+            ti.setGeneratedAt(XmlGregorianCalendars.now());
+            ti.setTournament(tournamentExtended(competitorLocation.isInTopLevelTournament()));
+            ti.setSeason(fullyPopulatedSeason(Urn.parse(FULLY_POPULATED_TOURNAMENT_URN)));
+            ti.setRound(fullyPopulatedMatchRound());
+            ti.setSeasonCoverageInfo(fullyPopulatedSeasonCoverageInfo());
+            ti.setCoverageInfo(coverageInfo());
+            if (competitorLocation.isInRootLevel() == COMPETITORS_PRESENT) {
+                ti.setCompetitors(fullyPopulatedFootballCompetitors());
+            }
+            if (competitorLocation.isInGroup() == COMPETITORS_PRESENT) {
+                ti.setGroups(groups());
+            }
+            ti.setChildren(childrenTournaments(competitorLocation));
+            return ti;
         }
 
-        private static SapiTeam hamlin() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:39981");
-            team.setName("Hamlin, Denny");
-            team.setAbbreviation("HAM");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        private static SapiChildren childrenTournaments(
+            CompetitorLocationInTournamentInfo competitorLocation
+        ) {
+            val children = new SapiChildren();
+            children.getTournament().add(tournamentExtended(competitorLocation.isInChildTournaments()));
+            return children;
         }
 
-        private static SapiTeam ragan() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:39983");
-            team.setName("Ragan, David");
-            team.setAbbreviation("RAG");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        private static SapiTournamentGroups groups() {
+            val groups = new SapiTournamentGroups();
+            groups.getGroup().add(fullyPopulatedGroup());
+            return groups;
         }
 
-        private static SapiTeam johnson() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:39995");
-            team.setName("Johnson, Jimmie");
-            team.setAbbreviation("JOH");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        private static SapiTournamentGroup fullyPopulatedGroup() {
+            val group = new SapiTournamentGroup();
+            group.setId("sr:group:9043664");
+            group.setName("Fully populated tournament group name");
+            group.getCompetitor().add(fullyPopulatedFootballCompetitor());
+            return group;
         }
 
-        private static SapiTeam busch() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:40006");
-            team.setName("Busch, Kyle");
-            team.setAbbreviation("BUS");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        private static SapiTournamentLiveCoverageInfo coverageInfo() {
+            SapiTournamentLiveCoverageInfo coverageInfo = new SapiTournamentLiveCoverageInfo();
+            coverageInfo.setLiveCoverage("Fully populated tournament live coverage info");
+            return coverageInfo;
         }
 
-        private static SapiTeam allmendinger() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:40012");
-            team.setName("Allmendinger, A J");
-            team.setAbbreviation("ALL");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        private static SapiTournamentExtended tournamentExtended(CompetitorPresence competitorPresence) {
+            val t = new SapiTournamentExtended();
+            t.setId(FULLY_POPULATED_TOURNAMENT_URN);
+            t.setName("Fully Populated Tournament");
+            t.setSport(SapiSports.soccer());
+            t.setCategory(international());
+            t.setCurrentSeason(fullyPopulatedCurrentSeason(Urn.parse(FULLY_POPULATED_TOURNAMENT_URN)));
+            if (competitorPresence == COMPETITORS_PRESENT) {
+                t.setCompetitors(fullyPopulatedFootballCompetitors());
+            }
+            t.setSeasonCoverageInfo(fullyPopulatedSeasonCoverageInfo());
+            t.setExhibitionGames(true);
+            t.setScheduled(XmlGregorianCalendars.forDate(LocalDate.of(2024, 2, 14)));
+            t.setScheduledEnd(XmlGregorianCalendars.forDate(LocalDate.of(2024, 11, 2)));
+            t.setTournamentLength(sapiTournamentLength());
+            return t;
         }
 
-        private static SapiTeam logano() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:40014");
-            team.setName("Logano, Joey");
-            team.setAbbreviation("LOG");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        public static SapiTournament fullyPopulatedTournament() {
+            SapiTournament tournament = new SapiTournament();
+            tournament.setId("sr:tournament:1");
+            tournament.setName("UEFA Euro");
+            tournament.setSport(soccer());
+            tournament.setCategory(international());
+            tournament.setScheduled(anyFutureDate());
+            tournament.setExhibitionGames(true);
+            tournament.setScheduledEnd(anyFutureDate());
+            tournament.setTournamentLength(sapiTournamentLength());
+            return tournament;
         }
 
-        private static SapiTeam mcdowell() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:40276");
-            team.setName("McDowell, Michael");
-            team.setAbbreviation("MCD");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        private static SapiTournamentLength sapiTournamentLength() {
+            SapiTournamentLength length = new SapiTournamentLength();
+            length.setStartDate(anyFutureDate());
+            length.setEndDate(anyFutureDate());
+            return length;
         }
 
-        private static SapiTeam keselowski() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:40277");
-            team.setName("Keselowski, Brad");
-            team.setAbbreviation("KES");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        public static SapiCompetitors fullyPopulatedFootballCompetitors() {
+            val competitors = new SapiCompetitors();
+            competitors.getCompetitor().add(fullyPopulatedFootballCompetitor());
+            return competitors;
         }
 
-        private static SapiTeam yeley() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:42133");
-            team.setName("Yeley, J J");
-            team.setAbbreviation("YEL");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
+        public static enum CompetitorLocationInTournamentInfo {
+            COMPETITORS_AT_ROOT_LEVEL,
+            COMPETITORS_IN_TOP_LEVEL_TOURNAMENT,
+            COMPETITORS_IN_CHILD_TOURNAMENTS,
+            COMPETITORS_IN_GROUP,
+            COMPETITORS_EVERYWHERE;
+
+            public CompetitorPresence isInGroup() {
+                return this == COMPETITORS_IN_GROUP || this == COMPETITORS_EVERYWHERE
+                    ? COMPETITORS_PRESENT
+                    : COMPETITORS_ABSENT;
+            }
+
+            public CompetitorPresence isInRootLevel() {
+                return this == COMPETITORS_AT_ROOT_LEVEL || this == COMPETITORS_EVERYWHERE
+                    ? COMPETITORS_PRESENT
+                    : COMPETITORS_ABSENT;
+            }
+
+            public CompetitorPresence isInChildTournaments() {
+                return this == COMPETITORS_IN_CHILD_TOURNAMENTS || this == COMPETITORS_EVERYWHERE
+                    ? COMPETITORS_PRESENT
+                    : COMPETITORS_ABSENT;
+            }
+
+            public CompetitorPresence isInTopLevelTournament() {
+                return this == COMPETITORS_IN_TOP_LEVEL_TOURNAMENT || this == COMPETITORS_EVERYWHERE
+                    ? COMPETITORS_PRESENT
+                    : COMPETITORS_ABSENT;
+            }
         }
 
-        private static SapiTeam allgaier() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:45055");
-            team.setName("Allgaier, Justin");
-            team.setAbbreviation("ALL");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
-        }
-
-        private static SapiTeam starr() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:51151");
-            team.setName("Starr, David");
-            team.setAbbreviation("STA");
-            team.setCountry("USA");
-            team.setCountryCode("USA");
-            team.setGender("male");
-            return team;
-        }
-
-        private static SapiTeam brown() {
-            val team = new SapiTeam();
-            team.setId("sr:competitor:1142449");
-            team.setName("Brown, Will");
-            team.setAbbreviation("BRO");
-            team.setCountry("Australia");
-            team.setCountryCode("AUS");
-            team.setGender("male");
-            return team;
+        public static enum CompetitorPresence {
+            COMPETITORS_PRESENT,
+            COMPETITORS_ABSENT,
         }
     }
 }

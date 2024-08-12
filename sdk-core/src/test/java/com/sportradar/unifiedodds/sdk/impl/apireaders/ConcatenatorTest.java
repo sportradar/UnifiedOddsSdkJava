@@ -5,14 +5,13 @@ package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Enclosed.class)
 public class ConcatenatorTest {
 
-    public static class ConcatenatingInts {
+    @Nested
+    public class ConcatenatingInts {
 
         public static final int ELEVEN = 11;
         public static final int TWENTY_TWO = 22;
@@ -86,7 +85,8 @@ public class ConcatenatorTest {
         }
     }
 
-    public static class ConcatenatingStrings {
+    @Nested
+    public class ConcatenatingStrings {
 
         private Concatenator concatenator = Concatenator.separatingWith(",");
 
@@ -157,7 +157,8 @@ public class ConcatenatorTest {
         }
     }
 
-    public static class Separator {
+    @Nested
+    public class Separator {
 
         @Test
         public void separateWithDash() {

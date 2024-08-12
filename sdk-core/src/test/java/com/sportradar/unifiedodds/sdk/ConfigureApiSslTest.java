@@ -14,13 +14,10 @@ import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@RunWith(JUnitParamsRunner.class)
 public class ConfigureApiSslTest {
 
     private final boolean replayMode = true;
@@ -36,8 +33,8 @@ public class ConfigureApiSslTest {
         anyConfig -> producerDataProvider
     );
 
-    @Test
-    @Parameters({ "true", "false" })
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
     public void configureViaJavaApi(boolean isSslEnabled) {
         UofConfiguration config = buildFromPropsFile
             .setAccessToken("any")

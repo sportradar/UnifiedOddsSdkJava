@@ -61,6 +61,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="CompetitorProfileCacheImplTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="SportDataProviderImpl.java"/>
     </module>
     <module name="SuppressionSingleFilter">
