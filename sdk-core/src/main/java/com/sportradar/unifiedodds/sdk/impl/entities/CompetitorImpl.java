@@ -67,10 +67,7 @@ public class CompetitorImpl implements Competitor {
      * @param locales a {@link List} in which is provided the {@link CompetitorCi}
      * @param sportEntityFactory the factory used to create additional entities
      * @param exceptionHandlingStrategy the exception handling strategy
-     *
-     * @deprecated not used
      */
-    @Deprecated
     public CompetitorImpl(
         Urn competitorId,
         ProfileCache profileCache,
@@ -204,8 +201,15 @@ public class CompetitorImpl implements Competitor {
      */
     @Override
     public boolean isVirtual() {
-        FetchEventCompetitorsVirtual();
-        return IsVirtual != null && IsVirtual.booleanValue();
+        try {
+            return loadCacheItem().map(c -> c.isVirtual()).orElse(false);
+        } catch (com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException e) {
+            if (exceptionHandlingStrategy == ExceptionHandlingStrategy.Throw) {
+                throw e;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -533,24 +537,6 @@ public class CompetitorImpl implements Competitor {
             }
         } catch (DataRouterStreamException e) {
             handleException(String.format("getCompetitorsDivisions(%s)", competitorId), e);
-        } finally {
-            reentrantLock.unlock();
-        }
-    }
-
-    protected void FetchEventCompetitorsVirtual() {
-        reentrantLock.lock();
-        try {
-            if (IsVirtual == null && sportEventCi != null && sportEventCi instanceof MatchCi) {
-                MatchCi matchCi = (MatchCi) sportEventCi;
-                List<Urn> competitorsVirtual = matchCi.getCompetitorsVirtual();
-
-                if (competitorsVirtual != null && !competitorsVirtual.isEmpty()) {
-                    IsVirtual = competitorsVirtual.contains(competitorId);
-                }
-            }
-        } catch (DataRouterStreamException e) {
-            handleException(String.format("getCompetitorsVirtual(%s)", competitorId), e);
         } finally {
             reentrantLock.unlock();
         }

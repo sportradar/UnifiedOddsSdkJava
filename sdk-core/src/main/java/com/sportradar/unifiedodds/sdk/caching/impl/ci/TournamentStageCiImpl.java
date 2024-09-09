@@ -96,11 +96,6 @@ class TournamentStageCiImpl implements StageCi, ExportableCacheItem {
     private Map<Urn, ReferenceIdCi> competitorsReferences;
 
     /**
-     * A {@link List} of competitor identifiers which are marked as virtual in the sport event
-     */
-    private List<Urn> competitorVirtual;
-
-    /**
      * A {@link Map} storing the available sport event names
      */
     private final Map<Locale, String> sportEventNames = Maps.newConcurrentMap();
@@ -274,10 +269,6 @@ class TournamentStageCiImpl implements StageCi, ExportableCacheItem {
                     .collect(
                         Collectors.toMap(r -> Urn.parse(r.getKey()), r -> new ReferenceIdCi(r.getValue()))
                     )
-                : null;
-        this.competitorVirtual =
-            exportable.getCompetitorVirtual() != null
-                ? exportable.getCompetitorVirtual().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.sportEventNames.putAll(exportable.getNames());
         this.categoryId = exportable.getCategoryId() != null ? Urn.parse(exportable.getCategoryId()) : null;
@@ -590,24 +581,6 @@ class TournamentStageCiImpl implements StageCi, ExportableCacheItem {
         return competitorsReferences == null ? null : ImmutableMap.copyOf(competitorsReferences);
     }
 
-    /**
-     * Returns list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
-     *
-     * @return list of {@link Urn} of {@link Competitor} which are marked as virtual for this sport event
-     */
-    @Override
-    public List<Urn> getCompetitorsVirtual() {
-        if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
-            return competitorVirtual;
-        }
-
-        if (cachedLocales.isEmpty()) {
-            requestMissingStageTournamentData(Collections.singletonList(defaultLocale));
-        }
-
-        return competitorVirtual == null ? null : competitorVirtual;
-    }
-
     private void internalMerge(SapiTournamentInfoEndpoint endpointData, Locale dataLocale) {
         Preconditions.checkNotNull(endpointData);
         Preconditions.checkNotNull(dataLocale);
@@ -802,9 +775,7 @@ class TournamentStageCiImpl implements StageCi, ExportableCacheItem {
             new ArrayList<>(cachedLocales),
             liveOdds,
             sportEventType,
-            competitorVirtual == null
-                ? null
-                : competitorVirtual.stream().map(Urn::toString).collect(Collectors.toList())
+            null
         );
     }
 }

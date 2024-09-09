@@ -1,5 +1,8 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.3.2 (2024-08-28)**
+- fix: Information whether competitor is virtual or not can reliably be fetched on all applicable sport events
+
 **3.3.1 (2024-08-12)**
 * fix: Fixed translation loading logic in Match. Whenever Match.getName is invoked it no longer attempts to fetch all languages at once and fetches only user-requested language instead.
 * fix: Car properties of DriverProfile are now properly exposed

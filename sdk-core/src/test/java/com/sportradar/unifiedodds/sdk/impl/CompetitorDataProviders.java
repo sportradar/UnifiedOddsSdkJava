@@ -8,7 +8,7 @@ import static com.sportradar.utils.generic.testing.Urls.anyHttpUrl;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SapiMatchSummaryEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SapiSimpleTeamProfileEndpoint;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import lombok.SneakyThrows;
@@ -62,6 +62,21 @@ public class CompetitorDataProviders {
         );
         doReturn(competitor).when(dataProvider).getData(language.get(), sportEventId);
         doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
+        return dataProvider;
+    }
+
+    @SneakyThrows
+    public static DataProvider<SapiSimpleTeamProfileEndpoint> providing(
+        LanguageHolder language,
+        String teamId,
+        SapiSimpleTeamProfileEndpoint competitor
+    ) {
+        DataProvider<SapiSimpleTeamProfileEndpoint> dataProvider = mock(
+            DataProvider.class,
+            withGetDataThrowingByDefault()
+        );
+        doReturn(competitor).when(dataProvider).getData(language.get(), teamId);
+        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), teamId);
         return dataProvider;
     }
 

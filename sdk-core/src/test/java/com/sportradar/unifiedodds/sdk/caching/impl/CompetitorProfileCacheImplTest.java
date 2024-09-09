@@ -8,6 +8,7 @@ import static com.sportradar.unifiedodds.sdk.caching.impl.ProfileCaches.exportAn
 import static com.sportradar.unifiedodds.sdk.caching.impl.ProfileCaches.exportAndImportTheOnlyItemIn;
 import static com.sportradar.unifiedodds.sdk.caching.impl.SportEntityFactories.BuilderStubbingOutAllCachesAndStatusFactory.stubbingOutAllCachesAndStatusFactory;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSimpleTeams.sapiSimpleTeam;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.FullyPopulatedStage.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedCompetitor.fullyPopulatedFootballCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedCompetitor.fullyPopulatedFormula1CompetitorProfile;
@@ -41,6 +42,8 @@ import com.sportradar.uf.sportsapi.datamodel.SapiStageSummaryEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.*;
+import com.sportradar.unifiedodds.sdk.conn.CompetitorAssert;
+import com.sportradar.unifiedodds.sdk.conn.SapiSimpleTeams;
 import com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.FullyPopulatedStage;
 import com.sportradar.unifiedodds.sdk.conn.SapiTeams;
 import com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedCompetitor;
@@ -50,7 +53,6 @@ import com.sportradar.unifiedodds.sdk.conn.SapiTeams.VirtualCompetitor;
 import com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.utils.Urn;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -58,7 +60,6 @@ import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -127,7 +128,6 @@ class CompetitorProfileCacheImplTest {
 
         @ParameterizedTest
         @ValueSource(booleans = { true, false })
-        @Disabled
         public void competitorVirtualAtBuildTimeIsDeadArgument(boolean isVirtual) throws Exception {
             val profileCache = stubbingOutDataRouterManager().build();
             val profileFactory = stubbingOutAllCachesAndStatusFactory().with(profileCache).build();
@@ -146,7 +146,6 @@ class CompetitorProfileCacheImplTest {
 
         @ParameterizedTest
         @MethodSource(PROPERTIES_FROM_FOOTBALL_COMPETITOR_PROFILE)
-        @Disabled
         public void cachesPropertiesFromFootballCompetitorProfile(
             Urn competitorUrn,
             CompetitorEndpointBackedParameterSources.PropertyGetterFromCompetitor property,
@@ -192,7 +191,6 @@ class CompetitorProfileCacheImplTest {
 
         @ParameterizedTest
         @MethodSource(PROPERTIES_FROM_FORMULA_1_COMPETITOR_PROFILE)
-        @Disabled
         public void cachesPropertiesFromFormula1CompetitorProfile(
             Urn competitorUrn,
             CompetitorEndpointBackedParameterSources.PropertyGetterFromCompetitor property,
@@ -325,7 +323,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void retrievesVirtualCompetitorPopulatedFromTournamentPropertyInTournamentInfo()
             throws Exception {
             SapiTournamentInfoEndpoint tournament = nascarCup2024TournamentInfo();
@@ -420,7 +417,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void retrievesVirtualCompetitorPopulatedFromTheRootOfTournamentInfo() throws Exception {
             SapiTournamentInfoEndpoint tournament = fullyPopulatedFootballTournamentInfo(
                 COMPETITORS_AT_ROOT_LEVEL
@@ -523,7 +519,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void retrievesVirtualCompetitorPopulatedFromGroupsOfTournamentInfo() throws Exception {
             SapiTournamentInfoEndpoint tournament = fullyPopulatedFootballTournamentInfo(
                 COMPETITORS_IN_GROUP
@@ -617,7 +612,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void retrievesVirtualCompetitorForMatchPopulatedFromStageSummary() throws Exception {
             SapiStageSummaryEndpoint summary = fullyPopulatedStageSummary();
             replace1stCompetitorWithVirtual(summary);
@@ -662,8 +656,7 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
-        public void retrievesVirtualCompetitorForMatchPopulatedFromSummary() throws Exception {
+        void retrievesVirtualCompetitorForMatchPopulatedFromMatchSummary() throws Exception {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyVsVirtual2024();
             Urn virtualUrn = parse(VirtualCompetitor.ID);
 
@@ -737,7 +730,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void retrievesVirtualCompetitorForMatchPopulatedFromTournamentSummary() throws Exception {
             val nascarCupWithVirtual = replaceFirstCompetitorWithVirtual(nascarCup2024TournamentInfo());
             val virtualStageCompetitor = nascarCupWithVirtual
@@ -784,7 +776,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void retrievesVirtualCompetitor() throws Exception {
             SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
             virtual.getCompetitor().setVirtual(true);
@@ -820,7 +811,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void absenceOfVirtualFlagInSummaryDoesNotOverrideVirtualFlagFromCompetitor() throws Exception {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyScotlandEuro2024();
             Urn germanyUrn = parse(Germany2024Uefa.COMPETITOR_ID);
@@ -860,7 +850,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void virtualFlagInSummaryOverridesLackOfVirtualFlagFromCompetitor() throws Exception {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyVsVirtual2024();
             Urn virtualUrn = parse(VirtualCompetitor.ID);
@@ -941,7 +930,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void undefinedVirtualProfileInDifferentLanguageDoesNotOverrideVirtualFlagFromSummary()
             throws Exception {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyVsVirtual2024();
@@ -1016,7 +1004,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void competitorProfileApiEndpointInvokedOnceEvenIfVirtualFlagIsAbsent() throws Exception {
             SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
             virtual.getCompetitor().setVirtual(null);
@@ -1055,7 +1042,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void throwsExceptionOnFailedRetrieval() throws Exception {
             DataRouterImpl dataRouter = new DataRouterImpl();
 
@@ -1120,7 +1106,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void exportsImportsVirtualCompetitor() throws Exception {
             SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
             virtual.getCompetitor().setVirtual(true);
@@ -1177,7 +1162,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void exportsImportsNonVirtualCompetitor() throws Exception {
             val competitor = alonsoCompetitorProfile();
             competitor.getCompetitor().setVirtual(false);
@@ -1235,7 +1219,6 @@ class CompetitorProfileCacheImplTest {
 
         @Test
         @SneakyThrows
-        @Disabled
         public void workaroundBreakingChangeAfterReimportMakesRedundantCallIfVirtualSourcedNotFromProfile() {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyVsVirtual2024();
             SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
@@ -1280,7 +1263,6 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        @Disabled
         public void fetchesProfileAfterReimportIfVirtualWasNotKnownBeforeExport() throws Exception {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyVsVirtual2024();
             SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
@@ -1338,6 +1320,39 @@ class CompetitorProfileCacheImplTest {
                     .isVirtual()
             )
                 .isTrue();
+        }
+
+        @Test
+        public void retrievesCompetitorPopulatedFromSimpleTeamEndpoint() throws Exception {
+            Urn urn = parse(SapiSimpleTeams.ID);
+
+            DataRouterImpl dataRouter = new DataRouterImpl();
+            DataRouterManager dataRouterManager = dataRouterManagerBuilder
+                .withSimpleTeams(providing(in(ENGLISH), with(urn.toString()), sapiSimpleTeam()))
+                .with(dataRouter)
+                .build();
+            val profileCache = stubbingOutDataRouterManager()
+                .withDefaultLanguage(ENGLISH)
+                .with(dataRouterManager)
+                .build();
+            dataRouter.setDataListeners(asList(profileCache));
+            dataRouterManager.requestSimpleTeamEndpoint(ENGLISH, urn, anyMatch);
+
+            val profileFactory = stubbingOutAllCachesAndStatusFactory()
+                .withDefaultLanguage(ENGLISH)
+                .with(profileCache)
+                .build();
+
+            val competitor = profileFactory.buildCompetitor(
+                urn,
+                anyQualifier,
+                anyDivision,
+                noInfoAboutVirtual,
+                anyMatch,
+                asList(ENGLISH)
+            );
+
+            CompetitorAssert.assertThat(competitor, in(ENGLISH)).isEqualTo(sapiSimpleTeam());
         }
 
         private SapiCompetitorProfileEndpoint withoutVirtualFlag(SapiCompetitorProfileEndpoint profile) {

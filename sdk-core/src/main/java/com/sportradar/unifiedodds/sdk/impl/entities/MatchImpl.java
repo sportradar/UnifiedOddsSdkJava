@@ -237,7 +237,7 @@ public class MatchImpl extends SportEventImpl implements Match {
                             c,
                             provideCompetitorQualifier(matchCi, c),
                             provideCompetitorDivision(matchCi, c),
-                            provideCompetitorVirtual(matchCi, c),
+                            null,
                             matchCi,
                             locales
                         );
@@ -761,12 +761,5 @@ public class MatchImpl extends SportEventImpl implements Match {
         Preconditions.checkNotNull(competitorId);
 
         return ci.getCompetitorsDivisions() == null ? null : ci.getCompetitorsDivisions().get(competitorId);
-    }
-
-    private static Boolean provideCompetitorVirtual(MatchCi ci, Urn competitorId) {
-        Preconditions.checkNotNull(ci);
-        Preconditions.checkNotNull(competitorId);
-
-        return ci.getCompetitorsVirtual() == null ? null : ci.getCompetitorsVirtual().contains(competitorId);
     }
 }

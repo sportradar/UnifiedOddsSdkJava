@@ -20,6 +20,25 @@ import lombok.val;
 @SuppressWarnings({ "MultipleStringLiterals", "MagicNumber" })
 public class SapiTeams {
 
+    public static SapiTeamExtended sapiTeamExtended(SapiTeam team) {
+        val extended = new SapiTeamExtended();
+        extended.setAbbreviation(team.getAbbreviation());
+        extended.setCountry(team.getCountry());
+        extended.setCountryCode(team.getCountryCode());
+        extended.setId(team.getId());
+        extended.setAgeGroup(team.getAgeGroup());
+        extended.setDivision(team.getDivision());
+        extended.setDivisionName(team.getDivisionName());
+        extended.setGender(team.getGender());
+        extended.setPlayers(team.getPlayers());
+        extended.setReferenceIds(team.getReferenceIds());
+        extended.setShortName(team.getShortName());
+        extended.setName(team.getName());
+        extended.setState(team.getState());
+        extended.setVirtual(team.isVirtual());
+        return extended;
+    }
+
     @SuppressWarnings({ "ClassDataAbstractionCoupling", "MultipleStringLiterals", "MagicNumber" })
     public static class Germany2024Uefa {
 

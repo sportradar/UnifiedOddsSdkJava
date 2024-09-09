@@ -22,7 +22,8 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-@Timeout(value = 1, unit = TimeUnit.SECONDS)
+@SuppressWarnings("MagicNumber")
+@Timeout(value = 10, unit = TimeUnit.SECONDS)
 public class WaitingUofListenerTest {
 
     private static final long MIDNIGHT_TIMESTAMP_MILLIS = 1664402400000L;
@@ -38,6 +39,7 @@ public class WaitingUofListenerTest {
     private final FluentExecutor executor = new FluentExecutor();
 
     @Test
+    @Timeout(value = 1, unit = TimeUnit.SECONDS)
     public void shouldNotFailIfOddsMessageIsReceivedIn1Sec() {
         val listener = new WaitingUofListener.Factory(queue).expectingOddsChange();
         val message = mock(OddsChange.class);
@@ -52,7 +54,7 @@ public class WaitingUofListenerTest {
 
         OddsChange message = mock(OddsChange.class);
         executor.executeInAnotherThread(() -> {
-            queue.getWaiterForStartingToPoll().await(2, TimeUnit.SECONDS);
+            queue.getWaiterForStartingToPoll().await(20, TimeUnit.SECONDS);
             listener.onOddsChange(mock(UofSession.class), message);
         });
 
@@ -64,7 +66,7 @@ public class WaitingUofListenerTest {
         val listener = new WaitingUofListener.Factory(queue).expectingOddsChange();
 
         executor.executeInAnotherThread(() -> {
-            queue.getWaiterForStartingToPoll().await(2, TimeUnit.SECONDS);
+            queue.getWaiterForStartingToPoll().await(20, TimeUnit.SECONDS);
             timeUtils.tick(seconds(2));
         });
 

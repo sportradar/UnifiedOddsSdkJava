@@ -6,14 +6,17 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
+import static com.sportradar.unifiedodds.sdk.conn.AcceptanceTestDsl.Setup.context;
+import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.ExactGoals.exactGoalsMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.FreeTextMarketDescription.freeTextMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NascarOutrights.nascarOutrightsMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OneXtwo.oneXtwoMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiVariantDescriptions.ExactGoals.fivePlusVariantDescription;
+import static com.sportradar.unifiedodds.sdk.conn.Sport.FOOTBALL;
+import static com.sportradar.unifiedodds.sdk.conn.SportEvent.MATCH;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.*;
-import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.fivePlusVariant;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.fivePlusVariant;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
@@ -64,16 +67,17 @@ import org.junit.runner.RunWith;
         "MultipleStringLiterals",
         "OverloadMethodsDeclarationOrder",
         "ParameterAssignment",
+        "LambdaBodyLength",
     }
 )
 public class MarketWithMissingNameIT {
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicPort());
 
     private final GlobalVariables globalVariables = new GlobalVariables();
-    private final ApiSimulator apiSimulator = new ApiSimulator(wireMockRule);
-
+    private final ApiSimulator apiSimulator = new ApiSimulator(wireMock);
+    private final Locale aLanguage = Locale.ENGLISH;
     private final Credentials sdkCredentials = Credentials.with(
         Constants.SDK_USERNAME,
         Constants.SDK_PASSWORD
@@ -108,7 +112,7 @@ public class MarketWithMissingNameIT {
     @Before
     public void setup() throws Exception {
         rabbitMqUserSetup.setupUser(sdkCredentials);
-        sportsApiBaseUrl = BaseUrl.of("localhost", wireMockRule.port());
+        sportsApiBaseUrl = BaseUrl.of("localhost", wireMock.port());
     }
 
     @After
@@ -122,7 +126,7 @@ public class MarketWithMissingNameIT {
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy unused
     ) throws Exception {
-        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setProducer(LIVE_ODDS);
         Locale aLanguage = Locale.ENGLISH;
 
         apiSimulator.defineBookmaker();
@@ -148,42 +152,25 @@ public class MarketWithMissingNameIT {
     @Parameters(method = "exceptionHandlingStrategies")
     public void marketDefinitionWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
-    ) throws IOException, TimeoutException, InitException {
-        globalVariables.setProducer(ProducerId.LIVE_ODDS);
-        globalVariables.setSportEventUrn(SportEvent.MATCH);
-        globalVariables.setSportUrn(Sport.FOOTBALL);
-        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
-        Locale aLanguage = Locale.ENGLISH;
-        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+        ExpectationTowardsSdkErrorHandlingStrategy notUsed
+    ) {
+        context(c -> c.setProducer(LIVE_ODDS).setSportEventUrn(MATCH).setSportUrn(FOOTBALL), wireMock)
+            .stubApiBookmakerAndProducersAnd(api ->
+                api.stubMarketListContaining(nullifyName(oddEvenMarketDescription()), aLanguage)
+            )
+            .sdkWithFeed(sdk -> sdk.with(exceptionHandlingStrategy).withDefaultLanguage(aLanguage))
+            .runScenario((sdk, dsl) -> {
+                dsl.rabbitProducer.send(
+                    dsl.messages.oddsChange(oddEvenMarket()),
+                    dsl.routingKeys.liveOddsChange()
+                );
 
-        apiSimulator.defineBookmaker();
-        apiSimulator.activateOnlyLiveProducer();
-        apiSimulator.stubMarketListContaining(nullifyName(oddEvenMarketDescription()), aLanguage);
+                val market = theOnlyMarketIn(dsl.listinerWaitingFor.theOnlyOddsChange());
+                MarketDefinition definition = market.getMarketDefinition();
 
-        try (
-            val rabbitProducer = connectDeclaringExchange(
-                exchangeLocation,
-                adminCredentials,
-                factory,
-                new TimeUtilsImpl()
-            );
-            val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
-                .with(ListenerCollectingMessages.to(messagesStorage))
-                .with(exceptionHandlingStrategy)
-                .withDefaultLanguage(aLanguage)
-                .with1Session()
-                .withOpenedFeed()
-        ) {
-            rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange());
-
-            val market = theOnlyMarketIn(listinerWaitingFor.theOnlyOddsChange());
-            MarketDefinition definition = market.getMarketDefinition();
-
-            assertThat(definition.getNameTemplate()).isNull();
-            assertThat(definition.getNameTemplate(aLanguage)).isNull();
-        }
+                assertThat(definition.getNameTemplate()).isNull();
+                assertThat(definition.getNameTemplate(aLanguage)).isNull();
+            });
     }
 
     @Test
@@ -192,9 +179,9 @@ public class MarketWithMissingNameIT {
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
-        globalVariables.setProducer(ProducerId.LIVE_ODDS);
-        globalVariables.setSportEventUrn(SportEvent.MATCH);
-        globalVariables.setSportUrn(Sport.FOOTBALL);
+        globalVariables.setProducer(LIVE_ODDS);
+        globalVariables.setSportEventUrn(MATCH);
+        globalVariables.setSportUrn(FOOTBALL);
         FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
         Locale aLanguage = Locale.ENGLISH;
         RoutingKeys routingKeys = new RoutingKeys(globalVariables);
@@ -232,9 +219,9 @@ public class MarketWithMissingNameIT {
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
-        globalVariables.setProducer(ProducerId.LIVE_ODDS);
-        globalVariables.setSportEventUrn(SportEvent.MATCH);
-        globalVariables.setSportUrn(Sport.FOOTBALL);
+        globalVariables.setProducer(LIVE_ODDS);
+        globalVariables.setSportEventUrn(MATCH);
+        globalVariables.setSportUrn(FOOTBALL);
         FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
         Locale aLanguage = Locale.ENGLISH;
         RoutingKeys routingKeys = new RoutingKeys(globalVariables);
@@ -276,9 +263,9 @@ public class MarketWithMissingNameIT {
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
-        globalVariables.setProducer(ProducerId.LIVE_ODDS);
-        globalVariables.setSportEventUrn(SportEvent.MATCH);
-        globalVariables.setSportUrn(Sport.FOOTBALL);
+        globalVariables.setProducer(LIVE_ODDS);
+        globalVariables.setSportEventUrn(MATCH);
+        globalVariables.setSportUrn(FOOTBALL);
         FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
         Locale aLanguage = Locale.ENGLISH;
         RoutingKeys routingKeys = new RoutingKeys(globalVariables);

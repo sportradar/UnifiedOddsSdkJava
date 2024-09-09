@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiLotterySchedule;
+import com.sportradar.uf.sportsapi.datamodel.SapiSimpleTeamProfileEndpoint;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
@@ -21,6 +22,7 @@ public class DataRouterManagerBuilder {
     private DataRouter dataRouter = mock(DataRouter.class);
     private DataProvider<Object> summaries = mock(DataProvider.class);
     private DataProvider<SapiCompetitorProfileEndpoint> competitors = mock(DataProvider.class);
+    private DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeams = mock(DataProvider.class);
 
     public static DataRouterManagerBuilder create() {
         return new DataRouterManagerBuilder();
@@ -38,6 +40,11 @@ public class DataRouterManagerBuilder {
 
     public DataRouterManagerBuilder withCompetitors(DataProvider<SapiCompetitorProfileEndpoint> competitors) {
         this.competitors = competitors;
+        return this;
+    }
+
+    public DataRouterManagerBuilder withSimpleTeams(DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeams) {
+        this.simpleTeams = simpleTeams;
         return this;
     }
 
@@ -61,7 +68,7 @@ public class DataRouterManagerBuilder {
             mock(DataProvider.class),
             mock(DataProvider.class),
             competitors,
-            mock(DataProvider.class),
+            simpleTeams,
             mock(DataProvider.class),
             mock(DataProvider.class),
             mock(DataProvider.class),

@@ -13,6 +13,7 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.utils.Urn;
@@ -72,10 +73,11 @@ public class ApiSimulator {
         stub(new MarketDescriptions(), format("/v1/descriptions/%s/markets.xml.*", language.toString()));
     }
 
-    public void stubMarketListContaining(DescMarket market, Locale language) {
+    public ApiSimulator stubMarketListContaining(DescMarket market, Locale language) {
         val descriptions = new MarketDescriptions();
         descriptions.getMarket().add(market);
         stub(descriptions, format("/v1/descriptions/%s/markets.xml.*", language.toString()));
+        return this;
     }
 
     public void stubVariantListContaining(DescVariant variantDescription, Locale language) {
@@ -316,20 +318,32 @@ public class ApiSimulator {
         }
     }
 
-    public void stubCompetitorProfile(Locale aLanguage, SapiCompetitorProfileEndpoint profile) {
-        JAXBElement<SapiCompetitorProfileEndpoint> profileJaxb = new JAXBElement<>(
-            new QName(UNIFIED_XML_NAMESPACE, "competitor_profile"),
-            SapiCompetitorProfileEndpoint.class,
-            profile
-        );
-        stub(
-            profileJaxb,
-            format(
-                "/v1/sports/%s/competitors/%s/profile.xml",
-                aLanguage.getLanguage(),
-                profile.getCompetitor().getId()
-            )
-        );
+    public void stubCompetitorProfile(
+        Locale aLanguage,
+        SapiCompetitorProfileEndpoint profile,
+        SapiCompetitorProfileEndpoint... profiles
+    ) {
+        val allProfiles = ImmutableList
+            .<SapiCompetitorProfileEndpoint>builder()
+            .add(profile)
+            .addAll(ImmutableList.copyOf(profiles))
+            .build();
+
+        for (SapiCompetitorProfileEndpoint p : allProfiles) {
+            JAXBElement<SapiCompetitorProfileEndpoint> profileJaxb = new JAXBElement<>(
+                new QName(UNIFIED_XML_NAMESPACE, "competitor_profile"),
+                SapiCompetitorProfileEndpoint.class,
+                p
+            );
+            stub(
+                profileJaxb,
+                format(
+                    "/v1/sports/%s/competitors/%s/profile.xml",
+                    aLanguage.getLanguage(),
+                    p.getCompetitor().getId()
+                )
+            );
+        }
     }
 
     public void stubSportCategories(Locale langA, Sport sport, SapiCategory category) {

@@ -18,28 +18,32 @@ public class GlobalVariables {
         return producer.get();
     }
 
-    public void setProducer(ProducerId producerId) {
+    public GlobalVariables setProducer(ProducerId producerId) {
         this.producer = Optional.of(producerId);
+        return this;
     }
 
     public Urn getSportEventUrn() {
         return sportEventUrn.get();
     }
 
-    public void setSportEventUrn(SportEvent sportEventUrn) {
+    public GlobalVariables setSportEventUrn(SportEvent sportEventUrn) {
         this.sportEventUrn = Optional.of(sportEventUrn.getUrn());
+        return this;
     }
 
-    public void setSportEventUrn(Urn urn) {
+    public GlobalVariables setSportEventUrn(Urn urn) {
         this.sportEventUrn = Optional.of(urn);
+        return this;
     }
 
     public Sport getSportUrn() {
         return sportUrn.get();
     }
 
-    public void setSportUrn(Sport sportUrn) {
+    public GlobalVariables setSportUrn(Sport sportUrn) {
         this.sportUrn = Optional.of(sportUrn);
+        return this;
     }
 
     public int getNodeId() {

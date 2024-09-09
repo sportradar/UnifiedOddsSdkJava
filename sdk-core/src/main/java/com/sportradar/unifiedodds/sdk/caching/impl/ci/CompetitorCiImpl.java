@@ -16,8 +16,6 @@ import com.sportradar.unifiedodds.sdk.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCacheItem;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCi;
 import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableCompetitorCi;
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDivisionCi;
-import com.sportradar.unifiedodds.sdk.entities.Division;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.DataRouterStreamException;
@@ -88,7 +86,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
     /**
      * A value indicating whether represented competitor is virtual
      */
-    private boolean isVirtual;
+    private Boolean isVirtual;
 
     /**
      * A {@link String} representation of a country code
@@ -343,8 +341,8 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
      */
     @Override
     public boolean isVirtual() {
-        ensureDataLoaded(isVirtual);
-        return isVirtual;
+        ensureDataLoaded();
+        return Boolean.TRUE.equals(isVirtual);
     }
 
     /**
@@ -681,7 +679,8 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
         Preconditions.checkNotNull(competitor);
         Preconditions.checkNotNull(dataLocale);
 
-        isVirtual = competitor.isVirtual() == null ? false : competitor.isVirtual();
+        mergeVirtual(competitor.isVirtual());
+
         countryCode = competitor.getCountryCode();
 
         Optional.ofNullable(competitor.getName()).ifPresent(s -> names.put(dataLocale, s));
@@ -761,6 +760,16 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
         internalMerge(data.getCompetitor(), dataLocale);
     }
 
+    private void mergeVirtual(Boolean newValue) {
+        if (isVirtual == null) {
+            isVirtual = newValue != null && newValue;
+        } else {
+            if (newValue != null) {
+                isVirtual = newValue;
+            }
+        }
+    }
+
     private void requestMissingCompetitorData(List<Locale> requiredLocales) {
         Preconditions.checkNotNull(requiredLocales);
 
@@ -819,6 +828,14 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
             );
     }
 
+    private void ensureDataLoaded() {
+        if (!cachedLocales.isEmpty()) {
+            return;
+        }
+
+        requestMissingCompetitorData(Collections.singletonList(defaultLocale));
+    }
+
     private void ensureDataLoaded(Object object) {
         if (object != null || !cachedLocales.isEmpty()) {
             return;
@@ -851,7 +868,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
             defaultLocale,
             new HashMap<>(countryNames),
             new HashMap<>(abbreviations),
-            isVirtual,
+            Boolean.TRUE.equals(isVirtual),
             countryCode,
             referenceId != null ? new HashMap<>(referenceId.getReferenceIds()) : null,
             associatedPlayerIds != null

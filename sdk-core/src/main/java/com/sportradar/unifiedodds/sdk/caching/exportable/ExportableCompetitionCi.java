@@ -23,6 +23,10 @@ public class ExportableCompetitionCi extends ExportableSportEventCi {
     private SportEventType sportEventType;
     private List<String> competitorVirtual;
 
+    /**
+     * @deprecated Information about virtual competitors is no longer available on the exportable item
+     */
+    @Deprecated
     ExportableCompetitionCi(
         String id,
         Map<Locale, String> names,
@@ -39,6 +43,39 @@ public class ExportableCompetitionCi extends ExportableSportEventCi {
         SportEventType sportEventType,
         List<String> competitorVirtual
     ) {
+        this(
+            id,
+            names,
+            scheduled,
+            scheduledEnd,
+            startTimeTbd,
+            replacedBy,
+            bookingStatus,
+            competitorIds,
+            venue,
+            conditions,
+            competitorsReferences,
+            liveOdds,
+            sportEventType
+        );
+        this.competitorVirtual = competitorVirtual;
+    }
+
+    ExportableCompetitionCi(
+        String id,
+        Map<Locale, String> names,
+        Date scheduled,
+        Date scheduledEnd,
+        Boolean startTimeTbd,
+        String replacedBy,
+        BookingStatus bookingStatus,
+        List<String> competitorIds,
+        ExportableVenueCi venue,
+        ExportableSportEventConditionsCi conditions,
+        Map<String, Map<String, String>> competitorsReferences,
+        String liveOdds,
+        SportEventType sportEventType
+    ) {
         super(id, names, scheduled, scheduledEnd, startTimeTbd, replacedBy);
         this.bookingStatus = bookingStatus;
         this.competitorIds = competitorIds;
@@ -47,7 +84,6 @@ public class ExportableCompetitionCi extends ExportableSportEventCi {
         this.competitorsReferences = competitorsReferences;
         this.liveOdds = liveOdds;
         this.sportEventType = sportEventType;
-        this.competitorVirtual = competitorVirtual;
     }
 
     public BookingStatus getBookingStatus() {
@@ -106,10 +142,18 @@ public class ExportableCompetitionCi extends ExportableSportEventCi {
         this.sportEventType = sportEventType;
     }
 
+    /**
+     * @deprecated Information about virtual competitors is no longer available on the exportable item
+     */
+    @Deprecated
     public List<String> getCompetitorVirtual() {
         return competitorVirtual;
     }
 
+    /**
+     * @deprecated Information about virtual competitors is no longer available on the exportable item
+     */
+    @Deprecated
     public void setCompetitorVirtual(List<String> competitorVirtual) {
         this.competitorVirtual = competitorVirtual;
     }

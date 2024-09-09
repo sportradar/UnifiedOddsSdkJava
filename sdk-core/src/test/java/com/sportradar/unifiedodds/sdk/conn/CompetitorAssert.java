@@ -5,10 +5,10 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static java.util.stream.Collectors.toList;
 
-import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SapiJersey;
+import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.Jersey;
+import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Arrays;
@@ -38,6 +38,16 @@ public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competito
 
     public CompetitorAssert isEqualTo(SapiCompetitorProfileEndpoint profile) {
         val competitor = profile.getCompetitor();
+        assertJerseyLists(profile);
+        assertPlayerLists(profile);
+        return isEqualTo(competitor);
+    }
+
+    public CompetitorAssert isEqualTo(SapiSimpleTeamProfileEndpoint simpleTeamProfileEndpoint) {
+        return isEqualTo(simpleTeamProfileEndpoint.getCompetitor());
+    }
+
+    public CompetitorAssert isEqualTo(SapiTeamExtended competitor) {
         Assertions.assertThat(actual.getName(locale.get())).isEqualTo(competitor.getName());
         Assertions.assertThat(actual.getCountryCode()).isEqualTo(competitor.getCountryCode());
         Assertions.assertThat(actual.getAbbreviation(locale.get())).isEqualTo(competitor.getAbbreviation());
@@ -47,8 +57,28 @@ public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competito
         Assertions.assertThat(actual.getState()).isEqualTo(competitor.getState());
         Assertions.assertThat(actual.getCountry(locale.get())).isEqualTo(competitor.getCountry());
         Assertions.assertThat(actual.isVirtual()).isEqualTo(BooleanUtils.isTrue(competitor.isVirtual()));
-        assertJerseyLists(profile);
-        assertPlayerLists(profile);
+        return this;
+    }
+
+    @SuppressWarnings("MagicNumber")
+    public CompetitorAssert isEqualTo(SapiTeam competitor) {
+        Assertions.assertThat(actual.getName(locale.get())).isEqualTo(competitor.getName());
+        Assertions.assertThat(actual.getCountryCode()).isEqualTo(competitor.getCountryCode());
+        if (competitor.getAbbreviation() == null) {
+            Assertions
+                .assertThat(actual.getAbbreviation(locale.get()))
+                .isEqualTo(SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
+        } else {
+            Assertions
+                .assertThat(actual.getAbbreviation(locale.get()))
+                .isEqualTo(competitor.getAbbreviation());
+        }
+        Assertions.assertThat(actual.getGender()).isEqualTo(competitor.getGender());
+        Assertions.assertThat(actual.getAgeGroup()).isEqualTo(competitor.getAgeGroup());
+        Assertions.assertThat(actual.getShortName()).isEqualTo(competitor.getShortName());
+        Assertions.assertThat(actual.getState()).isEqualTo(competitor.getState());
+        Assertions.assertThat(actual.getCountry(locale.get())).isEqualTo(competitor.getCountry());
+        Assertions.assertThat(actual.isVirtual()).isEqualTo(BooleanUtils.isTrue(competitor.isVirtual()));
         return this;
     }
 

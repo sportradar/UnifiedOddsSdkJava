@@ -18,15 +18,10 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.rep
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterables;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.http.client.Client;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeam;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
@@ -43,9 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.val;
 import org.apache.commons.lang3.BooleanUtils;
-import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -58,7 +51,7 @@ class CompetitorsIT {
     @RegisterExtension
     private static WireMockExtension wireMock = WireMockExtension
         .newInstance()
-        .options(wireMockConfig().dynamicPort().dynamicPort())
+        .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
 
     private final GlobalVariables globalVariables = new GlobalVariables();
@@ -82,7 +75,6 @@ class CompetitorsIT {
     @Nested
     class SeasonCompetitors {
 
-        @Disabled
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
         void fromSportDataProviderProperlyProvideVirtualInfo(ExceptionHandlingStrategy strategy)
@@ -98,6 +90,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
             apiSimulator.stubSeasonSummary(aLanguage, euro2024TournamentInfo());
+            SapiCompetitorProfiles
+                .profilesFromGroupCompetitors(euro2024TournamentInfo())
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -126,7 +121,6 @@ class CompetitorsIT {
     @Nested
     class TournamentCompetitors {
 
-        @Disabled
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
         void fromSportDataProviderProperlyProvideVirtualInfo(ExceptionHandlingStrategy strategy)
@@ -142,6 +136,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
             apiSimulator.stubTournamentSummary(aLanguage, euro2024TournamentInfo());
+            SapiCompetitorProfiles
+                .profilesFromGroupCompetitors(euro2024TournamentInfo())
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -166,7 +163,6 @@ class CompetitorsIT {
             }
         }
 
-        @Disabled
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
         void competitorVirtualFlagRemainsAfterEvictingTournamentItWasSourcedFrom(
@@ -183,6 +179,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
             apiSimulator.stubTournamentSummary(aLanguage, euro2024TournamentInfo());
+            SapiCompetitorProfiles
+                .profilesFromGroupCompetitors(euro2024TournamentInfo())
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -213,7 +212,6 @@ class CompetitorsIT {
     @Nested
     class StageCompetitors {
 
-        @Disabled
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
         void acquiringVirtualCompetitorsOfTournamentStageViaSportDataProviderSportEvent(
@@ -231,6 +229,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubEmptyAllTournaments(aLanguage);
             apiSimulator.stubTournamentSummary(aLanguage, nascarCupWithVirtual);
+            SapiCompetitorProfiles
+                .profilesFromNestedTournamentCompetitors(nascarCupWithVirtual)
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -255,7 +256,6 @@ class CompetitorsIT {
         }
 
         @ParameterizedTest
-        @Disabled
         @EnumSource(ExceptionHandlingStrategy.class)
         void acquiringVirtualCompetitorOfRaceViaSportDataProvider(ExceptionHandlingStrategy strategy)
             throws Exception {
@@ -266,6 +266,9 @@ class CompetitorsIT {
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubRaceSummary(aLanguage, grandPrixWithVirtual);
+            SapiCompetitorProfiles
+                .profilesFromSapiStageSummary(grandPrixWithVirtual)
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -295,7 +298,6 @@ class CompetitorsIT {
             }
         }
 
-        @Disabled
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
         void competitorVirtualFlagRemainsAfterEvictingStageItWasSourcedFrom(
@@ -313,6 +315,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubEmptyAllTournaments(aLanguage);
             apiSimulator.stubTournamentSummary(aLanguage, nascarCupWithVirtual);
+            SapiCompetitorProfiles
+                .profilesFromNestedTournamentCompetitors(nascarCupWithVirtual)
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -339,7 +344,6 @@ class CompetitorsIT {
             }
         }
 
-        @Disabled
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
         void competitorRemainsVirtualAfterPurgingRaceStageTheCompetitorIsAssociatedWith(
@@ -352,6 +356,9 @@ class CompetitorsIT {
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubRaceSummary(aLanguage, grandPrixWithVirtual);
+            SapiCompetitorProfiles
+                .profilesFromSapiStageSummary(grandPrixWithVirtual)
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -402,6 +409,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
             apiSimulator.stubMatchSummary(aLanguage, soccerMatchGermanyVsVirtual2024());
+            SapiCompetitorProfiles
+                .profilesFromSapiMatchSummary(soccerMatchGermanyVsVirtual2024())
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup
@@ -446,6 +456,9 @@ class CompetitorsIT {
             apiSimulator.stubAllSports(aLanguage);
             apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
             apiSimulator.stubMatchSummary(aLanguage, soccerMatchGermanyVsVirtual2024());
+            SapiCompetitorProfiles
+                .profilesFromSapiMatchSummary(soccerMatchGermanyVsVirtual2024())
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
 
             try (
                 val sdk = SdkSetup

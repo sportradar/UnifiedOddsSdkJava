@@ -4,8 +4,6 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategies.anyErrorHandlingStrategy;
-import static com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer.deserialize;
-import static com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer.serialize;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -33,29 +31,29 @@ public class ProfileCaches {
     public static void exportAndImportTheOnlyItemIn(ProfileCacheImpl cache) {
         val exported = cache.exportItems();
         assertThat(exported).hasSize(1);
-        val serialized = serialize(exported.get(0));
+        val serialized = JavaSerializer.serialize(exported.get(0));
 
         purge(cache, exported.get(0));
 
-        val deserialized = deserialize(serialized);
+        val deserialized = JavaSerializer.deserialize(serialized);
         cache.importItems(asList((ExportableCompetitorCi) deserialized));
     }
 
     @SneakyThrows
     public static void exportAndImportItemsIn(ProfileCacheImpl cache) {
         val exported = cache.exportItems();
-        List<byte[]> serialised = serialise(exported);
+        List<byte[]> serialised = serialize(exported);
 
         purge(exported, cache);
 
-        cache.importItems(deserialise(serialised));
+        cache.importItems(deserialize(serialised));
     }
 
-    private static List<byte[]> serialise(List<ExportableCi> exported) {
+    private static List<byte[]> serialize(List<ExportableCi> exported) {
         return exported.stream().map(JavaSerializer::serialize).collect(Collectors.toList());
     }
 
-    private static List<ExportableCi> deserialise(List<byte[]> serialised) {
+    private static List<ExportableCi> deserialize(List<byte[]> serialised) {
         return serialised
             .stream()
             .map(JavaSerializer::deserialize)

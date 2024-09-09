@@ -108,11 +108,6 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
     private Map<Urn, Integer> competitorDivisions;
 
     /**
-     * A {@link List} of competitor identifiers which are marked as virtual in the sport event
-     */
-    private List<Urn> competitorVirtual;
-
-    /**
      * A {@link Map} of competitors id and their references that participate in the sport event
      * associated with the current instance
      */
@@ -429,10 +424,6 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
                     .entrySet()
                     .stream()
                     .collect(Collectors.toMap(c -> Urn.parse(c.getKey()), Map.Entry::getValue))
-                : null;
-        this.competitorVirtual =
-            exportable.getCompetitorVirtual() != null
-                ? exportable.getCompetitorVirtual().stream().map(Urn::parse).collect(Collectors.toList())
                 : null;
         this.tournamentId =
             exportable.getTournamentId() != null ? Urn.parse(exportable.getTournamentId()) : null;
@@ -911,24 +902,6 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
         return competitorDivisions == null ? null : copyOf(competitorDivisions);
     }
 
-    /**
-     * Returns list of {@link Urn} of {@link CompetitorCi} which are marked as virtual for this sport event
-     *
-     * @return list of {@link Urn} of {@link CompetitorCi} which are marked as virtual for this sport event
-     */
-    @Override
-    public List<Urn> getCompetitorsVirtual() {
-        if (competitorVirtual != null && !competitorVirtual.isEmpty()) {
-            return competitorVirtual;
-        }
-
-        if (loadedCompetitorLocales.isEmpty()) {
-            requestMissingSummaryData(Collections.singletonList(defaultLocale), false);
-        }
-
-        return competitorVirtual == null ? null : competitorVirtual;
-    }
-
     @Override
     public String getLiveOdds(List<Locale> locales) {
         if (liveOdds != null) {
@@ -1367,7 +1340,6 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
         this.competitorDivisions = competitorDivisionsLocal;
         this.competitorsReferences =
             SdkHelper.parseTeamCompetitorsReferences(competitors, competitorsReferences);
-        this.competitorVirtual = competitorVirtualLocal;
         this.loadedCompetitorLocales.add(locale);
     }
 
@@ -1489,9 +1461,7 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
             liveOdds,
             sportEventType,
             stageType,
-            competitorVirtual == null
-                ? null
-                : competitorVirtual.stream().map(Urn::toString).collect(Collectors.toList())
+            null
         );
     }
 }
