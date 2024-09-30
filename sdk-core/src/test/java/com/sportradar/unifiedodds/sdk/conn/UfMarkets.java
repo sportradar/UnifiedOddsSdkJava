@@ -13,10 +13,11 @@ import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Pr
 import static com.sportradar.utils.generic.testing.RandomObjectPicker.pickOneRandomlyFrom;
 
 import com.sportradar.uf.datamodel.*;
-import com.sportradar.unifiedodds.sdk.conn.marketids.FlexScoreMarketIds;
-import com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds;
-import com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds;
+import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
+import com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.*;
+import com.sportradar.unifiedodds.sdk.conn.marketids.*;
 import com.sportradar.utils.domain.feedmessages.markets.TeamIndicators;
+import java.util.List;
 import lombok.val;
 
 public class UfMarkets {
@@ -30,6 +31,7 @@ public class UfMarkets {
         }
     }
 
+    @SuppressWarnings("ClassFanOutComplexity")
     public static class WithOdds {
 
         public static UfOddsChangeMarket oddEvenMarket() {
@@ -100,6 +102,102 @@ public class UfMarkets {
             market.setId(CORRECT_SCORE_FLEX_SCORE_MARKET_ID);
             market.setSpecifiers(String.format(SCORE_SPECIFIER, currentHomeScore, currentAwayScore));
             populateOutcomeIds(from(FlexScoreMarketIds.correctScoreFlexScoreMarket()), to(market));
+            return market;
+        }
+
+        public static UfOddsChangeMarket mapDurationMarket(UfMapNrSpecifier mapnr, UfMinuteSpecifier minute) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(MapDurationMarketIds.MAP_DURATION_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(mapnr, minute));
+            populateOutcomeIds(from(MapDurationMarketIds.mapDurationMarket()), to(market));
+            return market;
+        }
+
+        public static UfOddsChangeMarket handicapMarket(UfHandicapSpecifier hcp) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(HandicapMarketIds.HANDICAP_MARKET_MARKET_ID);
+            market.setSpecifiers(hcp.getKeyValue());
+            populateOutcomeIds(from(HandicapMarketIds.handicapMarket()), to(market));
+            return market;
+        }
+
+        public static UfOddsChangeMarket winnerCompetitorMarket(List<SapiTeamCompetitor> competitors) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(WinnerCompetitorMarketIds.WINNER_COMPETITOR_MARKET_ID);
+            populateOutcomeIds(
+                from(WinnerCompetitorMarketIds.winnerCompetitorMarket(competitors)),
+                to(market)
+            );
+            return market;
+        }
+
+        public static UfOddsChangeMarket whenWillTheRunBeScoredExtraInningsMarket(
+            UfInningNrSpecifier inningnr,
+            UfRunNrSpecifier runnr
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(
+                WhenWillTheRunBeScoredExtraInningsMarketIds.WHEN_WILL_THE_RUN_BE_SCORED_EXTRA_INNINGS_MARKET_ID
+            );
+            market.setSpecifiers(UfSpecifiers.join(inningnr, runnr));
+            populateOutcomeIds(
+                from(WhenWillTheRunBeScoredExtraInningsMarketIds.whenWillTheRunBeScoredExtraInningsMarket()),
+                to(market)
+            );
+            return market;
+        }
+
+        public static UfOddsChangeMarket setNrBreakNrMarket(
+            UfSetNrSpecifier setnr,
+            UfBreakNrSpecifier breaknr
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(SetNrBreakNrMarketIds.SET_NR_BREAK_NR_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(setnr, breaknr));
+            populateOutcomeIds(from(SetNrBreakNrMarketIds.setNrBreakNrMarket()), to(market));
+            return market;
+        }
+
+        public static UfOddsChangeMarket holeNrCompetitorUnderParMarket(
+            UfHoleNrSpecifier holeNr,
+            UfCompetitorSpecifier competitor
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(HoleNrCompetitorUnderParMarketIds.HOLE_NR_COMPETITOR_UNDER_PAR_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(holeNr, competitor));
+            populateOutcomeIds(
+                from(HoleNrCompetitorUnderParMarketIds.holeNrCompetitorUnderParMarket()),
+                to(market)
+            );
+            return market;
+        }
+
+        public static UfOddsChangeMarket playerToStrikeOutAppearanceTimeAtBatMarket(
+            UfAppearanceNrSpecifier appearanceNr,
+            UfPlayerSpecifier player
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(
+                PlayerToStrikeOutAppearanceTimeAtBatMarketIds.PLAYER_TO_STRIKE_OUT_APPEARANCE_TIME_AT_BAT_MARKET_ID
+            );
+            market.setSpecifiers(UfSpecifiers.join(appearanceNr, player));
+            populateOutcomeIds(
+                from(
+                    PlayerToStrikeOutAppearanceTimeAtBatMarketIds.playerToStrikeOutAppearanceTimeAtBatMarket()
+                ),
+                to(market)
+            );
+            return market;
+        }
+
+        public static UfOddsChangeMarket eventMatchDayHomeTeamsTotalMarket(UfMatchDaySpecifier matchDay) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(EventMatchDayHomeTeamsTotalMarketIds.EVENT_MATCH_DAY_HOME_TEAMS_TOTAL_MARKET_ID);
+            market.setSpecifiers(matchDay.getKeyValue());
+            populateOutcomeIds(
+                from(EventMatchDayHomeTeamsTotalMarketIds.eventMatchDayHomeTeamsTotalMarket()),
+                to(market)
+            );
             return market;
         }
 

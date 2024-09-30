@@ -18,6 +18,7 @@ public class ExportableCompetitorCi extends ExportableCi {
     private String countryCode;
     private Map<String, String> referenceId;
     private List<String> associatedPlayerIds;
+    private Map<String, Integer> associatedPlayerJerseyNumbers;
     private List<ExportableJerseyCi> jerseys;
     private ExportableManagerCi manager;
     private ExportableVenueCi venue;
@@ -41,6 +42,7 @@ public class ExportableCompetitorCi extends ExportableCi {
         String countryCode,
         Map<String, String> referenceId,
         List<String> associatedPlayerIds,
+        Map<String, Integer> associatedPlayerJerseyNumbers,
         List<ExportableJerseyCi> jerseys,
         ExportableManagerCi manager,
         ExportableVenueCi venue,
@@ -55,25 +57,26 @@ public class ExportableCompetitorCi extends ExportableCi {
         ExportableDivisionCi division
     ) {
         super(id, names);
-        this.defaultLocale = defaultLocale;
-        this.countryNames = countryNames;
-        this.abbreviations = abbreviations;
-        this.isVirtual = isVirtual;
-        this.countryCode = countryCode;
-        this.referenceId = referenceId;
-        this.associatedPlayerIds = associatedPlayerIds;
-        this.jerseys = jerseys;
-        this.manager = manager;
-        this.venue = venue;
-        this.gender = gender;
-        this.ageGroup = ageGroup;
-        this.raceDriverProfile = raceDriverProfile;
-        this.cachedLocales = cachedLocales;
-        this.state = state;
-        this.sportId = sportId;
-        this.categoryId = categoryId;
-        this.shortName = shortName;
         this.division = division;
+        this.setDefaultLocale(defaultLocale);
+        this.setCountryNames(countryNames);
+        this.setAbbreviations(abbreviations);
+        this.setVirtual(isVirtual);
+        this.setCountryCode(countryCode);
+        this.setReferenceId(referenceId);
+        this.setAssociatedPlayerIds(associatedPlayerIds);
+        this.setAssociatedPlayerJerseyNumbers(associatedPlayerJerseyNumbers);
+        this.setJerseys(jerseys);
+        this.setManager(manager);
+        this.setVenue(venue);
+        this.setGender(gender);
+        this.setAgeGroup(ageGroup);
+        this.setRaceDriverProfile(raceDriverProfile);
+        this.setCachedLocales(cachedLocales);
+        this.setState(state);
+        this.setSportId(sportId);
+        this.setCategoryId(categoryId);
+        this.setShortName(shortName);
     }
 
     public Locale getDefaultLocale() {
@@ -130,6 +133,14 @@ public class ExportableCompetitorCi extends ExportableCi {
 
     public void setAssociatedPlayerIds(List<String> associatedPlayerIds) {
         this.associatedPlayerIds = associatedPlayerIds;
+    }
+
+    public Map<String, Integer> getAssociatedPlayerJerseyNumbers() {
+        return associatedPlayerJerseyNumbers;
+    }
+
+    public void setAssociatedPlayerJerseyNumbers(Map<String, Integer> associatedPlayerJerseyNumbers) {
+        this.associatedPlayerJerseyNumbers = associatedPlayerJerseyNumbers;
     }
 
     public List<ExportableJerseyCi> getJerseys() {

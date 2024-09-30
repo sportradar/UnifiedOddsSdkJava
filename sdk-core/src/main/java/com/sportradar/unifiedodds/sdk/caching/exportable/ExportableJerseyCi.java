@@ -15,6 +15,12 @@ public class ExportableJerseyCi extends ExportableCi {
     private String splitColor;
     private String shirtType;
     private String sleeveDetail;
+    private Boolean stripes;
+    private Boolean horizontalStripes;
+    private String horizontalStripesColor;
+    private Boolean squares;
+    private String squaresColor;
+    private Boolean split;
 
     public ExportableJerseyCi(
         String base,
@@ -26,15 +32,55 @@ public class ExportableJerseyCi extends ExportableCi {
         String shirtType,
         String sleeveDetail
     ) {
+        this(
+            base,
+            number,
+            sleeve,
+            type,
+            stripesColor,
+            splitColor,
+            shirtType,
+            sleeveDetail,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
+    public ExportableJerseyCi(
+        String base,
+        String number,
+        String sleeve,
+        String type,
+        String stripesColor,
+        String splitColor,
+        String shirtType,
+        String sleeveDetail,
+        Boolean stripes,
+        Boolean horizontalStripes,
+        String horizontalStripesColor,
+        Boolean squares,
+        String squaresColor,
+        Boolean split
+    ) {
         super(null, null);
-        this.base = base;
-        this.number = number;
-        this.sleeve = sleeve;
-        this.type = type;
-        this.stripesColor = stripesColor;
-        this.splitColor = splitColor;
-        this.shirtType = shirtType;
-        this.sleeveDetail = sleeveDetail;
+        setBase(base);
+        setNumber(number);
+        setSleeve(sleeve);
+        setType(type);
+        setStripesColor(stripesColor);
+        setSplitColor(splitColor);
+        setShirtType(shirtType);
+        setSleeveDetail(sleeveDetail);
+        setStripes(stripes);
+        setHorizontalStripes(horizontalStripes);
+        setHorizontalStripesColor(horizontalStripesColor);
+        setSquares(squares);
+        setSquaresColor(squaresColor);
+        setSplit(split);
     }
 
     public String getBase() {
@@ -99,5 +145,53 @@ public class ExportableJerseyCi extends ExportableCi {
 
     public void setSleeveDetail(String sleeveDetail) {
         this.sleeveDetail = sleeveDetail;
+    }
+
+    public Boolean getStripes() {
+        return stripes;
+    }
+
+    public void setStripes(Boolean stripes) {
+        this.stripes = stripes;
+    }
+
+    public Boolean getHorizontalStripes() {
+        return horizontalStripes;
+    }
+
+    public void setHorizontalStripes(Boolean horizontalStripes) {
+        this.horizontalStripes = horizontalStripes;
+    }
+
+    public String getHorizontalStripesColor() {
+        return horizontalStripesColor;
+    }
+
+    public void setHorizontalStripesColor(String horizontalStripesColor) {
+        this.horizontalStripesColor = horizontalStripesColor;
+    }
+
+    public Boolean getSquares() {
+        return squares;
+    }
+
+    public void setSquares(Boolean squares) {
+        this.squares = squares;
+    }
+
+    public String getSquaresColor() {
+        return squaresColor;
+    }
+
+    public void setSquaresColor(String squaresColor) {
+        this.squaresColor = squaresColor;
+    }
+
+    public Boolean getSplit() {
+        return split;
+    }
+
+    public void setSplit(Boolean split) {
+        this.split = split;
     }
 }

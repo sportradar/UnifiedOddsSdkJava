@@ -18,13 +18,15 @@ import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
-import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.by;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.in;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static java.util.stream.Collectors.toList;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
@@ -49,19 +51,20 @@ import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeOdds;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.assertj.core.api.Assertions;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
-@Ignore
 @SuppressWarnings(
     {
         "ClassDataAbstractionCoupling",
@@ -79,13 +82,16 @@ import org.junit.runner.RunWith;
         "ParameterAssignment",
     }
 )
-public class MarketWithMissingOutcomeNameIT {
+class MarketWithMissingOutcomeNameIT {
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+    @RegisterExtension
+    private static WireMockExtension wireMock = WireMockExtension
+        .newInstance()
+        .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
+        .build();
 
     private final GlobalVariables globalVariables = new GlobalVariables();
-    private final ApiSimulator apiSimulator = new ApiSimulator(wireMockRule);
+    private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
 
     private final Credentials sdkCredentials = Credentials.with(
         Constants.SDK_USERNAME,
@@ -116,22 +122,22 @@ public class MarketWithMissingOutcomeNameIT {
 
     private BaseUrl sportsApiBaseUrl;
 
-    public MarketWithMissingOutcomeNameIT() throws Exception {}
+    MarketWithMissingOutcomeNameIT() throws Exception {}
 
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    void setup() throws Exception {
         rabbitMqUserSetup.setupUser(sdkCredentials);
-        sportsApiBaseUrl = BaseUrl.of("localhost", wireMockRule.port());
+        sportsApiBaseUrl = BaseUrl.of("localhost", wireMock.getPort());
     }
 
-    @After
-    public void tearDownProxy() {
+    @AfterEach
+    void tearDownProxy() {
         rabbitMqUserSetup.revertChangesMade();
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void marketOutcomeHasEmptyName(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void marketOutcomeHasEmptyName(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy unused
     ) throws Exception {
@@ -158,9 +164,9 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void marketWithNullOutcomeNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void marketWithNullOutcomeNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -199,9 +205,9 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void marketWithNullOutcomeNameTemplateIsHandedOverToCustomerCodeAsNull(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void marketWithNullOutcomeNameTemplateIsHandedOverToCustomerCodeAsNull(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy notImportant
     ) throws IOException, TimeoutException, InitException {
@@ -245,9 +251,9 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void invariantFlexScoreMarketWithNullOutcomeNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void invariantFlexScoreMarketWithNullOutcomeNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -289,15 +295,15 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void invariantFlexScoreFutsalMarketWithNullMappingOutcomeNameIsHandedOverToCustomerCodeAndReturnsNull(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void invariantFlexScoreFutsalMarketWithNullMappingOutcomeNameIsHandedOverToCustomerCodeAndReturnsNull(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy notImportant
     ) throws IOException, TimeoutException, InitException {
         globalVariables.setProducer(ProducerId.LIVE_ODDS);
         globalVariables.setSportEventUrn(SportEvent.MATCH);
-        globalVariables.setSportUrn(Sport.FOOTBALL);
+        globalVariables.setSportUrn(Sport.FUTSAL);
         FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
         Locale aLanguage = Locale.ENGLISH;
         RoutingKeys routingKeys = new RoutingKeys(globalVariables);
@@ -338,9 +344,9 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void structuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void structuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -388,9 +394,9 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void unstructuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void unstructuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -435,7 +441,7 @@ public class MarketWithMissingOutcomeNameIT {
         }
     }
 
-    private Object[] exceptionHandlingStrategies() {
+    private static Object[] exceptionHandlingStrategies() {
         return new Object[][] {
             { Throw, WILL_THROW_EXCEPTIONS },
             { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },

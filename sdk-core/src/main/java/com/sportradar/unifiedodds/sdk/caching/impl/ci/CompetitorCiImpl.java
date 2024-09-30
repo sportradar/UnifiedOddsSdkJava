@@ -104,6 +104,11 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
     private List<Urn> associatedPlayerIds;
 
     /**
+     * A {@link Map} of associated player jersey numbers
+     */
+    private Map<Urn, Integer> associatedPlayerJerseyNumbers;
+
+    /**
      * A {@link List} of known competitor jerseys
      */
     private List<JerseyCi> jerseys;
@@ -385,6 +390,27 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
     }
 
     /**
+     * Returns a {@link Map} of associated player jersey numbers
+     *
+     * @param locales the locales in which the players data should be pre-fetched
+     * @return {@link Map} of associated player jersey numbers
+     */
+    @Override
+    public Map<Urn, Integer> getAssociatedPlayerJerseyNumbers(List<Locale> locales) {
+        if (cachedLocales.containsAll(locales)) {
+            return associatedPlayerJerseyNumbers == null
+                ? null
+                : ImmutableMap.copyOf(associatedPlayerJerseyNumbers);
+        }
+
+        requestMissingCompetitorData(locales);
+
+        return associatedPlayerJerseyNumbers == null
+            ? null
+            : ImmutableMap.copyOf(associatedPlayerJerseyNumbers);
+    }
+
+    /**
      * Returns a {@link List} of known competitor jerseys
      *
      * @return {@link List} of known competitor jerseys
@@ -576,6 +602,16 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
         } else {
             associatedPlayerIds.addAll(missingAssociatedPlayerIds);
         }
+
+        associatedPlayerJerseyNumbers =
+            exportable.getAssociatedPlayerJerseyNumbers() != null
+                ? exportable
+                    .getAssociatedPlayerJerseyNumbers()
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(pl -> Urn.parse(pl.getKey()), Map.Entry::getValue))
+                : new HashMap<>();
+
         jerseys =
             exportable.getJerseys() != null
                 ? exportable.getJerseys().stream().map(JerseyCi::new).collect(Collectors.toList())
@@ -615,6 +651,22 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
                     .ofNullable(data.getPlayers())
                     .map(p ->
                         p.getPlayer().stream().map(pp -> Urn.parse(pp.getId())).collect(Collectors.toList())
+                    )
+                    .orElse(null);
+            associatedPlayerJerseyNumbers =
+                Optional
+                    .ofNullable(data.getPlayers())
+                    .map(p ->
+                        p
+                            .getPlayer()
+                            .stream()
+                            .filter(pl -> pl.getJerseyNumber() != null)
+                            .collect(
+                                Collectors.toMap(
+                                    pl -> Urn.parse(pl.getId()),
+                                    SapiPlayerExtended::getJerseyNumber
+                                )
+                            )
                     )
                     .orElse(null);
         }
@@ -873,6 +925,12 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
             referenceId != null ? new HashMap<>(referenceId.getReferenceIds()) : null,
             associatedPlayerIds != null
                 ? associatedPlayerIds.stream().map(Urn::toString).collect(Collectors.toList())
+                : null,
+            associatedPlayerJerseyNumbers != null
+                ? associatedPlayerJerseyNumbers
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(p -> p.getKey().toString(), Map.Entry::getValue))
                 : null,
             jerseys != null ? jerseys.stream().map(JerseyCi::export).collect(Collectors.toList()) : null,
             manager != null ? manager.export() : null,

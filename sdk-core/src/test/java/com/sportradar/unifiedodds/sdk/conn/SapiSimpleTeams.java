@@ -3,26 +3,38 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
-import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.EnderunTitansCollegeBasketballCompetitor.enderunTitansTeamCompetitor;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedFootballCompetitor.fullyPopulatedFootballCompetitor;
+
 import com.sportradar.uf.sportsapi.datamodel.SapiSimpleTeamProfileEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
-import lombok.val;
+import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
+import java.time.LocalDateTime;
 
 public class SapiSimpleTeams {
 
-    public static final String ID = "sr:simpleteam:9053004";
+    public static class EnderunTitansCollegeBasketballTeam {
 
-    public static SapiSimpleTeamProfileEndpoint sapiSimpleTeam() {
-        SapiSimpleTeamProfileEndpoint team = new SapiSimpleTeamProfileEndpoint();
-        team.setCompetitor(new SapiTeamCompetitor());
-        team.getCompetitor().setId("sr:simpleteam:9053004");
-        team.getCompetitor().setName("Enderun Titans");
-        val referenceIds = new SapiCompetitorReferenceIds();
-        val ref = new SapiCompetitorReferenceIds.SapiReferenceId();
-        ref.setName("competitor");
-        ref.setValue("sr:competitor:396606");
-        referenceIds.getReferenceId().add(ref);
-        team.getCompetitor().setReferenceIds(referenceIds);
-        return team;
+        public static final String URN = enderunTitansTeamCompetitor().getId();
+
+        public static SapiSimpleTeamProfileEndpoint sapiEnderunTitansTeam() {
+            SapiSimpleTeamProfileEndpoint team = new SapiSimpleTeamProfileEndpoint();
+            team.setCompetitor(enderunTitansTeamCompetitor());
+            return team;
+        }
+    }
+
+    public static class FullyPopulatedCollegeBasketballTeam {
+
+        public static final String URN = SapiTeams.FullyPopulatedFootballCompetitor
+            .fullyPopulatedFootballCompetitor()
+            .getId();
+
+        @SuppressWarnings("MagicNumber")
+        public static SapiSimpleTeamProfileEndpoint fullyPopulatedCollegeBasketballTeam() {
+            SapiSimpleTeamProfileEndpoint team = new SapiSimpleTeamProfileEndpoint();
+            team.setCompetitor(SapiTeams.FullyPopulatedFootballCompetitor.fullyPopulatedFootballCompetitor());
+            team.setGeneratedAt(XmlGregorianCalendars.forTime(LocalDateTime.of(2024, 8, 27, 10, 32, 23)));
+            return team;
+        }
     }
 }

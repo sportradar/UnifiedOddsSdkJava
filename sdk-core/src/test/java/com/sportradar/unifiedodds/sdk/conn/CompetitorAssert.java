@@ -7,15 +7,15 @@ import static java.util.stream.Collectors.toList;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
+import com.sportradar.unifiedodds.sdk.entities.CompetitorPlayer;
 import com.sportradar.unifiedodds.sdk.entities.Jersey;
-import com.sportradar.utils.SdkHelper;
+import com.sportradar.unifiedodds.sdk.entities.Player;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import lombok.val;
-import org.apache.commons.lang3.BooleanUtils;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 
@@ -36,49 +36,9 @@ public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competito
         return new CompetitorAssert(competitor, Languages.any());
     }
 
-    public CompetitorAssert isEqualTo(SapiCompetitorProfileEndpoint profile) {
-        val competitor = profile.getCompetitor();
-        assertJerseyLists(profile);
-        assertPlayerLists(profile);
-        return isEqualTo(competitor);
-    }
-
-    public CompetitorAssert isEqualTo(SapiSimpleTeamProfileEndpoint simpleTeamProfileEndpoint) {
-        return isEqualTo(simpleTeamProfileEndpoint.getCompetitor());
-    }
-
-    public CompetitorAssert isEqualTo(SapiTeamExtended competitor) {
+    public CompetitorAssert hasSameUrnAndNameAs(SapiTeam competitor) {
+        Assertions.assertThat(actual.getId().toString()).isEqualTo(competitor.getId());
         Assertions.assertThat(actual.getName(locale.get())).isEqualTo(competitor.getName());
-        Assertions.assertThat(actual.getCountryCode()).isEqualTo(competitor.getCountryCode());
-        Assertions.assertThat(actual.getAbbreviation(locale.get())).isEqualTo(competitor.getAbbreviation());
-        Assertions.assertThat(actual.getGender()).isEqualTo(competitor.getGender());
-        Assertions.assertThat(actual.getAgeGroup()).isEqualTo(competitor.getAgeGroup());
-        Assertions.assertThat(actual.getShortName()).isEqualTo(competitor.getShortName());
-        Assertions.assertThat(actual.getState()).isEqualTo(competitor.getState());
-        Assertions.assertThat(actual.getCountry(locale.get())).isEqualTo(competitor.getCountry());
-        Assertions.assertThat(actual.isVirtual()).isEqualTo(BooleanUtils.isTrue(competitor.isVirtual()));
-        return this;
-    }
-
-    @SuppressWarnings("MagicNumber")
-    public CompetitorAssert isEqualTo(SapiTeam competitor) {
-        Assertions.assertThat(actual.getName(locale.get())).isEqualTo(competitor.getName());
-        Assertions.assertThat(actual.getCountryCode()).isEqualTo(competitor.getCountryCode());
-        if (competitor.getAbbreviation() == null) {
-            Assertions
-                .assertThat(actual.getAbbreviation(locale.get()))
-                .isEqualTo(SdkHelper.getAbbreviationFromName(competitor.getName(), 3));
-        } else {
-            Assertions
-                .assertThat(actual.getAbbreviation(locale.get()))
-                .isEqualTo(competitor.getAbbreviation());
-        }
-        Assertions.assertThat(actual.getGender()).isEqualTo(competitor.getGender());
-        Assertions.assertThat(actual.getAgeGroup()).isEqualTo(competitor.getAgeGroup());
-        Assertions.assertThat(actual.getShortName()).isEqualTo(competitor.getShortName());
-        Assertions.assertThat(actual.getState()).isEqualTo(competitor.getState());
-        Assertions.assertThat(actual.getCountry(locale.get())).isEqualTo(competitor.getCountry());
-        Assertions.assertThat(actual.isVirtual()).isEqualTo(BooleanUtils.isTrue(competitor.isVirtual()));
         return this;
     }
 
@@ -92,36 +52,94 @@ public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competito
         return this;
     }
 
-    private void assertJerseyLists(SapiCompetitorProfileEndpoint profile) {
-        val jerseys = actual.getJerseys().stream().map(this::toString).collect(toList());
-        val sapiJerseys = profile.getJerseys().getJersey().stream().map(this::toString).collect(toList());
-        Assertions.assertThat(jerseys).containsExactlyInAnyOrderElementsOf(sapiJerseys);
+    public void hasSameJerseysAs(SapiJerseys sapiJerseys) {
+        val expectedJerseys = sapiJerseys.getJersey();
+        Assertions.assertThat(expectedJerseys).isNotEmpty();
+
+        val jerseysSerialized = actual.getJerseys().stream().map(this::toString).collect(toList());
+        val sapiJerseysSerialized = expectedJerseys.stream().map(this::toString).collect(toList());
+        Assertions.assertThat(jerseysSerialized).containsExactlyInAnyOrderElementsOf(sapiJerseysSerialized);
     }
 
     private String toString(Jersey jersey) {
         return Arrays.toString(
-            new Object[] { jersey.getBase(), jersey.getNumber(), jersey.getSleeve(), jersey.getType() }
+            new Object[] {
+                jersey.getBase(),
+                jersey.getNumber(),
+                jersey.getSleeve(),
+                jersey.getType(),
+                jersey.getStripesColor(),
+                jersey.getSplitColor(),
+                jersey.getShirtType(),
+                jersey.getSleeveDetail(),
+                jersey.getStripes(),
+                jersey.getHorizontalStripes(),
+                jersey.getHorizontalStripesColor(),
+                jersey.getSquares(),
+                jersey.getSquaresColor(),
+                jersey.getSplit(),
+            }
         );
     }
 
     private String toString(SapiJersey jersey) {
         return Arrays.toString(
-            new Object[] { jersey.getBase(), jersey.getNumber(), jersey.getSleeve(), jersey.getType() }
+            new Object[] {
+                jersey.getBase(),
+                jersey.getNumber(),
+                jersey.getSleeve(),
+                jersey.getType(),
+                jersey.getStripesColor(),
+                jersey.getSplitColor(),
+                jersey.getShirtType(),
+                jersey.getSleeveDetail(),
+                jersey.isStripes(),
+                jersey.isHorizontalStripes(),
+                jersey.getHorizontalStripesColor(),
+                jersey.isSquares(),
+                jersey.getSquaresColor(),
+                jersey.isSplit(),
+            }
         );
     }
 
-    private void assertPlayerLists(SapiCompetitorProfileEndpoint profile) {
-        val players = actual
+    public CompetitorAssert hasPlayersWithSameIdsAndNamesAs(
+        com.sportradar.uf.sportsapi.datamodel.SapiPlayers sapiPlayers
+    ) {
+        val playersIdsAndNames = actual
             .getPlayers()
             .stream()
-            .map(p -> p.getId() + " - " + p.getName(locale.get()))
+            .map(p -> concat(p.getId().toString(), p.getName(locale.get())))
             .collect(toList());
-        val sapiPlayers = profile
-            .getPlayers()
+        val sapiPlayersIdsAndNames = sapiPlayers
             .getPlayer()
             .stream()
-            .map(p -> p.getId() + " - " + p.getName())
+            .map(p -> concat(p.getId(), p.getName()))
             .collect(toList());
-        Assertions.assertThat(players).containsExactlyInAnyOrderElementsOf(sapiPlayers);
+        Assertions.assertThat(playersIdsAndNames).containsExactlyInAnyOrderElementsOf(sapiPlayersIdsAndNames);
+        return this;
+    }
+
+    public CompetitorAssert hasPlayersWithSameJerseyNumbersAs(
+        com.sportradar.uf.sportsapi.datamodel.SapiPlayers sapiPlayers
+    ) {
+        val playersIdsAndJerseyNumbers = actual
+            .getPlayers()
+            .stream()
+            .map(p -> concat(p.getId().toString(), ((CompetitorPlayer) p).getJerseyNumber()))
+            .collect(toList());
+        val sapiPlayersIdsAndJerseyNumbers = sapiPlayers
+            .getPlayer()
+            .stream()
+            .map(p -> concat(p.getId(), p.getJerseyNumber()))
+            .collect(toList());
+        Assertions
+            .assertThat(playersIdsAndJerseyNumbers)
+            .containsExactlyInAnyOrderElementsOf(sapiPlayersIdsAndJerseyNumbers);
+        return this;
+    }
+
+    private static String concat(String id, Object propertyToConcat) {
+        return String.format("%s - %s", id, propertyToConcat);
     }
 }

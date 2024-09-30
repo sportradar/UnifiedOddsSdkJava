@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.primitives.Ints;
 import java.util.Map;
 
 /**
@@ -53,6 +54,11 @@ public class ExpressionOperand extends OperandBase implements Operand {
 
     @Override
     public String getStringValue() {
+        String value = provideSpecifierValue(operandString, specifiers);
+        Integer intValue = Ints.tryParse(value);
+        if (intValue != null) {
+            return String.valueOf(getIntValue());
+        }
         throw new UnsupportedOperationException();
     }
 

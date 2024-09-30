@@ -29,6 +29,13 @@ public class SapiCategories {
         return category;
     }
 
+    public static SapiCategory norway() {
+        SapiCategory category = new SapiCategory();
+        category.setId("sr:category:4");
+        category.setName("International");
+        return category;
+    }
+
     public static SapiCategory england() {
         SapiCategory category = new SapiCategory();
         category.setId("sr:category:1");
@@ -41,6 +48,27 @@ public class SapiCategories {
         SapiCategory category = new SapiCategory();
         category.setId("sr:category:36");
         category.setName("Formula 1");
+        return category;
+    }
+
+    public static SapiCategory men() {
+        SapiCategory category = new SapiCategory();
+        category.setId("sr:category:28");
+        category.setName("Men");
+        return category;
+    }
+
+    public static SapiCategory atp() {
+        SapiCategory category = new SapiCategory();
+        category.setId("sr:category:3");
+        category.setName("ATP");
+        return category;
+    }
+
+    public static SapiCategory virtualFootball() {
+        SapiCategory category = new SapiCategory();
+        category.setId("sr:category:1111");
+        category.setName("Virtual Football");
         return category;
     }
 }

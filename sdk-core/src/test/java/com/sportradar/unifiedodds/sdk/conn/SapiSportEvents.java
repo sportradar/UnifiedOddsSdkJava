@@ -3,10 +3,10 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
-import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.SapiVenues.munichFootballArena;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa.germanyCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Scotland.scotlandCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.fullyPopulatedTournament;
+import static com.sportradar.unifiedodds.sdk.conn.SapiVenues.munichFootballArena;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.*;
 
 import com.sportradar.uf.sportsapi.datamodel.*;

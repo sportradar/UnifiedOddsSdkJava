@@ -8,7 +8,11 @@ import com.sportradar.utils.Urn;
 public enum Sport {
     FOOTBALL(Urn.parse("sr:sport:1")),
     FUTSAL(Urn.parse("sr:sport:29")),
-    FORMULA1(Urn.parse("sr:sport:40"));
+    FORMULA1(Urn.parse("sr:sport:40")),
+    ESPORT_DOTA(Urn.parse("sr:sport:111")),
+    GOLF(Urn.parse("sr:sport:9")),
+    TENNIS(Urn.parse("sr:sport:5")),
+    BASEBALL(Urn.parse("sr:sport:3"));
 
     private final Urn urn;
 

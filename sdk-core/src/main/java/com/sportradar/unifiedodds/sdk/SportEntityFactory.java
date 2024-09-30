@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundExceptio
 import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Defines methods implemented by classes used to build {@link Sport} and {@link Tournament} instances.
@@ -136,4 +137,19 @@ public interface SportEntityFactory {
      */
     PlayerProfile buildPlayerProfile(Urn id, List<Locale> locales, List<Urn> possibleAssociatedCompetitorIds)
         throws ObjectNotFoundException;
+
+    /**
+     *
+     * @param id the player identifier
+     * @param locales the {@link Locale}s in which the data should be available
+     * @param possibleAssociatedCompetitorIds a list of possible associated competitor ids (used to prefetch data)
+     * @return the constructed object
+     * @throws ObjectNotFoundException  if the requested instance could not be provided
+     */
+    CompetitorPlayer buildCompetitorPlayerProfile(
+        Urn id,
+        List<Locale> locales,
+        List<Urn> possibleAssociatedCompetitorIds,
+        Map<Urn, Integer> associatedJerseyNumbers
+    ) throws ObjectNotFoundException;
 }

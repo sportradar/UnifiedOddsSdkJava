@@ -24,9 +24,10 @@ import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.Expectati
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
@@ -44,14 +45,14 @@ import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 import org.assertj.core.api.Assertions;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings(
     {
         "ClassDataAbstractionCoupling",
@@ -70,13 +71,16 @@ import org.junit.runner.RunWith;
         "LambdaBodyLength",
     }
 )
-public class MarketWithMissingNameIT {
+class MarketWithMissingNameIT {
 
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicPort());
+    @RegisterExtension
+    private static WireMockExtension wireMock = WireMockExtension
+        .newInstance()
+        .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
+        .build();
 
     private final GlobalVariables globalVariables = new GlobalVariables();
-    private final ApiSimulator apiSimulator = new ApiSimulator(wireMock);
+    private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
     private final Locale aLanguage = Locale.ENGLISH;
     private final Credentials sdkCredentials = Credentials.with(
         Constants.SDK_USERNAME,
@@ -107,22 +111,22 @@ public class MarketWithMissingNameIT {
 
     private BaseUrl sportsApiBaseUrl;
 
-    public MarketWithMissingNameIT() throws Exception {}
+    MarketWithMissingNameIT() throws Exception {}
 
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    void setup() throws Exception {
         rabbitMqUserSetup.setupUser(sdkCredentials);
-        sportsApiBaseUrl = BaseUrl.of("localhost", wireMock.port());
+        sportsApiBaseUrl = BaseUrl.of("localhost", wireMock.getPort());
     }
 
-    @After
-    public void tearDownProxy() {
+    @AfterEach
+    void tearDownProxy() {
         rabbitMqUserSetup.revertChangesMade();
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void marketDescriptionHasNullName(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void marketDescriptionHasNullName(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy unused
     ) throws Exception {
@@ -148,9 +152,9 @@ public class MarketWithMissingNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void marketDefinitionWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void marketDefinitionWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy notUsed
     ) {
@@ -173,9 +177,9 @@ public class MarketWithMissingNameIT {
             });
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void marketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void marketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -213,9 +217,9 @@ public class MarketWithMissingNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void structuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void structuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -257,9 +261,9 @@ public class MarketWithMissingNameIT {
         }
     }
 
-    @Test
-    @Parameters(method = "exceptionHandlingStrategies")
-    public void unstructuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void unstructuredVariantMarketWithNullNameIsHandedOverToCustomerCodeAndFailsUponNameRetrieval(
         ExceptionHandlingStrategy exceptionHandlingStrategy,
         ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
     ) throws IOException, TimeoutException, InitException {
@@ -298,7 +302,7 @@ public class MarketWithMissingNameIT {
         }
     }
 
-    private Object[] exceptionHandlingStrategies() {
+    private static Object[] exceptionHandlingStrategies() {
         return new Object[][] {
             { Throw, WILL_THROW_EXCEPTIONS },
             { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },

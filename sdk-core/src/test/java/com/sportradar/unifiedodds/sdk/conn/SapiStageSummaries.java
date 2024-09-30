@@ -4,25 +4,17 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.conn.SapiSportEvents.FullyPopulatedSportEvent.fullyPopulatedSportEvent;
-import static com.sportradar.unifiedodds.sdk.conn.SapiSportEvents.FullyPopulatedSportEvent.fullyPopulatedSportEvent;
-import static com.sportradar.unifiedodds.sdk.conn.SapiSports.formula1;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.formula1;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.ALONSO_COMPETITOR_URN;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.HAMILTON_COMPETITOR_URN;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SapiCategories;
-import com.sportradar.unifiedodds.sdk.SapiCategories;
-import com.sportradar.unifiedodds.sdk.conn.SapiSportEvents.FullyPopulatedSportEvent;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
-import java.util.List;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.function.Predicate;
 import lombok.val;
 
@@ -301,6 +293,180 @@ public final class SapiStageSummaries {
             result.setType("type");
             result.setValue("value");
             return result;
+        }
+    }
+
+    public static class ThePlayersGolfChampionship {
+
+        public static class Round2 {
+
+            public static final String THE_PLAYERS_GOLF_ROUND_2_STAGE_ID = "sr:stage:1094255";
+            public static final String THE_PLAYERS_GOLF_ROUND_2_COMPETITION_GROUP_ID =
+                "codds:competition_group:43550";
+
+            public static SapiStageSummaryEndpoint thePlayersGolfChampionshipRound2() {
+                val summary = new SapiStageSummaryEndpoint();
+                summary.setGeneratedAt(XmlGregorianCalendars.now());
+                summary.setSportEvent(sportEvent());
+                summary.setSportEventStatus(status());
+                return summary;
+            }
+
+            private static SapiSportEvent sportEvent() {
+                val event = new SapiSportEvent();
+                event.setId(THE_PLAYERS_GOLF_ROUND_2_STAGE_ID);
+                event.setName("Round 2");
+                event.setType("parent");
+                event.setStageType("round");
+                event.setScheduled(XmlGregorianCalendars.now());
+                event.setScheduledEnd(XmlGregorianCalendars.now());
+                event.setParent(thePlayersChampionship());
+                event.setTournament(pgaTour2023Tournament());
+                event.setCompetitors(thePlayersGolfChampionshipCompetitors());
+                event.setRaces(races());
+                return event;
+            }
+
+            private static SapiParentStage thePlayersChampionship() {
+                val parent = new SapiParentStage();
+                parent.setId("sr:stage:1025033");
+                parent.setName("THE PLAYERS Championship");
+                parent.setType("parent");
+                parent.setStageType("event");
+                return parent;
+            }
+
+            private static SapiTournament pgaTour2023Tournament() {
+                val tournament = new SapiTournament();
+                tournament.setId("sr:stage:1024907");
+                tournament.setName("PGA Tour 2023");
+                tournament.setScheduled(XmlGregorianCalendars.now());
+                tournament.setScheduledEnd(XmlGregorianCalendars.now());
+                tournament.setSport(SapiSports.golf());
+                tournament.setCategory(SapiCategories.men());
+                return tournament;
+            }
+
+            private static SapiSportEventCompetitors thePlayersGolfChampionshipCompetitors() {
+                val competitors = new SapiSportEventCompetitors();
+                competitors.getCompetitor().add(kellyJerry());
+                competitors.getCompetitor().add(scottAdam());
+                competitors.getCompetitor().add(molinariFrancesco());
+                competitors.getCompetitor().add(cinkStewart());
+                return competitors;
+            }
+
+            private static SapiTeamCompetitor kellyJerry() {
+                val competitor = new SapiTeamCompetitor();
+                competitor.setId("sr:competitor:20913");
+                competitor.setName("Kelly, Jerry");
+                competitor.setAbbreviation("KEL");
+                competitor.setGender("male");
+                return competitor;
+            }
+
+            private static SapiTeamCompetitor scottAdam() {
+                val competitor = new SapiTeamCompetitor();
+                competitor.setId("sr:competitor:20919");
+                competitor.setName("Scott, Adam");
+                competitor.setAbbreviation("SCO");
+                competitor.setGender("male");
+                return competitor;
+            }
+
+            private static SapiTeamCompetitor molinariFrancesco() {
+                val competitor = new SapiTeamCompetitor();
+                competitor.setId("sr:competitor:20985");
+                competitor.setName("Molinari, Francesco");
+                competitor.setAbbreviation("MOL");
+                competitor.setGender("male");
+                return competitor;
+            }
+
+            private static SapiTeamCompetitor cinkStewart() {
+                val competitor = new SapiTeamCompetitor();
+                competitor.setId("sr:competitor:21077");
+                competitor.setName("Cink, Stewart");
+                competitor.setAbbreviation("CIN");
+                competitor.setGender("male");
+                return competitor;
+            }
+
+            private static SapiSportEventChildren races() {
+                val races = new SapiSportEventChildren();
+                races.getSportEvent().add(race(THE_PLAYERS_GOLF_ROUND_2_COMPETITION_GROUP_ID));
+                races.getSportEvent().add(race("codds:competition_group:43579"));
+                races.getSportEvent().add(race("codds:competition_group:43590"));
+                races.getSportEvent().add(race("codds:competition_group:43608"));
+                return races;
+            }
+
+            private static SapiSportEventChildren.SapiSportEvent race(String id) {
+                val event = new SapiSportEventChildren.SapiSportEvent();
+                event.setId(id);
+                event.setType("child");
+                event.setStageType("competition_group");
+                event.setScheduled(XmlGregorianCalendars.now());
+                return event;
+            }
+
+            private static SapiStageSportEventStatus status() {
+                SapiStageSportEventStatus status = new SapiStageSportEventStatus();
+                SapiStageResult results = new SapiStageResult();
+                status.setResults(results);
+                results.getCompetitor().add(kellyJerryResults());
+                results.getCompetitor().add(scottAdamResults());
+                results.getCompetitor().add(molinariFrancescoResults());
+                results.getCompetitor().add(cinkStewartResults());
+                status.setStatus("ended");
+                return status;
+            }
+
+            private static SapiStageResult.SapiCompetitor kellyJerryResults() {
+                val competitor = new SapiStageResult.SapiCompetitor();
+                competitor.setId("sr:competitor:20913");
+                competitor.getResult().add(strokes(72));
+                competitor.getResult().add(score(0.0));
+                return competitor;
+            }
+
+            private static SapiStageResult.SapiCompetitor scottAdamResults() {
+                val competitor = new SapiStageResult.SapiCompetitor();
+                competitor.setId("sr:competitor:20919");
+                competitor.getResult().add(strokes(73));
+                competitor.getResult().add(score(1.0));
+                return competitor;
+            }
+
+            private static SapiStageResult.SapiCompetitor cinkStewartResults() {
+                val competitor = new SapiStageResult.SapiCompetitor();
+                competitor.setId("sr:competitor:21077");
+                competitor.getResult().add(strokes(81));
+                competitor.getResult().add(score(9.0));
+                return competitor;
+            }
+
+            private static SapiStageResult.SapiCompetitor molinariFrancescoResults() {
+                val competitor = new SapiStageResult.SapiCompetitor();
+                competitor.setId("sr:competitor:20985");
+                competitor.getResult().add(strokes(71));
+                competitor.getResult().add(score(-1.0));
+                return competitor;
+            }
+
+            private static SapiStageResult.SapiCompetitor.SapiResult score(double score) {
+                val result = new SapiStageResult.SapiCompetitor.SapiResult();
+                result.setType("score");
+                result.setValue(String.valueOf(score));
+                return result;
+            }
+
+            private static SapiStageResult.SapiCompetitor.SapiResult strokes(int strokes) {
+                val result = new SapiStageResult.SapiCompetitor.SapiResult();
+                result.setType("strokes");
+                result.setValue(String.valueOf(strokes));
+                return result;
+            }
         }
     }
 }

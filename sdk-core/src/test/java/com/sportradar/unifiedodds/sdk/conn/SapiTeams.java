@@ -4,12 +4,17 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.SapiCategories.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.CompetitorSapiPlayerProfiles.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
+import static com.sportradar.unifiedodds.sdk.conn.SapiVenues.FullyPopulatedSapiVenue.getVenue;
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds.SapiReferenceId;
+import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -17,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.val;
 
-@SuppressWarnings({ "MultipleStringLiterals", "MagicNumber" })
+@SuppressWarnings({ "MultipleStringLiterals", "MagicNumber", "ExecutableStatementCount" })
 public class SapiTeams {
 
     public static SapiTeamExtended sapiTeamExtended(SapiTeam team) {
@@ -324,6 +329,257 @@ public class SapiTeams {
         }
     }
 
+    public static class BuffaloSabres {
+
+        public static SapiCompetitorProfileEndpoint buffaloSabres() {
+            SapiCompetitorProfileEndpoint sapiCompetitorProfileEndpoint = new SapiCompetitorProfileEndpoint();
+            sapiCompetitorProfileEndpoint.setCompetitor(competitor());
+            sapiCompetitorProfileEndpoint.setVenue(venue());
+            sapiCompetitorProfileEndpoint.setJerseys(jerseys());
+            sapiCompetitorProfileEndpoint.setPlayers(players());
+            return sapiCompetitorProfileEndpoint;
+        }
+
+        private static SapiTeamExtended competitor() {
+            SapiTeamExtended sapiTeamExtended = new SapiTeamExtended();
+            sapiTeamExtended.setId("sr:competitor:3678");
+            sapiTeamExtended.setName("Buffalo Sabres");
+            sapiTeamExtended.setAbbreviation("BUF");
+            sapiTeamExtended.setShortName("Buffalo");
+            sapiTeamExtended.setCountry("USA");
+            sapiTeamExtended.setCountryCode("USA");
+            sapiTeamExtended.setCategory(com.sportradar.unifiedodds.sdk.SapiCategories.usa());
+            return sapiTeamExtended;
+        }
+
+        private static SapiVenue venue() {
+            SapiVenue sapiVenue = new SapiVenue();
+            sapiVenue.setId("sr:venue:5950");
+            sapiVenue.setName("KeyBank Center");
+            sapiVenue.setCapacity(19070);
+            sapiVenue.setCityName("Buffalo");
+            sapiVenue.setCountryName("USA");
+            sapiVenue.setCountryCode("USA");
+            sapiVenue.setMapCoordinates("42.875381,-78.876601");
+            sapiVenue.setState("NY");
+            return sapiVenue;
+        }
+
+        private static SapiJerseys jerseys() {
+            SapiJerseys sapiJerseys = new SapiJerseys();
+            sapiJerseys.getJersey().add(jerseyHome());
+            sapiJerseys.getJersey().add(jerseyAway());
+            sapiJerseys.getJersey().add(jerseyThird());
+            return sapiJerseys;
+        }
+
+        private static SapiJersey jerseyHome() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("home");
+            jersey.setBase("02408d");
+            jersey.setSleeve("fcb514");
+            jersey.setNumber("fcb514");
+            jersey.setStripes(true);
+            jersey.setStripesColor("000000");
+            jersey.setHorizontalStripes(true);
+            jersey.setHorizontalStripesColor("ffffff");
+            jersey.setSquares(true);
+            jersey.setSquaresColor("ffffff");
+            jersey.setSplit(true);
+            jersey.setSplitColor("ff0000");
+            jersey.setShirtType("long_sleeves");
+            jersey.setSleeveDetail("detailed");
+            return jersey;
+        }
+
+        private static SapiJersey jerseyAway() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("away");
+            jersey.setBase("02408d");
+            jersey.setSleeve("fcb514");
+            jersey.setNumber("fcb514");
+            jersey.setStripes(false);
+            jersey.setStripesColor("055000");
+            jersey.setHorizontalStripes(true);
+            jersey.setHorizontalStripesColor("ff11ff");
+            jersey.setSquares(false);
+            jersey.setSquaresColor("ff00ff");
+            jersey.setSplit(true);
+            jersey.setSplitColor("ff0307");
+            jersey.setShirtType("long_sleeves");
+            jersey.setSleeveDetail("detailed");
+            return jersey;
+        }
+
+        private static SapiJersey jerseyThird() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("third");
+            jersey.setBase("02408d");
+            jersey.setSleeve("fcb514");
+            jersey.setNumber("fcb514");
+            jersey.setStripes(false);
+            jersey.setStripesColor("055000");
+            jersey.setHorizontalStripes(false);
+            jersey.setHorizontalStripesColor("ff11ff");
+            jersey.setSquares(false);
+            jersey.setSquaresColor("ff00ff");
+            jersey.setSplit(false);
+            jersey.setSplitColor("ff0307");
+            jersey.setShirtType("long_sleeves");
+            jersey.setSleeveDetail("detailed");
+            return jersey;
+        }
+
+        private static SapiPlayers players() {
+            SapiPlayers sapiPlayers = new SapiPlayers();
+            sapiPlayers.getPlayer().add(beckMelentsynProfile());
+            sapiPlayers.getPlayer().add(samLaffertyProfile());
+            sapiPlayers.getPlayer().add(ryanMcLeodProfile());
+            sapiPlayers.getPlayer().add(coltonPoolmanProfile());
+            sapiPlayers.getPlayer().add(jackRathboneProfile());
+            sapiPlayers.getPlayer().add(tylerTullioProfile());
+            sapiPlayers.getPlayer().add(nicolasAubeKubelProfile());
+            sapiPlayers.getPlayer().add(jasonZuckerProfile());
+            sapiPlayers.getPlayer().add(dennisGilbertProfile());
+            sapiPlayers.getPlayer().add(felixSandstromProfile());
+            sapiPlayers.getPlayer().add(patrickGearyProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresUkkoPekkaLuukkonenProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresBowenByramProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresZachBensonProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresHenriJokiharjuProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresJordanGreenwayProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresPeytonKrebsProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresJoshDunneProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresJackQuinnProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresDylanCozensProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresOwenPowerProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresRasmusDahlinProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresKaleClagueProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresTageThompsonProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresConnorCliftonProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresJohnJasonPeterkaProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresJacobBrysonProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresBrettMurrayProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresMasonJobstProfile());
+            sapiPlayers.getPlayer().add(buffaloSabresAlexTuchProfile());
+            return sapiPlayers;
+        }
+    }
+
+    public static class NorwayNationalSoccerTeam {
+
+        public static SapiCompetitorProfileEndpoint norwayNationalSoccerTeamProfile() {
+            SapiCompetitorProfileEndpoint sapiCompetitorProfileEndpoint = new SapiCompetitorProfileEndpoint();
+            sapiCompetitorProfileEndpoint.setCompetitor(competitor());
+            sapiCompetitorProfileEndpoint.setJerseys(jerseys());
+            sapiCompetitorProfileEndpoint.setPlayers(players());
+            return sapiCompetitorProfileEndpoint;
+        }
+
+        private static SapiTeamExtended competitor() {
+            SapiTeamExtended sapiTeamExtended = new SapiTeamExtended();
+            sapiTeamExtended.setId("sr:competitor:4475");
+            sapiTeamExtended.setName("Norway");
+            sapiTeamExtended.setAbbreviation("NOR");
+            sapiTeamExtended.setShortName("Norway");
+            sapiTeamExtended.setCountry("Norway");
+            sapiTeamExtended.setCountryCode("NOR");
+            sapiTeamExtended.setCategory(com.sportradar.unifiedodds.sdk.SapiCategories.norway());
+            return sapiTeamExtended;
+        }
+
+        private static SapiJerseys jerseys() {
+            SapiJerseys sapiJerseys = new SapiJerseys();
+            sapiJerseys.getJersey().add(jerseyHome());
+            sapiJerseys.getJersey().add(jerseyAway());
+            return sapiJerseys;
+        }
+
+        private static SapiJersey jerseyHome() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("home");
+            jersey.setBase("65081b");
+            jersey.setSleeve("ffffff");
+            jersey.setNumber("ffffff");
+            jersey.setShirtType("short_sleeves");
+            return jersey;
+        }
+
+        private static SapiJersey jerseyAway() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("away");
+            jersey.setBase("ffffff");
+            jersey.setSleeve("ff0000");
+            jersey.setNumber("16306d");
+            jersey.setShirtType("short_sleeves");
+            return jersey;
+        }
+
+        private static SapiPlayers players() {
+            SapiPlayers sapiPlayers = new SapiPlayers();
+            sapiPlayers.getPlayer().add(norwayNationalTeamMartinOdegaardProfile());
+            sapiPlayers.getPlayer().add(norwayNationalTeamErlingHaalandProfile());
+            return sapiPlayers;
+        }
+    }
+
+    public static class ArsenalFc {
+
+        public static SapiCompetitorProfileEndpoint arsenalProfile() {
+            SapiCompetitorProfileEndpoint sapiCompetitorProfileEndpoint = new SapiCompetitorProfileEndpoint();
+            sapiCompetitorProfileEndpoint.setCompetitor(competitor());
+            sapiCompetitorProfileEndpoint.setJerseys(jerseys());
+            sapiCompetitorProfileEndpoint.setPlayers(players());
+            return sapiCompetitorProfileEndpoint;
+        }
+
+        private static SapiTeamExtended competitor() {
+            SapiTeamExtended sapiTeamExtended = new SapiTeamExtended();
+            sapiTeamExtended.setId("sr:competitor:42");
+            sapiTeamExtended.setName("Arsenal FC");
+            sapiTeamExtended.setAbbreviation("ARS");
+            sapiTeamExtended.setShortName("Arsenal");
+            sapiTeamExtended.setCountry("England");
+            sapiTeamExtended.setCountryCode("ENG");
+            sapiTeamExtended.setCategory(SapiCategories.england());
+            return sapiTeamExtended;
+        }
+
+        private static SapiJerseys jerseys() {
+            SapiJerseys sapiJerseys = new SapiJerseys();
+            sapiJerseys.getJersey().add(jerseyHome());
+            sapiJerseys.getJersey().add(jerseyAway());
+            return sapiJerseys;
+        }
+
+        private static SapiJersey jerseyHome() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("home");
+            jersey.setBase("e10000");
+            jersey.setSleeve("ffffff");
+            jersey.setNumber("ffffff");
+            jersey.setShirtType("short_sleeves");
+            return jersey;
+        }
+
+        private static SapiJersey jerseyAway() {
+            SapiJersey jersey = new SapiJersey();
+            jersey.setType("away");
+            jersey.setBase("000000");
+            jersey.setSleeve("000000");
+            jersey.setNumber("ffffff");
+            jersey.setShirtType("short_sleeves");
+            return jersey;
+        }
+
+        private static SapiPlayers players() {
+            SapiPlayers sapiPlayers = new SapiPlayers();
+            sapiPlayers.getPlayer().add(arsenalFcMartinOdegaardProfile());
+            sapiPlayers.getPlayer().add(arsenalFcKaiHavertzProfile());
+            return sapiPlayers;
+        }
+    }
+
     public static class VirtualCompetitor {
 
         public static final String ID = "sr:competitor:1002045";
@@ -379,10 +635,28 @@ public class SapiTeams {
         }
     }
 
+    public static class EnderunTitansCollegeBasketballCompetitor {
+
+        public static final String ID = "sr:simpleteam:9053004";
+
+        public static SapiTeamCompetitor enderunTitansTeamCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            competitor.setId("sr:simpleteam:9053004");
+            competitor.setName("Enderun Titans");
+            val referenceIds = new SapiCompetitorReferenceIds();
+            val ref = new SapiCompetitorReferenceIds.SapiReferenceId();
+            ref.setName("competitor");
+            ref.setValue("sr:competitor:396606");
+            referenceIds.getReferenceId().add(ref);
+            competitor.setReferenceIds(referenceIds);
+            return competitor;
+        }
+    }
+
     @SuppressWarnings(
         { "ClassDataAbstractionCoupling", "MultipleStringLiterals", "MagicNumber", "ClassFanOutComplexity" }
     )
-    public static class FullyPopulatedCompetitor {
+    public static class FullyPopulatedFootballCompetitor {
 
         public static final String URN = "sr:competitor:4711";
         public static final Locale LANGUAGE = Locale.ENGLISH;
@@ -409,7 +683,7 @@ public class SapiTeams {
             competitor.setCountry("Germany");
             competitor.setCountryCode("DEU");
             competitor.setGender("male");
-            competitor.setId(FullyPopulatedCompetitor.URN);
+            competitor.setId(FullyPopulatedFootballCompetitor.URN);
             competitor.setName(
                 Optional
                     .ofNullable(NAMES.get(language))
@@ -434,68 +708,11 @@ public class SapiTeams {
             SapiCompetitorProfileEndpoint profile = new SapiCompetitorProfileEndpoint();
             profile.setGeneratedAt(XmlGregorianCalendars.anyPastDate());
             profile.setVenue(getVenue());
-            profile.setCompetitor(fullyPopulatedCompetitorExtended());
+            profile.setCompetitor(fullyPopulatedFootballTeamExtended());
             profile.setJerseys(getJerseys());
             profile.setManager(getManager());
             profile.setPlayers(getPlayers());
             return profile;
-        }
-
-        public static SapiCompetitorProfileEndpoint fullyPopulatedFormula1CompetitorProfile() {
-            SapiCompetitorProfileEndpoint profile = new SapiCompetitorProfileEndpoint();
-            profile.setRaceDriverProfile(getRaceDriverProfile());
-            profile.setGeneratedAt(XmlGregorianCalendars.anyPastDate());
-            profile.setVenue(getVenue());
-            profile.setCompetitor(fullyPopulatedCompetitorExtended());
-            return profile;
-        }
-
-        private static SapiRaceDriverProfile getRaceDriverProfile() {
-            SapiRaceDriverProfile profile = new SapiRaceDriverProfile();
-            profile.setCar(getCar());
-            profile.setRaceDriver(getRaceDriver());
-            profile.setRaceTeam(getRaceTeam());
-            return profile;
-        }
-
-        private static SapiRaceTeam getRaceTeam() {
-            SapiRaceTeam team = new SapiRaceTeam();
-            team.setId("sr:competitor:4711");
-            team.setName("Germany");
-            team.setAbbreviation("GER");
-            team.setCountry("Germany");
-            team.setCountryCode("DEU");
-            team.setGender("male");
-            team.setAgeGroup("adult");
-            team.setDivision(2);
-            team.setDivisionName("Division 2");
-            team.setPlayers(getPlayersExtendedList());
-            team.setShortName("Germany");
-            team.setState("Bavaria");
-            team.setReferenceIds(getReferenceIds());
-            team.setVirtual(false);
-            return team;
-        }
-
-        private static SapiRaceDriver getRaceDriver() {
-            SapiRaceDriver driver = new SapiRaceDriver();
-            driver.setNationality("Germany");
-            driver.setCountryCode("DEU");
-            driver.setDateOfBirth("1986-03-27");
-            driver.setPlayers(getPlayersExtendedList());
-            driver.setAbbreviation("NEU");
-            driver.setAgeGroup("adult");
-            driver.setCountry("Germany");
-            driver.setDivision(2);
-            driver.setDivisionName("Division 2");
-            driver.setGender("male");
-            driver.setId("sr:player:8959");
-            driver.setName("Neuer, Manuel");
-            driver.setReferenceIds(getReferenceIds());
-            driver.setShortName("Neuer");
-            driver.setState("Bavaria");
-            driver.setVirtual(false);
-            return driver;
         }
 
         private static SapiPlayerExtendedList getPlayersExtendedList() {
@@ -504,46 +721,9 @@ public class SapiTeams {
             return players;
         }
 
-        private static SapiCar getCar() {
-            SapiCar car = new SapiCar();
-            car.setName("BMW M4 DTM");
-            car.setChassis("BMW M4 DTM Chassis");
-            car.setEngineName("BMW P66");
-            return car;
-        }
-
-        private static SapiVenue getVenue() {
-            SapiVenue venue = new SapiVenue();
-            venue.setId("sr:venue:1234");
-            venue.setName("Allianz Arena");
-            venue.setCityName("Munich");
-            venue.setCountryCode("DEU");
-            venue.setCountryName("Germany");
-            venue.setCapacity(75000);
-            venue.setMapCoordinates("48.218775, 11.624753");
-            venue.setState("Bavaria");
-            venue.getCourse().add(getCourse());
-            return venue;
-        }
-
-        private static SapiCourse getCourse() {
-            SapiCourse course = new SapiCourse();
-            course.setId("sr:venue:4522");
-            course.setName("Malaga Course 4");
-            course.getHole().add(getHole());
-            return course;
-        }
-
-        private static SapiHole getHole() {
-            SapiHole hole = new SapiHole();
-            hole.setNumber(1);
-            hole.setPar(4);
-            return hole;
-        }
-
-        private static SapiTeamExtended fullyPopulatedCompetitorExtended() {
+        private static SapiTeamExtended fullyPopulatedFootballTeamExtended() {
             SapiTeamExtended team = new SapiTeamExtended();
-            team.setId(Germany2024Uefa.COMPETITOR_ID);
+            team.setId(URN);
             team.setName("Germany");
             team.setAbbreviation("GER");
             team.setCountry("Germany");
@@ -562,13 +742,13 @@ public class SapiTeams {
             return team;
         }
 
-        public static SapiJerseys getJerseys() {
+        private static SapiJerseys getJerseys() {
             SapiJerseys jerseys = new SapiJerseys();
             jerseys.getJersey().addAll(asList(getFullyPopulatedJersey()));
             return jerseys;
         }
 
-        public static SapiJersey getFullyPopulatedJersey() {
+        private static SapiJersey getFullyPopulatedJersey() {
             SapiJersey jersey = new SapiJersey();
             jersey.setType("home");
             jersey.setBase("ffffff");
@@ -585,7 +765,7 @@ public class SapiTeams {
             return jersey;
         }
 
-        public static SapiManager getManager() {
+        private static SapiManager getManager() {
             SapiManager manager = new SapiManager();
             manager.setId("sr:player:572854");
             manager.setName("Nagelsmann, Julian");
@@ -611,7 +791,7 @@ public class SapiTeams {
             return players;
         }
 
-        public static SapiPlayerCompetitor getPlayerCompetitor() {
+        private static SapiPlayerCompetitor getPlayerCompetitor() {
             SapiPlayerCompetitor player = new SapiPlayerCompetitor();
             player.setAbbreviation("NEU");
             player.setNationality("Germany");
@@ -714,6 +894,157 @@ public class SapiTeams {
             player.setId("sr:player:259117");
             player.setName("Kimmich, Joshua");
             return player;
+        }
+    }
+
+    @SuppressWarnings(
+        { "ClassDataAbstractionCoupling", "MultipleStringLiterals", "MagicNumber", "ClassFanOutComplexity" }
+    )
+    public static class FullyPopulatedFormula1Competitor {
+
+        public static final String COMPETITOR_URN = "sr:competitor:4712";
+        public static final String TEAM_URN = "sr:competitor:4713";
+        public static final Locale LANGUAGE = Locale.ENGLISH;
+        private static final Map<Locale, String> NAMES = ImmutableMap.of(
+            Locale.ENGLISH,
+            "Germany",
+            Locale.GERMAN,
+            "Deutschland"
+        );
+
+        public static SapiTeamCompetitor fullyPopulatedF1Competitor() {
+            return fullyPopulatedF1Competitor(Locale.ENGLISH);
+        }
+
+        public static SapiTeamCompetitor fullyPopulatedF1Competitor(Locale language) {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            competitor.setAbbreviation("GER");
+            competitor.setAgeGroup("adult");
+            competitor.setDivision(2);
+            competitor.setDivisionName("Division 2");
+            competitor.setShortName("Germany");
+            competitor.setState("Bavaria");
+            competitor.setVirtual(false);
+            competitor.setCountry("Germany");
+            competitor.setCountryCode("DEU");
+            competitor.setGender("male");
+            competitor.setId(FullyPopulatedFootballCompetitor.URN);
+            competitor.setName(
+                Optional
+                    .ofNullable(NAMES.get(language))
+                    .orElseThrow(() -> new IllegalStateException("No name for " + language))
+            );
+            competitor.setQualifier("home");
+
+            competitor.setReferenceIds(getReferenceIds());
+            return competitor;
+        }
+
+        private static SapiCompetitorReferenceIds getReferenceIds() {
+            SapiCompetitorReferenceIds refIds = new SapiCompetitorReferenceIds();
+            SapiReferenceId sapiReferenceId = new SapiReferenceId();
+            sapiReferenceId.setName("betradar");
+            sapiReferenceId.setValue("6171");
+            refIds.getReferenceId().add(sapiReferenceId);
+            return refIds;
+        }
+
+        public static SapiCompetitorProfileEndpoint fullyPopulatedFormula1CompetitorProfile() {
+            SapiCompetitorProfileEndpoint profile = new SapiCompetitorProfileEndpoint();
+            profile.setRaceDriverProfile(getFullyPopulatedRaceDriverProfile());
+            profile.setGeneratedAt(XmlGregorianCalendars.anyPastDate());
+            profile.setVenue(getVenue());
+            profile.setCompetitor(fullyPopulatedFormula1DriverExtended());
+            assertThat(profile.getJerseys())
+                .describedAs("formula 1 competitor does not have jerseys")
+                .isNull();
+            assertThat(profile.getPlayers())
+                .describedAs("formula 1 competitor does not have players")
+                .isNull();
+            assertThat(profile.getManager())
+                .describedAs("formula 1 competitor does not have manager")
+                .isNull();
+            return profile;
+        }
+
+        private static SapiRaceDriverProfile getFullyPopulatedRaceDriverProfile() {
+            SapiRaceDriverProfile profile = new SapiRaceDriverProfile();
+            profile.setCar(getCar());
+            profile.setRaceDriver(getFullyPopulatedRaceDriver());
+            profile.setRaceTeam(getFullyPopulatedRaceTeam());
+            return profile;
+        }
+
+        private static SapiRaceTeam getFullyPopulatedRaceTeam() {
+            SapiRaceTeam team = new SapiRaceTeam();
+            team.setId(TEAM_URN);
+            team.setName("Formula 1 Team");
+            team.setAbbreviation("GER");
+            team.setCountry("Germany");
+            team.setCountryCode("DEU");
+            team.setGender("male");
+            team.setAgeGroup("adult");
+            team.setDivision(2);
+            team.setDivisionName("Division 2");
+            team.setPlayers(null);
+            team.setShortName("Germany");
+            team.setState("Bavaria");
+            team.setReferenceIds(getReferenceIds());
+            team.setVirtual(false);
+            assertThat(team.getPlayers()).describedAs("race team does not have players").isNull();
+            return team;
+        }
+
+        private static SapiRaceDriver getFullyPopulatedRaceDriver() {
+            SapiRaceDriver driver = new SapiRaceDriver();
+            driver.setNationality("Germany");
+            driver.setCountryCode("DEU");
+            driver.setDateOfBirth("1986-03-27");
+            driver.setPlayers(null);
+            driver.setAbbreviation("NEU");
+            driver.setAgeGroup("adult");
+            driver.setCountry("Germany");
+            driver.setDivision(2);
+            driver.setDivisionName("Division 2");
+            driver.setGender("male");
+            driver.setId(COMPETITOR_URN);
+            driver.setName("Neuer, Manuel");
+            driver.setReferenceIds(getReferenceIds());
+            driver.setShortName("Neuer");
+            driver.setState("Bavaria");
+            driver.setVirtual(false);
+            assertThat(driver.getPlayers()).describedAs("race driver does not have players").isNull();
+            return driver;
+        }
+
+        private static SapiCar getCar() {
+            SapiCar car = new SapiCar();
+            car.setName("BMW M4 DTM");
+            car.setChassis("BMW M4 DTM Chassis");
+            car.setEngineName("BMW P66");
+            return car;
+        }
+
+        private static SapiTeamExtended fullyPopulatedFormula1DriverExtended() {
+            SapiTeamExtended team = new SapiTeamExtended();
+            team.setId(TEAM_URN);
+            team.setName("Alonso, Fernando");
+            team.setAbbreviation("ALO");
+            team.setCountry("Spain");
+            team.setCountryCode("ESP");
+            team.setGender("male");
+            team.setSport(SapiSports.formula1());
+            team.setCategory(formula1());
+            team.setVirtual(true);
+            team.setAgeGroup("adult");
+            team.setDivision(2);
+            team.setDivisionName("Division 2");
+            team.setPlayers(null);
+            team.setReferenceIds(getReferenceIds());
+            team.setShortName("Alonso");
+            team.setState("Asturias");
+            assertThat(team.getPlayers()).describedAs("formula 1 team does not have players").isNull();
+            return team;
         }
     }
 

@@ -55,6 +55,36 @@ public class JerseyImpl implements Jersey {
     private final String sleeveDetail;
 
     /**
+     * The jersey stripes
+     */
+    private final Boolean stripes;
+
+    /**
+     * The jersey horizontal stripes
+     */
+    private final Boolean horizontalStripes;
+
+    /**
+     * The jersey horizontal stripes color
+     */
+    private final String horizontalStripesColor;
+
+    /**
+     * The jersey has squares
+     */
+    private final Boolean squares;
+
+    /**
+     * The jersey has squares color
+     */
+    private final String squaresColor;
+
+    /**
+     * The jersey has split
+     */
+    private final Boolean split;
+
+    /**
      * Initializes a new {@link JerseyImpl}
      *
      * @param jersey the CI which will be used to construct the instance
@@ -70,6 +100,12 @@ public class JerseyImpl implements Jersey {
         splitColor = jersey.getSplitColor();
         shirtType = jersey.getShirtType();
         sleeveDetail = jersey.getSleeveDetail();
+        stripes = jersey.getStripes();
+        horizontalStripes = jersey.getHorizontalStripes();
+        horizontalStripesColor = jersey.getHorizontalStripesColor();
+        squares = jersey.getSquares();
+        squaresColor = jersey.getSquaresColor();
+        split = jersey.getSplit();
     }
 
     /**
@@ -152,6 +188,66 @@ public class JerseyImpl implements Jersey {
         return sleeveDetail;
     }
 
+    /**
+     * Returns the jersey has stripes
+     *
+     * @return the jersey has stripes
+     */
+    @Override
+    public Boolean getStripes() {
+        return stripes;
+    }
+
+    /**
+     * Returns the jersey has horizontal stripes
+     *
+     * @return the jersey has horizontal stripes
+     */
+    @Override
+    public Boolean getHorizontalStripes() {
+        return horizontalStripes;
+    }
+
+    /**
+     * Returns the jersey horizontal stripes color
+     *
+     * @return the jersey horizontal stripes color
+     */
+    @Override
+    public String getHorizontalStripesColor() {
+        return horizontalStripesColor;
+    }
+
+    /**
+     * returns information about the jersey squares
+     *
+     * @return information about the jersey squares
+     */
+    @Override
+    public Boolean getSquares() {
+        return squares;
+    }
+
+    /**
+     * returns information about the jersey squares
+     *
+     * @return information about the jersey squares
+     */
+    @Override
+    public String getSquaresColor() {
+        return squaresColor;
+    }
+
+    /**
+     * returns information about the jersey split
+     *
+     * @return information about the jersey split
+     */
+    @Override
+    public Boolean getSplit() {
+        return split;
+    }
+
     @Override
     public String toString() {
         return (
@@ -179,6 +275,24 @@ public class JerseyImpl implements Jersey {
             '\'' +
             ", sleeveDetail='" +
             sleeveDetail +
+            '\'' +
+            ", stripes='" +
+            stripes +
+            '\'' +
+            ", horizontalStripes='" +
+            horizontalStripes +
+            '\'' +
+            ", horizontalStripesColor='" +
+            horizontalStripesColor +
+            '\'' +
+            ", squares='" +
+            squares +
+            '\'' +
+            ", squaresColor='" +
+            squaresColor +
+            '\'' +
+            ", split='" +
+            split +
             '\'' +
             '}'
         );

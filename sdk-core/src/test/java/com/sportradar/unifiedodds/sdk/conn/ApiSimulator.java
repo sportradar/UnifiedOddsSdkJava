@@ -54,6 +54,17 @@ public class ApiSimulator {
         );
     }
 
+    public void activateProducer(ProducerId producer) {
+        Producers producers = new Producers();
+        producers.setResponseCode(ResponseCode.OK);
+        producers.getProducer().add(buildActiveProducer(producer));
+
+        register(
+            get(urlPathEqualTo("/v1/descriptions/producers.xml"))
+                .willReturn(WireMock.ok(JaxbContexts.SportsApi.marshall(producers)))
+        );
+    }
+
     public void defineBookmaker() {
         register(
             get(urlPathEqualTo("/v1/users/whoami.xml"))
@@ -344,6 +355,36 @@ public class ApiSimulator {
                 )
             );
         }
+    }
+
+    public void stubCompetitorProfile(Locale aLanguage, SapiSimpleTeamProfileEndpoint profile) {
+        JAXBElement<SapiSimpleTeamProfileEndpoint> profileJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "simpleteam_profile"),
+            SapiSimpleTeamProfileEndpoint.class,
+            profile
+        );
+        stub(
+            profileJaxb,
+            format(
+                "/v1/sports/%s/competitors/%s/profile.xml",
+                aLanguage.getLanguage(),
+                profile.getCompetitor().getId()
+            )
+        );
+    }
+
+    public void stubPlayerProfile(Locale aLanguage, SapiPlayerExtended player) {
+        SapiPlayerProfileEndpoint p = new SapiPlayerProfileEndpoint();
+        p.setPlayer(player);
+        JAXBElement<SapiPlayerProfileEndpoint> profileJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "player_profile"),
+            SapiPlayerProfileEndpoint.class,
+            p
+        );
+        stub(
+            profileJaxb,
+            format("/v1/sports/%s/players/%s/profile.xml", aLanguage.getLanguage(), player.getId())
+        );
     }
 
     public void stubSportCategories(Locale langA, Sport sport, SapiCategory category) {

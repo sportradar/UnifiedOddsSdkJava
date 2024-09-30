@@ -5,6 +5,7 @@ package com.sportradar.unifiedodds.sdk.testutil.jaxb;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -63,6 +64,15 @@ public class XmlGregorianCalendars {
         calendar.setHour(localDate.getHour());
         calendar.setMinute(localDate.getMinute());
         calendar.setSecond(localDate.getSecond());
+        return calendar;
+    }
+
+    @SneakyThrows
+    public static XMLGregorianCalendar forTime(LocalTime localTime) {
+        val calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+        calendar.setHour(localTime.getHour());
+        calendar.setMinute(localTime.getMinute());
+        calendar.setSecond(localTime.getSecond());
         return calendar;
     }
 

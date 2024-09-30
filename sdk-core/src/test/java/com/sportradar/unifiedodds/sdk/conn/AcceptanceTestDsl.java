@@ -7,6 +7,7 @@ import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.UofSdk;
@@ -19,7 +20,7 @@ import java.util.function.Function;
 import lombok.SneakyThrows;
 import lombok.val;
 
-@SuppressWarnings({ "VisibilityModifier", "LambdaBodyLength" })
+@SuppressWarnings({ "VisibilityModifier", "LambdaBodyLength", "ClassFanOutComplexity" })
 public class AcceptanceTestDsl {
 
     public final RabbitMqProducer rabbitProducer;
@@ -64,6 +65,12 @@ public class AcceptanceTestDsl {
         private Callable<RabbitMqProducer> startRabbitProducer;
         private Callable<UofSdk> startSdk;
 
+        private Setup(WireMockExtension wiremock, GlobalVariables globalVariables) {
+            this.globalVariables = globalVariables;
+            this.apiSimulator = new ApiSimulator(wiremock.getRuntimeInfo().getWireMock());
+            sportsApiBaseUrl = BaseUrl.of("localhost", wiremock.getRuntimeInfo().getHttpPort());
+        }
+
         private Setup(WireMockRule wiremock, GlobalVariables globalVariables) {
             this.globalVariables = globalVariables;
             this.apiSimulator = new ApiSimulator(wiremock);
@@ -73,6 +80,13 @@ public class AcceptanceTestDsl {
         public static Setup context(
             Function<GlobalVariables, GlobalVariables> setGlobalVariables,
             WireMockRule wiremock
+        ) {
+            return new Setup(wiremock, setGlobalVariables.apply(new GlobalVariables()));
+        }
+
+        public static Setup context(
+            Function<GlobalVariables, GlobalVariables> setGlobalVariables,
+            WireMockExtension wiremock
         ) {
             return new Setup(wiremock, setGlobalVariables.apply(new GlobalVariables()));
         }

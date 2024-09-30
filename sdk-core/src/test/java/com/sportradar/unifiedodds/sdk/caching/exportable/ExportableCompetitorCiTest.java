@@ -42,6 +42,7 @@ public class ExportableCompetitorCiTest {
             "no",
             new HashMap<>(),
             new ArrayList<>(),
+            new HashMap<>(),
             new ArrayList<>(),
             mock(ExportableManagerCi.class),
             mock(ExportableVenueCi.class),

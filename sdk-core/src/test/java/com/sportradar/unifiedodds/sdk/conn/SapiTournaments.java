@@ -9,19 +9,19 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMatch.FullyPopulatedMatch.
 import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.FullyPopulatedSeason.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.stockCarRacing;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedCompetitor.fullyPopulatedFootballCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Nascar2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorLocationInTournamentInfo.COMPETITORS_EVERYWHERE;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_ABSENT;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_PRESENT;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.anyFutureDate;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
 import com.sportradar.utils.Urn;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.val;
 
 @SuppressWarnings(
@@ -948,7 +948,9 @@ public class SapiTournaments {
             val group = new SapiTournamentGroup();
             group.setId("sr:group:9043664");
             group.setName("Fully populated tournament group name");
-            group.getCompetitor().add(fullyPopulatedFootballCompetitor());
+            group
+                .getCompetitor()
+                .add(SapiTeams.FullyPopulatedFootballCompetitor.fullyPopulatedFootballCompetitor());
             return group;
         }
 
@@ -998,7 +1000,9 @@ public class SapiTournaments {
 
         public static SapiCompetitors fullyPopulatedFootballCompetitors() {
             val competitors = new SapiCompetitors();
-            competitors.getCompetitor().add(fullyPopulatedFootballCompetitor());
+            competitors
+                .getCompetitor()
+                .add(SapiTeams.FullyPopulatedFootballCompetitor.fullyPopulatedFootballCompetitor());
             return competitors;
         }
 
@@ -1037,6 +1041,91 @@ public class SapiTournaments {
         public static enum CompetitorPresence {
             COMPETITORS_PRESENT,
             COMPETITORS_ABSENT,
+        }
+    }
+
+    public static final class VirtualFootballLeague {
+
+        public static final class VirtualFootballLeagueSeason {
+
+            public static final Urn VIRTUAL_FOOTBALL_LEAGUE_SEASON_ID = Urn.parse("vf:season:2877975");
+
+            public static SapiTournamentInfoEndpoint virtualFootballLeagueSeasonInfo() {
+                val ti = new SapiTournamentInfoEndpoint();
+                ti.setGeneratedAt(XmlGregorianCalendars.now());
+                ti.setTournament(tournament());
+                ti.setSeason(season());
+                ti.setGroups(groups());
+                return ti;
+            }
+
+            private static SapiSeasonExtended season() {
+                val season = new SapiSeasonExtended();
+                season.setId("vf:season:2877975");
+                season.setName("VFLM 34981");
+                season.setStartDate(XmlGregorianCalendars.forDate(LocalDate.of(2024, 9, 25)));
+                season.setEndDate(XmlGregorianCalendars.forDate(LocalDate.of(2024, 9, 25)));
+                season.setStartTime(XmlGregorianCalendars.forTime(LocalTime.of(7, 26, 45)));
+                season.setEndTime(XmlGregorianCalendars.forTime(LocalTime.of(9, 18, 45)));
+                season.setYear("34981");
+                return season;
+            }
+
+            private static SapiTournamentGroups groups() {
+                val groups = new SapiTournamentGroups();
+                groups.getGroup().add(group());
+                return groups;
+            }
+
+            private static SapiTournamentGroup group() {
+                val group = new SapiTournamentGroup();
+                group.getCompetitor().add(lisbon());
+                group.getCompetitor().add(london());
+                group.getCompetitor().add(athens());
+                group.getCompetitor().add(vienna());
+                return group;
+            }
+
+            private static SapiTeam lisbon() {
+                val team = new SapiTeam();
+                team.setId("sr:competitor:276501");
+                team.setName("VL Lisbon");
+                team.setAbbreviation("LIS");
+                return team;
+            }
+
+            private static SapiTeam london() {
+                val team = new SapiTeam();
+                team.setId("sr:competitor:276502");
+                team.setName("VL London");
+                team.setAbbreviation("LON");
+                return team;
+            }
+
+            private static SapiTeam athens() {
+                val team = new SapiTeam();
+                team.setId("sr:competitor:276503");
+                team.setName("VL Athens");
+                team.setAbbreviation("ATH");
+                return team;
+            }
+
+            private static SapiTeam vienna() {
+                val team = new SapiTeam();
+                team.setId("sr:competitor:276504");
+                team.setName("VL Vienna");
+                team.setAbbreviation("VIE");
+                return team;
+            }
+
+            private static SapiTournamentExtended tournament() {
+                val t = new SapiTournamentExtended();
+                t.setId("vf:tournament:14560");
+                t.setName("Virtual Football League Mode");
+                t.setSport(SapiSports.soccer());
+                t.setCategory(SapiCategories.virtualFootball());
+                return t;
+            }
         }
     }
 }

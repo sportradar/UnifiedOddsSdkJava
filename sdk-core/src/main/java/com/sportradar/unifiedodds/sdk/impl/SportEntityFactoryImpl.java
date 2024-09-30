@@ -409,6 +409,36 @@ public class SportEntityFactoryImpl implements SportEntityFactory {
     }
 
     /**
+     *
+     * @param id the player identifier
+     * @param locales the {@link Locale}s in which the data should be available
+     * @param possibleAssociatedCompetitorIds a list of possible associated competitor ids (used to prefetch data)
+     * @return the constructed object
+     */
+    @Override
+    public CompetitorPlayer buildCompetitorPlayerProfile(
+        Urn id,
+        List<Locale> locales,
+        List<Urn> possibleAssociatedCompetitorIds,
+        Map<Urn, Integer> associatedJerseyNumbers
+    ) {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(locales);
+        Integer jerseyNumber = associatedJerseyNumbers != null
+            ? associatedJerseyNumbers.getOrDefault(id, null)
+            : null;
+
+        return new CompetitorPlayerImpl(
+            id,
+            jerseyNumber,
+            profileCache,
+            possibleAssociatedCompetitorIds,
+            locales,
+            exceptionHandlingStrategy
+        );
+    }
+
+    /**
      * Constructs and returns a new instance derived from the {@link SportEvent} with the provided data
      *
      * @param id - the {@link Urn} specifying the identifier of the sport event

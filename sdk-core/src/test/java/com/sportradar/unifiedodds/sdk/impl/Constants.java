@@ -25,11 +25,12 @@ public class Constants {
     public static final String SCHEDULE_MSG_URI = "test/rest/schedule.en.xml";
 
     // local rabbit data for tests
+    public static final boolean IS_LOCAL = System.getenv().get("CI") == null;
     public static final String ADMIN_USERNAME = "guest";
     public static final String ADMIN_PASSWORD = "guest";
-    public static final String TOXIPROXY_IP = "toxiproxy";
+    public static final String TOXIPROXY_IP = IS_LOCAL ? "localhost" : "toxiproxy";
     public static final BaseUrl TOXIPROXY_BASE_URL = BaseUrl.of(TOXIPROXY_IP, 8474);
-    public static final String RABBIT_IP = "rabbit";
+    public static final String RABBIT_IP = IS_LOCAL ? "localhost" : "rabbit";
     public static final BaseUrl RABBIT_MANAGEMENT_BASE_URL = BaseUrl.of(Constants.RABBIT_IP, 15672);
     public static final int PROXIED_RABBIT_PORT = 8089;
     public static final BaseUrl PROXIED_RABBIT_BASE_URL = BaseUrl.of(TOXIPROXY_IP, PROXIED_RABBIT_PORT);

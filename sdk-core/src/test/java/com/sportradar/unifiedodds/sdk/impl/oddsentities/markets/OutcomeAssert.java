@@ -40,6 +40,14 @@ public class OutcomeAssert extends AbstractOutcomeAssert<OutcomeAssert, Outcome>
         return this;
     }
 
+    public OutcomeAssert hasName(TranslationHolder translation) {
+        Assertions.assertThat(actual.getName(translation.getLanguage())).isEqualTo(translation.getWord());
+        Assertions
+            .assertThat(actual.getNames(singletonList(translation.getLanguage())))
+            .containsEntry(translation.getLanguage(), translation.getWord());
+        return this;
+    }
+
     public OutcomeAssert getNameForDefault(
         Locale aLanguage,
         ExpectationTowardsSdkErrorHandlingStrategy errorHandling

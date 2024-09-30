@@ -5,15 +5,18 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.SapiCategories.international;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.SapiCoverages.*;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.SapiVenues.munichFootballArena;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa.germanyCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Scotland.scotlandCompetitor;
+import static com.sportradar.unifiedodds.sdk.conn.SapiVenues.munichFootballArena;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds.SapiReferenceId;
+import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
+import com.sportradar.utils.Urn;
 import java.time.LocalDate;
 import java.util.Locale;
 import lombok.val;
@@ -336,18 +339,447 @@ public final class SapiMatchSummaries {
         }
     }
 
-    public static class SapiVenues {
+    public static final class AtpHangzhouDoubles {
 
-        public static SapiVenue munichFootballArena() {
+        public static final Urn HOME_COMPETITOR = Urn.parse("sr:competitor:1187037");
+        public static final Urn AWAY_COMPETITOR = Urn.parse("sr:competitor:60922");
+
+        public static SapiMatchSummaryEndpoint atpHangzhouDoubleMatch() {
+            SapiMatchSummaryEndpoint summary = new SapiMatchSummaryEndpoint();
+            summary.setGeneratedAt(XmlGregorianCalendars.now());
+            summary.setSportEvent(sportEvent());
+            summary.setSportEventConditions(conditions());
+            summary.setSportEventStatus(status());
+            summary.setCoverageInfo(coverage());
+            return summary;
+        }
+
+        private static SapiCoverageInfo coverage() {
+            SapiCoverageInfo coverage = new SapiCoverageInfo();
+            coverage.setLevel("silver");
+            coverage.setLiveCoverage(true);
+            coverage.setCoveredFrom("venue");
+            coverage.getCoverage().add(basicScore());
+            coverage.getCoverage().add(keyEvents());
+            return coverage;
+        }
+
+        private static SapiSportEventStatus status() {
+            SapiSportEventStatus status = new SapiSportEventStatus();
+            status.setHomeScore("1");
+            status.setAwayScore("2");
+            status.setStatusCode(4);
+            status.setMatchStatusCode(100);
+            status.setStatus("closed");
+            status.setMatchStatus("ended");
+            status.setWinnerId("sr:competitor:60922");
+            status.setPeriodScores(periodScores());
+            status.setResults(results());
+            return status;
+        }
+
+        private static SapiResultScores results() {
+            SapiResultScores results = new SapiResultScores();
+            results.getResult().add(matchResults());
+            return results;
+        }
+
+        private static SapiResultScore matchResults() {
+            SapiResultScore result = new SapiResultScore();
+            result.setHomeScore("1");
+            result.setAwayScore("2");
+            result.setMatchStatusCode(100);
+            return result;
+        }
+
+        private static SapiPeriodScores periodScores() {
+            SapiPeriodScores scores = new SapiPeriodScores();
+            scores.getPeriodScore().add(firstPeriosScores());
+            scores.getPeriodScore().add(secondPeriodScores());
+            scores.getPeriodScore().add(thirdPeriodScores());
+            return scores;
+        }
+
+        private static SapiPeriodScore thirdPeriodScores() {
+            SapiPeriodScore score = new SapiPeriodScore();
+            score.setHomeScore("4");
+            score.setAwayScore("10");
+            score.setMatchStatusCode(10);
+            score.setType("regular_period");
+            score.setNumber(3);
+            return score;
+        }
+
+        private static SapiPeriodScore secondPeriodScores() {
+            SapiPeriodScore score = new SapiPeriodScore();
+            score.setHomeScore("2");
+            score.setAwayScore("6");
+            score.setMatchStatusCode(9);
+            score.setType("regular_period");
+            score.setNumber(2);
+            return score;
+        }
+
+        private static SapiPeriodScore firstPeriosScores() {
+            SapiPeriodScore score = new SapiPeriodScore();
+            score.setHomeScore("6");
+            score.setAwayScore("0");
+            score.setMatchStatusCode(8);
+            score.setType("regular_period");
+            score.setNumber(1);
+            return score;
+        }
+
+        private static SapiSportEventConditions conditions() {
+            SapiSportEventConditions conditions = new SapiSportEventConditions();
+            conditions.setMatchMode("bo3");
+            conditions.setVenue(venue());
+            return conditions;
+        }
+
+        private static SapiSportEvent sportEvent() {
+            SapiSportEvent event = new SapiSportEvent();
+            event.setId("sr:match:53542557");
+            event.setScheduled(forDate(LocalDate.of(2024, 9, 23)));
+            event.setStartTimeTbd(false);
+            event.setTournamentRound(matchRound());
+            event.setSeason(season());
+            event.setTournament(tournament());
+            event.setCompetitors(competitors());
+            event.setVenue(venue());
+            return event;
+        }
+
+        private static SapiVenue venue() {
             SapiVenue venue = new SapiVenue();
-            venue.setId("sr:venue:574");
-            venue.setName("Munich Football Arena");
-            venue.setCapacity(75000);
-            venue.setCityName("Munich");
-            venue.setCountryName("Germany");
-            venue.setCountryCode("DEU");
-            venue.setMapCoordinates("48.218777,11.624748");
+            venue.setId("sr:venue:80041");
+            venue.setName("Center Court");
+            venue.setCityName("Hangzhou");
+            venue.setCountryName("China");
+            venue.setCountryCode("CHN");
             return venue;
+        }
+
+        private static SapiSportEventCompetitors competitors() {
+            SapiSportEventCompetitors competitors = new SapiSportEventCompetitors();
+            competitors.getCompetitor().add(homeCompetitor());
+            competitors.getCompetitor().add(awayCompetitor());
+            return competitors;
+        }
+
+        private static SapiTeamCompetitor awayCompetitor() {
+            SapiTeamCompetitor away = new SapiTeamCompetitor();
+            away.setQualifier("away");
+            away.setId(AWAY_COMPETITOR.toString());
+            away.setName("Nedunchezhiyan J / Prashanth N V S");
+            away.setAbbreviation("NED");
+            away.setPlayers(awayPlayers());
+            return away;
+        }
+
+        private static SapiPlayerExtendedList awayPlayers() {
+            SapiPlayerExtendedList players = new SapiPlayerExtendedList();
+            players.getPlayer().add(nedunchezhiyansPlayer());
+            players.getPlayer().add(prashanthsPlayer());
+            return players;
+        }
+
+        private static SapiPlayerCompetitor prashanthsPlayer() {
+            SapiPlayerCompetitor player = new SapiPlayerCompetitor();
+            player.setId("sr:competitor:53759");
+            player.setName("Prashanth, N. Vijay Sundar");
+            player.setAbbreviation("PRA");
+            player.setNationality("India");
+            return player;
+        }
+
+        private static SapiPlayerCompetitor nedunchezhiyansPlayer() {
+            SapiPlayerCompetitor player = new SapiPlayerCompetitor();
+            player.setId("sr:competitor:60920");
+            player.setName("Nedunchezhiyan, Jeevan");
+            player.setAbbreviation("NED");
+            player.setNationality("India");
+            return player;
+        }
+
+        private static SapiTeamCompetitor homeCompetitor() {
+            SapiTeamCompetitor home = new SapiTeamCompetitor();
+            home.setQualifier("home");
+            home.setId(HOME_COMPETITOR.toString());
+            home.setName("Behar A / Galloway R");
+            home.setAbbreviation("BEH");
+            home.setPlayers(homePlayers());
+            return home;
+        }
+
+        private static SapiPlayerExtendedList homePlayers() {
+            SapiPlayerExtendedList players = new SapiPlayerExtendedList();
+            players.getPlayer().add(beharsPlayer());
+            players.getPlayer().add(gallowaysPlayer());
+            return players;
+        }
+
+        private static SapiPlayerCompetitor gallowaysPlayer() {
+            SapiPlayerCompetitor player = new SapiPlayerCompetitor();
+            player.setId("sr:competitor:206889");
+            player.setName("Galloway, Robert");
+            player.setAbbreviation("GAL");
+            player.setNationality("Usa");
+            return player;
+        }
+
+        private static SapiPlayerCompetitor beharsPlayer() {
+            SapiPlayerCompetitor player = new SapiPlayerCompetitor();
+            player.setId("sr:competitor:45105");
+            player.setName("Behar, Ariel");
+            player.setAbbreviation("BEH");
+            player.setNationality("Uruguay");
+            return player;
+        }
+
+        private static SapiTournament tournament() {
+            SapiTournament tournament = new SapiTournament();
+            tournament.setId("sr:tournament:42981");
+            tournament.setName("ATP Hangzhou, China Men Doubles");
+            tournament.setSport(SapiSports.tennis());
+            tournament.setCategory(SapiCategories.atp());
+            return tournament;
+        }
+
+        private static SapiSeasonExtended season() {
+            SapiSeasonExtended season = new SapiCurrentSeason();
+            season.setId("sr:season:119037");
+            season.setStartDate(forDate(LocalDate.of(2024, 9, 18)));
+            season.setEndDate(forDate(LocalDate.of(2024, 9, 24)));
+            season.setYear("2024");
+            season.setTournamentId("sr:tournament:42981");
+            season.setName("ATP Hangzhou, China Men Doubles 2024");
+            return season;
+        }
+
+        private static SapiMatchRound matchRound() {
+            SapiMatchRound round = new SapiMatchRound();
+            round.setType("cup");
+            round.setName("semifinal");
+            round.setBetradarId(150613);
+            round.setBetradarName("Hangzhou, China, Doubles");
+            return round;
+        }
+    }
+
+    public static final class Mlb {
+
+        public static final class MlbHoustonAstrosLosAngelesAngels2024 {
+
+            public static final Urn MLB_HOUSTON_ASTROS_LOS_ANGELES_ANGELS_2024 = Urn.parse(
+                "sr:match:46680823"
+            );
+
+            public static SapiMatchSummaryEndpoint mlbHoustonAstrosLosAngelesAngels2024() {
+                SapiMatchSummaryEndpoint summary = new SapiMatchSummaryEndpoint();
+                summary.setGeneratedAt(XmlGregorianCalendars.now());
+                summary.setSportEvent(sportEvent());
+                summary.setSportEventConditions(conditions());
+                summary.setSportEventStatus(status());
+                summary.setCoverageInfo(coverage());
+                return summary;
+            }
+
+            private static SapiCoverageInfo coverage() {
+                SapiCoverageInfo coverage = new SapiCoverageInfo();
+                coverage.setLevel("silver");
+                coverage.setLiveCoverage(true);
+                coverage.setCoveredFrom("venue");
+                coverage.getCoverage().add(basicScore());
+                coverage.getCoverage().add(keyEvents());
+                return coverage;
+            }
+
+            private static SapiSportEventStatus status() {
+                SapiSportEventStatus status = new SapiSportEventStatus();
+                status.setHomeScore("3");
+                status.setAwayScore("1");
+                status.setStatusCode(4);
+                status.setMatchStatusCode(100);
+                status.setStatus("closed");
+                status.setMatchStatus("ended");
+                status.setWinnerId("sr:competitor:3655");
+                status.setPeriodScores(periodScores());
+                status.setResults(results());
+                return status;
+            }
+
+            private static SapiResultScores results() {
+                SapiResultScores results = new SapiResultScores();
+                results.getResult().add(result());
+                return results;
+            }
+
+            private static SapiResultScore result() {
+                SapiResultScore result = new SapiResultScore();
+                result.setHomeScore("3");
+                result.setAwayScore("1");
+                result.setMatchStatusCode(100);
+                return result;
+            }
+
+            private static SapiPeriodScores periodScores() {
+                SapiPeriodScores scores = new SapiPeriodScores();
+                scores.getPeriodScore().add(firstPeriodScore());
+                scores.getPeriodScore().add(secondPeriodScore());
+                return scores;
+            }
+
+            private static SapiPeriodScore firstPeriodScore() {
+                SapiPeriodScore score = new SapiPeriodScore();
+                score.setHomeScore("0");
+                score.setAwayScore("1");
+                score.setMatchStatusCode(531);
+                score.setType("regular_period");
+                score.setNumber(1);
+                return score;
+            }
+
+            private static SapiPeriodScore secondPeriodScore() {
+                SapiPeriodScore score = new SapiPeriodScore();
+                score.setHomeScore("0");
+                score.setAwayScore("0");
+                score.setMatchStatusCode(532);
+                score.setType("regular_period");
+                score.setNumber(2);
+                return score;
+            }
+
+            private static SapiSportEventConditions conditions() {
+                SapiSportEventConditions conditions = new SapiSportEventConditions();
+                conditions.setAttendance("33107");
+                conditions.setVenue(SapiVenues.minuteMaidParkHouston());
+                return conditions;
+            }
+
+            private static SapiSportEvent sportEvent() {
+                SapiSportEvent event = new SapiSportEvent();
+                event.setId(MLB_HOUSTON_ASTROS_LOS_ANGELES_ANGELS_2024.toString());
+                event.setScheduled(forDate(LocalDate.of(2024, 9, 20)));
+                event.setStartTimeTbd(false);
+                event.setTournamentRound(tournamentRound());
+                event.setSeason(season());
+                event.setTournament(tornament());
+                event.setCompetitors(competitors());
+                event.setVenue(SapiVenues.minuteMaidParkHouston());
+                return event;
+            }
+
+            private static SapiSportEventCompetitors competitors() {
+                SapiSportEventCompetitors competitors = new SapiSportEventCompetitors();
+                competitors.getCompetitor().add(houstonAstros());
+                competitors.getCompetitor().add(losAngelesAngels());
+                return competitors;
+            }
+
+            private static SapiTeamCompetitor losAngelesAngels() {
+                SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+                competitor.setQualifier("away");
+                competitor.setId("sr:competitor:5929");
+                competitor.setName("Los Angeles Angels");
+                competitor.setAbbreviation("LAA");
+                competitor.setShortName("LA Angels");
+                competitor.setCountry("USA");
+                competitor.setCountryCode("USA");
+                competitor.setGender("male");
+                competitor.setState("CA");
+                competitor.setReferenceIds(losAngelesAngelsReferenceIds());
+                return competitor;
+            }
+
+            private static SapiCompetitorReferenceIds losAngelesAngelsReferenceIds() {
+                SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+                referenceIds.getReferenceId().add(losAngelesAngelsRotationNumber());
+                referenceIds.getReferenceId().add(losAngelesAngelsBetradar());
+                return referenceIds;
+            }
+
+            private static SapiReferenceId losAngelesAngelsBetradar() {
+                SapiReferenceId referenceId = new SapiReferenceId();
+                referenceId.setName("betradar");
+                referenceId.setValue("499003");
+                return referenceId;
+            }
+
+            private static SapiReferenceId losAngelesAngelsRotationNumber() {
+                SapiReferenceId referenceId = new SapiReferenceId();
+                referenceId.setName("rotation_number");
+                referenceId.setValue("971");
+                return referenceId;
+            }
+
+            private static SapiTeamCompetitor houstonAstros() {
+                SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+                competitor.setQualifier("home");
+                competitor.setId("sr:competitor:3655");
+                competitor.setName("Houston Astros");
+                competitor.setAbbreviation("HOU");
+                competitor.setShortName("Houston");
+                competitor.setCountry("USA");
+                competitor.setCountryCode("USA");
+                competitor.setGender("male");
+                competitor.setState("TX");
+                competitor.setReferenceIds(houstonAstrosReferenceIds());
+                return competitor;
+            }
+
+            private static SapiCompetitorReferenceIds houstonAstrosReferenceIds() {
+                SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+                referenceIds.getReferenceId().add(houstonAstrosRotationNumber());
+                referenceIds.getReferenceId().add(houstonAstros2024Betradar());
+                return referenceIds;
+            }
+
+            private static SapiReferenceId houstonAstros2024Betradar() {
+                SapiReferenceId referenceId = new SapiReferenceId();
+                referenceId.setName("betradar");
+                referenceId.setValue("24462");
+                return referenceId;
+            }
+
+            private static SapiReferenceId houstonAstrosRotationNumber() {
+                SapiReferenceId referenceId = new SapiReferenceId();
+                referenceId.setName("rotation_number");
+                referenceId.setValue("972");
+                return referenceId;
+            }
+
+            private static SapiTournament tornament() {
+                SapiTournament tournament = new SapiTournament();
+                tournament.setId("sr:tournament:109");
+                tournament.setName("MLB");
+                tournament.setSport(SapiSports.baseball());
+                tournament.setCategory(SapiCategories.usa());
+                return tournament;
+            }
+
+            private static SapiSeasonExtended season() {
+                SapiSeasonExtended season = new SapiCurrentSeason();
+                season.setId("sr:season:112588");
+                season.setStartDate(forDate(LocalDate.of(2024, 3, 20)));
+                season.setEndDate(forDate(LocalDate.of(2024, 11, 3)));
+                season.setYear("2024");
+                season.setTournamentId("sr:tournament:109");
+                season.setName("MLB 2024");
+                return season;
+            }
+
+            private static SapiMatchRound tournamentRound() {
+                SapiMatchRound round = new SapiMatchRound();
+                round.setType("group");
+                round.setNumber(1);
+                round.setGroupLongName("MLB");
+                round.setGroup("American League West");
+                round.setGroupId("sr:group:80917");
+                round.setBetradarId(25);
+                round.setBetradarName("MLB");
+                return round;
+            }
         }
     }
 

@@ -3,8 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
+import com.sportradar.uf.sportsapi.datamodel.SapiSportEvent;
 import com.sportradar.utils.Urn;
-import com.sportradar.utils.generic.testing.RandomInteger;
 import java.util.Optional;
 
 public class GlobalVariables {
@@ -29,6 +29,11 @@ public class GlobalVariables {
 
     public GlobalVariables setSportEventUrn(SportEvent sportEventUrn) {
         this.sportEventUrn = Optional.of(sportEventUrn.getUrn());
+        return this;
+    }
+
+    public GlobalVariables setSportEventUrn(SapiSportEvent sportEvent) {
+        this.sportEventUrn = Optional.of(Urn.parse(sportEvent.getId()));
         return this;
     }
 

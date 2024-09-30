@@ -61,6 +61,14 @@ public interface CompetitorCi extends CacheItem {
     List<Urn> getAssociatedPlayerIds(List<Locale> locales);
 
     /**
+     * Returns a {@link Map} of associated player jersey numbers
+     *
+     * @param locales the locales in which the players data should be pre-fetched
+     * @return {@link Map} of associated player jersey numbers
+     */
+    Map<Urn, Integer> getAssociatedPlayerJerseyNumbers(List<Locale> locales);
+
+    /**
      * Returns a {@link List} of known competitor jerseys
      *
      * @return {@link List} of known competitor jerseys

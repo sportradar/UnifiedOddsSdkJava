@@ -8,23 +8,31 @@ import static com.google.common.base.Predicates.not;
 import static com.sportradar.unifiedodds.sdk.conn.CompetitorAssert.assertThat;
 import static com.sportradar.unifiedodds.sdk.conn.CompetitorsIT.SapiCompetitorsWrapper.fromGroups;
 import static com.sportradar.unifiedodds.sdk.conn.CompetitorsIT.SapiCompetitorsWrapper.fromTournament;
-import static com.sportradar.unifiedodds.sdk.conn.SapiCompetitorProfiles.BuffaloSabres.buffaloSabres;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.AtpHangzhouDoubles.atpHangzhouDoubleMatch;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyVsVirtual2024;
+import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.MARTIN_ODEGAARD_PLAYER_ID;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSimpleTeams.EnderunTitansCollegeBasketballTeam.sapiEnderunTitansTeam;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.GrandPrix2024.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.ArsenalFc.arsenalProfile;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.BuffaloSabres.buffaloSabres;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.ALONSO_COMPETITOR_URN;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.NorwayNationalSoccerTeam.norwayNationalSoccerTeamProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.nascarCup2024TournamentInfo;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.replaceFirstCompetitorWithVirtual;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeam;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.AtpHangzhouDoubles;
 import com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.GrandPrix2024;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
@@ -40,7 +48,6 @@ import lombok.val;
 import org.apache.commons.lang3.BooleanUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -84,7 +91,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(seasonId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -130,7 +137,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(tournamentId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -173,7 +180,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(tournamentId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -223,7 +230,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(stageId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -262,7 +269,7 @@ class CompetitorsIT {
             val raceUrn = Urn.parse(GrandPrix2024.RACE_STAGE_URN);
             val grandPrixWithVirtual = replaceHamiltonWithVirtualCompetitor(grandPrix2024RaceStageEndpoint());
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubRaceSummary(aLanguage, grandPrixWithVirtual);
@@ -309,7 +316,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(stageId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -352,7 +359,7 @@ class CompetitorsIT {
             val raceUrn = Urn.parse(GrandPrix2024.RACE_STAGE_URN);
             val grandPrixWithVirtual = replaceHamiltonWithVirtualCompetitor(grandPrix2024RaceStageEndpoint());
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubRaceSummary(aLanguage, grandPrixWithVirtual);
@@ -403,7 +410,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(matchId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -442,6 +449,55 @@ class CompetitorsIT {
 
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
+        void sportDataProviderReturnsSamePlayerWithDifferentJerseyNumbersForDifferentCompetitors(
+            ExceptionHandlingStrategy strategy
+        ) throws Exception {
+            val martinOdegaardId = Urn.parse(MARTIN_ODEGAARD_PLAYER_ID);
+            val martinOdegaardArsenalJerseyNumber = getMartinOdegaardJerseyNumber(arsenalProfile());
+            val martinOdegaardNorwayTeamJerseyNumber = getMartinOdegaardJerseyNumber(
+                norwayNationalSoccerTeamProfile()
+            );
+            val norwayNationalTeamId = Urn.parse(norwayNationalSoccerTeamProfile().getCompetitor().getId());
+            val arsenalFcId = Urn.parse(arsenalProfile().getCompetitor().getId());
+
+            Locale aLanguage = ENGLISH;
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubAllSports(aLanguage);
+            apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
+            apiSimulator.stubCompetitorProfile(
+                aLanguage,
+                norwayNationalSoccerTeamProfile(),
+                arsenalProfile()
+            );
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(strategy)
+                    .withDefaultLanguage(aLanguage)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+                val norwayNationalTeam = sportDataProvider.getCompetitor(norwayNationalTeamId, ENGLISH);
+                val arsenalFc = sportDataProvider.getCompetitor(arsenalFcId, ENGLISH);
+
+                val martinOdegaardNorwayTeamPlayer = getCompetitorPlayerProfileById(
+                    norwayNationalTeam,
+                    martinOdegaardId
+                );
+                val martinOdegaardArsenalPlayer = getCompetitorPlayerProfileById(arsenalFc, martinOdegaardId);
+
+                assertThat(((CompetitorPlayer) martinOdegaardNorwayTeamPlayer).getJerseyNumber())
+                    .isEqualTo(martinOdegaardNorwayTeamJerseyNumber);
+                assertThat(((CompetitorPlayer) martinOdegaardArsenalPlayer).getJerseyNumber())
+                    .isEqualTo(martinOdegaardArsenalJerseyNumber);
+            }
+        }
+
+        @ParameterizedTest
+        @EnumSource(ExceptionHandlingStrategy.class)
         void competitorVirtualFlagRemainsAfterEvictingMatchItWasSourcedFrom(
             ExceptionHandlingStrategy strategy
         ) throws Exception {
@@ -450,7 +506,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(matchId);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubAllSports(aLanguage);
@@ -488,6 +544,63 @@ class CompetitorsIT {
                 assertThat(competitors.get(sapiVirtualCompetitor.getId()).isVirtual()).isTrue();
             }
         }
+
+        @ParameterizedTest
+        @EnumSource(ExceptionHandlingStrategy.class)
+        void providesCompetitorAssociatedPlayersForTennisDoublesOnlyWhenSummaryPopulatesCacheBeforehand(
+            ExceptionHandlingStrategy strategy
+        ) throws Exception {
+            val matchId = Urn.parse(atpHangzhouDoubleMatch().getSportEvent().getId());
+            globalVariables.setProducer(ProducerId.LIVE_ODDS);
+            globalVariables.setSportEventUrn(matchId);
+            globalVariables.setSportUrn(Sport.TENNIS);
+
+            Locale aLanguage = ENGLISH;
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubAllSports(aLanguage);
+            apiSimulator.stubEmptyAllTournaments(aLanguage);
+            apiSimulator.stubMatchSummary(aLanguage, atpHangzhouDoubleMatch());
+            SapiCompetitorProfiles
+                .profilesFromSapiMatchSummary(atpHangzhouDoubleMatch())
+                .forEach(p -> apiSimulator.stubCompetitorProfile(aLanguage, p));
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(strategy)
+                    .withDefaultLanguage(aLanguage)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                sportDataProvider.getSportEvent(matchId);
+
+                val homeCompetitor = sportDataProvider.getCompetitor(AtpHangzhouDoubles.HOME_COMPETITOR);
+                val awayCompetitor = sportDataProvider.getCompetitor(AtpHangzhouDoubles.AWAY_COMPETITOR);
+
+                assertThat(homeCompetitor.getPlayers()).hasSize(2);
+                assertThat(awayCompetitor.getPlayers()).hasSize(2);
+            }
+        }
+    }
+
+    private static Integer getMartinOdegaardJerseyNumber(
+        SapiCompetitorProfileEndpoint sapiCompetitorProfileEndpoint
+    ) {
+        return sapiCompetitorProfileEndpoint
+            .getPlayers()
+            .getPlayer()
+            .stream()
+            .filter(p -> p.getId().equals(MARTIN_ODEGAARD_PLAYER_ID))
+            .findFirst()
+            .get()
+            .getJerseyNumber();
+    }
+
+    private static Player getCompetitorPlayerProfileById(Competitor competitor, Urn playerId) {
+        return competitor.getPlayers().stream().filter(p -> p.getId().equals(playerId)).findFirst().get();
     }
 
     @Nested
@@ -500,7 +613,7 @@ class CompetitorsIT {
             globalVariables.setSportEventUrn(SportEvent.MATCH);
             globalVariables.setSportUrn(Sport.FOOTBALL);
 
-            Locale aLanguage = Locale.ENGLISH;
+            Locale aLanguage = ENGLISH;
             apiSimulator.defineBookmaker();
             apiSimulator.activateOnlyLiveProducer();
             apiSimulator.stubCompetitorProfile(aLanguage, buffaloSabres());
@@ -519,7 +632,46 @@ class CompetitorsIT {
                     Urn.parse(sapiCompetitorProfile.getCompetitor().getId())
                 );
 
-                assertThat(competitor, in(aLanguage)).isEqualTo(sapiCompetitorProfile);
+                assertThat(competitor, in(aLanguage))
+                    .hasSameUrnAndNameAs(sapiCompetitorProfile.getCompetitor())
+                    .hasPlayersWithSameIdsAndNamesAs(sapiCompetitorProfile.getPlayers())
+                    .hasPlayersWithSameJerseyNumbersAs(sapiCompetitorProfile.getPlayers())
+                    .hasSameJerseysAs(sapiCompetitorProfile.getJerseys());
+            }
+        }
+    }
+
+    @Nested
+    class SimpleTeamCompetitors {
+
+        @ParameterizedTest
+        @EnumSource(ExceptionHandlingStrategy.class)
+        void competitorDataIsProperlyPopulated(ExceptionHandlingStrategy strategy) throws Exception {
+            globalVariables.setProducer(ProducerId.LIVE_ODDS);
+            globalVariables.setSportEventUrn(SportEvent.MATCH);
+            globalVariables.setSportUrn(Sport.FOOTBALL);
+
+            Locale aLanguage = ENGLISH;
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubCompetitorProfile(aLanguage, sapiEnderunTitansTeam());
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(strategy)
+                    .withDefaultLanguage(aLanguage)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+                val sapiSimpleTeamProfile = sapiEnderunTitansTeam();
+                val competitor = sportDataProvider.getCompetitor(
+                    Urn.parse(sapiSimpleTeamProfile.getCompetitor().getId())
+                );
+
+                assertThat(competitor, in(aLanguage))
+                    .hasSameUrnAndNameAs(sapiSimpleTeamProfile.getCompetitor());
             }
         }
     }

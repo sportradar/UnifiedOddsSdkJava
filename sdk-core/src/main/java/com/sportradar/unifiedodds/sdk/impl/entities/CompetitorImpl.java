@@ -265,7 +265,12 @@ public class CompetitorImpl implements Competitor {
         List<Urn> singleton = Collections.singletonList(competitorId);
 
         try {
-            return loadCacheItem()
+            Optional<CompetitorCi> competitorCi = loadCacheItem();
+            Map<Urn, Integer> associatedJerseyNumbers = competitorCi
+                .map(c -> c.getAssociatedPlayerJerseyNumbers(locales))
+                .orElse(null);
+
+            return competitorCi
                 .map(ci -> ci.getAssociatedPlayerIds(locales))
                 .map(pIds ->
                     pIds
@@ -273,7 +278,12 @@ public class CompetitorImpl implements Competitor {
                         .map(id -> {
                             try {
                                 if (id.getType().equals(UnifiedFeedConstants.PLAYER_URN_TYPE)) {
-                                    return sportEntityFactory.buildPlayerProfile(id, locales, singleton);
+                                    return sportEntityFactory.buildCompetitorPlayerProfile(
+                                        id,
+                                        locales,
+                                        singleton,
+                                        associatedJerseyNumbers
+                                    );
                                 } else {
                                     return sportEntityFactory.buildCompetitor(
                                         id,

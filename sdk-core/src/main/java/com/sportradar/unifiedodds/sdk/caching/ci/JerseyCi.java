@@ -54,6 +54,36 @@ public class JerseyCi {
     private final String sleeveDetail;
 
     /**
+     * The jersey has stripes
+     */
+    private final Boolean stripes;
+
+    /**
+     * The jersey has horizontal stripes
+     */
+    private final Boolean horizontalStripes;
+
+    /**
+     * The jersey horizontal stripes color
+     */
+    private final String horizontalStripesColor;
+
+    /**
+     * The jersey has squares
+     */
+    private final Boolean squares;
+
+    /**
+     * The jersey squares color
+     */
+    private final String squaresColor;
+
+    /**
+     * The jersey has split
+     */
+    private final Boolean split;
+
+    /**
      * Initializes a new {@link JerseyCi}
      *
      * @param jersey the API schema object which will be used to construct the instance
@@ -69,6 +99,12 @@ public class JerseyCi {
         splitColor = jersey.getSplitColor();
         shirtType = jersey.getShirtType();
         sleeveDetail = jersey.getSleeveDetail();
+        stripes = jersey.isStripes();
+        horizontalStripes = jersey.isHorizontalStripes();
+        horizontalStripesColor = jersey.getHorizontalStripesColor();
+        squares = jersey.isSquares();
+        squaresColor = jersey.getSquaresColor();
+        split = jersey.isSplit();
     }
 
     public JerseyCi(ExportableJerseyCi exportable) {
@@ -82,6 +118,12 @@ public class JerseyCi {
         splitColor = exportable.getSplitColor();
         shirtType = exportable.getShirtType();
         sleeveDetail = exportable.getSleeveDetail();
+        stripes = exportable.getStripes();
+        horizontalStripes = exportable.getHorizontalStripes();
+        horizontalStripesColor = exportable.getHorizontalStripesColor();
+        squares = exportable.getSquares();
+        squaresColor = exportable.getSquaresColor();
+        split = exportable.getSplit();
     }
 
     /**
@@ -156,6 +198,60 @@ public class JerseyCi {
         return sleeveDetail;
     }
 
+    /**
+     * Returns the jersey stripes
+     *
+     * @return the jersey stripes
+     */
+    public Boolean getStripes() {
+        return stripes;
+    }
+
+    /**
+     * Returns the jersey horizontal stripes
+     *
+     * @return the jersey horizontal stripes
+     */
+    public Boolean getHorizontalStripes() {
+        return horizontalStripes;
+    }
+
+    /**
+     * Returns the jersey horizontal stripes color
+     *
+     * @return the jersey horizontal stripes color
+     */
+    public String getHorizontalStripesColor() {
+        return horizontalStripesColor;
+    }
+
+    /**
+     * returns information about the jersey squares
+     *
+     * @return information about the jersey squares
+     */
+    public Boolean getSquares() {
+        return squares;
+    }
+
+    /**
+     * returns the jersey squares color
+     *
+     * @return the jersey squares color
+     */
+    public String getSquaresColor() {
+        return squaresColor;
+    }
+
+    /**
+     * Returns the jersey split
+     *
+     * @return the jersey split
+     */
+    public Boolean getSplit() {
+        return split;
+    }
+
     public ExportableJerseyCi export() {
         return new ExportableJerseyCi(
             base,
@@ -165,7 +261,13 @@ public class JerseyCi {
             stripesColor,
             splitColor,
             shirtType,
-            sleeveDetail
+            sleeveDetail,
+            stripes,
+            horizontalStripes,
+            horizontalStripesColor,
+            squares,
+            squaresColor,
+            split
         );
     }
 }

@@ -255,4 +255,25 @@ public class SapiSports {
         formula1.setName("Formula 1");
         return formula1;
     }
+
+    public static SapiSport golf() {
+        SapiSport soccer = new SapiSport();
+        soccer.setId("sr:sport:9");
+        soccer.setName("Golf");
+        return soccer;
+    }
+
+    public static SapiSport tennis() {
+        SapiSport formula1 = new SapiSport();
+        formula1.setId("sr:sport:5");
+        formula1.setName("Tennis");
+        return formula1;
+    }
+
+    public static SapiSport baseball() {
+        SapiSport formula1 = new SapiSport();
+        formula1.setId("sr:sport:3");
+        formula1.setName("Baseball");
+        return formula1;
+    }
 }

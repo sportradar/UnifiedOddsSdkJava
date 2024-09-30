@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>3.3.2</version>
+    <version>3.4.0</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -435,10 +435,9 @@
                     <skip>false</skip>
                     <outputDirectory>${project.build.directory}/javadoc</outputDirectory>
                     <!-- switch on dependency-driven aggregation -->
-                    <overview>src/main/resources/javadoc/unified-odds-overview.html</overview>
+                    <overview>src/main/resources/doc-files/unified-odds-overview.html</overview>
                     <windowtitle>Unified Odds SDK ${project.version} API</windowtitle>
                     <doctitle>Unified Odds SDK ${project.version} API</doctitle>
-
                     <excludePackageNames>
                         com.sportradar.unifiedodds.sdk.impl
                         :com.sportradar.unifiedodds.sdk.impl.*

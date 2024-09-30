@@ -1,5 +1,11 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.4.0 (2024-09-30)**
+
+- Added new Jersey attributes: stripes, horizontalStripes, horizontalStripesColor, squares, squaresColor, split
+- A player can now have different jersey numbers assigned for different teams.
+- Added support for + or - operation in market and outcome name template (e.g. market 739, 725)
+
 **3.3.2 (2024-08-28)**
 - fix: Information whether competitor is virtual or not can reliably be fetched on all applicable sport events
 
