@@ -357,7 +357,6 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.listSportEventsProvider = listSportEventsProvider;
         this.availableSportTournamentsProvider = availableSportTournamentsProvider;
         this.periodSummaryDataProvider = periodSummaryDataProvider;
-
         this.tournamentListDataFetched =
             Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
         this.sportsListDataFetched = Collections.synchronizedList(new ArrayList<>(prefetchLocales.size()));
@@ -1008,6 +1007,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                             selection.setMarketId(s.getMarketId());
                             selection.setSpecifiers(s.getSpecifiers());
                             selection.setOutcomeId(s.getOutcomeId());
+                            selection.setOdds(s.getOdds());
                             return selection;
                         })
                         .collect(Collectors.toList())
@@ -1041,6 +1041,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 filterSelectionMarketType.setMarketId(selection.getMarketId());
                 filterSelectionMarketType.setOutcomeId(selection.getOutcomeId());
                 filterSelectionMarketType.setSpecifiers(selection.getSpecifiers());
+                filterSelectionMarketType.setOdds(selection.getOdds());
 
                 CapiFilterSelectionType filterSelectionType = new CapiFilterSelectionType();
                 filterSelectionType.setId(selection.getEventId().toString());

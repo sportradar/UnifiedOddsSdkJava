@@ -6,11 +6,8 @@ package com.sportradar.unifiedodds.sdk.impl.custombetentities;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
-import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelectionsFilter;
-import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
 import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
 import com.sportradar.utils.SdkHelper;
 import java.text.ParseException;
@@ -27,6 +24,7 @@ public class CalculationFilterImpl implements CalculationFilter {
     private final double probability;
     private final List<AvailableSelectionsFilter> availableSelectionsList;
     private final Date generatedAt;
+    private final Boolean isHarmonization;
 
     public CalculationFilterImpl(CapiFilteredCalculationResponse calculation) {
         Preconditions.checkNotNull(calculation);
@@ -47,8 +45,11 @@ public class CalculationFilterImpl implements CalculationFilter {
         Date date = new Date();
         try {
             date = SdkHelper.toDate(calculation.getGeneratedAt());
-        } catch (ParseException e) {}
+        } catch (ParseException e) {
+            // ignore
+        }
         this.generatedAt = date;
+        this.isHarmonization = calculation.getCalculation().isHarmonization();
     }
 
     /**
@@ -89,5 +90,10 @@ public class CalculationFilterImpl implements CalculationFilter {
     @Override
     public Date getGeneratedAt() {
         return generatedAt;
+    }
+
+    @Override
+    public Boolean isHarmonization() {
+        return isHarmonization;
     }
 }

@@ -17,7 +17,8 @@ public final class JaxbContexts {
 
         static {
             try {
-                SPORTS_API_JAXB_CONTEXT = JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
+                SPORTS_API_JAXB_CONTEXT =
+                    javax.xml.bind.JAXBContext.newInstance("com.sportradar.uf.sportsapi.datamodel");
             } catch (JAXBException e) {
                 throw new IllegalStateException("JAXB contexts creation failed, ex: ", e);
             }
@@ -27,6 +28,30 @@ public final class JaxbContexts {
             StringWriter writer = new StringWriter();
             try {
                 SPORTS_API_JAXB_CONTEXT.createMarshaller().marshal(unmarshalled, writer);
+                return writer.toString();
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static class CustomBetApi {
+
+        private static final JAXBContext CUSTOM_BET_API_JAXB_CONTEXT;
+
+        static {
+            try {
+                CUSTOM_BET_API_JAXB_CONTEXT =
+                    JAXBContext.newInstance("com.sportradar.uf.custombet.datamodel");
+            } catch (JAXBException e) {
+                throw new IllegalStateException("JAXB contexts creation failed, ex: ", e);
+            }
+        }
+
+        public static String marshall(Object unmarshalled) {
+            StringWriter writer = new StringWriter();
+            try {
+                CUSTOM_BET_API_JAXB_CONTEXT.createMarshaller().marshal(unmarshalled, writer);
                 return writer.toString();
             } catch (JAXBException e) {
                 throw new RuntimeException(e);

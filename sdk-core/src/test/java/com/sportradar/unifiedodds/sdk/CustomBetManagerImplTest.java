@@ -5,41 +5,96 @@ package com.sportradar.unifiedodds.sdk;
 
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
-import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
-import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
+import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
+import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterManagerBuilder;
 import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.impl.DataProvider;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.val;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
+@SuppressWarnings({ "MagicNumber" })
 public class CustomBetManagerImplTest {
 
-    public static final String DISTINCT_TYPES_OF_EXCEPTION =
-        "com.sportradar.unifiedodds.sdk.CustomBetManagerImplTest#distinctTypesOfExceptions";
+    private DataProvider<CapiAvailableSelections> availableSelectionsDataProvider;
+    private DataProvider<CapiCalculationResponse> calculateDataProvider;
+    private DataProvider<CapiFilteredCalculationResponse> calculateFilterDataProvider;
+    private CustomBetManagerImpl customBetManagerThrow;
+    private CustomBetManagerImpl customBetManagerCatch;
+    private Urn eventId;
+    private List<Selection> selections;
+
+    @BeforeEach
+    void setUp() {
+        availableSelectionsDataProvider = mock(DataProvider.class);
+        calculateDataProvider = mock(DataProvider.class);
+        calculateFilterDataProvider = mock(DataProvider.class);
+
+        List<Locale> desiredLocales = new ArrayList<Locale>();
+        desiredLocales.add(Locale.ENGLISH);
+        SdkInternalConfiguration configThrow = mock(SdkInternalConfiguration.class);
+        when(configThrow.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        when(configThrow.getDesiredLocales()).thenReturn(desiredLocales);
+        SdkInternalConfiguration configCatch = mock(SdkInternalConfiguration.class);
+        when(configCatch.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
+        when(configCatch.getDesiredLocales()).thenReturn(desiredLocales);
+        DataRouterImpl dataRouter = new DataRouterImpl();
+        dataRouter.setDataListeners(new ArrayList<>());
+        DataRouterManager dataRouterManager = new DataRouterManagerBuilder()
+            .withCbAvailableSelections(availableSelectionsDataProvider)
+            .withCbCalculation(calculateDataProvider)
+            .withCbCalculationFilter(calculateFilterDataProvider)
+            .with(dataRouter)
+            .build();
+        customBetManagerThrow = new CustomBetManagerImpl(dataRouterManager, configThrow);
+        customBetManagerCatch = new CustomBetManagerImpl(dataRouterManager, configCatch);
+        CustomBetSelectionBuilder customBetSelectionBuilder = new CustomBetSelectionBuilderImpl();
+
+        eventId = Urn.parse("sr:match:1000");
+        val selection = customBetSelectionBuilder
+            .setEventId(eventId)
+            .setMarketId(1)
+            .setOutcomeId("2")
+            .setSpecifiers("specifier=value")
+            .setOdds(1.5)
+            .build();
+        selections = new ArrayList<Selection>();
+        selections.add(selection);
+    }
 
     @Nested
-    public class CustomBetManagerImplConstruction {
+    class CustomBetManagerImplConstruction {
 
         @Test
-        public void shouldNotBeCreatedWithNullArguments() {
+        void shouldNotBeCreatedWithNullDataRouterManager() {
             assertThatNullPointerException()
                 .isThrownBy(() -> new CustomBetManagerImpl(null, mock(SdkInternalConfiguration.class)))
                 .withMessage("dataRouterManager");
+        }
+
+        @Test
+        void shouldNotBeCreatedWithNullConfiguration() {
             assertThatNullPointerException()
                 .isThrownBy(() -> new CustomBetManagerImpl(mock(DataRouterManager.class), null))
                 .withMessage("configuration");
@@ -47,151 +102,200 @@ public class CustomBetManagerImplTest {
     }
 
     @Nested
-    public class RequestingAvailableSelection {
+    class RequestingAvailableSelection {
 
         private final Urn anyUrn = Urns.SportEvents.getForAnyMatch();
-        private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-        private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
 
         @Test
-        public void shouldRequireNonNullUrn() {
-            val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertThatNullPointerException().isThrownBy(() -> customBetManager.getAvailableSelections(null));
-        }
-
-        @Test
-        public void shouldReturnSelections() throws CommunicationException {
-            val selections = mock(AvailableSelections.class);
-            when(dataRouterManager.requestAvailableSelections(any())).thenReturn(selections);
-            val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertEquals(selections, customBetManager.getAvailableSelections(anyUrn));
-        }
-
-        @ParameterizedTest
-        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
-        public void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrow(final Class exceptionType)
-            throws CommunicationException {
-            when(dataRouterManager.requestAvailableSelections(any())).thenThrow(exceptionType);
-            when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
-            final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertThatThrownBy(() -> customBetManager.getAvailableSelections(anyUrn))
-                .isInstanceOf(exceptionType);
-        }
-
-        @ParameterizedTest
-        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
-        public void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(
-            final Class exceptionType
-        ) throws CommunicationException {
-            when(dataRouterManager.requestAvailableSelections(any())).thenThrow(exceptionType);
-            when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
-            final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertNull(customBetManager.getAvailableSelections(anyUrn));
-        }
-    }
-
-    @Nested
-    public class RequestingProbabilitiesCalculation {
-
-        private final List<Selection> anySelection = new ArrayList<>();
-        private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-        private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
-
-        @Test
-        public void shouldRequireNonNullSelection() {
-            val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertThatNullPointerException().isThrownBy(() -> customBetManager.calculateProbability(null));
-        }
-
-        @Test
-        public void shouldPassThroughCalculation() throws CommunicationException {
-            val calculation = mock(Calculation.class);
-            when(dataRouterManager.requestCalculateProbability(any())).thenReturn(calculation);
-            val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertEquals(calculation, customBetManager.calculateProbability(anySelection));
-        }
-
-        @ParameterizedTest
-        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
-        public void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrow(final Class exceptionType)
-            throws CommunicationException {
-            when(dataRouterManager.requestCalculateProbability(any())).thenThrow(exceptionType);
-            when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
-            final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertThatThrownBy(() -> customBetManager.calculateProbability(anySelection))
-                .isInstanceOf(exceptionType);
-        }
-
-        @ParameterizedTest
-        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
-        public void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(
-            final Class exceptionType
-        ) throws CommunicationException {
-            when(dataRouterManager.requestCalculateProbability(any())).thenThrow(exceptionType);
-            when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
-            final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertNull(customBetManager.calculateProbability(anySelection));
-        }
-    }
-
-    @Nested
-    public class RequestingProbabilitiesCalculationMeanwhileClientIsFilteringOutcomes {
-
-        private final List<Selection> anySelection = new ArrayList<>();
-        private DataRouterManager dataRouterManager = mock(DataRouterManager.class);
-        private SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
-
-        @Test
-        public void shouldRequireNonNullSelection() {
-            val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
+        void shouldRequireNonNullUrnForThrow() {
             assertThatNullPointerException()
-                .isThrownBy(() -> customBetManager.calculateProbabilityFilter(null));
+                .isThrownBy(() -> customBetManagerThrow.getAvailableSelections(null));
         }
 
         @Test
-        public void shouldPassThroughCalculation() throws CommunicationException {
-            val calculation = mock(CalculationFilter.class);
-            when(dataRouterManager.requestCalculateProbabilityFilter(any())).thenReturn(calculation);
-            val customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
+        void shouldRequireNonNullUrnForCatch() {
+            assertThatNullPointerException()
+                .isThrownBy(() -> customBetManagerCatch.getAvailableSelections(null));
+        }
 
-            assertEquals(calculation, customBetManager.calculateProbabilityFilter(anySelection));
+        @Test
+        void shouldReturnSelections() throws CommunicationException, DataProviderException {
+            val capiSelections = CapiCustomBet.getAvailableSelectionsResponse(Urn.parse("sr:match:1000"), 10);
+            when(availableSelectionsDataProvider.getData(capiSelections.getEvent().getId()))
+                .thenReturn(capiSelections);
+
+            val availableSelections = customBetManagerThrow.getAvailableSelections(
+                Urn.parse(capiSelections.getEvent().getId())
+            );
+
+            Assertions.assertNotNull(availableSelections);
+        }
+
+        @Test
+        void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrowForRuntimeException()
+            throws DataProviderException {
+            when(availableSelectionsDataProvider.getData(anyString())).thenThrow(RuntimeException.class);
+
+            assertThatThrownBy(() -> customBetManagerThrow.getAvailableSelections(anyUrn))
+                .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrowForDataProviderException()
+            throws DataProviderException {
+            when(availableSelectionsDataProvider.getData(anyString())).thenThrow(DataProviderException.class);
+
+            assertThatThrownBy(() -> customBetManagerThrow.getAvailableSelections(anyUrn))
+                .isInstanceOf(CommunicationException.class);
         }
 
         @ParameterizedTest
-        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
-        public void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrow(final Class exceptionType)
-            throws CommunicationException {
-            when(dataRouterManager.requestCalculateProbabilityFilter(any())).thenThrow(exceptionType);
-            when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
-            final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
+        @ValueSource(classes = { RuntimeException.class, DataProviderException.class })
+        void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(final Class exceptionType)
+            throws DataProviderException, CommunicationException {
+            when(availableSelectionsDataProvider.getData(anyString())).thenThrow(exceptionType);
 
-            assertThatThrownBy(() -> customBetManager.calculateProbabilityFilter(anySelection))
-                .isInstanceOf(exceptionType);
-        }
-
-        @ParameterizedTest
-        @MethodSource(DISTINCT_TYPES_OF_EXCEPTION)
-        public void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(
-            final Class exceptionType
-        ) throws CommunicationException {
-            when(dataRouterManager.requestCalculateProbabilityFilter(any())).thenThrow(exceptionType);
-            when(config.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
-            final CustomBetManagerImpl customBetManager = new CustomBetManagerImpl(dataRouterManager, config);
-
-            assertNull(customBetManager.calculateProbabilityFilter(anySelection));
+            Assertions.assertNull(customBetManagerCatch.getAvailableSelections(anyUrn));
         }
     }
 
-    public static Object[] distinctTypesOfExceptions() {
-        return new Object[] { RuntimeException.class, CommunicationException.class };
+    @Nested
+    class RequestingProbabilitiesCalculation {
+
+        @Test
+        void shouldRequireNonNullSelection() {
+            assertThatNullPointerException()
+                .isThrownBy(() -> customBetManagerThrow.calculateProbability(null));
+        }
+
+        @Test
+        void shouldPassThroughCalculation() throws CommunicationException, DataProviderException {
+            val calculation = CapiCustomBet.getCalculationResponse(eventId, 10);
+            when(calculateDataProvider.postData(any())).thenReturn(calculation);
+
+            val calculationResponse = customBetManagerThrow.calculateProbability(selections);
+
+            Assertions.assertNotNull(calculationResponse);
+            Assertions.assertEquals(calculation.getCalculation().getOdds(), calculationResponse.getOdds());
+            Assertions.assertEquals(
+                calculation.getCalculation().getProbability(),
+                calculationResponse.getProbability()
+            );
+            Assertions.assertEquals(
+                calculation.getCalculation().isHarmonization(),
+                calculationResponse.isHarmonization()
+            );
+        }
+
+        @Test
+        void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrowForRuntimeException()
+            throws DataProviderException {
+            when(calculateDataProvider.postData(any())).thenThrow(RuntimeException.class);
+
+            assertThatThrownBy(() -> customBetManagerThrow.calculateProbability(selections))
+                .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrowForDataProviderException()
+            throws DataProviderException {
+            when(calculateDataProvider.postData(any())).thenThrow(DataProviderException.class);
+
+            assertThatThrownBy(() -> customBetManagerThrow.calculateProbability(selections))
+                .isInstanceOf(CommunicationException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(classes = { RuntimeException.class, DataProviderException.class })
+        void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(final Class exceptionType)
+            throws CommunicationException, DataProviderException {
+            when(calculateDataProvider.postData(any())).thenThrow(exceptionType);
+
+            Assertions.assertNull(customBetManagerCatch.calculateProbability(selections));
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = { true, false })
+        @NullSource
+        void shouldPassThroughCalculationWithHarmonization(final Boolean harmonization)
+            throws CommunicationException, DataProviderException {
+            val calculation = CapiCustomBet.getCalculationResponse(eventId, 10);
+            calculation.getCalculation().setHarmonization(harmonization);
+            when(calculateDataProvider.postData(any())).thenReturn(calculation);
+
+            val calculationResponse = customBetManagerThrow.calculateProbability(selections);
+
+            Assertions.assertEquals(harmonization, calculationResponse.isHarmonization());
+        }
+    }
+
+    @Nested
+    class RequestingProbabilitiesCalculationFilter {
+
+        @Test
+        void shouldRequireNonNullSelection() {
+            assertThatNullPointerException()
+                .isThrownBy(() -> customBetManagerThrow.calculateProbabilityFilter(null));
+        }
+
+        @Test
+        void shouldPassThroughCalculation() throws CommunicationException, DataProviderException {
+            val calculation = CapiCustomBet.getFilteredCalculationResponse(eventId, 10);
+            when(calculateFilterDataProvider.postData(any())).thenReturn(calculation);
+
+            val calculationResponse = customBetManagerThrow.calculateProbabilityFilter(selections);
+
+            Assertions.assertNotNull(calculationResponse);
+            Assertions.assertEquals(calculation.getCalculation().getOdds(), calculationResponse.getOdds());
+            Assertions.assertEquals(
+                calculation.getCalculation().getProbability(),
+                calculationResponse.getProbability()
+            );
+            Assertions.assertEquals(
+                calculation.getCalculation().isHarmonization(),
+                calculationResponse.isHarmonization()
+            );
+        }
+
+        @Test
+        void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrowForRuntimeException()
+            throws DataProviderException {
+            when(calculateFilterDataProvider.postData(any())).thenThrow(RuntimeException.class);
+
+            assertThatThrownBy(() -> customBetManagerThrow.calculateProbabilityFilter(selections))
+                .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        void failingDueToExceptionShouldRethrowItWhenSdkIsConfiguredToThrowForDataProviderException()
+            throws DataProviderException {
+            when(calculateFilterDataProvider.postData(any())).thenThrow(DataProviderException.class);
+
+            assertThatThrownBy(() -> customBetManagerThrow.calculateProbabilityFilter(selections))
+                .isInstanceOf(CommunicationException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(classes = { RuntimeException.class, DataProviderException.class })
+        void failingDueToExceptionShouldReturnNullWhenSdkIsConfiguredToCatch(final Class exceptionType)
+            throws CommunicationException, DataProviderException {
+            when(calculateFilterDataProvider.postData(any())).thenThrow(exceptionType);
+
+            Assertions.assertNull(customBetManagerCatch.calculateProbabilityFilter(selections));
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = { true, false })
+        @NullSource
+        void shouldPassThroughCalculationWithHarmonization(final Boolean harmonization)
+            throws CommunicationException, DataProviderException {
+            val calculation = CapiCustomBet.getFilteredCalculationResponse(eventId, 10);
+            calculation.getCalculation().setHarmonization(harmonization);
+            when(calculateFilterDataProvider.postData(any())).thenReturn(calculation);
+
+            val calculationResponse = customBetManagerThrow.calculateProbabilityFilter(selections);
+
+            Assertions.assertEquals(harmonization, calculationResponse.isHarmonization());
+        }
     }
 }

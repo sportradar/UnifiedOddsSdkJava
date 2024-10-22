@@ -5,6 +5,9 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiLotterySchedule;
 import com.sportradar.uf.sportsapi.datamodel.SapiSimpleTeamProfileEndpoint;
@@ -23,6 +26,9 @@ public class DataRouterManagerBuilder {
     private DataProvider<Object> summaries = mock(DataProvider.class);
     private DataProvider<SapiCompetitorProfileEndpoint> competitors = mock(DataProvider.class);
     private DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeams = mock(DataProvider.class);
+    private DataProvider<CapiAvailableSelections> cbAvailableSelections = mock(DataProvider.class);
+    private DataProvider<CapiCalculationResponse> cbCalculate = mock(DataProvider.class);
+    private DataProvider<CapiFilteredCalculationResponse> cbCalculateFilter = mock(DataProvider.class);
 
     public static DataRouterManagerBuilder create() {
         return new DataRouterManagerBuilder();
@@ -45,6 +51,25 @@ public class DataRouterManagerBuilder {
 
     public DataRouterManagerBuilder withSimpleTeams(DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeams) {
         this.simpleTeams = simpleTeams;
+        return this;
+    }
+
+    public DataRouterManagerBuilder withCbAvailableSelections(
+        DataProvider<CapiAvailableSelections> cbAvailableSelections
+    ) {
+        this.cbAvailableSelections = cbAvailableSelections;
+        return this;
+    }
+
+    public DataRouterManagerBuilder withCbCalculation(DataProvider<CapiCalculationResponse> cbCalculate) {
+        this.cbCalculate = cbCalculate;
+        return this;
+    }
+
+    public DataRouterManagerBuilder withCbCalculationFilter(
+        DataProvider<CapiFilteredCalculationResponse> cbCalculateFilter
+    ) {
+        this.cbCalculateFilter = cbCalculateFilter;
         return this;
     }
 
@@ -76,9 +101,9 @@ public class DataRouterManagerBuilder {
             mock(DataProvider.class),
             mock(DataProvider.class),
             lotterySchedules,
-            mock(DataProvider.class),
-            mock(DataProvider.class),
-            mock(DataProvider.class),
+            cbAvailableSelections,
+            cbCalculate,
+            cbCalculateFilter,
             mock(DataProvider.class),
             mock(DataProvider.class),
             mock(DataProvider.class),

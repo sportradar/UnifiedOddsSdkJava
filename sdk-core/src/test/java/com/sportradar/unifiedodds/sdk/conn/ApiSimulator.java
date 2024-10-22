@@ -8,12 +8,15 @@ import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
 import static com.sportradar.unifiedodds.sdk.conn.SapiProducers.buildActiveProducer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.allSports;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.utils.Urn;
@@ -24,6 +27,7 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.val;
 import org.apache.http.HttpStatus;
 
@@ -230,6 +234,17 @@ public class ApiSimulator {
         stub(allSportsJaxb, format("/v1/sports/%s/sports.xml", language.getLanguage()));
     }
 
+    public void stubAllSports(Locale language, SapiSport... sport) {
+        val allSports = new SapiSportsEndpoint();
+        val allSportsJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sports"),
+            SapiSportsEndpoint.class,
+            allSports
+        );
+        allSports.getSport().addAll(asList(sport));
+        stub(allSportsJaxb, format("/v1/sports/%s/sports.xml", language.getLanguage()));
+    }
+
     public void stubEmptyAllTournaments(Locale language) {
         val allTournaments = new SapiTournamentsEndpoint();
         val allTournamentsJaxb = new JAXBElement<>(
@@ -306,6 +321,42 @@ public class ApiSimulator {
             post(urlPathMatching("/v1/custombet/calculate"))
                 .willReturn(
                     WireMock.aResponse().withBody(toXml(response)).withStatus(HttpStatus.SC_NOT_FOUND)
+                )
+        );
+    }
+
+    public void returnNotFoundForCustomBetCalculateFilter() {
+        CapiResponse response = notFoundResponse(
+            "no available selections for a path " + "/v1/custombet/calculate-filter"
+        );
+        register(
+            post(urlPathMatching("/v1/custombet/calculate-filter"))
+                .willReturn(
+                    WireMock.aResponse().withBody(toXml(response)).withStatus(HttpStatus.SC_NOT_FOUND)
+                )
+        );
+    }
+
+    public void stubCustomBetCalculate(CapiCalculationResponse response) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
+                )
+        );
+    }
+
+    public void stubCustomBetCalculateFilter(CapiFilteredCalculationResponse response) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate-filter"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
                 )
         );
     }
@@ -388,23 +439,120 @@ public class ApiSimulator {
     }
 
     public void stubSportCategories(Locale langA, Sport sport, SapiCategory category) {
-        val categories = new SapiSportCategoriesEndpoint();
-        val sapiSport = new SapiSport();
-        sapiSport.setId(sport.getUrn().toString());
-        sapiSport.setName("Sport (" + sport.getUrn() + ") name in " + langA);
-
-        categories.setSport(sapiSport);
-        categories.setCategories(new SapiCategories());
-        categories.getCategories().getCategory().add(category);
+        Urn sportUrn = sport.getUrn();
+        val categories = createCategories(sportUrn, category, sport.name());
         val categoriesJaxb = new JAXBElement<>(
             new QName(UNIFIED_XML_NAMESPACE, "sport_categories"),
             SapiSportCategoriesEndpoint.class,
             categories
         );
 
-        stub(
-            categoriesJaxb,
-            format("/v1/sports/%s/sports/%s/categories.xml", langA.getLanguage(), sport.getUrn())
+        stub(categoriesJaxb, format("/v1/sports/%s/sports/%s/categories.xml", langA.getLanguage(), sportUrn));
+    }
+
+    public void stubSportCategories(Locale langA, SapiSport sport, SapiCategory category) {
+        Urn sportUrn = Urn.parse(sport.getId());
+        val categories = createCategories(sportUrn, category, sport.getName());
+        val categoriesJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sport_categories"),
+            SapiSportCategoriesEndpoint.class,
+            categories
         );
+
+        stub(categoriesJaxb, format("/v1/sports/%s/sports/%s/categories.xml", langA.getLanguage(), sportUrn));
+    }
+
+    private static SapiSportCategoriesEndpoint createCategories(
+        Urn sportUrn,
+        SapiCategory category,
+        String sportName
+    ) {
+        val categories = new SapiSportCategoriesEndpoint();
+        val sapiSport = new SapiSport();
+        sapiSport.setId(sportUrn.toString());
+        sapiSport.setName(sportName);
+
+        categories.setSport(sapiSport);
+        categories.setCategories(new SapiCategories());
+        categories.getCategories().getCategory().add(category);
+        return categories;
+    }
+
+    public void stubFixtureChanges(
+        Locale aLanguage,
+        SapiFixtureChangesEndpoint fixtureChanges,
+        ApiStubQueryParameter... queryParameters
+    ) {
+        JAXBElement<SapiFixtureChangesEndpoint> changesJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "fixture_changes"),
+            SapiFixtureChangesEndpoint.class,
+            fixtureChanges
+        );
+        val path = format("/v1/sports/%s/fixtures/changes.xml", aLanguage.getLanguage());
+        MappingBuilder mappingBuilder = get(urlPathMatching(path));
+        appendQueryParameters(queryParameters, mappingBuilder);
+        register(mappingBuilder.willReturn(WireMock.ok(JaxbContexts.SportsApi.marshall(changesJaxb))));
+    }
+
+    public void stubResultChanges(
+        Locale aLanguage,
+        SapiResultChangesEndpoint resultChanges,
+        ApiStubQueryParameter... queryParameters
+    ) {
+        JAXBElement<SapiResultChangesEndpoint> changesJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "result_changes"),
+            SapiResultChangesEndpoint.class,
+            resultChanges
+        );
+        val path = format("/v1/sports/%s/results/changes.xml", aLanguage.getLanguage());
+        MappingBuilder mappingBuilder = get(urlPathMatching(path));
+        appendQueryParameters(queryParameters, mappingBuilder);
+        register(mappingBuilder.willReturn(WireMock.ok(JaxbContexts.SportsApi.marshall(changesJaxb))));
+    }
+
+    private static void appendQueryParameters(
+        ApiStubQueryParameter[] queryParameters,
+        MappingBuilder mappingBuilder
+    ) {
+        if (queryParameters != null) {
+            for (ApiStubQueryParameter queryParameter : queryParameters) {
+                mappingBuilder.withQueryParam(
+                    queryParameter.getKey().get(),
+                    equalTo(queryParameter.getValue())
+                );
+            }
+        }
+    }
+
+    @Value
+    @SuppressWarnings("VisibilityModifier")
+    public static class ApiStubQueryParameter {
+
+        QueryParameterName key;
+        String value;
+
+        public static ApiStubQueryParameter queryParameter(QueryParameterName key, String value) {
+            return new ApiStubQueryParameter(key, value);
+        }
+
+        public interface QueryParameterName {
+            String get();
+        }
+
+        public enum FixtureChangesQueryParameter implements QueryParameterName {
+            AFTER_DATE_TIME("afterDateTime"),
+            SPORT_ID("sportId");
+
+            private final String key;
+
+            FixtureChangesQueryParameter(String key) {
+                this.key = key;
+            }
+
+            @Override
+            public String get() {
+                return key;
+            }
+        }
     }
 }

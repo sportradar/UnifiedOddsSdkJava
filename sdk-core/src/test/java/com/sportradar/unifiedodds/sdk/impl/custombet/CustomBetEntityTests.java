@@ -1,20 +1,30 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
 package com.sportradar.unifiedodds.sdk.impl.custombet;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.sportradar.uf.custombet.datamodel.*;
+import com.sportradar.unifiedodds.sdk.CapiCustomBet;
 import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilder;
 import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilderImpl;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.conn.UofConnListener;
 import com.sportradar.unifiedodds.sdk.custombetentities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.shared.*;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterImpl;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.unifiedodds.sdk.shared.TestDataRouterManager;
+import com.sportradar.unifiedodds.sdk.shared.TestFeed;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.Urn;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Assert;
@@ -22,25 +32,30 @@ import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings(
-    { "ClassFanOutComplexity", "MagicNumber", "MethodLength", "MethodNameTest", "MultipleStringLiterals" }
+    {
+        "ClassFanOutComplexity",
+        "MagicNumber",
+        "MethodLength",
+        "MethodNameTest",
+        "MultipleStringLiterals",
+        "ClassDataAbstractionCoupling",
+        "AnonInnerLength",
+    }
 )
 public class CustomBetEntityTests {
 
+    private final Urn eventId = Urn.parse("sr:match:31561675");
     private DataRouterManager dataRouterManager;
     private CustomBetSelectionBuilder customBetSelectionBuilder;
-    private TestFeed feed;
-    private UofConfiguration config;
-    private UofConnListener sdkListener;
 
     @Before
     public void setup() {
         StubUofConfiguration stubUofConfiguration = new StubUofConfiguration();
         stubUofConfiguration.setEnvironment(Environment.Production);
         stubUofConfiguration.resetNbrSetEnvironmentCalled();
-        config = stubUofConfiguration;
 
-        sdkListener = new UofConnListener();
-        feed = new TestFeed(sdkListener, config, sdkListener);
+        UofConnListener sdkListener = new UofConnListener();
+        TestFeed feed = new TestFeed(sdkListener, stubUofConfiguration, sdkListener);
 
         DataRouterImpl dataRouter = new DataRouterImpl();
         dataRouter.setDataListeners(new ArrayList<>());
@@ -49,38 +64,39 @@ public class CustomBetEntityTests {
     }
 
     @Test
-    public void AvailableSelectionsMapTest() {
-        CapiAvailableSelections availableSelectionsType = RestMessageBuilder.getAvailableSelections(
+    public void availableSelectionsMapTest() {
+        CapiAvailableSelections availableSelectionsType = CapiCustomBet.getAvailableSelectionsResponse(
             Urn.parse("sr:match:1000"),
             10
         );
-        AvailableSelections resultAvailableSelections = SdkMessageBuilder.getAvailableSelections(
+        AvailableSelections resultAvailableSelections = CapiCustomBet.getAvailableSelections(
             availableSelectionsType
         );
-        AvailableSelectionsCompare(availableSelectionsType, resultAvailableSelections);
+
+        availableSelectionsCompare(availableSelectionsType, resultAvailableSelections);
     }
 
     @Test
-    public void AvailableSelectionsEmptyMapTest() {
-        CapiAvailableSelections availableSelectionsType = RestMessageBuilder.getAvailableSelections(
+    public void availableSelectionsEmptyMapTest() {
+        CapiAvailableSelections availableSelectionsType = CapiCustomBet.getAvailableSelectionsResponse(
             Urn.parse("sr:match:1000"),
             0
         );
         Assert.assertTrue(availableSelectionsType.getEvent().getMarkets().getMarkets().isEmpty());
-        AvailableSelections resultAvailableSelections = SdkMessageBuilder.getAvailableSelections(
+        AvailableSelections resultAvailableSelections = CapiCustomBet.getAvailableSelections(
             availableSelectionsType
         );
         Assert.assertTrue(resultAvailableSelections.getMarkets().isEmpty());
-        AvailableSelectionsCompare(availableSelectionsType, resultAvailableSelections);
+        availableSelectionsCompare(availableSelectionsType, resultAvailableSelections);
     }
 
     @Test
-    public void CalculationEmptyMapTest() throws ParseException {
-        CapiCalculationResponse calculationResponseType = RestMessageBuilder.getCalculationResponse(
+    public void calculationEmptyMapTest() throws ParseException {
+        CapiCalculationResponse calculationResponseType = CapiCustomBet.getCalculationResponse(
             Urn.parse("sr:match:1000"),
             0
         );
-        Calculation calculation = SdkMessageBuilder.getCalculation(calculationResponseType);
+        Calculation calculation = CapiCustomBet.getCalculation(calculationResponseType);
 
         Assert.assertNotNull(calculationResponseType);
         Assert.assertNotNull(calculation);
@@ -109,12 +125,12 @@ public class CustomBetEntityTests {
     }
 
     @Test
-    public void CalculationMapTest() throws ParseException {
-        CapiCalculationResponse calculationResponseType = RestMessageBuilder.getCalculationResponse(
+    public void calculationMapTest() throws ParseException {
+        CapiCalculationResponse calculationResponseType = CapiCustomBet.getCalculationResponse(
             Urn.parse("sr:match:1000"),
             7
         );
-        Calculation calculation = SdkMessageBuilder.getCalculation(calculationResponseType);
+        Calculation calculation = CapiCustomBet.getCalculation(calculationResponseType);
 
         Assert.assertNotNull(calculationResponseType);
         Assert.assertNotNull(calculation);
@@ -162,7 +178,7 @@ public class CustomBetEntityTests {
                     .findFirst()
                     .get();
                 Assert.assertNotNull(resultMarket);
-                MarketCompare(sourceMarket, resultMarket);
+                this.marketCompare(sourceMarket, resultMarket);
             }
         }
         int marketCount = calculation
@@ -177,18 +193,16 @@ public class CustomBetEntityTests {
             .flatMap(s -> s.getMarkets().stream().flatMap(f2 -> f2.getOutcomes().stream()))
             .collect(Collectors.toList())
             .size();
-        System.out.println(
-            String.format("Calculation has {} markets and {} outcomes.", marketCount, outcomeCount)
-        );
+        System.out.printf("Calculation has {} markets and {} outcomes.%n", marketCount, outcomeCount);
     }
 
     @Test
-    public void CalculationFilterEmptyMapTest() throws ParseException {
-        CapiFilteredCalculationResponse calculationResponseType = RestMessageBuilder.getFilteredCalculationResponse(
+    public void calculationFilterEmptyMapTest() throws ParseException {
+        CapiFilteredCalculationResponse calculationResponseType = CapiCustomBet.getFilteredCalculationResponse(
             Urn.parse("sr:match:1000"),
             0
         );
-        CalculationFilter calculation = SdkMessageBuilder.getCalculationFilter(calculationResponseType);
+        CalculationFilter calculation = CapiCustomBet.getCalculationFilter(calculationResponseType);
 
         Assert.assertNotNull(calculationResponseType);
         Assert.assertNotNull(calculation);
@@ -226,18 +240,16 @@ public class CustomBetEntityTests {
             .flatMap(s -> s.getMarkets().stream().flatMap(f2 -> f2.getOutcomes().stream()))
             .collect(Collectors.toList())
             .size();
-        System.out.println(
-            String.format("Calculation has {} markets and {} outcomes.", marketCount, outcomeCount)
-        );
+        System.out.printf("Calculation has {} markets and {} outcomes.%n", marketCount, outcomeCount);
     }
 
     @Test
-    public void CalculationFilterMapTest() throws ParseException {
-        CapiFilteredCalculationResponse calculationResponseType = RestMessageBuilder.getFilteredCalculationResponse(
+    public void calculationFilterMapTest() throws ParseException {
+        CapiFilteredCalculationResponse calculationResponseType = CapiCustomBet.getFilteredCalculationResponse(
             Urn.parse("sr:match:1000"),
             0
         );
-        CalculationFilter calculation = SdkMessageBuilder.getCalculationFilter(calculationResponseType);
+        CalculationFilter calculation = CapiCustomBet.getCalculationFilter(calculationResponseType);
 
         Assert.assertNotNull(calculationResponseType);
         Assert.assertNotNull(calculation);
@@ -285,7 +297,7 @@ public class CustomBetEntityTests {
                     .findFirst()
                     .get();
                 Assert.assertNotNull(resultMarket);
-                MarketCompare(sourceMarket, resultMarket);
+                marketCompare(sourceMarket, resultMarket);
             }
         }
         int marketCount = calculation
@@ -300,14 +312,11 @@ public class CustomBetEntityTests {
             .flatMap(s -> s.getMarkets().stream().flatMap(f2 -> f2.getOutcomes().stream()))
             .collect(Collectors.toList())
             .size();
-        System.out.println(
-            String.format("Calculation has {} markets and {} outcomes.", marketCount, outcomeCount)
-        );
+        System.out.printf("Calculation has {} markets and {} outcomes.%n", marketCount, outcomeCount);
     }
 
     @Test
-    public void GetAvailableSelectionsTest() throws CommunicationException {
-        Urn eventId = Urn.parse("sr:match:31561675");
+    public void getAvailableSelectionsTest() throws CommunicationException {
         AvailableSelections availableSelections = dataRouterManager.requestAvailableSelections(eventId);
         Assert.assertNotNull(availableSelections);
         Assert.assertEquals(eventId, availableSelections.getEvent());
@@ -315,8 +324,7 @@ public class CustomBetEntityTests {
     }
 
     @Test
-    public void GetCalculationTest() throws CommunicationException {
-        Urn eventId = Urn.parse("sr:match:31561675");
+    public void getCalculationTest() throws CommunicationException {
         AvailableSelections availableSelections = dataRouterManager.requestAvailableSelections(eventId);
         Assert.assertNotNull(availableSelections);
 
@@ -347,8 +355,7 @@ public class CustomBetEntityTests {
     }
 
     @Test
-    public void GetCalculationFilterTest() throws CommunicationException {
-        Urn eventId = Urn.parse("sr:match:31561675");
+    public void getCalculationFilterTest() throws CommunicationException {
         AvailableSelections availableSelections = dataRouterManager.requestAvailableSelections(eventId);
         Assert.assertNotNull(availableSelections);
 
@@ -378,7 +385,229 @@ public class CustomBetEntityTests {
         Assert.assertFalse(calculation.getAvailableSelections().isEmpty());
     }
 
-    private void AvailableSelectionsCompare(CapiAvailableSelections source, AvailableSelections result) {
+    @Test
+    public void selectionConstructWhenAllDataThenBuildCorrectly() {
+        Selection selection = customBetSelectionBuilder
+            .setEventId(eventId)
+            .setMarketId(1)
+            .setOutcomeId("2")
+            .setSpecifiers("specifier=value")
+            .setOdds(1.5)
+            .build();
+
+        Assert.assertNotNull(selection);
+        Assert.assertEquals(eventId, selection.getEventId());
+        Assert.assertEquals(1, selection.getMarketId());
+        Assert.assertEquals("2", selection.getOutcomeId());
+        Assert.assertEquals("specifier=value", selection.getSpecifiers());
+        Assert.assertEquals(1.5, selection.getOdds(), 0);
+    }
+
+    @Test
+    public void selectionConstructWhenAllDataDirectThenBuildCorrectly() {
+        Selection selection = customBetSelectionBuilder.build(eventId, 1, "specifier=value", "2", 1.5);
+
+        Assert.assertNotNull(selection);
+        Assert.assertEquals(eventId, selection.getEventId());
+        Assert.assertEquals(1, selection.getMarketId());
+        Assert.assertEquals("2", selection.getOutcomeId());
+        Assert.assertEquals("specifier=value", selection.getSpecifiers());
+        Assert.assertEquals(1.5, selection.getOdds(), 0);
+    }
+
+    @Test
+    public void selectionConstructWhenNoOddsThenBuildCorrectly() {
+        Selection selection = customBetSelectionBuilder.build(eventId, 1, "specifier=value", "2", null);
+
+        Assert.assertNotNull(selection);
+        Assert.assertEquals(eventId, selection.getEventId());
+        Assert.assertEquals(1, selection.getMarketId());
+        Assert.assertEquals("2", selection.getOutcomeId());
+        Assert.assertEquals("specifier=value", selection.getSpecifiers());
+        Assert.assertNull(selection.getOdds());
+    }
+
+    @Test
+    public void selectionConstructWhenWithoutOddsThenBuildCorrectly() {
+        Selection selection = customBetSelectionBuilder.build(eventId, 1, "specifier=value", "2");
+
+        Assert.assertNotNull(selection);
+        Assert.assertEquals(eventId, selection.getEventId());
+        Assert.assertEquals(1, selection.getMarketId());
+        Assert.assertEquals("2", selection.getOutcomeId());
+        Assert.assertEquals("specifier=value", selection.getSpecifiers());
+        Assert.assertNull(selection.getOdds());
+    }
+
+    @Test
+    public void selectionConstructWhenMissingEventIdThenThrow() {
+        customBetSelectionBuilder
+            .setMarketId(1)
+            .setOutcomeId("2")
+            .setSpecifiers("specifier=value")
+            .setOdds(1.5);
+
+        assertThrows(NullPointerException.class, customBetSelectionBuilder::build);
+    }
+
+    @Test
+    public void selectionConstructWhenMissingMarketIdThenThrow() {
+        customBetSelectionBuilder
+            .setEventId(eventId)
+            .setOutcomeId("2")
+            .setSpecifiers("specifier=value")
+            .setOdds(1.5);
+
+        assertThrows(IllegalArgumentException.class, customBetSelectionBuilder::build);
+    }
+
+    @Test
+    public void selectionConstructWhenMissingOutcomeIdThenThrow() {
+        customBetSelectionBuilder
+            .setMarketId(1)
+            .setEventId(eventId)
+            .setMarketId(123)
+            .setSpecifiers("specifier=value")
+            .setOdds(1.5);
+
+        assertThrows(NullPointerException.class, customBetSelectionBuilder::build);
+    }
+
+    @Test
+    public void defaultImplementationCustomBetSelectionBuilderThrowsUnsupportedOperationException() {
+        CustomBetSelectionBuilder defaultCbSelectionBuilder = CapiCustomBet.getDefaultImplCustomBetSelectionBuilder();
+
+        assertThrows(UnsupportedOperationException.class, () -> defaultCbSelectionBuilder.setOdds(1.5));
+        assertThrows(
+            UnsupportedOperationException.class,
+            () -> defaultCbSelectionBuilder.build(eventId, 5, "spec=23", "23", 1.5)
+        );
+    }
+
+    @Test
+    public void defaultImplementationSelectionGetOddsThrowsUnsupportedOperationException() {
+        Selection selection = CapiCustomBet.getDefaultImplementationSelection();
+
+        assertThrows(UnsupportedOperationException.class, selection::getOdds);
+    }
+
+    @Test
+    public void defaultImplementationCalculationIsHarmonizationThrowsUnsupportedOperationException() {
+        Calculation calculation = CapiCustomBet.getDefaultImplementationCalculation();
+
+        assertThrows(UnsupportedOperationException.class, calculation::isHarmonization);
+    }
+
+    @Test
+    public void defaultImplementationCalculationFilterIsHarmonizationThrowsUnsupportedOperationException() {
+        CalculationFilter calculation = CapiCustomBet.getDefaultImplementationCalculationFilter();
+
+        assertThrows(UnsupportedOperationException.class, calculation::isHarmonization);
+    }
+
+    @Test
+    public void calculateResponseWhenHarmonizationMissingThenIsNull() {
+        CapiCalculationResponse calculationResponseType = CapiCustomBet.getCalculationResponse(eventId, 7);
+
+        Calculation calculation = new CalculationImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertNull(calculation.isHarmonization());
+    }
+
+    @Test
+    public void calculateResponseWhenHarmonizationTrueThenMapCorrectly() {
+        CapiCalculationResponse calculationResponseType = CapiCustomBet.getCalculationResponse(eventId, 7);
+        calculationResponseType.getCalculation().setHarmonization(true);
+
+        Calculation calculation = new CalculationImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertTrue(calculation.isHarmonization());
+    }
+
+    @Test
+    public void calculateResponseWhenHarmonizationFalseThenMapCorrectly() {
+        CapiCalculationResponse calculationResponseType = CapiCustomBet.getCalculationResponse(eventId, 7);
+        calculationResponseType.getCalculation().setHarmonization(false);
+
+        Calculation calculation = new CalculationImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertFalse(calculation.isHarmonization());
+    }
+
+    @Test
+    public void calculateResponseWhenGeneratedAtInWrongFormatFalseThenReturnCurrentDate() {
+        CapiCalculationResponse calculationResponseType = CapiCustomBet.getCalculationResponse(eventId, 7);
+        calculationResponseType.setGeneratedAt("a-b-c");
+
+        Calculation calculation = new CalculationImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertNotNull(calculation.getGeneratedAt());
+        long dateDiff = new Date().getTime() - calculation.getGeneratedAt().getTime();
+        Assert.assertTrue(Math.abs(dateDiff) < 10);
+    }
+
+    @Test
+    public void calculateFilterResponseWhenHarmonizationMissingThenIsNull() {
+        CapiFilteredCalculationResponse calculationResponseType = CapiCustomBet.getFilteredCalculationResponse(
+            eventId,
+            7
+        );
+
+        CalculationFilter calculation = new CalculationFilterImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertNull(calculation.isHarmonization());
+    }
+
+    @Test
+    public void calculateFilterResponseWhenHarmonizationTrueThenMapCorrectly() {
+        CapiFilteredCalculationResponse calculationResponseType = CapiCustomBet.getFilteredCalculationResponse(
+            eventId,
+            7
+        );
+        calculationResponseType.getCalculation().setHarmonization(true);
+
+        CalculationFilter calculation = new CalculationFilterImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertTrue(calculation.isHarmonization());
+    }
+
+    @Test
+    public void calculateFilterResponseWhenHarmonizationFalseThenMapCorrectly() {
+        CapiFilteredCalculationResponse calculationResponseType = CapiCustomBet.getFilteredCalculationResponse(
+            eventId,
+            7
+        );
+        calculationResponseType.getCalculation().setHarmonization(false);
+
+        CalculationFilter calculation = new CalculationFilterImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertFalse(calculation.isHarmonization());
+    }
+
+    @Test
+    public void calculateFilterResponseWhenGeneratedAtInWrongFormatFalseThenReturnCurrentDate() {
+        CapiFilteredCalculationResponse calculationResponseType = CapiCustomBet.getFilteredCalculationResponse(
+            eventId,
+            7
+        );
+        calculationResponseType.setGeneratedAt("a-b-c");
+
+        CalculationFilter calculation = new CalculationFilterImpl(calculationResponseType);
+
+        Assert.assertNotNull(calculation);
+        Assert.assertNotNull(calculation.getGeneratedAt());
+        long dateDiff = new Date().getTime() - calculation.getGeneratedAt().getTime();
+        Assert.assertTrue(Math.abs(dateDiff) < 10);
+    }
+
+    private void availableSelectionsCompare(CapiAvailableSelections source, AvailableSelections result) {
         Assert.assertNotNull(source);
         Assert.assertNotNull(result);
 
@@ -401,11 +630,11 @@ public class CustomBetEntityTests {
                 .findFirst()
                 .get();
             Assert.assertNotNull(resultMarket);
-            MarketCompare(sourceMarket, resultMarket);
+            marketCompare(sourceMarket, resultMarket);
         }
     }
 
-    private void MarketCompare(CapiMarketType source, Market result) {
+    private void marketCompare(CapiMarketType source, Market result) {
         Assert.assertNotNull(source);
         Assert.assertNotNull(result);
 
@@ -423,7 +652,7 @@ public class CustomBetEntityTests {
         }
     }
 
-    private void MarketCompare(CapiFilteredMarketType source, MarketFilter result) {
+    private void marketCompare(CapiFilteredMarketType source, MarketFilter result) {
         Assert.assertNotNull(source);
         Assert.assertNotNull(result);
 

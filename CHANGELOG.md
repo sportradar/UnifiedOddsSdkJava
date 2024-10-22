@@ -1,5 +1,10 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.5.0 (2024-10-22)**
+
+- CustomBet Calculation and CalculationFilter extended with isHarmonization
+- CustomBetSelectionBuilder extended with new method setOdds
+
 **3.4.0 (2024-09-30)**
 
 - Added new Jersey attributes: stripes, horizontalStripes, horizontalStripesColor, squares, squaresColor, split

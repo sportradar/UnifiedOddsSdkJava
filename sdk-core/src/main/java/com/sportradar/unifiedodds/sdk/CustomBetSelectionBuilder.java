@@ -44,6 +44,16 @@ public interface CustomBetSelectionBuilder {
     CustomBetSelectionBuilder setOutcomeId(String outcomeId);
 
     /**
+     * Sets the odds
+     *
+     * @param odds the value representing the odds
+     * @return the {@link CustomBetSelectionBuilder} instance used to set additional values
+     */
+    default CustomBetSelectionBuilder setOdds(double odds) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    /**
      * Builds and returns a {@link Selection} instance
      *
      * @return the constructed {@link Selection} instance
@@ -53,11 +63,25 @@ public interface CustomBetSelectionBuilder {
     /**
      * Builds and returns a {@link Selection} instance
      *
+     * @param eventId    the {@link Urn} representing the event id
+     * @param marketId   the value representing the market id
+     * @param specifiers the value representing the specifiers
+     * @param outcomeId  the value representing the outcome id
+     * @return the constructed {@link Selection} instance
+     */
+    Selection build(Urn eventId, int marketId, String specifiers, String outcomeId);
+
+    /**
+     * Builds and returns a {@link Selection} instance
+     *
      * @param eventId the {@link Urn} representing the event id
      * @param marketId the value representing the market id
      * @param specifiers the value representing the specifiers
      * @param outcomeId the value representing the outcome id
+     * @param odds the value representing the odds
      * @return the constructed {@link Selection} instance
      */
-    Selection build(Urn eventId, int marketId, String specifiers, String outcomeId);
+    default Selection build(Urn eventId, int marketId, String specifiers, String outcomeId, Double odds) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
 }

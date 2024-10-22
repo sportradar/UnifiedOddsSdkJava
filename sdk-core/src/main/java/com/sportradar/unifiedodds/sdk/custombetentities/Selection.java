@@ -7,7 +7,7 @@ package com.sportradar.unifiedodds.sdk.custombetentities;
 import com.sportradar.utils.Urn;
 
 /**
- * Provides an requested selection
+ * Provides a requested selection
  */
 public interface Selection {
     /**
@@ -37,4 +37,13 @@ public interface Selection {
      * @return the outcome id
      */
     String getOutcomeId();
+
+    /**
+     * Gets the odds
+     *
+     * @return the odds
+     */
+    default Double getOdds() {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
 }

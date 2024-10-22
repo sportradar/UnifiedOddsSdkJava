@@ -4,6 +4,7 @@ import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
+import com.sportradar.unifiedodds.sdk.CapiCustomBet;
 import com.sportradar.unifiedodds.sdk.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
@@ -54,7 +55,7 @@ public class TestDataRouterManager implements DataRouterManager {
 
     public Map<String, Integer> RestCalls;
 
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
     public TestDataRouterManager(TestHttpHelper testHttpHelper, DataRouter dataRouter) {
         this.testHttpHelper = testHttpHelper;
@@ -156,7 +157,7 @@ public class TestDataRouterManager implements DataRouterManager {
         if (id.getId() == 0) {
             result = null;
         } else if (id.getId() != 31561675) {
-            result = RestMessageBuilder.getAvailableSelections(id, StaticRandom.I100());
+            result = CapiCustomBet.getAvailableSelectionsResponse(id, StaticRandom.I100());
         }
 
         if (result != null) {
@@ -187,7 +188,7 @@ public class TestDataRouterManager implements DataRouterManager {
             result = null;
         } else if (selections.stream().findFirst().get().getEventId().getId() != 31561675) {
             result =
-                RestMessageBuilder.getCalculationResponse(
+                CapiCustomBet.getCalculationResponse(
                     selections.stream().findFirst().get().getEventId(),
                     StaticRandom.I100()
                 );
@@ -222,7 +223,7 @@ public class TestDataRouterManager implements DataRouterManager {
             result = null;
         } else if (selections.stream().findFirst().get().getEventId().getId() != 31561675) {
             result =
-                RestMessageBuilder.getFilteredCalculationResponse(
+                CapiCustomBet.getFilteredCalculationResponse(
                     selections.stream().findFirst().get().getEventId(),
                     StaticRandom.I100()
                 );
@@ -328,22 +329,18 @@ public class TestDataRouterManager implements DataRouterManager {
             if (_delayVariable) {
                 delayMs = StaticRandom.I(delayMs);
             }
-            System.out.println(
-                String.format(
-                    "DRM - executing delay for {} and {}: {} ms START",
-                    id,
-                    locale.getISO3Language(),
-                    delayMs
-                )
+            System.out.printf(
+                "DRM - executing delay for {} and {}: {} ms START%n",
+                id,
+                locale.getISO3Language(),
+                delayMs
             );
             Helper.sleep(delayMs);
-            System.out.println(
-                String.format(
-                    "DRM - executing delay for {} and {}: {} ms END",
-                    id,
-                    locale.getISO3Language(),
-                    delayMs
-                )
+            System.out.printf(
+                "DRM - executing delay for {} and {}: {} ms END%n",
+                id,
+                locale.getISO3Language(),
+                delayMs
             );
         }
     }

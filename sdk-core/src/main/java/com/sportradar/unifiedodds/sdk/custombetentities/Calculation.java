@@ -36,4 +36,13 @@ public interface Calculation {
      * @return the date when API response was generated
      */
     Date getGeneratedAt();
+
+    /**
+     * Returns the value if harmonization method was applied
+     *
+     * @return the value if harmonization method was applied
+     */
+    default Boolean isHarmonization() {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
 }

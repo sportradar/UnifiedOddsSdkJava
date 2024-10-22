@@ -13,8 +13,6 @@ import com.sportradar.utils.SdkHelper;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.slf4j.IMarkerFactory;
 
 /**
  * Implements methods used to provide a probability calculation
@@ -26,6 +24,7 @@ public class CalculationImpl implements Calculation {
     private final double probability;
     private final List<AvailableSelections> availableSelectionsList;
     private final Date generatedAt;
+    private final Boolean isHarmonization;
 
     public CalculationImpl(CapiCalculationResponse calculation) {
         Preconditions.checkNotNull(calculation);
@@ -46,8 +45,11 @@ public class CalculationImpl implements Calculation {
         Date date = new Date();
         try {
             date = SdkHelper.toDate(calculation.getGeneratedAt());
-        } catch (ParseException e) {}
+        } catch (ParseException e) {
+            // ignore
+        }
         this.generatedAt = date;
+        this.isHarmonization = calculation.getCalculation().isHarmonization();
     }
 
     /**
@@ -88,5 +90,10 @@ public class CalculationImpl implements Calculation {
     @Override
     public Date getGeneratedAt() {
         return generatedAt;
+    }
+
+    @Override
+    public Boolean isHarmonization() {
+        return isHarmonization;
     }
 }

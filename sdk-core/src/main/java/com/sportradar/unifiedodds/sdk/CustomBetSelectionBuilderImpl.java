@@ -18,6 +18,7 @@ public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder 
     private int marketId;
     private String outcomeId;
     private String specifiers;
+    private Double odds;
 
     @Override
     public CustomBetSelectionBuilder setEventId(Urn eventId) {
@@ -44,21 +45,34 @@ public class CustomBetSelectionBuilderImpl implements CustomBetSelectionBuilder 
     }
 
     @Override
+    public CustomBetSelectionBuilder setOdds(double odds) {
+        this.odds = odds;
+        return this;
+    }
+
+    @Override
     public Selection build() {
-        Selection selection = new SelectionImpl(eventId, marketId, outcomeId, specifiers);
+        Selection selection = new SelectionImpl(eventId, marketId, outcomeId, specifiers, odds);
         eventId = null;
         marketId = 0;
         outcomeId = null;
         specifiers = null;
+        odds = null;
         return selection;
     }
 
     @Override
     public Selection build(Urn eventId, int marketId, String specifiers, String outcomeId) {
+        return build(eventId, marketId, specifiers, outcomeId, null);
+    }
+
+    @Override
+    public Selection build(Urn eventId, int marketId, String specifiers, String outcomeId, Double odds) {
         this.eventId = eventId;
         this.marketId = marketId;
         this.outcomeId = outcomeId;
         this.specifiers = specifiers;
+        this.odds = odds;
         return build();
     }
 }
