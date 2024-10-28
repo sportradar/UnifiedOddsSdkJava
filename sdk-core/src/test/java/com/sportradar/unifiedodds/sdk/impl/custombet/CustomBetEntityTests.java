@@ -17,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.custombetentities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.impl.custombetentities.SelectionImpl;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import com.sportradar.unifiedodds.sdk.shared.TestDataRouterManager;
 import com.sportradar.unifiedodds.sdk.shared.TestFeed;
@@ -401,6 +402,18 @@ public class CustomBetEntityTests {
         Assert.assertEquals("2", selection.getOutcomeId());
         Assert.assertEquals("specifier=value", selection.getSpecifiers());
         Assert.assertEquals(1.5, selection.getOdds(), 0);
+    }
+
+    @Test
+    public void selectionConstructedWithConstructor() {
+        Selection selection = new SelectionImpl(eventId, 1, "2", "specifier=value");
+
+        Assert.assertNotNull(selection);
+        Assert.assertEquals(eventId, selection.getEventId());
+        Assert.assertEquals(1, selection.getMarketId());
+        Assert.assertEquals("2", selection.getOutcomeId());
+        Assert.assertEquals("specifier=value", selection.getSpecifiers());
+        Assert.assertNull(selection.getOdds());
     }
 
     @Test

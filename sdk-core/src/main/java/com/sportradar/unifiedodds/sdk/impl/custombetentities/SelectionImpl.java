@@ -19,6 +19,10 @@ public class SelectionImpl implements Selection {
     private final String specifiers;
     private final Double odds;
 
+    public SelectionImpl(Urn eventId, int marketId, String outcomeId, String specifiers) {
+        this(eventId, marketId, outcomeId, specifiers, null);
+    }
+
     public SelectionImpl(Urn eventId, int marketId, String outcomeId, String specifiers, Double odds) {
         Preconditions.checkNotNull(eventId);
         Preconditions.checkArgument(marketId > 0);

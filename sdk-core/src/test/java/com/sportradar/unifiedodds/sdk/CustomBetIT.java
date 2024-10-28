@@ -77,19 +77,19 @@ class CustomBetIT {
 
         apiSimulator.stubCustomBetCalculate(capiCalculationResponse);
 
-        val calculation = sdk
-            .getCustomBetManager()
-            .calculateProbability(
-                singletonList(
-                    new SelectionImpl(
-                        Urns.SportEvents.getForAnyMatch(),
-                        defaultMarketId,
-                        defaultOutcomeId,
-                        defaultMarketSpecifier,
-                        null
-                    )
-                )
-            );
+        val customBetManager = sdk.getCustomBetManager();
+
+        val calculation = customBetManager.calculateProbability(
+            singletonList(
+                customBetManager
+                    .getCustomBetSelectionBuilder()
+                    .setEventId(Urns.SportEvents.getForAnyMatch())
+                    .setMarketId(defaultMarketId)
+                    .setOutcomeId(defaultOutcomeId)
+                    .setSpecifiers(defaultMarketSpecifier)
+                    .build()
+            )
+        );
 
         Assertions.assertNotNull(calculation);
         Assertions.assertEquals(harmonization, calculation.isHarmonization());
@@ -105,19 +105,19 @@ class CustomBetIT {
 
         apiSimulator.stubCustomBetCalculateFilter(capiCalculationResponse);
 
-        val calculation = sdk
-            .getCustomBetManager()
-            .calculateProbabilityFilter(
-                singletonList(
-                    new SelectionImpl(
-                        Urns.SportEvents.getForAnyMatch(),
-                        defaultMarketId,
-                        defaultOutcomeId,
-                        defaultMarketSpecifier,
-                        null
-                    )
-                )
-            );
+        val customBetManager = sdk.getCustomBetManager();
+
+        val calculation = customBetManager.calculateProbabilityFilter(
+            singletonList(
+                customBetManager
+                    .getCustomBetSelectionBuilder()
+                    .setEventId(Urns.SportEvents.getForAnyMatch())
+                    .setMarketId(defaultMarketId)
+                    .setOutcomeId(defaultOutcomeId)
+                    .setSpecifiers(defaultMarketSpecifier)
+                    .build()
+            )
+        );
 
         Assertions.assertNotNull(calculation);
         Assertions.assertEquals(harmonization, calculation.isHarmonization());
@@ -129,19 +129,20 @@ class CustomBetIT {
 
         apiSimulator.stubCustomBetCalculate(capiCalculationResponse);
 
-        val calculation = sdk
-            .getCustomBetManager()
-            .calculateProbability(
-                singletonList(
-                    new SelectionImpl(
-                        Urns.SportEvents.getForAnyMatch(),
-                        defaultMarketId,
-                        defaultOutcomeId,
-                        defaultMarketSpecifier,
-                        1.23
-                    )
-                )
-            );
+        val customBetManager = sdk.getCustomBetManager();
+
+        val calculation = customBetManager.calculateProbability(
+            singletonList(
+                customBetManager
+                    .getCustomBetSelectionBuilder()
+                    .setEventId(Urns.SportEvents.getForAnyMatch())
+                    .setMarketId(defaultMarketId)
+                    .setOutcomeId(defaultOutcomeId)
+                    .setSpecifiers(defaultMarketSpecifier)
+                    .setOdds(1.23)
+                    .build()
+            )
+        );
 
         Assertions.assertNotNull(calculation);
         val wiremockRequests = WireMock.findAll(
@@ -159,19 +160,20 @@ class CustomBetIT {
 
         apiSimulator.stubCustomBetCalculateFilter(capiCalculationResponse);
 
-        val calculation = sdk
-            .getCustomBetManager()
-            .calculateProbabilityFilter(
-                singletonList(
-                    new SelectionImpl(
-                        Urns.SportEvents.getForAnyMatch(),
-                        defaultMarketId,
-                        defaultOutcomeId,
-                        defaultMarketSpecifier,
-                        1.23
-                    )
-                )
-            );
+        val customBetManager = sdk.getCustomBetManager();
+
+        val calculation = customBetManager.calculateProbabilityFilter(
+            singletonList(
+                customBetManager
+                    .getCustomBetSelectionBuilder()
+                    .setEventId(Urns.SportEvents.getForAnyMatch())
+                    .setMarketId(defaultMarketId)
+                    .setOutcomeId(defaultOutcomeId)
+                    .setSpecifiers(defaultMarketSpecifier)
+                    .setOdds(1.23)
+                    .build()
+            )
+        );
 
         Assertions.assertNotNull(calculation);
         val wiremockRequests = WireMock.findAll(
@@ -188,8 +190,7 @@ class CustomBetIT {
             Urns.SportEvents.getForAnyMatch(),
             defaultMarketId,
             defaultOutcomeId,
-            defaultMarketSpecifier,
-            null
+            defaultMarketSpecifier
         );
 
         @Test
