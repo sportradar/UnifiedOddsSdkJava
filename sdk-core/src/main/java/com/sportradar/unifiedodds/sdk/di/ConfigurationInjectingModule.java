@@ -31,7 +31,7 @@ public class ConfigurationInjectingModule extends AbstractModule {
         bind(UofConfigurationImpl.class).toInstance((UofConfigurationImpl) configuration);
 
         install(new GlobalVariablesModule(new ResourceReader()));
-        install(new MetricsModule());
+        install(new NoopJmxModule());
         install(new DeserializerModule());
         install(new HttpClientModule(internalConfiguration));
         install(new WhoAmIReaderModule(internalConfiguration));

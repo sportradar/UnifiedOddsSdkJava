@@ -127,7 +127,10 @@ public class RecoveryManagerImpl
         }
 
         activeProducers.forEach((id, p) ->
-            perProducerInfo.computeIfAbsent(id, producerId -> new ProducerInfo(producerId, producerManager))
+            perProducerInfo.computeIfAbsent(
+                id,
+                producerId -> new ProducerInfo(producerId, producerManager, timeUtils)
+            )
         );
 
         if (!config.isReplaySession()) {
@@ -1082,7 +1085,7 @@ public class RecoveryManagerImpl
             producerId,
             pid -> {
                 logger.info("Creating new ProducerInfo[{}]", producerId);
-                return new ProducerInfo(producerId, producerManager);
+                return new ProducerInfo(producerId, producerManager, timeUtils);
             }
         );
     }

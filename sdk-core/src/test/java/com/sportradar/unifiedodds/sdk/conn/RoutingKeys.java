@@ -22,4 +22,14 @@ public class RoutingKeys {
             globalVariables.getNodeId()
         );
     }
+
+    public String liveBetCancel() {
+        return format(
+            "hi.-.live.bet_cancel.%d.sr:%s.%d.%s",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId(),
+            globalVariables.getNodeId()
+        );
+    }
 }

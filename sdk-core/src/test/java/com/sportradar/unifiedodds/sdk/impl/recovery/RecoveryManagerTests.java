@@ -6,16 +6,12 @@ package com.sportradar.unifiedodds.sdk.impl.recovery;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
-import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.SdkEventRecoveryStatusListener;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.SdkProducerStatusListener;
+import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.impl.*;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
@@ -25,9 +21,7 @@ import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +40,7 @@ import org.junit.Test;
         "MagicNumber",
         "MethodLength",
         "VariableDeclarationUsageDistance",
+        "ClassDataAbstractionCoupling",
     }
 )
 public class RecoveryManagerTests {
@@ -69,7 +64,7 @@ public class RecoveryManagerTests {
 
         ProducerDataProvider producerDataProvider = mock(ProducerDataProvider.class);
         when(producerDataProvider.getAvailableProducers()).thenReturn(getAvailableProducerData());
-        producerManager = new ProducerManagerImpl(cfg, producerDataProvider);
+        producerManager = new ProducerManagerImpl(cfg, producerDataProvider, new TimeUtilsImpl());
 
         mockedEventRecoveryListener = mock(SdkEventRecoveryStatusListener.class);
         mockedHttpHelper = mock(HttpHelper.class);

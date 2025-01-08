@@ -16,10 +16,11 @@ import lombok.val;
 public final class ProducerIds {
 
     public static final Integer PREMIUM_CRICKET_PRODUCER_ID = 5;
+    public static final Integer LIVE_PRODUCER_ID = 1;
 
     @SuppressWarnings("MagicNumber")
     private static final Integer[] PRODUCER_IDS = {
-        1,
+        LIVE_PRODUCER_ID,
         3,
         4,
         PREMIUM_CRICKET_PRODUCER_ID,

@@ -11,6 +11,8 @@ import com.sportradar.utils.generic.testing.RandomInteger;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import lombok.SneakyThrows;
 
 public final class SapiProducers {
 
@@ -29,7 +31,7 @@ public final class SapiProducers {
     private static Map<ProducerId, Producer> createAllProducers() {
         try {
             Map<ProducerId, Producer> producers = new HashMap<>();
-            producers.put(ProducerId.LIVE_ODDS, createLiveOddsProducer());
+            producers.put(ProducerId.LIVE_ODDS, liveOddsProducer());
             producers.put(ProducerId.BETRADAR_CTRL, createBetradarCtrlProducer());
             producers.put(ProducerId.BETPAL, createBetPalProducer());
             producers.put(ProducerId.PREMIUM_CRICKET, createPremiumCricketProducer());
@@ -50,13 +52,27 @@ public final class SapiProducers {
         }
     }
 
-    private static Producer createLiveOddsProducer() throws MalformedURLException {
+    @SneakyThrows
+    public static Producer liveOddsProducer(Consumer<Producer> modifyProducer) {
         Producer producer = new Producer();
         producer.setId(ProducerId.LIVE_ODDS.get());
         producer.setName("LO");
         producer.setDescription("Live Odds");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
+        producer.setScope("live");
+        producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
+        modifyProducer.accept(producer);
+        return producer;
+    }
+
+    public static Producer liveOddsProducer() throws MalformedURLException {
+        Producer producer = new Producer();
+        producer.setId(ProducerId.LIVE_ODDS.get());
+        producer.setName("LO");
+        producer.setDescription("Live Odds");
+        producer.setApiUrl(anyHttpUrl().toString());
+        producer.setActive(true);
         producer.setScope("live");
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -68,7 +84,7 @@ public final class SapiProducers {
         producer.setName("Ctrl");
         producer.setDescription("Betradar Ctrl");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope("prematch");
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -80,7 +96,7 @@ public final class SapiProducers {
         producer.setName("BetPal");
         producer.setDescription("BetPal");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(LIVE);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -92,7 +108,7 @@ public final class SapiProducers {
         producer.setName("PremiumCricket");
         producer.setDescription("Premium Cricket");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(LIVE + "|" + PREMATCH);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -104,7 +120,7 @@ public final class SapiProducers {
         producer.setName("VF");
         producer.setDescription("Virtual Football");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -116,7 +132,7 @@ public final class SapiProducers {
         producer.setName("WNS");
         producer.setDescription("Numbers Betting");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(PREMATCH);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -128,7 +144,7 @@ public final class SapiProducers {
         producer.setName("VBL");
         producer.setDescription("Virtual Basketball League");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -140,7 +156,7 @@ public final class SapiProducers {
         producer.setName("VTO");
         producer.setDescription("Virtual Tennis Open");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -152,7 +168,7 @@ public final class SapiProducers {
         producer.setName("VDR");
         producer.setDescription("Virtual Dog Racing");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -164,7 +180,7 @@ public final class SapiProducers {
         producer.setName("VHC");
         producer.setDescription("Virtual Horse Racing");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -176,7 +192,7 @@ public final class SapiProducers {
         producer.setName("VTI");
         producer.setDescription("Virtual Tennis In Play");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -188,7 +204,7 @@ public final class SapiProducers {
         producer.setName("C-Odds");
         producer.setDescription("Competition Odds");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(LIVE);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -200,7 +216,7 @@ public final class SapiProducers {
         producer.setName("VBI");
         producer.setDescription("Virtual Baseball In-Play");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -212,7 +228,7 @@ public final class SapiProducers {
         producer.setName("PB");
         producer.setDescription("Performance Betting");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(LIVE);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;
@@ -224,7 +240,7 @@ public final class SapiProducers {
         producer.setName("VCI");
         producer.setDescription("Virtual Cricket In Play");
         producer.setApiUrl(anyHttpUrl().toString());
-        producer.setActive(Booleans.any());
+        producer.setActive(true);
         producer.setScope(VIRTUAL);
         producer.setStatefulRecoveryWindowInMinutes(anyRecoveryWindow());
         return producer;

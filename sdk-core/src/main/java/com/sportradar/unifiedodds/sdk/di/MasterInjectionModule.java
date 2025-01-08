@@ -58,7 +58,7 @@ public class MasterInjectionModule extends AbstractModule {
         bind(InternalCachesProvider.class).toInstance(internalCachesProvider);
 
         install(new GlobalVariablesModule(new ResourceReader()));
-        install(new MetricsModule());
+        install(new JmxModule());
         install(new DeserializerModule());
         install(new HttpClientModule(configInternal));
         install(new WhoAmIReaderModule(configInternal));

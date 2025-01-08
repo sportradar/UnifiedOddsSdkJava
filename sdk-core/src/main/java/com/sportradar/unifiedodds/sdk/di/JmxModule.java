@@ -11,7 +11,7 @@ import com.google.inject.Singleton;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedOddsStatistics;
 import java.lang.management.ManagementFactory;
 
-public class MetricsModule implements Module {
+public class JmxModule implements Module {
 
     @Override
     public void configure(Binder binder) {}

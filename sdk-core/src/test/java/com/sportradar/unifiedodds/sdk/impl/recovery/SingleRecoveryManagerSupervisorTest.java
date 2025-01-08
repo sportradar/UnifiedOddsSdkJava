@@ -47,7 +47,8 @@ public class SingleRecoveryManagerSupervisorTest {
 
     private SdkProducerManager producerManager = new ProducerManagerImpl(
         mock(SdkInternalConfiguration.class),
-        producerDataProvider
+        producerDataProvider,
+        new TimeUtilsImpl()
     );
 
     private SingleRecoveryManagerSupervisor supervisor;
@@ -57,7 +58,12 @@ public class SingleRecoveryManagerSupervisorTest {
         ProducerData producerData = producerData().active().withId(PRODUCER_ID);
         when(producerDataProvider.getAvailableProducers()).thenReturn(asList(producerData));
 
-        producerManager = new ProducerManagerImpl(mock(SdkInternalConfiguration.class), producerDataProvider);
+        producerManager =
+            new ProducerManagerImpl(
+                mock(SdkInternalConfiguration.class),
+                producerDataProvider,
+                new TimeUtilsImpl()
+            );
 
         supervisor =
             new SingleRecoveryManagerSupervisor(

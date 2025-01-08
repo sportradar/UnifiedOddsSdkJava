@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.ProducerScope;
 import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
+import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerDownReason;
@@ -44,13 +45,13 @@ class ProducerInfo {
     private volatile long lastValidAliveGenTimestampInRecovery;
     private volatile long created;
 
-    ProducerInfo(int producerId, SdkProducerManager producerManager) {
+    ProducerInfo(int producerId, SdkProducerManager producerManager, TimeUtils time) {
         Preconditions.checkNotNull(producerManager);
         Preconditions.checkArgument(producerId > 0);
 
         this.producerId = producerId;
         this.producerManager = producerManager;
-        created = new TimeUtilsImpl().now();
+        created = time.now();
     }
 
     void onFirstRecoveryCompleted() {

@@ -63,6 +63,18 @@ public class FeedMessageBuilder {
         return Helper.serializeToJaxbXml(oddsChange);
     }
 
+    public String betCancel(UfOddsChangeMarket market) {
+        val message = new UfBetCancel();
+        message.setEventId(globalVariables.getSportEventUrn().toString());
+        message.setProduct(globalVariables.getProducer().get());
+        message.setTimestamp(new Date().getTime());
+        val betCancelMarket = new UfMarket();
+        betCancelMarket.setId(market.getId());
+        betCancelMarket.setSpecifiers(market.getSpecifiers());
+        message.getMarket().add(betCancelMarket);
+        return Helper.serializeToJaxbXml(message);
+    }
+
     public UfOddsChange buildOddsChangeForExactGoalsMarket() {
         UfOddsChangeMarket exactGoalsMarket = new UfOddsChangeMarket();
 

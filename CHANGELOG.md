@@ -1,5 +1,8 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.5.2**
+- fix: JMX statistics published by the SDK are now properly being updated.
+
 **3.5.1** (2024-10-28)
 - fix: restore previous SelectionImpl constructor to preserve backward compatibility for clients relying on the internal SelectionImpl (CustomBetManager.getSelectionBuilder() is the only recommended way to construct selections with SDK)
 

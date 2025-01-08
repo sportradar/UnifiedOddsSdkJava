@@ -51,4 +51,8 @@ public class MessagesInMemoryStorage {
     public List<OddsChange<SportEvent>> findAllOddsChange() {
         return oddsChangeMessages.stream().collect(Collectors.toList());
     }
+
+    public List<BetCancel<SportEvent>> findAllBetCancel() {
+        return betCancelMessages.stream().collect(Collectors.toList());
+    }
 }

@@ -31,15 +31,18 @@ public class ProducerManagerImpl implements SdkProducerManager {
     private final Map<Integer, ProducerData> producers;
     private Set<Integer> unknownProducersWarning = new HashSet<>();
     private boolean feedOpened;
+    private TimeUtils time;
 
     @Inject
     public ProducerManagerImpl(
         SdkInternalConfiguration configuration,
-        ProducerDataProvider producerDataProvider
+        ProducerDataProvider producerDataProvider,
+        TimeUtils time
     ) {
         Preconditions.checkNotNull(configuration);
         Preconditions.checkNotNull(producerDataProvider);
 
+        this.time = time;
         this.configuration = configuration;
 
         logger.info("Fetching producer list");
@@ -145,7 +148,7 @@ public class ProducerManagerImpl implements SdkProducerManager {
         if (lastMessageTimestamp != 0) {
             int maxRequestMinutes = producers.get(producerId).getStatefulRecoveryWindowInMinutes();
             long maxRecoveryInterval = TimeUnit.MILLISECONDS.convert(maxRequestMinutes, TimeUnit.MINUTES);
-            long requestedRecoveryInterval = System.currentTimeMillis() - lastMessageTimestamp;
+            long requestedRecoveryInterval = time.now() - lastMessageTimestamp;
             if (requestedRecoveryInterval > maxRecoveryInterval) {
                 throw new IllegalArgumentException(
                     String.format(

@@ -3,7 +3,6 @@
  */
 package com.sportradar.unifiedodds.sdk.di;
 
-import com.sportradar.unifiedodds.sdk.di.MetricsModule;
 import com.sportradar.unifiedodds.sdk.impl.UnifiedOddsStatistics;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetricsRegisterer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MetricsModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JmxModule.class);
 
     private final MBeanServer mbeanServer;
 
