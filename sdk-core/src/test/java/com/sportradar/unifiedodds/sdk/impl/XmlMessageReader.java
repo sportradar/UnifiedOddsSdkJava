@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DeserializationException;
+import com.sportradar.unifiedodds.sdk.internal.impl.Deserializer;
+import com.sportradar.unifiedodds.sdk.internal.impl.DeserializerImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

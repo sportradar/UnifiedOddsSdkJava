@@ -3,14 +3,15 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
-import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.ClosingResult.NEWLY_CLOSED;
-import static com.sportradar.unifiedodds.sdk.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
+import static com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.ClosingResult.NEWLY_CLOSED;
+import static com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.OpeningResult.NEWLY_OPENED;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.internal.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;

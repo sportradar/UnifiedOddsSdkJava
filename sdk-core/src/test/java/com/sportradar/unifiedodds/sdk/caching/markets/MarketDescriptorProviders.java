@@ -7,10 +7,10 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionProvider;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import java.util.List;
 import java.util.Locale;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public final class MarketDescriptorProviders {

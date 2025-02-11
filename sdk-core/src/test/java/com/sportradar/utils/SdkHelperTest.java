@@ -6,11 +6,14 @@ package com.sportradar.utils;
 
 import static org.junit.Assert.*;
 
+import com.sportradar.unifiedodds.sdk.UofSdk;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import lombok.val;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class SdkHelperTest {
@@ -53,6 +56,13 @@ public class SdkHelperTest {
 
         Date expectedDate = calendar.getTime();
         assertEquals(expectedDate, actualDate);
+    }
+
+    @Test
+    public void getsTheVersion() {
+        val actual = SdkHelper.getVersion();
+
+        Assertions.assertThat(actual).isEqualTo(UofSdk.class.getPackage().getImplementationVersion());
     }
 
     private void setupCalendarWithExpectedDate() {

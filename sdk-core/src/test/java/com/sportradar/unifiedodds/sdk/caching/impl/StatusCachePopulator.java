@@ -3,7 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
-import com.sportradar.unifiedodds.sdk.impl.dto.SportEventStatusDto;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventStatusCacheImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.dto.SportEventStatusDto;
 import com.sportradar.utils.Urn;
 import lombok.AllArgsConstructor;
 

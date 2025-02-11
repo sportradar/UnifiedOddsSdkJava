@@ -17,6 +17,14 @@ public class TimeInterval {
         this.currentInMillis = millis;
     }
 
+    public static TimeInterval milliseconds(int count) {
+        return new TimeInterval(count);
+    }
+
+    public static TimeInterval milliseconds(long count) {
+        return new TimeInterval(count);
+    }
+
     public static TimeInterval seconds(int count) {
         return new TimeInterval(count * MILLIS_IN_SECOND);
     }

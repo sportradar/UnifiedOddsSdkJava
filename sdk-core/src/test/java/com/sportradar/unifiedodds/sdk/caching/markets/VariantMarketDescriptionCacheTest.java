@@ -7,7 +7,8 @@ import static com.sportradar.unifiedodds.sdk.caching.markets.DataProviderAnswers
 import static com.sportradar.unifiedodds.sdk.caching.markets.VariantMarketDescriptionCaches.stubbingOutDataProvidersAndTime;
 import static com.sportradar.unifiedodds.sdk.caching.markets.VariantMarketSources.nullifyMarketName;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.ExactGoals.exactGoalsMarketDescription;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NascarOutrights.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NascarOutrights.nascarOutrightsMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NascarOutrights.nascarOutrightsOddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NflAfcConferenceOutrights.nflAfcConferenceOutrightsMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NflAfcConferenceOutrights.openMarket;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.notFoundWithEmptyMarket;
@@ -15,9 +16,7 @@ import static com.sportradar.unifiedodds.sdk.conn.marketids.ChampionshipFreeText
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.EXACT_GOALS_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.fivePlusVariant;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.*;
-import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.nascarOutrightsVariant;
 import static com.sportradar.unifiedodds.sdk.impl.MarketDescriptionDataProviders.providing;
-import static com.sportradar.unifiedodds.sdk.impl.MarketDescriptionDataProviders.providingList;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Conjunctions.and;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Determiners.every;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.of;
@@ -35,16 +34,18 @@ import com.google.common.collect.ImmutableSet;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.caching.ci.markets.MarketDescriptionCi;
-import com.sportradar.unifiedodds.sdk.caching.markets.VariantMarketDescriptionCache.Config;
 import com.sportradar.unifiedodds.sdk.caching.markets.VariantMarketSources.AttributeRemover;
 import com.sportradar.unifiedodds.sdk.conn.MarketVariant;
-import com.sportradar.unifiedodds.sdk.domain.language.Languages;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.markets.MappingValidatorFactory;
+import com.sportradar.unifiedodds.sdk.internal.caching.Languages;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.markets.MarketDescriptionCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantMarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantMarketDescriptionCache.Config;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.MappingValidatorFactory;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.VoidCallables;
 import com.sportradar.utils.time.TimeInterval;
@@ -52,7 +53,7 @@ import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
@@ -106,16 +107,19 @@ class VariantMarketDescriptionCacheTest {
         MappingValidatorFactory v = mock(MappingValidatorFactory.class);
         TimeUtils t = mock(TimeUtils.class);
         Config f = mock(Config.class);
+        TelemetryFactory tf = mock(TelemetryFactory.class);
 
-        assertThatThrownBy(() -> new VariantMarketDescriptionCache(null, p, v, t, f))
+        assertThatThrownBy(() -> new VariantMarketDescriptionCache(null, p, v, t, f, tf))
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, null, v, t, f))
+        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, null, v, t, f, tf))
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, null, t, f))
+        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, null, t, f, tf))
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, v, null, f))
+        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, v, null, f, tf))
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, v, t, null))
+        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, v, t, null, tf))
+            .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new VariantMarketDescriptionCache(c, p, v, t, f, null))
             .isInstanceOf(NullPointerException.class);
     }
 

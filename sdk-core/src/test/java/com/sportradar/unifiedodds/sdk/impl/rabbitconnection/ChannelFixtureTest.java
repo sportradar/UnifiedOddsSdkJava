@@ -6,12 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.rabbitmq.client.*;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
-import com.sportradar.utils.time.EpochMillis;
-import com.sportradar.utils.time.TimeUtilsStub;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;

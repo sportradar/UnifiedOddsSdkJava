@@ -20,11 +20,7 @@ public enum Environment {
 
     GlobalProduction,
 
-    GlobalIntegration,
-
-    ProxySingapore,
-
-    ProxyTokyo;
+    GlobalIntegration;
 
     public static Environment getEnvironment(String environment) {
         if (environment == null) {
@@ -46,10 +42,6 @@ public enum Environment {
                 return GlobalProduction;
             case "GlobalIntegration":
                 return GlobalIntegration;
-            case "ProxySingapore":
-                return ProxySingapore;
-            case "ProxyTokyo":
-                return ProxyTokyo;
             default:
                 return null;
         }

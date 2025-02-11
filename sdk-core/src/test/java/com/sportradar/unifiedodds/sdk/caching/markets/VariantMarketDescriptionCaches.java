@@ -9,9 +9,11 @@ import static org.mockito.Mockito.mock;
 
 import com.google.common.cache.CacheBuilder;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantMarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.mappings.MappingValidatorFactoryImpl;
 import java.util.Optional;
 
 public class VariantMarketDescriptionCaches {
@@ -51,7 +53,8 @@ public class VariantMarketDescriptionCaches {
                 ofNullable(dataProvider).orElse(mock(DataProvider.class, withGetDataThrowingByDefault())),
                 new MappingValidatorFactoryImpl(),
                 time.orElse(mock(TimeUtils.class)),
-                config.orElse(mock(VariantMarketDescriptionCache.Config.class))
+                config.orElse(mock(VariantMarketDescriptionCache.Config.class)),
+                mock(TelemetryFactory.class)
             );
         }
     }

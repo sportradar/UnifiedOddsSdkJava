@@ -14,11 +14,16 @@ import static org.mockito.Mockito.*;
 import com.google.common.cache.Cache;
 import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.unifiedodds.sdk.*;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.conn.GlobalVariables;
+import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.impl.processing.pipeline.CompositeMessageProcessor;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.unifiedodds.sdk.internal.impl.processing.pipeline.CompositeMessageProcessor;
+import com.sportradar.unifiedodds.sdk.managers.RecoveryManager;
+import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
+import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -139,5 +144,16 @@ public class UofSessionImplTest {
         session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp);
 
         verify(processor).processMessage(any(), any(), any(), any());
+    }
+
+    @Test
+    public void messageProcessorDelegatesCallToTheUserCode() throws Exception {
+        session.open(anyRoutingKeys, AllMessages, listener, extListener);
+
+        val ufOddsChange = new FeedMessageBuilder(new GlobalVariables()).buildOddsChangeFor1x2Market();
+
+        session.processMessage(ufOddsChange, new byte[0], anyRoutingKey, timestamp);
+
+        verify(listener).onOddsChange(same(session), any());
     }
 }

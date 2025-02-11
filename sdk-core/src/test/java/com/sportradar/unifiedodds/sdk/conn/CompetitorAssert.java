@@ -3,13 +3,17 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static java.util.stream.Collectors.toList;
 
-import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.uf.sportsapi.datamodel.SapiJersey;
+import com.sportradar.uf.sportsapi.datamodel.SapiJerseys;
+import com.sportradar.uf.sportsapi.datamodel.SapiTeam;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorPlayer;
 import com.sportradar.unifiedodds.sdk.entities.Jersey;
-import com.sportradar.unifiedodds.sdk.entities.Player;
+import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Arrays;
@@ -137,6 +141,22 @@ public class CompetitorAssert extends AbstractAssert<CompetitorAssert, Competito
             .assertThat(playersIdsAndJerseyNumbers)
             .containsExactlyInAnyOrderElementsOf(sapiPlayersIdsAndJerseyNumbers);
         return this;
+    }
+
+    public CompetitorAssert getNameForGiven(
+        Locale aLanguage,
+        ExpectationTowardsSdkErrorHandlingStrategy errorHandling
+    ) {
+        if (errorHandling == WILL_THROW_EXCEPTIONS) {
+            resultsInNotFoundWhen(() -> actual.getName(aLanguage));
+        } else {
+            Assertions.assertThat(actual.getName(aLanguage)).isNull();
+        }
+        return this;
+    }
+
+    private void resultsInNotFoundWhen(Runnable routine) {
+        Assertions.assertThatThrownBy(routine::run).isInstanceOf(ObjectNotFoundException.class);
     }
 
     private static String concat(String id, Object propertyToConcat) {

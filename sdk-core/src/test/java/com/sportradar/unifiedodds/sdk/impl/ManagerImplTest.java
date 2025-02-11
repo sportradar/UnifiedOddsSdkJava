@@ -10,7 +10,8 @@ import static java.util.Locale.FRENCH;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.ManagerCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.ManagerCi;
+import com.sportradar.unifiedodds.sdk.internal.impl.ManagerImpl;
 import java.util.Locale;
 import lombok.val;
 import org.junit.jupiter.api.Test;

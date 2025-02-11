@@ -8,7 +8,7 @@ import static java.util.Arrays.asList;
 
 import com.google.common.collect.Streams;
 import com.rabbitmq.client.Channel;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;

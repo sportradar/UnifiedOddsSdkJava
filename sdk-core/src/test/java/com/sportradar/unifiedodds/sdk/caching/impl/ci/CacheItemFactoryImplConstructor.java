@@ -4,8 +4,10 @@
 package com.sportradar.unifiedodds.sdk.caching.impl.ci;
 
 import com.google.common.cache.Cache;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.ci.CacheItemFactory;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.ci.CacheItemFactoryImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.utils.Urn;
 import java.util.Date;
 

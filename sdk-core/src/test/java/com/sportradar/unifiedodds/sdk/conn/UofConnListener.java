@@ -2,8 +2,8 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
+import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.unifiedodds.sdk.shared.Helper;
 import com.sportradar.utils.Urn;

@@ -6,14 +6,13 @@ package com.sportradar.unifiedodds.example;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
-import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.sdk.*;
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
+import com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager;
+import com.sportradar.unifiedodds.sdk.managers.ProducerManager;
+import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * The following example is a very simple example that just connects to the Unified Odds Feed and

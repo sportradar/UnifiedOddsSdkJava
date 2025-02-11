@@ -7,9 +7,10 @@ package com.sportradar.utils;
 import com.google.common.base.Preconditions;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeam;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
-import com.sportradar.unifiedodds.sdk.caching.ci.ReferenceIdCi;
+import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.ReferenceIdCi;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -434,5 +435,10 @@ public final class SdkHelper {
                 : errorMatcher.group();
         }
         return responseContent;
+    }
+
+    public static String getVersion() {
+        Package pkg = UofSdk.class.getPackage();
+        return pkg.getImplementationVersion();
     }
 }

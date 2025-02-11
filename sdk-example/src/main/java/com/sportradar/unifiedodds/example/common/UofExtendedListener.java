@@ -6,8 +6,8 @@ package com.sportradar.unifiedodds.example.common;
 
 import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
+import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.net.URI;
 import org.slf4j.Logger;

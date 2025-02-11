@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.extended;
 
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import java.net.URI;

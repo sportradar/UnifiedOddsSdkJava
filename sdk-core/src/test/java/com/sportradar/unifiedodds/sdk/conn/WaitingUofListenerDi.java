@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
-import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue;
 
 public class WaitingUofListenerDi {

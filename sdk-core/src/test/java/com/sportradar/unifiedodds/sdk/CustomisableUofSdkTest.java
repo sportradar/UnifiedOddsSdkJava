@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.CustomisableUofSdk;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import org.junit.jupiter.api.Test;
 

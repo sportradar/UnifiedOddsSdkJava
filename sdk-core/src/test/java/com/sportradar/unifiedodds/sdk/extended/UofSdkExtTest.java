@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationImpl;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
 import org.junit.jupiter.api.Test;
 
 public class UofSdkExtTest {

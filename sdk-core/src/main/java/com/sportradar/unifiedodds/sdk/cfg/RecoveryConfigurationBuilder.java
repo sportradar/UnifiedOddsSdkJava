@@ -42,14 +42,6 @@ public interface RecoveryConfigurationBuilder<T> extends ConfigurationBuilderBas
     T setMinIntervalBetweenRecoveryRequests(int intervalSeconds);
 
     /**
-     * Sets the value indicating whether the after age should be adjusted before executing recovery request
-     *
-     * @param adjustAfterAge true if age should be adjusted; false otherwise
-     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
-     */
-    T setAdjustAfterAge(boolean adjustAfterAge);
-
-    /**
      * Sets the timeout which should be used on HTTP requests (seconds)
      *
      * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
@@ -162,4 +154,12 @@ public interface RecoveryConfigurationBuilder<T> extends ConfigurationBuilderBas
      * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
      */
     T omitMarketMappings(boolean omit);
+
+    /**
+     * Sets the value indicating whether sdk usage (metrics) can be exported
+     *
+     * @param enableUsageExport if set to true export is permitted, otherwise not
+     * @return a {@link RecoveryConfigurationBuilder} derived instance used to set general configuration properties
+     */
+    T enableUsageExport(boolean enableUsageExport);
 }

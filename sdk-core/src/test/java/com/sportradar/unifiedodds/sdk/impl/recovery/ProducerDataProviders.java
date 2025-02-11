@@ -4,14 +4,13 @@
 package com.sportradar.unifiedodds.sdk.impl.recovery;
 
 import static com.sportradar.unifiedodds.sdk.caching.markets.DataProviderAnswers.withGetDataThrowingByDefault;
-import static com.sportradar.utils.generic.testing.Urls.anyHttpUrl;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.uf.sportsapi.datamodel.Producer;
 import com.sportradar.uf.sportsapi.datamodel.Producers;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import java.util.Arrays;
 import lombok.SneakyThrows;
 

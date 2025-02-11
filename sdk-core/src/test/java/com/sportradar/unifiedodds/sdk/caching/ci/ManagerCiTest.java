@@ -8,6 +8,7 @@ import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.ManagerCi;
 import java.util.Locale;
 import lombok.val;
 import org.assertj.core.api.Assertions;

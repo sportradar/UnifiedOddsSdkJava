@@ -31,7 +31,7 @@ public interface Competitor extends Player {
      * Returns a value indicating whether the current instance represents a placeholder team
      * @return - a value indicating whether the current instance represents a placeholder team
      */
-    boolean isVirtual();
+    Boolean isVirtual();
 
     /**
      * Returns the reference ids

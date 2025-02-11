@@ -5,6 +5,7 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableVenueCi;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;

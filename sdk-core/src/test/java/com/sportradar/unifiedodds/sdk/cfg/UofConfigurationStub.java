@@ -3,8 +3,6 @@
  */
 package com.sportradar.unifiedodds.sdk.cfg;
 
-import static org.junit.Assert.*;
-
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import java.util.List;
@@ -14,10 +12,10 @@ import java.util.Locale;
 public class UofConfigurationStub implements UofConfiguration {
 
     private UofCacheConfiguration cache = new UofCacheConfigurationStub();
+    private final UofApiConfiguration apiConfig = new UofApiConfigurationStub();
     private UofRabbitConfiguration rabbit = new UofRabbitConfigurationStub();
-    private UofProducerConfiguration producerConfig = new UofProducerConfigurationStub();
+    private final UofProducerConfiguration producerConfig = new UofProducerConfigurationStub();
     private Environment environment;
-    private UofApiConfiguration apiConfig = new UofApiConfigurationStub();
     private Integer nodeId;
 
     @Override
@@ -93,6 +91,11 @@ public class UofConfigurationStub implements UofConfiguration {
 
     @Override
     public UofAdditionalConfiguration getAdditional() {
+        return null;
+    }
+
+    @Override
+    public UofUsageConfiguration getUsage() {
         return null;
     }
 }

@@ -5,7 +5,7 @@ package com.sportradar.unifiedodds.sdk.testutil.generic.concurrent;
 
 import static com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.WaiterForEvents.createWaiterForEvents;
 
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import lombok.val;

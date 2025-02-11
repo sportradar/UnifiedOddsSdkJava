@@ -10,11 +10,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.ProfileCache;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.utils.domain.names.Languages;
+import com.sportradar.unifiedodds.sdk.internal.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameExpressionFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProviderFactoryImpl;
 import com.sportradar.utils.time.TimeUtilsStub;
 import java.util.Collections;
 import java.util.Optional;

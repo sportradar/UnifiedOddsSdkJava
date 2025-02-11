@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;

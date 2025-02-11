@@ -4,10 +4,11 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.uf.custombet.datamodel.*;
-import com.sportradar.unifiedodds.sdk.custombetentities.*;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.AvailableSelectionsImpl;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterImpl;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.entities.custombet.*;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.AvailableSelectionsImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationFilterImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.managers.CustomBetSelectionBuilder;
 import com.sportradar.unifiedodds.sdk.shared.StaticRandom;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.Urn;
@@ -52,12 +53,28 @@ public class CapiCustomBet {
             }
 
             @Override
+            public CustomBetSelectionBuilder setOdds(double odds) {
+                return null;
+            }
+
+            @Override
             public Selection build() {
                 return null;
             }
 
             @Override
             public Selection build(Urn eventId, int marketId, String specifiers, String outcomeId) {
+                return null;
+            }
+
+            @Override
+            public Selection build(
+                Urn eventId,
+                int marketId,
+                String specifiers,
+                String outcomeId,
+                Double odds
+            ) {
                 return null;
             }
         };
@@ -84,6 +101,11 @@ public class CapiCustomBet {
             public String getOutcomeId() {
                 return null;
             }
+
+            @Override
+            public Double getOdds() {
+                return null;
+            }
         };
     }
 
@@ -108,6 +130,11 @@ public class CapiCustomBet {
             public Date getGeneratedAt() {
                 return null;
             }
+
+            @Override
+            public Boolean isHarmonization() {
+                return null;
+            }
         };
     }
 
@@ -130,6 +157,11 @@ public class CapiCustomBet {
 
             @Override
             public Date getGeneratedAt() {
+                return null;
+            }
+
+            @Override
+            public Boolean isHarmonization() {
                 return null;
             }
         };

@@ -20,9 +20,9 @@ import com.rabbitmq.http.client.Client;
 import com.sportradar.uf.datamodel.UfSportEventStatus;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchStatistics;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.entities.SoccerEvent;
+import com.sportradar.unifiedodds.sdk.entities.Match;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
 import com.sportradar.utils.Urn;
@@ -112,7 +112,7 @@ public class SportEventStatisticsIT {
         ) {
             val sportDataProvider = sdk.getSportDataProvider();
             val matchId = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
-            val match = (SoccerEvent) sportDataProvider.getSportEvent(matchId);
+            val match = (Match) sportDataProvider.getSportEvent(matchId);
             val statistics = match.getStatus().getStatistics();
 
             SapiMatchStatistics expectedStats = soccerMatchGermanyScotlandEuro2024().getStatistics();
@@ -160,7 +160,7 @@ public class SportEventStatisticsIT {
             listinerWaitingFor.theOnlyOddsChange();
 
             val sportDataProvider = sdk.getSportDataProvider();
-            val match = (SoccerEvent) sportDataProvider.getSportEvent(matchId);
+            val match = (Match) sportDataProvider.getSportEvent(matchId);
             val statistics = match.getStatus().getStatistics();
 
             StatisticsAssert

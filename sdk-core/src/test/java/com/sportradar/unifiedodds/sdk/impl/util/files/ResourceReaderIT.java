@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.util.files;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.io.CharStreams;
+import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -23,6 +24,6 @@ public class ResourceReaderIT {
         ) {
             text = CharStreams.toString(reader);
         }
-        assertThat(text).startsWith("version=3");
+        assertThat(text).startsWith("version=4");
     }
 }

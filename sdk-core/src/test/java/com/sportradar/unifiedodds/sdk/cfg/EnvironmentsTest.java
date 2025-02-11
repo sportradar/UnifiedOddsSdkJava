@@ -9,8 +9,6 @@ import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalProduction;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Integration;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Production;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.ProxySingapore;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.ProxyTokyo;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,8 +39,6 @@ public class EnvironmentsTest {
         nonReplayEnvironments.add(Custom);
         nonReplayEnvironments.add(GlobalProduction);
         nonReplayEnvironments.add(GlobalIntegration);
-        nonReplayEnvironments.add(ProxySingapore);
-        nonReplayEnvironments.add(ProxyTokyo);
 
         assertThat(Environments.getNonReplayEnvironments()).isEqualTo(nonReplayEnvironments);
     }

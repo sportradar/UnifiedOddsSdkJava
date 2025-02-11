@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 import com.rabbitmq.client.BlockedCallback;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.UnblockedCallback;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.SdkConnection;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 

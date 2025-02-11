@@ -4,7 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.TimelineEventCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.TimelineEventCi;
 import java.util.List;
 
 /**

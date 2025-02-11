@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.impl.apireaders;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.hc.core5.http.HttpStatus;

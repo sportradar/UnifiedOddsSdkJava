@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.sportradar.unifiedodds.sdk.ProducerScope;
 import org.junit.jupiter.api.Test;
 
 public class ProducerStubsTest {

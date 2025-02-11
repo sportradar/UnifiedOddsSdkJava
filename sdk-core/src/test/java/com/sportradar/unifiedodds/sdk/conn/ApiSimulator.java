@@ -178,6 +178,14 @@ public class ApiSimulator {
         );
     }
 
+    public void stubCompetitorProfileNotFound(Locale language, Urn id) {
+        stub(
+            HttpStatus.SC_NOT_FOUND,
+            format("/v1/sports/%s/competitors/%s/profile.xml", language.getLanguage(), id),
+            sapiNotFoundResponse()
+        );
+    }
+
     private JAXBElement<Response> sapiNotFoundResponse() {
         val sapiResponse = new Response();
         sapiResponse.setResponseCode(ResponseCode.NOT_FOUND);

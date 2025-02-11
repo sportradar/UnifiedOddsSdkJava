@@ -9,12 +9,12 @@ import com.google.common.cache.Cache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCi;
-import com.sportradar.unifiedodds.sdk.caching.impl.SportEventCacheImpl;
-import com.sportradar.unifiedodds.sdk.caching.impl.ci.CacheItemFactory;
-import com.sportradar.unifiedodds.sdk.impl.MappingTypeProvider;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventCacheImpl;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.ci.CacheItemFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.MappingTypeProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.utils.Urn;
 
 public class SportEvenCacheToProxyDataRouterManagerOnly {

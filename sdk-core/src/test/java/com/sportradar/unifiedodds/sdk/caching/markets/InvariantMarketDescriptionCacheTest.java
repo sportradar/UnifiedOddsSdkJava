@@ -9,15 +9,16 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.ODD_EVEN_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.impl.MarketDescriptionDataProviders.providingList;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static java.util.Arrays.asList;
 import static java.util.Locale.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
-import com.sportradar.unifiedodds.sdk.domain.language.Languages;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
+import com.sportradar.unifiedodds.sdk.internal.caching.Languages;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.VoidCallables;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -346,6 +347,29 @@ public class InvariantMarketDescriptionCacheTest {
 
         private void expectNotToFind(VoidCallables.ThrowingRunnable runnable) {
             assertThatThrownBy(runnable::run).isInstanceOf(CacheItemNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class OnInitialization {
+
+        @Test
+        public void automaticallyLoadsMarketDescriptionsForAllLanguages() throws Exception {
+            val dataProvider = providingList(
+                in(ENGLISH),
+                oddEvenMarketDescription(ENGLISH),
+                in(FRENCH),
+                oddEvenMarketDescription(FRENCH)
+            );
+
+            stubbingOutDataProvidersAndScheduler()
+                .with(dataProvider)
+                .withImmediatelyExecutingTaskScheduler()
+                .withPrefetchLanguages(asList(ENGLISH, FRENCH))
+                .build();
+
+            verify(dataProvider).getData(ENGLISH);
+            verify(dataProvider).getData(FRENCH);
         }
     }
 }

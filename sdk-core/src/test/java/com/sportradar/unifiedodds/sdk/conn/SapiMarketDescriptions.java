@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.conn.MarketVariant.OutcomeMapping;
 import com.sportradar.unifiedodds.sdk.conn.marketids.*;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.internal.impl.UnifiedFeedConstants;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;

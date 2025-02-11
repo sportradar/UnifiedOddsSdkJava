@@ -6,7 +6,8 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import static com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer.deserialize;
 import static com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer.serialize;
 
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableVenueCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.VenueCi;
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableVenueCi;
 import lombok.val;
 
 public final class VenueCis {

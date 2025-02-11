@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtilsImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.FluentExecutor;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.SignallingOnPollingQueue;

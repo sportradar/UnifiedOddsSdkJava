@@ -6,7 +6,8 @@ package com.sportradar.unifiedodds.sdk.caching.ci;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 
-import com.sportradar.unifiedodds.sdk.caching.exportable.ExportableDivisionCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.DivisionCi;
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableDivisionCi;
 import org.junit.jupiter.api.Test;
 
 public class DivisionCiTest {

@@ -7,6 +7,8 @@ import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.ProducerData;
+import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import java.util.List;
 
 public class ProducerDataProviderStubs {

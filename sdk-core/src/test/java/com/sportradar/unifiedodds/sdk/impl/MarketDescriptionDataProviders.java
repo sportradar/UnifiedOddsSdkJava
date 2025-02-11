@@ -9,7 +9,8 @@ import static org.mockito.Mockito.*;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.unifiedodds.sdk.conn.Identifiable;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.utils.domain.names.LanguageHolder;
 
 public final class MarketDescriptionDataProviders {

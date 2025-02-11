@@ -6,8 +6,9 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.DivisionCi;
 import com.sportradar.unifiedodds.sdk.entities.Division;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.DivisionCi;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.DivisionImpl;
 import org.junit.jupiter.api.Test;
 
 public class DivisionImplTest {

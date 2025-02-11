@@ -16,8 +16,6 @@ public class EnvironmentTest {
         assertEquals(Environment.GlobalIntegration, Environment.getEnvironment("GlobalIntegration"));
         assertEquals(Environment.Production, Environment.getEnvironment("Production"));
         assertEquals(Environment.GlobalProduction, Environment.getEnvironment("GlobalProduction"));
-        assertEquals(Environment.ProxySingapore, Environment.getEnvironment("ProxySingapore"));
-        assertEquals(Environment.ProxyTokyo, Environment.getEnvironment("ProxyTokyo"));
         assertEquals(Environment.Replay, Environment.getEnvironment("Replay"));
         assertEquals(Environment.GlobalReplay, Environment.getEnvironment("GlobalReplay"));
         assertEquals(Environment.Custom, Environment.getEnvironment("Custom"));

@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.SocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

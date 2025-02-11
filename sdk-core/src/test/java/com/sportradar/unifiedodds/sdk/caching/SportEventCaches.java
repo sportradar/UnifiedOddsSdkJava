@@ -3,19 +3,16 @@
  */
 package com.sportradar.unifiedodds.sdk.caching;
 
-import static java.util.Arrays.asList;
 import static org.mockito.Mockito.*;
 
-import com.sportradar.uf.sportsapi.datamodel.SapiMatchSummaryEndpoint;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
+import com.sportradar.unifiedodds.sdk.internal.caching.CompetitionCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.TournamentCi;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundException;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.LanguageHolder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.mockito.stubbing.Answer;
 
 public class SportEventCaches {

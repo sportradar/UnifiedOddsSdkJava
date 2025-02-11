@@ -2,6 +2,9 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
+import com.sportradar.unifiedodds.sdk.internal.impl.RegexRoutingKeyParser;
+import com.sportradar.unifiedodds.sdk.internal.impl.RoutingKeyParser;
 import com.sportradar.utils.Urn;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;

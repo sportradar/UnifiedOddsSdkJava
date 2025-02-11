@@ -13,11 +13,6 @@ public class UofProducerConfigurationStub implements UofProducerConfiguration {
     private Duration maxRecoveryTime;
     private Duration minIntervalBetweenRecoveryRequests;
 
-    @Override
-    public boolean adjustAfterAge() {
-        return false;
-    }
-
     public void setInactivitySeconds(Duration duration) {
         this.inactivitySeconds = duration;
     }

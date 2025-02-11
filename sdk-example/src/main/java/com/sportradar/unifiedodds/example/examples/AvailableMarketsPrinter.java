@@ -6,11 +6,11 @@ package com.sportradar.unifiedodds.example.examples;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
-import com.sportradar.unifiedodds.sdk.MarketDescriptionManager;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.markets.Specifier;
+import com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager;
 import java.util.Locale;
 import java.util.stream.Collectors;
 

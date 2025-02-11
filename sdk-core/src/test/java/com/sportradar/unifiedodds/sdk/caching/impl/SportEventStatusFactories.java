@@ -6,13 +6,11 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.cache.CacheBuilder;
 import com.sportradar.unifiedodds.sdk.caching.MatchStatusValues;
-import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.SportEventStatusCache;
-import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
-import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactoryImpl;
+import com.sportradar.unifiedodds.sdk.internal.caching.NamedValuesProvider;
+import com.sportradar.unifiedodds.sdk.internal.caching.SportEventStatusCache;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactoryImpl;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 

@@ -3,6 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
+
 public class HttpHelperPostTest extends HttpHelperWithStubbedHttpClientTest {
 
     @Override

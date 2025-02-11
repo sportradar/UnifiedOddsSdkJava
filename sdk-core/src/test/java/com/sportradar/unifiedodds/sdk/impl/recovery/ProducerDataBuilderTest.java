@@ -3,7 +3,7 @@ package com.sportradar.unifiedodds.sdk.impl.recovery;
 import static com.sportradar.unifiedodds.sdk.impl.recovery.ProducerDataBuilder.producerData;
 import static org.junit.Assert.*;
 
-import com.sportradar.unifiedodds.sdk.impl.ProducerData;
+import com.sportradar.unifiedodds.sdk.internal.impl.ProducerData;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "MagicNumber" })

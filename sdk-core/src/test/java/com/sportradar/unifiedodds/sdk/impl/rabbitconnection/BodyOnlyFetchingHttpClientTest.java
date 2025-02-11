@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.BodyOnlyFetchingHttpClient;
 import java.io.IOException;
 import lombok.val;
 import org.junit.Rule;

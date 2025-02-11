@@ -4,7 +4,8 @@
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CacheItemNotFoundException;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionProvider;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;

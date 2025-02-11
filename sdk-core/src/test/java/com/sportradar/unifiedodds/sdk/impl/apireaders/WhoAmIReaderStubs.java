@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import java.time.Duration;
 import java.util.Date;
 

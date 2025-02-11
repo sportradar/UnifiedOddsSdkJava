@@ -10,9 +10,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
 import com.sportradar.unifiedodds.sdk.shared.CloseableHttpClientFixture;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
 import java.io.IOException;

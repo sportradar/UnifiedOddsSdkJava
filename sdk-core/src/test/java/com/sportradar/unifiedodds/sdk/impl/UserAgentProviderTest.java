@@ -7,6 +7,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
 import java.time.Instant;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;

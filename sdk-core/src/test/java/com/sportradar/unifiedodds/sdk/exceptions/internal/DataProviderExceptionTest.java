@@ -5,6 +5,8 @@ package com.sportradar.unifiedodds.sdk.exceptions.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 

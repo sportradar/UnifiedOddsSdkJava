@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 
 public class DataRouterManagers {
 

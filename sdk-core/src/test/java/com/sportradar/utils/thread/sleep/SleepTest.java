@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 
-import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.LogsMock;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.LogsMock;
 import java.util.Optional;
 import lombok.val;
 import org.junit.jupiter.api.Test;

@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+
 public class ClassResolverStubs {
 
     private ClassResolverStubs() {}

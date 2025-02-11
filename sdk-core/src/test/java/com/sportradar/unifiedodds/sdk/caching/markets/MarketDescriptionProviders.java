@@ -8,7 +8,11 @@ import static org.mockito.Mockito.mock;
 
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.uf.sportsapi.datamodel.VariantDescriptions;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.InvariantMarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionProviderImpl;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantMarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import java.util.function.Function;
 import lombok.val;
 

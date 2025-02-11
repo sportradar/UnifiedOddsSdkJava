@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.ci.matchers;
 
-import com.sportradar.unifiedodds.sdk.domain.language.Translations;
+import com.sportradar.unifiedodds.sdk.internal.caching.Translations;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.TranslationHolder;
 import java.util.Locale;

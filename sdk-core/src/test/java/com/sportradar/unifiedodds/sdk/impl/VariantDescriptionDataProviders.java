@@ -8,7 +8,8 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.uf.sportsapi.datamodel.DescVariant;
 import com.sportradar.uf.sportsapi.datamodel.VariantDescriptions;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import lombok.val;
 
@@ -20,6 +21,18 @@ public final class VariantDescriptionDataProviders {
     ) throws DataProviderException {
         DataProvider<VariantDescriptions> dataProvider = mock(DataProvider.class);
         when(dataProvider.getData(language.get())).thenReturn(getVariantDescriptions(variantDescription));
+        return dataProvider;
+    }
+
+    public static DataProvider<VariantDescriptions> providingList(
+        LanguageHolder languageA,
+        DescVariant variantDescriptionA,
+        LanguageHolder languageB,
+        DescVariant variantDescriptionB
+    ) throws DataProviderException {
+        DataProvider<VariantDescriptions> dataProvider = mock(DataProvider.class);
+        when(dataProvider.getData(languageA.get())).thenReturn(getVariantDescriptions(variantDescriptionA));
+        when(dataProvider.getData(languageB.get())).thenReturn(getVariantDescriptions(variantDescriptionB));
         return dataProvider;
     }
 

@@ -3,9 +3,7 @@
  */
 package com.sportradar.utils.time;
 
-import static com.sportradar.utils.time.TimeInterval.seconds;
-
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

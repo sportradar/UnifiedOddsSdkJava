@@ -2,8 +2,9 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import com.sportradar.uf.datamodel.UfAlive;
 import com.sportradar.uf.sportsapi.datamodel.SapiFixturesEndpoint;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DeserializationException;
+import com.sportradar.unifiedodds.sdk.internal.impl.TestingDataProvider;
 import org.junit.Assert;
 import org.junit.Test;
 

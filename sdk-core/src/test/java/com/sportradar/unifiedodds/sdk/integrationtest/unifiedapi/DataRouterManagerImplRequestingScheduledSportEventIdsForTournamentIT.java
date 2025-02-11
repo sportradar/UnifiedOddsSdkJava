@@ -19,12 +19,12 @@ import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.DataRouter;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterManagerImpl;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.impl.*;
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterManagerImpl;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
 import javax.xml.bind.JAXBContext;
@@ -253,6 +253,12 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
         @Provides
         private DataProvider<SapiStagePeriodEndpoint> stagePeriods() {
             return mock(DataProvider.class);
+        }
+
+        @Provides
+        @Named("InternalSdkTelemetryFactory")
+        private TelemetryFactory provideTelemetryFactory() {
+            return mock(TelemetryFactory.class);
         }
     }
 }

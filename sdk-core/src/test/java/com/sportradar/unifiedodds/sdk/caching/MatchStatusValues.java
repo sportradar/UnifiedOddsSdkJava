@@ -4,6 +4,7 @@
 package com.sportradar.unifiedodds.sdk.caching;
 
 import com.sportradar.unifiedodds.sdk.entities.LocalizedNamedValue;
+import com.sportradar.unifiedodds.sdk.internal.caching.LocalizedNamedValueCache;
 import java.util.List;
 import java.util.Locale;
 

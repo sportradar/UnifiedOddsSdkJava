@@ -7,8 +7,6 @@ package com.sportradar.unifiedodds.example.common;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.entities.status.CompetitionStatus;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
-import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatistics;
-import com.sportradar.unifiedodds.sdk.entities.status.SoccerStatus;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
@@ -148,22 +146,6 @@ public class SportEntityWriter {
             writeData(event.getAwayCompetitor()),
             writeData(event.getSeason()),
             writeData(event.getTournamentRound()),
-            writeData(event.getStatus())
-        );
-    }
-
-    /**
-     * Builds and returns a description for the provided {@link SoccerEvent}
-     *
-     * @param event the {@link SoccerEvent} from which to compose the description
-     * @return a {@link String} describing the provided {@link SoccerEvent}
-     */
-    public String writeData(SoccerEvent event) {
-        String baselineDescription = writeData((Match) event);
-
-        return String.format(
-            "SoccerEvent-%s, Status:'%s']",
-            baselineDescription,
             writeData(event.getStatus())
         );
     }
@@ -443,62 +425,6 @@ public class SportEntityWriter {
         );
     }
 
-    /**
-     * Builds and returns a description for the provided {@link SoccerStatus}
-     *
-     * @param status the {@link SoccerStatus} from which to compose the description
-     * @return a {@link String} describing the provided {@link SoccerStatus}
-     */
-    private String writeData(SoccerStatus status) {
-        if (status == null) {
-            return "";
-        }
-        return (
-            writeData((MatchStatus) status) +
-            ", " +
-            String.format("Statistics:'%s'", writeData(status.getStatistics()))
-        );
-    }
-
-    /**
-     * Builds and returns a description for the provided {@link SoccerStatistics}
-     *
-     * @param statistics the {@link SoccerStatistics} from which to compose the description
-     * @return a {@link String} describing the provided {@link SoccerStatistics}
-     */
-    private String writeData(SoccerStatistics statistics) {
-        if (statistics == null) {
-            return "No statistics";
-        }
-
-        String totalStats = null;
-        if (statistics.getTotalStatistics() != null) {
-            StringJoiner sj = new StringJoiner(",");
-            statistics
-                .getTotalStatistics()
-                .forEach(s ->
-                    sj.add(
-                        String.format(
-                            "[HomeAway:'%s', YellowCards:'%s', RedCards:'%s', CornerKicks:'%s']",
-                            s.getHomeAway(),
-                            s.getYellowCards(),
-                            s.getRedCards(),
-                            s.getCornerKicks()
-                        )
-                    )
-                );
-            totalStats = sj.toString();
-        }
-
-        return String.format(
-            "TotalStatistics:'%s', PeriodStatistics:'%s'",
-            totalStats == null ? "No total statistics" : totalStats,
-            statistics.getPeriodStatistics() == null
-                ? "No period statistics"
-                : statistics.getPeriodStatistics().size() + " periods available"
-        );
-    }
-
     public void writeData(SportEvent sportEvent) {
         String description = null;
         if (sportEvent != null) {
@@ -509,8 +435,6 @@ public class SportEntityWriter {
                 description = writeData((BasicTournament) sportEvent);
             } else if (sportEvent instanceof Season) {
                 description = writeData((Season) sportEvent);
-            } else if (sportEvent instanceof SoccerEvent) {
-                description = writeData((SoccerEvent) sportEvent);
             } else if (sportEvent instanceof Match) {
                 description = writeData((Match) sportEvent);
             } else if (sportEvent instanceof Stage) {
@@ -546,8 +470,6 @@ public class SportEntityWriter {
                 description = sportEntityWriter.writeData((BasicTournament) sportEvent);
             } else if (sportEvent instanceof Season) {
                 description = sportEntityWriter.writeData((Season) sportEvent);
-            } else if (sportEvent instanceof SoccerEvent) {
-                description = sportEntityWriter.writeData((SoccerEvent) sportEvent);
             } else if (sportEvent instanceof Match) {
                 description = sportEntityWriter.writeData((Match) sportEvent);
             } else if (sportEvent instanceof Stage) {

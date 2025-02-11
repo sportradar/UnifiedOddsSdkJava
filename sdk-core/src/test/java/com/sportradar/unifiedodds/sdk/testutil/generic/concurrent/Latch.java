@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.testutil.generic.concurrent;
 
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 

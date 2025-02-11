@@ -4,7 +4,7 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.ExchangeLocation;

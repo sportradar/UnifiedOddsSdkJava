@@ -19,9 +19,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
 import com.sportradar.unifiedodds.sdk.cfg.*;
-import com.sportradar.unifiedodds.sdk.impl.EnvironmentManager;
-import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.internal.cfg.*;
+import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
+import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -274,7 +276,7 @@ public class ConfigureApiHostAndPortTest {
                 .setDefaultLanguage(anyLanguage)
                 .setApiHost("urlWhichShouldBeReplaced")
                 .build();
-            com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater updater = createUpdaterFrom(config);
+            com.sportradar.unifiedodds.sdk.internal.cfg.ApiHostUpdater updater = createUpdaterFrom(config);
             updater.updateToIntegration();
             val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
             val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
@@ -299,7 +301,7 @@ public class ConfigureApiHostAndPortTest {
                 .setDefaultLanguage(anyLanguage)
                 .setApiHost("urlWhichShouldBeReplaced")
                 .build();
-            com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater updater = createUpdaterFrom(config);
+            com.sportradar.unifiedodds.sdk.internal.cfg.ApiHostUpdater updater = createUpdaterFrom(config);
             updater.updateToProduction();
             val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
             val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
@@ -316,12 +318,12 @@ public class ConfigureApiHostAndPortTest {
                 .isEqualTo(productionApiHost);
         }
 
-        private com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater createUpdaterFrom(
+        private com.sportradar.unifiedodds.sdk.internal.cfg.ApiHostUpdater createUpdaterFrom(
             final UofConfiguration configuration
         ) {
             return Guice
                 .createInjector(new ConfigurationProvidingModule(configuration))
-                .getInstance(com.sportradar.unifiedodds.sdk.cfg.ApiHostUpdater.class);
+                .getInstance(com.sportradar.unifiedodds.sdk.internal.cfg.ApiHostUpdater.class);
         }
 
         public class ConfigurationProvidingModule extends AbstractModule {

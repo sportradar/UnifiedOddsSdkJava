@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.unifiedodds.sdk.oddsentities.ProducerScope;
 import java.util.*;
 import java.util.stream.Collectors;
 

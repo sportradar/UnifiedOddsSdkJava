@@ -25,6 +25,7 @@ import com.rabbitmq.http.client.Client;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.conn.*;
 import com.sportradar.unifiedodds.sdk.conn.RoutingKeys;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
 import java.io.IOException;

@@ -4,7 +4,7 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import com.sportradar.uf.sportsapi.datamodel.DescSpecifiers;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.internal.impl.UnifiedFeedConstants;
 
 public class SpecifierDescriptions {
 

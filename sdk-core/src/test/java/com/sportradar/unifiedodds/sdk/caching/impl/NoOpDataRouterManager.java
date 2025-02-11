@@ -4,16 +4,16 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
-import com.sportradar.unifiedodds.sdk.caching.CacheItem;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.custombetentities.AvailableSelections;
-import com.sportradar.unifiedodds.sdk.custombetentities.Calculation;
-import com.sportradar.unifiedodds.sdk.custombetentities.CalculationFilter;
-import com.sportradar.unifiedodds.sdk.custombetentities.Selection;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
+import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
+import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
+import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.caching.CacheItem;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;

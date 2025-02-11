@@ -10,10 +10,14 @@ import static org.mockito.Mockito.mock;
 
 import com.google.common.cache.CacheBuilder;
 import com.sportradar.uf.sportsapi.datamodel.MarketDescriptions;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.ObservableDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
-import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.InvariantMarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.ObservableDataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.mappings.MappingValidatorFactoryImpl;
+import java.util.List;
+import java.util.Locale;
 
 public class InvariantMarketDescriptionCaches {
 
@@ -24,9 +28,21 @@ public class InvariantMarketDescriptionCaches {
     public static class InvariantMarketDescriptionCachesBuilder {
 
         private DataProvider<MarketDescriptions> dataProvider;
+        private SdkTaskScheduler scheduler;
+        private List<Locale> prefetchLanguages;
 
         public InvariantMarketDescriptionCachesBuilder with(DataProvider<MarketDescriptions> provider) {
             this.dataProvider = provider;
+            return this;
+        }
+
+        public InvariantMarketDescriptionCachesBuilder withImmediatelyExecutingTaskScheduler() {
+            this.scheduler = new ImmediatelyExecutingTaskScheduler();
+            return this;
+        }
+
+        public InvariantMarketDescriptionCachesBuilder withPrefetchLanguages(List<Locale> languages) {
+            this.prefetchLanguages = languages;
             return this;
         }
 
@@ -36,8 +52,9 @@ public class InvariantMarketDescriptionCaches {
                 ofNullable(dataProvider).orElse(mock(DataProvider.class, withGetDataThrowingByDefault())),
                 mock(ObservableDataProvider.class),
                 new MappingValidatorFactoryImpl(),
-                mock(SdkTaskScheduler.class),
-                anyLanguages()
+                ofNullable(scheduler).orElse(mock(SdkTaskScheduler.class)),
+                ofNullable(prefetchLanguages).orElse(anyLanguages()),
+                mock(TelemetryFactory.class)
             );
         }
     }

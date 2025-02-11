@@ -4,7 +4,7 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
-import static com.sportradar.unifiedodds.sdk.impl.ValidationResult.*;
+import static com.sportradar.unifiedodds.sdk.internal.impl.ValidationResult.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,9 +12,10 @@ import static org.mockito.Mockito.when;
 import com.google.inject.Injector;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.di.TestInjectorFactory;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DeserializationException;
+import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DeserializationException;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
 import java.util.Locale;
@@ -22,7 +23,6 @@ import java.util.function.Consumer;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "MultipleStringLiterals", "VisibilityModifier" })
 public class FeedMessageValidatorTest {

@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.internal.impl.UnifiedFeedConstants;
 import com.sportradar.utils.domain.specifiers.MarketSpecifiers;
 import java.util.List;
 import java.util.Locale;

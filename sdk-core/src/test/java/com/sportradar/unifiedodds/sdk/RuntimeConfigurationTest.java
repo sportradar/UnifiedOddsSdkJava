@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.RuntimeConfiguration;
 import java.time.Duration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

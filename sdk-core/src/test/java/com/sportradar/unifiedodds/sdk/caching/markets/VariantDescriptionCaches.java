@@ -10,9 +10,14 @@ import static org.mockito.Mockito.mock;
 
 import com.google.common.cache.CacheBuilder;
 import com.sportradar.uf.sportsapi.datamodel.VariantDescriptions;
-import com.sportradar.unifiedodds.sdk.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
-import com.sportradar.unifiedodds.sdk.impl.markets.mappings.MappingValidatorFactoryImpl;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantDescriptionCacheImpl;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.mappings.MappingValidatorFactoryImpl;
+import java.util.List;
+import java.util.Locale;
 
 public class VariantDescriptionCaches {
 
@@ -23,9 +28,21 @@ public class VariantDescriptionCaches {
     public static class VariantDescriptionCachesBuilder {
 
         private DataProvider<VariantDescriptions> dataProvider;
+        private SdkTaskScheduler scheduler;
+        private List<Locale> prefetchLanguages;
 
         public VariantDescriptionCachesBuilder with(DataProvider<VariantDescriptions> provider) {
             this.dataProvider = provider;
+            return this;
+        }
+
+        public VariantDescriptionCachesBuilder withImmediatelyExecutingTaskScheduler() {
+            this.scheduler = new ImmediatelyExecutingTaskScheduler();
+            return this;
+        }
+
+        public VariantDescriptionCachesBuilder withPrefetchLanguages(List<Locale> languages) {
+            this.prefetchLanguages = languages;
             return this;
         }
 
@@ -34,8 +51,9 @@ public class VariantDescriptionCaches {
                 CacheBuilder.newBuilder().build(),
                 ofNullable(dataProvider).orElse(mock(DataProvider.class, withGetDataThrowingByDefault())),
                 new MappingValidatorFactoryImpl(),
-                mock(SdkTaskScheduler.class),
-                anyLanguages()
+                ofNullable(scheduler).orElse(mock(SdkTaskScheduler.class)),
+                ofNullable(prefetchLanguages).orElse(anyLanguages()),
+                mock(TelemetryFactory.class)
             );
         }
     }

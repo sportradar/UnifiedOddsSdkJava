@@ -9,7 +9,8 @@ import static org.mockito.Mockito.*;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiSimpleTeamProfileEndpoint;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import lombok.SneakyThrows;
 import org.mockito.invocation.InvocationOnMock;

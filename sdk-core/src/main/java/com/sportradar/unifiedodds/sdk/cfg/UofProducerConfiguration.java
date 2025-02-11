@@ -10,12 +10,6 @@ import java.util.List;
 
 public interface UofProducerConfiguration {
     /**
-     * Gets a value indicating whether the after age should be adjusted before executing recovery request
-     * @return a value indicating whether the after age should be adjusted
-     */
-    boolean adjustAfterAge();
-
-    /**
      * @return The longest inactivity interval between producer alive messages (seconds)
      */
     Duration getInactivitySeconds();

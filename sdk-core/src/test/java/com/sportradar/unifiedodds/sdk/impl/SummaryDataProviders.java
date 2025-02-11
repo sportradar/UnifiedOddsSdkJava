@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchSummaryEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiStageSummaryEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
-import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import lombok.SneakyThrows;
 

@@ -6,8 +6,8 @@ package com.sportradar.unifiedodds.sdk.caching.ci.matchers;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
-import com.sportradar.unifiedodds.sdk.caching.ci.CourseCi;
-import com.sportradar.unifiedodds.sdk.caching.ci.VenueCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.CourseCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.VenueCi;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.TranslationHolder;

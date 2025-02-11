@@ -1,11 +1,27 @@
 ### Unified Feed SDK 3.x changelog
 
-**3.5.2**
+**4.0.0 (2025-02-11) (breaking change) **
+
+- ExceptionHandlingStrategy default value is changed to Throw (before Catch)
+- Asian proxy environments are no longer supported therefore they are removed from enum Environment
+- Outdated entities are removed. Affected entities are - SoccerEvent, SoccerStatistics, SoccerStatus, SoccerUofListener
+- Entities Calculation, CalculationFilter, MatchStatus, CustomBetSelectionBuilder and Selection no longer contain default implementations of methods
+- ExportableCompetitorCi.isVirtual is nullable. Null value means that the information was not yet retrieved from the server or that the server call failed when exception handling strategy is set to CATCH.
+- Renamed AvailableSelections.getEvent to getEventId
+- Renamed AvailableSelectionsFilter.getEvent to getEventId
+- UofUsageConfiguration exposed via UofConfiguration.getUsage for properties configuring usage export (metrics)
+- UofConfiguration.getUsage().isExportEnabled (default: enabled)
+- Added ConfigurationBuilder.enableUsageExport(bool enable) method
+- Competitor.isVirtual is initialized with a boolean value unless the competitor profile retrieval has failed
+- SDK package restructuring. com.sportradar.unifiedodds.sdk.internal and its subpackages are considered internal and should not be used in client implementations.
+- Updated Sdk dependencies
+- Check associated migration guide for more details
+
+**3.5.2 (2025-01-08)**
 - fix: JMX statistics published by the SDK are now properly being updated.
 
-**3.5.1** (2024-10-28)
+**3.5.1 (2024-10-28)** 
 - fix: restore previous SelectionImpl constructor to preserve backward compatibility for clients relying on the internal SelectionImpl (CustomBetManager.getSelectionBuilder() is the only recommended way to construct selections with SDK)
-
 
 **3.5.0 (2024-10-22)**
 

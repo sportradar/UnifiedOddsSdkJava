@@ -7,27 +7,29 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.sportradar.uf.custombet.datamodel.*;
 import com.sportradar.unifiedodds.sdk.CapiCustomBet;
-import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilder;
-import com.sportradar.unifiedodds.sdk.CustomBetSelectionBuilderImpl;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.conn.UofConnListener;
-import com.sportradar.unifiedodds.sdk.custombetentities.*;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationFilterImpl;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.CalculationImpl;
-import com.sportradar.unifiedodds.sdk.impl.custombetentities.SelectionImpl;
+import com.sportradar.unifiedodds.sdk.entities.custombet.*;
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.CustomBetSelectionBuilderImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.AvailableSelectionsImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationFilterImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.SelectionImpl;
+import com.sportradar.unifiedodds.sdk.internal.shared.TestDataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.shared.TestFeed;
+import com.sportradar.unifiedodds.sdk.managers.CustomBetSelectionBuilder;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
-import com.sportradar.unifiedodds.sdk.shared.TestDataRouterManager;
-import com.sportradar.unifiedodds.sdk.shared.TestFeed;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.Urn;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,24 +52,25 @@ public class CustomBetEntityTests {
     private CustomBetSelectionBuilder customBetSelectionBuilder;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         StubUofConfiguration stubUofConfiguration = new StubUofConfiguration();
         stubUofConfiguration.setEnvironment(Environment.Production);
         stubUofConfiguration.resetNbrSetEnvironmentCalled();
 
         UofConnListener sdkListener = new UofConnListener();
-        TestFeed feed = new TestFeed(sdkListener, stubUofConfiguration, sdkListener);
+        try (TestFeed feed = new TestFeed(sdkListener, stubUofConfiguration, sdkListener)) {
+            DataRouterImpl dataRouter = new DataRouterImpl();
+            dataRouter.setDataListeners(new ArrayList<>());
+            dataRouterManager = new TestDataRouterManager(feed.TestHttpHelper, dataRouter);
+        }
 
-        DataRouterImpl dataRouter = new DataRouterImpl();
-        dataRouter.setDataListeners(new ArrayList<>());
-        dataRouterManager = new TestDataRouterManager(feed.TestHttpHelper, dataRouter);
         customBetSelectionBuilder = new CustomBetSelectionBuilderImpl();
     }
 
     @Test
     public void availableSelectionsMapTest() {
         CapiAvailableSelections availableSelectionsType = CapiCustomBet.getAvailableSelectionsResponse(
-            Urn.parse("sr:match:1000"),
+            eventId,
             10
         );
         AvailableSelections resultAvailableSelections = CapiCustomBet.getAvailableSelections(
@@ -80,7 +83,7 @@ public class CustomBetEntityTests {
     @Test
     public void availableSelectionsEmptyMapTest() {
         CapiAvailableSelections availableSelectionsType = CapiCustomBet.getAvailableSelectionsResponse(
-            Urn.parse("sr:match:1000"),
+            eventId,
             0
         );
         Assert.assertTrue(availableSelectionsType.getEvent().getMarkets().getMarkets().isEmpty());
@@ -89,6 +92,36 @@ public class CustomBetEntityTests {
         );
         Assert.assertTrue(resultAvailableSelections.getMarkets().isEmpty());
         availableSelectionsCompare(availableSelectionsType, resultAvailableSelections);
+    }
+
+    @Test
+    public void availableSelectionsNullMarketsTest() {
+        CapiAvailableSelections availableSelectionsType = CapiCustomBet.getAvailableSelectionsResponse(
+            eventId,
+            0
+        );
+        availableSelectionsType.getEvent().setMarkets(null);
+        Assert.assertNull(availableSelectionsType.getEvent().getMarkets());
+
+        AvailableSelections resultAvailableSelections = CapiCustomBet.getAvailableSelections(
+            availableSelectionsType
+        );
+
+        Assert.assertTrue(resultAvailableSelections.getMarkets().isEmpty());
+    }
+
+    @Test
+    public void availableSelectionsEventNullMarketsTest() {
+        CapiEventType capiEventType = CapiCustomBet.getEventType(eventId, 0);
+        capiEventType.setMarkets(null);
+        Assert.assertNull(capiEventType.getMarkets());
+
+        AvailableSelections resultAvailableSelections = new AvailableSelectionsImpl(
+            capiEventType,
+            "generatedAt"
+        );
+
+        Assert.assertTrue(resultAvailableSelections.getMarkets().isEmpty());
     }
 
     @Test
@@ -169,7 +202,7 @@ public class CustomBetEntityTests {
 
             Assert.assertEquals(
                 Urn.parse(sourceAvailableSelection.getId()),
-                resultAvailableSelection.getEvent()
+                resultAvailableSelection.getEventId()
             );
             for (CapiMarketType sourceMarket : sourceAvailableSelection.getMarkets().getMarkets()) {
                 Market resultMarket = resultAvailableSelection
@@ -182,19 +215,17 @@ public class CustomBetEntityTests {
                 this.marketCompare(sourceMarket, resultMarket);
             }
         }
-        int marketCount = calculation
+        int marketCount = (int) calculation
             .getAvailableSelections()
             .stream()
-            .flatMap(s -> s.getMarkets().stream())
-            .collect(Collectors.toList())
-            .size();
-        int outcomeCount = calculation
+            .mapToLong(s -> s.getMarkets().size())
+            .sum();
+        int outcomeCount = (int) calculation
             .getAvailableSelections()
             .stream()
             .flatMap(s -> s.getMarkets().stream().flatMap(f2 -> f2.getOutcomes().stream()))
-            .collect(Collectors.toList())
-            .size();
-        System.out.printf("Calculation has {} markets and {} outcomes.%n", marketCount, outcomeCount);
+            .count();
+        System.out.printf("Calculation has %d markets and %d outcomes.%n", marketCount, outcomeCount);
     }
 
     @Test
@@ -229,19 +260,17 @@ public class CustomBetEntityTests {
                 calculation.getGeneratedAt()
             );
         }
-        int marketCount = calculation
+        int marketCount = (int) calculation
             .getAvailableSelections()
             .stream()
-            .flatMap(s -> s.getMarkets().stream())
-            .collect(Collectors.toList())
-            .size();
-        int outcomeCount = calculation
+            .mapToLong(s -> s.getMarkets().size())
+            .sum();
+        int outcomeCount = (int) calculation
             .getAvailableSelections()
             .stream()
             .flatMap(s -> s.getMarkets().stream().flatMap(f2 -> f2.getOutcomes().stream()))
-            .collect(Collectors.toList())
-            .size();
-        System.out.printf("Calculation has {} markets and {} outcomes.%n", marketCount, outcomeCount);
+            .count();
+        System.out.printf("Calculation has %d markets and %d outcomes.%n", marketCount, outcomeCount);
     }
 
     @Test
@@ -288,7 +317,7 @@ public class CustomBetEntityTests {
 
             Assert.assertEquals(
                 Urn.parse(sourceAvailableSelection.getId()),
-                resultAvailableSelection.getEvent()
+                resultAvailableSelection.getEventId()
             );
             for (CapiFilteredMarketType sourceMarket : sourceAvailableSelection.getMarkets().getMarkets()) {
                 MarketFilter resultMarket = resultAvailableSelection
@@ -301,26 +330,24 @@ public class CustomBetEntityTests {
                 marketCompare(sourceMarket, resultMarket);
             }
         }
-        int marketCount = calculation
+        int marketCount = (int) calculation
             .getAvailableSelections()
             .stream()
-            .flatMap(s -> s.getMarkets().stream())
-            .collect(Collectors.toList())
-            .size();
-        int outcomeCount = calculation
+            .mapToLong(s -> s.getMarkets().size())
+            .sum();
+        int outcomeCount = (int) calculation
             .getAvailableSelections()
             .stream()
             .flatMap(s -> s.getMarkets().stream().flatMap(f2 -> f2.getOutcomes().stream()))
-            .collect(Collectors.toList())
-            .size();
-        System.out.printf("Calculation has {} markets and {} outcomes.%n", marketCount, outcomeCount);
+            .count();
+        System.out.printf("Calculation has %d markets and %d outcomes.%n", marketCount, outcomeCount);
     }
 
     @Test
     public void getAvailableSelectionsTest() throws CommunicationException {
         AvailableSelections availableSelections = dataRouterManager.requestAvailableSelections(eventId);
         Assert.assertNotNull(availableSelections);
-        Assert.assertEquals(eventId, availableSelections.getEvent());
+        Assert.assertEquals(eventId, availableSelections.getEventId());
         Assert.assertFalse(availableSelections.getMarkets().isEmpty());
     }
 
@@ -351,7 +378,7 @@ public class CustomBetEntityTests {
         Calculation calculation = dataRouterManager.requestCalculateProbability(matchSelections);
 
         Assert.assertNotNull(calculation);
-        Assert.assertEquals(eventId, calculation.getAvailableSelections().get(0).getEvent());
+        Assert.assertEquals(eventId, calculation.getAvailableSelections().get(0).getEventId());
         Assert.assertFalse(calculation.getAvailableSelections().isEmpty());
     }
 
@@ -382,7 +409,7 @@ public class CustomBetEntityTests {
         CalculationFilter calculation = dataRouterManager.requestCalculateProbabilityFilter(matchSelections);
 
         Assert.assertNotNull(calculation);
-        Assert.assertEquals(eventId, calculation.getAvailableSelections().get(0).getEvent());
+        Assert.assertEquals(eventId, calculation.getAvailableSelections().get(0).getEventId());
         Assert.assertFalse(calculation.getAvailableSelections().isEmpty());
     }
 
@@ -484,38 +511,6 @@ public class CustomBetEntityTests {
             .setOdds(1.5);
 
         assertThrows(NullPointerException.class, customBetSelectionBuilder::build);
-    }
-
-    @Test
-    public void defaultImplementationCustomBetSelectionBuilderThrowsUnsupportedOperationException() {
-        CustomBetSelectionBuilder defaultCbSelectionBuilder = CapiCustomBet.getDefaultImplCustomBetSelectionBuilder();
-
-        assertThrows(UnsupportedOperationException.class, () -> defaultCbSelectionBuilder.setOdds(1.5));
-        assertThrows(
-            UnsupportedOperationException.class,
-            () -> defaultCbSelectionBuilder.build(eventId, 5, "spec=23", "23", 1.5)
-        );
-    }
-
-    @Test
-    public void defaultImplementationSelectionGetOddsThrowsUnsupportedOperationException() {
-        Selection selection = CapiCustomBet.getDefaultImplementationSelection();
-
-        assertThrows(UnsupportedOperationException.class, selection::getOdds);
-    }
-
-    @Test
-    public void defaultImplementationCalculationIsHarmonizationThrowsUnsupportedOperationException() {
-        Calculation calculation = CapiCustomBet.getDefaultImplementationCalculation();
-
-        assertThrows(UnsupportedOperationException.class, calculation::isHarmonization);
-    }
-
-    @Test
-    public void defaultImplementationCalculationFilterIsHarmonizationThrowsUnsupportedOperationException() {
-        CalculationFilter calculation = CapiCustomBet.getDefaultImplementationCalculationFilter();
-
-        assertThrows(UnsupportedOperationException.class, calculation::isHarmonization);
     }
 
     @Test
@@ -627,7 +622,7 @@ public class CustomBetEntityTests {
         Assert.assertNotNull(source.getEvent());
         Assert.assertFalse(SdkHelper.stringIsNullOrEmpty(source.getGeneratedAt()));
 
-        Assert.assertEquals(source.getEvent().getId(), result.getEvent().toString());
+        Assert.assertEquals(source.getEvent().getId(), result.getEventId().toString());
 
         if (source.getEvent().getMarkets().getMarkets().isEmpty()) {
             Assert.assertTrue(result.getMarkets().isEmpty());
@@ -682,7 +677,7 @@ public class CustomBetEntityTests {
             OutcomeFilter resultOutcome = result
                 .getOutcomes()
                 .stream()
-                .filter(f -> f.getId() == sourceOutcome.getId())
+                .filter(f -> Objects.equals(f.getId(), sourceOutcome.getId()))
                 .findFirst()
                 .get();
             Assert.assertNotNull(resultOutcome);

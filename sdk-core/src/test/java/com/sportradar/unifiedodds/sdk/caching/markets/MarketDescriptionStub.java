@@ -3,16 +3,10 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
-import com.sportradar.uf.sportsapi.datamodel.DescMarket;
-import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
-import com.sportradar.unifiedodds.sdk.domain.language.Translations;
 import com.sportradar.unifiedodds.sdk.entities.markets.*;
+import com.sportradar.unifiedodds.sdk.internal.caching.Translations;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
-import lombok.var;
 
 @RequiredArgsConstructor
 public class MarketDescriptionStub implements MarketDescription {

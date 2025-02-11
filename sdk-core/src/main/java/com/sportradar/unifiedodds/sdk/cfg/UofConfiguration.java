@@ -85,4 +85,11 @@ public interface UofConfiguration {
      * @return the additional configuration
      */
     UofAdditionalConfiguration getAdditional();
+
+    /**
+     * Gets the settings for usage exporter
+     *
+     * @return the settings for usage exporter
+     */
+    UofUsageConfiguration getUsage();
 }

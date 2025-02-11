@@ -3,6 +3,9 @@
  */
 package com.sportradar.unifiedodds.sdk.impl;
 
+import com.sportradar.unifiedodds.sdk.internal.impl.MappingTypeProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.MappingTypeProviderImpl;
+
 public class MappingTypeProviderImplConstructor {
 
     private MappingTypeProviderImplConstructor() {}

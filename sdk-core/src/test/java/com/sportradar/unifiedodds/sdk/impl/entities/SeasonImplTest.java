@@ -15,13 +15,14 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.caching.impl.SportEventCacheImpl;
 import com.sportradar.unifiedodds.sdk.entities.Competition;
 import com.sportradar.unifiedodds.sdk.entities.Season;
+import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventCacheImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.SeasonImpl;
 import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;

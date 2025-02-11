@@ -5,6 +5,7 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 
 import static org.junit.Assert.*;
 
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableDivisionCi;
 import org.junit.jupiter.api.Test;
 
 public class ExportableDivisionCiTest {

@@ -8,7 +8,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
-import com.sportradar.unifiedodds.sdk.exceptions.internal.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataWrapper;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import org.apache.hc.core5.http.Header;
 

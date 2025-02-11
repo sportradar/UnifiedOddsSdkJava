@@ -9,6 +9,7 @@ import static java.util.Collections.emptyList;
 
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SdkSetup {
@@ -38,6 +40,7 @@ public final class SdkSetup {
 
     private Optional<UofListener> messagesListener = Optional.empty();
     private Optional<ExceptionHandlingStrategy> exceptionHandlingStrategy = Optional.empty();
+    private boolean useDefaultExceptionHandlingStrategy;
     private Optional<Locale> defaultLanguage = Optional.empty();
     private Optional<List<Locale>> desiredLanguages = Optional.empty();
 
@@ -80,8 +83,13 @@ public final class SdkSetup {
         return this;
     }
 
+    public SdkSetup withDefaultExceptionHandlingStrategy() {
+        useDefaultExceptionHandlingStrategy = true;
+        return this;
+    }
+
     public UofSdk withoutFeed() throws InitException {
-        UofConfiguration config = UofSdk
+        val config = UofSdk
             .getUofConfigurationBuilder()
             .setAccessToken(sdkCredentials.getUsername())
             .selectCustom()
@@ -89,15 +97,21 @@ public final class SdkSetup {
             .setApiHost(sportsApiBaseUrl.get())
             .setDefaultLanguage(defaultLanguage.orElse(Languages.any()))
             .setDesiredLanguages(desiredLanguages.orElse(emptyList()))
-            .setExceptionHandlingStrategy(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()))
-            .setNodeId(nodeId)
-            .build();
+            .setNodeId(nodeId);
 
-        return createSdk(config);
+        setExceptionHandlingStrategy(config);
+
+        return createSdk(config.build());
+    }
+
+    private void setExceptionHandlingStrategy(CustomConfigurationBuilder config) {
+        if (!useDefaultExceptionHandlingStrategy) {
+            config.setExceptionHandlingStrategy(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()));
+        }
     }
 
     public UofSdk withOpenedFeed() throws InitException {
-        UofConfiguration config = UofSdk
+        val config = UofSdk
             .getUofConfigurationBuilder()
             .setAccessToken(sdkCredentials.getUsername())
             .selectCustom()
@@ -111,11 +125,11 @@ public final class SdkSetup {
             .setDefaultLanguage(defaultLanguage.orElse(Languages.any()))
             .setDesiredLanguages(desiredLanguages.orElse(emptyList()))
             .setMessagingVirtualHost(UF_VIRTUALHOST)
-            .setExceptionHandlingStrategy(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()))
-            .setNodeId(nodeId)
-            .build();
+            .setNodeId(nodeId);
 
-        UofSdk sdk = createSdk(config);
+        setExceptionHandlingStrategy(config);
+
+        UofSdk sdk = createSdk(config.build());
 
         if (configureSession) {
             configure1Session(sdk);

@@ -9,7 +9,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.VoidCallables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

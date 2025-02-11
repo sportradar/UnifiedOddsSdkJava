@@ -5,13 +5,10 @@ package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import static java.util.Optional.empty;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.google.common.cache.CacheBuilder;
-import com.sportradar.unifiedodds.sdk.caching.MatchStatusValues;
-import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.utils.domain.names.LanguageHolder;
+import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventStatusCacheImpl;
 import java.util.Optional;
 
 public class SportEventStatusCaches {

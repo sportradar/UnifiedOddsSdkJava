@@ -14,7 +14,7 @@ import com.sportradar.unifiedodds.sdk.UofSdkForReplay;
 import com.sportradar.unifiedodds.sdk.UofSessionBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
+import com.sportradar.unifiedodds.sdk.internal.impl.ReplayManager;
 import com.sportradar.utils.Urn;
 import java.io.IOException;
 import java.util.Locale;

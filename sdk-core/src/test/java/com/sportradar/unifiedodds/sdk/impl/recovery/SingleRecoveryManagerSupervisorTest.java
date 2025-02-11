@@ -13,10 +13,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.*;
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.impl.*;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.common.internal.ObservableOpenTelemetry;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.internal.impl.recovery.SingleRecoveryManagerSupervisor;
+import com.sportradar.unifiedodds.sdk.managers.RecoveryManager;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
@@ -26,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({ "MagicNumber" })
+@SuppressWarnings({ "MagicNumber", "ClassFanOutComplexity" })
 public class SingleRecoveryManagerSupervisorTest {
 
     private static final boolean SUBSCRIBED = true;
@@ -65,6 +69,9 @@ public class SingleRecoveryManagerSupervisorTest {
                 new TimeUtilsImpl()
             );
 
+        TimeUtilsStub timeUtils = TimeUtilsStub
+            .threadSafe(new AtomicActionPerformer())
+            .withCurrentTime(Instant.ofEpochMilli(CURRENT_TIMESTAMP));
         supervisor =
             new SingleRecoveryManagerSupervisor(
                 mock(SdkInternalConfiguration.class),
@@ -78,9 +85,11 @@ public class SingleRecoveryManagerSupervisorTest {
                 mock(FeedMessageFactory.class),
                 mock(WhoAmIReader.class),
                 mock(SequenceGenerator.class),
-                TimeUtilsStub
-                    .threadSafe(new AtomicActionPerformer())
-                    .withCurrentTime(Instant.ofEpochMilli(CURRENT_TIMESTAMP))
+                timeUtils,
+                new TelemetryFactory(
+                    new TelemetryImpl(new ObservableOpenTelemetry(), "unit-test", "1.0.0"),
+                    timeUtils
+                )
             );
     }
 

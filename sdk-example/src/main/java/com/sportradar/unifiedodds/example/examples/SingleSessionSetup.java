@@ -7,10 +7,10 @@ package com.sportradar.unifiedodds.example.examples;
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
-import com.sportradar.unifiedodds.sdk.ProducerManager;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
+import com.sportradar.unifiedodds.sdk.managers.ProducerManager;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 

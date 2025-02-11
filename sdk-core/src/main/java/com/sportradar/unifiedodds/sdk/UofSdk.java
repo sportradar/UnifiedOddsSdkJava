@@ -14,25 +14,26 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.sportradar.unifiedodds.sdk.caching.*;
-import com.sportradar.unifiedodds.sdk.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.cfg.*;
-import com.sportradar.unifiedodds.sdk.di.ConfigurationInjectingModule;
-import com.sportradar.unifiedodds.sdk.di.CustomisableSdkModule;
-import com.sportradar.unifiedodds.sdk.di.InternalCachesProvider;
-import com.sportradar.unifiedodds.sdk.di.MasterInjectionModule;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.exceptions.InvalidBookmakerDetailsException;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.impl.ProducerDataProvider;
-import com.sportradar.unifiedodds.sdk.impl.SdkProducerManager;
-import com.sportradar.unifiedodds.sdk.impl.SdkTaskScheduler;
-import com.sportradar.unifiedodds.sdk.impl.UofSessionImpl;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
-import com.sportradar.unifiedodds.sdk.impl.rabbitconnection.AmqpConnectionFactory;
-import com.sportradar.unifiedodds.sdk.impl.recovery.SingleRecoveryManagerSupervisor;
-import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.*;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterImpl;
+import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationPropertiesReaderFactory;
+import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationYamlReaderFactory;
+import com.sportradar.unifiedodds.sdk.internal.cfg.TokenSetterImpl;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
+import com.sportradar.unifiedodds.sdk.internal.di.ConfigurationInjectingModule;
+import com.sportradar.unifiedodds.sdk.internal.di.CustomisableSdkModule;
+import com.sportradar.unifiedodds.sdk.internal.di.InternalCachesProvider;
+import com.sportradar.unifiedodds.sdk.internal.di.MasterInjectionModule;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.AmqpConnectionFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.recovery.SingleRecoveryManagerSupervisor;
+import com.sportradar.unifiedodds.sdk.managers.*;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportAsDiIsNotTestedAtUnitTestLevel;
 import java.io.IOException;
@@ -319,9 +320,9 @@ public class UofSdk implements AutoCloseable {
     }
 
     /**
-     * Returns the {@link MarketDescriptionManager} used to access markets data trough our API
+     * Returns the {@link com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager} used to access markets data trough our API
      *
-     * @return {@link MarketDescriptionManager} used to access markets data
+     * @return {@link com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager} used to access markets data
      */
     public MarketDescriptionManager getMarketDescriptionManager() {
         this.initOddsFeedInstance();
@@ -329,9 +330,9 @@ public class UofSdk implements AutoCloseable {
     }
 
     /**
-     * Returns the {@link SportDataProvider} helper that contains useful methods for specific event data retrieval
+     * Returns the {@link com.sportradar.unifiedodds.sdk.managers.SportDataProvider} helper that contains useful methods for specific event data retrieval
      *
-     * @return {@link SportDataProvider} used to access various sports data
+     * @return {@link com.sportradar.unifiedodds.sdk.managers.SportDataProvider} used to access various sports data
      */
     public SportDataProvider getSportDataProvider() {
         this.initOddsFeedInstance();
@@ -339,9 +340,9 @@ public class UofSdk implements AutoCloseable {
     }
 
     /**
-     * Returns the {@link ProducerManager} instance used to manage available producers
+     * Returns the {@link com.sportradar.unifiedodds.sdk.managers.ProducerManager} instance used to manage available producers
      *
-     * @return a {@link ProducerManager} instance used to manage available producers
+     * @return a {@link com.sportradar.unifiedodds.sdk.managers.ProducerManager} instance used to manage available producers
      */
     public ProducerManager getProducerManager() {
         this.initOddsFeedInstance();
@@ -349,9 +350,9 @@ public class UofSdk implements AutoCloseable {
     }
 
     /**
-     * Returns the {@link CashOutProbabilitiesManager} instance used to access probabilities data
+     * Returns the {@link com.sportradar.unifiedodds.sdk.managers.CashOutProbabilitiesManager} instance used to access probabilities data
      *
-     * @return a {@link CashOutProbabilitiesManager} instance which can be used to access probabilities data
+     * @return a {@link com.sportradar.unifiedodds.sdk.managers.CashOutProbabilitiesManager} instance which can be used to access probabilities data
      */
     public CashOutProbabilitiesManager getCashOutProbabilitiesManager() {
         this.initOddsFeedInstance();

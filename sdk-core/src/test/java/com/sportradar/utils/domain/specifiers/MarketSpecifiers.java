@@ -7,7 +7,7 @@ import static com.sportradar.utils.generic.testing.RandomObjectPicker.pickOneRan
 
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.unifiedodds.sdk.conn.Identifiable;
-import com.sportradar.unifiedodds.sdk.impl.UnifiedFeedConstants;
+import com.sportradar.unifiedodds.sdk.internal.impl.UnifiedFeedConstants;
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
 import java.util.Collections;
 import java.util.HashMap;

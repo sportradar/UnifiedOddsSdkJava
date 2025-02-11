@@ -5,10 +5,13 @@ package com.sportradar.unifiedodds.sdk.impl.rabbitconnection;
 
 import static org.mockito.Mockito.mock;
 
-import com.sportradar.unifiedodds.sdk.impl.ChannelMessageConsumer;
-import com.sportradar.unifiedodds.sdk.impl.RabbitMqSystemListener;
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.internal.impl.ChannelMessageConsumer;
+import com.sportradar.unifiedodds.sdk.internal.impl.RabbitMqSystemListener;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.AmqpConnectionFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.OnDemandChannelSupervisor;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.RabbitMqChannelImpl;
 import com.sportradar.utils.thread.sleep.Sleep;
 import java.io.IOException;
 import java.util.Arrays;

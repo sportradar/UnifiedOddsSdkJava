@@ -1,6 +1,6 @@
 package com.sportradar.unifiedodds.sdk.impl.recovery;
 
-import com.sportradar.unifiedodds.sdk.impl.ProducerData;
+import com.sportradar.unifiedodds.sdk.internal.impl.ProducerData;
 
 public class ProducerDataBuilder {
 

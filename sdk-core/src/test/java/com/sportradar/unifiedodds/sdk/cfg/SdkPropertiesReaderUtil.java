@@ -5,6 +5,8 @@
 package com.sportradar.unifiedodds.sdk.cfg;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationPropertiesReader;
+import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationYamlReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;

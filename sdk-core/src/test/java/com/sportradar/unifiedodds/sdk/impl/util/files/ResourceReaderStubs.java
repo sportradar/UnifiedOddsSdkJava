@@ -5,7 +5,7 @@ package com.sportradar.unifiedodds.sdk.impl.util.files;
 
 import static org.mockito.Mockito.mock;
 
-import junit.framework.TestCase;
+import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 
 public class ResourceReaderStubs {
 

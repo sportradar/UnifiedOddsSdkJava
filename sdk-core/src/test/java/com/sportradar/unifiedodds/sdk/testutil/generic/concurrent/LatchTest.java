@@ -7,7 +7,7 @@ import static com.sportradar.utils.time.TimeInterval.seconds;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-import com.sportradar.unifiedodds.sdk.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.Executors;

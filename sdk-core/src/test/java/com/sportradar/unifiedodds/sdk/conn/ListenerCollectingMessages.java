@@ -3,14 +3,10 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
-import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofListener;
 import com.sportradar.unifiedodds.sdk.UofSession;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
-import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.impl.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
-import java.net.URI;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)

@@ -3,8 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
-import com.sportradar.unifiedodds.sdk.domain.language.Translations;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
+import com.sportradar.unifiedodds.sdk.internal.caching.Translations;
 import java.util.Collection;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;

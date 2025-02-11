@@ -5,9 +5,9 @@ package com.sportradar.unifiedodds.sdk.caching.markets;
 
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
-import com.sportradar.unifiedodds.sdk.domain.language.Translations;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
 import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeDescription;
+import com.sportradar.unifiedodds.sdk.internal.caching.Translations;
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import java.util.*;

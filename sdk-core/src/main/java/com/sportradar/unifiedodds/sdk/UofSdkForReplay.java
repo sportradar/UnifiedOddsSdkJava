@@ -5,8 +5,9 @@
 package com.sportradar.unifiedodds.sdk;
 
 import com.sportradar.unifiedodds.sdk.cfg.*;
-import com.sportradar.unifiedodds.sdk.di.CustomisableSdkModule;
-import com.sportradar.unifiedodds.sdk.replay.ReplayManager;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
+import com.sportradar.unifiedodds.sdk.internal.di.CustomisableSdkModule;
+import com.sportradar.unifiedodds.sdk.internal.impl.ReplayManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -26,7 +26,8 @@ import static org.mockito.Mockito.times;
 
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.unifiedodds.sdk.caching.markets.VariantMarketDescriptionCacheUsingOutcomesTest.TestParameterSources.OutcomeNameRemover;
-import com.sportradar.unifiedodds.sdk.domain.language.Languages;
+import com.sportradar.unifiedodds.sdk.internal.caching.Languages;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantMarketDescriptionCache;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.utils.time.TimeInterval;
 import com.sportradar.utils.time.TimeUtilsStub;

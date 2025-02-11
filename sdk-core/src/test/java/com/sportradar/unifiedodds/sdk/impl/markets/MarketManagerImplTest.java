@@ -6,11 +6,12 @@ package com.sportradar.unifiedodds.sdk.impl.markets;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.caching.markets.InvariantMarketDescriptionCache;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionCache;
-import com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionProvider;
-import com.sportradar.unifiedodds.sdk.caching.markets.VariantDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.InvariantMarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionProvider;
+import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantDescriptionCache;
+import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
 import java.util.ArrayList;
 import java.util.Arrays;

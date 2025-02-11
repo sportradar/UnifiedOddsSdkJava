@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
+import com.sportradar.unifiedodds.sdk.internal.caching.ci.markets.MarketOutcomeCi;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 

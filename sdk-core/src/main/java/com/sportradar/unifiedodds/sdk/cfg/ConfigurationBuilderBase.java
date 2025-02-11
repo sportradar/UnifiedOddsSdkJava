@@ -77,9 +77,9 @@ public interface ConfigurationBuilderBase<T> {
     T setDisabledProducers(List<Integer> producerIds);
 
     /**
-     * Builds and returns a {@link UofConfigurationImpl} instance
+     * Builds and returns a {@link UofConfiguration} instance
      *
-     * @return the constructed {@link UofConfigurationImpl} instance
+     * @return the constructed {@link UofConfiguration} instance
      */
     UofConfiguration build();
 }

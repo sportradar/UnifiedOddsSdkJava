@@ -7,6 +7,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCourseCi;
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
 import com.sportradar.utils.Urns;
 import com.sportradar.utils.domain.names.Languages;

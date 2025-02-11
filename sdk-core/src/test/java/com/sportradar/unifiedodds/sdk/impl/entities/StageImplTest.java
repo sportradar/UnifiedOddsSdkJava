@@ -9,10 +9,11 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
-import com.sportradar.unifiedodds.sdk.caching.StageCi;
-import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
+import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.StageCi;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.StageImpl;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.Optional;

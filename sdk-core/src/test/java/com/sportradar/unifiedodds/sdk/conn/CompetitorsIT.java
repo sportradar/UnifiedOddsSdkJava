@@ -5,6 +5,8 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.google.common.base.Predicates.not;
+import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
+import static com.sportradar.unifiedodds.sdk.SapiCategories.atp;
 import static com.sportradar.unifiedodds.sdk.conn.CompetitorAssert.assertThat;
 import static com.sportradar.unifiedodds.sdk.conn.CompetitorsIT.SapiCompetitorsWrapper.fromGroups;
 import static com.sportradar.unifiedodds.sdk.conn.CompetitorsIT.SapiCompetitorsWrapper.fromTournament;
@@ -12,6 +14,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.AtpHangzhou
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyVsVirtual2024;
 import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.MARTIN_ODEGAARD_PLAYER_ID;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSimpleTeams.EnderunTitansCollegeBasketballTeam.sapiEnderunTitansTeam;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSports.tennis;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.GrandPrix2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.ArsenalFc.arsenalProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.BuffaloSabres.buffaloSabres;
@@ -22,6 +25,9 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.nas
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.replaceFirstCompetitorWithVirtual;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
+import static com.sportradar.utils.Urns.CompetitorProfiles.urnForAnyCompetitor;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,10 +41,15 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.AtpHangzhouDoubles;
 import com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.GrandPrix2024;
 import com.sportradar.unifiedodds.sdk.entities.*;
+import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.managers.CacheType;
+import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCompetitorCi;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
 import com.sportradar.utils.Urn;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -46,11 +57,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.val;
 import org.apache.commons.lang3.BooleanUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "VariableDeclarationUsageDistance", "MultipleStringLiterals" })
 class CompetitorsIT {
@@ -60,6 +74,9 @@ class CompetitorsIT {
         .newInstance()
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
+
+    private static final String EXCEPTION_HANDLING_STRATEGIES =
+        "com.sportradar.unifiedodds.sdk.conn.CompetitorsItParameters#exceptionHandlingStrategies";
 
     private final GlobalVariables globalVariables = new GlobalVariables();
     private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
@@ -403,7 +420,7 @@ class CompetitorsIT {
 
         @ParameterizedTest
         @EnumSource(ExceptionHandlingStrategy.class)
-        void fromSportDataProviderProperlyReturnVirtualFlag(ExceptionHandlingStrategy strategy)
+        void fromSportDataProviderProperlyReturnCorrectVirtualFlag(ExceptionHandlingStrategy strategy)
             throws Exception {
             val matchId = Urn.parse(soccerMatchGermanyVsVirtual2024().getSportEvent().getId());
             globalVariables.setProducer(ProducerId.LIVE_ODDS);
@@ -584,6 +601,37 @@ class CompetitorsIT {
                 assertThat(awayCompetitor.getPlayers()).hasSize(2);
             }
         }
+
+        @Test
+        void exportedCompetitorProfilesDontHaveInformationAboutBeingVirtualIfApiCallFailed()
+            throws Exception {
+            globalVariables.setProducer(ProducerId.LIVE_ODDS);
+            globalVariables.setSportUrn(Sport.TENNIS);
+
+            Locale aLanguage = ENGLISH;
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubEmptyAllTournaments(aLanguage);
+            apiSimulator.stubAllSports(aLanguage, tennis());
+            apiSimulator.stubSportCategories(aLanguage, Sport.TENNIS, atp());
+            apiSimulator.stubCompetitorProfileNotFound(aLanguage, AtpHangzhouDoubles.HOME_COMPETITOR);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ExceptionHandlingStrategy.Catch)
+                    .withDefaultLanguage(aLanguage)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+                val homeCompetitor = sportDataProvider.getCompetitor(AtpHangzhouDoubles.HOME_COMPETITOR);
+                assertThat(homeCompetitor.isVirtual()).isNull();
+                val exportedProfiles = sportDataProvider.cacheExport(EnumSet.of(CacheType.Profile));
+                val exportedProfile = (ExportableCompetitorCi) exportedProfiles.get(0);
+
+                assertThat(exportedProfile.isVirtual()).isNull();
+            }
+        }
     }
 
     private static Integer getMartinOdegaardJerseyNumber(
@@ -637,6 +685,67 @@ class CompetitorsIT {
                     .hasPlayersWithSameIdsAndNamesAs(sapiCompetitorProfile.getPlayers())
                     .hasPlayersWithSameJerseyNumbersAs(sapiCompetitorProfile.getPlayers())
                     .hasSameJerseysAs(sapiCompetitorProfile.getJerseys());
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
+        void gettingCompetitorRespectsExceptionHandlingStrategy(
+            ExceptionHandlingStrategy exceptionHandlingStrategy,
+            ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+        ) throws Exception {
+            globalVariables.setProducer(ProducerId.LIVE_ODDS);
+            globalVariables.setSportEventUrn(SportEvent.MATCH);
+            globalVariables.setSportUrn(Sport.FOOTBALL);
+
+            Locale aLanguage = ENGLISH;
+            Urn competitorId = urnForAnyCompetitor();
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubCompetitorProfileNotFound(aLanguage, competitorId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .withDefaultLanguage(aLanguage)
+                    .with(exceptionHandlingStrategy)
+                    .withoutFeed()
+            ) {
+                val competitor = sdk.getSportDataProvider().getCompetitor(competitorId);
+                CompetitorAssert
+                    .assertThat(competitor)
+                    .getNameForGiven(aLanguage, willFailRespectingSdkStrategy);
+            }
+        }
+
+        @Test
+        void throwsExceptionOnNotFoundCompetitorForDefaultExceptionHandlingStrategy() throws Exception {
+            globalVariables.setProducer(ProducerId.LIVE_ODDS);
+            globalVariables.setSportEventUrn(SportEvent.MATCH);
+            globalVariables.setSportUrn(Sport.FOOTBALL);
+
+            Locale aLanguage = ENGLISH;
+            Urn competitorId = urnForAnyCompetitor();
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubCompetitorProfileNotFound(aLanguage, competitorId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .withDefaultLanguage(aLanguage)
+                    .withDefaultExceptionHandlingStrategy()
+                    .withoutFeed()
+            ) {
+                Assertions
+                    .assertThatException()
+                    .isThrownBy(() -> {
+                        val competitor = sdk.getSportDataProvider().getCompetitor(competitorId);
+                        competitor.getName(aLanguage);
+                    })
+                    .isInstanceOf(ObjectNotFoundException.class);
             }
         }
     }
@@ -715,5 +824,15 @@ class CompetitorsIT {
         static SapiCompetitorsWrapper fromGroups(SapiTournamentInfoEndpoint info) {
             return new SapiCompetitorsWrapper(info, Mode.GROUP_COMPETITORS);
         }
+    }
+}
+
+class CompetitorsItParameters {
+
+    static Object[] exceptionHandlingStrategies() {
+        return new Object[][] {
+            { Throw, WILL_THROW_EXCEPTIONS },
+            { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
+        };
     }
 }

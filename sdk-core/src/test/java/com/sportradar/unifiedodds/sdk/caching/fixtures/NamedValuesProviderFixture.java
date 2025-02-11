@@ -3,10 +3,10 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.fixtures;
 
-import com.sportradar.unifiedodds.sdk.caching.LocalizedNamedValueCache;
-import com.sportradar.unifiedodds.sdk.caching.NamedValueCache;
-import com.sportradar.unifiedodds.sdk.caching.NamedValuesProvider;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
+import com.sportradar.unifiedodds.sdk.internal.caching.LocalizedNamedValueCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.NamedValueCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.NamedValuesProvider;
 import java.util.Optional;
 import lombok.NonNull;
 

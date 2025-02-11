@@ -13,15 +13,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.caching.MatchCi;
-import com.sportradar.unifiedodds.sdk.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.entities.Match;
 import com.sportradar.unifiedodds.sdk.entities.Sport;
 import com.sportradar.unifiedodds.sdk.entities.SportSummary;
 import com.sportradar.unifiedodds.sdk.entities.Tournament;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
-import com.sportradar.unifiedodds.sdk.impl.SportEventStatusFactory;
+import com.sportradar.unifiedodds.sdk.internal.caching.MatchCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.MatchImpl;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.Collections;
@@ -64,7 +65,7 @@ public class MatchImplGetSportTest {
     public void throwsWhenSportNotFoundAndExceptionHandlingIsThrow() throws Exception {
         when(entityFactory.buildSport(ANY_SPORT_URN, Collections.singletonList(ENGLISH)))
             .thenThrow(
-                new com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException(
+                new com.sportradar.unifiedodds.sdk.internal.exceptions.ObjectNotFoundException(
                     "Error message",
                     new Exception()
                 )
@@ -89,7 +90,7 @@ public class MatchImplGetSportTest {
     public void doesNotThrowWhenExceptionHandlingIsCatchAndReturnsNull() throws Exception {
         when(entityFactory.buildSport(ANY_SPORT_URN, Collections.singletonList(ENGLISH)))
             .thenThrow(
-                new com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException(
+                new com.sportradar.unifiedodds.sdk.internal.exceptions.ObjectNotFoundException(
                     "Error message",
                     new Exception()
                 )
@@ -190,7 +191,7 @@ public class MatchImplGetSportTest {
     }
 
     private Tournament createWithSportSummary(Sport sportSummary)
-        throws com.sportradar.unifiedodds.sdk.exceptions.internal.ObjectNotFoundException {
+        throws com.sportradar.unifiedodds.sdk.internal.exceptions.ObjectNotFoundException {
         Tournament tournament = mock(Tournament.class);
         when(tournament.getSport()).thenReturn(sportSummary);
         when(entityFactory.buildSport(ANY_SPORT_URN, SINGLE_LOCALE_LIST)).thenReturn(sportSummary);

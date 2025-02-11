@@ -11,9 +11,9 @@ import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationImpl;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
-import com.sportradar.unifiedodds.sdk.impl.entities.BookmakerDetailsImpl;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.BookmakerDetailsImpl;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -31,6 +31,7 @@ public class StubUofConfiguration extends UofConfigurationImpl implements UofCon
         setNodeId(1);
         updateSdkEnvironment(Environment.GlobalIntegration);
         setExceptionHandlingStrategy(ExceptionHandlingStrategy.Throw);
+        setEnableUsageExport(false);
 
         validateMinimumSettings();
     }
