@@ -24,7 +24,7 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({ "ClassFanOutComplexity", "MultipleStringLiterals", "VisibilityModifier" })
+@SuppressWarnings({ "ClassFanOutComplexity", "MultipleStringLiterals", "VisibilityModifier", "MagicNumber" })
 public class FeedMessageValidatorTest {
 
     private static final String INVALID_EVENT_ID = "some_event_id";
@@ -346,6 +346,8 @@ public class FeedMessageValidatorTest {
         SdkInternalConfiguration mock = mock(SdkInternalConfiguration.class);
         when(mock.getDefaultLocale()).thenReturn(Locale.UK);
         when(mock.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        when(mock.getHttpClientTimeout()).thenReturn(10);
+        when(mock.getFastHttpClientTimeout()).thenReturn(5L);
         return mock;
     }
 }

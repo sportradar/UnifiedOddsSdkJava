@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
 /**
@@ -152,7 +151,7 @@ public class DataProvider<TOut> {
         }
     }
 
-    private HttpData fetchData(HttpEntity content, Locale locale, String[] args)
+    private HttpData fetchData(StringEntity content, Locale locale, String[] args)
         throws DataProviderException {
         HttpData fetchedContent;
         try {

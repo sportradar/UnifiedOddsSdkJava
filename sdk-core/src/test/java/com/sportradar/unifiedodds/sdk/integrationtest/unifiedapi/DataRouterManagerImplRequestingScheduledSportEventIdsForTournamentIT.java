@@ -29,11 +29,12 @@ import com.sportradar.utils.Urn;
 import java.util.Locale;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+@SuppressWarnings("MagicNumber")
 public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentIT {
 
     private static final String TOURNAMENT_SCHEDULE_PATH_FORMAT = "/sports/%s/tournaments/%s/schedule.xml";
@@ -135,8 +136,8 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
                 TOURNAMENT_SCHEDULE_PATH_FORMAT,
                 configWiremockHostAndEnglishByDefault(),
                 new LogHttpDataFetcher(
-                    configWithToken(),
-                    HttpClientBuilder.create().build(),
+                    configWithTokenAndTimeouts(),
+                    HttpAsyncClientBuilder.create().build(),
                     mock(UnifiedOddsStatistics.class),
                     new HttpResponseHandler(),
                     mock(UserAgentProvider.class)
@@ -145,9 +146,11 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
             );
         }
 
-        private SdkInternalConfiguration configWithToken() {
+        private SdkInternalConfiguration configWithTokenAndTimeouts() {
             SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
             when(config.getAccessToken()).thenReturn("someToken");
+            when(config.getHttpClientTimeout()).thenReturn(5000);
+            when(config.getFastHttpClientTimeout()).thenReturn(1000L);
             return config;
         }
 

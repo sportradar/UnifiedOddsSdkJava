@@ -97,7 +97,8 @@ public final class SdkSetup {
             .setApiHost(sportsApiBaseUrl.get())
             .setDefaultLanguage(defaultLanguage.orElse(Languages.any()))
             .setDesiredLanguages(desiredLanguages.orElse(emptyList()))
-            .setNodeId(nodeId);
+            .setNodeId(nodeId)
+            .enableUsageExport(false);
 
         setExceptionHandlingStrategy(config);
 
@@ -125,7 +126,8 @@ public final class SdkSetup {
             .setDefaultLanguage(defaultLanguage.orElse(Languages.any()))
             .setDesiredLanguages(desiredLanguages.orElse(emptyList()))
             .setMessagingVirtualHost(UF_VIRTUALHOST)
-            .setNodeId(nodeId);
+            .setNodeId(nodeId)
+            .enableUsageExport(false);
 
         setExceptionHandlingStrategy(config);
 

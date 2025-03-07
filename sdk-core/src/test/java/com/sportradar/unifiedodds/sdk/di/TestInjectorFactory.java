@@ -30,6 +30,8 @@ public class TestInjectorFactory {
         stubConfig.resetNbrSetEnvironmentCalled();
         internalConfig = mock(SdkInternalConfiguration.class);
         when(internalConfig.getEnvironment()).thenReturn(Environment.Integration);
+        when(internalConfig.getHttpClientTimeout()).thenReturn(10);
+        when(internalConfig.getFastHttpClientTimeout()).thenReturn(5L);
         config = stubConfig;
     }
 

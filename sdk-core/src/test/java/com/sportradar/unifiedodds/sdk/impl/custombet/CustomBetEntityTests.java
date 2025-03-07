@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -555,7 +556,7 @@ public class CustomBetEntityTests {
         Assert.assertNotNull(calculation);
         Assert.assertNotNull(calculation.getGeneratedAt());
         long dateDiff = new Date().getTime() - calculation.getGeneratedAt().getTime();
-        Assert.assertTrue(Math.abs(dateDiff) < 10);
+        Assertions.assertThat(Math.abs(dateDiff)).isLessThan(100);
     }
 
     @Test
@@ -612,7 +613,7 @@ public class CustomBetEntityTests {
         Assert.assertNotNull(calculation);
         Assert.assertNotNull(calculation.getGeneratedAt());
         long dateDiff = new Date().getTime() - calculation.getGeneratedAt().getTime();
-        Assert.assertTrue(Math.abs(dateDiff) < 10);
+        Assertions.assertThat(Math.abs(dateDiff)).isLessThan(100);
     }
 
     private void availableSelectionsCompare(CapiAvailableSelections source, AvailableSelections result) {

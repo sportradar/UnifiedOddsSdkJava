@@ -109,6 +109,7 @@ public class SdkInternalConfigurationTest {
                 ANY_DURATION
             );
         ((UofApiConfigurationStub) config.getApi()).setHttpClientTimeout(ANY_DURATION);
+        ((UofApiConfigurationStub) config.getApi()).setHttpClientFastFailingTimeout(ANY_DURATION);
         ((UofApiConfigurationStub) config.getApi()).setHttpClientRecoveryTimeout(ANY_DURATION);
         val replaySession = true;
 

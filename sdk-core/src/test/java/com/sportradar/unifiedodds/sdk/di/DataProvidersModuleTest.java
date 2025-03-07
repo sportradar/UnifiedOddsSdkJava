@@ -37,7 +37,7 @@ public class DataProvidersModuleTest {
     private static final String REPLAY_PATH_PREFIX = "/v1/replay/";
 
     private StubUofConfiguration config = new StubUofConfiguration();
-    private SdkInternalConfiguration internalConfig = mock(SdkInternalConfiguration.class);
+    private SdkInternalConfiguration internalConfig = configurationWithTimeouts();
 
     private Injector injector;
 
@@ -255,6 +255,13 @@ public class DataProvidersModuleTest {
             HTTPS_PREFIX + host + "/v1/wns/en/sport_events/" + WNS_EVENT_ID + "/summary.xml";
 
         assertEquals(expectedEndpointPath, sapiDrawSummaryDataProvider.getFinalUrl(locale, WNS_EVENT_ID));
+    }
+
+    private static SdkInternalConfiguration configurationWithTimeouts() {
+        SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+        when(config.getHttpClientTimeout()).thenReturn(1);
+        when(config.getFastHttpClientTimeout()).thenReturn(1L);
+        return config;
     }
 
     private static class FixtureProviders {

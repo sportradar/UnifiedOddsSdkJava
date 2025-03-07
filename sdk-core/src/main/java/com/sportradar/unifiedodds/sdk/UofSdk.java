@@ -42,6 +42,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -522,6 +523,7 @@ public class UofSdk implements AutoCloseable {
      * @throws IOException if the AMQP connection closure fails
      */
     @Override
+    @ExcludeFromJacocoGeneratedReportAsDiIsNotTestedAtUnitTestLevel
     public void close() throws IOException {
         if (!this.feedOpened) {
             logger.warn("Invoked close on already closed UofSdk instance");
@@ -557,9 +559,16 @@ public class UofSdk implements AutoCloseable {
             logger.warn("Error during close - HttpClient", ex);
         }
         try {
-            injector.getInstance(Key.get(CloseableHttpClient.class, Names.named("FastHttpClient"))).close();
+            injector.getInstance(CloseableHttpAsyncClient.class).close();
         } catch (Exception ex) {
-            logger.warn("Error during close - FastHttpClient", ex);
+            logger.warn("Error during close - AsyncHttpClient", ex);
+        }
+        try {
+            injector
+                .getInstance(Key.get(CloseableHttpAsyncClient.class, Names.named("FastHttpClient")))
+                .close();
+        } catch (Exception ex) {
+            logger.warn("Error during close - FastAsyncHttpClient", ex);
         }
         try {
             injector

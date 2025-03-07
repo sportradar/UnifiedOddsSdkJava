@@ -10,6 +10,7 @@ public class UofApiConfigurationStub implements UofApiConfiguration {
     private Duration httpClientTimeout;
     private Duration httpClientRecoveryTimeout;
     private String host;
+    private Duration httpClientFastFailingTimeout;
 
     @Override
     public String getHost() {
@@ -50,7 +51,11 @@ public class UofApiConfigurationStub implements UofApiConfiguration {
 
     @Override
     public Duration getHttpClientFastFailingTimeout() {
-        return null;
+        return httpClientFastFailingTimeout;
+    }
+
+    public void setHttpClientFastFailingTimeout(Duration duration) {
+        this.httpClientFastFailingTimeout = duration;
     }
 
     @Override

@@ -104,6 +104,7 @@ public class SdkConnectionIT {
                 .setMessagingVirtualHost(UF_VIRTUALHOST)
                 .setMinIntervalBetweenRecoveryRequests(20)
                 .setNodeId(0)
+                .enableUsageExport(false)
                 .build();
 
         sdkListener = new UofConnListener();

@@ -10,7 +10,7 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import java.util.concurrent.TimeUnit;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +29,19 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
     @Inject
     public LogFastHttpDataFetcher(
         SdkInternalConfiguration config,
-        @Named("FastHttpClient") CloseableHttpClient httpClient,
+        @Named("FastHttpClient") CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler responseDataHandler,
         UserAgentProvider userAgentProvider
     ) {
-        super(config, httpClient, statsBean, responseDataHandler, userAgentProvider);
+        super(
+            config,
+            httpClient,
+            statsBean,
+            responseDataHandler,
+            userAgentProvider,
+            config.getFastHttpClientTimeout()
+        );
     }
 
     @Override

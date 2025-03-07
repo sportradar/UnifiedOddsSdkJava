@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.caching;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -32,7 +33,9 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings({ "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ClassFanOutComplexity" })
+@SuppressWarnings(
+    { "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ClassFanOutComplexity", "MagicNumber" }
+)
 public class SportDataCacheTests {
 
     private static final Urn SPORT_ID1 = Urn.parse("sr:sport:1");
@@ -46,7 +49,11 @@ public class SportDataCacheTests {
     public void setup() {
         final StubUofConfiguration config = new StubUofConfiguration();
 
-        Injector injector = new TestInjectorFactory(mock(SdkInternalConfiguration.class), config).create();
+        SdkInternalConfiguration internalConfiguration = mock(SdkInternalConfiguration.class);
+        when(internalConfiguration.getHttpClientTimeout()).thenReturn(10);
+        when(internalConfiguration.getFastHttpClientTimeout()).thenReturn(5L);
+
+        Injector injector = new TestInjectorFactory(internalConfiguration, config).create();
 
         sportsCache = CacheBuilder.newBuilder().build();
         categoriesCache = CacheBuilder.newBuilder().build();

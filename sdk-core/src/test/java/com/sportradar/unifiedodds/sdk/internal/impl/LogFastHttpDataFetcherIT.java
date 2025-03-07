@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 import static org.mockito.Mockito.mock;
 
 import javax.xml.bind.JAXBException;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 public class LogFastHttpDataFetcherIT extends HttpDataFetcherIT {
@@ -15,7 +16,7 @@ public class LogFastHttpDataFetcherIT extends HttpDataFetcherIT {
     @Override
     public HttpDataFetcher createHttpDataFetcher(
         SdkInternalConfiguration config,
-        CloseableHttpClient httpClient,
+        CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler httpResponseHandler
     ) {

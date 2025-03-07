@@ -1,5 +1,8 @@
-### Unified Feed SDK 3.x changelog
+### Unified Feed SDK 4.x changelog
 
+**4.0.1**
+- fix: http clients respect configured timeouts.  
+- 
 **4.0.0 (2025-02-11) (breaking change) **
 
 - ExceptionHandlingStrategy default value is changed to Throw (before Catch)
