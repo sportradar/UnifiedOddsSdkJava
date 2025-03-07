@@ -44,6 +44,7 @@ public class SdkInternalConfiguration {
     private final List<Integer> disabledProducers;
     private final Set<String> schedulerTasksToSkip;
     private final String messagingVirtualHost;
+    private final long fastHttpClientTimeout;
     private String apiHost;
     private final int apiPort;
     private String apiHostAndPort;
@@ -100,6 +101,8 @@ public class SdkInternalConfiguration {
         recoveryHttpClientTimeout = (int) (cfg.getApi().getHttpClientRecoveryTimeout().toMillis() / 1000);
         recoveryHttpClientMaxConnTotal = cfg.getApi().getHttpClientMaxConnTotal();
         recoveryHttpClientMaxConnPerRoute = cfg.getApi().getHttpClientMaxConnPerRoute();
+
+        fastHttpClientTimeout = cfg.getApi().getHttpClientFastFailingTimeout().toMillis() / 1000;
 
         cleanTrafficLogEntries = false;
 
@@ -360,6 +363,15 @@ public class SdkInternalConfiguration {
             apiHost = newApiHost;
             apiHostAndPort = hostAndPort(apiHost, apiPort);
         }
+    }
+
+    /**
+     * Indicates the timeout which should be used on fast-failing HTTP requests(seconds)
+     *
+     * @return the timeout which should be used on fast-failing HTTP requests(seconds)
+     */
+    public long getFastHttpClientTimeout() {
+        return fastHttpClientTimeout;
     }
 
     @Override

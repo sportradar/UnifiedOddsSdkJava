@@ -230,6 +230,8 @@ public class TournamentCiTest {
         SdkInternalConfiguration mock = mock(SdkInternalConfiguration.class);
         when(mock.getDefaultLocale()).thenReturn(Locale.UK);
         when(mock.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        when(mock.getHttpClientTimeout()).thenReturn(10);
+        when(mock.getFastHttpClientTimeout()).thenReturn(5L);
         return mock;
     }
 

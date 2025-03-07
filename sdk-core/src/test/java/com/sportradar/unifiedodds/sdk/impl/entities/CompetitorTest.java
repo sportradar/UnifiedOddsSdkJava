@@ -28,7 +28,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({ "VisibilityModifier" })
+@SuppressWarnings({ "VisibilityModifier", "MagicNumber" })
 public class CompetitorTest {
 
     private static final String COMPETITOR_ID = "sr:competitor:3700";
@@ -68,6 +68,8 @@ public class CompetitorTest {
         when(mock.getDefaultLocale()).thenReturn(Locale.UK);
         when(mock.getDesiredLocales()).thenReturn(asList(Locale.UK));
         when(mock.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        when(mock.getHttpClientTimeout()).thenReturn(10);
+        when(mock.getFastHttpClientTimeout()).thenReturn(5L);
         return mock;
     }
 }

@@ -1,6 +1,7 @@
 package com.sportradar.unifiedodds.sdk.di;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -26,6 +27,8 @@ public class TestInjectorFactory {
         stubConfig.setEnvironment(Environment.Integration);
         stubConfig.resetNbrSetEnvironmentCalled();
         internalConfig = mock(SdkInternalConfiguration.class);
+        when(internalConfig.getHttpClientTimeout()).thenReturn(10);
+        when(internalConfig.getFastHttpClientTimeout()).thenReturn(5L);
         config = stubConfig;
     }
 

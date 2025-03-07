@@ -16,6 +16,7 @@ import com.sportradar.unifiedodds.sdk.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.MessageAndActionExtractor;
 import java.util.concurrent.TimeUnit;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 public class HttpClientModule implements Module {
@@ -52,17 +53,39 @@ public class HttpClientModule implements Module {
 
     @Provides
     @Singleton
-    @Named("FastHttpClient")
-    CloseableHttpClient provideCriticalHttpClient() {
-        int maxTimeoutInMillis = (int) RuntimeConfiguration.getFastHttpClientTimeout().toMillis();
+    CloseableHttpAsyncClient provideAsyncHttpClient() {
+        int maxTimeoutInMillis = Math.toIntExact(
+            TimeUnit.MILLISECONDS.convert(configuration.getHttpClientTimeout(), TimeUnit.SECONDS)
+        );
         int connectionPoolSize = configuration.getHttpClientMaxConnTotal();
         int maxConcurrentConnectionsPerRoute = configuration.getHttpClientMaxConnPerRoute();
 
-        return httpClientFactory.create(
+        CloseableHttpAsyncClient client = httpClientFactory.createAsync(
             maxTimeoutInMillis,
             connectionPoolSize,
             maxConcurrentConnectionsPerRoute
         );
+        client.start();
+        return client;
+    }
+
+    @Provides
+    @Singleton
+    @Named("FastHttpClient")
+    CloseableHttpAsyncClient provideCriticalHttpClient() {
+        int maxTimeoutInMillis = Math.toIntExact(
+            TimeUnit.MILLISECONDS.convert(configuration.getFastHttpClientTimeout(), TimeUnit.SECONDS)
+        );
+        int connectionPoolSize = configuration.getHttpClientMaxConnTotal();
+        int maxConcurrentConnectionsPerRoute = configuration.getHttpClientMaxConnPerRoute();
+
+        CloseableHttpAsyncClient client = httpClientFactory.createAsync(
+            maxTimeoutInMillis,
+            connectionPoolSize,
+            maxConcurrentConnectionsPerRoute
+        );
+        client.start();
+        return client;
     }
 
     /**

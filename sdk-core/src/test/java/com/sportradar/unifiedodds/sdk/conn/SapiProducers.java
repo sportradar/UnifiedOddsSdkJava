@@ -6,7 +6,6 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.sportradar.utils.generic.testing.Urls.anyHttpUrl;
 
 import com.sportradar.uf.sportsapi.datamodel.Producer;
-import com.sportradar.utils.generic.testing.Booleans;
 import com.sportradar.utils.generic.testing.RandomInteger;
 import java.net.MalformedURLException;
 import java.util.HashMap;

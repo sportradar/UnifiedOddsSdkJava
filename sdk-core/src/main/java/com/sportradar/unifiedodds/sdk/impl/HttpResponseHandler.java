@@ -4,14 +4,15 @@
 package com.sportradar.unifiedodds.sdk.impl;
 
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.sportradar.unifiedodds.sdk.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.impl.apireaders.MessageAndActionExtractor;
 import com.sportradar.unifiedodds.sdk.impl.http.ApiResponseHandlingException;
+import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUntestableCheckedException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 public class HttpResponseHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpResponseHandler.class);
+    private static final String EMPTY_ERROR_MESSAGE = "no message";
 
     HttpData extractHttpDataFromHttpResponse(ClassicHttpResponse httpResponse, String path) {
         try {
@@ -30,9 +32,19 @@ public class HttpResponseHandler {
         }
     }
 
+    HttpData extractHttpDataFromHttpResponse(SimpleHttpResponse httpResponse, String path) {
+        return parseResponse(httpResponse, path);
+    }
+
+    private HttpData parseResponse(SimpleHttpResponse httpResponse, String path) {
+        validateStatusCode(httpResponse, path, () -> getErrorMessage(httpResponse, path));
+        String responseString = parseBody(httpResponse, path, httpResponse.getCode());
+        return new HttpData(responseString, httpResponse.getHeaders());
+    }
+
     private HttpData parseResponse(ClassicHttpResponse httpResponse, String path)
         throws IOException, ParseException {
-        validateStatusCode(httpResponse, path);
+        validateStatusCode(httpResponse, path, () -> getErrorMessage(httpResponse, path));
         String responseString = parseBody(httpResponse, path, httpResponse.getCode());
         return new HttpData(responseString, httpResponse.getHeaders());
     }
@@ -41,9 +53,8 @@ public class HttpResponseHandler {
         throws IOException, ParseException {
         String responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         if (Strings.isNullOrEmpty(responseString)) {
-            String emptyErrorMessage = "no message";
             throw new ApiResponseHandlingException(
-                formatUncheckedExceptionMessage(emptyErrorMessage, statusCode),
+                formatUncheckedExceptionMessage(EMPTY_ERROR_MESSAGE, statusCode),
                 path,
                 statusCode
             );
@@ -51,7 +62,23 @@ public class HttpResponseHandler {
         return responseString;
     }
 
-    private void validateStatusCode(ClassicHttpResponse httpResponse, String path) throws IOException {
+    private String parseBody(SimpleHttpResponse httpResponse, String path, int statusCode) {
+        String responseString = new String(httpResponse.getBodyBytes(), StandardCharsets.UTF_8);
+        if (Strings.isNullOrEmpty(responseString)) {
+            throw new ApiResponseHandlingException(
+                formatUncheckedExceptionMessage(EMPTY_ERROR_MESSAGE, statusCode),
+                path,
+                statusCode
+            );
+        }
+        return responseString;
+    }
+
+    private void validateStatusCode(
+        HttpResponse httpResponse,
+        String path,
+        ErrorMessageSupplier errorMessageSupplier
+    ) {
         int statusCode = httpResponse.getCode();
 
         // the whoami endpoint is a special case since we are interested in the response even with forbidden code
@@ -60,7 +87,11 @@ public class HttpResponseHandler {
             !responseHasSuccessfulStatusCode(statusCode) &&
             !isWhoAmIWithForbiddenStatusCode(statusCode, isWhoAmI)
         ) {
-            String errorMessage = logAndReturnErrorMessage(httpResponse, path);
+            String errorFromResponse = errorMessageSupplier.get();
+            String errorMessage = Strings.isNullOrEmpty(errorFromResponse)
+                ? EMPTY_ERROR_MESSAGE
+                : errorFromResponse;
+            logErrorMessage(httpResponse, errorMessage, path);
             throw new ApiResponseHandlingException(
                 formatUncheckedExceptionMessage(errorMessage, statusCode),
                 path,
@@ -69,23 +100,36 @@ public class HttpResponseHandler {
         }
     }
 
-    private String logAndReturnErrorMessage(ClassicHttpResponse httpResponse, String path)
-        throws IOException {
-        String errorMessage = new MessageAndActionExtractor().parse(httpResponse.getEntity().getContent());
+    private void logErrorMessage(HttpResponse httpResponse, String errorMessage, String path) {
         LOGGER.warn(
-            "Bad API response: " +
-            httpResponse.getVersion() +
-            " " +
-            httpResponse.getCode() +
-            " " +
-            httpResponse.getReasonPhrase() +
-            ", message: '" +
-            errorMessage +
-            "' " +
+            "Bad API response: {} {} {}, message: '{}' {}",
+            httpResponse.getVersion(),
+            httpResponse.getCode(),
+            httpResponse.getReasonPhrase(),
+            errorMessage,
             path
         );
-        errorMessage = Strings.isNullOrEmpty(errorMessage) ? "no message" : errorMessage;
-        return errorMessage;
+    }
+
+    private String getErrorMessage(ClassicHttpResponse httpResponse, String path) {
+        try {
+            return new MessageAndActionExtractor().parse(httpResponse.getEntity().getContent());
+        } catch (IOException e) {
+            throw new ApiResponseHandlingException(path, httpResponse.getCode(), e);
+        }
+    }
+
+    @ExcludeFromJacocoGeneratedReportUntestableCheckedException
+    private String getErrorMessage(SimpleHttpResponse httpResponse, String path) {
+        try (
+            ByteArrayInputStream bodyInputStream = new ByteArrayInputStream(
+                httpResponse.getBody().getBodyBytes()
+            )
+        ) {
+            return new MessageAndActionExtractor().parse(bodyInputStream);
+        } catch (IOException e) {
+            throw new ApiResponseHandlingException(path, httpResponse.getCode(), e);
+        }
     }
 
     private String formatUncheckedExceptionMessage(String errorMessage, int responseStatusCode) {
@@ -98,5 +142,9 @@ public class HttpResponseHandler {
 
     private boolean isWhoAmIWithForbiddenStatusCode(int statusCode, boolean isWhoAmI) {
         return isWhoAmI && statusCode == HttpStatus.SC_FORBIDDEN;
+    }
+
+    private interface ErrorMessageSupplier {
+        String get();
     }
 }

@@ -8,45 +8,64 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import lombok.val;
+import org.apache.commons.io.IOUtils;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+@SuppressWarnings("MagicNumber")
 public abstract class HttpDataFetcherIT {
 
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
-    private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+    private CloseableHttpAsyncClient httpClient;
     private final String anyPath = "/some/path";
 
     private final int anyErrorResponseCode = 404;
     private final HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
     private final SportsApiXmlResponseProvider xmlResponseProvider = new SportsApiXmlResponseProvider();
-    private HttpDataFetcher httpFetcher = createHttpDataFetcher(
-        mock(SdkInternalConfiguration.class),
-        httpClient,
-        mock(UnifiedOddsStatistics.class),
-        httpResponseHandler
-    );
+    private HttpDataFetcher httpFetcher;
 
     protected HttpDataFetcherIT() throws JAXBException {}
 
     public abstract HttpDataFetcher createHttpDataFetcher(
         SdkInternalConfiguration config,
-        CloseableHttpClient httpClient,
+        CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler httpResponseHandler
     );
+
+    @Before
+    public void setUp() {
+        httpClient = HttpAsyncClientBuilder.create().build();
+        httpClient.start();
+
+        httpFetcher =
+            createHttpDataFetcher(
+                configWithTimeouts(),
+                httpClient,
+                mock(UnifiedOddsStatistics.class),
+                httpResponseHandler
+            );
+    }
+
+    @After
+    public void tearDown() {
+        IOUtils.closeQuietly(httpClient);
+    }
 
     @Test
     public void getRequestShouldReturnHttpDataFromApiResponse() throws Exception {
@@ -149,5 +168,12 @@ public abstract class HttpDataFetcherIT {
 
     private String createLocalhostString(String path) {
         return "http://localhost:" + wireMockRule.port() + path;
+    }
+
+    private static SdkInternalConfiguration configWithTimeouts() {
+        val config = mock(SdkInternalConfiguration.class);
+        when(config.getHttpClientTimeout()).thenReturn(2000);
+        when(config.getFastHttpClientTimeout()).thenReturn(1000L);
+        return config;
     }
 }

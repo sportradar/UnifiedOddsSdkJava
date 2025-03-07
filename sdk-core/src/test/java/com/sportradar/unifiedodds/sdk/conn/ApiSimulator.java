@@ -21,6 +21,8 @@ import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.utils.Urn;
 import java.io.ByteArrayOutputStream;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.Locale;
 import java.util.function.Consumer;
 import javax.xml.bind.JAXB;
@@ -82,6 +84,10 @@ public class ApiSimulator {
                     )
                 )
         );
+    }
+
+    public void stubWhoAmIWithEmptyResponseBody() {
+        register(get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(WireMock.ok()));
     }
 
     public void stubEmptyMarketList(Locale language) {
@@ -229,7 +235,7 @@ public class ApiSimulator {
         val allSportsJaxb = new JAXBElement<>(
             new QName(UNIFIED_XML_NAMESPACE, "sports"),
             SapiSportsEndpoint.class,
-            allSports()
+            allSports(language)
         );
         stub(allSportsJaxb, format("/v1/sports/%s/sports.xml", language.getLanguage()));
     }
@@ -243,6 +249,28 @@ public class ApiSimulator {
         );
         allSports.getSport().addAll(asList(sport));
         stub(allSportsJaxb, format("/v1/sports/%s/sports.xml", language.getLanguage()));
+    }
+
+    public void stubAllSports(Locale language, ApiStubDelay delay) {
+        val allSportsJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sports"),
+            SapiSportsEndpoint.class,
+            allSports()
+        );
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .willReturn(
+                    ok(JaxbContexts.SportsApi.marshall(allSportsJaxb))
+                        .withFixedDelay((int) delay.delay.toMillis())
+                )
+        );
+    }
+
+    public void stubAllSportsWithEmptyErrorResponse(Locale language) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .willReturn(badRequest().withBody("<response/>"))
+        );
     }
 
     public void stubEmptyAllTournaments(Locale language) {
@@ -264,6 +292,25 @@ public class ApiSimulator {
             allTournaments
         );
         stub(allTournamentsJaxb, format("/v1/sports/%s/tournaments.xml", language.getLanguage()));
+    }
+
+    public void stubAllTournaments(
+        Locale language,
+        SapiTournamentExtended tournament,
+        HeaderEquality headerEquality
+    ) {
+        val allTournaments = new SapiTournamentsEndpoint();
+        allTournaments.getTournament().add(tournament);
+        val allTournamentsJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "tournaments"),
+            SapiTournamentsEndpoint.class,
+            allTournaments
+        );
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .withHeader(headerEquality.name, equalTo(headerEquality.value))
+                .willReturn(ok(JaxbContexts.SportsApi.marshall(allTournamentsJaxb)))
+        );
     }
 
     private void stub(int httpStatus, String path) {
@@ -340,6 +387,19 @@ public class ApiSimulator {
     public void stubCustomBetCalculate(CapiCalculationResponse response) {
         register(
             post(urlPathMatching("/v1/custombet/calculate"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
+                )
+        );
+    }
+
+    public void stubCustomBetCalculate(CapiCalculationResponse response, BodyCondition requestBodyCondition) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .withRequestBody(equalTo(JaxbContexts.CustomBetApi.marshall(requestBodyCondition.value)))
                 .willReturn(
                     WireMock
                         .aResponse()
@@ -553,6 +613,47 @@ public class ApiSimulator {
             public String get() {
                 return key;
             }
+        }
+    }
+
+    public static class ApiStubDelay {
+
+        private final Duration delay;
+
+        private ApiStubDelay(Duration delay) {
+            this.delay = delay;
+        }
+
+        public static ApiStubDelay toBeDelayedBy(int delay, TemporalUnit unit) {
+            return new ApiStubDelay(Duration.of(delay, unit));
+        }
+    }
+
+    public static class HeaderEquality {
+
+        private final String name;
+        private final String value;
+
+        public HeaderEquality(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static HeaderEquality forHeader(String name, String value) {
+            return new HeaderEquality(name, value);
+        }
+    }
+
+    public static class BodyCondition {
+
+        private final Object value;
+
+        public BodyCondition(Object value) {
+            this.value = value;
+        }
+
+        public static BodyCondition forRequestBody(Object value) {
+            return new BodyCondition(value);
         }
     }
 }

@@ -1,5 +1,8 @@
 ### Unified Feed SDK 3.x changelog
 
+**3.5.3**
+- fix: http clients respect configured timeouts.  
+
 **3.5.2**
 - fix: JMX statistics published by the SDK are now properly being updated.
 

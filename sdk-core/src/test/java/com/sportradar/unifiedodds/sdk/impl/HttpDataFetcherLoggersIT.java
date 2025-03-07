@@ -9,35 +9,51 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sportradar.unifiedodds.sdk.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.internal.CommunicationException;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import lombok.val;
+import org.apache.commons.io.IOUtils;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+@SuppressWarnings("MagicNumber")
 public class HttpDataFetcherLoggersIT {
 
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
-    private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+    private CloseableHttpAsyncClient httpClient;
     private final HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
     private final SportsApiXmlResponseProvider xmlResponseProvider = new SportsApiXmlResponseProvider();
 
     public HttpDataFetcherLoggersIT() throws JAXBException {}
 
+    @Before
+    public void setUp() {
+        httpClient = HttpAsyncClientBuilder.create().build();
+        httpClient.start();
+    }
+
+    @After
+    public void tearDown() {
+        IOUtils.closeQuietly(httpClient);
+    }
+
     @Test
     public void logFastHttpDataFetcherShouldReturnHttpDataWhenHttpRequestSuccessful()
         throws CommunicationException {
         LogFastHttpDataFetcher httpDataFetcher = new LogFastHttpDataFetcher(
-            mock(SdkInternalConfiguration.class),
+            configWithTimeouts(),
             httpClient,
             mock(UnifiedOddsStatistics.class),
             httpResponseHandler,
@@ -50,7 +66,7 @@ public class HttpDataFetcherLoggersIT {
     public void logHttpDataFetcherShouldReturnHttpDataWhenHttpRequestSuccessful()
         throws CommunicationException {
         LogHttpDataFetcher httpDataFetcher = new LogHttpDataFetcher(
-            mock(SdkInternalConfiguration.class),
+            configWithTimeouts(),
             httpClient,
             mock(UnifiedOddsStatistics.class),
             httpResponseHandler,
@@ -72,5 +88,12 @@ public class HttpDataFetcherLoggersIT {
 
         HttpData responseData = httpDataFetcher.get(localhost);
         assertEquals(apiXmlResponseString, responseData.getResponse());
+    }
+
+    private static SdkInternalConfiguration configWithTimeouts() {
+        val config = mock(SdkInternalConfiguration.class);
+        when(config.getHttpClientTimeout()).thenReturn(2000);
+        when(config.getFastHttpClientTimeout()).thenReturn(1000L);
+        return config;
     }
 }
