@@ -53,7 +53,7 @@ integrate with in their code, are located in the com.sportradar.unifiedodds.sdk.
 | MarketDescriptionManager    | com.sportradar.unifiedodds.sdk.managers           |
 | ProducerManager             | com.sportradar.unifiedodds.sdk.managers           |
 | RecoveryManager             | com.sportradar.unifiedodds.sdk.managers           |
-| ReplayManager               | com.sportradar.unifiedodds.sdk.managers           |   
+| ReplayManager               | com.sportradar.unifiedodds.sdk.internal.impl      |   
 | SportDataProvider           | com.sportradar.unifiedodds.sdk.managers           |
 | RoutingKeyInfo              | com.sportradar.unifiedodds.sdk.extended           |
 

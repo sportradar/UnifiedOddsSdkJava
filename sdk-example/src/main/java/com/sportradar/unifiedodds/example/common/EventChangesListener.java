@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class EventChangesListener implements EventChangeListener {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Override
     public void onFixtureChange(Urn eventId, Date updated, SportEvent sportEvent) {

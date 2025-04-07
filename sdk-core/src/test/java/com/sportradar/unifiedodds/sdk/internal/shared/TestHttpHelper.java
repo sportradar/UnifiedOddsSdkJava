@@ -3,6 +3,7 @@ package com.sportradar.unifiedodds.sdk.internal.shared;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
@@ -60,9 +61,10 @@ public class TestHttpHelper extends HttpHelper {
         SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
-        UserAgentProvider userAgentProvider
+        UserAgentProvider userAgentProvider,
+        TraceIdProvider traceIdProvider
     ) {
-        super(config, httpClient, messageExtractor, userAgentProvider);
+        super(config, httpClient, messageExtractor, userAgentProvider, traceIdProvider);
         UriReplacements = new HashMap<>();
         PostResponses = new ArrayList<>();
         PutResponses = new ArrayList<>();

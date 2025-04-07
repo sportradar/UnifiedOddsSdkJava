@@ -15,7 +15,7 @@ import java.util.UUID;
 
 /**
  * The master {@link FeedMessageProcessor} implementation that handles the flow
- * trough the message processing pipeline
+ * through the message processing pipeline
  */
 @SuppressWarnings({ "ExplicitInitialization" })
 public class CompositeMessageProcessor implements CompositeFeedMessageProcessor {

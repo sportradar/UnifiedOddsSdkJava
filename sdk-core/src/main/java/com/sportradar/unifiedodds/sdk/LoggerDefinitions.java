@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk;
 
 /**
- * Defines interfaces used to identify logger instances used trough the SDK
+ * Defines interfaces used to identify logger instances used through the SDK
  */
 public interface LoggerDefinitions {
     /**

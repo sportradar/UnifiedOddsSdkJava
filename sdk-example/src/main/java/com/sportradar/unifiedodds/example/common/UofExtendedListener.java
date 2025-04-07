@@ -8,14 +8,15 @@ import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
+import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UofExtendedListener implements UofExtListener {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /**
      * Occurs when any feed message arrives

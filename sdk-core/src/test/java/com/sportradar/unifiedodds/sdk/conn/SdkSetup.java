@@ -36,6 +36,9 @@ public final class SdkSetup {
     private final int nodeId;
     private boolean configureSession;
 
+    private int httpClientFastFailingTimeout;
+    private int httpClientTimeout;
+
     private Optional<UofExtListener> rawMessagesListener = Optional.empty();
 
     private Optional<UofListener> messagesListener = Optional.empty();
@@ -88,8 +91,18 @@ public final class SdkSetup {
         return this;
     }
 
+    public SdkSetup withClientFastFailingTimeout(int fastFailingTimeout) {
+        httpClientFastFailingTimeout = fastFailingTimeout;
+        return this;
+    }
+
+    public SdkSetup withClientTimeout(int clientTimeout) {
+        httpClientTimeout = clientTimeout;
+        return this;
+    }
+
     public UofSdk withoutFeed() throws InitException {
-        val config = UofSdk
+        CustomConfigurationBuilder configBuilder = UofSdk
             .getUofConfigurationBuilder()
             .setAccessToken(sdkCredentials.getUsername())
             .selectCustom()
@@ -100,19 +113,17 @@ public final class SdkSetup {
             .setNodeId(nodeId)
             .enableUsageExport(false);
 
-        setExceptionHandlingStrategy(config);
+        setHttpClientFastFailingTimeout(configBuilder);
+        setHttpClientTimeout(configBuilder);
+        setExceptionHandlingStrategy(configBuilder);
 
-        return createSdk(config.build());
-    }
+        UofConfiguration config = configBuilder.build();
 
-    private void setExceptionHandlingStrategy(CustomConfigurationBuilder config) {
-        if (!useDefaultExceptionHandlingStrategy) {
-            config.setExceptionHandlingStrategy(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()));
-        }
+        return createSdk(config);
     }
 
     public UofSdk withOpenedFeed() throws InitException {
-        val config = UofSdk
+        CustomConfigurationBuilder configBuilder = UofSdk
             .getUofConfigurationBuilder()
             .setAccessToken(sdkCredentials.getUsername())
             .selectCustom()
@@ -129,9 +140,12 @@ public final class SdkSetup {
             .setNodeId(nodeId)
             .enableUsageExport(false);
 
-        setExceptionHandlingStrategy(config);
+        setHttpClientFastFailingTimeout(configBuilder);
+        setHttpClientTimeout(configBuilder);
+        setExceptionHandlingStrategy(configBuilder);
 
-        UofSdk sdk = createSdk(config.build());
+        UofConfiguration config = configBuilder.build();
+        UofSdk sdk = createSdk(config);
 
         if (configureSession) {
             configure1Session(sdk);
@@ -139,6 +153,24 @@ public final class SdkSetup {
 
         sdk.open();
         return sdk;
+    }
+
+    private void setHttpClientTimeout(CustomConfigurationBuilder configBuilder) {
+        if (httpClientTimeout > 0) {
+            configBuilder.setHttpClientTimeout(httpClientTimeout);
+        }
+    }
+
+    private void setHttpClientFastFailingTimeout(CustomConfigurationBuilder configBuilder) {
+        if (httpClientFastFailingTimeout > 0) {
+            configBuilder.setHttpClientFastFailingTimeout(httpClientFastFailingTimeout);
+        }
+    }
+
+    private void setExceptionHandlingStrategy(CustomConfigurationBuilder config) {
+        if (!useDefaultExceptionHandlingStrategy) {
+            config.setExceptionHandlingStrategy(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()));
+        }
     }
 
     private UofSdk createSdk(UofConfiguration config) {

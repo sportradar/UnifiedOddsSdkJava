@@ -9,7 +9,9 @@ import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
+import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUntestableCheckedException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +20,7 @@ import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,27 +33,32 @@ public class HttpHelper {
         LoggerDefinitions.UfSdkRestTrafficLog.class
     );
     private static final String EMPTY_RESPONSE = "EMPTY_RESPONSE";
+    private static final String TRACE_ID_HEADER = "trace-id";
     private final SdkInternalConfiguration config;
     private final CloseableHttpClient httpClient;
     private final MessageAndActionExtractor messageExtractor;
     private final UserAgentProvider userAgent;
+    private final TraceIdProvider traceIdProvider;
 
     @Inject
     public HttpHelper(
         SdkInternalConfiguration config,
         CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
-        UserAgentProvider userAgent
+        UserAgentProvider userAgent,
+        TraceIdProvider traceIdProvider
     ) {
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(httpClient);
         Preconditions.checkNotNull(messageExtractor);
         Preconditions.checkNotNull(userAgent, "userAgent");
+        Preconditions.checkNotNull(traceIdProvider, "traceIdProvider");
 
         this.config = config;
         this.httpClient = httpClient;
         this.messageExtractor = messageExtractor;
         this.userAgent = userAgent;
+        this.traceIdProvider = traceIdProvider;
     }
 
     public ResponseData post(String path) throws CommunicationException {
@@ -102,13 +106,15 @@ public class HttpHelper {
         }
     }
 
-    public ResponseData executeRequest(ClassicHttpRequest httpRequest, String path)
+    private ResponseData executeRequest(ClassicHttpRequest httpRequest, String path)
         throws CommunicationException {
         Stopwatch timer = Stopwatch.createStarted();
+        String traceId = traceIdProvider.generateTraceId();
         ResponseData responseData;
         try {
             httpRequest.addHeader("x-access-token", config.getAccessToken());
             httpRequest.addHeader("User-Agent", userAgent.asHeaderValue());
+            httpRequest.addHeader(TRACE_ID_HEADER, traceId);
             responseData =
                 httpClient.execute(
                     httpRequest,
@@ -116,8 +122,9 @@ public class HttpHelper {
                 );
         } catch (IOException e) {
             TRAFFIC_LOGGER.info(
-                "Request[{}]: {}, FAILED({}), ex:",
+                "Request[{}]: traceId - {}, {}, FAILED({}), ex:",
                 httpRequest.getMethod(),
+                traceId,
                 path,
                 timer.stop(),
                 e
@@ -157,20 +164,33 @@ public class HttpHelper {
         String responseContent
     ) {
         String errorMessage;
+        String traceId = extractTraceId(httpRequest);
 
         if (responseData.isSuccessful()) {
-            errorMessage = "Request[{}]: {}, response code - OK[{}]({}): {}";
+            errorMessage = "Request[{}]: traceId - {}, {}, response code - OK[{}]({}): {}";
         } else {
-            errorMessage = "Request[{}]: {}, response code - FAILED[{}]({}): {}";
+            errorMessage = "Request[{}]: traceId - {}, {}, response code - FAILED[{}]({}): {}";
         }
         TRAFFIC_LOGGER.info(
             errorMessage,
             httpRequest.getMethod(),
+            traceId,
             path,
             responseData.getStatusCode(),
             timer.stop(),
             responseContent
         );
+    }
+
+    @ExcludeFromJacocoGeneratedReportUntestableCheckedException
+    protected String extractTraceId(ClassicHttpRequest request) {
+        Header header = null;
+        try {
+            header = request.getHeader(TRACE_ID_HEADER);
+        } catch (ProtocolException e) {
+            return null;
+        }
+        return header != null ? header.getValue() : null;
     }
 
     public static class ResponseData {

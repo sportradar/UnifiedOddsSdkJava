@@ -5,7 +5,7 @@
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
 /**
- * Default pass-trough snapshot scheduler
+ * Default pass-through snapshot scheduler
  */
 public class DefaultSnapshotRequestManager implements SnapshotRequestManager {
 

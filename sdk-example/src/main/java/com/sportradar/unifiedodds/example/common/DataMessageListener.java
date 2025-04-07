@@ -23,12 +23,12 @@ public class DataMessageListener implements UofListener {
     private final boolean writeMarketData;
 
     public DataMessageListener(
-        String listener_version,
+        String listenerVersion,
         List<Locale> desiredLocales,
         boolean writeEventData,
         boolean writeMarketData
     ) {
-        this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
+        this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listenerVersion);
         sportEntityWriter = new SportEntityWriter(desiredLocales, true, false);
         marketWriter = new MarketWriter(desiredLocales, true, false);
         this.writeEventData = writeEventData;
@@ -148,7 +148,7 @@ public class DataMessageListener implements UofListener {
     /**
      * This handler is called when the SDK detects that it has problems parsing/dispatching a message.
      * The handler can decide to take some custom action (shutting down everything etc. doing some
-     * special analysis of the raw message content etc) or just ignore the message. The SDK itself
+     * special analysis of the raw message content etc.) or just ignore the message. The SDK itself
      * will always log that it has received an unparseable message.
      *
      * @param sender            the session
@@ -159,7 +159,8 @@ public class DataMessageListener implements UofListener {
     public void onUnparsableMessage(UofSession sender, UnparsableMessage unparsableMessage) {
         if (unparsableMessage.getEvent() != null) {
             logger.info(
-                "Problems detected on received message for event " + unparsableMessage.getEvent().getId()
+                "Problems detected on received message for event {}",
+                unparsableMessage.getEvent().getId()
             );
         } else {
             logger.info("Problems detected on received message"); // probably a system message deserialization failure
@@ -167,9 +168,11 @@ public class DataMessageListener implements UofListener {
     }
 
     @Override
-    public void onUserUnhandledException(UofSession sender, Exception exception) {}
+    public void onUserUnhandledException(UofSession sender, Exception exception) {
+        // This is a user unhandled exception
+    }
 
     private void logBaseMessageData(Class msgClass, SportEvent event) {
-        logger.info("Received " + msgClass.getSimpleName() + " for sport event " + event.getId());
+        logger.info("Received {} for sport event {}", msgClass.getSimpleName(), event.getId());
     }
 }

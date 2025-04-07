@@ -27,6 +27,13 @@ public final class SapiProducers {
         return producer;
     }
 
+    public static Producer buildActiveProducer(ProducerId id, String producerApiUrl) {
+        Producer producer = createAllProducers().get(id);
+        producer.setActive(true);
+        producer.setApiUrl(producerApiUrl);
+        return producer;
+    }
+
     private static Map<ProducerId, Producer> createAllProducers() {
         try {
             Map<ProducerId, Producer> producers = new HashMap<>();

@@ -32,7 +32,8 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
         @Named("FastHttpClient") CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler responseDataHandler,
-        UserAgentProvider userAgentProvider
+        UserAgentProvider userAgentProvider,
+        TraceIdProvider traceIdProvider
     ) {
         super(
             config,
@@ -40,6 +41,7 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
             statsBean,
             responseDataHandler,
             userAgentProvider,
+            traceIdProvider,
             config.getFastHttpClientTimeout()
         );
     }
@@ -52,8 +54,10 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
         try {
             result = super.send(request, path);
         } catch (CommunicationException e) {
+            String traceId = extractTraceId(request);
             trafficLogger.info(
-                "Request[DataFetcher]: {}, response - FAILED({} ms), ex:",
+                "Request[DataFetcher]: traceId - {}, {}, response - FAILED({} ms), ex:",
+                traceId,
                 path,
                 timer.stop().elapsed(TimeUnit.MILLISECONDS),
                 e
@@ -65,8 +69,11 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
             String cleanResponse = result.getResponse() == null
                 ? null
                 : result.getResponse().replace("\n", "");
+            String traceId = extractTraceId(request);
+
             trafficLogger.info(
-                "Request[DataFetcher]: {}, response - OK({} ms): {}",
+                "Request[DataFetcher]: traceId - {}, {}, response - OK({} ms): {}",
+                traceId,
                 path,
                 timer.stop().elapsed(TimeUnit.MILLISECONDS),
                 cleanResponse

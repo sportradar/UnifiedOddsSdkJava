@@ -54,7 +54,7 @@ public interface SportEventCache {
     void purgeCacheItem(Urn id);
 
     /**
-     * Method that gets triggered when the associated event gets booked trough the {@link BookingManager}
+     * Method that gets triggered when the associated event gets booked through the {@link BookingManager}
      *
      * @param id the {@link Urn} of the event that was successfully booked
      */

@@ -45,7 +45,7 @@ public enum ReportingStatus {
     }
 
     /**
-     * Maps the value received trough a message to the {@link ReportingStatus}
+     * Maps the value received through a message to the {@link ReportingStatus}
      *
      * @param status - the sport event status received as a message
      * @return - if the received sport event status is in a known state, the mapped state; otherwise {@link #Unknown}

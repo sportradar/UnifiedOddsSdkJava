@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({ "LineLength" })
 public class GlobalEventsListener implements UofGlobalEventsListener {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /**
      * Invoked when the producer status changes, some examples:

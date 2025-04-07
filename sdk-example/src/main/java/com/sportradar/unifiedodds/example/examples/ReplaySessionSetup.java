@@ -21,7 +21,7 @@ import java.io.IOException;
 @SuppressWarnings({ "MagicNumber" })
 public class ReplaySessionSetup {
 
-    private final UofSdkForReplay oddsFeed;
+    private final UofSdkForReplay uofSdkForReplay;
 
     public ReplaySessionSetup() {
         logEntry("Running the UofSdk SDK Basic example - single session with replay server");
@@ -36,18 +36,18 @@ public class ReplaySessionSetup {
             .build();
 
         logEntry("Creating a new UofSdkForReplay instance");
-        oddsFeed = new UofSdkForReplay(new GlobalEventsListener(), configuration);
+        uofSdkForReplay = new UofSdkForReplay(new GlobalEventsListener(), configuration);
     }
 
     public void run() throws IOException, InitException, InterruptedException {
         logEntry("Building a simple session which will receive all messages replayed from the server");
-        oddsFeed
+        uofSdkForReplay
             .getSessionBuilder()
             .setMessageInterest(MessageInterest.AllMessages)
             .setListener(new MessageListener("ReplaySessionSetup"))
             .build();
 
-        ReplayManager replayManager = oddsFeed.getReplayManager();
+        ReplayManager replayManager = uofSdkForReplay.getReplayManager();
 
         Urn eventId = Urn.parse("sr:match:12089842");
         Urn eventId1 = Urn.parse("sr:match:12089826");
@@ -60,7 +60,7 @@ public class ReplaySessionSetup {
             "Opening the feed instance & starting the replay procedure (30x faster, max delay between messages 500ms)"
         );
         logEntry("Feed instance will remain open for 30 minutes, processing replay messages");
-        oddsFeed.open();
+        uofSdkForReplay.open();
         replayManager.play(30, 500);
 
         logEntry("Replay example successfully started");
@@ -68,7 +68,7 @@ public class ReplaySessionSetup {
         Thread.sleep(1000 * 60 * 30L);
 
         logEntry("Closing the odds feed instance (30min elapsed)");
-        oddsFeed.close();
+        uofSdkForReplay.close();
 
         logEntry("ReplaySessionSetup example finished");
         logEntry("");

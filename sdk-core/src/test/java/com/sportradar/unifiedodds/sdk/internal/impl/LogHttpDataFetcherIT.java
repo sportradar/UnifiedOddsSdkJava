@@ -25,7 +25,8 @@ public class LogHttpDataFetcherIT extends HttpDataFetcherIT {
             httpClient,
             statsBean,
             httpResponseHandler,
-            mock(UserAgentProvider.class)
+            mock(UserAgentProvider.class),
+            mock(TraceIdProvider.class)
         );
     }
 }

@@ -6,7 +6,7 @@ package com.sportradar.unifiedodds.sdk.conn;
 import com.sportradar.uf.sportsapi.datamodel.SapiFixtureChange;
 import com.sportradar.uf.sportsapi.datamodel.SapiFixtureChangesEndpoint;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 public class SapiFixtureChanges {
 
@@ -34,7 +34,7 @@ public class SapiFixtureChanges {
     private static SapiFixtureChange fixtureChange(String eventId, String updateTime) {
         SapiFixtureChange result = new SapiFixtureChange();
         result.setSportEventId(eventId);
-        result.setUpdateTime(XmlGregorianCalendars.forInstant(Instant.parse(updateTime)));
+        result.setUpdateTime(XmlGregorianCalendars.forInstant(ZonedDateTime.parse(updateTime).toInstant()));
         return result;
     }
 }

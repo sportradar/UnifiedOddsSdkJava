@@ -9,16 +9,14 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.sportradar.unifiedodds.sdk.internal.impl.Deserializer;
-import com.sportradar.unifiedodds.sdk.internal.impl.RuntimeConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
 import java.util.concurrent.TimeUnit;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MagicNumber" })
 public class HttpClientModule implements Module {
 
     private final HttpClientFactory httpClientFactory;
@@ -117,8 +115,15 @@ public class HttpClientModule implements Module {
         SdkInternalConfiguration config,
         @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
         @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer,
-        UserAgentProvider userAgentProvider
+        UserAgentProvider userAgentProvider,
+        TraceIdProvider traceIdProvider
     ) {
-        return new HttpHelper(config, httpClient, new MessageAndActionExtractor(), userAgentProvider);
+        return new HttpHelper(
+            config,
+            httpClient,
+            new MessageAndActionExtractor(),
+            userAgentProvider,
+            traceIdProvider
+        );
     }
 }

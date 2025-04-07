@@ -1,9 +1,12 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.0.1**
+**4.1.0**
+- All HTTP requests now include a trace-id header for improved traceability.
+
+**4.0.1 (2025-03-07)**
 - fix: http clients respect configured timeouts.  
 - 
-**4.0.0 (2025-02-11) (breaking change) **
+**4.0.0 (2025-02-11) (breaking change)**
 
 - ExceptionHandlingStrategy default value is changed to Throw (before Catch)
 - Asian proxy environments are no longer supported therefore they are removed from enum Environment
@@ -529,14 +532,14 @@
 * added support for decimal results on "EventResult"(Stage entity results)
 * added the possibility to set a custom messaging virtual host on the CustomConfigurationBuilder
 * added sample SDK properties to the included example
-* added support to purge sport event status on demand(trough SportsInfoManager)
+* added support to purge sport event status on demand(through SportsInfoManager)
 * improved handling of "simpleteam" entities
 * when a match gets booked successfully, the SDK now updates the internal state of the booking status
 * minor fixes and improvements
 
 **2.0.5 (2018-03-13)**
 * configuration build process refactored, previous build path was deprecated!
-* added a new market type - MarketCancel, accessible trough the BetCancel message
+* added a new market type - MarketCancel, accessible through the BetCancel message
 * addition of the EventStatus.Postponed enum value
 * match status fetching logic improvements
 * fixed flex score market name generation(0.0 -> 0, 1.0 -> 1,...)
@@ -568,8 +571,8 @@
 
 **2.0.2 (2018-01-15)**
 * added support for replay server node id
-* added support for seamless access to staging env(trough the configuration)
-* extended support for SDK configuration trough the properties file
+* added support for seamless access to staging env(through the configuration)
+* extended support for SDK configuration through the properties file
 * exposure of named value ids(void reasons, betstop reason,...)
 * events cache improvements
 * variant markets caching update

@@ -44,9 +44,9 @@ public interface UofConfiguration {
     Integer getNodeId();
 
     /**
-     * Returns the {@link ExceptionHandlingStrategy} which will be used trough the SDK
+     * Returns the {@link ExceptionHandlingStrategy} which will be used through the SDK
      *
-     * @return the {@link ExceptionHandlingStrategy} which will be used trough the SDK
+     * @return the {@link ExceptionHandlingStrategy} which will be used through the SDK
      */
     ExceptionHandlingStrategy getExceptionHandlingStrategy();
 

@@ -321,7 +321,7 @@ public class UofSdk implements AutoCloseable {
     }
 
     /**
-     * Returns the {@link com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager} used to access markets data trough our API
+     * Returns the {@link com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager} used to access markets data through our API
      *
      * @return {@link com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager} used to access markets data
      */

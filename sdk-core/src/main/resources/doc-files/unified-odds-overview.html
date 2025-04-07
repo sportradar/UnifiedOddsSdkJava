@@ -127,7 +127,7 @@ By default all the data is available in English. You can add additional desired 
 (<a href="com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#addDesiredLocales-java.util.List-">addDesiredLocales</a>,
 <a href="com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#setDefaultLocale-java.util.Locale-">setDefaultLocale</a>).
 
-If you need to access a locale that was not specified as the default locale and neither added to the desired locales list, you can still access the locale translated content trough the
+If you need to access a locale that was not specified as the default locale and neither added to the desired locales list, you can still access the locale translated content through the
 <a href="com/sportradar/unifiedodds/sdk/SportDataProvider.html">SportDataProvider</a>
 and <a href="com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html">MarketDescriptionManager</a>.
 
@@ -147,7 +147,7 @@ after the producer is up again you can safely re-enable all the markets.
 <p>
 If your system crashes or if you take down/restart your system you need to provide the timestamp of the last processed message per producer,
 so the SDK performs the recovery for the missed messages(the max time from the last processed message can not be more than 3 days).
-You can do this trough the <a href="com/sportradar/unifiedodds/sdk/ProducerManager.html">ProducerManager</a> available on the <a href="com/sportradar/unifiedodds/sdk/UofSdk.html">UofSdk</a> instance.
+You can do this through the <a href="com/sportradar/unifiedodds/sdk/ProducerManager.html">ProducerManager</a> available on the <a href="com/sportradar/unifiedodds/sdk/UofSdk.html">UofSdk</a> instance.
 If the last processed message timestamp is not provided, the SDK will perform a full recovery, <b>beware</b>: with a full recovery you do not recover any lost <a href="com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html">BetSettlement</a> messages!
 </p>
 <pre>

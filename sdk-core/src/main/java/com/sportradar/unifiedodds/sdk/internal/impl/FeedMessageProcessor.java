@@ -21,7 +21,7 @@ public interface FeedMessageProcessor {
 
     /**
      * Processes the provided message. If the <i>next message processor</i> is defined
-     * trough the {@link #setNextMessageProcessor(FeedMessageProcessor)}, the instance should forward the
+     * through the {@link #setNextMessageProcessor(FeedMessageProcessor)}, the instance should forward the
      * message to the defined <i>next message processor</i> after the processing is completed
      *
      * @param message - the message that should be processed

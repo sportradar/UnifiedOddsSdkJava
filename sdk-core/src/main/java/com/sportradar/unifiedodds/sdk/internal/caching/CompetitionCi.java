@@ -63,7 +63,7 @@ public interface CompetitionCi extends SportEventCi {
     void fetchSportEventStatus();
 
     /**
-     * Method that gets triggered when the associated event gets booked trough the {@link BookingManager}
+     * Method that gets triggered when the associated event gets booked through the {@link BookingManager}
      */
     void onEventBooked();
 

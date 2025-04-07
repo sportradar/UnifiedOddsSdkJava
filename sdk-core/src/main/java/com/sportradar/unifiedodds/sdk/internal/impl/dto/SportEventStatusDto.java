@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A data-transfer-object representation for sport event status. The status can be receiver trough messages or fetched
+ * A data-transfer-object representation for sport event status. The status can be receiver through messages or fetched
  * from the API
  */
 @SuppressWarnings(

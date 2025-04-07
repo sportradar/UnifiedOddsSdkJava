@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName" })
 public abstract class HttpHelperWithStubbedHttpClientTest {
 
     private static final String ANY_MESSAGE = "anyMessage";
@@ -33,8 +35,9 @@ public abstract class HttpHelperWithStubbedHttpClientTest {
     private final CloseableHttpClientFixture httpClient = new CloseableHttpClientFixture();
     private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
     private final UserAgentProvider userAgentProvider = mock(UserAgentProvider.class);
+    private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
     private final InvokeHelpersHttpMethod httpMethod = httpMethodInvocationOn(
-        new HttpHelper(config, httpClient, messageExtractor, userAgentProvider)
+        new HttpHelper(config, httpClient, messageExtractor, userAgentProvider, traceIdProvider)
     );
     private final SportsApiXmlResponseProvider xmlResponses = new SportsApiXmlResponseProvider();
     private final String anyPath = "/path/resource";
@@ -46,13 +49,17 @@ public abstract class HttpHelperWithStubbedHttpClientTest {
 
     @Test
     public void shouldNotInstantiateWithNullArguments() {
-        assertThatThrownBy(() -> new HttpHelper(null, httpClient, messageExtractor, userAgentProvider))
+        assertThatThrownBy(() ->
+                new HttpHelper(null, httpClient, messageExtractor, userAgentProvider, traceIdProvider)
+            )
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new HttpHelper(config, null, messageExtractor, userAgentProvider))
+        assertThatThrownBy(() ->
+                new HttpHelper(config, null, messageExtractor, userAgentProvider, traceIdProvider)
+            )
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new HttpHelper(config, httpClient, null, userAgentProvider))
+        assertThatThrownBy(() -> new HttpHelper(config, httpClient, null, userAgentProvider, traceIdProvider))
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new HttpHelper(config, httpClient, messageExtractor, null))
+        assertThatThrownBy(() -> new HttpHelper(config, httpClient, messageExtractor, null, traceIdProvider))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("userAgent");
     }

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * A data-transfer-object representation for sport event status statistics. The status can be receiver trough messages or fetched
+ * A data-transfer-object representation for sport event status statistics. The status can be receiver through messages or fetched
  * from the API
  */
 @SuppressWarnings({ "BooleanExpressionComplexity", "CyclomaticComplexity", "NPathComplexity" })

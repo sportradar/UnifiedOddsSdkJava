@@ -22,8 +22,8 @@ public class MessageListener implements UofListener {
 
     private final Logger logger;
 
-    public MessageListener(String listener_version) {
-        this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listener_version);
+    public MessageListener(String listenerVersion) {
+        this.logger = LoggerFactory.getLogger(this.getClass().getName() + "-" + listenerVersion);
     }
 
     /**
@@ -35,7 +35,7 @@ public class MessageListener implements UofListener {
     @Override
     public void onOddsChange(UofSession sender, OddsChange<SportEvent> oddsChanges) {
         SportEvent event = oddsChanges.getEvent();
-        logger.info("Received odds change for: " + event);
+        logger.info("Received odds change for: {}", event);
 
         event.getName(Locale.ENGLISH);
         event.getId();
@@ -49,8 +49,8 @@ public class MessageListener implements UofListener {
 
             String marketDescription = marketOdds.getName();
 
-            logger.info("Received odds information for: " + marketDescription);
-            logger.info("Market status is: " + marketOdds.getStatus());
+            logger.info("Received odds information for: {}", marketDescription);
+            logger.info("Market status is: {}", marketOdds.getStatus());
 
             // If the market is active printout odds for all outcomes
             if (marketOdds.getStatus() == MarketStatus.Active) {
@@ -62,11 +62,9 @@ public class MessageListener implements UofListener {
                     outcomeOdds.getOutcomeDefinition();
 
                     logger.info(
-                        "Outcome " +
-                        outcomeDesc +
-                        " has odds " +
-                        outcomeOdds.getOdds(null) +
-                        " " +
+                        "Outcome {} has odds {} {}",
+                        outcomeDesc,
+                        outcomeOdds.getOdds(null),
                         outcomeOdds.getProbability()
                     );
                 }
@@ -82,7 +80,7 @@ public class MessageListener implements UofListener {
      */
     @Override
     public void onBetStop(UofSession sender, BetStop<SportEvent> betStop) {
-        logger.info("Received betstop for sport event " + betStop.getEvent());
+        logger.info("Received betstop for sport event {}", betStop.getEvent());
     }
 
     /**
@@ -98,15 +96,17 @@ public class MessageListener implements UofListener {
      */
     @Override
     public void onBetSettlement(UofSession sender, BetSettlement<SportEvent> clearBets) {
-        logger.info("Received bet settlement for sport event " + clearBets.getEvent());
+        logger.info("Received bet settlement for sport event {}", clearBets.getEvent());
 
         // Iterate through the betsettlements for each market
         for (MarketWithSettlement marketSettlement : clearBets.getMarkets()) {
             // Then iterate through the result for each outcome (win or loss)
             for (OutcomeSettlement result : marketSettlement.getOutcomeSettlements()) {
-                if (result.getOutcomeResult().equals(OutcomeResult.Won)) logger.info(
-                    "Outcome " + result.getId() + " is a win"
-                ); else logger.info("Outcome " + result.getId() + " is a loss");
+                if (result.getOutcomeResult().equals(OutcomeResult.Won)) {
+                    logger.info("Outcome {} is a win", result.getId());
+                } else {
+                    logger.info("Outcome {} is a loss", result.getId());
+                }
             }
         }
     }
@@ -124,7 +124,7 @@ public class MessageListener implements UofListener {
         UofSession sender,
         RollbackBetSettlement<SportEvent> rollbackBetSettlement
     ) {
-        logger.info("Received rollback betsettlement for sport event " + rollbackBetSettlement.getEvent());
+        logger.info("Received rollback betsettlement for sport event {}", rollbackBetSettlement.getEvent());
     }
 
     /**
@@ -138,7 +138,7 @@ public class MessageListener implements UofListener {
      */
     @Override
     public void onBetCancel(UofSession sender, BetCancel<SportEvent> betCancel) {
-        logger.info("Received bet cancel for sport event " + betCancel.getEvent());
+        logger.info("Received bet cancel for sport event {}", betCancel.getEvent());
     }
 
     /**
@@ -152,7 +152,7 @@ public class MessageListener implements UofListener {
      */
     @Override
     public void onRollbackBetCancel(UofSession sender, RollbackBetCancel<SportEvent> rbBetCancel) {
-        logger.info("Received rollback betcancel for sport event " + rbBetCancel.getEvent());
+        logger.info("Received rollback betcancel for sport event {}", rbBetCancel.getEvent());
     }
 
     /**
@@ -168,7 +168,7 @@ public class MessageListener implements UofListener {
      */
     @Override
     public void onFixtureChange(UofSession sender, FixtureChange<SportEvent> fixtureChange) {
-        logger.info("Received fixture change for sport event " + fixtureChange.getEvent());
+        logger.info("Received fixture change for sport event {}", fixtureChange.getEvent());
     }
 
     /**
@@ -187,7 +187,8 @@ public class MessageListener implements UofListener {
 
         if (unparsableMessage.getEvent() != null) {
             logger.info(
-                "Problems detected on received message for event " + unparsableMessage.getEvent().getId()
+                "Problems detected on received message for event {}",
+                unparsableMessage.getEvent().getId()
             );
         } else {
             logger.info("Problems detected on received message"); // probably a system message deserialization failure
@@ -195,5 +196,7 @@ public class MessageListener implements UofListener {
     }
 
     @Override
-    public void onUserUnhandledException(UofSession sender, Exception exception) {}
+    public void onUserUnhandledException(UofSession sender, Exception exception) {
+        logger.error("Received onUserUnhandledException", exception);
+    }
 }

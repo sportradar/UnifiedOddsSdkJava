@@ -45,9 +45,10 @@ public class SdkTestModule implements Module {
         SdkInternalConfiguration config,
         @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
-        UserAgentProvider userAgentProvider
+        UserAgentProvider userAgentProvider,
+        TraceIdProvider traceIdProvider
     ) {
-        return new TestHttpHelper(config, httpClient, messageExtractor, userAgentProvider);
+        return new TestHttpHelper(config, httpClient, messageExtractor, userAgentProvider, traceIdProvider);
     }
 
     @Provides

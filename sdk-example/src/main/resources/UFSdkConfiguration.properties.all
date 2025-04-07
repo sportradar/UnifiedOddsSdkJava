@@ -19,7 +19,7 @@ uf.sdk.desiredLanguages=
 # a list of producer identifiers that should be automatically disabled, separated with comma (1,2,4)
 uf.sdk.disabledProducers=
 
-# the exception handling strategy that should be used trough the SDK (throw/catch)
+# the exception handling strategy that should be used through the SDK (throw/catch)
 uf.sdk.exceptionHandlingStrategy=
 
 # a value indicating to which unified feed environment sdk should connect (Environment enum value)

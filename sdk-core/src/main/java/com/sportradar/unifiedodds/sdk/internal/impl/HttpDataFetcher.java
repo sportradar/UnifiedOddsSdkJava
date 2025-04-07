@@ -18,15 +18,14 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.core5.concurrent.FutureCallback;
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("ClassFanOutComplexity")
+@SuppressWarnings({ "ClassFanOutComplexity", "ParameterNumber" })
 abstract class HttpDataFetcher {
 
+    private static final String TRACE_ID_HEADER = "trace-id";
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpDataFetcher.class);
     private final SdkInternalConfiguration config;
     private final CloseableHttpAsyncClient httpClient;
@@ -34,6 +33,7 @@ abstract class HttpDataFetcher {
     private final HttpResponseHandler responseHandler;
     private final long timeoutSeconds;
     private final UserAgentProvider userAgentProvider;
+    private final TraceIdProvider traceIdProvider;
 
     HttpDataFetcher(
         SdkInternalConfiguration config,
@@ -41,6 +41,7 @@ abstract class HttpDataFetcher {
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler responseHandler,
         UserAgentProvider userAgentProvider,
+        TraceIdProvider traceIdProvider,
         long timeoutSeconds
     ) {
         Preconditions.checkNotNull(config);
@@ -48,6 +49,7 @@ abstract class HttpDataFetcher {
         Preconditions.checkNotNull(statsBean);
         Preconditions.checkNotNull(responseHandler);
         Preconditions.checkNotNull(userAgentProvider, "userAgentProvider");
+        Preconditions.checkNotNull(traceIdProvider, "traceIdProvider");
         Preconditions.checkArgument(timeoutSeconds > 0, "timeout cannot be 0");
 
         this.config = config;
@@ -55,6 +57,7 @@ abstract class HttpDataFetcher {
         this.statsBean = statsBean;
         this.responseHandler = responseHandler;
         this.userAgentProvider = userAgentProvider;
+        this.traceIdProvider = traceIdProvider;
         this.timeoutSeconds = timeoutSeconds;
     }
 
@@ -72,6 +75,7 @@ abstract class HttpDataFetcher {
         statsBean.onStreamingHttpGet(path);
         httpRequest.addHeader("x-access-token", config.getAccessToken());
         httpRequest.addHeader("User-Agent", userAgentProvider.asHeaderValue());
+        httpRequest.addHeader(TRACE_ID_HEADER, traceIdProvider.generateTraceId());
 
         try {
             Optional<byte[]> requestBody = readBody(httpRequest, path);
@@ -94,6 +98,17 @@ abstract class HttpDataFetcher {
                 ex
             );
         }
+    }
+
+    @ExcludeFromJacocoGeneratedReportUntestableCheckedException
+    protected String extractTraceId(ClassicHttpRequest request) {
+        Header header = null;
+        try {
+            header = request.getHeader(TRACE_ID_HEADER);
+        } catch (ProtocolException e) {
+            return null;
+        }
+        return header != null ? header.getValue() : null;
     }
 
     @ExcludeFromJacocoGeneratedReportUntestableCheckedException

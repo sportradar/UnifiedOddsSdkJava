@@ -81,6 +81,10 @@ public class CompetitorDataProviders {
         return dataProvider;
     }
 
+    public static DataProvider<SapiCompetitorProfileEndpoint> neverProviding() {
+        return mock(DataProvider.class, withGetDataThrowingByDefault());
+    }
+
     public static DataProvider<SapiCompetitorProfileEndpoint> failingToProvide(
         LanguageHolder language,
         String sportEventId

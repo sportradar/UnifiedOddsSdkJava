@@ -69,7 +69,7 @@ public class MarketMappingWriter {
                 .append(", SubTypeId:")
                 .append(data.getMarketSubTypeId())
                 .append(", Sov:")
-                .append(data.getSovTemplate()); //.append("\n");
+                .append(data.getSovTemplate());
         }
         return sb.toString();
     }
@@ -82,10 +82,6 @@ public class MarketMappingWriter {
         List<MarketMappingData> mappings = market.getMarketDefinition().getValidMappings(locale);
         if (mappings == null || mappings.isEmpty()) {
             return "";
-        }
-
-        if (mappings.size() > 1) {
-            int c = mappings.size();
         }
 
         StringBuilder sb = new StringBuilder();

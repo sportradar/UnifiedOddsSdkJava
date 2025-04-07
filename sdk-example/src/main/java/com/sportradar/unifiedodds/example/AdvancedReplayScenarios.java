@@ -40,7 +40,7 @@ public class AdvancedReplayScenarios {
         // create new UofSdkForReplay instance
         UofSdkForReplay uofSdkForReplay = new UofSdkForReplay(new GlobalEventsListener(), config);
 
-        // all the operations supported by the replay server can be accessed trough the ReplayManager
+        // all the operations supported by the replay server can be accessed through the ReplayManager
         ReplayManager replayManager = uofSdkForReplay.getReplayManager();
 
         // stop & clear the replay server, so we cleanup the "previous" state

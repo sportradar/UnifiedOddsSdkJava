@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 )
 public class MarketWriter {
 
-    private List<Locale> locales;
-    private Locale defaultLocale;
-    private boolean includeMappings;
-    private boolean writeLog;
+    private final List<Locale> locales;
+    private final Locale defaultLocale;
+    private final boolean includeMappings;
+    private final boolean writeLog;
     private final Logger logger;
 
     public MarketWriter(List<Locale> locales, boolean includeMappings, boolean writeLog) {
@@ -61,45 +61,56 @@ public class MarketWriter {
     }
 
     public void writeMarket(Market market) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("MarketId:").append(market.getId());
-        sb.append(", Name:").append(market.getName());
-        sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb
-            .append(", AdditionalInfo:'")
-            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
-            .append("'");
-        writeMessage(sb.toString());
+        String sb =
+            "MarketId:" +
+            market.getId() +
+            ", Name:" +
+            market.getName() +
+            ", Specifiers:'" +
+            writeSpecifiers(market.getSpecifiers()) +
+            "'" +
+            ", AdditionalInfo:'" +
+            writeAdditionalInfo(market.getAdditionalMarketInfo()) +
+            "'";
+        writeMessage(sb);
 
         writeMarketMappings(market);
     }
 
     public void writeMarket(MarketCancel market) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("MarketId:").append(market.getId());
-        sb.append(", Name:").append(market.getName());
-        sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb
-            .append(", AdditionalInfo:'")
-            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
-            .append("'");
-        sb.append(", VoidReason:").append(market.getVoidReason());
-        writeMessage(sb.toString());
+        String sb =
+            "MarketId:" +
+            market.getId() +
+            ", Name:" +
+            market.getName() +
+            ", Specifiers:'" +
+            writeSpecifiers(market.getSpecifiers()) +
+            "'" +
+            ", AdditionalInfo:'" +
+            writeAdditionalInfo(market.getAdditionalMarketInfo()) +
+            "'" +
+            ", VoidReason:" +
+            market.getVoidReason();
+        writeMessage(sb);
 
         writeMarketMappings(market);
     }
 
     public void writeMarket(MarketWithProbabilities market) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("MarketId:").append(market.getId());
-        sb.append(", Name:").append(market.getName());
-        sb.append(", Specifiers:'").append(writeSpecifiers(market.getSpecifiers())).append("'");
-        sb
-            .append(", AdditionalInfo:'")
-            .append(writeAdditionalInfo(market.getAdditionalMarketInfo()))
-            .append("'");
-        sb.append(", MarketMetaData:").append(getMarketMetaData(market.getMarketMetadata()));
-        writeMessage(sb.toString());
+        String sb =
+            "MarketId:" +
+            market.getId() +
+            ", Name:" +
+            market.getName() +
+            ", Specifiers:'" +
+            writeSpecifiers(market.getSpecifiers()) +
+            "'" +
+            ", AdditionalInfo:'" +
+            writeAdditionalInfo(market.getAdditionalMarketInfo()) +
+            "'" +
+            ", MarketMetaData:" +
+            getMarketMetaData(market.getMarketMetadata());
+        writeMessage(sb);
 
         writeMarketMappings(market);
     }
@@ -248,7 +259,7 @@ public class MarketWriter {
     private void writeMarketMappings(Market market) {
         if (includeMappings) {
             String result = MarketMappingWriter.writeMarketMapping(market, defaultLocale);
-            if (result == null || result.isEmpty()) {
+            if (result.isEmpty()) {
                 result = "No market mappings for market: " + market.getId();
             }
             writeMessage(result);
@@ -258,7 +269,7 @@ public class MarketWriter {
     private void writeMarketOutcomeMappings(Market market) {
         if (includeMappings) {
             String result = MarketMappingWriter.writeMarketOutcomeMapping(market, defaultLocale);
-            if (result == null || result.isEmpty()) {
+            if (result.isEmpty()) {
                 result = "No market outcome mappings for outcome: " + market.getId();
             }
             writeMessage(result);
@@ -279,7 +290,7 @@ public class MarketWriter {
             return "";
         }
         return String.format(
-            "Win={}, Lose={}, HalfWin={}, HalfLose={}, Refund={}",
+            "Win=%s, Lose=%s, HalfWin=%s, HalfLose=%s, Refund=%s",
             probabilities.getWin(),
             probabilities.getLose(),
             probabilities.getHalfWin(),

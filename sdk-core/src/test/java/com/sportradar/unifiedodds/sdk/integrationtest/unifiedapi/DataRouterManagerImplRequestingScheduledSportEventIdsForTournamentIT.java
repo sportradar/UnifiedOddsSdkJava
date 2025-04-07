@@ -140,7 +140,8 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
                     HttpAsyncClientBuilder.create().build(),
                     mock(UnifiedOddsStatistics.class),
                     new HttpResponseHandler(),
-                    mock(UserAgentProvider.class)
+                    mock(UserAgentProvider.class),
+                    mock(TraceIdProvider.class)
                 ),
                 deserializer
             );

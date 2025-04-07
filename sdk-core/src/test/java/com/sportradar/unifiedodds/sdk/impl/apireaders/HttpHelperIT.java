@@ -20,6 +20,7 @@ import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
@@ -45,8 +46,15 @@ public class HttpHelperIT {
         Key.get(Deserializer.class, Names.named("SportsApiJaxbDeserializer"))
     );
     private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
+    private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
     private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor();
-    private final HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
+    private final HttpHelper httpHelper = new HttpHelper(
+        config,
+        httpClient,
+        messageExtractor,
+        userAgent,
+        traceIdProvider
+    );
 
     private final String anyPath = "/path/resource";
 

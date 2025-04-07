@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
 )
 public class SportEntityWriter {
 
-    private List<Locale> locales;
-    private Locale defaultLocale;
-    private boolean writeNonCacheableData;
-    private boolean writeLog;
+    private final List<Locale> locales;
+    private final Locale defaultLocale;
+    private final boolean writeNonCacheableData;
+    private final boolean writeLog;
     private final Logger logger;
 
     public SportEntityWriter(List<Locale> locales, boolean writeNonCacheableData, boolean writeLog) {
@@ -126,7 +126,7 @@ public class SportEntityWriter {
             //                event.getParentStage() != null ? writeData(event.getParentStage()) : "no parent event",
             event.getParentStage() != null ? event.getParentStage().getId() : "no parent event",
             event.getStageType(),
-            stages.toString()
+            stages
         );
     }
 
@@ -387,7 +387,7 @@ public class SportEntityWriter {
                 );
             }
         });
-        return String.format("Competitors:[%s]", sj.toString());
+        return String.format("Competitors:[%s]", sj);
     }
 
     /**

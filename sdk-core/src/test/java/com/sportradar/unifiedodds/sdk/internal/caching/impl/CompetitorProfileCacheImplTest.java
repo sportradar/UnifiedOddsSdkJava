@@ -51,6 +51,7 @@ import com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
 import com.sportradar.unifiedodds.sdk.entities.CompetitorPlayer;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.impl.CompetitorDataProviders;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.MatchCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCi;
@@ -695,11 +696,7 @@ class CompetitorProfileCacheImplTest {
             Urn germanyUrn = parse(Germany2024Uefa.COMPETITOR_ID);
 
             DataRouterImpl dataRouter = new DataRouterImpl();
-            DataProvider competitorProvider = providing(
-                in(ENGLISH),
-                with(germanyUrn.toString()),
-                convertToVirtual(fullyPopulatedFootballCompetitorProfile())
-            );
+            DataProvider competitorProvider = CompetitorDataProviders.neverProviding();
             DataRouterManager dataRouterManager =
                 CompetitorProfileCacheImplTest.this.dataRouterManagerBuilder.withSummaries(
                         providing(in(ENGLISH), with(GERMANY_SCOTLAND_MATCH_URN), summary)
@@ -818,7 +815,7 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        public void retrievesNonVirtualCompetitor() throws Exception {
+        public void retrievesNonVirtualCompetitorFromCompetitorProfile() throws Exception {
             SapiCompetitorProfileEndpoint germany = Germany2024Uefa.germanyCompetitorProfile();
             Urn virtualUrn = parse(VirtualCompetitor.ID);
 
@@ -851,7 +848,7 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        public void retrievesVirtualCompetitorForMatchPopulatedFromTournamentSummary() throws Exception {
+        public void retrievesVirtualCompetitorPopulatedFromTournamentSummary() throws Exception {
             val nascarCupWithVirtual = replaceFirstCompetitorWithVirtual(nascarCup2024TournamentInfo());
             val virtualStageCompetitor = nascarCupWithVirtual
                 .getTournament()
@@ -897,7 +894,7 @@ class CompetitorProfileCacheImplTest {
         }
 
         @Test
-        public void retrievesVirtualCompetitor() throws Exception {
+        public void retrievesVirtualCompetitorFromCompetitorProfile() throws Exception {
             SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
             virtual.getCompetitor().setVirtual(true);
 
@@ -1014,13 +1011,13 @@ class CompetitorProfileCacheImplTest {
             throws Exception {
             SapiMatchSummaryEndpoint summary = soccerMatchGermanyVsVirtual2024();
             Urn virtualUrn = parse(VirtualCompetitor.ID);
-            SapiCompetitorProfileEndpoint virtual = SapiTeams.VirtualCompetitor.profile();
-            virtual.getCompetitor().setVirtual(false);
-            virtual.getCompetitor().setId(virtualUrn.toString());
+            SapiCompetitorProfileEndpoint nonVirtual = SapiTeams.VirtualCompetitor.profile();
+            nonVirtual.getCompetitor().setVirtual(false);
+            nonVirtual.getCompetitor().setId(virtualUrn.toString());
 
             DataRouterImpl dataRouter = new DataRouterImpl();
             DataRouterManager dataRouterManager = dataRouterManagerBuilder
-                .withCompetitors(providing(in(ENGLISH), with(virtualUrn.toString()), virtual))
+                .withCompetitors(providing(in(ENGLISH), with(virtualUrn.toString()), nonVirtual))
                 .withSummaries(providing(in(FRENCH), with(virtualUrn.toString()), summary))
                 .with(dataRouter)
                 .build();

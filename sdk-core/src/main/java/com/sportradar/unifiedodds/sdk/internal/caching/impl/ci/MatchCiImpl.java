@@ -948,7 +948,7 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
     }
 
     /**
-     * Method that gets triggered when the associated event gets booked trough the {@link BookingManager}
+     * Method that gets triggered when the associated event gets booked through the {@link BookingManager}
      */
     @Override
     public void onEventBooked() {

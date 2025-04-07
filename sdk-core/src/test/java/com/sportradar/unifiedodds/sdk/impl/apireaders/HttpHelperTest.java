@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
@@ -35,7 +36,14 @@ public class HttpHelperTest {
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
         private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
-        private HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
+        private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
+        private HttpHelper httpHelper = new HttpHelper(
+            config,
+            httpClient,
+            messageExtractor,
+            userAgent,
+            traceIdProvider
+        );
 
         @Test
         public void urlShouldBePreservedWhenIoExceptionHappensDuringPost() throws IOException {
@@ -100,7 +108,14 @@ public class HttpHelperTest {
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
         private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
-        private HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
+        private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
+        private HttpHelper httpHelper = new HttpHelper(
+            config,
+            httpClient,
+            messageExtractor,
+            userAgent,
+            traceIdProvider
+        );
 
         @Test
         public void urlShouldBePreserved() throws IOException {
@@ -165,7 +180,14 @@ public class HttpHelperTest {
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
         private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
-        private HttpHelper httpHelper = new HttpHelper(config, httpClient, messageExtractor, userAgent);
+        private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
+        private HttpHelper httpHelper = new HttpHelper(
+            config,
+            httpClient,
+            messageExtractor,
+            userAgent,
+            traceIdProvider
+        );
 
         @Test
         public void urlShouldBePreserved() throws IOException {

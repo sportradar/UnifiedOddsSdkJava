@@ -56,7 +56,8 @@ public class HttpDataFetcherLoggersIT {
             httpClient,
             mock(UnifiedOddsStatistics.class),
             httpResponseHandler,
-            mock(UserAgentProvider.class)
+            mock(UserAgentProvider.class),
+            mock(TraceIdProvider.class)
         );
         httpDataFetcherShouldReturnHttpDataWhenHttpRequestSuccessful(httpDataFetcher);
     }
@@ -69,7 +70,8 @@ public class HttpDataFetcherLoggersIT {
             httpClient,
             mock(UnifiedOddsStatistics.class),
             httpResponseHandler,
-            mock(UserAgentProvider.class)
+            mock(UserAgentProvider.class),
+            mock(TraceIdProvider.class)
         );
         httpDataFetcherShouldReturnHttpDataWhenHttpRequestSuccessful(httpDataFetcher);
     }

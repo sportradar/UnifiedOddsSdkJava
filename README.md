@@ -115,7 +115,7 @@ and set the default locale with the use of the
 ([addDesiredLocales](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#addDesiredLocales-java.util.List-),
 [setDefaultLocale](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#setDefaultLocale-java.util.Locale-)).
 If you need to access a locale that was not specified as the default locale and neither added to the desired locales
-list, you can still access the locale translated content trough the
+list, you can still access the locale translated content through the
 [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
 and
 [MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html).
@@ -134,7 +134,7 @@ event is dispatched, after the producer is up again you can safely re-enable all
 
 If your system crashes or if you take down/restart your system you need to provide the timestamp of the last processed
 message per producer, so the SDK performs the recovery for the missed messages(the max time from the last processed
-message can not be more than 3 days). You can do this trough the
+message can not be more than 3 days). You can do this through the
 [ProducerManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/ProducerManager.html)
 available on the
 [UofSdk](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSdk.html)

@@ -674,7 +674,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
     }
 
     /**
-     * Adds fixture timestamp to cache so that the next fixture calls for the event goes through non-cached fixture provider
+     * Adds fixture timestamp to cache so that the next fixture calls for the event goes trough non-cached fixture provider
      *
      * @param id the {@link Urn} of the event
      */

@@ -42,6 +42,7 @@ public class BookingManagerTest {
         Modules.override(new MockedMasterModule()).with(new TestingModule())
     );
     private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
+    private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
     private BookingManager bookingManager;
     private TestHttpHelper testHttpHelper;
 
@@ -52,7 +53,8 @@ public class BookingManagerTest {
         );
         when(configInternal.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
         val messageExtractor = new MessageAndActionExtractor();
-        testHttpHelper = new TestHttpHelper(configInternal, httpClient, messageExtractor, userAgent);
+        testHttpHelper =
+            new TestHttpHelper(configInternal, httpClient, messageExtractor, userAgent, traceIdProvider);
         bookingManager = new BookingManagerImpl(sportEventCache, configInternal, testHttpHelper);
     }
 

@@ -6,7 +6,9 @@ package com.sportradar.unifiedodds.example;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
-import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.MessageInterest;
+import com.sportradar.unifiedodds.sdk.UofSdk;
+import com.sportradar.unifiedodds.sdk.UofSessionBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager;
@@ -23,9 +25,9 @@ public class BasicUofSdkExampleMain {
 
     public static void main(String[] args) throws InitException, IOException, InterruptedException {
         // first you need to prepare a configuration suitable to your use. The most important thing is the access
-        // token provided by Sportradar. You can set the token trough the builder via two ways:
+        // token provided by Sportradar. You can set the token through the builder via two ways:
         //      - as a system property(JVM argument -Duf.accesstoken=<your-access-token>)
-        //        and than invoking setAccessTokenFromSystemVar on the builder
+        //        and then invoking setAccessTokenFromSystemVar on the builder
         //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
         UofConfiguration config = UofSdk.getUofConfigurationBuilder().buildConfigFromSdkProperties();
         // create the new feed
@@ -34,7 +36,7 @@ public class BasicUofSdkExampleMain {
         // access the producer manager
         ProducerManager producerManager = uofSdk.getProducerManager();
 
-        // set the last received message timestamp trough the producer - if known
+        // set the last received message timestamp through the producer - if known
         // (as an example, we set the last message received timestamp as 2 days ago)
         /*Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -2);
