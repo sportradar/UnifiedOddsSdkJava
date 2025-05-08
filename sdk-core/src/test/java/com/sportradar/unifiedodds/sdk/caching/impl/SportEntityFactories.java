@@ -11,11 +11,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.internal.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportsDataCache;
-import com.sportradar.unifiedodds.sdk.internal.impl.MappingTypeProviderImpl;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
-import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactoryImpl;
-import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Locale;
 import java.util.Optional;
@@ -30,6 +26,8 @@ public class SportEntityFactories {
         private Optional<ProfileCache> profileCache = Optional.empty();
         private Optional<ExceptionHandlingStrategy> exceptionHandlingStrategy = Optional.empty();
         private Optional<Locale> language = Optional.empty();
+        private Optional<SportEventCache> sportEventCache = Optional.empty();
+        private Optional<SportsDataCache> sportsDataCache = Optional.empty();
 
         public static BuilderStubbingOutAllCachesAndStatusFactory stubbingOutAllCachesAndStatusFactory() {
             return new BuilderStubbingOutAllCachesAndStatusFactory();
@@ -42,8 +40,20 @@ public class SportEntityFactories {
         }
 
         @SuppressWarnings("HiddenField")
+        public BuilderStubbingOutAllCachesAndStatusFactory with(SportEventCache sportEventCache) {
+            this.sportEventCache = Optional.of(sportEventCache);
+            return this;
+        }
+
+        @SuppressWarnings("HiddenField")
         public BuilderStubbingOutAllCachesAndStatusFactory with(ExceptionHandlingStrategy strategy) {
             this.exceptionHandlingStrategy = Optional.of(strategy);
+            return this;
+        }
+
+        @SuppressWarnings("HiddenField")
+        public BuilderStubbingOutAllCachesAndStatusFactory with(SportsDataCache sportsDataCache) {
+            this.sportsDataCache = Optional.of(sportsDataCache);
             return this;
         }
 
@@ -59,8 +69,8 @@ public class SportEntityFactories {
                 .thenReturn(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()));
             when(config.getDefaultLocale()).thenReturn(language.orElse(Languages.any()));
             return new SportEntityFactoryImpl(
-                mock(SportsDataCache.class),
-                mock(SportEventCache.class),
+                sportsDataCache.orElse(mock(SportsDataCache.class)),
+                sportEventCache.orElse(mock(SportEventCache.class)),
                 profileCache.orElse(mock(ProfileCache.class)),
                 mock(SportEventStatusFactory.class),
                 new MappingTypeProviderImpl(),

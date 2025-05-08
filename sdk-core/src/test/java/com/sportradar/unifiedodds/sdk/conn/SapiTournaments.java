@@ -9,18 +9,22 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMatch.FullyPopulatedMatch.
 import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.FullyPopulatedSeason.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.stockCarRacing;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Nascar2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorLocationInTournamentInfo.COMPETITORS_EVERYWHERE;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_ABSENT;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_PRESENT;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.anyFutureDate;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
+import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static java.util.Locale.ENGLISH;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
 import com.sportradar.utils.Urn;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.val;
 
@@ -1006,7 +1010,7 @@ public class SapiTournaments {
             return competitors;
         }
 
-        public static enum CompetitorLocationInTournamentInfo {
+        public enum CompetitorLocationInTournamentInfo {
             COMPETITORS_AT_ROOT_LEVEL,
             COMPETITORS_IN_TOP_LEVEL_TOURNAMENT,
             COMPETITORS_IN_CHILD_TOURNAMENTS,
@@ -1038,7 +1042,7 @@ public class SapiTournaments {
             }
         }
 
-        public static enum CompetitorPresence {
+        public enum CompetitorPresence {
             COMPETITORS_PRESENT,
             COMPETITORS_ABSENT,
         }
@@ -1126,6 +1130,75 @@ public class SapiTournaments {
                 t.setCategory(SapiCategories.virtualFootball());
                 return t;
             }
+        }
+    }
+
+    public static final class FormulaOne2025 {
+
+        public static SapiTournamentInfoEndpoint formulaOne2025() {
+            val t = new SapiTournamentInfoEndpoint();
+            t.setGeneratedAt(XmlGregorianCalendars.now());
+            t.setTournament(formulaOne2025TournamentExtended());
+            t.setCoverageInfo(formulaOne2025CoverageInfo());
+            return t;
+        }
+
+        private static SapiTournamentLiveCoverageInfo formulaOne2025CoverageInfo() {
+            val coverageInfo = new SapiTournamentLiveCoverageInfo();
+            coverageInfo.setLiveCoverage("true");
+            return coverageInfo;
+        }
+
+        public static SapiTournamentExtended formulaOne2025TournamentExtended() {
+            val t = new SapiTournamentExtended();
+            t.setId("sr:stage:1189123");
+            t.setName("Formula 1 2025");
+            t.setSport(SapiSports.formula1());
+            t.setCategory(SapiCategories.formula1());
+            t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 3, 14, 1, 35)));
+            t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 12, 7, 15, 0)));
+            t.setCompetitors(formulaOne2025Competitors());
+            return t;
+        }
+
+        private static SapiCompetitors formulaOne2025Competitors() {
+            val c = new SapiCompetitors();
+            c.getCompetitor().add(fernandoAlonso());
+            c.getCompetitor().add(lewisHamilton());
+            c.getCompetitor().add(nicoHulkenberg());
+            c.getCompetitor().add(maxVerstappen());
+            c.getCompetitor().add(estebanOcon());
+            c.getCompetitor().add(oscarPiastri());
+            return c;
+        }
+    }
+
+    public static final class SkiJumping {
+
+        public static SapiTournamentExtended skiJumpingOverallTournamentExtended() {
+            val t = new SapiTournamentExtended();
+            t.setId("sr:stage:703728");
+            t.setName("Overall");
+            t.setSport(SapiSports.getSapiSport(Urn.parse("sr:sport:48"), in(ENGLISH)));
+            t.setCategory(
+                SapiCategories.getSapiCategory(Urn.parse("sr:category:140"), in(ENGLISH)).getCategory()
+            );
+            t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2021, 11, 20, 15, 0)));
+            t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 3, 27, 10, 0)));
+            return t;
+        }
+
+        public static SapiTournamentExtended fourHillsTournametExtended() {
+            val t = new SapiTournamentExtended();
+            t.setId("sr:stage:703730");
+            t.setName("Four Hills Tournament");
+            t.setSport(SapiSports.getSapiSport(Urn.parse("sr:sport:48"), in(ENGLISH)));
+            t.setCategory(
+                SapiCategories.getSapiCategory(Urn.parse("sr:category:140"), in(ENGLISH)).getCategory()
+            );
+            t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2021, 12, 28, 15, 0)));
+            t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 1, 6, 10, 0)));
+            return t;
         }
     }
 }

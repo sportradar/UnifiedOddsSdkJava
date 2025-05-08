@@ -37,6 +37,11 @@ public class ReferenceImpl implements Reference {
     private final Integer aamsId;
 
     /**
+     * The Lugas id for this instance
+     */
+    private final String lugasId;
+
+    /**
      * All the reference ids associated with the current instance
      *
      * @see com.google.common.collect.ImmutableMap
@@ -55,6 +60,7 @@ public class ReferenceImpl implements Reference {
         this.betradarId = referenceIdCi.getBetradarId();
         this.rotationNumber = referenceIdCi.getRotationNumber();
         this.aamsId = referenceIdCi.getAamsId();
+        this.lugasId = referenceIdCi.getLugasId();
         this.references = ImmutableMap.copyOf(referenceIdCi.getReferenceIds());
     }
 
@@ -96,6 +102,16 @@ public class ReferenceImpl implements Reference {
     @Override
     public Integer getAamsId() {
         return aamsId;
+    }
+
+    /**
+     * Returns the Lugas id for this instance if provided amount reference ids, null otherwise
+     *
+     * @return - the Lugas id for this instance if provided amount reference ids, null otherwise
+     */
+    @Override
+    public String getLugasId() {
+        return lugasId;
     }
 
     /**

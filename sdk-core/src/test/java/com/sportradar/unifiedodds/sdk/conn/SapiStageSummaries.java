@@ -4,24 +4,64 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.conn.SapiSportEvents.FullyPopulatedSportEvent.fullyPopulatedSportEvent;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSportEvents.SkiJumping.FourHillsTournament.Insbruck.insbruckSkiJumpingSportEvent;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.formula1;
+import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Qualifying.bahrainGrandPrix2025QualifyingStage;
+import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Race.bahrainGrandPrix2025RaceStage;
+import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Races.Practice3.bahrainGrandPrix2025Practice3Stage;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.oscarPiastri;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.ALONSO_COMPETITOR_URN;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.HAMILTON_COMPETITOR_URN;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.SkiJumping.manuelFettner;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.SkiJumping.simonAmmann;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FormulaOne2025.formulaOne2025TournamentExtended;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.SkiJumping.skiJumpingOverallTournamentExtended;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.val;
 
 @SuppressWarnings(
     { "ClassDataAbstractionCoupling", "ClassFanOutComplexity", "MagicNumber", "MultipleStringLiterals" }
 )
 public final class SapiStageSummaries {
+
+    static SapiStageResult.SapiCompetitor competitorOnPosition(SapiTeam competitor, Integer position) {
+        val c = new SapiStageResult.SapiCompetitor();
+        c.setId(competitor.getId());
+        c.setPosition(position);
+        return c;
+    }
+
+    @SuppressWarnings("LambdaBodyLength")
+    static Function<SapiTeam, SapiTeamCompetitor> toSapiTeamCompetitor() {
+        return c -> {
+            val tc = new SapiTeamCompetitor();
+            tc.setId(c.getId());
+            tc.setName(c.getName());
+            tc.setAbbreviation(c.getAbbreviation());
+            tc.setVirtual(c.isVirtual());
+            tc.setReferenceIds(c.getReferenceIds());
+            tc.setAgeGroup(c.getAgeGroup());
+            tc.setGender(c.getGender());
+            tc.setCountry(c.getCountry());
+            tc.setCountryCode(c.getCountryCode());
+            tc.setDivision(c.getDivision());
+            tc.setDivisionName(c.getDivisionName());
+            return tc;
+        };
+    }
 
     public static class GrandPrix2024 {
 
@@ -466,6 +506,486 @@ public final class SapiStageSummaries {
                 result.setType("strokes");
                 result.setValue(String.valueOf(strokes));
                 return result;
+            }
+        }
+    }
+
+    public static final class Formula1 {
+
+        public static final class BahrainGrandPrix2025FormulaOne {
+
+            public static final String BAHRAIN_GRAND_PRIX_2025_STAGE_ID = "sr:stage:1190633";
+
+            public static SapiStageSummaryEndpoint bahrainGrandPrix2025() {
+                val s = new SapiStageSummaryEndpoint();
+                s.setGeneratedAt(XmlGregorianCalendars.now());
+                s.setSportEvent(bahrainGrandPrix2025SportEvent());
+                s.setSportEventStatus(bahrainGrandPrix2025SportEventStatus());
+
+                return s;
+            }
+
+            private static SapiStageSportEventStatus bahrainGrandPrix2025SportEventStatus() {
+                val status = new SapiStageSportEventStatus();
+                status.setStatus("ended");
+                status.setWinnerId(oscarPiastri().getId());
+                status.setResults(bahrainGrandPrix2025SportEventResults());
+                return status;
+            }
+
+            private static SapiStageResult bahrainGrandPrix2025SportEventResults() {
+                val results = new SapiStageResult();
+                results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 15));
+                results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 5));
+                results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 12));
+                results.getCompetitor().add(competitorOnPosition(maxVerstappen(), null));
+                results.getCompetitor().add(competitorOnPosition(oscarPiastri(), 1));
+                return results;
+            }
+
+            private static SapiStageResult.SapiCompetitor competitorOnPosition(
+                SapiTeam competitor,
+                Integer position
+            ) {
+                val c = new SapiStageResult.SapiCompetitor();
+                c.setId(competitor.getId());
+                c.setPosition(position);
+                return c;
+            }
+
+            private static SapiSportEvent bahrainGrandPrix2025SportEvent() {
+                val se = new SapiSportEvent();
+                se.setId("sr:stage:1190633");
+                se.setName("Bahrain Grand Prix 2025");
+                se.setType("parent");
+                se.setStageType("event");
+                se.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 11, 11, 30)));
+                se.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 13, 17, 0)));
+                se.setParent(formulaOne2025ParentStage());
+                se.setTournament(bahrainGrandPrix2025TournamentExtended());
+                se.setCompetitors(competitors());
+                se.setRaces(new SapiSportEventChildren());
+                se.getRaces().getSportEvent().add(childEventFor(bahrainGrandPrix2025Practice3Stage()));
+                se.getRaces().getSportEvent().add(childEventFor(bahrainGrandPrix2025QualifyingStage()));
+                se.getRaces().getSportEvent().add(childEventFor(bahrainGrandPrix2025RaceStage()));
+                return se;
+            }
+
+            private static SapiSportEventCompetitors competitors() {
+                val competitors = Stream
+                    .of(
+                        fernandoAlonso(),
+                        lewisHamilton(),
+                        nicoHulkenberg(),
+                        maxVerstappen(),
+                        estebanOcon(),
+                        oscarPiastri()
+                    )
+                    .map(toSapiTeamCompetitor())
+                    .collect(Collectors.toList());
+                val result = new SapiSportEventCompetitors();
+                result.getCompetitor().addAll(competitors);
+                return result;
+            }
+
+            private static SapiSportEventChildren.SapiSportEvent childEventFor(
+                SapiStageSummaryEndpoint stage
+            ) {
+                val child = new SapiSportEventChildren.SapiSportEvent();
+                child.setId(stage.getSportEvent().getId());
+                child.setName(stage.getSportEvent().getName());
+                child.setScheduled(stage.getSportEvent().getScheduled());
+                child.setScheduledEnd(stage.getSportEvent().getScheduledEnd());
+                child.setType(stage.getSportEvent().getType());
+                child.setStageType(stage.getSportEvent().getStageType());
+                child.setReplacedBy(stage.getSportEvent().getReplacedBy());
+                child.setStartTimeTbd(stage.getSportEvent().isStartTimeTbd());
+                return child;
+            }
+
+            private static SapiParentStage formulaOne2025ParentStage() {
+                val parentStage = new SapiParentStage();
+                val formulaOne2025 = formulaOne2025TournamentExtended();
+                parentStage.setId(formulaOne2025.getId());
+                parentStage.setName(formulaOne2025.getName());
+                parentStage.setType("parent");
+                parentStage.setStageType("season");
+                return parentStage;
+            }
+
+            public static SapiTournamentExtended bahrainGrandPrix2025TournamentExtended() {
+                val t = new SapiTournamentExtended();
+                t.setId("sr:stage:1190633");
+                t.setName("Bahrain Grand Prix 2025");
+                t.setSport(SapiSports.formula1());
+                t.setCategory(SapiCategories.formula1());
+                t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 11, 11, 30)));
+                t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 13, 17, 0)));
+                t.setCompetitors(bahrainGrandPrix2025Competitors());
+                return t;
+            }
+
+            private static SapiCompetitors bahrainGrandPrix2025Competitors() {
+                val c = new SapiCompetitors();
+                c.getCompetitor().add(fernandoAlonso());
+                c.getCompetitor().add(lewisHamilton());
+                c.getCompetitor().add(nicoHulkenberg());
+                c.getCompetitor().add(maxVerstappen());
+                c.getCompetitor().add(estebanOcon());
+                return c;
+            }
+
+            private static SapiParentStage bahrainGrandPrix2025ParentStage() {
+                val parentStage = new SapiParentStage();
+                parentStage.setId(BAHRAIN_GRAND_PRIX_2025_STAGE_ID);
+                parentStage.setName("Bahrain Grand Prix 2025");
+                parentStage.setType("parent");
+                parentStage.setStageType("event");
+                return parentStage;
+            }
+
+            public static final class Races {
+
+                public static final class Practice3 {
+
+                    public static final String BAHRAIN_GRAND_PRIX_2025_PRACTICE3_STAGE_ID =
+                        "sr:stage:1190639";
+
+                    public static SapiStageSummaryEndpoint bahrainGrandPrix2025Practice3Stage() {
+                        val s = new SapiStageSummaryEndpoint();
+                        s.setGeneratedAt(XmlGregorianCalendars.now());
+                        s.setSportEvent(sportEvent());
+                        s.setSportEventStatus(status());
+
+                        return s;
+                    }
+
+                    private static SapiStageSportEventStatus status() {
+                        val status = new SapiStageSportEventStatus();
+                        status.setStatus("ended");
+                        status.setResults(results());
+                        return status;
+                    }
+
+                    private static SapiStageResult results() {
+                        val results = new SapiStageResult();
+                        results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 14));
+                        results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 6));
+                        results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 3));
+                        results.getCompetitor().add(competitorOnPosition(maxVerstappen(), 2));
+                        results.getCompetitor().add(competitorOnPosition(estebanOcon(), 4));
+                        return results;
+                    }
+
+                    private static SapiSportEvent sportEvent() {
+                        val se = new SapiSportEvent();
+                        se.setId(BAHRAIN_GRAND_PRIX_2025_PRACTICE3_STAGE_ID);
+                        se.setName("Practice 3");
+                        se.setType("child");
+                        se.setStageType("practice");
+                        se.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 12, 12, 30)));
+                        se.setScheduledEnd(
+                            XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 12, 13, 30))
+                        );
+                        se.setParent(bahrainGrandPrix2025ParentStage());
+                        se.setTournament(bahrainGrandPrix2025TournamentExtended());
+                        se.setCompetitors(competitors());
+                        return se;
+                    }
+
+                    private static SapiSportEventCompetitors competitors() {
+                        val competitors = Stream
+                            .of(
+                                fernandoAlonso(),
+                                lewisHamilton(),
+                                nicoHulkenberg(),
+                                maxVerstappen(),
+                                estebanOcon(),
+                                oscarPiastri()
+                            )
+                            .map(toSapiTeamCompetitor())
+                            .collect(Collectors.toList());
+                        val result = new SapiSportEventCompetitors();
+                        result.getCompetitor().addAll(competitors);
+                        return result;
+                    }
+                }
+            }
+
+            public static final class Qualifying {
+
+                public static final String BAHRAIN_GRAND_PRIX_2025_QUALIFYING_STAGE_ID = "sr:stage:1190641";
+
+                public static SapiStageSummaryEndpoint bahrainGrandPrix2025QualifyingStage() {
+                    val s = new SapiStageSummaryEndpoint();
+                    s.setGeneratedAt(XmlGregorianCalendars.now());
+                    s.setSportEvent(sportEvent());
+                    s.setSportEventStatus(status());
+
+                    return s;
+                }
+
+                private static SapiStageSportEventStatus status() {
+                    val status = new SapiStageSportEventStatus();
+                    status.setStatus("ended");
+                    status.setResults(results());
+                    return status;
+                }
+
+                private static SapiStageResult results() {
+                    val results = new SapiStageResult();
+                    results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 1));
+                    results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 2));
+                    results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 3));
+                    results.getCompetitor().add(competitorOnPosition(maxVerstappen(), 4));
+                    results.getCompetitor().add(competitorOnPosition(estebanOcon(), 5));
+                    return results;
+                }
+
+                private static SapiSportEvent sportEvent() {
+                    val se = new SapiSportEvent();
+                    se.setId(BAHRAIN_GRAND_PRIX_2025_QUALIFYING_STAGE_ID);
+                    se.setName("Qualifying");
+                    se.setType("child");
+                    se.setStageType("qualifying");
+                    se.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 12, 16, 0)));
+                    se.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 12, 17, 0)));
+                    se.setParent(bahrainGrandPrix2025ParentStage());
+                    se.setTournament(bahrainGrandPrix2025TournamentExtended());
+                    se.setCompetitors(competitors());
+                    return se;
+                }
+
+                private static SapiSportEventCompetitors competitors() {
+                    val competitors = Stream
+                        .of(
+                            fernandoAlonso(),
+                            lewisHamilton(),
+                            nicoHulkenberg(),
+                            maxVerstappen(),
+                            estebanOcon(),
+                            oscarPiastri()
+                        )
+                        .map(toSapiTeamCompetitor())
+                        .collect(Collectors.toList());
+                    val result = new SapiSportEventCompetitors();
+                    result.getCompetitor().addAll(competitors);
+                    return result;
+                }
+            }
+
+            public static final class Race {
+
+                public static final String BAHRAIN_GRAND_PRIX_2025_RACE_STAGE_ID = "sr:stage:1190719";
+
+                public static SapiStageSummaryEndpoint bahrainGrandPrix2025RaceStage() {
+                    val s = new SapiStageSummaryEndpoint();
+                    s.setGeneratedAt(XmlGregorianCalendars.now());
+                    s.setSportEvent(sportEvent());
+                    s.setSportEventStatus(status());
+
+                    return s;
+                }
+
+                private static SapiStageSportEventStatus status() {
+                    val status = new SapiStageSportEventStatus();
+                    status.setStatus("ended");
+                    status.setResults(results());
+                    return status;
+                }
+
+                private static SapiStageResult results() {
+                    val results = new SapiStageResult();
+                    results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 1));
+                    results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 2));
+                    results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 3));
+                    results.getCompetitor().add(competitorOnPosition(maxVerstappen(), 4));
+                    results.getCompetitor().add(competitorOnPosition(estebanOcon(), 5));
+                    return results;
+                }
+
+                private static SapiSportEvent sportEvent() {
+                    val event = new SapiSportEvent();
+                    event.setId(BAHRAIN_GRAND_PRIX_2025_RACE_STAGE_ID);
+                    event.setName("Race");
+                    event.setType("child");
+                    event.setStageType("race");
+                    event.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 13, 15, 0)));
+                    event.setScheduledEnd(
+                        XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 4, 13, 17, 0))
+                    );
+                    event.setParent(bahrainGrandPrix2025ParentStage());
+                    event.setTournament(bahrainGrandPrix2025TournamentExtended());
+                    event.setCompetitors(competitors());
+                    return event;
+                }
+
+                private static SapiSportEventCompetitors competitors() {
+                    val competitors = Stream
+                        .of(
+                            fernandoAlonso(),
+                            lewisHamilton(),
+                            nicoHulkenberg(),
+                            maxVerstappen(),
+                            estebanOcon(),
+                            oscarPiastri()
+                        )
+                        .map(toSapiTeamCompetitor())
+                        .collect(Collectors.toList());
+                    val result = new SapiSportEventCompetitors();
+                    result.getCompetitor().addAll(competitors);
+                    return result;
+                }
+            }
+        }
+    }
+
+    public static final class SkiJumping {
+
+        public static final class FourHillsTournament {
+
+            public static final class Insbruck {
+
+                public static SapiStageSummaryEndpoint insbruckFourHillsSkiJumping() {
+                    val summary = new SapiStageSummaryEndpoint();
+                    summary.setGeneratedAt(XmlGregorianCalendars.now());
+                    summary.setSportEvent(insbruckSkiJumpingSportEvent());
+                    summary.setSportEventStatus(insbruckSportEventStatus());
+                    return summary;
+                }
+
+                private static SapiStageSportEventStatus insbruckSportEventStatus() {
+                    val status = new SapiStageSportEventStatus();
+                    status.setStatus("ended");
+                    status.setWinnerId(manuelFettner().getId());
+                    status.setResults(insbruckSportEventResults());
+                    return status;
+                }
+
+                private static SapiStageResult insbruckSportEventResults() {
+                    val results = new SapiStageResult();
+                    results.getCompetitor().add(competitorOnPosition(simonAmmann(), 16));
+                    results.getCompetitor().add(competitorOnPosition(manuelFettner(), 1));
+                    return results;
+                }
+
+                private static SapiParentStage insbruckFourHillsTournamentParentStage() {
+                    val parent = new SapiParentStage();
+                    parent.setId("sr:stage:713292");
+                    parent.setName("Innsbruck (AUT), HS 130");
+                    parent.setType("parent");
+                    parent.setStageType("event");
+                    return parent;
+                }
+
+                public static final class Runs {
+
+                    public static final class FirstRun {
+
+                        public static SapiStageSummaryEndpoint insbruckFourHillsSkiJumpingFirstRunStage() {
+                            val summary = new SapiStageSummaryEndpoint();
+                            summary.setGeneratedAt(XmlGregorianCalendars.now());
+                            summary.setSportEvent(sportEvent());
+                            summary.setSportEventStatus(status());
+                            return summary;
+                        }
+
+                        private static SapiStageSportEventStatus status() {
+                            val status = new SapiStageSportEventStatus();
+                            status.setStatus("ended");
+                            status.setResults(results());
+                            return status;
+                        }
+
+                        private static SapiStageResult results() {
+                            val results = new SapiStageResult();
+                            results.getCompetitor().add(competitorOnPosition(simonAmmann(), 10));
+                            results.getCompetitor().add(competitorOnPosition(manuelFettner(), 2));
+                            return results;
+                        }
+
+                        private static SapiSportEvent sportEvent() {
+                            val event = new SapiSportEvent();
+                            event.setId("sr:stage:713296");
+                            event.setName("1st Run");
+                            event.setType("child");
+                            event.setStageType("run");
+                            event.setScheduled(
+                                XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 1, 5, 15, 30))
+                            );
+                            event.setScheduledEnd(
+                                XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 1, 5, 16, 30))
+                            );
+                            event.setParent(insbruckFourHillsTournamentParentStage());
+                            event.setTournament(skiJumpingOverallTournamentExtended());
+                            event.setCompetitors(competitors());
+                            return event;
+                        }
+
+                        private static SapiSportEventCompetitors competitors() {
+                            val competitors = Stream
+                                .of(simonAmmann(), manuelFettner())
+                                .map(toSapiTeamCompetitor())
+                                .collect(Collectors.toList());
+                            val result = new SapiSportEventCompetitors();
+                            result.getCompetitor().addAll(competitors);
+                            return result;
+                        }
+                    }
+
+                    public static final class SecondRun {
+
+                        public static SapiStageSummaryEndpoint insbruckFourHillsSkiJumpingSecondRunStage() {
+                            val summary = new SapiStageSummaryEndpoint();
+                            summary.setGeneratedAt(XmlGregorianCalendars.now());
+                            summary.setSportEvent(sportEvent());
+                            summary.setSportEventStatus(status());
+                            return summary;
+                        }
+
+                        private static SapiStageSportEventStatus status() {
+                            val status = new SapiStageSportEventStatus();
+                            status.setStatus("ended");
+                            status.setResults(results());
+                            return status;
+                        }
+
+                        private static SapiStageResult results() {
+                            val results = new SapiStageResult();
+                            results.getCompetitor().add(competitorOnPosition(simonAmmann(), 12));
+                            results.getCompetitor().add(competitorOnPosition(manuelFettner(), 21));
+                            return results;
+                        }
+
+                        private static SapiSportEvent sportEvent() {
+                            val event = new SapiSportEvent();
+                            event.setId("sr:stage:713298");
+                            event.setName("2nd Run");
+                            event.setType("child");
+                            event.setStageType("run");
+                            event.setScheduled(
+                                XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 1, 5, 16, 45))
+                            );
+                            event.setScheduledEnd(
+                                XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 1, 5, 17, 45))
+                            );
+                            event.setParent(insbruckFourHillsTournamentParentStage());
+                            event.setTournament(skiJumpingOverallTournamentExtended());
+                            event.setCompetitors(competitors());
+                            return event;
+                        }
+
+                        private static SapiSportEventCompetitors competitors() {
+                            val competitors = Stream
+                                .of(simonAmmann(), manuelFettner())
+                                .map(toSapiTeamCompetitor())
+                                .collect(Collectors.toList());
+                            val result = new SapiSportEventCompetitors();
+                            result.getCompetitor().addAll(competitors);
+                            return result;
+                        }
+                    }
+                }
             }
         }
     }

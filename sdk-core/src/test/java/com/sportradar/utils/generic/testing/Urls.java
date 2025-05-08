@@ -5,14 +5,15 @@ package com.sportradar.utils.generic.testing;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import lombok.SneakyThrows;
 
 public final class Urls {
 
     private Urls() {}
 
-    public static URL anyHttpUrl() throws MalformedURLException {
+    @SneakyThrows
+    public static URL anyHttpUrl() {
         String scheme = RandomObjectPicker.pickOneRandomlyFrom("http://", "https://");
         return new URL(scheme + anyDomain() + anyPath());
     }

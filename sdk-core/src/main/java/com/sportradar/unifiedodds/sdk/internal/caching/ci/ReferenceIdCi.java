@@ -44,6 +44,11 @@ public class ReferenceIdCi {
     private Integer aamsId;
 
     /**
+     * The Lugas id for this instance
+     */
+    private String lugasId;
+
+    /**
      * A {@link ImmutableMap} containing all the referenceIds
      */
     private ImmutableMap<String, String> referenceIds;
@@ -129,6 +134,15 @@ public class ReferenceIdCi {
                 aamsId = null;
             }
             this.aamsId = aamsId;
+            this.lugasId = extractLugasIdReference();
+        }
+    }
+
+    private String extractLugasIdReference() {
+        if (this.referenceIds.containsKey("lugas")) {
+            return this.referenceIds.get("lugas");
+        } else {
+            return null;
         }
     }
 
@@ -166,6 +180,15 @@ public class ReferenceIdCi {
      */
     public Integer getAamsId() {
         return aamsId;
+    }
+
+    /**
+     * Returns the Lugas id for this instance if provided amount reference ids, null otherwise
+     *
+     * @return - the Lugas id for this instance if provided amount reference ids, null otherwise
+     */
+    public String getLugasId() {
+        return lugasId;
     }
 
     /**

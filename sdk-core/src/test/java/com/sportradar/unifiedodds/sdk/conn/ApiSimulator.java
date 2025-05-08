@@ -4,10 +4,12 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
 import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
 import static com.sportradar.unifiedodds.sdk.conn.SapiProducers.buildActiveProducer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.allSports;
 import static java.lang.String.format;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
@@ -779,6 +781,10 @@ public class ApiSimulator {
                     .withFixedDelay((int) delay.delay.toMillis())
             )
         );
+    }
+
+    public void stubSportEventFixtures(String matchId, Locale aLanguage, SapiFixturesEndpoint fixtures) {
+        stubSportEventFixtures(matchId, aLanguage, fixtures, toBeDelayedBy(0, SECONDS));
     }
 
     public void stubResultChanges(

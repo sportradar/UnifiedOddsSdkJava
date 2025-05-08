@@ -17,16 +17,17 @@ import lombok.SneakyThrows;
 
 public class SummaryDataProviders {
 
+    public static SummaryDataProvidersBuilder summaryDataProvider() {
+        return new SummaryDataProvidersBuilder();
+    }
+
     @SneakyThrows
     public static DataProvider<Object> providing(
         LanguageHolder language,
         String sportEventId,
         SapiMatchSummaryEndpoint summary
     ) {
-        DataProvider<Object> dataProvider = mock(DataProvider.class, withGetDataThrowingByDefault());
-        doReturn(summary).when(dataProvider).getData(language.get(), sportEventId);
-        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
-        return dataProvider;
+        return new SummaryDataProvidersBuilder().providing(language, sportEventId, summary).build();
     }
 
     @SneakyThrows
@@ -35,10 +36,7 @@ public class SummaryDataProviders {
         String sportEventId,
         SapiTournamentInfoEndpoint summary
     ) {
-        DataProvider<Object> dataProvider = mock(DataProvider.class, withGetDataThrowingByDefault());
-        doReturn(summary).when(dataProvider).getData(language.get(), sportEventId);
-        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
-        return dataProvider;
+        return new SummaryDataProvidersBuilder().providing(language, sportEventId, summary).build();
     }
 
     @SneakyThrows
@@ -47,9 +45,57 @@ public class SummaryDataProviders {
         String sportEventId,
         SapiStageSummaryEndpoint summary
     ) {
+        return new SummaryDataProvidersBuilder().providing(language, sportEventId, summary).build();
+    }
+
+    @SneakyThrows
+    public static DataProvider<Object> notProvidingAnyData() {
         DataProvider<Object> dataProvider = mock(DataProvider.class, withGetDataThrowingByDefault());
-        doReturn(summary).when(dataProvider).getData(language.get(), sportEventId);
-        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
         return dataProvider;
+    }
+
+    public static final class SummaryDataProvidersBuilder {
+
+        private final DataProvider<Object> dataProvider = mock(
+            DataProvider.class,
+            withGetDataThrowingByDefault()
+        );
+
+        @SneakyThrows
+        public SummaryDataProvidersBuilder providing(
+            LanguageHolder language,
+            String sportEventId,
+            SapiMatchSummaryEndpoint summary
+        ) {
+            doReturn(summary).when(dataProvider).getData(language.get(), sportEventId);
+            doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
+            return this;
+        }
+
+        @SneakyThrows
+        public SummaryDataProvidersBuilder providing(
+            LanguageHolder language,
+            String sportEventId,
+            SapiTournamentInfoEndpoint summary
+        ) {
+            doReturn(summary).when(dataProvider).getData(language.get(), sportEventId);
+            doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
+            return this;
+        }
+
+        @SneakyThrows
+        public SummaryDataProvidersBuilder providing(
+            LanguageHolder language,
+            String sportEventId,
+            SapiStageSummaryEndpoint summary
+        ) {
+            doReturn(summary).when(dataProvider).getData(language.get(), sportEventId);
+            doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
+            return this;
+        }
+
+        public DataProvider<Object> build() {
+            return dataProvider;
+        }
     }
 }

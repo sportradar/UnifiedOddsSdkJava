@@ -3,17 +3,23 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
+import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static java.util.Locale.ENGLISH;
 import static java.util.stream.Collectors.toList;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiSport;
 import com.sportradar.uf.sportsapi.datamodel.SapiSportsEndpoint;
+import com.sportradar.utils.Urn;
+import com.sportradar.utils.domain.names.LanguageHolder;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.Function;
 import lombok.val;
 
 @SuppressWarnings("MethodLength")
 public class SapiSports {
 
+    public static final String WORLD_LOTTERY_SPORT_ID = "sr:sport:108";
     private static final String[][] SPORTS_ENGLISH = new String[][] {
         { "sr:sport:143", "7BallRun" },
         { "sr:sport:192", "Air Racing" },
@@ -53,6 +59,7 @@ public class SapiSports {
         { "sr:sport:141", "Cycling Cycle Ball" },
         { "sr:sport:88", "Mountain Bike" },
         { "sr:sport:97", "Track cycling" },
+        { "sr:sport:207", "Cyclo-Cross" },
         { "sr:sport:22", "Darts" },
         { "sr:sport:177", "DEPRECATED sc" },
         { "sr:sport:96", "Diving" },
@@ -218,7 +225,7 @@ public class SapiSports {
         { "sr:sport:85", "Weightlifting" },
         { "sr:sport:14", "Winter Sports" },
         { "sr:sport:63", "World Championship" },
-        { "sr:sport:108", "World Lottery" },
+        { WORLD_LOTTERY_SPORT_ID, "World Lottery" },
         { "sr:sport:86", "Wrestling" },
     };
 
@@ -427,12 +434,37 @@ public class SapiSports {
         { "sr:sport:85", "举重" },
         { "sr:sport:14", "高山滑雪" },
         { "sr:sport:63", "世界锦标赛" },
-        { "sr:sport:108", "世界彩票协会" },
+        { WORLD_LOTTERY_SPORT_ID, "世界彩票协会" },
         { "sr:sport:86", "摔跤" },
     };
 
+    public static SapiSport getSapiSport(Urn sportId, LanguageHolder language) {
+        return allSports(language)
+            .getSport()
+            .stream()
+            .filter(sport -> sport.getId().equals(sportId.toString()))
+            .findFirst()
+            .map(toFreshCopy())
+            .orElseThrow(() ->
+                new IllegalArgumentException("Sport not found [" + sportId + ", " + language + "]")
+            );
+    }
+
+    private static Function<SapiSport, SapiSport> toFreshCopy() {
+        return sport -> {
+            SapiSport sapiSport = new SapiSport();
+            sapiSport.setId(sport.getId());
+            sapiSport.setName(sport.getName());
+            return sapiSport;
+        };
+    }
+
     public static SapiSportsEndpoint allSports() {
-        return allSports(Locale.ENGLISH);
+        return allSports(ENGLISH);
+    }
+
+    public static SapiSportsEndpoint allSports(LanguageHolder languageHolder) {
+        return allSports(languageHolder.get());
     }
 
     public static SapiSportsEndpoint allSports(Locale language) {
@@ -452,10 +484,11 @@ public class SapiSports {
     }
 
     public static SapiSport soccer() {
-        SapiSport soccer = new SapiSport();
-        soccer.setId("sr:sport:1");
-        soccer.setName("Soccer");
-        return soccer;
+        return soccer(in(ENGLISH));
+    }
+
+    public static SapiSport soccer(LanguageHolder language) {
+        return getSapiSport(Urn.parse("sr:sport:1"), language);
     }
 
     public static SapiSport stockCarRacing() {

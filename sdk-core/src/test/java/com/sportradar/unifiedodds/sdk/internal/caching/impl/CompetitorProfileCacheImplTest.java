@@ -55,8 +55,9 @@ import com.sportradar.unifiedodds.sdk.impl.CompetitorDataProviders;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.MatchCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCi;
-import com.sportradar.unifiedodds.sdk.internal.caching.impl.CompetitorProfileCacheImplTest.CompetitorEndpointBackedParameterSources.PropertySetterToSapiCompetitorProfileEndpoint;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertyGetterFrom;
+import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertySetterTo;
 import com.sportradar.utils.Urn;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -169,8 +170,8 @@ class CompetitorProfileCacheImplTest {
             }
         )
         void preservesPropertiesAfterExportingAndReimporting(
-            PropertyGetterFromCompetitor property,
-            PropertySetterToSapiCompetitorProfileEndpoint sapiProperty,
+            PropertyGetterFrom<Competitor> property,
+            PropertySetterTo<SapiCompetitorProfileEndpoint> sapiProperty,
             Object expected
         ) throws Exception {
             Urn competitorUrn = parse(FullyPopulatedFootballCompetitor.URN);
@@ -219,8 +220,8 @@ class CompetitorProfileCacheImplTest {
             { OLD_JERSEY_PROPERTIES_IN_PRE_V3_3_3, ABSENCE_OF_NEW_JERSEY_PROPERTIES_IN_VERSIONS_PRE_V3_3_3 }
         )
         void legacyPreV3_3_3ExportIntegrationPreservesOnlyPreV3_3_3ExistingPropertiesAfterExportingAndReimporting(
-            PropertyGetterFromCompetitor property,
-            PropertySetterToSapiCompetitorProfileEndpoint sapiProperty,
+            PropertyGetterFrom<Competitor> property,
+            PropertySetterTo<SapiCompetitorProfileEndpoint> sapiProperty,
             Object expected
         ) throws Exception {
             Urn competitorUrn = parse(FullyPopulatedFootballCompetitor.URN);
@@ -268,8 +269,8 @@ class CompetitorProfileCacheImplTest {
             }
         )
         void cachesPropertiesFromFootballCompetitorProfile(
-            PropertyGetterFromCompetitor property,
-            PropertySetterToSapiCompetitorProfileEndpoint sapiProperty,
+            PropertyGetterFrom<Competitor> property,
+            PropertySetterTo<SapiCompetitorProfileEndpoint> sapiProperty,
             Object expected
         ) throws Exception {
             Urn competitorUrn = parse(FullyPopulatedFootballCompetitor.URN);
@@ -314,8 +315,8 @@ class CompetitorProfileCacheImplTest {
         @ParameterizedTest
         @MethodSource(ALL_PROPERTIES_FROM_FORMULA_1_COMPETITOR_PROFILE)
         public void cachesPropertiesFromFormula1CompetitorProfile(
-            PropertyGetterFromCompetitor property,
-            PropertySetterToSapiCompetitorProfileEndpoint sapiProperty,
+            PropertyGetterFrom<Competitor> property,
+            PropertySetterTo<SapiCompetitorProfileEndpoint> sapiProperty,
             Object expected
         ) throws Exception {
             Urn competitorUrn = parse(FullyPopulatedFootballCompetitor.URN);
@@ -1440,7 +1441,7 @@ class CompetitorProfileCacheImplTest {
         @ParameterizedTest
         @MethodSource(ALL_PROPERTIES_FROM_COLLEGE_BASKETBALL_TEAM_COMPETITOR_PROFILE)
         public void retrievesCompetitorPopulatedFromSimpleTeamEndpoint(
-            PropertyGetterFromCompetitor property,
+            PropertyGetterFrom<Competitor> property,
             SimpleTeamProfileEndpointBackedParameterSources.PropertySetterToSapiSimpleTeamProfileEndpoint sapiProperty,
             Object expected
         ) throws Exception {
@@ -2945,14 +2946,10 @@ class CompetitorProfileCacheImplTest {
             );
         }
 
-        public interface PropertySetterToSapiCompetitorProfileEndpoint {
-            void setOn(SapiCompetitorProfileEndpoint sapiCompetitor);
-        }
-
         public static Arguments arguments(
             String propertyName,
-            PropertyGetterFromCompetitor propertyGetter,
-            PropertySetterToSapiCompetitorProfileEndpoint propertySetter,
+            PropertyGetterFrom<Competitor> propertyGetter,
+            PropertySetterTo<SapiCompetitorProfileEndpoint> propertySetter,
             Object expected
         ) {
             return Arguments.of(Named.of(propertyName, propertyGetter), propertySetter, expected);
@@ -3295,15 +3292,11 @@ class CompetitorProfileCacheImplTest {
 
         public static Arguments arguments(
             String propertyName,
-            PropertyGetterFromCompetitor propertyGetter,
+            PropertyGetterFrom<Competitor> propertyGetter,
             PropertySetterToSapiSimpleTeamProfileEndpoint propertySetter,
             Object expected
         ) {
             return Arguments.of(Named.of(propertyName, propertyGetter), propertySetter, expected);
         }
-    }
-
-    public interface PropertyGetterFromCompetitor {
-        Object getFrom(Competitor competitor);
     }
 }

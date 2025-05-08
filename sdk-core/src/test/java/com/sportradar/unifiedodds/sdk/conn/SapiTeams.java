@@ -9,6 +9,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.CompetitorS
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiVenues.FullyPopulatedSapiVenue.getVenue;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
@@ -717,7 +718,7 @@ public class SapiTeams {
 
         private static SapiPlayerExtendedList getPlayersExtendedList() {
             SapiPlayerExtendedList players = new SapiPlayerExtendedList();
-            players.getPlayer().addAll(asList(getPlayerCompetitor()));
+            players.getPlayer().add(getPlayerCompetitor());
             return players;
         }
 
@@ -744,7 +745,7 @@ public class SapiTeams {
 
         private static SapiJerseys getJerseys() {
             SapiJerseys jerseys = new SapiJerseys();
-            jerseys.getJersey().addAll(asList(getFullyPopulatedJersey()));
+            jerseys.getJersey().add(getFullyPopulatedJersey());
             return jerseys;
         }
 
@@ -1303,6 +1304,94 @@ public class SapiTeams {
             team.setCountryCode("AUS");
             team.setGender("male");
             return team;
+        }
+    }
+
+    public static class FormulaOne2025 {
+
+        public static SapiTeam fernandoAlonso() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:4521");
+            t.setName("Alonso, Fernando");
+            t.setAbbreviation("ALO");
+            t.setCountry("Spain");
+            t.setCountryCode("ESP");
+            t.setGender("male");
+            return t;
+        }
+
+        public static SapiTeam lewisHamilton() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:7135");
+            t.setName("Hamilton, Lewis");
+            t.setAbbreviation("HAM");
+            t.setCountry("Great Britain");
+            t.setCountryCode("GBR");
+            t.setGender("male");
+            return t;
+        }
+
+        public static SapiTeam nicoHulkenberg() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:39412");
+            t.setName("Hulkenberg, Nico");
+            t.setAbbreviation("HUL");
+            t.setCountry("Germany");
+            t.setCountryCode("DEU");
+            t.setGender("male");
+            return t;
+        }
+
+        public static SapiTeam maxVerstappen() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:178318");
+            t.setName("Verstappen, Max");
+            t.setAbbreviation("VER");
+            t.setCountry("Netherlands");
+            t.setCountryCode("NLD");
+            t.setGender("male");
+            return t;
+        }
+
+        public static SapiTeam estebanOcon() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:184751");
+            t.setName("Ocon, Esteban");
+            t.setAbbreviation("OCO");
+            t.setCountry("France");
+            t.setCountryCode("FRA");
+            t.setGender("male");
+            return t;
+        }
+
+        public static SapiTeam oscarPiastri() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:953189");
+            t.setName("Piastri, Oscar");
+            t.setAbbreviation("PIA");
+            t.setGender("male");
+            return t;
+        }
+    }
+
+    public static class SkiJumping {
+
+        public static SapiTeam simonAmmann() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:13799");
+            t.setName("Ammann, Simon");
+            t.setAbbreviation("AMM");
+            t.setGender("male");
+            return t;
+        }
+
+        public static SapiTeam manuelFettner() {
+            val t = new SapiTeam();
+            t.setId("sr:competitor:13858");
+            t.setName("Fettner, Manuel");
+            t.setAbbreviation("FET");
+            t.setGender("male");
+            return t;
         }
     }
 }

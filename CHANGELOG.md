@@ -1,6 +1,10 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.1.0**
+**4.2.0**
+- Added Lugas property to sport event fixture references. It is currently in preview mode until supported by the UF API.
+- Upgraded httpclient5 to the latest version (5.4.4) to mitigate CVE-2025-27820 vulnerability.
+
+**4.1.0 (2025-04-07)**
 - All HTTP requests now include a trace-id header for improved traceability.
 
 **4.0.1 (2025-03-07)**

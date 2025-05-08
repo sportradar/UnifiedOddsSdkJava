@@ -59,5 +59,16 @@ public class SapiSeasons {
             coverageInfo.setMinCoverageLevel("gold");
             return coverageInfo;
         }
+
+        public static SapiSeasonExtended euro2024Season() {
+            val season = new SapiSeasonExtended();
+            season.setId("sr:season:92261");
+            season.setName("UEFA Euro - 2024");
+            season.setStartDate(XmlGregorianCalendars.forDate(LocalDate.parse("2024-06-14")));
+            season.setEndDate(XmlGregorianCalendars.forDate(LocalDate.parse("2024-07-14")));
+            season.setYear("2024");
+            season.setTournamentId("sr:tournament:1");
+            return season;
+        }
     }
 }

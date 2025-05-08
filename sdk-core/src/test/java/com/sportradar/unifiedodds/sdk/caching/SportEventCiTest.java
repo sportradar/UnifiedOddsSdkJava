@@ -163,7 +163,7 @@ public class SportEventCiTest {
 
         SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
         CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
-            DataRouterManagerBuilder.create().with(dataRouter).setLotterySchedules(lotterySchedules).build(),
+            DataRouterManagerBuilder.create().with(dataRouter).withLotterySchedule(lotterySchedules).build(),
             config,
             mock(Cache.class)
         );

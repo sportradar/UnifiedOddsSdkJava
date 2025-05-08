@@ -357,6 +357,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="SapiCategories.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="UofConfigurationImpl.java"/>
     </module>
     <module name="SuppressionSingleFilter">

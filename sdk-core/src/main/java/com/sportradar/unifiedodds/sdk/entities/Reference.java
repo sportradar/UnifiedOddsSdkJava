@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.entities;
 
+import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUnreachableCode;
 import java.util.Map;
 
 /**
@@ -37,6 +38,16 @@ public interface Reference {
      * @return - the AAMS id for this instance if provided among reference ids, null otherwise
      */
     default Integer getAamsId() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns the Lugas id for this instance if provided among reference ids, null otherwise
+     *
+     * @return - the Lugas id for this instance if provided among reference ids, null otherwise
+     */
+    @ExcludeFromJacocoGeneratedReportUnreachableCode
+    default String getLugasId() {
         throw new UnsupportedOperationException("Method not implemented. Use derived type.");
     }
 
