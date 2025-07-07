@@ -9,7 +9,6 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.CompetitorS
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiVenues.FullyPopulatedSapiVenue.getVenue;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
@@ -1392,6 +1391,71 @@ public class SapiTeams {
             t.setAbbreviation("FET");
             t.setGender("male");
             return t;
+        }
+    }
+
+    public static class Soccer {
+
+        public static SapiTeam fcKaiserslautern() {
+            SapiTeam team = new SapiTeam();
+            team.setId("sr:competitor:2675");
+            team.setName("1 FC Kaiserslautern");
+            team.setAbbreviation("FCK");
+            team.setShortName("Kaiserslautern");
+            team.setCountry("Germany");
+            team.setCountryCode("DEU");
+            team.setGender("male");
+            SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+            SapiReferenceId betradarReference = new SapiReferenceId();
+            betradarReference.setName("betradar");
+            betradarReference.setValue("37582");
+            referenceIds.getReferenceId().add(betradarReference);
+            team.setReferenceIds(referenceIds);
+            return team;
+        }
+
+        public static SapiTeam arsenalFc() {
+            SapiTeam team = new SapiTeam();
+            team.setId("sr:competitor:36554");
+            team.setName("Arsenal FC");
+            team.setAbbreviation("ARS");
+            team.setShortName("Arsenal");
+            team.setCountry("England");
+            team.setCountryCode("ENG");
+            team.setGender("male");
+            SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+            SapiReferenceId betradarReference = new SapiReferenceId();
+            betradarReference.setName("betradar");
+            betradarReference.setValue("6760629");
+            referenceIds.getReferenceId().add(betradarReference);
+            team.setReferenceIds(referenceIds);
+            return team;
+        }
+    }
+
+    public static class TenerifeWomensOpen2025Golf {
+
+        public static SapiTeam carmenAlonsoFuentes() {
+            val team = new SapiTeam();
+            team.setId("sr:competitor:412297");
+            team.setName("Alonso Fuentes, Carmen");
+            team.setAbbreviation("ALO");
+            team.setShortName("Alonso Fuentes, C.");
+            team.setCountry("Spain");
+            team.setCountryCode("ESP");
+            team.setGender("female");
+            return team;
+        }
+
+        public static SapiTeam casandraAlexander() {
+            val team = new SapiTeam();
+            team.setId("sr:competitor:553784");
+            team.setName("Alexander, Casandra");
+            team.setAbbreviation("ALE");
+            team.setCountry("South Africa");
+            team.setCountryCode("ZAF");
+            team.setGender("female");
+            return team;
         }
     }
 }

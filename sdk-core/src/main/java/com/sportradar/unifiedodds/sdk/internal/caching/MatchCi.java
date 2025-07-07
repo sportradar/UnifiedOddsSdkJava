@@ -99,4 +99,16 @@ public interface MatchCi extends CompetitionCi {
      * @return list of {@link Urn} of {@link CompetitorCi} and associated division for this sport event
      */
     Map<Urn, Integer> getCompetitorsDivisions();
+
+    /**
+     * Request Summary API Call and store its result to the cache
+     * @param requiredLocales the {@link List} of {@link Locale}s in which the data should be provided
+     * @param forceFetch if set to true, the data will be fetched from the API even if it is already cached
+     * @param requestOptions the {@link RequestOptions} used to specify the execution path
+     */
+    void requestMissingSummaryData(
+        List<Locale> requiredLocales,
+        boolean forceFetch,
+        RequestOptions requestOptions
+    );
 }

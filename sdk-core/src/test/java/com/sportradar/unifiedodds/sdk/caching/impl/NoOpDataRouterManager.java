@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
 import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,12 @@ public class NoOpDataRouterManager implements DataRouterManager {
     @Override
     public void requestSummaryEndpoint(Locale locale, Urn id, CacheItem requester)
         throws CommunicationException {}
+
+    @Override
+    public void requestSummaryEndpoint(Locale locale, Urn id, CacheItem requester, RequestOptions options)
+        throws CommunicationException {
+        // no-op
+    }
 
     @Override
     public void requestFixtureEndpoint(Locale locale, Urn id, boolean useCachedProvider, CacheItem requester)

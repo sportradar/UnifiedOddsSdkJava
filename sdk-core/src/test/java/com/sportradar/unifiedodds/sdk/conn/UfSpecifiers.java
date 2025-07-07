@@ -128,6 +128,39 @@ public final class UfSpecifiers {
         }
     }
 
+    public static final class UfPlayer1Specifier extends UfSpecifier<Urn> {
+
+        private UfPlayer1Specifier(Urn urn) {
+            super("player1", urn);
+        }
+
+        public static UfPlayer1Specifier player1(Urn urn) {
+            return new UfPlayer1Specifier(urn);
+        }
+    }
+
+    public static final class UfPlayer2Specifier extends UfSpecifier<Urn> {
+
+        private UfPlayer2Specifier(Urn urn) {
+            super("player2", urn);
+        }
+
+        public static UfPlayer2Specifier player2(Urn urn) {
+            return new UfPlayer2Specifier(urn);
+        }
+    }
+
+    public static final class UfMaxoversSpecifier extends UfSpecifier<Integer> {
+
+        private UfMaxoversSpecifier(Integer maxovers) {
+            super("maxovers", maxovers);
+        }
+
+        public static UfMaxoversSpecifier maxovers(Integer maxovers) {
+            return new UfMaxoversSpecifier(maxovers);
+        }
+    }
+
     public static final class UfAppearanceNrSpecifier extends UfSpecifier<Integer> {
 
         private UfAppearanceNrSpecifier(int value) {
@@ -147,6 +180,17 @@ public final class UfSpecifiers {
 
         public static UfMatchDaySpecifier matchDay(int value) {
             return new UfMatchDaySpecifier(value);
+        }
+    }
+
+    public static final class UfTotalSpecifier extends UfSpecifier<Integer> {
+
+        private UfTotalSpecifier(int value) {
+            super("total", value);
+        }
+
+        public static UfTotalSpecifier total(int value) {
+            return new UfTotalSpecifier(value);
         }
     }
 

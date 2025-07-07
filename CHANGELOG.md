@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.2.0**
+**4.3.0-rc1**
+- Soccer tournaments 86 and 853 (Club Friendly Games) with increased amount of data are preloaded using a longer timeout.
+
+**4.2.0 (2025-05-08)**
 - Added Lugas property to sport event fixture references. It is currently in preview mode until supported by the UF API.
 - Upgraded httpclient5 to the latest version (5.4.4) to mitigate CVE-2025-27820 vulnerability.
 

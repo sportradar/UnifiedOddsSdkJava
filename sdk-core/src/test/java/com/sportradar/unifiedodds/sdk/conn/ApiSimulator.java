@@ -318,10 +318,35 @@ public class ApiSimulator {
         );
     }
 
+    public void stubRaceSummaryNotFound(Locale language, Urn id) {
+        stub(
+            HttpStatus.SC_NOT_FOUND,
+            format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id),
+            sapiNotFoundResponse()
+        );
+    }
+
+    public void stubSeasonSummaryNotFound(Locale language, Urn id) {
+        stub(
+            HttpStatus.SC_NOT_FOUND,
+            format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id),
+            sapiNotFoundResponse()
+        );
+    }
+
     private JAXBElement<Response> sapiNotFoundResponse() {
         val sapiResponse = new Response();
         sapiResponse.setResponseCode(ResponseCode.NOT_FOUND);
         return new JAXBElement<>(new QName(UNIFIED_XML_NAMESPACE, "response"), Response.class, sapiResponse);
+    }
+
+    public void stubSeasonSummary(
+        Locale language,
+        SapiTournamentInfoEndpoint tournamentInfo,
+        ApiStubDelay delay
+    ) {
+        String id = tournamentInfo.getSeason().getId();
+        stubTournamentInfo(language, tournamentInfo, id, delay);
     }
 
     public void stubSeasonSummary(Locale language, SapiTournamentInfoEndpoint tournamentInfo) {
@@ -332,6 +357,15 @@ public class ApiSimulator {
     public void stubTournamentSummary(Locale language, SapiTournamentInfoEndpoint tournamentInfo) {
         String id = tournamentInfo.getTournament().getId();
         stubTournamentInfo(language, tournamentInfo, id);
+    }
+
+    public void stubTournamentSummary(
+        Locale language,
+        SapiTournamentInfoEndpoint tournamentInfo,
+        ApiStubDelay delay
+    ) {
+        String id = tournamentInfo.getTournament().getId();
+        stubTournamentInfo(language, tournamentInfo, id, delay);
     }
 
     private void stubTournamentInfo(Locale language, SapiTournamentInfoEndpoint tournamentInfo, String id) {
@@ -347,9 +381,40 @@ public class ApiSimulator {
         );
     }
 
+    private void stubTournamentInfo(
+        Locale language,
+        SapiTournamentInfoEndpoint tournamentInfo,
+        String id,
+        ApiStubDelay delay
+    ) {
+        val summaryElement = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "tournament_info"),
+            SapiTournamentInfoEndpoint.class,
+            tournamentInfo
+        );
+        register(
+            get(
+                urlPathMatching(
+                    format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id)
+                )
+            )
+                .willReturn(
+                    aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.SportsApi.marshall(summaryElement))
+                        .withFixedDelay((int) delay.delay.toMillis())
+                )
+        );
+    }
+
     public void stubRaceSummary(Locale language, SapiStageSummaryEndpoint stageSummary) {
         String id = stageSummary.getSportEvent().getId();
         stubRaceSummary(language, stageSummary, id);
+    }
+
+    public void stubRaceSummary(Locale language, SapiStageSummaryEndpoint stageSummary, ApiStubDelay delay) {
+        String id = stageSummary.getSportEvent().getId();
+        stubRaceSummary(language, stageSummary, id, delay);
     }
 
     private void stubRaceSummary(Locale language, SapiStageSummaryEndpoint stageSummary, String id) {
@@ -362,6 +427,32 @@ public class ApiSimulator {
             HttpStatus.SC_OK,
             format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id),
             summaryElement
+        );
+    }
+
+    private void stubRaceSummary(
+        Locale language,
+        SapiStageSummaryEndpoint stageSummary,
+        String id,
+        ApiStubDelay delay
+    ) {
+        val summaryElement = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "race_summary"),
+            SapiStageSummaryEndpoint.class,
+            stageSummary
+        );
+        register(
+            get(
+                urlPathMatching(
+                    format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id)
+                )
+            )
+                .willReturn(
+                    aResponse()
+                        .withFixedDelay((int) delay.delay.toMillis())
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.SportsApi.marshall(summaryElement))
+                )
         );
     }
 
@@ -843,6 +934,20 @@ public class ApiSimulator {
         register(mapping.willReturn(ok("OK")));
     }
 
+    public void stubTournamentSummaryNotFound(Locale language, Urn id) {
+        val mapping = get(
+            urlPathMatching(format("/v1/sports/%s/sport_events/%s/summary.xml", language.getLanguage(), id))
+        );
+
+        register(
+            mapping.willReturn(
+                aResponse()
+                    .withStatus(HttpStatus.SC_NOT_FOUND)
+                    .withBody(JaxbContexts.SportsApi.marshall(sapiNotFoundResponse()))
+            )
+        );
+    }
+
     @Value
     @SuppressWarnings("VisibilityModifier")
     public static class ApiStubQueryParameter {
@@ -885,6 +990,10 @@ public class ApiSimulator {
 
         public static ApiStubDelay toBeDelayedBy(int delay, TemporalUnit unit) {
             return new ApiStubDelay(Duration.of(delay, unit));
+        }
+
+        public static ApiStubDelay toBeDelayedBy(Duration delay) {
+            return new ApiStubDelay(delay);
         }
     }
 

@@ -4,12 +4,17 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
+import static com.sportradar.unifiedodds.sdk.internal.caching.ExecutionPath.NON_TIME_CRITICAL;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
-import com.sportradar.unifiedodds.sdk.*;
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.*;
@@ -19,6 +24,7 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.internal.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.internal.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.EventTimelineImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.PreloadableEntity;
 import com.sportradar.unifiedodds.sdk.managers.CacheType;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCi;
@@ -58,6 +64,11 @@ public class SportDataProviderImpl implements SportDataProvider {
      * The execution log instance
      */
     private static final Logger logger = LoggerFactory.getLogger(SportDataProviderImpl.class);
+
+    private static final Set<Urn> CLUB_FRIENDLY_GAMES_URNS = ImmutableSet.of(
+        Urn.parse("sr:simple_tournament:86"),
+        Urn.parse("sr:tournament:853")
+    );
 
     /**
      * A {@link SportEntityFactory} instance used to build sport related instances
@@ -454,6 +465,7 @@ public class SportDataProviderImpl implements SportDataProvider {
         } catch (ObjectNotFoundException e) {
             return handleException("getSportEvent[" + id + "]", e);
         }
+        ensureClubFriendlySummaryIsFetchedWithNonCriticalPathTimeout(sportEvent);
         clientInteractionLog.info(
             "SportDataProvider.getSportEvent({}) invoked. Execution time: {}",
             id,
@@ -494,6 +506,7 @@ public class SportDataProviderImpl implements SportDataProvider {
         } catch (ObjectNotFoundException e) {
             return handleException("getSportEvent[" + id + ", " + locale + "]", e);
         }
+        ensureClubFriendlySummaryIsFetchedWithNonCriticalPathTimeout(sportEvent, locale);
         clientInteractionLog.info(
             "SportDataProvider.getSportEvent({}, {}) invoked. Execution time: {}",
             id,
@@ -517,6 +530,7 @@ public class SportDataProviderImpl implements SportDataProvider {
         Stopwatch timer = Stopwatch.createStarted();
         try {
             LongTermEvent longTermEvent = internalGetLongTermEvent(id, desiredLocales);
+            ensureClubFriendlySummaryIsFetchedWithNonCriticalPathTimeout(longTermEvent);
             clientInteractionLog.info(
                 "SportDataProvider.getLongTermEvent({}) invoked. Execution time: {}",
                 id,
@@ -548,6 +562,7 @@ public class SportDataProviderImpl implements SportDataProvider {
         Stopwatch timer = Stopwatch.createStarted();
         try {
             LongTermEvent longTermEvent = internalGetLongTermEvent(id, Lists.newArrayList(locale));
+            ensureClubFriendlySummaryIsFetchedWithNonCriticalPathTimeout(longTermEvent, locale);
             clientInteractionLog.info(
                 "SportDataProvider.getLongTermEvent({},{}) invoked. Execution time: {}",
                 id,
@@ -1361,5 +1376,40 @@ public class SportDataProviderImpl implements SportDataProvider {
             }
             return null;
         }
+    }
+
+    private static RequestOptions nonTimeCriticalRequestOptions() {
+        return RequestOptions.requestOptions().setExecutionPath(NON_TIME_CRITICAL).build();
+    }
+
+    private void ensureClubFriendlySummaryIsFetchedWithNonCriticalPathTimeout(SportEvent sportEvent) {
+        if (isPreloadableEntity(sportEvent) && isClubFriendlyGames(sportEvent)) {
+            PreloadableEntity preloadableEntity = (PreloadableEntity) sportEvent;
+            preloadableEntity.ensureSummaryIsFetchedForLanguages(
+                desiredLocales,
+                nonTimeCriticalRequestOptions()
+            );
+        }
+    }
+
+    private void ensureClubFriendlySummaryIsFetchedWithNonCriticalPathTimeout(
+        SportEvent sportEvent,
+        Locale language
+    ) {
+        if (isPreloadableEntity(sportEvent) && isClubFriendlyGames(sportEvent)) {
+            PreloadableEntity preloadableEntity = (PreloadableEntity) sportEvent;
+            preloadableEntity.ensureSummaryIsFetchedForLanguages(
+                ImmutableList.of(language),
+                nonTimeCriticalRequestOptions()
+            );
+        }
+    }
+
+    private static boolean isPreloadableEntity(SportEvent sportEvent) {
+        return sportEvent instanceof PreloadableEntity;
+    }
+
+    private static boolean isClubFriendlyGames(SportEvent sportEvent) {
+        return CLUB_FRIENDLY_GAMES_URNS.contains(sportEvent.getId());
     }
 }

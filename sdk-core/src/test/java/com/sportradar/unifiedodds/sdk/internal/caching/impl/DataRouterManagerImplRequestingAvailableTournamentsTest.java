@@ -16,10 +16,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
-import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
@@ -35,7 +32,7 @@ public class DataRouterManagerImplRequestingAvailableTournamentsTest {
         mock(SdkProducerManager.class),
         mock(DataRouter.class),
         mock(TelemetryFactory.class),
-        mock(DataProvider.class),
+        mock(ExecutionPathDataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),

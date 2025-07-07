@@ -14,9 +14,7 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.internal.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.markets.MarketDescriptionProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameExpressionFactory;
-import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProvider;
-import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProviderFactoryImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.markets.*;
 import com.sportradar.utils.time.TimeUtilsStub;
 import java.util.Collections;
 import java.util.Optional;
@@ -49,10 +47,11 @@ public final class NameProviders {
             val config = mock(SdkInternalConfiguration.class);
             when(config.getExceptionHandlingStrategy())
                 .thenReturn(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()));
+            val profileCache = mock(ProfileCache.class);
             val factory = new NameProviderFactoryImpl(
                 marketDescriptorProvider.orElse(mock(MarketDescriptionProvider.class)),
-                mock(ProfileCache.class),
-                mock(NameExpressionFactory.class),
+                profileCache,
+                new NameExpressionFactoryImpl(new OperandFactoryImpl(), profileCache),
                 config,
                 mock(TimeUtilsStub.class)
             );

@@ -102,8 +102,8 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
         @Provides
         @Named("SummaryEndpointDataProvider")
-        private DataProvider<Object> summaries() {
-            return mock(DataProvider.class);
+        private ExecutionPathDataProvider<Object> summaries() {
+            return mock(ExecutionPathDataProvider.class);
         }
 
         @Provides

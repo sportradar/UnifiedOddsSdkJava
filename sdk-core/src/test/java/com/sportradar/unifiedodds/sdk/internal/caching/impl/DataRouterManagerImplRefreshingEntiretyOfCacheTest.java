@@ -18,10 +18,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
-import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.LogsMock;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Collections;
@@ -66,7 +63,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(SdkProducerManager.class),
                     mock(DataRouter.class),
                     mock(TelemetryFactory.class),
-                    mock(DataProvider.class),
+                    mock(ExecutionPathDataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     allTournaments,
@@ -178,7 +175,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     wnsProducer,
                     mock(DataRouter.class),
                     mock(TelemetryFactory.class),
-                    mock(DataProvider.class),
+                    mock(ExecutionPathDataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -287,7 +284,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(SdkProducerManager.class),
                     mock(DataRouter.class),
                     mock(TelemetryFactory.class),
-                    mock(DataProvider.class),
+                    mock(ExecutionPathDataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -398,7 +395,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     producersWithSingleEnabledProducer(wnsProducerId),
                     mock(DataRouter.class),
                     mock(TelemetryFactory.class),
-                    mock(DataProvider.class),
+                    mock(ExecutionPathDataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     allTournaments,

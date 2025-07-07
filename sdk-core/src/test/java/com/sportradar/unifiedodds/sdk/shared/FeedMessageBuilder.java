@@ -1,6 +1,8 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
 import com.sportradar.uf.datamodel.*;
+import com.sportradar.uf.sportsapi.datamodel.DescMarket;
+import com.sportradar.uf.sportsapi.datamodel.DescSpecifiers;
 import com.sportradar.unifiedodds.sdk.conn.GlobalVariables;
 import com.sportradar.unifiedodds.sdk.conn.ProducerId;
 import com.sportradar.unifiedodds.sdk.conn.SportEvent;
@@ -10,7 +12,9 @@ import lombok.val;
 /**
  * Class for building test feed messages
  */
-@SuppressWarnings({ "ParameterAssignment", "ClassDataAbstractionCoupling", "MagicNumber" })
+@SuppressWarnings(
+    { "ParameterAssignment", "ClassDataAbstractionCoupling", "MagicNumber", "ClassFanOutComplexity" }
+)
 public class FeedMessageBuilder {
 
     private final GlobalVariables globalVariables;
@@ -61,6 +65,18 @@ public class FeedMessageBuilder {
         oddsChange.setOdds(odds);
         oddsChange.setSportEventStatus(status);
         return Helper.serializeToJaxbXml(oddsChange);
+    }
+
+    public String betSettlement(UfBetSettlementMarket market) {
+        UfBetSettlement message = new UfBetSettlement();
+        message.setOutcomes(new UfBetSettlement.UfOutcomes());
+        message.getOutcomes().getMarket().add(market);
+        message.setProduct(globalVariables.getProducer().get());
+        message.setEventId(globalVariables.getSportEventUrn().toString());
+        message.setTimestamp(new Date().getTime());
+        final int officialStatusHasBeenConfirmed = 2;
+        message.setCertainty(officialStatusHasBeenConfirmed);
+        return Helper.serializeToJaxbXml(message);
     }
 
     public String betCancel(UfOddsChangeMarket market) {

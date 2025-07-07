@@ -18,10 +18,10 @@
 'UTF-8'
 -Xdoclint:all,-missing
 -doctitle
-'Unified Odds SDK 4.2.0 API'
+'Unified Odds SDK 4.3.0-rc1 API'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'Unified Odds SDK 4.2.0 API'
+'Unified Odds SDK 4.3.0-rc1 API'

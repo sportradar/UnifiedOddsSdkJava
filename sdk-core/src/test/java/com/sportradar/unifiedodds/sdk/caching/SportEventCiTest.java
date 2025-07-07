@@ -20,6 +20,7 @@ import com.sportradar.unifiedodds.sdk.entities.TimeType;
 import com.sportradar.unifiedodds.sdk.impl.MappingTypeProviderImplConstructor;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.LotteryCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.DrawInfoCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterImpl;
@@ -30,6 +31,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.impl.ci.CacheItemFactory;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundException;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
+import com.sportradar.unifiedodds.sdk.internal.impl.ExecutionPathDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
@@ -58,9 +60,10 @@ public class SportEventCiTest {
         SapiMatchSummaryEndpoint matchSummary = new SapiMatchSummaryEndpoint();
         matchSummary.setSportEvent(match);
 
-        val summaries = mock(DataProvider.class);
+        val summaries = mock(ExecutionPathDataProvider.class);
 
-        when(summaries.getData(any(Locale.class), anyString())).thenReturn(matchSummary);
+        when(summaries.getData(any(RequestOptions.class), any(Locale.class), anyString()))
+            .thenReturn(matchSummary);
 
         SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
         CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(
@@ -93,9 +96,10 @@ public class SportEventCiTest {
         SapiStageSummaryEndpoint stageSummary = new SapiStageSummaryEndpoint();
         stageSummary.setSportEvent(stage);
 
-        val summaries = mock(DataProvider.class);
+        val summaries = mock(ExecutionPathDataProvider.class);
 
-        when(summaries.getData(any(Locale.class), anyString())).thenReturn(stageSummary);
+        when(summaries.getData(any(RequestOptions.class), any(Locale.class), anyString()))
+            .thenReturn(stageSummary);
 
         SdkInternalConfiguration langConfig = configurationWithAnyLanguage();
         SdkInternalConfiguration langConfigThrowing = configurationWithAnyLanguageThrowingOnErrors();
@@ -128,8 +132,9 @@ public class SportEventCiTest {
         tournament.setScheduled(april10th2016());
         tournamentSummary.setTournament(tournament);
 
-        val summaries = mock(DataProvider.class);
-        when(summaries.getData(any(Locale.class), anyString())).thenReturn(tournamentSummary);
+        val summaries = mock(ExecutionPathDataProvider.class);
+        when(summaries.getData(any(RequestOptions.class), any(Locale.class), anyString()))
+            .thenReturn(tournamentSummary);
 
         SdkInternalConfiguration config = configurationWithAnyLanguageThrowingOnErrors();
         CacheItemFactory ciFactory = CacheItemFactoryImplConstructor.create(

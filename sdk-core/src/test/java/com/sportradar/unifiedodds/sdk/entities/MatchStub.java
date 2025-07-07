@@ -6,9 +6,6 @@ package com.sportradar.unifiedodds.sdk.entities;
 import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
-import com.sportradar.utils.domain.names.Names;
-import com.sportradar.utils.generic.testing.Booleans;
-import com.sportradar.utils.generic.testing.Dates;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -91,7 +88,7 @@ public class MatchStub implements Match {
 
     @Override
     public Urn getId() {
-        return null;
+        return Urn.parse("sr:match:987");
     }
 
     @Override

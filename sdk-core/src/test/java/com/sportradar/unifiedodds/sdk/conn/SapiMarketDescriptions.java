@@ -3,18 +3,21 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
+import static com.sportradar.unifiedodds.sdk.conn.marketids.BatterHead2HeadMarketIds.BATTER_HEAD2HEAD_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ChampionshipFreeTextMarketIds.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.Competitor1ToWinBothHalvesMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.EXACT_GOALS_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FlexScoreMarketIds.CORRECT_SCORE_FLEX_SCORE_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.*;
-import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.FREE_TEXT_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.NascarOutrightsOddEvenVariant.NASCAR_EVEN_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.NascarOutrightsOddEvenVariant.NASCAR_ODD_OUTCOME_ID;
-import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.nascarOutrightsVariant;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.HoleNrCompetitorUnderParMarketIds.HOLE_NR_COMPETITOR_UNDER_PAR_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OneXtwoMarketIds.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.PlayerToScoreMarketIds.PLAYER_TO_SCORE_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PlayerToStrikeOutAppearanceTimeAtBatMarketIds.PLAYER_TO_STRIKE_OUT_APPEARANCE_TIME_AT_BAT_MARKET_ID;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.TotalHolesWonMarketIds.TOTAL_HOLES_WON_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
@@ -62,6 +65,20 @@ public final class SapiMarketDescriptions {
         responseForPreMatchWithFaultyMarketAndNotFoundStatus.setResponseCode(ResponseCode.NOT_FOUND);
         responseForPreMatchWithFaultyMarketAndNotFoundStatus.getMarket().add(emptyMarketWithIdZero);
         return responseForPreMatchWithFaultyMarketAndNotFoundStatus;
+    }
+
+    private static DescSpecifiers specifiers() {
+        DescSpecifiers descSpecifiers = new DescSpecifiers();
+        descSpecifiers.getSpecifier().add(specifier("player1", "string"));
+        descSpecifiers.getSpecifier().add(specifier("player2", "string"));
+        return descSpecifiers;
+    }
+
+    private static DescSpecifiers.Specifier specifier(String name, String type) {
+        DescSpecifiers.Specifier specifier = new DescSpecifiers.Specifier();
+        specifier.setName(name);
+        specifier.setType(type);
+        return specifier;
     }
 
     public static class ExactGoals {
@@ -1881,7 +1898,8 @@ public final class SapiMarketDescriptions {
         @RequiredArgsConstructor
         @Getter
         private enum MarketTranslation {
-            EN(Locale.ENGLISH, "Hole {holenr} - {%competitor} under par", "yes", "no");
+            EN(Locale.ENGLISH, "Hole {holenr} - {%competitor} under par", "yes", "no"),
+            FR(Locale.FRENCH, "Hole {holenr} - {%competitor} under par", "oui", "non");
 
             private final Locale language;
             private final String marketName;
@@ -2022,6 +2040,301 @@ public final class SapiMarketDescriptions {
                     .filter(translation -> translation.language.equals(language))
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException(LANGUAGE_NOT_SUPPORTED_BY_TEST_FIXTURE));
+            }
+        }
+    }
+
+    public static final class Competitor1ToWinBothHalves {
+
+        public static DescMarket competitor1ToWinBothHalvesMarketDescription() {
+            return competitor1ToWinBothHalvesMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket competitor1ToWinBothHalvesMarketDescription(Locale language) {
+            return competitor1ToWinBothHalvesMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket competitor1ToWinBothHalvesMarketDescription(MarketTranslation translation) {
+            DescMarket market = new DescMarket();
+            market.setId(COMPETITOR1_TO_WIN_BOTH_HALVES_MARKET_ID);
+            market.setName(translation.marketName);
+            market.setOutcomes(new DescOutcomes());
+            market.getOutcomes().getOutcome().add(yesOutcomeDescription());
+            market.getOutcomes().getOutcome().add(noOutcomeDescription());
+            return market;
+        }
+
+        private static DescOutcomes.Outcome yesOutcomeDescription() {
+            DescOutcomes.Outcome yesOutcome = new DescOutcomes.Outcome();
+            yesOutcome.setId(YES_OUTCOME_ID);
+            yesOutcome.setName(MarketTranslation.EN.yesOutcomeName);
+            return yesOutcome;
+        }
+
+        private static DescOutcomes.Outcome noOutcomeDescription() {
+            DescOutcomes.Outcome noOutcome = new DescOutcomes.Outcome();
+            noOutcome.setId(NO_OUTCOME_ID);
+            noOutcome.setName(MarketTranslation.EN.yesOutcomeName);
+            return noOutcome;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "{$competitor1} to win both halves", "yes", "no"),
+            FR(Locale.FRENCH, "{$competitor1} gagne les deux périodes", "oui", "non");
+
+            private final Locale language;
+            private final String marketName;
+            private final String yesOutcomeName;
+            private final String noOutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(translation -> translation.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException(LANGUAGE_NOT_SUPPORTED_BY_TEST_FIXTURE));
+            }
+        }
+    }
+
+    public static final class PenaltyShootoutCompetitor2Total {
+
+        public static DescMarket penaltyShootoutCompetitor2TotalMarketDescription() {
+            return penaltyShootoutCompetitor2TotalMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket penaltyShootoutCompetitor2TotalMarketDescription(Locale language) {
+            return penaltyShootoutCompetitor2TotalMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket penaltyShootoutCompetitor2TotalMarketDescription(
+            MarketTranslation translation
+        ) {
+            DescMarket market = new DescMarket();
+            market.setId(PENALTY_SHOOTOUT_COMPETITOR2_TOTAL_MARKET_ID);
+            market.setName(translation.marketName);
+            market.setOutcomes(new DescOutcomes());
+            market.getOutcomes().getOutcome().add(overTotalOutcomeDescription());
+            market.getOutcomes().getOutcome().add(underTotalOutcomeDescription());
+            return market;
+        }
+
+        private static DescOutcomes.Outcome overTotalOutcomeDescription() {
+            DescOutcomes.Outcome yesOutcome = new DescOutcomes.Outcome();
+            yesOutcome.setId(OVER_TOTAL_OUTCOME_ID);
+            yesOutcome.setName(MarketTranslation.EN.overTotalOutcomeName);
+            return yesOutcome;
+        }
+
+        private static DescOutcomes.Outcome underTotalOutcomeDescription() {
+            DescOutcomes.Outcome noOutcome = new DescOutcomes.Outcome();
+            noOutcome.setId(UNDER_TOTAL_OUTCOME_ID);
+            noOutcome.setName(MarketTranslation.EN.underTotalOutcomeName);
+            return noOutcome;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "Penalty shootout - {$competitor2} total", "under {total}", "over {total}"),
+            FR(
+                Locale.FRENCH,
+                "Séance de tirs au but - {$competitor2} total",
+                "Moins de {total}",
+                "Plus de {total}"
+            );
+
+            private final Locale language;
+            private final String marketName;
+            private final String overTotalOutcomeName;
+            private final String underTotalOutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(translation -> translation.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException(LANGUAGE_NOT_SUPPORTED_BY_TEST_FIXTURE));
+            }
+        }
+    }
+
+    public static final class PlayerToScore {
+
+        public static DescMarket playerToScoreMarketDescription() {
+            return playerToScoreMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket playerToScoreMarketDescription(Locale language) {
+            return playerToScoreMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket playerToScoreMarketDescription(MarketTranslation translation) {
+            DescMarket market = new DescMarket();
+            market.setId(PLAYER_TO_SCORE_MARKET_ID);
+            market.setName(translation.marketName);
+            market.setOutcomes(new DescOutcomes());
+            market.getOutcomes().getOutcome().add(yesOutcomeDescription());
+            market.getOutcomes().getOutcome().add(noOutcomeDescription());
+            return market;
+        }
+
+        private static DescOutcomes.Outcome yesOutcomeDescription() {
+            DescOutcomes.Outcome yesOutcome = new DescOutcomes.Outcome();
+            yesOutcome.setId(PlayerToScoreMarketIds.YES_OUTCOME_ID);
+            yesOutcome.setName(MarketTranslation.EN.yesOutcomeName);
+            return yesOutcome;
+        }
+
+        private static DescOutcomes.Outcome noOutcomeDescription() {
+            DescOutcomes.Outcome noOutcome = new DescOutcomes.Outcome();
+            noOutcome.setId(PlayerToScoreMarketIds.NO_OUTCOME_ID);
+            noOutcome.setName(MarketTranslation.EN.noOutcomeName);
+            return noOutcome;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "{%player} to score (incl. overtime)", "yes", "no"),
+            FR(Locale.FRENCH, "{%player} qui marque (prolongations incluses)", "oui", "non");
+
+            private final Locale language;
+            private final String marketName;
+            private final String yesOutcomeName;
+            private final String noOutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(translation -> translation.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException(LANGUAGE_NOT_SUPPORTED_BY_TEST_FIXTURE));
+            }
+        }
+    }
+
+    public static final class BatterHead2Head {
+
+        public static DescMarket batterHead2HeadMarketDescription() {
+            return batterHead2HeadMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket batterHead2HeadMarketDescription(Locale language) {
+            return batterHead2HeadMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket batterHead2HeadMarketDescription(MarketTranslation translation) {
+            DescMarket market = new DescMarket();
+            market.setId(BATTER_HEAD2HEAD_MARKET_ID);
+            market.setName(translation.marketName);
+
+            DescOutcomes outcomes = new DescOutcomes();
+            outcomes.getOutcome().add(player1Outcome(translation));
+            outcomes.getOutcome().add(drawOutcome(translation));
+            outcomes.getOutcome().add(player2Outcome(translation));
+
+            market.setOutcomes(outcomes);
+            market.setSpecifiers(specifiers());
+
+            return market;
+        }
+
+        private static DescOutcomes.Outcome player1Outcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(BatterHead2HeadMarketIds.PLAYER_1_OUTCOME_ID);
+            outcome.setName(translation.player1OutcomeName);
+            return outcome;
+        }
+
+        private static DescOutcomes.Outcome drawOutcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(BatterHead2HeadMarketIds.DRAW_OUTCOME_ID);
+            outcome.setName(translation.drawOutcomeName);
+            return outcome;
+        }
+
+        private static DescOutcomes.Outcome player2Outcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(BatterHead2HeadMarketIds.PLAYER_2_OUTCOME_ID);
+            outcome.setName(translation.player2OutcomeName);
+            return outcome;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "Batter head2head (1x2)", "{%player1}", "draw", "{%player2}");
+
+            private final Locale language;
+            private final String marketName;
+            private final String player1OutcomeName;
+            private final String drawOutcomeName;
+            private final String player2OutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(t -> t.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Unsupported language in test fixture"));
+            }
+        }
+    }
+
+    public static final class TotalHolesWon {
+
+        public static DescMarket totalHolesWonMarketDescription() {
+            return totalHolesWonMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket totalHolesWonMarketDescription(Locale language) {
+            return totalHolesWonMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket totalHolesWonMarketDescription(MarketTranslation translation) {
+            DescMarket market = new DescMarket();
+            market.setId(TOTAL_HOLES_WON_MARKET_ID);
+            market.setName(translation.marketName);
+
+            DescOutcomes outcomes = new DescOutcomes();
+            outcomes.getOutcome().add(underTotalOutcome(translation));
+            outcomes.getOutcome().add(overTotalOutcome(translation));
+
+            market.setOutcomes(outcomes);
+            market.setSpecifiers(specifiers());
+
+            return market;
+        }
+
+        private static DescOutcomes.Outcome underTotalOutcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(TotalHolesWonMarketIds.UNDER_TOTAL_OUTCOME_ID);
+            outcome.setName(translation.underTotalOutcomeName);
+            return outcome;
+        }
+
+        private static DescOutcomes.Outcome overTotalOutcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(TotalHolesWonMarketIds.OVER_TOTAL_OUTCOME_ID);
+            outcome.setName(translation.overTotalOutcomeName);
+            return outcome;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "{%competitor} total holes won", "under {total}", "over {total}"),
+            FR(Locale.FRENCH, "{%competitor} total holes won", "Moins de {total}", "Plus de {total}");
+
+            private final Locale language;
+            private final String marketName;
+            private final String underTotalOutcomeName;
+            private final String overTotalOutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(t -> t.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Unsupported language in test fixture"));
             }
         }
     }

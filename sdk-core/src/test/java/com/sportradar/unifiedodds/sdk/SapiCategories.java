@@ -2423,7 +2423,7 @@ public class SapiCategories {
     }
 
     public static SapiCategory nascar() {
-        return sapiCategory("sr:category:6", "NASCAR");
+        return getSapiCategory(Urn.parse("sr:category:150"), LanguageHolder.in(ENGLISH)).getCategory();
     }
 
     public static SapiCategory usa() {

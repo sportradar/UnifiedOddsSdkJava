@@ -8,6 +8,8 @@ import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FlexScoreMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.FREE_TEXT_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.OVER_TOTAL_OUTCOME_ID;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.UNDER_TOTAL_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.from;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.to;
 import static com.sportradar.utils.generic.testing.RandomObjectPicker.pickOneRandomlyFrom;
@@ -201,6 +203,68 @@ public class UfMarkets {
             return market;
         }
 
+        public static UfOddsChangeMarket competitor1ToWinBothHalvesMarket() {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(Competitor1ToWinBothHalvesMarketIds.COMPETITOR1_TO_WIN_BOTH_HALVES_MARKET_ID);
+
+            market
+                .getOutcome()
+                .add(activeOutcome().withId(Competitor1ToWinBothHalvesMarketIds.YES_OUTCOME_ID));
+            market
+                .getOutcome()
+                .add(activeOutcome().withId(Competitor1ToWinBothHalvesMarketIds.NO_OUTCOME_ID));
+
+            return market;
+        }
+
+        public static UfOddsChangeMarket penaltyShootoutCompetitor2TotalMarket(UfTotalSpecifier total) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(
+                PenaltyShootoutCompetitor2TotalMarketIds.PENALTY_SHOOTOUT_COMPETITOR2_TOTAL_MARKET_ID
+            );
+            market.setSpecifiers(UfSpecifiers.join(total));
+            market.getOutcome().add(activeOutcome().withId(UNDER_TOTAL_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(OVER_TOTAL_OUTCOME_ID));
+
+            return market;
+        }
+
+        public static UfOddsChangeMarket playerToScoreMarket(UfPlayerSpecifier player) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(PlayerToScoreMarketIds.PLAYER_TO_SCORE_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(player));
+            market.getOutcome().add(activeOutcome().withId(PlayerToScoreMarketIds.YES_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(PlayerToScoreMarketIds.NO_OUTCOME_ID));
+
+            return market;
+        }
+
+        public static UfOddsChangeMarket batterHead2HeadMarket(
+            UfPlayer1Specifier player1,
+            UfPlayer2Specifier player2,
+            UfMaxoversSpecifier maxovers
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(BatterHead2HeadMarketIds.BATTER_HEAD2HEAD_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(player1, player2, maxovers));
+            market.getOutcome().add(activeOutcome().withId(BatterHead2HeadMarketIds.PLAYER_1_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(BatterHead2HeadMarketIds.DRAW_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(BatterHead2HeadMarketIds.PLAYER_2_OUTCOME_ID));
+            return market;
+        }
+
+        public static UfOddsChangeMarket totalHolesWonMarket(
+            UfCompetitorSpecifier competitor,
+            UfTotalSpecifier total
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(TotalHolesWonMarketIds.TOTAL_HOLES_WON_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(competitor, total));
+            market.getOutcome().add(activeOutcome().withId(TotalHolesWonMarketIds.OVER_TOTAL_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(TotalHolesWonMarketIds.UNDER_TOTAL_OUTCOME_ID));
+            return market;
+        }
+
         public static class UfOddsChangeOutcomeBuilder {
 
             private UfOddsChangeOutcomeBuilder() {}
@@ -232,7 +296,9 @@ public class UfMarkets {
             market.setId(ODD_EVEN_MARKET_ID);
 
             market.getOutcome().add(UfBetSettlementOutcomeBuilder.activeOutcome().wonWithId(ODD_OUTCOME_ID));
-            market.getOutcome().add(UfBetSettlementOutcomeBuilder.activeOutcome().wonWithId(EVEN_OUTCOME_ID));
+            market
+                .getOutcome()
+                .add(UfBetSettlementOutcomeBuilder.activeOutcome().lostWithId(EVEN_OUTCOME_ID));
 
             return market;
         }
@@ -249,6 +315,13 @@ public class UfMarkets {
                 UfBetSettlementMarket.UfOutcome outcome = new UfBetSettlementMarket.UfOutcome();
                 outcome.setId(id);
                 outcome.setResult(UfResult.WON);
+                return outcome;
+            }
+
+            private UfBetSettlementMarket.UfOutcome lostWithId(String id) {
+                UfBetSettlementMarket.UfOutcome outcome = new UfBetSettlementMarket.UfOutcome();
+                outcome.setId(id);
+                outcome.setResult(UfResult.LOST);
                 return outcome;
             }
         }

@@ -4,13 +4,18 @@
 package com.sportradar.unifiedodds.sdk.internal.caching;
 
 import static com.sportradar.unifiedodds.sdk.caching.impl.SportEntityFactories.BuilderStubbingOutAllCachesAndStatusFactory.stubbingOutAllCachesAndStatusFactory;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
 import static com.sportradar.unifiedodds.sdk.conn.SapiPitchers.joseSuarez;
 import static com.sportradar.unifiedodds.sdk.conn.SapiPitchers.yuseiKikuchi;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.FullyPopulatedSeason.euro2024Season;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSports.getSapiSport;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeamCompetitors.germany;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
 import static com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventCaches.BuilderStubbingOutDataRouterManager.stubbingOutDataRouterManager;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
+import static java.util.Locale.CHINESE;
 import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -18,16 +23,20 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
-import com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.*;
+import com.sportradar.unifiedodds.sdk.impl.assertions.SportSummaryAssert;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterManagerBuilder;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportsDataCaches;
+import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
 import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertyGetterFrom;
 import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertySetterTo;
 import com.sportradar.utils.Urn;
+import java.time.*;
+import java.util.Date;
+import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.val;
 import org.junit.jupiter.api.Named;
@@ -36,9 +45,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@SuppressWarnings({ "MagicNumber", "LineLength" })
+@SuppressWarnings({ "MagicNumber", "LineLength", "ClassFanOutComplexity" })
 class SportEventCacheMatchSummaryTest {
 
+    private static final String ENGLISH_AND_CHINESE =
+        "com.sportradar.unifiedodds.sdk.internal.caching.SportEventCacheMatchSummaryTest#englishAndChinese";
     private static final String MATCH_PROPERTIES =
         "com.sportradar.unifiedodds.sdk.internal.caching.MatchSummaryPropertyProviders#matchProperties";
     private static final String MATCH_PROPERTIES_WHEN_SUMMARY_MISSING =
@@ -52,7 +63,7 @@ class SportEventCacheMatchSummaryTest {
         PropertySetterTo<SapiMatchSummaryEndpoint> sapiProperty,
         Object expected
     ) throws Exception {
-        val matchSummary = SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024();
+        val matchSummary = soccerMatchGermanyScotlandEuro2024();
         sapiProperty.setOn(matchSummary);
         val matchId = Urn.parse(matchSummary.getSportEvent().getId());
 
@@ -99,8 +110,8 @@ class SportEventCacheMatchSummaryTest {
     }
 
     @Test
-    void fetchingMatchThrowsExceptionWhenSummaryMissingAndErrorStrategyIsThrow() throws Exception {
-        val matchSummary = SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024();
+    void fetchingMatchThrowsExceptionWhenSummaryMissingAndErrorStrategyIsThrow() {
+        val matchSummary = soccerMatchGermanyScotlandEuro2024();
         val matchId = Urn.parse(matchSummary.getSportEvent().getId());
 
         val dataRouter = new DataRouterImpl();
@@ -134,7 +145,7 @@ class SportEventCacheMatchSummaryTest {
     void fetchingMatchPropertiesWithStrategyCatchReturnsNullForEachPropertyWhenSummaryFixtureAndTimelineMissing(
         PropertyGetterFrom<SportEvent> property
     ) throws Exception {
-        val matchSummary = SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024();
+        val matchSummary = soccerMatchGermanyScotlandEuro2024();
         val matchId = Urn.parse(matchSummary.getSportEvent().getId());
 
         val dataRouter = new DataRouterImpl();
@@ -168,12 +179,62 @@ class SportEventCacheMatchSummaryTest {
         assertThat(property.getFrom(sportEvent)).isNull();
     }
 
+    @ParameterizedTest
+    @MethodSource(ENGLISH_AND_CHINESE)
+    void retrievesSportFromFetchedSummary(Locale language) throws Exception {
+        val matchSummary = soccerMatchGermanyScotlandEuro2024();
+        val matchId = Urn.parse(matchSummary.getSportEvent().getId());
+
+        val summaryProvider = SummaryDataProviders.providing(
+            in(language),
+            with(matchId.toString()),
+            matchSummary
+        );
+
+        val dataRouter = new DataRouterImpl();
+        val dataRouterManager = dataRouterManagerBuilder
+            .withSummaries(summaryProvider)
+            .with(dataRouter)
+            .build();
+
+        val sportsDataCache = SportsDataCaches
+            .providing(in(language), categoryFrom(tournamentEuro2024()))
+            .providing(in(language), sportFrom(tournamentEuro2024()));
+
+        val sportEventCache = stubbingOutDataRouterManager()
+            .withDefaultLanguage(language)
+            .with(dataRouterManager)
+            .build();
+
+        dataRouter.setDataListeners(singletonList(sportEventCache));
+
+        val sportEntityFactory = stubbingOutAllCachesAndStatusFactory()
+            .withDefaultLanguage(language)
+            .with(sportEventCache)
+            .with(sportsDataCache)
+            .build();
+
+        val sportEvent = (Match) sportEntityFactory.buildSportEvent(matchId, singletonList(language), false);
+
+        val sport = sportEvent.getSport();
+        SportSummaryAssert
+            .assertThat(sport, in(language))
+            .hasIdAndNameEqualTo(getSapiSport(sportUrnFrom(tournamentEuro2024()), in(language)));
+
+        val sportId = sportEvent.getSportId();
+        assertThat(sportId).isEqualTo(sportUrnFrom(tournamentEuro2024()));
+    }
+
     private SapiCategory categoryFrom(SapiTournamentExtended sapiTournamentExtended) {
         return sapiTournamentExtended.getCategory();
     }
 
     private String sportIdFrom(SapiTournamentExtended tournament) {
         return tournament.getSport().getId();
+    }
+
+    private Urn sportUrnFrom(SapiTournamentExtended tournament) {
+        return Urn.parse(tournament.getSport().getId());
     }
 
     private SapiSportCategoriesEndpoint categoriesFrom(SapiTournamentExtended tournament) {
@@ -193,16 +254,25 @@ class SportEventCacheMatchSummaryTest {
     private SapiSport sportFrom(SapiTournamentExtended tournament) {
         return tournament.getSport();
     }
+
+    static Stream<Locale> englishAndChinese() {
+        return Stream.of(ENGLISH, CHINESE);
+    }
 }
 
 @SuppressWarnings({ "unused", "MultipleStringLiterals", "JavaNCSS", "MagicNumber" })
 class MatchSummaryPropertyProviders {
 
     private static Stream<Arguments> matchProperties() {
-        return Stream.concat(
-            venueProperties(),
-            Stream.concat(conditionsProperties(), tournamentProperties())
-        );
+        return Stream
+            .of(
+                venueProperties(),
+                competitorIdsProperties(),
+                conditionsProperties(),
+                tournamentProperties(),
+                seasonProperties()
+            )
+            .flatMap(Stream::sequential);
     }
 
     private static Stream<Arguments> venueProperties() {
@@ -889,6 +959,220 @@ class MatchSummaryPropertyProviders {
         );
     }
 
+    private static Stream<Arguments> competitorIdsProperties() {
+        return Stream.of(
+            arguments(
+                "competitors - missing",
+                Competition::getCompetitors,
+                p -> p.getSportEvent().setCompetitors(null),
+                null
+            ),
+            arguments(
+                "competitors - empty",
+                Competition::getCompetitors,
+                p -> p.getSportEvent().setCompetitors(new SapiSportEventCompetitors()),
+                emptyList()
+            ),
+            arguments(
+                "competitors - id is available without profile call",
+                m -> m.getCompetitors().get(0).getId(),
+                p -> {
+                    val competitors = sapiCompetitors(germany());
+                    p.getSportEvent().setCompetitors(competitors);
+                },
+                germany().getId()
+            )
+        );
+    }
+
+    private static Stream<Arguments> seasonProperties() {
+        return Stream.of(
+            arguments("season - missing", Match::getSeason, m -> m.getSportEvent().setSeason(null), null),
+            arguments(
+                "season - id",
+                m -> m.getSeason().getId(),
+                m -> m.getSportEvent().setSeason(euro2024Season()),
+                euro2024Season().getId()
+            ),
+            arguments(
+                "season - name - available",
+                m -> m.getSeason().getName(ENGLISH),
+                m -> m.getSportEvent().setSeason(euro2024Season()),
+                euro2024Season().getName()
+            ),
+            arguments(
+                "season - name - missing",
+                m -> m.getSeason().getName(ENGLISH),
+                m -> {
+                    val season = euro2024Season();
+                    season.setName(null);
+                    m.getSportEvent().setSeason(season);
+                },
+                null
+            ),
+            arguments(
+                "season - name - empty",
+                m -> m.getSeason().getName(ENGLISH),
+                m -> {
+                    val season = euro2024Season();
+                    season.setName("");
+                    m.getSportEvent().setSeason(season);
+                },
+                ""
+            ),
+            arguments(
+                "season - names - available",
+                m -> m.getSeason().getNames(),
+                m -> m.getSportEvent().setSeason(euro2024Season()),
+                ImmutableMap.of(ENGLISH, euro2024Season().getName())
+            ),
+            arguments(
+                "season - names - missing",
+                m -> m.getSeason().getNames(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setName(null);
+                    m.getSportEvent().setSeason(season);
+                },
+                emptyMap()
+            ),
+            arguments(
+                "season - names - empty",
+                m -> m.getSeason().getNames(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setName("");
+                    m.getSportEvent().setSeason(season);
+                },
+                ImmutableMap.of(ENGLISH, "")
+            ),
+            arguments(
+                "season - startDate - available",
+                m -> m.getSeason().getStartDate(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setStartDate(XmlGregorianCalendars.forDate(LocalDate.parse("2022-01-14")));
+                    m.getSportEvent().setSeason(season);
+                },
+                Date.from(Instant.parse("2022-01-14T00:00:00Z"))
+            ),
+            arguments(
+                "season - startDate - combined with startTime when available",
+                m -> m.getSeason().getStartDate(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setStartDate(XmlGregorianCalendars.forDate(LocalDate.parse("2022-01-14")));
+                    season.setStartTime(XmlGregorianCalendars.forTime(LocalTime.of(11, 12, 13)));
+                    m.getSportEvent().setSeason(season);
+                },
+                Date.from(Instant.parse("2022-01-14T11:12:13Z"))
+            ),
+            arguments(
+                "season - startDate - missing",
+                m -> m.getSeason().getStartDate(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setStartDate(null);
+                    m.getSportEvent().setSeason(season);
+                },
+                null
+            ),
+            arguments(
+                "season - endDate - available",
+                m -> m.getSeason().getEndDate(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setEndDate(XmlGregorianCalendars.forDate(LocalDate.parse("2024-02-15")));
+                    m.getSportEvent().setSeason(season);
+                },
+                Date.from(Instant.parse("2024-02-15T00:00:00Z"))
+            ),
+            arguments(
+                "season - endDate - combined with endTime when available",
+                m -> m.getSeason().getEndDate(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setEndDate(XmlGregorianCalendars.forDate(LocalDate.parse("2024-02-25")));
+                    season.setEndTime(XmlGregorianCalendars.forTime(LocalTime.of(1, 12, 55)));
+                    m.getSportEvent().setSeason(season);
+                },
+                Date.from(Instant.parse("2024-02-25T01:12:55Z"))
+            ),
+            arguments(
+                "season - endDate - missing",
+                m -> m.getSeason().getEndDate(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setEndDate(null);
+                    m.getSportEvent().setSeason(season);
+                },
+                null
+            ),
+            arguments(
+                "season - year - available",
+                m -> m.getSeason().getYear(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setYear("2011");
+                    m.getSportEvent().setSeason(season);
+                },
+                "2011"
+            ),
+            arguments(
+                "season - year - missing",
+                m -> m.getSeason().getYear(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setYear(null);
+                    m.getSportEvent().setSeason(season);
+                },
+                null
+            ),
+            arguments(
+                "season - year - empty",
+                m -> m.getSeason().getYear(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setYear("");
+                    m.getSportEvent().setSeason(season);
+                },
+                ""
+            ),
+            arguments(
+                "season - tournamentId - available",
+                m -> m.getSeason().getTournamentId(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setTournamentId("sr:tournament:1234");
+                    m.getSportEvent().setSeason(season);
+                },
+                Urn.parse("sr:tournament:1234")
+            ),
+            arguments(
+                "season - tournamentId - missing",
+                m -> m.getSeason().getTournamentId(),
+                m -> {
+                    val season = euro2024Season();
+                    season.setTournamentId(null);
+                    m.getSportEvent().setSeason(season);
+                },
+                null
+            ),
+            arguments(
+                "season - toString - available",
+                m -> m.getSeason().toString().contains("SeasonInfoImpl{"),
+                m -> m.getSportEvent().setSeason(euro2024Season()),
+                true
+            )
+        );
+    }
+
+    private static SapiSportEventCompetitors sapiCompetitors(SapiTeamCompetitor competitor) {
+        val competitors = new SapiSportEventCompetitors();
+        competitors.getCompetitor().add(competitor);
+        return competitors;
+    }
+
     private static Stream<Arguments> matchPropertiesWhenSummaryMissing() {
         return Stream.of(
             arguments("sportId", Match::getSportId),
@@ -914,15 +1198,6 @@ class MatchSummaryPropertyProviders {
             arguments("liveOdds", Match::getLiveOdds),
             arguments("sportEventType", Match::getSportEventType)
         );
-    }
-
-    private static SapiReferenceIds addReference(String reference, String id) {
-        SapiReferenceIds referenceIds = new SapiReferenceIds();
-        SapiReferenceIds.SapiReferenceId referenceId = new SapiReferenceIds.SapiReferenceId();
-        referenceId.setName(reference);
-        referenceId.setValue(id);
-        referenceIds.getReferenceId().add(referenceId);
-        return referenceIds;
     }
 
     static Arguments arguments(

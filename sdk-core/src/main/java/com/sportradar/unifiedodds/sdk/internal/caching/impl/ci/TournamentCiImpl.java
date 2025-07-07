@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.internal.caching.impl.ci;
 
+import static com.sportradar.unifiedodds.sdk.internal.caching.ExecutionPath.TIME_CRITICAL;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -15,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.entities.Reference;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
 import com.sportradar.unifiedodds.sdk.internal.caching.TournamentCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataRouterStreamException;
@@ -928,12 +931,29 @@ class TournamentCiImpl implements TournamentCi, ExportableCacheItem {
         this.exhibitionGames = endpointData.isExhibitionGames();
     }
 
+    @Override
+    public void requestMissingSummaryData(
+        List<Locale> requiredLocales,
+        boolean forceFetch,
+        RequestOptions requestOptions
+    ) {
+        requestMissingTournamentData(requiredLocales, requestOptions);
+    }
+
+    private void requestMissingTournamentData(List<Locale> requiredLocales) {
+        RequestOptions timeCiticalRequestOptions = RequestOptions
+            .requestOptions()
+            .setExecutionPath(TIME_CRITICAL)
+            .build();
+        requestMissingTournamentData(requiredLocales, timeCiticalRequestOptions);
+    }
+
     /**
      * Requests the data for the missing translations
      *
      * @param requiredLocales a {@link List} of locales in which the tournament data should be translated
      */
-    private void requestMissingTournamentData(List<Locale> requiredLocales) {
+    private void requestMissingTournamentData(List<Locale> requiredLocales, RequestOptions requestOptions) {
         Preconditions.checkNotNull(requiredLocales);
 
         List<Locale> missingLocales = SdkHelper.findMissingLocales(cachedLocales, requiredLocales);
@@ -957,7 +977,7 @@ class TournamentCiImpl implements TournamentCi, ExportableCacheItem {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestSummaryEndpoint(l, id, this);
+                    dataRouterManager.requestSummaryEndpoint(l, id, this, requestOptions);
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }

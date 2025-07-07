@@ -125,33 +125,6 @@ public class FastFailingTimeoutIT {
     }
 
     @Test
-    void sportProviderMatchSummaryHttpCallFailsIfNoResponseIn5Seconds() throws Exception {
-        val germanyVsScotlandMatchId = Urn.parse(GERMANY_SCOTLAND_MATCH_URN);
-        apiSimulator.stubMatchSummary(
-            enLanguage,
-            soccerMatchGermanyScotlandEuro2024(),
-            toBeDelayedBy(HTTP_TIMEOUT + 1, SECONDS)
-        );
-
-        try (
-            val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
-                .with(ListenerCollectingMessages.to(messagesStorage))
-                .with(ExceptionHandlingStrategy.Throw)
-                .withDefaultLanguage(enLanguage)
-                .withClientFastFailingTimeout(HTTP_TIMEOUT)
-                .withoutFeed()
-        ) {
-            val sportDataProvider = sdk.getSportDataProvider();
-
-            assertThatException()
-                .isThrownBy(() -> sportDataProvider.getSportEvent(germanyVsScotlandMatchId))
-                .withRootCauseInstanceOf(TimeoutException.class)
-                .isInstanceOf(ObjectNotFoundException.class);
-        }
-    }
-
-    @Test
     void matchSummaryHttpCallFailsIfNoResponseIn5Seconds()
         throws IOException, TimeoutException, InitException {
         val matchId = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());

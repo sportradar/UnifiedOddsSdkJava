@@ -32,4 +32,13 @@ public class SportAssert extends AbstractAssert<SportAssert, Sport> {
             .isEqualTo(new SportDataHolder(sapiSport));
         return this;
     }
+
+    public SportAssert hasIdAndNameEqualTo(Sport sport) {
+        isNotNull();
+
+        Assertions
+            .assertThat(new SportDataHolder(actual, language))
+            .isEqualTo(new SportDataHolder(sport, language));
+        return this;
+    }
 }

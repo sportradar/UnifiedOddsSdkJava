@@ -42,4 +42,8 @@ public class Languages {
             .map(i -> uniqueLanguages.getOne())
             .collect(Collectors.toList());
     }
+
+    public static Locale chinese() {
+        return Locale.forLanguageTag("zh");
+    }
 }

@@ -17,10 +17,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
-import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
@@ -30,7 +27,7 @@ public class DataRouterManagerImplRequestingEventSummaryTest {
     private static final String NON_NULL_URL = "http://nonNullUrl.com";
     private static final Locale ANY_LANGUAGE = Locale.FRENCH;
     private static final CacheItem ANY_CACHE_ITEM = mock(CacheItem.class);
-    private final DataProvider eventsSummaries = mock(DataProvider.class);
+    private final ExecutionPathDataProvider eventsSummaries = mock(ExecutionPathDataProvider.class);
     private final DataRouterManager manager = new DataRouterManagerImpl(
         mock(SdkInternalConfiguration.class),
         mock(SdkTaskScheduler.class),
@@ -66,7 +63,7 @@ public class DataRouterManagerImplRequestingEventSummaryTest {
 
     @Test
     public void providerFailureShouldResultInExceptionExplainingThat() throws DataProviderException {
-        when(eventsSummaries.getData(any(), any())).thenThrow(DataProviderException.class);
+        when(eventsSummaries.getData(any(), any(), any())).thenThrow(DataProviderException.class);
         Locale china = Locale.CHINA;
         Urn id = urnForAnyTournament();
 
@@ -86,7 +83,7 @@ public class DataRouterManagerImplRequestingEventSummaryTest {
         String providedUrl = "https://summaryUrl.com";
         DataProviderException dataProviderException = mock(DataProviderException.class);
         when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(providedUrl);
-        when(eventsSummaries.getData(any(), any())).thenThrow(dataProviderException);
+        when(eventsSummaries.getData(any(), any(), any())).thenThrow(dataProviderException);
 
         CommunicationException exception = catchThrowableOfType(
             () -> manager.requestSummaryEndpoint(ANY_LANGUAGE, urnForAnyTournament(), ANY_CACHE_ITEM),
@@ -103,7 +100,7 @@ public class DataRouterManagerImplRequestingEventSummaryTest {
         when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
         when(dataProviderException.tryExtractCommunicationExceptionHttpStatusCode(anyInt()))
             .thenReturn(httpCode);
-        when(eventsSummaries.getData(any(), any())).thenThrow(dataProviderException);
+        when(eventsSummaries.getData(any(), any(), any())).thenThrow(dataProviderException);
 
         CommunicationException exception = catchThrowableOfType(
             () -> manager.requestSummaryEndpoint(ANY_LANGUAGE, urnForAnyTournament(), ANY_CACHE_ITEM),
@@ -117,7 +114,7 @@ public class DataRouterManagerImplRequestingEventSummaryTest {
     public void providerFailureShouldResultInExceptionPreservingCause() throws DataProviderException {
         DataProviderException dataProviderException = mock(DataProviderException.class);
         when(dataProviderException.tryExtractCommunicationExceptionUrl(any())).thenReturn(NON_NULL_URL);
-        when(eventsSummaries.getData(any(), any())).thenThrow(dataProviderException);
+        when(eventsSummaries.getData(any(), any(), any())).thenThrow(dataProviderException);
 
         CommunicationException exception = catchThrowableOfType(
             () -> manager.requestSummaryEndpoint(ANY_LANGUAGE, urnForAnyTournament(), ANY_CACHE_ITEM),

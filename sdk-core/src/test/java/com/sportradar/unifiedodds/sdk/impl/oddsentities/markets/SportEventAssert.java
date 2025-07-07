@@ -44,7 +44,7 @@ public class SportEventAssert extends AbstractAssert<SportEventAssert, SportEven
         assertThatThrownBy(runnable::run)
             .isInstanceOf(ObjectNotFoundException.class)
             .message()
-            .containsAnyOf("requestMissingSummaryData([");
+            .containsAnyOf("requestMissingSummaryData([", "requestMissingTournamentData([");
     }
 
     private void assertThatIsNull(Object result) {

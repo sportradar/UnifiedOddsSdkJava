@@ -161,7 +161,7 @@ class SportEventCacheTournamentTest {
             false
         );
 
-        assertThat(property.getFrom(sportEvent)).isEqualTo(null);
+        assertThat(property.getFrom(sportEvent)).isNull();
     }
 
     @ParameterizedTest

@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.sportradar.unifiedodds.sdk.exceptions.NameGenerationException;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
+import com.sportradar.utils.domain.names.LanguageHolder;
 import java.util.Locale;
 import lombok.val;
 import org.assertj.core.api.AbstractAssert;
@@ -20,6 +21,12 @@ public abstract class AbstractOutcomeAssert<SELF extends AbstractAssert<SELF, AC
 
     protected AbstractOutcomeAssert(ACTUAL actual, Class<?> selfType) {
         super(actual, selfType);
+    }
+
+    public AbstractOutcomeAssert hasNameForDefaultLanguage(Locale language, String expectedName) {
+        org.assertj.core.api.Assertions.assertThat(actual.getName()).isEqualTo(expectedName);
+        org.assertj.core.api.Assertions.assertThat(actual.getName(language)).isEqualTo(expectedName);
+        return this;
     }
 
     public AbstractOutcomeAssert nameIsNotBackedByMarketDescriptionForDefaultLanguage(

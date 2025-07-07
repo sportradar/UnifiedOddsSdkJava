@@ -32,4 +32,13 @@ public class RoutingKeys {
             globalVariables.getNodeId()
         );
     }
+
+    public String liveBetSettlement() {
+        return format(
+            "lo.pre.-.bet_settlement.%d.sr:%s.%d.-",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId()
+        );
+    }
 }

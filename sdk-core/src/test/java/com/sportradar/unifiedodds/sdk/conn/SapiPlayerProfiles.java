@@ -685,4 +685,39 @@ public class SapiPlayerProfiles {
             return sapiPlayerExtended;
         }
     }
+
+    public static class Cricket {
+
+        public static class EnglandNationalTeam2025 {
+
+            public static SapiPlayerExtended joeRootProfile() {
+                SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
+                sapiPlayerExtended.setDateOfBirth("1990-12-30");
+                sapiPlayerExtended.setNationality("England");
+                sapiPlayerExtended.setCountryCode("ENG");
+                sapiPlayerExtended.setHeight(183);
+                sapiPlayerExtended.setFullName("Joseph Edward Root");
+                sapiPlayerExtended.setGender("male");
+                sapiPlayerExtended.setId("sr:player:656880");
+                sapiPlayerExtended.setName("Root, Joe");
+                return sapiPlayerExtended;
+            }
+        }
+
+        public static class IndiaNationalTeam2025 {
+
+            public static SapiPlayerExtended viratKohliProfile() {
+                SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
+                sapiPlayerExtended.setDateOfBirth("1988-11-05");
+                sapiPlayerExtended.setNationality("India");
+                sapiPlayerExtended.setCountryCode("IND");
+                sapiPlayerExtended.setHeight(175);
+                sapiPlayerExtended.setFullName("Virat Kohli");
+                sapiPlayerExtended.setGender("male");
+                sapiPlayerExtended.setId("sr:player:643154");
+                sapiPlayerExtended.setName("Kohli, Virat");
+                return sapiPlayerExtended;
+            }
+        }
+    }
 }

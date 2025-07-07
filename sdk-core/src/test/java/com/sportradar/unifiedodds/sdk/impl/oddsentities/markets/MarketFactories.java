@@ -33,6 +33,7 @@ public class MarketFactories {
         private Optional<ExceptionHandlingStrategy> exceptionHandlingStrategy = Optional.empty();
         private Optional<Locale> defaultLanguage = Optional.empty();
         private Optional<TimeUtils> time = Optional.empty();
+        private Optional<ProfileCache> profileCache = Optional.empty();
 
         public static BuilderStubbingOutSportEventAndCaches stubbingOutSportEventAndCaches() {
             return new BuilderStubbingOutSportEventAndCaches();
@@ -54,23 +55,29 @@ public class MarketFactories {
             return this;
         }
 
+        @SuppressWarnings("HiddenField")
+        public BuilderStubbingOutSportEventAndCaches with(ProfileCache profileCache) {
+            this.profileCache = Optional.of(profileCache);
+            return this;
+        }
+
         public BuilderStubbingOutSportEventAndCaches withDefaultLanguage(Locale language) {
             this.defaultLanguage = Optional.of(language);
             return this;
         }
 
         public MarketFactory build() {
-            val profileCache = mock(ProfileCache.class);
             val config = mock(SdkInternalConfiguration.class);
             when(config.getExceptionHandlingStrategy())
                 .thenReturn(exceptionHandlingStrategy.orElse(anyErrorHandlingStrategy()));
             when(config.getDefaultLocale()).thenReturn(defaultLanguage.orElse(Languages.any()));
+            val profileCacheOrDefault = profileCache.orElse(mock(ProfileCache.class));
             return new MarketFactoryImpl(
                 marketDescriptionProvider.orElse(mock(MarketDescriptionProvider.class)),
                 new NameProviderFactoryImpl(
                     marketDescriptionProvider.orElse(mock(MarketDescriptionProvider.class)),
-                    profileCache,
-                    new NameExpressionFactoryImpl(new OperandFactoryImpl(), profileCache),
+                    profileCacheOrDefault,
+                    new NameExpressionFactoryImpl(new OperandFactoryImpl(), profileCacheOrDefault),
                     config,
                     time.orElse(mock(TimeUtils.class))
                 ),

@@ -15,6 +15,8 @@ import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.ExecutionPath;
+import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
 import com.sportradar.unifiedodds.sdk.internal.caching.StageCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.ChildRaceCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.ReferenceIdCi;
@@ -1214,12 +1216,32 @@ class RaceStageCiImpl implements StageCi, ExportableCacheItem {
         }
     }
 
+    public void requestMissingSummaryData(
+        List<Locale> requiredLocales,
+        boolean forceFetch,
+        RequestOptions options
+    ) {
+        requestMissingSummaryDataWithOptions(requiredLocales, forceFetch, options);
+    }
+
     /**
      * Fetches fixture summaries for the missing translations
      *
      * @param requiredLocales a {@link List} of locales in which the fixture summaries should be translated
      */
     private void requestMissingSummaryData(List<Locale> requiredLocales, boolean forceFetch) {
+        requestMissingSummaryDataWithOptions(
+            requiredLocales,
+            forceFetch,
+            RequestOptions.requestOptions().setExecutionPath(ExecutionPath.TIME_CRITICAL).build()
+        );
+    }
+
+    private void requestMissingSummaryDataWithOptions(
+        List<Locale> requiredLocales,
+        boolean forceFetch,
+        RequestOptions requestOptions
+    ) {
         Preconditions.checkNotNull(requiredLocales);
 
         List<Locale> missingLocales = SdkHelper.findMissingLocales(loadedSummaryLocales, requiredLocales);
@@ -1246,7 +1268,7 @@ class RaceStageCiImpl implements StageCi, ExportableCacheItem {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestSummaryEndpoint(l, id, this);
+                    dataRouterManager.requestSummaryEndpoint(l, id, this, requestOptions);
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }

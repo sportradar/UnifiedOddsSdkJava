@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.internal.caching.impl.ci;
 
 import static com.google.common.collect.ImmutableMap.copyOf;
+import static com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions.requestOptions;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -17,9 +18,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
-import com.sportradar.unifiedodds.sdk.internal.caching.CompetitorCi;
-import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.internal.caching.MatchCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.*;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.*;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.internal.impl.dto.SportEventStatusDto;
@@ -1056,12 +1055,23 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
         }
     }
 
+    private void requestMissingSummaryData(List<Locale> requiredLocales, boolean forceFetch) {
+        RequestOptions.RequestOptionsBuilder timeCriticalRequestOptions = requestOptions()
+            .setExecutionPath(ExecutionPath.TIME_CRITICAL);
+        requestMissingSummaryData(requiredLocales, forceFetch, timeCriticalRequestOptions.build());
+    }
+
     /**
      * Fetches fixture summaries for the missing translations
      *
      * @param requiredLocales a {@link List} of locales in which the fixture summaries should be translated
      */
-    private void requestMissingSummaryData(List<Locale> requiredLocales, boolean forceFetch) {
+    @Override
+    public void requestMissingSummaryData(
+        List<Locale> requiredLocales,
+        boolean forceFetch,
+        RequestOptions requestOptions
+    ) {
         Preconditions.checkNotNull(requiredLocales);
 
         List<Locale> missingLocales = SdkHelper.findMissingLocales(loadedSummaryLocales, requiredLocales);
@@ -1085,7 +1095,7 @@ class MatchCiImpl implements MatchCi, ExportableCacheItem {
 
             missingLocales.forEach(l -> {
                 try {
-                    dataRouterManager.requestSummaryEndpoint(l, id, this);
+                    dataRouterManager.requestSummaryEndpoint(l, id, this, requestOptions);
                 } catch (CommunicationException e) {
                     throw new DataRouterStreamException(e.getMessage(), e);
                 }

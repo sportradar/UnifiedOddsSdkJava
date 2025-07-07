@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
 import static com.sportradar.unifiedodds.sdk.SapiCategories.england;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.oddEvenMarket;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
@@ -16,14 +17,15 @@ import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credent
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static com.sportradar.utils.domain.names.Languages.chinese;
 import static com.sportradar.utils.domain.names.TranslationHolder.of;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchSummaryEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy;
@@ -57,9 +59,9 @@ import org.junit.jupiter.params.provider.MethodSource;
         "ParameterAssignment",
     }
 )
-public class SportEventNameIT {
+class SportEventNameIT {
 
-    public static final String EXCEPTION_HANDLING_STRATEGIES =
+    static final String EXCEPTION_HANDLING_STRATEGIES =
         "com.sportradar.unifiedodds.sdk.conn.SportEventMethodSources#exceptionHandlingStrategies";
 
     @RegisterExtension
@@ -249,8 +251,127 @@ public class SportEventNameIT {
             return home + " vs. " + away;
         }
     }
+
+    @Nested
+    class Tournament {
+
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
+        void forSportDataProviderTournamentNameRetrievalFailuresFailTogetherIfOneLanguageFails(
+            ExceptionHandlingStrategy exceptionHandlingStrategy,
+            ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
+        ) throws Exception {
+            Locale langA = Locale.ENGLISH;
+            Locale langB = Locale.GERMAN;
+            val id = Urn.parse(euro2024TournamentInfo().getTournament().getId());
+
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubEmptyAllTournaments(langA);
+            apiSimulator.stubAllSports(langA);
+            apiSimulator.stubSportCategories(langA, Sport.FOOTBALL, england());
+            apiSimulator.stubTournamentSummaryNotFound(langA, id);
+            apiSimulator.stubTournamentSummary(langB, euro2024TournamentInfo());
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(exceptionHandlingStrategy)
+                    .withDefaultLanguage(langA)
+                    .withDesiredLanguages(langA, langB)
+                    .withoutFeed()
+            ) {
+                val event = sdk.getSportDataProvider().getSportEvent(id);
+
+                assertThat(event).getNameFor(langA, willRespectSdkStrategy);
+                assertThat(event).getNameFor(langB, willRespectSdkStrategy);
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
+        void tournamentNameIsLanguageAware(
+            ExceptionHandlingStrategy exceptionHandlingStrategy,
+            ExpectationTowardsSdkErrorHandlingStrategy unused
+        ) throws Exception {
+            Locale langA = Locale.ENGLISH;
+            Locale langB = chinese();
+            val id = Urn.parse(euro2024TournamentInfo().getTournament().getId());
+
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubEmptyAllTournaments(langA);
+            apiSimulator.stubAllSports(langA);
+            apiSimulator.stubSportCategories(langA, Sport.FOOTBALL, england());
+            apiSimulator.stubTournamentSummary(langA, euro2024TournamentInfo(langA));
+            apiSimulator.stubTournamentSummary(langB, euro2024TournamentInfo(langB));
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(exceptionHandlingStrategy)
+                    .withDefaultLanguage(langA)
+                    .withDesiredLanguages(langA, langB)
+                    .withoutFeed()
+            ) {
+                val event = sdk.getSportDataProvider().getSportEvent(id);
+
+                assertThat(event).hasName(of(tournamentName(euro2024TournamentInfo(langA)), in(langA)));
+                assertThat(event).hasName(of(tournamentName(euro2024TournamentInfo(langB)), in(langB)));
+            }
+        }
+
+        private String tournamentName(SapiTournamentInfoEndpoint tournament) {
+            return tournament.getTournament().getName();
+        }
+    }
+
+    @Nested
+    class Season {
+
+        @ParameterizedTest
+        @MethodSource(EXCEPTION_HANDLING_STRATEGIES)
+        void seasonNameIsLanguageAware(
+            ExceptionHandlingStrategy exceptionHandlingStrategy,
+            ExpectationTowardsSdkErrorHandlingStrategy unused
+        ) throws Exception {
+            Locale langA = Locale.ENGLISH;
+            Locale langB = chinese();
+            val id = Urn.parse(euro2024TournamentInfo().getSeason().getId());
+
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubEmptyAllTournaments(langA);
+            apiSimulator.stubAllSports(langA);
+            apiSimulator.stubSportCategories(langA, Sport.FOOTBALL, england());
+            apiSimulator.stubSeasonSummary(langA, euro2024TournamentInfo(langA));
+            apiSimulator.stubSeasonSummary(langB, euro2024TournamentInfo(langB));
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(exceptionHandlingStrategy)
+                    .withDefaultLanguage(langA)
+                    .withDesiredLanguages(langA, langB)
+                    .withoutFeed()
+            ) {
+                val event = sdk.getSportDataProvider().getSportEvent(id);
+
+                assertThat(event).hasName(of(seasonName(euro2024TournamentInfo(langA)), in(langA)));
+                assertThat(event).hasName(of(seasonName(euro2024TournamentInfo(langB)), in(langB)));
+            }
+        }
+
+        private String seasonName(SapiTournamentInfoEndpoint tournament) {
+            return tournament.getSeason().getName();
+        }
+    }
 }
 
+@SuppressWarnings("unused")
 class SportEventMethodSources {
 
     static Object[] exceptionHandlingStrategies() {

@@ -17,14 +17,17 @@ import static com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventCac
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.TranslationHolder.with;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.Locale.CHINESE;
-import static java.util.Locale.ENGLISH;
+import static java.util.Locale.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiCategory;
 import com.sportradar.uf.sportsapi.datamodel.SapiSport;
 import com.sportradar.uf.sportsapi.datamodel.SapiStageSummaryEndpoint;
+import com.sportradar.uf.sportsapi.datamodel.SapiTournamentInfoEndpoint;
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.entities.Stage;
 import com.sportradar.unifiedodds.sdk.impl.SummaryDataProviders;
 import com.sportradar.unifiedodds.sdk.impl.assertions.SportSummaryAssert;
@@ -32,19 +35,30 @@ import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.SportEventAssert
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterImpl;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterManagerBuilder;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportsDataCaches;
+import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
+import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertyGetterFrom;
+import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertySetterTo;
 import com.sportradar.utils.Urn;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.val;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("ClassFanOutComplexity")
-class SportEventCacheStageTest {
+class SportEventCacheStageSummaryTest {
 
     private static final String ENGLISH_AND_CHINESE =
-        "com.sportradar.unifiedodds.sdk.internal.caching.SportEventCacheStageTest#englishAndChinese";
+        "com.sportradar.unifiedodds.sdk.internal.caching.SportEventCacheStageSummaryTest#englishAndChinese";
+    private static final String TOURNAMENT_STAGE_PROPERTIES =
+        "com.sportradar.unifiedodds.sdk.internal.caching.TournamentStagePropertyProviders#tournamentStageProperties";
 
     private final DataRouterManagerBuilder dataRouterManagerBuilder = new DataRouterManagerBuilder();
 
@@ -235,20 +249,173 @@ class SportEventCacheStageTest {
             .containsExactly(Urn.parse(FOUR_HILLS_TOURNAMENT_STAGE_ID));
     }
 
-    private SapiCategory categoryFrom(SapiStageSummaryEndpoint lotterySchedule) {
-        return lotterySchedule.getSportEvent().getTournament().getCategory();
+    @ParameterizedTest
+    @MethodSource(TOURNAMENT_STAGE_PROPERTIES)
+    void fetchesStageTournamentProperties(
+        PropertyGetterFrom<Stage> property,
+        PropertySetterTo<SapiTournamentInfoEndpoint> sapiProperty,
+        Object expected
+    ) throws Exception {
+        val stage = formulaOne2025();
+        val stageId = Urn.parse(stage.getTournament().getId());
+
+        sapiProperty.setOn(stage);
+
+        val summaryProvider = SummaryDataProviders
+            .summaryDataProvider()
+            .providing(in(ENGLISH), with(stageId.toString()), stage)
+            .build();
+
+        val dataRouter = new DataRouterImpl();
+        val dataRouterManager = dataRouterManagerBuilder
+            .withSummaries(summaryProvider)
+            .with(dataRouter)
+            .build();
+
+        val sportEventCache = stubbingOutDataRouterManager()
+            .withDefaultLanguage(ENGLISH)
+            .with(ExceptionHandlingStrategy.Catch)
+            .with(dataRouterManager)
+            .build();
+
+        dataRouter.setDataListeners(singletonList(sportEventCache));
+
+        val sportEntityFactory = stubbingOutAllCachesAndStatusFactory()
+            .withDefaultLanguage(ENGLISH)
+            .with(ExceptionHandlingStrategy.Catch)
+            .with(sportEventCache)
+            .build();
+
+        val sportEvent = (Stage) sportEntityFactory.buildSportEvent(stageId, singletonList(ENGLISH), false);
+
+        assertThat(property.getFrom(sportEvent)).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource(TOURNAMENT_STAGE_PROPERTIES)
+    void fetchesStageTournamentPropertiesInNonDefaultLanguage(
+        PropertyGetterFrom<Stage> property,
+        PropertySetterTo<SapiTournamentInfoEndpoint> sapiProperty,
+        Object expected
+    ) throws Exception {
+        val stage = formulaOne2025();
+        val stageId = Urn.parse(stage.getTournament().getId());
+
+        sapiProperty.setOn(stage);
+
+        val summaryProvider = SummaryDataProviders
+            .summaryDataProvider()
+            .providing(in(ENGLISH), with(stageId.toString()), stage)
+            .providing(in(GERMAN), with(stageId.toString()), stage)
+            .build();
+
+        val dataRouter = new DataRouterImpl();
+        val dataRouterManager = dataRouterManagerBuilder
+            .withSummaries(summaryProvider)
+            .with(dataRouter)
+            .build();
+
+        val sportEventCache = stubbingOutDataRouterManager()
+            .withDefaultLanguage(GERMAN)
+            .with(ExceptionHandlingStrategy.Catch)
+            .with(dataRouterManager)
+            .build();
+
+        dataRouter.setDataListeners(singletonList(sportEventCache));
+
+        val sportEntityFactory = stubbingOutAllCachesAndStatusFactory()
+            .withDefaultLanguage(GERMAN)
+            .with(ExceptionHandlingStrategy.Catch)
+            .with(sportEventCache)
+            .build();
+
+        val sportEvent = (Stage) sportEntityFactory.buildSportEvent(stageId, asList(ENGLISH, GERMAN), false);
+
+        assertThat(property.getFrom(sportEvent)).isEqualTo(expected);
+    }
+
+    private SapiCategory categoryFrom(SapiStageSummaryEndpoint raceStage) {
+        return raceStage.getSportEvent().getTournament().getCategory();
     }
 
     private Urn sportIdFrom(SapiStageSummaryEndpoint stage) {
         return Urn.parse(stage.getSportEvent().getTournament().getSport().getId());
     }
 
-    private SapiSport sportFrom(SapiStageSummaryEndpoint stage) {
-        return stage.getSportEvent().getTournament().getSport();
+    private SapiSport sportFrom(SapiStageSummaryEndpoint raceStage) {
+        return raceStage.getSportEvent().getTournament().getSport();
     }
 
     @SuppressWarnings("unused")
     static Stream<Locale> englishAndChinese() {
         return Stream.of(ENGLISH, CHINESE);
+    }
+}
+
+@SuppressWarnings({ "unused", "MultipleStringLiterals", "MagicNumber" })
+class TournamentStagePropertyProviders {
+
+    static Stream<Arguments> tournamentStageProperties() {
+        return Stream.of(
+            arguments(
+                "name - available",
+                stage -> stage.getName(ENGLISH),
+                p -> {
+                    p.getTournament().setName("Tournament Name");
+                },
+                "Tournament Name"
+            ),
+            arguments(
+                "name - missing",
+                stage -> stage.getName(ENGLISH),
+                p -> p.getTournament().setName(null),
+                ""
+            ),
+            arguments(
+                "name - empty",
+                stage -> stage.getName(ENGLISH),
+                p -> p.getTournament().setName(""),
+                ""
+            ),
+            arguments(
+                "scheduledTime - available",
+                SportEvent::getScheduledTime,
+                p -> {
+                    val date = LocalDateTime.of(2025, 3, 4, 2, 3, 4);
+                    p.getTournament().setScheduled(XmlGregorianCalendars.forTime(date));
+                },
+                Date.from(LocalDateTime.of(2025, 3, 4, 2, 3, 4).toInstant(ZoneOffset.UTC))
+            ),
+            arguments(
+                "scheduledTime - missing",
+                SportEvent::getScheduledTime,
+                p -> p.getTournament().setScheduled(null),
+                null
+            ),
+            arguments(
+                "scheduledEndTime - available",
+                SportEvent::getScheduledEndTime,
+                p -> {
+                    val date = LocalDateTime.of(2024, 5, 6, 7, 8, 9);
+                    p.getTournament().setScheduledEnd(XmlGregorianCalendars.forTime(date));
+                },
+                Date.from(LocalDateTime.of(2024, 5, 6, 7, 8, 9).toInstant(ZoneOffset.UTC))
+            ),
+            arguments(
+                "scheduledEndTime - missing",
+                SportEvent::getScheduledEndTime,
+                p -> p.getTournament().setScheduledEnd(null),
+                null
+            )
+        );
+    }
+
+    static Arguments arguments(
+        String propertyName,
+        PropertyGetterFrom<Stage> propertyGetter,
+        PropertySetterTo<SapiTournamentInfoEndpoint> propertySetterTo,
+        Object expected
+    ) {
+        return Arguments.of(Named.of(propertyName, propertyGetter), propertySetterTo, expected);
     }
 }

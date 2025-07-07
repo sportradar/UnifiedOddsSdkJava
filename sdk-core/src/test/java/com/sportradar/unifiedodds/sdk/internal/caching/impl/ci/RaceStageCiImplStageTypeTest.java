@@ -357,7 +357,7 @@ public class RaceStageCiImplStageTypeTest {
                     val stageType = stage.getStageType();
 
                     assertThat(stageType).isNull();
-                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any());
+                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any(), any());
                 }
 
                 @Test
@@ -367,7 +367,7 @@ public class RaceStageCiImplStageTypeTest {
                     val stageType = stage.getStageType();
 
                     assertThat(stageType).isNull();
-                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any());
+                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any(), any());
                 }
 
                 @Test
@@ -379,7 +379,7 @@ public class RaceStageCiImplStageTypeTest {
                     val stageType = stage.getStageType();
 
                     assertThat(stageType).isNull();
-                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any());
+                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any(), any());
                 }
 
                 @Test
@@ -391,7 +391,7 @@ public class RaceStageCiImplStageTypeTest {
                     val stageType = stage.getStageType();
 
                     assertThat(stageType).isNull();
-                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any());
+                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any(), any());
                 }
 
                 @Test
@@ -404,7 +404,7 @@ public class RaceStageCiImplStageTypeTest {
                     val stageType = importedRaceStage.getStageType();
 
                     assertThat(stageType).isNull();
-                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any());
+                    verify(dataRouterManager).requestSummaryEndpoint(any(), any(), any(), any());
                 }
             }
 
@@ -472,7 +472,7 @@ public class RaceStageCiImplStageTypeTest {
                 ) throws CommunicationException {
                     does(() -> stage.getValue().merge(raceStageSummary, Languages.any()))
                         .when(dataRouterManager)
-                        .requestSummaryEndpoint(any(), any(), any());
+                        .requestSummaryEndpoint(any(), any(), any(), any());
                 }
 
                 private Stubber does(Runnable action) {
@@ -504,7 +504,7 @@ public class RaceStageCiImplStageTypeTest {
                             .constructFrom(new SapiSportEvent());
                         doThrow(communicationError)
                             .when(dataRouterManager)
-                            .requestSummaryEndpoint(any(), any(), any());
+                            .requestSummaryEndpoint(any(), any(), any(), any());
 
                         assertThatThrownBy(() -> stage.getStageType()).hasRootCause(communicationError);
                     }
@@ -517,7 +517,7 @@ public class RaceStageCiImplStageTypeTest {
                             .constructFrom(new SapiFixture());
                         doThrow(communicationError)
                             .when(dataRouterManager)
-                            .requestSummaryEndpoint(any(), any(), any());
+                            .requestSummaryEndpoint(any(), any(), any(), any());
 
                         assertThatThrownBy(() -> stage.getStageType()).hasRootCause(communicationError);
                     }
@@ -531,7 +531,7 @@ public class RaceStageCiImplStageTypeTest {
                             .constructFrom(new SapiSportEventChildren.SapiSportEvent());
                         doThrow(communicationError)
                             .when(dataRouterManager)
-                            .requestSummaryEndpoint(any(), any(), any());
+                            .requestSummaryEndpoint(any(), any(), any(), any());
 
                         assertThatThrownBy(() -> stage.getStageType()).hasRootCause(communicationError);
                     }
@@ -544,7 +544,7 @@ public class RaceStageCiImplStageTypeTest {
                             .constructFrom(new SapiParentStage());
                         doThrow(communicationError)
                             .when(dataRouterManager)
-                            .requestSummaryEndpoint(any(), any(), any());
+                            .requestSummaryEndpoint(any(), any(), any(), any());
 
                         assertThatThrownBy(() -> stage.getStageType()).hasRootCause(communicationError);
                     }
@@ -559,7 +559,7 @@ public class RaceStageCiImplStageTypeTest {
                             .construct();
                         doThrow(communicationError)
                             .when(dataRouterManager)
-                            .requestSummaryEndpoint(any(), any(), any());
+                            .requestSummaryEndpoint(any(), any(), any(), any());
 
                         assertThatThrownBy(() -> importedStage.getStageType())
                             .hasRootCause(communicationError);

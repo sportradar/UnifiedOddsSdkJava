@@ -12,17 +12,14 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
-import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 
 @SuppressWarnings("HiddenField")
 public class DataRouterManagerBuilder {
 
     private DataProvider<SapiLotterySchedule> lotterySchedule = mock(DataProvider.class);
     private DataRouter dataRouter = mock(DataRouter.class);
-    private DataProvider<Object> summaries = mock(DataProvider.class);
+    private ExecutionPathDataProvider<Object> summaries = mock(ExecutionPathDataProvider.class);
     private DataProvider<SapiCompetitorProfileEndpoint> competitors = mock(DataProvider.class);
     private DataProvider<SapiSimpleTeamProfileEndpoint> simpleTeams = mock(DataProvider.class);
     private DataProvider<CapiAvailableSelections> cbAvailableSelections = mock(DataProvider.class);
@@ -41,7 +38,7 @@ public class DataRouterManagerBuilder {
         return new DataRouterManagerBuilder();
     }
 
-    public DataRouterManagerBuilder withSummaries(DataProvider<Object> summaries) {
+    public DataRouterManagerBuilder withSummaries(ExecutionPathDataProvider<Object> summaries) {
         this.summaries = summaries;
         return this;
     }

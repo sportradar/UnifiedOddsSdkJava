@@ -3,13 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk.entities;
 
-import com.sportradar.unifiedodds.sdk.entities.status.MatchStatus;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 public class StageStub implements Stage {
 
@@ -35,7 +33,7 @@ public class StageStub implements Stage {
 
     @Override
     public Urn getId() {
-        return null;
+        return Urn.parse("sr:stage:1234");
     }
 
     @Override

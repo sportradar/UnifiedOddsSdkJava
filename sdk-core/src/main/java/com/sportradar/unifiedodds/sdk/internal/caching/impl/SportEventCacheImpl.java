@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.internal.caching.impl;
 
+import static com.sportradar.unifiedodds.sdk.internal.caching.ExecutionPath.TIME_CRITICAL;
+
 import com.google.common.base.Equivalence;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
@@ -107,6 +109,19 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
      */
     @Override
     public SportEventCi getEventCacheItem(Urn id) throws CacheItemNotFoundException {
+        return getEventCacheItem(id, RequestOptions.requestOptions().setExecutionPath(TIME_CRITICAL).build());
+    }
+
+    /**
+     * Returns a {@link SportEventCi} instance representing a cached sport event data
+     *
+     * @param id an {@link Urn} specifying the id of the sport event
+     * @param requestOptions a {@link RequestOptions} object with the configuration of request issued to DataRouterManager
+     * @return a {@link SportEventCi} instance representing cached sport event data
+     */
+    @Override
+    public SportEventCi getEventCacheItem(Urn id, RequestOptions requestOptions)
+        throws CacheItemNotFoundException {
         Preconditions.checkNotNull(id);
 
         try {
@@ -115,7 +130,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
                 () -> {
                     logger.info("Cache miss for[{}], providing CI", id);
                     try {
-                        return provideEventCi(id);
+                        return provideEventCi(id, requestOptions);
                     } catch (IllegalCacheStateException e) {
                         throw new CacheItemNotFoundException(
                             String.format("An error occurred while loading a new cache item '%s', ex: ", id),
@@ -717,7 +732,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         return (int) diff;
     }
 
-    private SportEventCi provideEventCi(Urn id)
+    private SportEventCi provideEventCi(Urn id, RequestOptions requestOptions)
         throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 
@@ -727,7 +742,7 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         } else if (mappedClazz == Match.class) {
             return cacheItemFactory.buildMatchCi(id);
         } else if (mappedClazz == Stage.class) {
-            return provideStageDerivedCi(id);
+            return provideStageDerivedCi(id, requestOptions);
         } else if (mappedClazz == Lottery.class) {
             return cacheItemFactory.buildLotteryCi(id);
         } else if (mappedClazz == Draw.class) {
@@ -745,13 +760,13 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
         return clazz == Tournament.class || clazz == BasicTournament.class || clazz == Season.class;
     }
 
-    private SportEventCi provideStageDerivedCi(Urn id)
+    private SportEventCi provideStageDerivedCi(Urn id, RequestOptions requestOptions)
         throws CacheItemNotFoundException, IllegalCacheStateException {
         Preconditions.checkNotNull(id);
 
         logger.debug("Pre-fetching summary endpoint(stage type detection)[{}]", id);
         try {
-            dataRouterManager.requestSummaryEndpoint(defaultLocale, id, null);
+            dataRouterManager.requestSummaryEndpoint(defaultLocale, id, null, requestOptions);
         } catch (CommunicationException e) {
             throw new IllegalCacheStateException(
                 "An error occurred while performing StageCI summary request[" + id + "]",

@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.internal.caching.impl;
 
+import static com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions.requestOptions;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
@@ -19,18 +21,13 @@ import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
-import com.sportradar.unifiedodds.sdk.internal.caching.CacheItem;
-import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
-import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.*;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.LatencyTracker;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.LongSdkHistogram;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataRouterStreamException;
-import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
-import com.sportradar.unifiedodds.sdk.internal.impl.SdkTaskScheduler;
+import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationImpl;
@@ -127,7 +124,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
     /**
      * A generic data provider linked with the summary endpoint
      */
-    private final DataProvider<Object> summaryEndpointProvider;
+    private final ExecutionPathDataProvider<Object> summaryEndpointProvider;
 
     /**
      * The {@link DataProvider} used to fetch fixture data
@@ -268,7 +265,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         SdkProducerManager producerManager,
         DataRouter dataRouter,
         @Named("InternalSdkTelemetryFactory") TelemetryFactory telemetryFactory,
-        @Named("SummaryEndpointDataProvider") DataProvider<Object> summaryEndpointProvider,
+        @Named("SummaryEndpointDataProvider") ExecutionPathDataProvider<Object> summaryEndpointProvider,
         @Named("FixtureEndpointDataProvider") DataProvider<SapiFixturesEndpoint> fixtureProvider,
         @Named(
             "FixtureChangeFixtureEndpointDataProvider"
@@ -399,6 +396,19 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(locale);
         Preconditions.checkNotNull(id);
 
+        RequestOptions requestOptions = requestOptions()
+            .setExecutionPath(ExecutionPath.TIME_CRITICAL)
+            .build();
+        requestSummaryEndpoint(locale, id, requester, requestOptions);
+    }
+
+    @Override
+    public void requestSummaryEndpoint(
+        Locale locale,
+        Urn id,
+        CacheItem requester,
+        RequestOptions requestOptions
+    ) throws CommunicationException {
         Object endpoint;
         try (
             LatencyTracker ignored = telemetryFactory.latencyHistogram(
@@ -407,7 +417,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 "SportEventSummary"
             )
         ) {
-            endpoint = summaryEndpointProvider.getData(locale, id.toString());
+            endpoint = summaryEndpointProvider.getData(requestOptions, locale, id.toString());
         } catch (DataProviderException e) {
             throw new CommunicationException(
                 String.format("Error executing summary request for id=%s, locale=%s", id, locale),
@@ -419,7 +429,10 @@ public class DataRouterManagerImpl implements DataRouterManager {
             );
         }
 
-        dispatchReceivedRawApiData(summaryEndpointProvider.getFinalUrl(locale, id.toString()), endpoint);
+        dispatchReceivedRawApiData(
+            summaryEndpointProvider.getFinalUrl(requestOptions, locale, id.toString()),
+            endpoint
+        );
 
         dataRouter.onSummaryFetched(id, endpoint, locale, requester);
     }

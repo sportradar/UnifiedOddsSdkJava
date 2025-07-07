@@ -3,29 +3,38 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
-import static com.sportradar.unifiedodds.sdk.SapiCategories.international;
-import static com.sportradar.unifiedodds.sdk.SapiCategories.nascar;
+import static com.sportradar.unifiedodds.sdk.SapiCategories.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatch.FullyPopulatedMatch.fullyPopulatedMatchRound;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.FullyPopulatedSeason.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.stockCarRacing;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Nascar2024.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Soccer.arsenalFc;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Soccer.fcKaiserslautern;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.TenerifeWomensOpen2025Golf.carmenAlonsoFuentes;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.TenerifeWomensOpen2025Golf.casandraAlexander;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorLocationInTournamentInfo.COMPETITORS_EVERYWHERE;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_ABSENT;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FullyPopulatedTournament.CompetitorPresence.COMPETITORS_PRESENT;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.anyFutureDate;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static com.sportradar.utils.domain.names.Languages.chinese;
 import static java.util.Locale.ENGLISH;
+import static java.util.Optional.ofNullable;
 
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
 import com.sportradar.utils.Urn;
+import com.sportradar.utils.domain.names.Languages;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Locale;
+import java.util.Map;
 import lombok.val;
 
 @SuppressWarnings(
@@ -74,10 +83,21 @@ public class SapiTournaments {
 
     public static class Euro2024 {
 
+        private static final Map<Locale, String> TOURNAMENT_NAMES = ImmutableMap.of(
+            ENGLISH,
+            "UEFA Euro",
+            chinese(),
+            "欧洲足球锦标赛"
+        );
+
         public static SapiTournamentInfoEndpoint euro2024TournamentInfo() {
+            return euro2024TournamentInfo(ENGLISH);
+        }
+
+        public static SapiTournamentInfoEndpoint euro2024TournamentInfo(Locale language) {
             SapiTournamentInfoEndpoint info = new SapiTournamentInfoEndpoint();
             info.setGeneratedAt(XmlGregorianCalendars.now());
-            info.setTournament(euro2024());
+            info.setTournament(euro2024(language));
             info.setSeason(season());
             info.setRound(round());
             info.setSeasonCoverageInfo(seasonCoverageInfo());
@@ -87,9 +107,17 @@ public class SapiTournaments {
         }
 
         private static SapiTournamentExtended euro2024() {
+            return euro2024(ENGLISH);
+        }
+
+        private static SapiTournamentExtended euro2024(Locale language) {
+            val name = ofNullable(TOURNAMENT_NAMES.get(language))
+                .orElseThrow(() ->
+                    new IllegalArgumentException("Tournament name not found for language: " + language)
+                );
             SapiTournamentExtended tournament = new SapiTournamentExtended();
             tournament.setId("sr:tournament:1");
-            tournament.setName("UEFA Euro");
+            tournament.setName(name);
             tournament.setSport(SapiSports.soccer());
             tournament.setCategory(international());
             tournament.setCurrentSeason(euro2024CurrentSeason());
@@ -1180,9 +1208,7 @@ public class SapiTournaments {
             t.setId("sr:stage:703728");
             t.setName("Overall");
             t.setSport(SapiSports.getSapiSport(Urn.parse("sr:sport:48"), in(ENGLISH)));
-            t.setCategory(
-                SapiCategories.getSapiCategory(Urn.parse("sr:category:140"), in(ENGLISH)).getCategory()
-            );
+            t.setCategory(getSapiCategory(Urn.parse("sr:category:140"), in(ENGLISH)).getCategory());
             t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2021, 11, 20, 15, 0)));
             t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 3, 27, 10, 0)));
             return t;
@@ -1193,11 +1219,229 @@ public class SapiTournaments {
             t.setId("sr:stage:703730");
             t.setName("Four Hills Tournament");
             t.setSport(SapiSports.getSapiSport(Urn.parse("sr:sport:48"), in(ENGLISH)));
-            t.setCategory(
-                SapiCategories.getSapiCategory(Urn.parse("sr:category:140"), in(ENGLISH)).getCategory()
-            );
+            t.setCategory(getSapiCategory(Urn.parse("sr:category:140"), in(ENGLISH)).getCategory());
             t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2021, 12, 28, 15, 0)));
             t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2022, 1, 6, 10, 0)));
+            return t;
+        }
+    }
+
+    public static final class SimpleTournaments {
+
+        public static final class TenerifeWomensOpen2025Golf {
+
+            public static final Urn TENERIFE_WOMENS_OPEN_2025_GOLF_TOURNAMENT_URN = Urn.parse(
+                "sr:simple_tournament:170716"
+            );
+
+            private static final Map<Locale, String> NAMES = ImmutableMap.of(
+                Locale.ENGLISH,
+                "Tenerife Womens Open 2025",
+                Locale.GERMAN,
+                "Tenerife Womens Open 2025",
+                Languages.chinese(),
+                "Tenerife Womens Open 2025"
+            );
+
+            public static SapiTournamentInfoEndpoint tenerifeWomensOpen2025Golf(Locale language) {
+                val ti = new SapiTournamentInfoEndpoint();
+                ti.setGeneratedAt(XmlGregorianCalendars.now());
+                ti.setTournament(tournament(language));
+                ti.setCoverageInfo(coverageInfo());
+                ti.setCompetitors(competitors());
+                return ti;
+            }
+
+            private static SapiCompetitors competitors() {
+                val competitors = new SapiCompetitors();
+                competitors.getCompetitor().add(casandraAlexander());
+                competitors.getCompetitor().add(carmenAlonsoFuentes());
+                return competitors;
+            }
+
+            private static SapiTournamentLiveCoverageInfo coverageInfo() {
+                val coverageInfo = new SapiTournamentLiveCoverageInfo();
+                coverageInfo.setLiveCoverage("false");
+                return coverageInfo;
+            }
+
+            private static SapiTournamentExtended tournament(Locale language) {
+                val t = new SapiTournamentExtended();
+                t.setId(TENERIFE_WOMENS_OPEN_2025_GOLF_TOURNAMENT_URN.toString());
+                t.setName(
+                    ofNullable(NAMES.get(language))
+                        .orElseThrow(() -> new IllegalArgumentException("No name for language " + language))
+                );
+                t.setSport(SapiSports.golf());
+                t.setCategory(getSapiCategory(Urn.parse("sr:category:29"), in(language)).getCategory());
+                t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 6, 1, 0, 0)));
+                t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2025, 6, 8, 0, 0)));
+                t.setTournamentLength(sapiTournamentLength());
+                return t;
+            }
+
+            private static SapiTournamentLength sapiTournamentLength() {
+                SapiTournamentLength length = new SapiTournamentLength();
+                length.setStartDate(XmlGregorianCalendars.forDate(LocalDate.of(2025, 6, 1)));
+                length.setEndDate(XmlGregorianCalendars.forDate(LocalDate.of(2025, 6, 8)));
+                return length;
+            }
+        }
+
+        public static final class ClubFriendlyGames {
+
+            public static final Urn CLUB_FRIENDLY_GAMES_BASIC_TOURNAMENT_URN = Urn.parse(
+                "sr:simple_tournament:86"
+            );
+
+            private static final Map<Locale, String> NAMES = ImmutableMap.of(
+                Locale.ENGLISH,
+                "Club Friendly Games",
+                Locale.GERMAN,
+                "Freundschaftsspiele",
+                Languages.chinese(),
+                "俱乐部友谊赛"
+            );
+
+            public static SapiTournamentInfoEndpoint clubFriendlyGames(Locale language) {
+                val ti = new SapiTournamentInfoEndpoint();
+                ti.setGeneratedAt(XmlGregorianCalendars.now());
+                ti.setTournament(tournament(language));
+                ti.setCoverageInfo(coverageInfo());
+                ti.setCompetitors(competitors());
+                return ti;
+            }
+
+            private static SapiCompetitors competitors() {
+                val competitors = new SapiCompetitors();
+                competitors.getCompetitor().add(arsenalFc());
+                competitors.getCompetitor().add(fcKaiserslautern());
+                return competitors;
+            }
+
+            private static SapiTournamentLiveCoverageInfo coverageInfo() {
+                SapiTournamentLiveCoverageInfo coverageInfo = new SapiTournamentLiveCoverageInfo();
+                coverageInfo.setLiveCoverage("false");
+                return coverageInfo;
+            }
+
+            private static SapiTournamentExtended tournament(Locale language) {
+                val t = new SapiTournamentExtended();
+                t.setId(CLUB_FRIENDLY_GAMES_BASIC_TOURNAMENT_URN.toString());
+                t.setName(
+                    ofNullable(NAMES.get(language))
+                        .orElseThrow(() -> new IllegalArgumentException("No name for language " + language))
+                );
+                t.setSport(SapiSports.soccer());
+                t.setCategory(getSapiCategory(Urn.parse("sr:category:393"), in(language)).getCategory());
+                t.setScheduled(XmlGregorianCalendars.forTime(LocalDateTime.of(2003, 6, 1, 0, 0)));
+                t.setScheduledEnd(XmlGregorianCalendars.forTime(LocalDateTime.of(2039, 12, 15, 0, 0)));
+                t.setTournamentLength(sapiTournamentLength());
+                return t;
+            }
+
+            private static SapiTournamentLength sapiTournamentLength() {
+                SapiTournamentLength length = new SapiTournamentLength();
+                length.setStartDate(XmlGregorianCalendars.forDate(LocalDate.of(2003, 6, 1)));
+                length.setEndDate(XmlGregorianCalendars.forDate(LocalDate.of(2039, 12, 15)));
+                return length;
+            }
+        }
+    }
+
+    public static final class ClubFriendlyGamesTournament {
+
+        public static final Urn CLUB_FRIENDLY_GAMES_TOURNAMENT_URN = Urn.parse("sr:tournament:853");
+
+        private static final Map<Locale, String> TOURNAMENT_NAMES = ImmutableMap.of(
+            Locale.ENGLISH,
+            "Club Friendly Games",
+            Locale.GERMAN,
+            "Klub-Freundschaftsspiele",
+            Languages.chinese(),
+            "俱乐部友谊赛"
+        );
+
+        private static final Map<Locale, String> SEASON_NAMES = ImmutableMap.of(
+            Locale.ENGLISH,
+            "Club Friendly Games 2025",
+            Locale.GERMAN,
+            "Klub-Freundschaftsspiele 2025",
+            Languages.chinese(),
+            "俱乐部友谊赛 2025"
+        );
+
+        public static SapiTournamentInfoEndpoint clubFriendlyGamesTournament(Locale language) {
+            val ti = new SapiTournamentInfoEndpoint();
+            ti.setGeneratedAt(XmlGregorianCalendars.now());
+            ti.setTournament(tournament(language));
+            ti.setSeason(season(language));
+            ti.setRound(round());
+            ti.setSeasonCoverageInfo(seasonCoverageInfo());
+            ti.setCoverageInfo(coverageInfo());
+            ti.setGroups(groups());
+            return ti;
+        }
+
+        private static SapiTournamentGroups groups() {
+            val groups = new SapiTournamentGroups();
+            groups.getGroup().add(group());
+            return groups;
+        }
+
+        private static SapiTournamentGroup group() {
+            val group = new SapiTournamentGroup();
+            group.getCompetitor().add(arsenalFc());
+            group.getCompetitor().add(fcKaiserslautern());
+            return group;
+        }
+
+        private static SapiTournamentLiveCoverageInfo coverageInfo() {
+            SapiTournamentLiveCoverageInfo coverageInfo = new SapiTournamentLiveCoverageInfo();
+            coverageInfo.setLiveCoverage("false");
+            return coverageInfo;
+        }
+
+        private static SapiSeasonCoverageInfo seasonCoverageInfo() {
+            SapiSeasonCoverageInfo coverageInfo = new SapiSeasonCoverageInfo();
+            coverageInfo.setSeasonId("sr:season:126853");
+            coverageInfo.setScheduled(2657);
+            coverageInfo.setPlayed(1229);
+            coverageInfo.setMaxCoverageLevel("silver");
+            coverageInfo.setMaxCovered(563);
+            coverageInfo.setMinCoverageLevel("bronze");
+            return coverageInfo;
+        }
+
+        private static SapiMatchRound round() {
+            val round = new SapiMatchRound();
+            round.setType("group");
+            round.setNumber(1);
+            return round;
+        }
+
+        private static SapiSeasonExtended season(Locale language) {
+            val season = new SapiSeasonExtended();
+            season.setId("sr:season:126853");
+            season.setName(
+                ofNullable(SEASON_NAMES.get(language))
+                    .orElseThrow(() -> new IllegalArgumentException("No name for language " + language))
+            );
+            season.setStartDate(XmlGregorianCalendars.forDate(LocalDate.of(2025, 1, 1)));
+            season.setEndDate(XmlGregorianCalendars.forDate(LocalDate.of(2025, 12, 31)));
+            season.setYear("2025");
+            return season;
+        }
+
+        private static SapiTournamentExtended tournament(Locale language) {
+            val t = new SapiTournamentExtended();
+            t.setId(CLUB_FRIENDLY_GAMES_TOURNAMENT_URN.toString());
+            t.setName(
+                ofNullable(TOURNAMENT_NAMES.get(language))
+                    .orElseThrow(() -> new IllegalArgumentException("No name for language " + language))
+            );
+            t.setSport(SapiSports.soccer());
+            t.setCategory(getSapiCategory(Urn.parse("sr:category:393"), in(language)).getCategory());
             return t;
         }
     }

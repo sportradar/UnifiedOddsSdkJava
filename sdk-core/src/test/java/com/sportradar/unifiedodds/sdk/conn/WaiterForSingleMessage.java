@@ -8,6 +8,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import com.google.common.collect.Iterables;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetCancel;
+import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
 import java.util.ArrayList;
@@ -35,6 +36,20 @@ public class WaiterForSingleMessage {
             );
         }
         return allOddsChange.get(0);
+    }
+
+    public BetSettlement<com.sportradar.unifiedodds.sdk.entities.SportEvent> theOnlyBetSettlement() {
+        final int tenForSlowMachines = 10;
+        Awaitility.await().atMost(tenForSlowMachines, SECONDS).until(anyBetSettlementMessageReceived());
+        List<BetSettlement<SportEvent>> allBetSettlement = new ArrayList<>(
+            messagesStorage.findAllBetSettlement()
+        );
+        if (allBetSettlement.size() != 1) {
+            throw new IllegalStateException(
+                "Expected 1 bet settlement message, but found " + allBetSettlement.size()
+            );
+        }
+        return allBetSettlement.get(0);
     }
 
     public BetCancel<SportEvent> theOnlyBetCancel() {
@@ -67,6 +82,10 @@ public class WaiterForSingleMessage {
 
     private Callable<Boolean> anyBetCancelMessageReceived() {
         return () -> !messagesStorage.findAllBetCancel().isEmpty();
+    }
+
+    private Callable<Boolean> anyBetSettlementMessageReceived() {
+        return () -> !messagesStorage.findAllBetSettlement().isEmpty();
     }
 
     private Callable<Boolean> multipleOddsChangeMessageReceived() {

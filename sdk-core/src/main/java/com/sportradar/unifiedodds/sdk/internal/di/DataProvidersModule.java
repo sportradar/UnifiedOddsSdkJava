@@ -11,7 +11,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.*;
  *
  * @author e.roznik
  */
-@SuppressWarnings({ "LineLength" })
+@SuppressWarnings({ "LineLength", "MultipleStringLiterals" })
 public class DataProvidersModule extends AbstractModule {
 
     @Override
@@ -21,14 +21,47 @@ public class DataProvidersModule extends AbstractModule {
 
     @Provides
     @Named("SummaryEndpointDataProvider")
-    private DataProvider<Object> provideSummaryEndpointDataProvider(
+    private ExecutionPathDataProvider<Object> provideSummaryEndpointDataProvider(
+        @Named(
+            "TimeCriticalSummaryEndpointDataProvider"
+        ) DataProvider<Object> timeCriticalSummaryDataprovider,
+        @Named(
+            "NonTimeCriticalSummaryEndpointDataProvider"
+        ) DataProvider<Object> nonTimeCriticalSummaryDataprovider
+    ) {
+        return new ExecutionPathDataProvider<>(
+            timeCriticalSummaryDataprovider,
+            nonTimeCriticalSummaryDataprovider
+        );
+    }
+
+    @Provides
+    @Named("TimeCriticalSummaryEndpointDataProvider")
+    private DataProvider<Object> provideSummaryEndpointDataProviderTimeCritical(
         SdkInternalConfiguration cfg,
         LogFastHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
-        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
-            ? "?node_id=" + cfg.getSdkNodeId()
-            : "";
+        String nodeIdStr = getNodeIdQueryString(cfg);
+
+        String replaySummary = baseUrl(cfg) + "/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
+
+        return new DataProvider<>(
+            cfg.isReplaySession() ? replaySummary : "/sports/%s/sport_events/%s/summary.xml",
+            cfg,
+            httpDataFetcher,
+            deserializer
+        );
+    }
+
+    @Provides
+    @Named("NonTimeCriticalSummaryEndpointDataProvider")
+    private DataProvider<Object> provideSummaryEndpointDataProviderNonTimeCritical(
+        SdkInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
+    ) {
+        String nodeIdStr = getNodeIdQueryString(cfg);
 
         String replaySummary = baseUrl(cfg) + "/replay/sports/%s/sport_events/%s/summary.xml" + nodeIdStr;
 
@@ -178,9 +211,7 @@ public class DataProvidersModule extends AbstractModule {
         LogHttpDataFetcher httpDataFetcher,
         @Named("SportsApiJaxbDeserializer") Deserializer deserializer
     ) {
-        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
-            ? "?node_id=" + cfg.getSdkNodeId()
-            : "";
+        String nodeIdStr = getNodeIdQueryString(cfg);
 
         String replayTimeline = baseUrl(cfg) + "/replay/sports/%s/sport_events/%s/timeline.xml" + nodeIdStr;
 
@@ -284,9 +315,7 @@ public class DataProvidersModule extends AbstractModule {
         Deserializer deserializer,
         String filename
     ) {
-        String nodeIdStr = cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0
-            ? "?node_id=" + cfg.getSdkNodeId()
-            : "";
+        String nodeIdStr = getNodeIdQueryString(cfg);
 
         String replayFixture = baseUrl(cfg) + "/replay/sports/%s/sport_events/%s/fixture.xml" + nodeIdStr;
 
@@ -301,5 +330,9 @@ public class DataProvidersModule extends AbstractModule {
     private static String baseUrl(SdkInternalConfiguration cfg) {
         String httpHttps = cfg.getUseApiSsl() ? "https" : "http";
         return httpHttps + "://" + cfg.getApiHostAndPort() + "/v1";
+    }
+
+    private static String getNodeIdQueryString(SdkInternalConfiguration cfg) {
+        return cfg.getSdkNodeId() != null && cfg.getSdkNodeId() != 0 ? "?node_id=" + cfg.getSdkNodeId() : "";
     }
 }

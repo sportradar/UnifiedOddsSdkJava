@@ -3,9 +3,6 @@
  */
 package com.sportradar.unifiedodds.sdk.entities;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-
 public final class SportEvents {
 
     private SportEvents() {}
@@ -20,5 +17,9 @@ public final class SportEvents {
 
     public static Stage anyStage() {
         return new StageStub();
+    }
+
+    public static Tournament anyTournament() {
+        return new TournamentStub();
     }
 }

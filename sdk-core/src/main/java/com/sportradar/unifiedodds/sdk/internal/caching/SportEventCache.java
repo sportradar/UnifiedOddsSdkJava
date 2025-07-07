@@ -27,6 +27,15 @@ public interface SportEventCache {
     SportEventCi getEventCacheItem(Urn id) throws CacheItemNotFoundException;
 
     /**
+     * Returns a {@link SportEventCi} instance representing a cached sport event data
+     *
+     * @param id an {@link Urn} specifying the id of the sport event
+     * @param requestOptions a {@link RequestOptions} object with the configuration of request issued to DataRouterManager
+     * @return a {@link SportEventCi} instance representing cached sport event data
+     */
+    SportEventCi getEventCacheItem(Urn id, RequestOptions requestOptions) throws CacheItemNotFoundException;
+
+    /**
      * Returns a {@link List} containing id's of sport events, which belong to a specific tournament
      *
      * @param tournamentId an {@link Urn} specifying the id of the tournament to which the events should relate

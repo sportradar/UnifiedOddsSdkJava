@@ -3,15 +3,20 @@
  */
 package com.sportradar.unifiedodds.sdk.impl;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.SapiCategories.*;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubQueryParameter.FixtureChangesQueryParameter.AFTER_DATE_TIME;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubQueryParameter.FixtureChangesQueryParameter.SPORT_ID;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubQueryParameter.queryParameter;
 import static com.sportradar.unifiedodds.sdk.conn.SapiFixtureChanges.fixtureChanges;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
 import static com.sportradar.unifiedodds.sdk.conn.SapiResultChanges.resultChanges;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Race.bahrainGrandPrix2025RaceStage;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FormulaOne2025.formulaOne2025TournamentExtended;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.nascarCup2024TournamentInfo;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.SimpleTournaments.ClubFriendlyGames.clubFriendlyGames;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
@@ -20,6 +25,7 @@ import static java.util.Locale.*;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.common.Pair;
@@ -33,6 +39,7 @@ import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.conn.*;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
+import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
 import com.sportradar.utils.SdkHelper;
@@ -41,8 +48,10 @@ import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -576,6 +585,194 @@ class SportDataProviderIT {
 
         private List<String> expected(SapiTournamentExtended tournament) {
             return singletonList(join(tournament.getId(), tournament.getName()));
+        }
+    }
+
+    @Nested
+    class GetSportEvent {
+
+        @BeforeEach
+        void stub() {
+            apiSimulator.defineBookmaker();
+            apiSimulator.activateOnlyLiveProducer();
+            apiSimulator.stubAllSports(ENGLISH);
+        }
+
+        @Test
+        void onAttemptToGetMatchItFailsDuringConstructionDueToMissingSummaryDuringSportDiscovery()
+            throws Exception {
+            val matchId = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
+
+            apiSimulator.stubSportCategories(
+                ENGLISH,
+                tournamentEuro2024().getSport(),
+                SapiCategories.international()
+            );
+            apiSimulator.stubAllTournaments(ENGLISH, tournamentEuro2024());
+            apiSimulator.stubMatchSummaryNotFound(ENGLISH, matchId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(ExceptionHandlingStrategy.Throw)
+                    .withDefaultLanguage(ENGLISH)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(matchId));
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(matchId, ENGLISH));
+            }
+        }
+
+        @Test
+        void getsRaceStageButFailsOnPropertyAccessDueToMissingSummary() throws Exception {
+            val stageId = Urn.parse(bahrainGrandPrix2025RaceStage().getSportEvent().getId());
+
+            apiSimulator.stubSportCategories(
+                ENGLISH,
+                bahrainGrandPrix2025RaceStage().getSportEvent().getTournament().getSport(),
+                SapiCategories.international()
+            );
+            apiSimulator.stubAllTournaments(ENGLISH, formulaOne2025TournamentExtended());
+            apiSimulator.stubRaceSummaryNotFound(ENGLISH, stageId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(ExceptionHandlingStrategy.Throw)
+                    .withDefaultLanguage(ENGLISH)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(stageId).getName(ENGLISH));
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(stageId, ENGLISH).getName(ENGLISH));
+            }
+        }
+
+        @Test
+        void getsTournamentStageButFailsOnPropertyAccessDueToMissingSummary() throws Exception {
+            val stageId = Urn.parse(nascarCup2024TournamentInfo().getTournament().getId());
+
+            apiSimulator.stubSportCategories(
+                ENGLISH,
+                bahrainGrandPrix2025RaceStage().getSportEvent().getTournament().getSport(),
+                SapiCategories.international()
+            );
+            apiSimulator.stubAllTournaments(ENGLISH, nascarCup2024TournamentInfo().getTournament());
+            apiSimulator.stubTournamentSummaryNotFound(ENGLISH, stageId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(ExceptionHandlingStrategy.Throw)
+                    .withDefaultLanguage(ENGLISH)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(stageId).getName(ENGLISH));
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(stageId, ENGLISH).getName(ENGLISH));
+            }
+        }
+
+        @Test
+        void getsTournamentButFailsOnPropertyAccessDueToMissingSummary() throws Exception {
+            val tournamentId = Urn.parse(tournamentEuro2024().getId());
+
+            apiSimulator.stubSportCategories(
+                ENGLISH,
+                tournamentEuro2024().getSport(),
+                SapiCategories.international()
+            );
+            apiSimulator.stubAllTournaments(ENGLISH, tournamentEuro2024());
+            apiSimulator.stubTournamentSummaryNotFound(ENGLISH, tournamentId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(ExceptionHandlingStrategy.Throw)
+                    .withDefaultLanguage(ENGLISH)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(tournamentId).getName(ENGLISH));
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(tournamentId, ENGLISH).getName(ENGLISH)
+                    );
+            }
+        }
+
+        @Test
+        void getsBasicTournamentButFailsOnPropertyAccessDueToMissingSummary() throws Exception {
+            val tournamentId = Urn.parse(clubFriendlyGames(ENGLISH).getTournament().getId());
+
+            apiSimulator.stubSportCategories(
+                ENGLISH,
+                clubFriendlyGames(ENGLISH).getTournament().getSport(),
+                SapiCategories.international()
+            );
+            apiSimulator.stubAllTournaments(ENGLISH, clubFriendlyGames(ENGLISH).getTournament());
+            apiSimulator.stubTournamentSummaryNotFound(ENGLISH, tournamentId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(ExceptionHandlingStrategy.Throw)
+                    .withDefaultLanguage(ENGLISH)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(tournamentId).getName(ENGLISH));
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(tournamentId, ENGLISH).getName(ENGLISH)
+                    );
+            }
+        }
+
+        @Test
+        void getsSeasonButFailsOnPropertyAccessDueToMissingSummary() throws Exception {
+            val seasonId = Urn.parse(euro2024TournamentInfo().getSeason().getId());
+
+            apiSimulator.stubSportCategories(
+                ENGLISH,
+                tournamentEuro2024().getSport(),
+                SapiCategories.international()
+            );
+            apiSimulator.stubAllTournaments(ENGLISH, tournamentEuro2024());
+            apiSimulator.stubSeasonSummaryNotFound(ENGLISH, seasonId);
+
+            try (
+                val sdk = SdkSetup
+                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(ListenerCollectingMessages.to(messagesStorage))
+                    .with(ExceptionHandlingStrategy.Throw)
+                    .withDefaultLanguage(ENGLISH)
+                    .withoutFeed()
+            ) {
+                val sportDataProvider = sdk.getSportDataProvider();
+
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(seasonId).getName(ENGLISH));
+                assertThatExceptionOfType(ObjectNotFoundException.class)
+                    .isThrownBy(() -> sportDataProvider.getSportEvent(seasonId, ENGLISH).getName(ENGLISH));
+            }
         }
     }
 

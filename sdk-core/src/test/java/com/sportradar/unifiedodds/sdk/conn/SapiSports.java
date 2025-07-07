@@ -492,10 +492,7 @@ public class SapiSports {
     }
 
     public static SapiSport stockCarRacing() {
-        SapiSport stockCarRacing = new SapiSport();
-        stockCarRacing.setId("sr:sport:191");
-        stockCarRacing.setName("Stock Car Racing");
-        return stockCarRacing;
+        return SapiSports.getSapiSport(Urn.parse("sr:sport:191"), in(ENGLISH));
     }
 
     public static SapiSport formula1() {

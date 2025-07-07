@@ -4,11 +4,14 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl.entities;
 
+import static java.util.Optional.ofNullable;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.entities.*;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
+import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.TournamentCi;
@@ -27,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Represents a sport tournament
  */
 @SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "LineLength", "MultipleStringLiterals" })
-public class BasicTournamentImpl extends SportEventImpl implements BasicTournament {
+public class BasicTournamentImpl extends SportEventImpl implements BasicTournament, PreloadableEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicTournamentImpl.class);
 
@@ -396,5 +399,12 @@ public class BasicTournamentImpl extends SportEventImpl implements BasicTourname
             handleException("loadBasicTournamentCI, CI not found", e);
         }
         return null;
+    }
+
+    @Override
+    public void ensureSummaryIsFetchedForLanguages(List<Locale> languages, RequestOptions requestOptions) {
+        TournamentCi tournamentCi = loadBasicTournamentCi();
+        ofNullable(tournamentCi)
+            .ifPresent(ci -> ci.requestMissingSummaryData(languages, false, requestOptions));
     }
 }

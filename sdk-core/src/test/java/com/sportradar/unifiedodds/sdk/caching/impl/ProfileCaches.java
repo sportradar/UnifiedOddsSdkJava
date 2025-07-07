@@ -4,17 +4,21 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategies.anyErrorHandlingStrategy;
+import static com.sportradar.unifiedodds.sdk.caching.markets.GenericAnswers.withAllMethodsThrowingByDefault;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.google.common.cache.CacheBuilder;
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds;
 import com.sportradar.uf.sportsapi.datamodel.SapiPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeamExtended;
+import com.sportradar.unifiedodds.sdk.internal.caching.CompetitorCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.internal.caching.PlayerProfileCi;
+import com.sportradar.unifiedodds.sdk.internal.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.ProfileCacheImpl;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.ci.CacheItemFactoryImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
@@ -23,6 +27,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCompetit
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableJerseyCi;
 import com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer;
 import com.sportradar.utils.Urn;
+import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +38,41 @@ import lombok.SneakyThrows;
 import lombok.val;
 
 public class ProfileCaches {
+
+    public static ProfileCache providing(LanguageHolder language, CompetitorCi competitorProfile)
+        throws Exception {
+        val profileCache = mock(ProfileCache.class, withAllMethodsThrowingByDefault());
+        val id = competitorProfile.getId();
+        doReturn(competitorProfile)
+            .when(profileCache)
+            .getCompetitorProfile(id, singletonList(language.get()));
+        return profileCache;
+    }
+
+    public static ProfileCache providing(LanguageHolder language, PlayerProfileCi playerProfile)
+        throws Exception {
+        val profileCache = mock(ProfileCache.class, withAllMethodsThrowingByDefault());
+        val id = playerProfile.getId();
+        doReturn(playerProfile).when(profileCache).getPlayerProfile(id, singletonList(language.get()), null);
+        return profileCache;
+    }
+
+    public static ProfileCache providing(
+        LanguageHolder language,
+        PlayerProfileCi player1Profile,
+        PlayerProfileCi player2Profile
+    ) throws Exception {
+        val profileCache = mock(ProfileCache.class, withAllMethodsThrowingByDefault());
+        val id1 = player1Profile.getId();
+        doReturn(player1Profile)
+            .when(profileCache)
+            .getPlayerProfile(id1, singletonList(language.get()), null);
+        val id2 = player2Profile.getId();
+        doReturn(player2Profile)
+            .when(profileCache)
+            .getPlayerProfile(id2, singletonList(language.get()), null);
+        return profileCache;
+    }
 
     @SneakyThrows
     public static void exportAndImportTheOnlyItemIn(ProfileCacheImpl cache) {

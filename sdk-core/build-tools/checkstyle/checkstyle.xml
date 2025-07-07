@@ -357,7 +357,19 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEventCacheMatchSummaryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="SapiCategories.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="ApiSimulator.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SportEventCacheMatchSummaryTest.java"/>
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>

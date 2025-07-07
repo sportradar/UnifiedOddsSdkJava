@@ -4,21 +4,84 @@
 package com.sportradar.unifiedodds.sdk.caching.impl;
 
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategies.anyErrorHandlingStrategy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static com.sportradar.unifiedodds.sdk.caching.markets.FactoryAnswers.withBuildThrowingByDefault;
+import static java.util.Collections.singletonList;
+import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.entities.Competition;
+import com.sportradar.unifiedodds.sdk.entities.Sport;
+import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.internal.caching.ProfileCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportsDataCache;
+import com.sportradar.unifiedodds.sdk.internal.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.utils.Urn;
+import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.val;
 
 public class SportEntityFactories {
+
+    @SneakyThrows
+    public static SportEntityFactory providingSports(LanguageHolder language, Sport sport) {
+        val factory = mock(SportEntityFactory.class, withBuildThrowingByDefault());
+        doReturn(singletonList(sport)).when(factory).buildSports(singletonList(language.get()));
+        return factory;
+    }
+
+    @SneakyThrows
+    public static SportEntityFactory failingToProvideSports(LanguageHolder language) {
+        val factory = mock(SportEntityFactory.class, withBuildThrowingByDefault());
+        doThrow(new ObjectNotFoundException("missing sports"))
+            .when(factory)
+            .buildSports(singletonList(language.get()));
+        return factory;
+    }
+
+    @SneakyThrows
+    public static SportEntityFactory providingSportEvent(LanguageHolder language, SportEvent sportEvent) {
+        val factory = mock(SportEntityFactory.class, withBuildThrowingByDefault());
+        val id = sportEvent.getId();
+        doReturn(sportEvent).when(factory).buildSportEvent(id, singletonList(language.get()), false);
+        return factory;
+    }
+
+    @SneakyThrows
+    public static SportEntityFactory providingSportEvents(
+        LanguageHolder language,
+        List<Urn> ids,
+        List<? extends Competition> sportEvents
+    ) {
+        val factory = mock(SportEntityFactory.class, withBuildThrowingByDefault());
+        doReturn(sportEvents).when(factory).buildSportEvents(ids, singletonList(language.get()));
+        return factory;
+    }
+
+    @SneakyThrows
+    public static SportEntityFactory failingToProvideSportEvents(LanguageHolder language, List<Urn> ids) {
+        val factory = mock(SportEntityFactory.class, withBuildThrowingByDefault());
+        doThrow(new ObjectNotFoundException("no sport events"))
+            .when(factory)
+            .buildSportEvents(ids, singletonList(language.get()));
+        return factory;
+    }
+
+    @SneakyThrows
+    public static SportEntityFactory failingToProvideSportEvent(Urn id, LanguageHolder language) {
+        val factory = mock(SportEntityFactory.class, withBuildThrowingByDefault());
+        doThrow(new ObjectNotFoundException("missing sport event"))
+            .when(factory)
+            .buildSportEvent(id, singletonList(language.get()), false);
+        return factory;
+    }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class BuilderStubbingOutAllCachesAndStatusFactory {
