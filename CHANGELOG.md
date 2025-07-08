@@ -1,6 +1,6 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.3.0-rc1**
+**4.3.0 (2025-07-07)**
 - Soccer tournaments 86 and 853 (Club Friendly Games) with increased amount of data are preloaded using a longer timeout.
 
 **4.2.0 (2025-05-08)**

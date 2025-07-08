@@ -7,8 +7,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.conn.WaitingUofListenerDi.createWaitingUofListenerFactory;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.from;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.on;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -34,6 +38,7 @@ import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.VhostLocation;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.val;
@@ -180,25 +185,7 @@ public class SdkConnectionIT {
         feed.TestHttpHelper.PostResponses.add(
             new TestHttpHelper.UrlReplacement("/liveodds/", 1, HttpStatus.SC_ACCEPTED)
         );
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
@@ -219,12 +206,8 @@ public class SdkConnectionIT {
         feed.open();
 
         rabbitProducer.send(feedMessageBuilder.buildAlive(producerId), null, 0);
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+
+        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
         producer = feed.getProducerManager().getProducer(producerId);
 
         assertNotNull(producer.getRecoveryInfo());
@@ -323,25 +306,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 1, HttpStatus.SC_ACCEPTED)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         Map<Integer, Date> afters = new HashMap<>();
         afters.put(producerId, Helper.addToDate(Calendar.MINUTE, -10));
@@ -366,12 +331,8 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         assertNotNull(producer.getRecoveryInfo());
@@ -863,25 +824,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 0, HttpStatus.SC_BAD_GATEWAY)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
@@ -904,12 +847,9 @@ public class SdkConnectionIT {
         // setup for recovery request and fails
         Helper.writeToOutput("Waiting for first recovery call");
         rabbitProducer.send(feedMessageBuilder.buildAlive(producerId));
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            10000
-        );
+
+        await().atMost(10, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         Helper.sleep(2000); // so all events are called
@@ -917,8 +857,8 @@ public class SdkConnectionIT {
         assertNotNull(producer.getRecoveryInfo());
         assertTrue(producer.isFlaggedDown());
         assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
-        final long producerRecoveryRequestId1 = producer.getRecoveryInfo().getRequestId();
-        Helper.writeToOutput("Recovery 1 called with RequestId=" + producerRecoveryRequestId1);
+        final long recoveryRequestId1 = producer.getRecoveryInfo().getRequestId();
+        Helper.writeToOutput("Recovery 1 called with RequestId=" + recoveryRequestId1);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -927,18 +867,10 @@ public class SdkConnectionIT {
         assertEquals(0, recoveryCalled.stream().filter(f -> f.contains("after")).count());
         assertEquals(
             1,
-            recoveryCalled
-                .stream()
-                .filter(f -> f.contains("request_id=" + producerRecoveryRequestId1))
-                .count()
+            recoveryCalled.stream().filter(f -> f.contains("request_id=" + recoveryRequestId1)).count()
         );
         assertTrue(
-            checkListContainsString(
-                sdkListener.CalledEvents,
-                "RequestId=" + producerRecoveryRequestId1,
-                "After=0",
-                1
-            )
+            checkListContainsString(sdkListener.CalledEvents, "RequestId=" + recoveryRequestId1, "After=0", 1)
         );
 
         Helper.sleep((config.getProducer().getMinIntervalBetweenRecoveryRequests().getSeconds() + 5) * 1000L);
@@ -946,16 +878,11 @@ public class SdkConnectionIT {
         // call second one and fail
         Helper.writeToOutput("Waiting for second recovery call");
         rabbitProducer.send(feedMessageBuilder.buildAlive(producerId));
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, producerRecoveryRequestId1, false),
-            "Producer new recovery info is not null",
-            1000,
-            20000
-        );
+        await().atMost(20, SECONDS).until(() -> recoveryIdChanges(from(recoveryRequestId1), on(producerId)));
         producer = feed.getProducerManager().getProducer(producerId);
-        final long producerRecoveryRequestId2 = producer.getRecoveryInfo().getRequestId();
-        Helper.writeToOutput("Recovery 2 called with RequestId=" + producerRecoveryRequestId2);
-        assertNotEquals(producerRecoveryRequestId1, producerRecoveryRequestId2);
+        final long recoveryRequestId2 = producer.getRecoveryInfo().getRequestId();
+        Helper.writeToOutput("Recovery 2 called with RequestId=" + recoveryRequestId2);
+        assertNotEquals(recoveryRequestId1, recoveryRequestId2);
 
         assertTrue(producer.isFlaggedDown());
         assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
@@ -971,7 +898,7 @@ public class SdkConnectionIT {
             1,
             recoveryCalled
                 .stream()
-                .filter(c -> c.contains("request_id=" + producerRecoveryRequestId2))
+                .filter(c -> c.contains("request_id=" + recoveryRequestId2))
                 .collect(Collectors.toList())
                 .size()
         );
@@ -979,23 +906,19 @@ public class SdkConnectionIT {
             1,
             sdkListener.CalledEvents
                 .stream()
-                .filter(c -> c.contains("RequestId=" + producerRecoveryRequestId2) && c.contains("After=0"))
+                .filter(c -> c.contains("RequestId=" + recoveryRequestId2) && c.contains("After=0"))
                 .collect(Collectors.toList())
                 .size()
         );
 
         // send 2 changeOdds and snapshotComplete for old recovery request id - should not trigger producerUp
-        rabbitProducer.send(
-            feedMessageBuilder.buildOddsChange(null, producerId, producerRecoveryRequestId1, null)
-        );
-        rabbitProducer.send(
-            feedMessageBuilder.buildOddsChange(-1L, producerId, producerRecoveryRequestId1, null)
-        );
+        rabbitProducer.send(feedMessageBuilder.buildOddsChange(null, producerId, recoveryRequestId1, null));
+        rabbitProducer.send(feedMessageBuilder.buildOddsChange(-1L, producerId, recoveryRequestId1, null));
         assertTrue(producer.isFlaggedDown());
         assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         UfSnapshotComplete snapshotComplete = feedMessageBuilder.buildSnapshotComplete(
             producerId,
-            producerRecoveryRequestId1,
+            recoveryRequestId1,
             null
         );
         rabbitProducer.send(snapshotComplete);
@@ -1018,12 +941,7 @@ public class SdkConnectionIT {
         );
         Helper.writeToOutput("Waiting for third recovery call");
         rabbitProducer.send(feedMessageBuilder.buildAlive(producerId));
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, producerRecoveryRequestId2, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+        await().atMost(20, SECONDS).until(() -> recoveryIdChanges(from(recoveryRequestId2), on(producerId)));
         producer = feed.getProducerManager().getProducer(producerId);
         final long producerRecoveryRequestId3 = producer.getRecoveryInfo().getRequestId();
         assertTrue(producer.isFlaggedDown());
@@ -1134,25 +1052,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 0, HttpStatus.SC_ACCEPTED)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
@@ -1173,12 +1073,8 @@ public class SdkConnectionIT {
         feed.open();
 
         // check if any recovery is done (without alive message), because of missing alive messages, it will be interrupted
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            5000,
-            70000
-        );
+        await().atMost(70, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         assertNotNull(producer.getRecoveryInfo());
@@ -1284,25 +1180,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 0, HttpStatus.SC_NOT_ACCEPTABLE)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
@@ -1322,12 +1200,8 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            10000
-        );
+        await().atMost(10, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         assertNotNull(producer.getRecoveryInfo());
@@ -1339,20 +1213,17 @@ public class SdkConnectionIT {
             .collect(Collectors.toList());
         assertEquals(1, recoveryCalled.size());
         assertEquals(0, recoveryCalled.stream().filter(f -> f.contains("after")).count());
-        final long producerRecoveryRequestId1 = producer.getRecoveryInfo().getRequestId();
+        final long recoveryRequestId = producer.getRecoveryInfo().getRequestId();
         assertEquals(
             1,
-            recoveryCalled
-                .stream()
-                .filter(f -> f.contains(String.valueOf(producerRecoveryRequestId1)))
-                .count()
+            recoveryCalled.stream().filter(f -> f.contains(String.valueOf(recoveryRequestId))).count()
         );
         writeStringList(sdkListener.CalledEvents, "Attempted recoveries 1: ");
         assertEquals(
             1,
             sdkListener.CalledEvents
                 .stream()
-                .filter(c -> c.contains("RequestId=" + producerRecoveryRequestId1))
+                .filter(c -> c.contains("RequestId=" + recoveryRequestId))
                 .collect(Collectors.toList())
                 .size()
         );
@@ -1366,12 +1237,8 @@ public class SdkConnectionIT {
         );
 
         // wait till new recovery is made
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, producerRecoveryRequestId1, false),
-            "Producer waiting for new recovery",
-            1000,
-            60000
-        );
+        await().atMost(60, SECONDS).until(() -> recoveryIdChanges(from(recoveryRequestId), on(producerId)));
+
         producer = feed.getProducerManager().getProducer(producerId);
         final long producerRecoveryRequestId2 = producer.getRecoveryInfo().getRequestId();
 
@@ -1387,10 +1254,7 @@ public class SdkConnectionIT {
         assertEquals(0, recoveryCalled.stream().filter(f -> f.contains("after")).count());
         assertEquals(
             1,
-            recoveryCalled
-                .stream()
-                .filter(f -> f.contains(String.valueOf(producerRecoveryRequestId1)))
-                .count()
+            recoveryCalled.stream().filter(f -> f.contains(String.valueOf(recoveryRequestId))).count()
         );
         assertEquals(
             1,
@@ -1504,25 +1368,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 0, HttpStatus.SC_ACCEPTED)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
@@ -1542,12 +1388,8 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         assertNotNull(producer.getRecoveryInfo());
@@ -1761,25 +1603,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 0, HttpStatus.SC_ACCEPTED)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
+        disableAllProducersButLiveOne();
 
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
@@ -1802,12 +1626,8 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         assertNotNull(producer.getRecoveryInfo());
@@ -2612,26 +2432,7 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 1, HttpStatus.SC_ACCEPTED)
         );
 
-        List<Integer> disabledProducers = Arrays.asList(
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17
-        );
-        disableProducers(disabledProducers, feed);
-
+        disableAllProducersButLiveOne();
         SimpleMessageListener simpleMessageListener = new SimpleMessageListener(
             "all",
             feed,
@@ -2653,12 +2454,8 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         Helper.sleep(1000);
@@ -2767,12 +2564,9 @@ public class SdkConnectionIT {
 
         // reset alives and wait for recovery
         rabbitProducer.addProducersAlive(producerId, 3000);
-        waitAndCheckTillTimeout(
-            w -> checkProducerRecovery(producerId, false),
-            "Producer recovery info is not null",
-            1000,
-            20000
-        );
+
+        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+
         producer = feed.getProducerManager().getProducer(producerId);
 
         final long producerRecoveryRequestId2 = producer.getRecoveryInfo().getRequestId();
@@ -3179,6 +2973,10 @@ public class SdkConnectionIT {
         }
     }
 
+    private boolean recoveryInfoIsAvailableForProducer(int producerId) {
+        return checkProducerRecovery(producerId, false);
+    }
+
     /**
      * Checks if the producer RecoveryInfo is equal isNull
      * @param producerId the producer id to check
@@ -3205,6 +3003,10 @@ public class SdkConnectionIT {
             return producer.isFlaggedDown();
         }
         return !producer.isFlaggedDown();
+    }
+
+    private boolean recoveryIdChanges(long requestId, int producerId) {
+        return checkProducerRecovery(producerId, requestId, false);
     }
 
     /**
@@ -3290,5 +3092,27 @@ public class SdkConnectionIT {
                     )
                 )
         );
+    }
+
+    private void disableAllProducersButLiveOne() {
+        List<Integer> disabledProducers = Arrays.asList(
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+        );
+        disableProducers(disabledProducers, feed);
     }
 }
