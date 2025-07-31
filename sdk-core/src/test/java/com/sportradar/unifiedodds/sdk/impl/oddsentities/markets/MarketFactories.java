@@ -35,7 +35,7 @@ public class MarketFactories {
         private Optional<TimeUtils> time = Optional.empty();
         private Optional<ProfileCache> profileCache = Optional.empty();
 
-        public static BuilderStubbingOutSportEventAndCaches stubbingOutSportEventAndCaches() {
+        public static BuilderStubbingOutSportEventAndCaches stubbingOutCaches() {
             return new BuilderStubbingOutSportEventAndCaches();
         }
 

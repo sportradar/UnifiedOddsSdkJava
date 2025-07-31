@@ -117,6 +117,28 @@ public final class UfSpecifiers {
         }
     }
 
+    public static final class UfCompetitor1Specifier extends UfSpecifier<Urn> {
+
+        private UfCompetitor1Specifier(Urn urn) {
+            super("competitor1", urn);
+        }
+
+        public static UfCompetitor1Specifier competitor1(Urn urn) {
+            return new UfCompetitor1Specifier(urn);
+        }
+    }
+
+    public static final class UfCompetitor2Specifier extends UfSpecifier<Urn> {
+
+        private UfCompetitor2Specifier(Urn urn) {
+            super("competitor2", urn);
+        }
+
+        public static UfCompetitor2Specifier competitor2(Urn urn) {
+            return new UfCompetitor2Specifier(urn);
+        }
+    }
+
     public static final class UfPlayerSpecifier extends UfSpecifier<Urn> {
 
         private UfPlayerSpecifier(Urn urn) {
@@ -191,6 +213,17 @@ public final class UfSpecifiers {
 
         public static UfTotalSpecifier total(int value) {
             return new UfTotalSpecifier(value);
+        }
+    }
+
+    public static final class UfTypeSpecifier extends UfSpecifier<String> {
+
+        private UfTypeSpecifier(String value) {
+            super("type", value);
+        }
+
+        public static UfTypeSpecifier type(String value) {
+            return new UfTypeSpecifier(value);
         }
     }
 

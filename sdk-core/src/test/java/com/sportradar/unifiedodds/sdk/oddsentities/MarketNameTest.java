@@ -9,7 +9,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.Competi
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.PenaltyShootoutCompetitor2Total.penaltyShootoutCompetitor2TotalMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.PlayerToScore.playerToScoreMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.TotalHolesWon.totalHolesWonMarketDescription;
-import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.kaiHavertzProfile;
+import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeamCompetitors.germany;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeamCompetitors.scotland;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.*;
@@ -18,7 +18,7 @@ import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfPlayerSpecifier
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfTotalSpecifier.total;
 import static com.sportradar.unifiedodds.sdk.entities.Matches.matchWithHomeAndAwayCompetitors;
 import static com.sportradar.unifiedodds.sdk.entities.SportEvents.anyMatch;
-import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactories.BuilderStubbingOutSportEventAndCaches.stubbingOutSportEventAndCaches;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactories.BuilderStubbingOutSportEventAndCaches.stubbingOutCaches;
 import static com.sportradar.unifiedodds.sdk.oddsentities.TeamCompetitors.teamCompetitor;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
+import com.sportradar.uf.sportsapi.datamodel.SapiPlayerExtended;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.caching.impl.ProfileCaches;
 import com.sportradar.unifiedodds.sdk.caching.impl.ci.CompetitorCis;
@@ -38,6 +39,7 @@ import java.util.stream.Stream;
 import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("MagicNumber")
@@ -51,6 +53,9 @@ class MarketNameTest {
     private static final String TOTAL_SPECIFIER_PATTERN = "{total}";
     private static final String ENGLISH_AND_FRENCH =
         "com.sportradar.unifiedodds.sdk.oddsentities.MarketNameTest#englishAndFrench";
+    private static final String KAI_HAVERTZ_SAPI_PROFILE_FROM_DIFFERENT_FEED_PROVIDERS_IN_ENGLISH_AND_FRENCH =
+        "com.sportradar.unifiedodds.sdk.oddsentities.MarketNameTest" +
+        "#kaiHavertzSapiProfileFromDifferentProvidersInEnglishAndFrench";
 
     @Nested
     class HomeAndAwayCompetitorExpressions {
@@ -69,7 +74,7 @@ class MarketNameTest {
                 with(ImmutableMap.of())
             );
 
-            val factory = stubbingOutSportEventAndCaches()
+            val factory = stubbingOutCaches()
                 .with(ExceptionHandlingStrategy.Throw)
                 .with(marketDescriptionProvider)
                 .withDefaultLanguage(language)
@@ -107,7 +112,7 @@ class MarketNameTest {
             val totalSpecifier = ImmutableMap.of("total", "1");
             val marketDescriptionProvider = providing(in(language), marketDescription, with(totalSpecifier));
 
-            val factory = stubbingOutSportEventAndCaches()
+            val factory = stubbingOutCaches()
                 .with(ExceptionHandlingStrategy.Throw)
                 .with(marketDescriptionProvider)
                 .withDefaultLanguage(language)
@@ -160,7 +165,7 @@ class MarketNameTest {
                 .build();
             val profileCache = ProfileCaches.providing(in(language), competitorProfile);
 
-            val factory = stubbingOutSportEventAndCaches()
+            val factory = stubbingOutCaches()
                 .with(ExceptionHandlingStrategy.Throw)
                 .with(marketDescriptionProvider)
                 .with(profileCache)
@@ -192,8 +197,9 @@ class MarketNameTest {
     class PlayerExpressions {
 
         @ParameterizedTest
-        @MethodSource(ENGLISH_AND_FRENCH)
-        void generatesMarketNameWithPlayerPatternReplacedWithPlayerNameFetchedFromPlayerProfile(
+        @MethodSource(KAI_HAVERTZ_SAPI_PROFILE_FROM_DIFFERENT_FEED_PROVIDERS_IN_ENGLISH_AND_FRENCH)
+        void generatesMarketNameUsingSpecifierOfPlayerIdFromDifferentFeedProviders(
+            SapiPlayerExtended kaiHavertzProfile,
             Locale language
         ) throws Exception {
             val sapiMarketDescription = playerToScoreMarketDescription(language);
@@ -201,17 +207,17 @@ class MarketNameTest {
                 .with(new Translations(language, sapiMarketDescription.getName()))
                 .withId(sapiMarketDescription.getId());
 
-            val playerId = Urn.parse("sr:player:9324");
-            val specifiers = ImmutableMap.of("player", playerId.toString());
+            val specifiers = ImmutableMap.of("player", kaiHavertzProfile.getId());
             val marketDescriptionProvider = providing(in(language), marketDescription, with(specifiers));
 
+            val kaiHavertzProfileId = Urn.parse(kaiHavertzProfile.getId());
             val playerProfile = playerProfileCi()
-                .withId(playerId)
-                .withName(in(language), kaiHavertzProfile().getName())
+                .withId(kaiHavertzProfileId)
+                .withName(in(language), kaiHavertzProfile.getName())
                 .build();
             val profileCache = ProfileCaches.providing(in(language), playerProfile);
 
-            val factory = stubbingOutSportEventAndCaches()
+            val factory = stubbingOutCaches()
                 .with(ExceptionHandlingStrategy.Throw)
                 .with(marketDescriptionProvider)
                 .with(profileCache)
@@ -219,7 +225,11 @@ class MarketNameTest {
                 .build();
 
             val market = factory
-                .buildMarketWithOdds(anyMatch(), playerToScoreMarket(player(playerId)), PRODUCER_ID)
+                .buildMarketWithOdds(
+                    anyMatch(),
+                    playerToScoreMarket(player(kaiHavertzProfileId)),
+                    PRODUCER_ID
+                )
                 .get();
 
             assertThat(market.getName(language))
@@ -227,7 +237,7 @@ class MarketNameTest {
                     nameOf(
                         playerToScoreMarketDescription(language),
                         with(PLAYER_FROM_SPECIFIER_PATTERN),
-                        replacedWith(kaiHavertzProfile().getName())
+                        replacedWith(kaiHavertzProfile.getName())
                     )
                 );
         }
@@ -256,5 +266,16 @@ class MarketNameTest {
     @SuppressWarnings("unused")
     static Stream<Locale> englishAndFrench() {
         return Stream.of(ENGLISH, Locale.FRENCH);
+    }
+
+    static Stream<Arguments> kaiHavertzSapiProfileFromDifferentProvidersInEnglishAndFrench() {
+        return Stream.of(
+            Arguments.of(kaiHavertzProfile(), Locale.ENGLISH),
+            Arguments.of(kaiHavertzProfile(), Locale.FRENCH),
+            Arguments.of(kaiHavertzProfileFromBetGenius(), Locale.ENGLISH),
+            Arguments.of(kaiHavertzProfileFromBetGenius(), Locale.FRENCH),
+            Arguments.of(kaiHavertzProfileFromOddin(), Locale.ENGLISH),
+            Arguments.of(kaiHavertzProfileFromOddin(), Locale.FRENCH)
+        );
     }
 }

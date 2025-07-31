@@ -227,7 +227,7 @@ public class FaultyRabbitConnectionIT {
                 .willReturn(
                     WireMock.ok(
                         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                        "<bookmaker_details response_code=\"OK\" expire_at=\"2025-07-26T17:44:24Z\" bookmaker_id=\"1\" virtual_host=\"/virtualhost\"/>"
+                        "<bookmaker_details response_code=\"OK\" expire_at=\"2030-07-26T17:44:24Z\" bookmaker_id=\"1\" virtual_host=\"/virtualhost\"/>"
                     )
                 )
         );

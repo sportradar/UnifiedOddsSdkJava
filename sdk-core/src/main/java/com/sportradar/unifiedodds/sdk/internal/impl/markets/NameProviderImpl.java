@@ -53,9 +53,8 @@ import org.slf4j.LoggerFactory;
 public class NameProviderImpl implements NameProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(NameProviderImpl.class);
-    private static final String PLAYER_PROFILE_MARKET_PREFIX = "sr:player:";
-    private static final String COMPETITOR_PROFILE_MARKET_PREFIX = "sr:competitor";
-    private static final String SIMPLETEAM_PROFILE_MARKET_PREFIX = "sr:simpleteam";
+    private static final String PLAYER_PROFILE_MARKET_PREFIX = ":player:";
+    private static final String COMPETITOR_PROFILE_MARKET_PREFIX = ":competitor:";
     private static final String COMPOSITE_ID_SEPARATOR = ",";
 
     private final MarketDescriptionProvider descriptorProvider;
@@ -200,8 +199,8 @@ public class NameProviderImpl implements NameProvider {
         Preconditions.checkNotNull(locales);
 
         if (
-            outcomeId.startsWith(PLAYER_PROFILE_MARKET_PREFIX) ||
-            outcomeId.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX)
+            outcomeId.contains(PLAYER_PROFILE_MARKET_PREFIX) ||
+            outcomeId.contains(COMPETITOR_PROFILE_MARKET_PREFIX)
         ) {
             try {
                 return getOutcomeNamesFromProfile(outcomeId, locales);
@@ -330,7 +329,7 @@ public class NameProviderImpl implements NameProvider {
                 throw new UnsupportedUrnFormatException("OutcomeId=" + idPart + " is not a valid URN", ex);
             }
 
-            if (idPart.startsWith(PLAYER_PROFILE_MARKET_PREFIX)) {
+            if (idPart.contains(PLAYER_PROFILE_MARKET_PREFIX)) {
                 PlayerProfileCi playerProfile = profileCache.getPlayerProfile(
                     profileId,
                     locales,
@@ -339,10 +338,7 @@ public class NameProviderImpl implements NameProvider {
                 for (Locale locale : locales) {
                     names.get(locale).add(playerProfile.getNames(locales).get(locale));
                 }
-            } else if (
-                idPart.startsWith(COMPETITOR_PROFILE_MARKET_PREFIX) ||
-                idPart.startsWith(SIMPLETEAM_PROFILE_MARKET_PREFIX)
-            ) {
+            } else if (idPart.contains(COMPETITOR_PROFILE_MARKET_PREFIX)) {
                 CompetitorCi competitorProfile = profileCache.getCompetitorProfile(profileId, locales);
                 for (Locale locale : locales) {
                     names.get(locale).add(competitorProfile.getNames(locales).get(locale));

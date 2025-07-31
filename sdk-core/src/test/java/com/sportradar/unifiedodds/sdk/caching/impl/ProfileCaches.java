@@ -15,10 +15,7 @@ import com.google.common.cache.CacheBuilder;
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds;
 import com.sportradar.uf.sportsapi.datamodel.SapiPlayerCompetitor;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeamExtended;
-import com.sportradar.unifiedodds.sdk.internal.caching.CompetitorCi;
-import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
-import com.sportradar.unifiedodds.sdk.internal.caching.PlayerProfileCi;
-import com.sportradar.unifiedodds.sdk.internal.caching.ProfileCache;
+import com.sportradar.unifiedodds.sdk.internal.caching.*;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.ProfileCacheImpl;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.ci.CacheItemFactoryImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
@@ -29,13 +26,12 @@ import com.sportradar.unifiedodds.sdk.testutil.serialization.JavaSerializer;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
+import org.mockito.ArgumentMatcher;
 
 public class ProfileCaches {
 
@@ -49,29 +45,56 @@ public class ProfileCaches {
         return profileCache;
     }
 
-    public static ProfileCache providing(LanguageHolder language, PlayerProfileCi playerProfile)
+    public static ProfileCache providing(
+        LanguageHolder language,
+        CompetitorCi competitor1Profile,
+        CompetitorCi competitor2Profile
+    ) throws Exception {
+        val profileCache = mock(ProfileCache.class, withAllMethodsThrowingByDefault());
+        val id1 = competitor1Profile.getId();
+        doReturn(competitor1Profile)
+            .when(profileCache)
+            .getCompetitorProfile(id1, singletonList(language.get()));
+        val id2 = competitor2Profile.getId();
+        doReturn(competitor2Profile)
+            .when(profileCache)
+            .getCompetitorProfile(id2, singletonList(language.get()));
+        return profileCache;
+    }
+
+    public static ProfileCache providing(LanguageHolder language, PlayerProfileCi... profiles)
         throws Exception {
         val profileCache = mock(ProfileCache.class, withAllMethodsThrowingByDefault());
-        val id = playerProfile.getId();
-        doReturn(playerProfile).when(profileCache).getPlayerProfile(id, singletonList(language.get()), null);
+        for (val profile : profiles) {
+            val id = profile.getId();
+            doReturn(profile)
+                .when(profileCache)
+                .getPlayerProfile(eq(id), eq(singletonList(language.get())), argThat(nullOrEmpty()));
+        }
         return profileCache;
     }
 
     public static ProfileCache providing(
         LanguageHolder language,
-        PlayerProfileCi player1Profile,
-        PlayerProfileCi player2Profile
+        CompetitorCi competitorProfile,
+        PlayerProfileCi playerProfile
     ) throws Exception {
         val profileCache = mock(ProfileCache.class, withAllMethodsThrowingByDefault());
-        val id1 = player1Profile.getId();
-        doReturn(player1Profile)
+        val competitorId = competitorProfile.getId();
+        doReturn(competitorProfile)
             .when(profileCache)
-            .getPlayerProfile(id1, singletonList(language.get()), null);
-        val id2 = player2Profile.getId();
-        doReturn(player2Profile)
+            .getCompetitorProfile(eq(competitorId), eq(singletonList(language.get())));
+        val playerId = playerProfile.getId();
+        doReturn(playerProfile)
             .when(profileCache)
-            .getPlayerProfile(id2, singletonList(language.get()), null);
+            .getPlayerProfile(eq(playerId), eq(singletonList(language.get())), argThat(nullOrEmpty()));
+
         return profileCache;
+    }
+
+    @NotNull
+    private static ArgumentMatcher<List<Urn>> nullOrEmpty() {
+        return l -> l == null || l.isEmpty();
     }
 
     @SneakyThrows

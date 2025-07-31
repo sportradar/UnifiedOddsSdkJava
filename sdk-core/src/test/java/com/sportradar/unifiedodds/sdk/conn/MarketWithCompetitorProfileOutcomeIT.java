@@ -6,17 +6,25 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
 import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
+import static com.sportradar.unifiedodds.sdk.conn.SapiCompetitorProfiles.profilesFromSapiStageSummary;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.HoleNrCompetitorUnderPar.holeNrCompetitorUnderParMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.WinnerCompetitor.winnerCompetitorMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.BAHRAIN_GRAND_PRIX_2025_STAGE_ID;
+import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.bahrainGrandPrix2025;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.ThePlayersGolfChampionship.Round2.THE_PLAYERS_GOLF_ROUND_2_COMPETITION_GROUP_ID;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.ThePlayersGolfChampionship.Round2.thePlayersGolfChampionshipRound2;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.alonsoCompetitorProfile;
+import static com.sportradar.unifiedodds.sdk.conn.Sport.FORMULA1;
 import static com.sportradar.unifiedodds.sdk.conn.Sport.GOLF;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.holeNrCompetitorUnderParMarket;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.winnerCompetitorMarket;
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfCompetitorSpecifier.competitor;
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfHoleNrSpecifier.holeNr;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static com.sportradar.utils.domain.names.TranslationHolder.with;
+import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
@@ -28,6 +36,7 @@ import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorProfileEndpoint;
 import com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfHoleNrSpecifier;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.OutcomesAssert;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
@@ -46,6 +55,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @SuppressWarnings(
     {
@@ -178,6 +188,69 @@ class MarketWithCompetitorProfileOutcomeIT {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "sr:competitor:4521", "bg:competitor:4521", "od:competitor:4521" })
+    void competitorProfileNameIsReflectedInOutcomeRegardlessOfCompetitorProfileOrigin(
+        String alonsoIdFromOneOfProviders
+    ) throws Exception {
+        globalVariables.setProducer(LIVE_ODDS);
+        globalVariables.setSportEventUrn(Urn.parse(BAHRAIN_GRAND_PRIX_2025_STAGE_ID));
+        globalVariables.setSportUrn(FORMULA1);
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        Locale aLanguage = Locale.ENGLISH;
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+
+        val winnerCompetitorMarketDescription = winnerCompetitorMarketDescription();
+
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubMarketListContaining(winnerCompetitorMarketDescription, aLanguage);
+        apiSimulator.stubRaceSummary(aLanguage, bahrainGrandPrix2025());
+
+        val alonsoCompetitorProfile = alonsoCompetitorProfile();
+        replaceProfileCompetitorIdWith(alonsoIdFromOneOfProviders, alonsoCompetitorProfile);
+        apiSimulator.stubCompetitorProfile(aLanguage, alonsoCompetitorProfile);
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(Throw)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            rabbitProducer.send(
+                messages.oddsChange(
+                    winnerCompetitorMarket(asList(alonsoCompetitorProfile.getCompetitor().getId()))
+                ),
+                routingKeys.liveOddsChange()
+            );
+
+            val market = theOnlyMarketIn(listenerWaitingFor.theOnlyOddsChange());
+            val outcomes = market.getOutcomeOdds();
+
+            OutcomesAssert
+                .assertThat(outcomes)
+                .hasOutcomeWithId(alonsoIdFromOneOfProviders)
+                .which()
+                .hasNameForDefaultLanguage(aLanguage, alonsoCompetitorProfile.getCompetitor().getName());
+        }
+    }
+
+    private static void replaceProfileCompetitorIdWith(
+        String newCompetitorId,
+        SapiCompetitorProfileEndpoint competitorProfileEndpoint
+    ) {
+        competitorProfileEndpoint.getCompetitor().setId(newCompetitorId);
+    }
+
     private static Urn withIdFrom(SapiCompetitorProfileEndpoint competitor) {
         return Urn.parse(competitor.getCompetitor().getId());
     }
@@ -209,8 +282,7 @@ class MarketWithCompetitorProfileOutcomeIT {
 
     static Stream<Arguments> competitorAndHole() {
         val golfRaceStage = thePlayersGolfChampionshipRound2();
-        return SapiCompetitorProfiles
-            .profilesFromSapiStageSummary(golfRaceStage)
+        return profilesFromSapiStageSummary(golfRaceStage)
             .stream()
             .flatMap(c -> Stream.of(arguments(c, holeNr(1)), arguments(c, holeNr(2))));
     }

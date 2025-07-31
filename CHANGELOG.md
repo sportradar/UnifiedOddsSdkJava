@@ -1,5 +1,8 @@
 ### Unified Feed SDK 4.x changelog
 
+**4.4.0**
+- Consistently supporting varied prefixes for player and competitor URNs
+
 **4.3.0 (2025-07-07)**
 - Soccer tournaments 86 and 853 (Club Friendly Games) with increased amount of data are preloaded using a longer timeout.
 

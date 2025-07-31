@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.cfg.UofUsageConfiguration;
-import java.util.Optional;
+import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 
 class UofConfigurationsForUsage {
 
@@ -41,6 +41,11 @@ class UofConfigurationsForUsage {
 
         public BuilderForUsageUsingMocks withNodeId(int nodeId) {
             when(uofConfiguration.getNodeId()).thenReturn(nodeId);
+            return this;
+        }
+
+        public BuilderForUsageUsingMocks withBookmakerDetails(BookmakerDetails bookmakerDetails) {
+            when(uofConfiguration.getBookmakerDetails()).thenReturn(bookmakerDetails);
             return this;
         }
 

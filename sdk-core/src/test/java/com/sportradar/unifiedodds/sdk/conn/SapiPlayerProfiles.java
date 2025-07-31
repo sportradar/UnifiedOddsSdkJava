@@ -10,6 +10,8 @@ import com.sportradar.uf.sportsapi.datamodel.SapiPlayerExtended;
 public class SapiPlayerProfiles {
 
     public static final String MARTIN_ODEGAARD_PLAYER_ID = "sr:player:547410";
+    public static final String KAI_HAVERTZ_BETGENIUS_PLAYER_ID = "bg:player:848321";
+    public static final String KAI_HAVERTZ_ODDIN_PLAYER_ID = "od:player:316103";
 
     public static SapiPlayerExtended beckMelentsynProfile() {
         SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
@@ -482,6 +484,18 @@ public class SapiPlayerProfiles {
         return sapiPlayerExtended;
     }
 
+    public static SapiPlayerExtended kaiHavertzProfileFromBetGenius() {
+        SapiPlayerExtended sapiPlayerExtended = kaiHavertzProfile();
+        sapiPlayerExtended.setId(KAI_HAVERTZ_BETGENIUS_PLAYER_ID);
+        return sapiPlayerExtended;
+    }
+
+    public static SapiPlayerExtended kaiHavertzProfileFromOddin() {
+        SapiPlayerExtended sapiPlayerExtended = kaiHavertzProfile();
+        sapiPlayerExtended.setId(KAI_HAVERTZ_ODDIN_PLAYER_ID);
+        return sapiPlayerExtended;
+    }
+
     public static SapiPlayerExtended kaiHavertzProfile() {
         SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
         sapiPlayerExtended.setType("forward");
@@ -509,6 +523,66 @@ public class SapiPlayerProfiles {
         sapiPlayerExtended.setGender("male");
         sapiPlayerExtended.setId("sr:player:991181");
         sapiPlayerExtended.setName("Haaland, Erling");
+        return sapiPlayerExtended;
+    }
+
+    public static SapiPlayerExtended santiagoAriasNaranjo() {
+        SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
+        sapiPlayerExtended.setType("defenseman");
+        sapiPlayerExtended.setDateOfBirth("1992-01-13");
+        sapiPlayerExtended.setNationality("Colombia");
+        sapiPlayerExtended.setCountryCode("COL");
+        sapiPlayerExtended.setHeight(178);
+        sapiPlayerExtended.setWeight(72);
+        sapiPlayerExtended.setFullName("Santiago Arias Naranjo");
+        sapiPlayerExtended.setGender("male");
+        sapiPlayerExtended.setId("sr:player:158583");
+        sapiPlayerExtended.setName("Arias, Santiago");
+        return sapiPlayerExtended;
+    }
+
+    public static SapiPlayerExtended caulyOliveiraSouza() {
+        SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
+        sapiPlayerExtended.setType("midfielder");
+        sapiPlayerExtended.setDateOfBirth("1995-09-15");
+        sapiPlayerExtended.setNationality("Brazil");
+        sapiPlayerExtended.setCountryCode("BRA");
+        sapiPlayerExtended.setHeight(175);
+        sapiPlayerExtended.setWeight(66);
+        sapiPlayerExtended.setFullName("Cauly Oliveira Souza");
+        sapiPlayerExtended.setGender("male");
+        sapiPlayerExtended.setId("sr:player:255873");
+        sapiPlayerExtended.setName("Cauly, Oliveira Souza");
+        return sapiPlayerExtended;
+    }
+
+    public static SapiPlayerExtended marcosFelipeDeFreitasMonteiro() {
+        SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
+        sapiPlayerExtended.setType("goalie");
+        sapiPlayerExtended.setDateOfBirth("1996-04-13");
+        sapiPlayerExtended.setNationality("Brazil");
+        sapiPlayerExtended.setCountryCode("BRA");
+        sapiPlayerExtended.setHeight(188);
+        sapiPlayerExtended.setWeight(80);
+        sapiPlayerExtended.setFullName("Marcos Felipe De Freitas Monteiro");
+        sapiPlayerExtended.setGender("male");
+        sapiPlayerExtended.setId("sr:player:358524");
+        sapiPlayerExtended.setName("Felipe, Marcos");
+        return sapiPlayerExtended;
+    }
+
+    public static SapiPlayerExtended rodrigoNestorBertalia() {
+        SapiPlayerExtended sapiPlayerExtended = new SapiPlayerExtended();
+        sapiPlayerExtended.setType("midfielder");
+        sapiPlayerExtended.setDateOfBirth("2000-08-09");
+        sapiPlayerExtended.setNationality("Brazil");
+        sapiPlayerExtended.setCountryCode("BRA");
+        sapiPlayerExtended.setHeight(175);
+        sapiPlayerExtended.setWeight(65);
+        sapiPlayerExtended.setFullName("Rodrigo Nestor Bertalia");
+        sapiPlayerExtended.setGender("male");
+        sapiPlayerExtended.setId("sr:player:1323032");
+        sapiPlayerExtended.setName("Nestor, Rodrigo");
         return sapiPlayerExtended;
     }
 

@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.impl.apireaders;
 import static com.sportradar.uf.sportsapi.datamodel.BookmakerDetailsDtos.bet365;
 import static com.sportradar.uf.sportsapi.datamodel.BookmakerDetailsDtos.notForRequestedEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -30,6 +31,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.assertj.core.api.Assertions;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -282,16 +285,33 @@ public class WhoAmIReaderTests {
             dataProvider,
             dataProvider
         );
-        try {
-            whoAmIReader.validateBookmakerDetails();
-        } catch (Exception e) {
-            Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals("Access token has expired (Tue Jul 26 19:44:24 CEST 2016)", e.getMessage());
-        }
+        whoAmIReader.validateBookmakerDetails();
 
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 1);
         Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
         Assert.assertEquals(whoAmIReader.getVirtualHost(), "/virtualhost");
+    }
+
+    @Test
+    public void expiredAccessToken() {
+        StubUofConfiguration config = new StubUofConfiguration();
+        config.setEnvironment(Environment.Integration);
+
+        TestingDataProvider<BookmakerDetails> dataProvider = new TestingDataProvider<>(
+            "test/rest/bookmaker_details_expired.xml"
+        );
+
+        WhoAmIReader whoAmIReader = new WhoAmIReader(
+            config,
+            ANY_ENVIRONMENT_UPDATER,
+            dataProvider,
+            dataProvider,
+            dataProvider
+        );
+
+        assertThatExceptionOfType(IllegalStateException.class)
+            .isThrownBy(whoAmIReader::validateBookmakerDetails)
+            .withMessageStartingWith("Access token has expired");
     }
 
     @SneakyThrows

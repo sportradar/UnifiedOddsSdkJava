@@ -14,6 +14,7 @@ import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfInningNrSpecifi
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfMapNrSpecifier.mapNr;
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfMinuteSpecifier.minute;
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfRunNrSpecifier.runNr;
+import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfTypeSpecifier.type;
 import static com.sportradar.unifiedodds.sdk.entities.SportEvents.anyStage;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.DescMarketFixture.market;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
@@ -22,7 +23,7 @@ import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAss
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketDefinitionAssert.MethodsBackedByMarketDescriptionInScope.ALL_METHODS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketDefinitionAssert.MethodsBackedByMarketDescriptionInScope.METHODS_EXCLUDING_VALID_MAPPINGS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketDefinitionAssert.assertThat;
-import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactories.BuilderStubbingOutSportEventAndCaches.stubbingOutSportEventAndCaches;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactories.BuilderStubbingOutSportEventAndCaches.stubbingOutCaches;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.Ordinals.ordinal;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.OutcomeOddsAssert.assertThat;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
@@ -79,7 +80,11 @@ public class MarketFactoryImplWithOddsTest {
 
     private static MarketWithOdds buildAnytimeGoalscorerMarketVia(MarketFactory marketFactory) {
         return marketFactory
-            .buildMarketWithOdds(SportEvents.anyMatch(), anytimeGoalscorerMarket(), anyProducerId())
+            .buildMarketWithOdds(
+                SportEvents.anyMatch(),
+                anytimeGoalscorerMarket(type("live")),
+                anyProducerId()
+            )
             .get();
     }
 
@@ -114,7 +119,7 @@ public class MarketFactoryImplWithOddsTest {
             ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .withDefaultLanguage(aLanguage)
                 .with(exceptionHandlingStrategy)
@@ -135,7 +140,7 @@ public class MarketFactoryImplWithOddsTest {
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(langA)
@@ -156,7 +161,7 @@ public class MarketFactoryImplWithOddsTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(aLanguage)
@@ -182,7 +187,7 @@ public class MarketFactoryImplWithOddsTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(aLanguage)
@@ -212,7 +217,7 @@ public class MarketFactoryImplWithOddsTest {
         ) {
             val defaultLanguage = Languages.any();
             val anotherLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(defaultLanguage)
@@ -239,7 +244,7 @@ public class MarketFactoryImplWithOddsTest {
         ) {
             val defaultLanguage = Languages.any();
             val anotherLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(defaultLanguage)
@@ -266,7 +271,7 @@ public class MarketFactoryImplWithOddsTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(aLanguage)
@@ -290,7 +295,7 @@ public class MarketFactoryImplWithOddsTest {
         ) {
             val defaultLanguage = Languages.any();
             val anotherLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(defaultLanguage)
@@ -312,13 +317,13 @@ public class MarketFactoryImplWithOddsTest {
         @Test
         public void nonPlayerOutcomeIsCreatedForTeamOutcomeForNonMatchSportEvent() {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .withDefaultLanguage(aLanguage)
                 .build();
 
             val market = marketFactory
-                .buildMarketWithOdds(anyStage(), anytimeGoalscorerMarket(), anyProducerId())
+                .buildMarketWithOdds(anyStage(), anytimeGoalscorerMarket(type("live")), anyProducerId())
                 .get();
 
             val oneOfOutcomes = market.getOutcomeOdds().get(0);
@@ -332,7 +337,7 @@ public class MarketFactoryImplWithOddsTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(aLanguage)
@@ -354,7 +359,7 @@ public class MarketFactoryImplWithOddsTest {
         ) {
             val defaultLanguage = Languages.any();
             val anotherLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(defaultLanguage)
@@ -378,7 +383,7 @@ public class MarketFactoryImplWithOddsTest {
             ExpectationTowardsSdkErrorHandlingStrategy willRespectSdkStrategy
         ) {
             val aLanguage = Languages.any();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .withDefaultLanguage(aLanguage)
                 .with(exceptionHandlingStrategy)
@@ -402,7 +407,7 @@ public class MarketFactoryImplWithOddsTest {
         ) {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(noMarketDescribingProvider())
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(langA)
@@ -429,7 +434,7 @@ public class MarketFactoryImplWithOddsTest {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
 
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
@@ -446,7 +451,7 @@ public class MarketFactoryImplWithOddsTest {
             val langA = uniqueLanguages.getOne();
             val langB = uniqueLanguages.getOne();
 
-            val marketFactory = stubbingOutSportEventAndCaches()
+            val marketFactory = stubbingOutCaches()
                 .with(providing(in(langB), namesOf(oddEvenMarketDescription(), in(langB))))
                 .withDefaultLanguage(langA)
                 .build();
@@ -465,7 +470,7 @@ public class MarketFactoryImplWithOddsTest {
             @ParameterizedTest
             @MethodSource(ORDINAL_EXPRESSIONS)
             void marketHasNameWithCalculatedOrdinalExpression(int mapNr, Locale lang) {
-                val factory = stubbingOutSportEventAndCaches()
+                val factory = stubbingOutCaches()
                     .with(providing(in(lang), namesOf(mapDurationMarketDescription(lang), in(lang))))
                     .withDefaultLanguage(lang)
                     .build();
@@ -494,7 +499,7 @@ public class MarketFactoryImplWithOddsTest {
                 int expectedOrdinal,
                 Locale lang
             ) {
-                val factory = stubbingOutSportEventAndCaches()
+                val factory = stubbingOutCaches()
                     .with(
                         providing(
                             in(lang),
@@ -531,7 +536,7 @@ public class MarketFactoryImplWithOddsTest {
                 String expectedValue
             ) {
                 val lang = ENGLISH;
-                val factory = stubbingOutSportEventAndCaches()
+                val factory = stubbingOutCaches()
                     .with(
                         providing(
                             in(lang),
@@ -572,7 +577,7 @@ public class MarketFactoryImplWithOddsTest {
             @Test
             void marketOutcomeNameArithmeticExpressionDoesNotSupportDoubleTypeForSpecifiers() {
                 val lang = ENGLISH;
-                val factory = stubbingOutSportEventAndCaches()
+                val factory = stubbingOutCaches()
                     .with(providing(in(lang), namesOf(mapDurationMarketDescription(lang), in(lang))))
                     .withDefaultLanguage(lang)
                     .build();
@@ -608,7 +613,7 @@ public class MarketFactoryImplWithOddsTest {
                 val marketDescription = market(whenWillTheRunBeScoredExtraInningsMarketDescription(lang))
                     .firstOutcome(nameInninngnrReplacedWith(expression));
 
-                val factory = stubbingOutSportEventAndCaches()
+                val factory = stubbingOutCaches()
                     .with(providing(in(lang), namesOf(marketDescription, in(lang))))
                     .withDefaultLanguage(lang)
                     .build();
@@ -642,7 +647,7 @@ public class MarketFactoryImplWithOddsTest {
                 val marketDescription = market(whenWillTheRunBeScoredExtraInningsMarketDescription(lang))
                     .firstOutcome(nameInninngnrReplacedWith(expression));
 
-                val factory = stubbingOutSportEventAndCaches()
+                val factory = stubbingOutCaches()
                     .with(providing(in(lang), namesOf(marketDescription, in(lang))))
                     .withDefaultLanguage(lang)
                     .build();

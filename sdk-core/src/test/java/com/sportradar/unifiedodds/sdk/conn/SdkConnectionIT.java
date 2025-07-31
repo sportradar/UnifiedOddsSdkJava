@@ -38,11 +38,11 @@ import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.VhostLocation;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.val;
 import org.apache.hc.core5.http.HttpStatus;
+import org.awaitility.core.ConditionFactory;
 import org.junit.*;
 
 @SuppressWarnings(
@@ -207,12 +207,9 @@ public class SdkConnectionIT {
 
         rabbitProducer.send(feedMessageBuilder.buildAlive(producerId), null, 0);
 
-        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
-        producer = feed.getProducerManager().getProducer(producerId);
+        await().atMost(20, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
+        producer = feed.getProducerManager().getProducer(producerId);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -331,13 +328,9 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(20, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
-
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -848,15 +841,12 @@ public class SdkConnectionIT {
         Helper.writeToOutput("Waiting for first recovery call");
         rabbitProducer.send(feedMessageBuilder.buildAlive(producerId));
 
-        await().atMost(10, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(10, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
 
         Helper.sleep(2000); // so all events are called
 
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         final long recoveryRequestId1 = producer.getRecoveryInfo().getRequestId();
         Helper.writeToOutput("Recovery 1 called with RequestId=" + recoveryRequestId1);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
@@ -1073,13 +1063,9 @@ public class SdkConnectionIT {
         feed.open();
 
         // check if any recovery is done (without alive message), because of missing alive messages, it will be interrupted
-        await().atMost(70, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(70, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
-
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -1200,13 +1186,9 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        await().atMost(10, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(10, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
-
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -1228,7 +1210,7 @@ public class SdkConnectionIT {
                 .size()
         );
 
-        Helper.sleep((config.getProducer().getMinIntervalBetweenRecoveryRequests().getSeconds()) * 1000L); // wait till new recovery request can be made
+        sleepLessThanMinIntervalBetweenRecoveries(); // waiting full interval causes a race condition on subsequent assertions on slow machines
 
         //reset so it can be accepted
         feed.TestHttpHelper.PostResponses.clear();
@@ -1236,8 +1218,8 @@ public class SdkConnectionIT {
             new TestHttpHelper.UrlReplacement("/liveodds/", 0, HttpStatus.SC_ACCEPTED)
         );
 
-        // wait till new recovery is made
-        await().atMost(60, SECONDS).until(() -> recoveryIdChanges(from(recoveryRequestId), on(producerId)));
+        awaitAtMostMinIntervalBetweenRecoveries()
+            .until(() -> recoveryIdChanges(from(recoveryRequestId), on(producerId)));
 
         producer = feed.getProducerManager().getProducer(producerId);
         final long producerRecoveryRequestId2 = producer.getRecoveryInfo().getRequestId();
@@ -1352,6 +1334,26 @@ public class SdkConnectionIT {
         assertEquals(2, simpleMessageListener.FeedMessages.size());
     }
 
+    private ConditionFactory awaitAtMostMinIntervalBetweenRecoveries() {
+        int intervalBetweenRecoveries = (int) config
+            .getProducer()
+            .getMinIntervalBetweenRecoveryRequests()
+            .getSeconds();
+        ConditionFactory awaitAtMostIntervalBetweenRecoveries = await()
+            .atMost(intervalBetweenRecoveries, SECONDS);
+        return awaitAtMostIntervalBetweenRecoveries;
+    }
+
+    private int sleepLessThanMinIntervalBetweenRecoveries() {
+        int intervalBetweenRecoveriesInSeconds = (int) config
+            .getProducer()
+            .getMinIntervalBetweenRecoveryRequests()
+            .getSeconds();
+        int halfIntervalBetweenRecoveriesInSeconds = intervalBetweenRecoveriesInSeconds / 2;
+        Helper.sleep(halfIntervalBetweenRecoveriesInSeconds * 1000L);
+        return intervalBetweenRecoveriesInSeconds;
+    }
+
     @Test
     public void aliveSubscribedFalseTest() throws InitException {
         wireMockRule.stubFor(get(anyUrl()).willReturn(WireMock.ok()));
@@ -1388,13 +1390,10 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(20, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
 
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -1626,13 +1625,10 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(20, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
 
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -2454,14 +2450,11 @@ public class SdkConnectionIT {
 
         feed.open();
 
-        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(20, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
 
         Helper.sleep(1000);
-        assertNotNull(producer.getRecoveryInfo());
-        assertTrue(producer.isFlaggedDown());
-        assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls
             .stream()
             .filter(f -> f.contains("/liveodds/recovery/"))
@@ -2565,7 +2558,7 @@ public class SdkConnectionIT {
         // reset alives and wait for recovery
         rabbitProducer.addProducersAlive(producerId, 3000);
 
-        await().atMost(20, SECONDS).until(() -> recoveryInfoIsAvailableForProducer(producerId));
+        await().atMost(20, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
 
@@ -2973,8 +2966,15 @@ public class SdkConnectionIT {
         }
     }
 
-    private boolean recoveryInfoIsAvailableForProducer(int producerId) {
-        return checkProducerRecovery(producerId, false);
+    private boolean producerIsMarkedAsRecovering(int producerId) {
+        boolean isProducerRecovering = checkProducerRecovery(producerId, false);
+        if (isProducerRecovering) {
+            Producer producer = feed.getProducerManager().getProducer(producerId);
+            assertNotNull(producer.getRecoveryInfo());
+            assertTrue(producer.isFlaggedDown());
+            assertTrue(producer.getRecoveryInfo().getRequestId() > 0);
+        }
+        return isProducerRecovering;
     }
 
     /**
@@ -3088,7 +3088,7 @@ public class SdkConnectionIT {
                 .willReturn(
                     WireMock.ok(
                         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                        "<bookmaker_details response_code=\"OK\" expire_at=\"2025-07-26T17:44:24Z\" bookmaker_id=\"1\" virtual_host=\"/virtualhost\"/>"
+                        "<bookmaker_details response_code=\"OK\" expire_at=\"2030-07-26T17:44:24Z\" bookmaker_id=\"1\" virtual_host=\"/virtualhost\"/>"
                     )
                 )
         );

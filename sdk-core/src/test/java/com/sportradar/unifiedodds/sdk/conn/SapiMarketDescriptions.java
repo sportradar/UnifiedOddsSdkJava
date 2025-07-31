@@ -67,13 +67,6 @@ public final class SapiMarketDescriptions {
         return responseForPreMatchWithFaultyMarketAndNotFoundStatus;
     }
 
-    private static DescSpecifiers specifiers() {
-        DescSpecifiers descSpecifiers = new DescSpecifiers();
-        descSpecifiers.getSpecifier().add(specifier("player1", "string"));
-        descSpecifiers.getSpecifier().add(specifier("player2", "string"));
-        return descSpecifiers;
-    }
-
     private static DescSpecifiers.Specifier specifier(String name, String type) {
         DescSpecifiers.Specifier specifier = new DescSpecifiers.Specifier();
         specifier.setName(name);
@@ -2213,6 +2206,53 @@ public final class SapiMarketDescriptions {
         }
     }
 
+    public static final class AnytimeGoalscorer {
+
+        public static DescMarket anytimeGoalscorerMarketDescription() {
+            return anytimeGoalscorerMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket anytimeGoalscorerMarketDescription(Locale language) {
+            return anytimeGoalscorerMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket anytimeGoalscorerMarketDescription(MarketTranslation translation) {
+            DescMarket market = new DescMarket();
+            market.setId(AnytimeGoalscorerMarketIds.ANYTIME_GOALSCORER_MARKET_ID);
+            market.setName(translation.marketName);
+            market.setOutcomes(new DescOutcomes());
+
+            market.getOutcomes().getOutcome().add(noGoalOutcomeDescription(translation));
+
+            return market;
+        }
+
+        private static DescOutcomes.Outcome noGoalOutcomeDescription(MarketTranslation translation) {
+            DescOutcomes.Outcome noGoal = new DescOutcomes.Outcome();
+            noGoal.setId(AnytimeGoalscorerMarketIds.NO_GOAL_OUTCOME_ID);
+            noGoal.setName(translation.noGoalOutcomeName);
+            return noGoal;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "Anytime goalscorer", "no goal"),
+            FR(Locale.FRENCH, "Buteur pendant le match", "aucun but");
+
+            private final Locale language;
+            private final String marketName;
+            private final String noGoalOutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(translation -> translation.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Language not supported by test fixture"));
+            }
+        }
+    }
+
     public static final class BatterHead2Head {
 
         public static DescMarket batterHead2HeadMarketDescription() {
@@ -2258,6 +2298,13 @@ public final class SapiMarketDescriptions {
             outcome.setId(BatterHead2HeadMarketIds.PLAYER_2_OUTCOME_ID);
             outcome.setName(translation.player2OutcomeName);
             return outcome;
+        }
+
+        private static DescSpecifiers specifiers() {
+            DescSpecifiers descSpecifiers = new DescSpecifiers();
+            descSpecifiers.getSpecifier().add(specifier("player1", "string"));
+            descSpecifiers.getSpecifier().add(specifier("player2", "string"));
+            return descSpecifiers;
         }
 
         @RequiredArgsConstructor
@@ -2319,6 +2366,13 @@ public final class SapiMarketDescriptions {
             return outcome;
         }
 
+        private static DescSpecifiers specifiers() {
+            DescSpecifiers descSpecifiers = new DescSpecifiers();
+            descSpecifiers.getSpecifier().add(specifier("competitor", "string"));
+            descSpecifiers.getSpecifier().add(specifier("total", "string"));
+            return descSpecifiers;
+        }
+
         @RequiredArgsConstructor
         @Getter
         private enum MarketTranslation {
@@ -2329,6 +2383,80 @@ public final class SapiMarketDescriptions {
             private final String marketName;
             private final String underTotalOutcomeName;
             private final String overTotalOutcomeName;
+
+            public static MarketTranslation getFor(Locale language) {
+                return stream(MarketTranslation.values())
+                    .filter(t -> t.language.equals(language))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Unsupported language in test fixture"));
+            }
+        }
+    }
+
+    public static final class GoldHead2Head {
+
+        public static DescMarket golfHead2HeadMarketDescription() {
+            return golfHead2HeadMarketDescription(Locale.ENGLISH);
+        }
+
+        public static DescMarket golfHead2HeadMarketDescription(Locale language) {
+            return golfHead2HeadMarketDescription(MarketTranslation.getFor(language));
+        }
+
+        private static DescMarket golfHead2HeadMarketDescription(MarketTranslation translation) {
+            DescMarket market = new DescMarket();
+            market.setId(GolfHead2HeadMarketIds.GOLF_HEAD2HEAD_MARKET_ID);
+            market.setName(translation.marketName);
+
+            DescOutcomes outcomes = new DescOutcomes();
+            outcomes.getOutcome().add(competitor1Outcome(translation));
+            outcomes.getOutcome().add(drawOutcome(translation));
+            outcomes.getOutcome().add(competitor2Outcome(translation));
+
+            market.setOutcomes(outcomes);
+            market.setSpecifiers(specifiers());
+
+            return market;
+        }
+
+        private static DescOutcomes.Outcome competitor1Outcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(GolfHead2HeadMarketIds.COMPETITOR_1_OUTCOME_ID);
+            outcome.setName(translation.player1OutcomeName);
+            return outcome;
+        }
+
+        private static DescOutcomes.Outcome drawOutcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(GolfHead2HeadMarketIds.DRAW_OUTCOME_ID);
+            outcome.setName(translation.drawOutcomeName);
+            return outcome;
+        }
+
+        private static DescOutcomes.Outcome competitor2Outcome(MarketTranslation translation) {
+            DescOutcomes.Outcome outcome = new DescOutcomes.Outcome();
+            outcome.setId(GolfHead2HeadMarketIds.COMPETITOR_2_OUTCOME_ID);
+            outcome.setName(translation.player2OutcomeName);
+            return outcome;
+        }
+
+        private static DescSpecifiers specifiers() {
+            DescSpecifiers descSpecifiers = new DescSpecifiers();
+            descSpecifiers.getSpecifier().add(specifier("competitor1", "string"));
+            descSpecifiers.getSpecifier().add(specifier("competitor2", "string"));
+            return descSpecifiers;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private enum MarketTranslation {
+            EN(Locale.ENGLISH, "Head2head (1x2)", "{%competitor1}", "draw", "{%competitor2}");
+
+            private final Locale language;
+            private final String marketName;
+            private final String player1OutcomeName;
+            private final String drawOutcomeName;
+            private final String player2OutcomeName;
 
             public static MarketTranslation getFor(Locale language) {
                 return stream(MarketTranslation.values())

@@ -4,6 +4,7 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.UfOddsChangeOutcomeBuilder.activeOutcome;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.UfOddsChangeOutcomeBuilder.outcome;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.EXACT_GOALS_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FlexScoreMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.FREE_TEXT_MARKET_ID;
@@ -12,15 +13,11 @@ import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompe
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.UNDER_TOTAL_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.from;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.to;
-import static com.sportradar.utils.generic.testing.RandomObjectPicker.pickOneRandomlyFrom;
 
 import com.sportradar.uf.datamodel.*;
-import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
 import com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.*;
 import com.sportradar.unifiedodds.sdk.conn.marketids.*;
-import com.sportradar.utils.domain.feedmessages.markets.TeamIndicators;
 import java.util.List;
-import lombok.val;
 
 public class UfMarkets {
 
@@ -46,20 +43,40 @@ public class UfMarkets {
             return market;
         }
 
-        public static UfOddsChangeMarket anytimeGoalscorerMarket() {
-            final int anytimeGoalscorerMarketId = 40;
+        public static UfOddsChangeMarket anytimeGoalscorerMarket(UfTypeSpecifier type) {
             UfOddsChangeMarket market = new UfOddsChangeMarket();
-            market.setId(anytimeGoalscorerMarketId);
+            market.setId(AnytimeGoalscorerMarketIds.ANYTIME_GOALSCORER_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(type));
+            AnytimeGoalscorerMarketIds.PLAYER_OUTCOME_IDS
+                .stream()
+                .map(id -> outcome().setId(id).markAsActive().markAsTeamOutcome().build())
+                .forEach(market.getOutcome()::add);
+            market.getOutcome().add(activeOutcome().withId(AnytimeGoalscorerMarketIds.NO_GOAL_OUTCOME_ID));
+            return market;
+        }
 
-            String anytimeScorer1 = "whenFoundExampleOfSuchPleaseReplaceThis1";
-            String anytimeScorer2 = "whenFoundExampleOfSuchPleaseReplaceThis2";
-            market
-                .getOutcome()
-                .add(UfOddsChangeOutcomeBuilder.activeOutcome().withAnyTeamAndId(anytimeScorer1));
-            market
-                .getOutcome()
-                .add(UfOddsChangeOutcomeBuilder.activeOutcome().withAnyTeamAndId(anytimeScorer2));
+        public static UfOddsChangeMarket anytimeGoalscorerMarket(UfPlayerSpecifier player) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(AnytimeGoalscorerMarketIds.ANYTIME_GOALSCORER_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(player));
 
+            market.getOutcome().add(activeOutcome().withId(AnytimeGoalscorerMarketIds.NO_GOAL_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(player.getValue().toString()));
+
+            return market;
+        }
+
+        public static UfOddsChangeMarket uefa2024ScotlandVsGermanyAnytimeGoalscorerMarket(
+            UfTypeSpecifier type
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(AnytimeGoalscorerMarketIds.ANYTIME_GOALSCORER_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(type));
+            AnytimeGoalscorerMarketIds.UEFA_2024_GERMANY_VS_SCOTLAND_PLAYER_OUTCOME_IDS
+                .stream()
+                .map(id -> outcome().setId(id).markAsActive().markAsTeamOutcome().build())
+                .forEach(market.getOutcome()::add);
+            market.getOutcome().add(activeOutcome().withId(AnytimeGoalscorerMarketIds.NO_GOAL_OUTCOME_ID));
             return market;
         }
 
@@ -123,11 +140,11 @@ public class UfMarkets {
             return market;
         }
 
-        public static UfOddsChangeMarket winnerCompetitorMarket(List<SapiTeamCompetitor> competitors) {
+        public static UfOddsChangeMarket winnerCompetitorMarket(List<String> competitorIds) {
             UfOddsChangeMarket market = new UfOddsChangeMarket();
             market.setId(WinnerCompetitorMarketIds.WINNER_COMPETITOR_MARKET_ID);
             populateOutcomeIds(
-                from(WinnerCompetitorMarketIds.winnerCompetitorMarket(competitors)),
+                from(WinnerCompetitorMarketIds.winnerCompetitorMarket(competitorIds)),
                 to(market)
             );
             return market;
@@ -265,7 +282,22 @@ public class UfMarkets {
             return market;
         }
 
+        public static UfOddsChangeMarket golfHead2HeadMarket(
+            UfCompetitor1Specifier competitor1,
+            UfCompetitor2Specifier competitor2
+        ) {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(GolfHead2HeadMarketIds.GOLF_HEAD2HEAD_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(competitor1, competitor2));
+            market.getOutcome().add(activeOutcome().withId(GolfHead2HeadMarketIds.COMPETITOR_1_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(GolfHead2HeadMarketIds.DRAW_OUTCOME_ID));
+            market.getOutcome().add(activeOutcome().withId(GolfHead2HeadMarketIds.COMPETITOR_2_OUTCOME_ID));
+            return market;
+        }
+
         public static class UfOddsChangeOutcomeBuilder {
+
+            private final UfOddsChangeMarket.UfOutcome outcome = new UfOddsChangeMarket.UfOutcome();
 
             private UfOddsChangeOutcomeBuilder() {}
 
@@ -274,16 +306,32 @@ public class UfMarkets {
             }
 
             public UfOddsChangeMarket.UfOutcome withId(String id) {
-                UfOddsChangeMarket.UfOutcome outcome = new UfOddsChangeMarket.UfOutcome();
                 outcome.setId(id);
                 outcome.setOdds(DecimalOdds.any());
                 outcome.setActive(UfOutcomeActive.ACTIVE);
                 return outcome;
             }
 
-            private UfOddsChangeMarket.UfOutcome withAnyTeamAndId(String id) {
-                val outcome = withId(id);
-                outcome.setTeam(pickOneRandomlyFrom(TeamIndicators.values()).getValue());
+            public UfOddsChangeOutcomeBuilder markAsActive() {
+                outcome.setActive(UfOutcomeActive.ACTIVE);
+                return this;
+            }
+
+            public UfOddsChangeOutcomeBuilder markAsTeamOutcome() {
+                outcome.setTeam(1);
+                return this;
+            }
+
+            public UfOddsChangeOutcomeBuilder setId(String id) {
+                outcome.setId(id);
+                return this;
+            }
+
+            public static UfOddsChangeOutcomeBuilder outcome() {
+                return new UfOddsChangeOutcomeBuilder();
+            }
+
+            public UfOddsChangeMarket.UfOutcome build() {
                 return outcome;
             }
         }

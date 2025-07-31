@@ -19,6 +19,7 @@ import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
+import com.sportradar.uf.sportsapi.datamodel.SapiStageSummaryEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
@@ -27,9 +28,11 @@ import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
+import java.util.List;
 import java.util.Locale;
 import lombok.val;
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,8 +126,9 @@ class MarketWithCompetitorOutcomeTypeIT {
                 .withOpenedFeed()
         ) {
             val f1RaceCompetitors = f1Race.getSportEvent().getCompetitors().getCompetitor();
+            val f1RaceCompetitorIds = getRaceCompetitorIds(f1Race);
             rabbitProducer.send(
-                messages.oddsChange(winnerCompetitorMarket(f1RaceCompetitors)),
+                messages.oddsChange(winnerCompetitorMarket(f1RaceCompetitorIds)),
                 routingKeys.liveOddsChange()
             );
 
@@ -145,5 +149,16 @@ class MarketWithCompetitorOutcomeTypeIT {
     ) {
         Assertions.assertThat(oddsChange.getMarkets()).hasSize(1);
         return oddsChange.getMarkets().get(0);
+    }
+
+    @NotNull
+    private static List<String> getRaceCompetitorIds(SapiStageSummaryEndpoint f1Race) {
+        return f1Race
+            .getSportEvent()
+            .getCompetitors()
+            .getCompetitor()
+            .stream()
+            .map(SapiTeamCompetitor::getId)
+            .collect(toList());
     }
 }

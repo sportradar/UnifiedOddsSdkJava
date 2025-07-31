@@ -48,6 +48,19 @@ public class SapiTeams {
     public static class Germany2024Uefa {
 
         public static final String COMPETITOR_ID = "sr:competitor:4711";
+
+        public static final String NEUER_MANUEL_PLAYER_ID = "sr:player:8959";
+
+        public static final String RUDIGER_ANTONIO_PLAYER_ID = "sr:player:142622";
+
+        public static final String RAUM_DAVID_PLAYER_ID = "sr:player:820038";
+
+        public static final String TAH_JONATHAN_PLAYER_ID = "sr:player:227672";
+
+        public static final String GROSS_PASCAL_PLAYER_ID = "sr:player:48480";
+
+        public static final String KIMMICH_JOSHUA_PLAYER_ID = "sr:player:259117";
+
         private static final Map<Locale, String> NAMES = ImmutableMap.of(
             Locale.ENGLISH,
             "Germany",
@@ -178,13 +191,13 @@ public class SapiTeams {
             return manager;
         }
 
-        public static SapiPlayers getPlayers() {
+        private static SapiPlayers getPlayers() {
             SapiPlayers players = new SapiPlayers();
             players
                 .getPlayer()
                 .addAll(
                     asList(
-                        getNeurManuel(),
+                        getNeuerManuel(),
                         getRudigerAntonio(),
                         getRaumDavid(),
                         getTahJonathan(),
@@ -195,7 +208,7 @@ public class SapiTeams {
             return players;
         }
 
-        public static SapiPlayerExtended getNeurManuel() {
+        public static SapiPlayerExtended getNeuerManuel() {
             SapiPlayerExtended player = new SapiPlayerExtended();
             player.setType("goalkeeper");
             player.setDateOfBirth("1986-03-27");
@@ -206,7 +219,7 @@ public class SapiTeams {
             player.setJerseyNumber(1);
             player.setFullName("Manuel Peter Neuer");
             player.setGender("male");
-            player.setId("sr:player:8959");
+            player.setId(NEUER_MANUEL_PLAYER_ID);
             player.setName("Neuer, Manuel");
             return player;
         }
@@ -222,7 +235,7 @@ public class SapiTeams {
             player.setJerseyNumber(2);
             player.setFullName("Antonio Rudiger");
             player.setGender("male");
-            player.setId("sr:player:142622");
+            player.setId(RUDIGER_ANTONIO_PLAYER_ID);
             player.setName("Rudiger, Antonio");
             return player;
         }
@@ -238,7 +251,7 @@ public class SapiTeams {
             player.setJerseyNumber(3);
             player.setFullName("David Raum");
             player.setGender("male");
-            player.setId("sr:player:820038");
+            player.setId(RAUM_DAVID_PLAYER_ID);
             player.setName("Raum, David");
             return player;
         }
@@ -254,7 +267,7 @@ public class SapiTeams {
             player.setJerseyNumber(4);
             player.setFullName("Jonathan Glao Tah");
             player.setGender("male");
-            player.setId("sr:player:227672");
+            player.setId(TAH_JONATHAN_PLAYER_ID);
             player.setName("Tah, Jonathan");
             return player;
         }
@@ -270,7 +283,7 @@ public class SapiTeams {
             player.setJerseyNumber(5);
             player.setFullName("Pascal Gross");
             player.setGender("male");
-            player.setId("sr:player:48480");
+            player.setId(GROSS_PASCAL_PLAYER_ID);
             player.setName("Gross, Pascal");
             return player;
         }
@@ -286,7 +299,7 @@ public class SapiTeams {
             player.setJerseyNumber(6);
             player.setFullName("Joshua Walter Kimmich");
             player.setGender("male");
-            player.setId("sr:player:259117");
+            player.setId(KIMMICH_JOSHUA_PLAYER_ID);
             player.setName("Kimmich, Joshua");
             return player;
         }
@@ -780,7 +793,7 @@ public class SapiTeams {
                 .getPlayer()
                 .addAll(
                     asList(
-                        getNeurManuel(),
+                        getNeuerManuel(),
                         getRudigerAntonio(),
                         getRaumDavid(),
                         getTahJonathan(),
@@ -800,7 +813,7 @@ public class SapiTeams {
             return player;
         }
 
-        public static SapiPlayerExtended getNeurManuel() {
+        public static SapiPlayerExtended getNeuerManuel() {
             SapiPlayerExtended player = new SapiPlayerExtended();
             player.setType("goalkeeper");
             player.setDateOfBirth("1986-03-27");

@@ -98,7 +98,7 @@ public class ApiSimulator {
                     WireMock.ok(
                         XML_DECLARATION +
                         "<bookmaker_details response_code=\"OK\" " +
-                        "expire_at=\"2025-07-26T17:44:24Z\" " +
+                        "expire_at=\"2030-07-26T17:44:24Z\" " +
                         "bookmaker_id=\"1\" " +
                         "virtual_host=\"/virtualhost\"/>"
                     )
