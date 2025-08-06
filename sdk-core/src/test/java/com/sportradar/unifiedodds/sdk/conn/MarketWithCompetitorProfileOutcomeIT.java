@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
 import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
+import static com.sportradar.unifiedodds.sdk.conn.SapiCompetitorProfileEndpoints.GrandPrix2024.fernandoAlonsoCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiCompetitorProfiles.profilesFromSapiStageSummary;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.HoleNrCompetitorUnderPar.holeNrCompetitorUnderParMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.WinnerCompetitor.winnerCompetitorMarketDescription;
@@ -13,7 +14,6 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.Ba
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.bahrainGrandPrix2025;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.ThePlayersGolfChampionship.Round2.THE_PLAYERS_GOLF_ROUND_2_COMPETITION_GROUP_ID;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.ThePlayersGolfChampionship.Round2.thePlayersGolfChampionshipRound2;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.alonsoCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.Sport.FORMULA1;
 import static com.sportradar.unifiedodds.sdk.conn.Sport.GOLF;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.holeNrCompetitorUnderParMarket;
@@ -207,7 +207,7 @@ class MarketWithCompetitorProfileOutcomeIT {
         apiSimulator.stubMarketListContaining(winnerCompetitorMarketDescription, aLanguage);
         apiSimulator.stubRaceSummary(aLanguage, bahrainGrandPrix2025());
 
-        val alonsoCompetitorProfile = alonsoCompetitorProfile();
+        val alonsoCompetitorProfile = fernandoAlonsoCompetitorProfile();
         replaceProfileCompetitorIdWith(alonsoIdFromOneOfProviders, alonsoCompetitorProfile);
         apiSimulator.stubCompetitorProfile(aLanguage, alonsoCompetitorProfile);
 

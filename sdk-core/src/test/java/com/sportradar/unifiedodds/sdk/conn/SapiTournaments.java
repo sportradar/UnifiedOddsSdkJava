@@ -8,7 +8,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMatch.FullyPopulatedMatch.
 import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.FullyPopulatedSeason.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.stockCarRacing;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Nascar2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Soccer.arsenalFc;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Soccer.fcKaiserslautern;
@@ -1191,12 +1191,12 @@ public class SapiTournaments {
 
         private static SapiCompetitors formulaOne2025Competitors() {
             val c = new SapiCompetitors();
-            c.getCompetitor().add(fernandoAlonso());
-            c.getCompetitor().add(lewisHamilton());
-            c.getCompetitor().add(nicoHulkenberg());
-            c.getCompetitor().add(maxVerstappen());
-            c.getCompetitor().add(estebanOcon());
-            c.getCompetitor().add(oscarPiastri());
+            c.getCompetitor().add(fernandoAlonsoTeamCompetitor());
+            c.getCompetitor().add(lewisHamiltonTeamCompetitor());
+            c.getCompetitor().add(nicoHulkenbergCompetitor());
+            c.getCompetitor().add(maxVerstappenTeamCompetitor());
+            c.getCompetitor().add(estebanOconTeamCompetitor());
+            c.getCompetitor().add(oscarPiastriTeamCompetitor());
             return c;
         }
     }

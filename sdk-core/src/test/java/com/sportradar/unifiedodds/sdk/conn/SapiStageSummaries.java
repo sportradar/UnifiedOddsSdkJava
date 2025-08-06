@@ -9,10 +9,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiSports.formula1;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Qualifying.bahrainGrandPrix2025QualifyingStage;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Race.bahrainGrandPrix2025RaceStage;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.Races.Practice3.bahrainGrandPrix2025Practice3Stage;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.*;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.oscarPiastri;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.ALONSO_COMPETITOR_URN;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.HAMILTON_COMPETITOR_URN;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.SkiJumping.manuelFettner;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.SkiJumping.simonAmmann;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.FormulaOne2025.formulaOne2025TournamentExtended;
@@ -79,7 +76,7 @@ public final class SapiStageSummaries {
         }
 
         private static Predicate<SapiTeamCompetitor> isLewisHamilton() {
-            return c -> Objects.equals(c.getId(), HAMILTON_COMPETITOR_URN);
+            return c -> Objects.equals(c.getId(), LEWIS_HAMILTON_COMPETITOR_URN);
         }
 
         public static SapiStageSummaryEndpoint grandPrix2024RaceStageEndpoint() {
@@ -109,7 +106,7 @@ public final class SapiStageSummaries {
 
         private static SapiStageResult.SapiCompetitor alonsoResults() {
             val competitor = new SapiStageResult.SapiCompetitor();
-            competitor.setId(ALONSO_COMPETITOR_URN);
+            competitor.setId(FERNANDO_ALONSO_COMPETITOR_URN);
             competitor.getResult().add(position(6));
             competitor.getResult().add(noPitstops(2));
             competitor.getResult().add(noOvertakings(0));
@@ -121,7 +118,7 @@ public final class SapiStageSummaries {
 
         private static SapiStageResult.SapiCompetitor hamiltonResults() {
             val competitor = new SapiStageResult.SapiCompetitor();
-            competitor.setId(HAMILTON_COMPETITOR_URN);
+            competitor.setId(LEWIS_HAMILTON_COMPETITOR_URN);
             competitor.getResult().add(position(4));
             competitor.getResult().add(noPitstops(3));
             competitor.getResult().add(noOvertakings(2));
@@ -528,18 +525,18 @@ public final class SapiStageSummaries {
             private static SapiStageSportEventStatus bahrainGrandPrix2025SportEventStatus() {
                 val status = new SapiStageSportEventStatus();
                 status.setStatus("ended");
-                status.setWinnerId(oscarPiastri().getId());
+                status.setWinnerId(OSCAR_PIASTRI_COMPETITOR_URN);
                 status.setResults(bahrainGrandPrix2025SportEventResults());
                 return status;
             }
 
             private static SapiStageResult bahrainGrandPrix2025SportEventResults() {
                 val results = new SapiStageResult();
-                results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 15));
-                results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 5));
-                results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 12));
-                results.getCompetitor().add(competitorOnPosition(maxVerstappen(), null));
-                results.getCompetitor().add(competitorOnPosition(oscarPiastri(), 1));
+                results.getCompetitor().add(competitorOnPosition(fernandoAlonsoTeamCompetitor(), 15));
+                results.getCompetitor().add(competitorOnPosition(lewisHamiltonTeamCompetitor(), 5));
+                results.getCompetitor().add(competitorOnPosition(nicoHulkenbergCompetitor(), 12));
+                results.getCompetitor().add(competitorOnPosition(maxVerstappenTeamCompetitor(), null));
+                results.getCompetitor().add(competitorOnPosition(oscarPiastriTeamCompetitor(), 1));
                 return results;
             }
 
@@ -574,12 +571,12 @@ public final class SapiStageSummaries {
             private static SapiSportEventCompetitors competitors() {
                 val competitors = Stream
                     .of(
-                        fernandoAlonso(),
-                        lewisHamilton(),
-                        nicoHulkenberg(),
-                        maxVerstappen(),
-                        estebanOcon(),
-                        oscarPiastri()
+                        fernandoAlonsoTeamCompetitor(),
+                        lewisHamiltonTeamCompetitor(),
+                        nicoHulkenbergCompetitor(),
+                        maxVerstappenTeamCompetitor(),
+                        estebanOconTeamCompetitor(),
+                        oscarPiastriTeamCompetitor()
                     )
                     .map(toSapiTeamCompetitor())
                     .collect(Collectors.toList());
@@ -627,11 +624,11 @@ public final class SapiStageSummaries {
 
             private static SapiCompetitors bahrainGrandPrix2025Competitors() {
                 val c = new SapiCompetitors();
-                c.getCompetitor().add(fernandoAlonso());
-                c.getCompetitor().add(lewisHamilton());
-                c.getCompetitor().add(nicoHulkenberg());
-                c.getCompetitor().add(maxVerstappen());
-                c.getCompetitor().add(estebanOcon());
+                c.getCompetitor().add(fernandoAlonsoTeamCompetitor());
+                c.getCompetitor().add(lewisHamiltonTeamCompetitor());
+                c.getCompetitor().add(nicoHulkenbergCompetitor());
+                c.getCompetitor().add(maxVerstappenTeamCompetitor());
+                c.getCompetitor().add(estebanOconTeamCompetitor());
                 return c;
             }
 
@@ -669,11 +666,11 @@ public final class SapiStageSummaries {
 
                     private static SapiStageResult results() {
                         val results = new SapiStageResult();
-                        results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 14));
-                        results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 6));
-                        results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 3));
-                        results.getCompetitor().add(competitorOnPosition(maxVerstappen(), 2));
-                        results.getCompetitor().add(competitorOnPosition(estebanOcon(), 4));
+                        results.getCompetitor().add(competitorOnPosition(fernandoAlonsoTeamCompetitor(), 14));
+                        results.getCompetitor().add(competitorOnPosition(lewisHamiltonTeamCompetitor(), 6));
+                        results.getCompetitor().add(competitorOnPosition(nicoHulkenbergCompetitor(), 3));
+                        results.getCompetitor().add(competitorOnPosition(maxVerstappenTeamCompetitor(), 2));
+                        results.getCompetitor().add(competitorOnPosition(estebanOconTeamCompetitor(), 4));
                         return results;
                     }
 
@@ -696,12 +693,12 @@ public final class SapiStageSummaries {
                     private static SapiSportEventCompetitors competitors() {
                         val competitors = Stream
                             .of(
-                                fernandoAlonso(),
-                                lewisHamilton(),
-                                nicoHulkenberg(),
-                                maxVerstappen(),
-                                estebanOcon(),
-                                oscarPiastri()
+                                fernandoAlonsoTeamCompetitor(),
+                                lewisHamiltonTeamCompetitor(),
+                                nicoHulkenbergCompetitor(),
+                                maxVerstappenTeamCompetitor(),
+                                estebanOconTeamCompetitor(),
+                                oscarPiastriTeamCompetitor()
                             )
                             .map(toSapiTeamCompetitor())
                             .collect(Collectors.toList());
@@ -734,11 +731,11 @@ public final class SapiStageSummaries {
 
                 private static SapiStageResult results() {
                     val results = new SapiStageResult();
-                    results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 1));
-                    results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 2));
-                    results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 3));
-                    results.getCompetitor().add(competitorOnPosition(maxVerstappen(), 4));
-                    results.getCompetitor().add(competitorOnPosition(estebanOcon(), 5));
+                    results.getCompetitor().add(competitorOnPosition(fernandoAlonsoTeamCompetitor(), 1));
+                    results.getCompetitor().add(competitorOnPosition(lewisHamiltonTeamCompetitor(), 2));
+                    results.getCompetitor().add(competitorOnPosition(nicoHulkenbergCompetitor(), 3));
+                    results.getCompetitor().add(competitorOnPosition(maxVerstappenTeamCompetitor(), 4));
+                    results.getCompetitor().add(competitorOnPosition(estebanOconTeamCompetitor(), 5));
                     return results;
                 }
 
@@ -759,12 +756,12 @@ public final class SapiStageSummaries {
                 private static SapiSportEventCompetitors competitors() {
                     val competitors = Stream
                         .of(
-                            fernandoAlonso(),
-                            lewisHamilton(),
-                            nicoHulkenberg(),
-                            maxVerstappen(),
-                            estebanOcon(),
-                            oscarPiastri()
+                            fernandoAlonsoTeamCompetitor(),
+                            lewisHamiltonTeamCompetitor(),
+                            nicoHulkenbergCompetitor(),
+                            maxVerstappenTeamCompetitor(),
+                            estebanOconTeamCompetitor(),
+                            oscarPiastriTeamCompetitor()
                         )
                         .map(toSapiTeamCompetitor())
                         .collect(Collectors.toList());
@@ -796,11 +793,11 @@ public final class SapiStageSummaries {
 
                 private static SapiStageResult results() {
                     val results = new SapiStageResult();
-                    results.getCompetitor().add(competitorOnPosition(fernandoAlonso(), 1));
-                    results.getCompetitor().add(competitorOnPosition(lewisHamilton(), 2));
-                    results.getCompetitor().add(competitorOnPosition(nicoHulkenberg(), 3));
-                    results.getCompetitor().add(competitorOnPosition(maxVerstappen(), 4));
-                    results.getCompetitor().add(competitorOnPosition(estebanOcon(), 5));
+                    results.getCompetitor().add(competitorOnPosition(fernandoAlonsoTeamCompetitor(), 1));
+                    results.getCompetitor().add(competitorOnPosition(lewisHamiltonTeamCompetitor(), 2));
+                    results.getCompetitor().add(competitorOnPosition(nicoHulkenbergCompetitor(), 3));
+                    results.getCompetitor().add(competitorOnPosition(maxVerstappenTeamCompetitor(), 4));
+                    results.getCompetitor().add(competitorOnPosition(estebanOconTeamCompetitor(), 5));
                     return results;
                 }
 
@@ -823,12 +820,12 @@ public final class SapiStageSummaries {
                 private static SapiSportEventCompetitors competitors() {
                     val competitors = Stream
                         .of(
-                            fernandoAlonso(),
-                            lewisHamilton(),
-                            nicoHulkenberg(),
-                            maxVerstappen(),
-                            estebanOcon(),
-                            oscarPiastri()
+                            fernandoAlonsoTeamCompetitor(),
+                            lewisHamiltonTeamCompetitor(),
+                            nicoHulkenbergCompetitor(),
+                            maxVerstappenTeamCompetitor(),
+                            estebanOconTeamCompetitor(),
+                            oscarPiastriTeamCompetitor()
                         )
                         .map(toSapiTeamCompetitor())
                         .collect(Collectors.toList());

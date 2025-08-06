@@ -18,7 +18,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiSports.tennis;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.GrandPrix2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.ArsenalFc.arsenalProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.BuffaloSabres.buffaloSabres;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.ALONSO_COMPETITOR_URN;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.FERNANDO_ALONSO_COMPETITOR_URN;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.NorwayNationalSoccerTeam.norwayNationalSoccerTeamProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.nascarCup2024TournamentInfo;
@@ -313,7 +313,7 @@ class CompetitorsIT {
                 val fernandoAlonso = stage
                     .getCompetitors()
                     .stream()
-                    .filter(c -> Objects.equals(c.getId().toString(), ALONSO_COMPETITOR_URN))
+                    .filter(c -> Objects.equals(c.getId().toString(), FERNANDO_ALONSO_COMPETITOR_URN))
                     .findFirst()
                     .get();
 
@@ -403,7 +403,7 @@ class CompetitorsIT {
                 val fernandoAlonso = stage
                     .getCompetitors()
                     .stream()
-                    .filter(c -> Objects.equals(c.getId().toString(), ALONSO_COMPETITOR_URN))
+                    .filter(c -> Objects.equals(c.getId().toString(), FERNANDO_ALONSO_COMPETITOR_URN))
                     .findFirst()
                     .get();
 

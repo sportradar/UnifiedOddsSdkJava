@@ -18,7 +18,9 @@ import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.di.UsageTelemetryFactories;
+import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.UsageGauge;
+import com.sportradar.unifiedodds.sdk.internal.impl.entities.BookmakerDetailsImpl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
 import io.opentelemetry.exporter.internal.http.HttpExporterBuilder;
 import java.time.Duration;
@@ -86,6 +88,7 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .withAccessToken("access-token")
             .withEnvironment(Environment.Production)
             .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(4))
             .withUsageConfiguration(
                 usageConfigurationForUsageTelemetry()
                     .withExportEnabled(true)
@@ -126,6 +129,7 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .withAccessToken("access-token")
             .withEnvironment(Environment.GlobalIntegration)
             .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(1234))
             .withUsageConfiguration(
                 usageConfigurationForUsageTelemetry()
                     .withExportEnabled(true)
@@ -167,6 +171,10 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
                 .withRequestBody(containing("metricsVersion"))
                 .withRequestBody(containing("v1"))
                 .withRequestBody(containing("service.instance.id"))
+                .withRequestBody(containing("bookmakerId"))
+                .withRequestBody(
+                    containing(String.valueOf(configuration.getBookmakerDetails().getBookmakerId()))
+                )
         );
     }
 
@@ -176,6 +184,7 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .withAccessToken("access-token")
             .withEnvironment(Environment.Integration)
             .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(12))
             .withUsageConfiguration(
                 usageConfigurationForUsageTelemetry()
                     .withExportEnabled(true)
@@ -222,5 +231,9 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             );
             return true;
         };
+    }
+
+    private BookmakerDetails bookmakerDetailsWithBookmakerId(int bookmakerId) {
+        return new BookmakerDetailsImpl(bookmakerId, "vhost", null, null, "message", Duration.ZERO);
     }
 }

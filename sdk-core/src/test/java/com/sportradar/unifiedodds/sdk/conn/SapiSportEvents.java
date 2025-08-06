@@ -9,7 +9,7 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.Ba
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.Formula1.BahrainGrandPrix2025FormulaOne.bahrainGrandPrix2025TournamentExtended;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.SkiJumping.FourHillsTournament.Insbruck.Runs.FirstRun.insbruckFourHillsSkiJumpingFirstRunStage;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.SkiJumping.FourHillsTournament.Insbruck.Runs.SecondRun.insbruckFourHillsSkiJumpingSecondRunStage;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa.germanyCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Scotland.scotlandCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.SkiJumping.manuelFettner;
@@ -233,12 +233,12 @@ public class SapiSportEvents {
             private static SapiSportEventCompetitors competitors() {
                 val competitors = Stream
                     .of(
-                        fernandoAlonso(),
-                        lewisHamilton(),
-                        nicoHulkenberg(),
-                        maxVerstappen(),
-                        estebanOcon(),
-                        oscarPiastri()
+                        fernandoAlonsoTeamCompetitor(),
+                        lewisHamiltonTeamCompetitor(),
+                        nicoHulkenbergCompetitor(),
+                        maxVerstappenTeamCompetitor(),
+                        estebanOconTeamCompetitor(),
+                        oscarPiastriTeamCompetitor()
                     )
                     .map(toSapiTeamCompetitor())
                     .collect(toList());

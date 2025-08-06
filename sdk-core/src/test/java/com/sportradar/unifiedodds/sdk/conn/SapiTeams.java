@@ -16,7 +16,6 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds.SapiReferenceId;
 import com.sportradar.unifiedodds.sdk.SapiCategories;
 import com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars;
-import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -1061,87 +1060,6 @@ public class SapiTeams {
         }
     }
 
-    public static class GrandPrix2024 {
-
-        public static final String HAMILTON_COMPETITOR_URN = "sr:competitor:7135";
-        public static final String ALONSO_COMPETITOR_URN = "sr:competitor:4521";
-
-        public static final String COMPETITOR_URN = "sr:competitor:4521";
-        private static final Map<Locale, String> NAMES = ImmutableMap.of(
-            Locale.ENGLISH,
-            "Germany",
-            Locale.GERMAN,
-            "Deutschland"
-        );
-
-        public static SapiCompetitorProfileEndpoint alonsoCompetitorProfile() {
-            SapiCompetitorProfileEndpoint profile = new SapiCompetitorProfileEndpoint();
-            profile.setCompetitor(alonsoCompetitorExtended());
-            profile.setRaceDriverProfile(getRaceDriverProfile());
-            profile.setGeneratedAt(XmlGregorianCalendars.forTime(LocalDateTime.of(2023, 11, 1, 7, 2, 58)));
-            return profile;
-        }
-
-        private static SapiRaceDriverProfile getRaceDriverProfile() {
-            SapiRaceDriverProfile profile = new SapiRaceDriverProfile();
-            profile.setCar(getCar());
-            profile.setRaceDriver(getRaceDriver());
-            profile.setRaceTeam(getRaceTeam());
-            return profile;
-        }
-
-        private static SapiRaceTeam getRaceTeam() {
-            SapiRaceTeam team = new SapiRaceTeam();
-            team.setId("sr:competitor:496090");
-            team.setName("Aston Martin F1 Team");
-            team.setGender("male");
-            return team;
-        }
-
-        private static SapiRaceDriver getRaceDriver() {
-            SapiRaceDriver driver = new SapiRaceDriver();
-            driver.setDateOfBirth("1986-03-27");
-            driver.setId(ALONSO_COMPETITOR_URN);
-            driver.setName("Alonso, Fernando");
-            return driver;
-        }
-
-        private static SapiCar getCar() {
-            SapiCar car = new SapiCar();
-            car.setName("Aston Martin AMR24");
-            car.setChassis("AMR24");
-            car.setEngineName("Mercedes M15 E Performance");
-            return car;
-        }
-
-        public static SapiTeamCompetitor fernandoAlonso() {
-            return fernandoAlonso(Locale.ENGLISH);
-        }
-
-        public static SapiTeamCompetitor fernandoAlonso(Locale language) {
-            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
-            competitor.setId(ALONSO_COMPETITOR_URN);
-            competitor.setName("Alonso, Fernando");
-            competitor.setAbbreviation("ALO");
-            competitor.setGender("male");
-            return competitor;
-        }
-
-        public static SapiTeamExtended alonsoCompetitorExtended() {
-            SapiTeamExtended competitor = new SapiTeamExtended();
-            competitor.setId(ALONSO_COMPETITOR_URN);
-            competitor.setName("Alonso, Fernando");
-            competitor.setAbbreviation("ALO");
-            competitor.setCountry("Spain");
-            competitor.setCountryCode("ESP");
-            competitor.setGender("male");
-            competitor.setSport(SapiSports.formula1());
-            competitor.setCategory(formula1());
-
-            return competitor;
-        }
-    }
-
     public static class Nascar2024 {
 
         public static final String TRUEX_JR_COMPETITOR_URN = "sr:competitor:39979";
@@ -1319,70 +1237,140 @@ public class SapiTeams {
         }
     }
 
-    public static class FormulaOne2025 {
+    public static class FormulaOnePilots {
 
-        public static SapiTeam fernandoAlonso() {
-            val t = new SapiTeam();
-            t.setId("sr:competitor:4521");
-            t.setName("Alonso, Fernando");
-            t.setAbbreviation("ALO");
-            t.setCountry("Spain");
-            t.setCountryCode("ESP");
-            t.setGender("male");
-            return t;
+        public static final String LEWIS_HAMILTON_COMPETITOR_URN = "sr:competitor:7135";
+
+        public static final String FERNANDO_ALONSO_COMPETITOR_URN = "sr:competitor:4521";
+
+        public static final String NICO_HULKENBERG_COMPETITOR_URN = "sr:competitor:39412";
+
+        public static final String MAX_VERSTAPPEN_COMPETITOR_URN = "sr:competitor:178318";
+
+        public static final String ESTEBAN_OCON_COMPETITOR_URN = "sr:competitor:184751";
+
+        public static final String OSCAR_PIASTRI_COMPETITOR_URN = "sr:competitor:953189";
+
+        public static SapiTeamCompetitor nicoHulkenbergCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            populateNicoHulkenbergCommonData(competitor);
+            return competitor;
         }
 
-        public static SapiTeam lewisHamilton() {
-            val t = new SapiTeam();
-            t.setId("sr:competitor:7135");
-            t.setName("Hamilton, Lewis");
-            t.setAbbreviation("HAM");
-            t.setCountry("Great Britain");
-            t.setCountryCode("GBR");
-            t.setGender("male");
-            return t;
+        public static SapiTeamExtended fernandoAlonsoCompetitorExtended() {
+            SapiTeamExtended competitor = new SapiTeamExtended();
+            populateFernandoAlonsoCommonData(competitor);
+            competitor.setSport(SapiSports.formula1());
+            competitor.setCategory(formula1());
+            return competitor;
         }
 
-        public static SapiTeam nicoHulkenberg() {
-            val t = new SapiTeam();
-            t.setId("sr:competitor:39412");
-            t.setName("Hulkenberg, Nico");
-            t.setAbbreviation("HUL");
-            t.setCountry("Germany");
-            t.setCountryCode("DEU");
-            t.setGender("male");
-            return t;
+        public static SapiTeamCompetitor fernandoAlonsoTeamCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            populateFernandoAlonsoCommonData(competitor);
+            return competitor;
         }
 
-        public static SapiTeam maxVerstappen() {
-            val t = new SapiTeam();
-            t.setId("sr:competitor:178318");
-            t.setName("Verstappen, Max");
-            t.setAbbreviation("VER");
-            t.setCountry("Netherlands");
-            t.setCountryCode("NLD");
-            t.setGender("male");
-            return t;
+        public static SapiRaceDriver fernandoAlonsoRaceDriver() {
+            SapiRaceDriver driver = new SapiRaceDriver();
+            populateFernandoAlonsoCommonData(driver);
+            driver.setDateOfBirth("1981-07-29");
+            driver.setNationality("Spain");
+            return driver;
         }
 
-        public static SapiTeam estebanOcon() {
-            val t = new SapiTeam();
-            t.setId("sr:competitor:184751");
-            t.setName("Ocon, Esteban");
-            t.setAbbreviation("OCO");
-            t.setCountry("France");
-            t.setCountryCode("FRA");
-            t.setGender("male");
-            return t;
+        public static SapiTeamExtended lewisHamiltonCompetitorExtended() {
+            SapiTeamExtended competitor = new SapiTeamExtended();
+            populateLewisHamiltonCommonData(competitor);
+            competitor.setSport(SapiSports.formula1());
+            competitor.setCategory(formula1());
+            return competitor;
         }
 
-        public static SapiTeam oscarPiastri() {
-            val t = new SapiTeam();
-            t.setId("sr:competitor:953189");
-            t.setName("Piastri, Oscar");
-            t.setAbbreviation("PIA");
-            t.setGender("male");
-            return t;
+        public static SapiTeamCompetitor lewisHamiltonTeamCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            populateLewisHamiltonCommonData(competitor);
+            return competitor;
+        }
+
+        public static SapiRaceDriver lewisHamiltonRaceDriver() {
+            SapiRaceDriver driver = new SapiRaceDriver();
+            populateLewisHamiltonCommonData(driver);
+            driver.setDateOfBirth("1985-01-07");
+            driver.setNationality("Great Britain");
+            return driver;
+        }
+
+        public static SapiTeamCompetitor maxVerstappenTeamCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            populateMaxVerstappenCommonData(competitor);
+            return competitor;
+        }
+
+        public static SapiTeamCompetitor estebanOconTeamCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            populateEstebanOconCommonData(competitor);
+            return competitor;
+        }
+
+        public static SapiTeamCompetitor oscarPiastriTeamCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            populateOscarPiastriCommonData(competitor);
+            return competitor;
+        }
+
+        private static void populateOscarPiastriCommonData(SapiTeam team) {
+            team.setId(OSCAR_PIASTRI_COMPETITOR_URN);
+            team.setName("Piastri, Oscar");
+            team.setAbbreviation("PIA");
+            team.setCountry("Australia");
+            team.setCountryCode("AUS");
+            team.setGender("male");
+        }
+
+        private static void populateEstebanOconCommonData(SapiTeam team) {
+            team.setId(ESTEBAN_OCON_COMPETITOR_URN);
+            team.setName("Ocon, Esteban");
+            team.setAbbreviation("OCO");
+            team.setCountry("France");
+            team.setCountryCode("FRA");
+            team.setGender("male");
+        }
+
+        private static void populateMaxVerstappenCommonData(SapiTeam team) {
+            team.setId(MAX_VERSTAPPEN_COMPETITOR_URN);
+            team.setName("Verstappen, Max");
+            team.setAbbreviation("VER");
+            team.setCountry("Netherlands");
+            team.setCountryCode("NLD");
+            team.setGender("male");
+        }
+
+        private static void populateNicoHulkenbergCommonData(SapiTeam team) {
+            team.setId(NICO_HULKENBERG_COMPETITOR_URN);
+            team.setName("Hulkenberg, Nico");
+            team.setAbbreviation("HUL");
+            team.setCountry("Germany");
+            team.setCountryCode("DEU");
+            team.setGender("male");
+        }
+
+        private static void populateLewisHamiltonCommonData(SapiTeam team) {
+            team.setId(LEWIS_HAMILTON_COMPETITOR_URN);
+            team.setName("Hamilton, Lewis");
+            team.setAbbreviation("HAM");
+            team.setCountry("Great Britain");
+            team.setCountryCode("GBR");
+            team.setGender("male");
+        }
+
+        private static void populateFernandoAlonsoCommonData(SapiTeam team) {
+            team.setId(FERNANDO_ALONSO_COMPETITOR_URN);
+            team.setName("Alonso, Fernando");
+            team.setAbbreviation("ALO");
+            team.setCountry("Spain");
+            team.setCountryCode("ESP");
+            team.setGender("male");
         }
     }
 

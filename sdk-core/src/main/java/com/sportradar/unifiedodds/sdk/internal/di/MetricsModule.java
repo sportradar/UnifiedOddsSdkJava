@@ -107,6 +107,7 @@ public class MetricsModule implements Module {
                     .put("environment", environmentName)
                     .put("metricsVersion", "v1")
                     .put("service.instance.id", serviceInstanceId)
+                    .put("bookmakerId", String.valueOf(configuration.getBookmakerDetails().getBookmakerId()))
                     .build()
             );
 

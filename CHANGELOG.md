@@ -1,7 +1,10 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.4.0**
-- Consistently supporting varied prefixes for player and competitor URNs
+**4.5.0**
+- Telemetry exports now support bookmaker id, improving metric correlation and issue analysis.
+
+**4.4.0 (2025-07-31)**
+- Enabling player and competitor URNs to support varied prefixes
 
 **4.3.0 (2025-07-07)**
 - Soccer tournaments 86 and 853 (Club Friendly Games) with increased amount of data are preloaded using a longer timeout.

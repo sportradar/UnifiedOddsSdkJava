@@ -6,12 +6,14 @@ package com.sportradar.unifiedodds.sdk.internal.caching.impl;
 import static com.sportradar.unifiedodds.sdk.caching.impl.ProfileCaches.*;
 import static com.sportradar.unifiedodds.sdk.caching.impl.ProfileCaches.BuilderStubbingOutDataRouterManager.stubbingOutDataRouterManager;
 import static com.sportradar.unifiedodds.sdk.caching.impl.SportEntityFactories.BuilderStubbingOutAllCachesAndStatusFactory.stubbingOutAllCachesAndStatusFactory;
+import static com.sportradar.unifiedodds.sdk.conn.SapiCompetitorProfileEndpoints.GrandPrix2024.fernandoAlonsoCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSimpleTeams.FullyPopulatedCollegeBasketballTeam.fullyPopulatedCollegeBasketballTeam;
 import static com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.FullyPopulatedStage.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.FERNANDO_ALONSO_COMPETITOR_URN;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.fernandoAlonsoTeamCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedFootballCompetitor.fullyPopulatedFootballCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedFormula1Competitor.fullyPopulatedFormula1CompetitorProfile;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.alonsoCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Nascar2024.truexJrCompetitorProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.VirtualCompetitor.convertToVirtual;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.VirtualCompetitor.virtualStageCompetitor;
@@ -45,7 +47,6 @@ import com.sportradar.unifiedodds.sdk.conn.SapiStageSummaries.FullyPopulatedStag
 import com.sportradar.unifiedodds.sdk.conn.SapiTeams;
 import com.sportradar.unifiedodds.sdk.conn.SapiTeams.FullyPopulatedFootballCompetitor;
 import com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa;
-import com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024;
 import com.sportradar.unifiedodds.sdk.conn.SapiTeams.VirtualCompetitor;
 import com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024;
 import com.sportradar.unifiedodds.sdk.entities.Competitor;
@@ -361,14 +362,14 @@ class CompetitorProfileCacheImplTest {
         @Test
         public void retrievesNonVirtualCompetitorForMatchPopulatedFromStageSummary() throws Exception {
             SapiStageSummaryEndpoint summary = fullyPopulatedStageSummary();
-            replace1stCompetitorWith(GrandPrix2024.fernandoAlonso(), summary);
-            Urn competitorUrn = parse(GrandPrix2024.ALONSO_COMPETITOR_URN);
+            replace1stCompetitorWith(fernandoAlonsoTeamCompetitor(), summary);
+            Urn competitorUrn = parse(FERNANDO_ALONSO_COMPETITOR_URN);
 
             DataRouterImpl dataRouter = new DataRouterImpl();
             val competitorProvider = providing(
                 in(ENGLISH),
                 with(competitorUrn.toString()),
-                convertToVirtual(alonsoCompetitorProfile())
+                convertToVirtual(fernandoAlonsoCompetitorProfile())
             );
             DataRouterManager dataRouterManager =
                 CompetitorProfileCacheImplTest.this.dataRouterManagerBuilder.withSummaries(
@@ -1280,7 +1281,7 @@ class CompetitorProfileCacheImplTest {
 
         @Test
         public void exportsImportsNonVirtualCompetitor() throws Exception {
-            val competitor = alonsoCompetitorProfile();
+            val competitor = fernandoAlonsoCompetitorProfile();
             competitor.getCompetitor().setVirtual(false);
 
             Urn competitorUrn = parse(competitor.getCompetitor().getId());

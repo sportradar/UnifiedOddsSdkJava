@@ -31,6 +31,11 @@ public class OutcomesAssert extends AbstractAssert<OutcomesAssert, List<? extend
         return this;
     }
 
+    public OutcomesAssert isEmpty() {
+        Assertions.assertThat(actual).isEmpty();
+        return this;
+    }
+
     public OutcomeAssert which() {
         return OutcomeAssert.assertThat(outcome);
     }

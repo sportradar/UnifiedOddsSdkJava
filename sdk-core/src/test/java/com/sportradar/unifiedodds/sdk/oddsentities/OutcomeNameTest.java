@@ -12,10 +12,10 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.GoldHea
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.WinnerCompetitor.winnerCompetitorMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.Cricket.EnglandNationalTeam2025.joeRootProfile;
 import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.Cricket.IndiaNationalTeam2025.viratKohliProfile;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOne2025.lewisHamilton;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.fernandoAlonsoTeamCompetitor;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.FormulaOnePilots.lewisHamiltonTeamCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa.getNeuerManuel;
-import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.GrandPrix2024.fernandoAlonso;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.TenerifeWomensOpen2025Golf.carmenAlonsoFuentes;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.TenerifeWomensOpen2025Golf.casandraAlexander;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.*;
@@ -56,6 +56,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -447,11 +448,54 @@ public class OutcomeNameTest {
                 .hasNameForDefaultLanguage(language, outcomeName);
         }
 
+        @Test
+        void marketDescriptionWithNullOutcomesAndFeedMessageWithEmptyOutcomesProduceEmptyOutcomesList()
+            throws Exception {
+            val marketDescription = winnerCompetitorMarketDescription();
+            nullifyMarketDescriptionOutcomesFrom(marketDescription);
+
+            val marketDescriptionStubWithNoOutcomes = stubWithMarketAndOutcomeIdsAndNamesFrom(
+                marketDescription,
+                language
+            );
+
+            val marketDescriptionProvider = providing(
+                in(language),
+                marketDescriptionStubWithNoOutcomes,
+                NO_SPECIFIERS
+            );
+
+            val factory = stubbingOutCaches()
+                .with(ExceptionHandlingStrategy.Throw)
+                .with(marketDescriptionProvider)
+                .withDefaultLanguage(language)
+                .build();
+
+            UfOddsChangeMarket ufMarket = getUfOddsChangeMarketWithoutAnyOutcomesFor(marketDescription);
+
+            val market = factory.buildMarketWithOdds(anyMatch(), ufMarket, PRODUCER_ID).get();
+            val outcomeOdds = market.getOutcomeOdds();
+
+            OutcomesAssert.assertThat(outcomeOdds).isEmpty();
+        }
+
+        @NotNull
+        private UfOddsChangeMarket getUfOddsChangeMarketWithoutAnyOutcomesFor(DescMarket marketDescription) {
+            UfOddsChangeMarket ufMarket = new UfOddsChangeMarket();
+            ufMarket.getOutcome().clear();
+            ufMarket.setId(marketDescription.getId());
+            return ufMarket;
+        }
+
+        private void nullifyMarketDescriptionOutcomesFrom(DescMarket marketDescription) {
+            marketDescription.setOutcomes(null);
+        }
+
         private void replaceManuelNeuerIdWith(String manuelNeuerId, UfOddsChangeMarket ufMarket) {
             ufMarket
                 .getOutcome()
                 .stream()
-                .filter(o -> o.getId() == getNeuerManuel().getId())
+                .filter(o -> o.getId().equals(getNeuerManuel().getId()))
                 .forEach(o -> {
                     o.setId(manuelNeuerId);
                 });
@@ -489,11 +533,12 @@ public class OutcomeNameTest {
                 NO_SPECIFIERS
             );
 
-            val fernandoAlonso = competitorCi()
+            val fernandoAlonso = fernandoAlonsoTeamCompetitor();
+            val fernandoAlonsoCi = competitorCi()
                 .withId(parse(fernandoAlonsoId))
-                .withName(in(language), fernandoAlonso().getName())
+                .withName(in(language), fernandoAlonso.getName())
                 .build();
-            val profileCache = ProfileCaches.providing(in(language), fernandoAlonso);
+            val profileCache = ProfileCaches.providing(in(language), fernandoAlonsoCi);
 
             val factory = stubbingOutCaches()
                 .with(ExceptionHandlingStrategy.Throw)
@@ -510,13 +555,15 @@ public class OutcomeNameTest {
                 .assertThat(outcomeOdds)
                 .hasOutcomeWithId(fernandoAlonsoId)
                 .which()
-                .hasNameForDefaultLanguage(language, fernandoAlonso().getName());
+                .hasNameForDefaultLanguage(language, fernandoAlonso.getName());
         }
 
         @Test
         void singleOutcomeIdCanRepresentMultipleCompetitors() throws Exception {
-            String multiCompetitorOutcomeId = fernandoAlonso().getId() + "," + lewisHamilton().getId();
-            String multiCompetitorOutcomeName = fernandoAlonso().getName() + "," + lewisHamilton().getName();
+            val fernandoAlonso = fernandoAlonsoTeamCompetitor();
+            val lewisHamilton = lewisHamiltonTeamCompetitor();
+            String multiCompetitorOutcomeId = fernandoAlonso.getId() + "," + lewisHamilton.getId();
+            String multiCompetitorOutcomeName = fernandoAlonso.getName() + "," + lewisHamilton.getName();
             DescMarket multiPlayerOutcomeIdMarketDescription = inventedMarketAsWeCouldNotFindSuchMarketInProduction(
                 "Invented Market - two chosen competitors collectively make less than 6 pit stops",
                 multiCompetitorOutcomeId,
@@ -534,12 +581,12 @@ public class OutcomeNameTest {
             );
 
             val fernandAlonsoCi = competitorCi()
-                .withId(parse(fernandoAlonso().getId()))
-                .withName(in(language), fernandoAlonso().getName())
+                .withId(parse(fernandoAlonso.getId()))
+                .withName(in(language), fernandoAlonso.getName())
                 .build();
             val lewisHamiltonCi = competitorCi()
-                .withId(parse(lewisHamilton().getId()))
-                .withName(in(language), lewisHamilton().getName())
+                .withId(parse(lewisHamilton.getId()))
+                .withName(in(language), lewisHamilton.getName())
                 .build();
 
             val profileCache = ProfileCaches.providing(in(language), fernandAlonsoCi, lewisHamiltonCi);
