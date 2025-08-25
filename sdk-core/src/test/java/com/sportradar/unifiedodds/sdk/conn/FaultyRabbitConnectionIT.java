@@ -105,7 +105,7 @@ public class FaultyRabbitConnectionIT {
     public void messagesAreNotDuplicatedAfterNetworkOutage()
         throws InitException, IOException, TimeoutException, InterruptedException {
         assumeThat("see developerREADME", shouldMavenRunToxiproxyIntegrationTests(), equalTo(true));
-        wireMockRule.stubFor(get(anyUrl()).willReturn(WireMock.ok()));
+        stubAnyGetAndPostApiCallsToReturnOk();
         stubBookmaker();
         enableOnlyLiveProducer();
         final int nodeId = 1;
@@ -133,6 +133,11 @@ public class FaultyRabbitConnectionIT {
             waitEnoughTimeForSdkToRecoverConnectionAndChannels();
             assertThatSdkNotDuplicatesMessages();
         }
+    }
+
+    private void stubAnyGetAndPostApiCallsToReturnOk() {
+        wireMockRule.stubFor(get(anyUrl()).willReturn(WireMock.ok()));
+        wireMockRule.stubFor(post(anyUrl()).willReturn(WireMock.ok()));
     }
 
     private void waitEnoughTimeForSdkToRecoverConnectionAndChannels() {

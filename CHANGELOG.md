@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.5.0**
+**4.5.1**
+ - Fixed an issue with producer recovery urls not being properly rewritten for custom environment setups. 
+
+**4.5.0 (2025-08-06)**
 - Telemetry exports now support bookmaker id, improving metric correlation and issue analysis.
 
 **4.4.0 (2025-07-31)**

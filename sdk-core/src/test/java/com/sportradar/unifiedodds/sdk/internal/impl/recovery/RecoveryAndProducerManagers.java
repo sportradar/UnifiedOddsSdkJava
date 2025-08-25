@@ -63,6 +63,7 @@ public class RecoveryAndProducerManagers {
         private Optional<DataProvider<Producers>> producerDataProvider = Optional.empty();
         private Optional<HttpHelper> httpClient = Optional.empty();
         private Optional<OpenTelemetry> openTelemetry = Optional.empty();
+        private Optional<SdkInternalConfiguration> config = Optional.empty();
 
         public static BuilderStubbingOutProducerDataProviderAndHttp stubbingOutProducerDataProviderAndHttpClient() {
             return new BuilderStubbingOutProducerDataProviderAndHttp();
@@ -100,8 +101,16 @@ public class RecoveryAndProducerManagers {
             return this;
         }
 
+        @SuppressWarnings("HiddenField")
+        public BuilderStubbingOutProducerDataProviderAndHttp withSdkInternalConfig(
+            SdkInternalConfiguration config
+        ) {
+            this.config = Optional.of(config);
+            return this;
+        }
+
         public RecoveryAndProducerManagers build() {
-            SdkInternalConfiguration internalConfig = mock(SdkInternalConfiguration.class);
+            SdkInternalConfiguration internalConfig = config.orElse(mock(SdkInternalConfiguration.class));
             when(internalConfig.getLongestInactivityInterval())
                 .thenReturn(DEFAULT_LONGEST_INACTIVITY_INTERVAL_SECONDS);
             SdkProducerStatusListener producerStatusListener = new SdkProducerStatusListener() {

@@ -10,8 +10,6 @@ import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.hc.core5.http.HttpStatus;
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
 import org.mockito.ArgumentCaptor;
 
 public class HttpHelperStubs {
@@ -25,10 +23,10 @@ public class HttpHelperStubs {
     }
 
     @SneakyThrows
-    public static AbstractStringAssert<?> verifyUrlPostedTo(HttpHelper httpClient) {
+    public static UrlAssert verifyUrlPostedTo(HttpHelper httpClient) {
         ArgumentCaptor<String> url = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(url.capture());
 
-        return Assertions.assertThat(url.getValue());
+        return UrlAssert.assertThat(url.getValue());
     }
 }

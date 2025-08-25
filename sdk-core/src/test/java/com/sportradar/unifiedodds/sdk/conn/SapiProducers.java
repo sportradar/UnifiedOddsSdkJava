@@ -72,7 +72,8 @@ public final class SapiProducers {
         return producer;
     }
 
-    public static Producer liveOddsProducer() throws MalformedURLException {
+    @SneakyThrows
+    public static Producer liveOddsProducer() {
         Producer producer = new Producer();
         producer.setId(ProducerId.LIVE_ODDS.get());
         producer.setName("LO");

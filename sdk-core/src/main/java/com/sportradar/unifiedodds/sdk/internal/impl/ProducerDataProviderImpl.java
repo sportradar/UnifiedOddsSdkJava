@@ -11,6 +11,7 @@ import com.sportradar.uf.sportsapi.datamodel.Producers;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +66,7 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
                     p.isActive(),
                     config.getEnvironment() != Environment.Custom
                         ? p.getApiUrl()
-                        : ReplaceProducerApiUrl(p.getApiUrl()),
+                        : createCustomProducerUrl(p.getApiUrl()),
                     p.getScope(),
                     p.getStatefulRecoveryWindowInMinutes()
                 )
@@ -73,13 +74,11 @@ public class ProducerDataProviderImpl implements ProducerDataProvider {
             .collect(Collectors.toList());
     }
 
-    private String ReplaceProducerApiUrl(String url) {
-        if (url.contains(config.getApiHost())) {
-            return url;
-        }
-        if (url.contains(EnvironmentManager.getApiHost(Environment.Integration))) {
-            return url.replace(EnvironmentManager.getApiHost(Environment.Integration), config.getApiHost());
-        }
-        return url.replace(EnvironmentManager.getApiHost(Environment.Production), config.getApiHost());
+    private String createCustomProducerUrl(String url) {
+        URI originalUri = URI.create(url);
+        String protocol = config.getUseApiSsl() ? "https" : "http";
+        String hostAndPort = config.getApiHostAndPort();
+
+        return protocol + "://" + hostAndPort + originalUri.getPath();
     }
 }
