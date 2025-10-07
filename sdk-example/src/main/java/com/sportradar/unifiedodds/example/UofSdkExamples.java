@@ -34,29 +34,91 @@ public class UofSdkExamples {
 
     private static void doExampleSelection() throws IOException, InitException, InterruptedException {
         System.out.println("Available examples: (select the one you would like to run)");
-        System.out.println("  1 - Sample setup: Basic \t\t\t\t\t\tSingle session (full odds recovery)");
+        System.out.println("  1 - Basic SDK Setup");
         System.out.println(
-            "  2 - Sample setup: Multi-session \t\t\t\tMultiple sessions: Prematch, Liveodds, Virtuals (full odds recovery)"
+            "      → Single UofSession with MessageInterest.AllMessages, full odds recovery from all producers"
         );
         System.out.println(
-            "  3 - Sample setup: Basic (recovery timestamp) \tSingle session (recovery for the last 2 hours - on all active producers)"
+            "      → Demonstrates: SDK initialization, GlobalEventsListener, MessageListener patterns"
+        );
+        System.out.println();
+
+        System.out.println("  2 - Multi-Session Architecture");
+        System.out.println(
+            "      → Three parallel sessions: Prematch, Live, Virtuals with filtered MessageInterest types"
         );
         System.out.println(
-            "  4 - Sample setup: Full message data \t\t\tSingle session (recovery for the last 2 hours - on all active producers)"
+            "      → Demonstrates: Session isolation, message filtering, concurrent event handling"
+        );
+        System.out.println();
+
+        System.out.println("  3 - Timestamp-Based Recovery");
+        System.out.println(
+            "      → Single session with ProducerManager recovery from last 2 hours via setProducersRecoveryTimestamp()"
         );
         System.out.println(
-            "  5 - Extra: Print available markets \t\t\tList the full static market descriptions list"
+            "      → Demonstrates: Historical data recovery, producer management, timestamp-based recovery"
+        );
+        System.out.println();
+
+        System.out.println("  4 - Full Message Data Access");
+        System.out.println(
+            "      → DataSessionSetup with DataMessageListener for complete message payload inspection"
         );
         System.out.println(
-            "  6 - Extra: Print available market mappings \tList the available static market description mappings"
+            "      → Demonstrates: Raw message data access, detailed event parsing, data structure exploration"
         );
-        System.out.println("  7 - Extra: Replay Server \t\t\t\t\t\tA simple replay demonstration");
-        System.out.println("  8 - Extra: Print sport event data \t\t\tPrints out static sport event data");
+        System.out.println();
+
+        System.out.println("  5 - Market Descriptions API");
         System.out.println(
-            "  9 - Extra: Advanced configuration setup \t\tA basic demonstration on how to do an advanced configuration setup"
+            "      → MarketDescriptionManager.getMarketDescriptions() - static metadata enumeration"
         );
         System.out.println(
-            " 10 - Extra: Cache export/import \t\t\t\tA basic demonstration on how to export/import current cache state"
+            "      → Demonstrates: Market metadata access, static data APIs, betting market structures"
+        );
+        System.out.println();
+
+        System.out.println("  6 - Market Mappings Analysis");
+        System.out.println(
+            "      → MarketDescriptionManager with mapping data for outcome/specifier relationships"
+        );
+        System.out.println(
+            "      → Demonstrates: Market variant mappings, outcome translations, specifier handling"
+        );
+        System.out.println();
+
+        System.out.println("  7 - Replay Server Integration");
+        System.out.println("      → UofSdkForReplay with ReplayManager for historical event simulation");
+        System.out.println(
+            "      → Demonstrates: Replay environment setup, historical data playback, testing scenarios"
+        );
+        System.out.println();
+
+        System.out.println("  8 - Sport Event Data Explorer");
+        System.out.println(
+            "      → SportEventDataPrinter accessing static sport hierarchy and event metadata"
+        );
+        System.out.println(
+            "      → Demonstrates: Sport data structures, event hierarchies, tournament/competition APIs"
+        );
+        System.out.println();
+
+        System.out.println("  9 - Advanced Configuration");
+        System.out.println(
+            "      → Custom UofConfiguration beyond default properties (timeouts, caching, locales)"
+        );
+        System.out.println(
+            "      → Demonstrates: Configuration builder patterns, environment selection, advanced tuning"
+        );
+        System.out.println();
+
+        System.out.println(" 10 - Cache Export/Import");
+        System.out.println(
+            "      → SDK cache serialization/deserialization for state persistence across restarts"
+        );
+        System.out.println(
+            "      → Demonstrates: Cache management, state persistence, performance optimization"
         );
 
         String selection = getConsoleInput();

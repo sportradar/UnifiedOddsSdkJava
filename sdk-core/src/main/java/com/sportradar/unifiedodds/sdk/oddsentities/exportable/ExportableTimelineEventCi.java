@@ -9,7 +9,7 @@ import java.util.List;
 @SuppressWarnings({ "HiddenField", "ParameterNumber" })
 public class ExportableTimelineEventCi implements Serializable {
 
-    private int id;
+    private long id;
     private BigDecimal awayScore;
     private BigDecimal homeScore;
     private Integer matchTime;
@@ -30,7 +30,7 @@ public class ExportableTimelineEventCi implements Serializable {
     private String matchClock;
 
     public ExportableTimelineEventCi(
-        int id,
+        long id,
         BigDecimal awayScore,
         BigDecimal homeScore,
         Integer matchTime,
@@ -71,11 +71,11 @@ public class ExportableTimelineEventCi implements Serializable {
         this.matchClock = matchClock;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

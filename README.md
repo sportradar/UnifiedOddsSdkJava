@@ -1,160 +1,197 @@
-Unified Feed SDK 3.x
-----------------
+# Sportradar Unified Odds SDK for Java 4.x
 
+A comprehensive Java SDK that simplifies access to Sportradar's real-time odds and sports data for bookmakers. This SDK seamlessly integrates message subscriptions with RESTful API calls, providing a unified interface while handling complex recovery mechanisms automatically.
 
-The Unified Odds SDK provides a simple and efficient way to access Sportradar's odds and sport information for a bookmaker.
-It combines subscription of messages and RESTful API calls into a unified Java interface that hides most of the complexity including recovery.
+## 📋 Migration Information
 
-When upgrading from 2.x to 3.x, please refer to the [Migration Guide](migration-guide-v3.md).
+- **Upgrading from version 2.x to 3.x?** See our [Migration Guide v3](migration-guide-v3.md)
+- **Upgrading from version 3.x to 4.x?** See our [Migration Guide v4](migration-guide-v4.md)
 
-### A Basic way to use the UofSdk
+## 🚀 Quick Start Guide
 
-First you need to implement the SDK event listeners that will receive callbacks for each message/event.
-* [UofListener](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofListener.html)
-* [UofGlobalEventsListener](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofGlobalEventsListener.html)
+### Step 1: Implement Event Listeners
 
-Then to actually connect and start receiving messages you do the following:
+Create your custom listeners to handle incoming messages and events:
+
+- **[UofListener](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofListener.html)** - Handles odds and betting-related messages
+- **[UofGlobalEventsListener](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofGlobalEventsListener.html)** - Handles system-wide events and status updates
+
+### Step 2: Initialize and Configure the SDK
+
 ```java
+// Create your listener instances
 MyUofListener listener = new MyUofListener();
 MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
-UofConfiguration config = UofSdk.getConfigurationBuilder().setAccessToken("your-token").build();
+// Configure the SDK with your access token
+UofConfiguration config = UofSdk.getConfigurationBuilder()
+    .setAccessToken("your-token")
+    .build();
 
+// Initialize the SDK
 UofSdk uofSdk = new UofSdk(globalEventsListener, config);
 
+// Create and configure a session
 UofSessionBuilder sessionBuilder = uofSdk.getSessionBuilder();
-sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.AllMessages).build();
+sessionBuilder.setListener(listener)
+    .setMessageInterest(MessageInterest.AllMessages)
+    .build();
 
+// Start receiving data
 uofSdk.open();
 ```
 
-See: [UofSdk](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSdk.html),
-[UofSessionBuilder](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSessionBuilder.html),
-[UofGlobalEventsListener](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofGlobalEventsListener.html)
-and [UofListener](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofListener.html)
+**Key Components:**
+- [UofSdk](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSdk.html) - Main SDK interface
+- [UofSessionBuilder](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSessionBuilder.html) - Session configuration builder
 
-That should be it!
+## 📊 Accessing Sports Data
 
-If you want to get available sport events, active tournaments, or all sports you can get the [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
-from the main [UofSdk](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSdk.html) instance:
+Retrieve sports information, tournaments, and events using the [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html):
 
 ```java
 SportDataProvider sportDataProvider = uofSdk.getSportDataProvider();
-// Get all sports, translated in the desired locales
+
+// Retrieve all available sports (with localized translations)
 for (Sport sport : sportDataProvider.getSports()) {
-
+    // Process sports data
 }
-// Get all soccer active tournaments, the returned data will be translated in the desired locales
+
+// Get active soccer tournaments
 for (SportEvent tournament : sportDataProvider.getActiveTournaments("soccer")) {
-
+    // Process tournament data
 }
-// Get all competitions scheduled for today
+
+// Fetch today's scheduled competitions
 for (SportEvent sportEvent : sportDataProvider.getCompetitionsFor(new Date())) {
-
+    // Process scheduled events
 }
 
-// Get all live competitions
+// Get currently live competitions
 for (SportEvent sportEvent : sportDataProvider.getLiveCompetitions()) {
-
+    // Process live events
 }
 ```
 
-### More Advanced Usage
-Note that there is one thread handling message reception and calling your registered listener per session,
-so the processing within your listener should be as quick as possible to not prevent following messages from being
-processed.
+## ⚡ Advanced Configuration Options
 
-Another more scalable way of listening to events is to have two different sessions one for high-priority messages
-and another for low-priority-messages. 
-This means that the low priority messages will not prevent high-priority messages from getting processed
-(ex., [BetSettlement](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html)
-is considered low-priority,
-[OddsChange](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/OddsChange.html) is considered high-priority).
-To create two different sessions for the high and low-priority messages you do the following:
+### High-Performance Message Processing
+
+For optimal performance, consider separating high-priority and low-priority message processing into different sessions. This prevents low-priority messages from blocking critical updates.
+
+**Message Priority Classification:**
+- **High Priority:** [OddsChange](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/OddsChange.html) events
+- **Low Priority:** [BetSettlement](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html) events
 
 ```java
 MyUofListener listener = new MyUofListener();
 MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
-UofConfiguration config = UofSdk.getConfigurationBuilder().setAccessToken("your-token").build();
+UofConfiguration config = UofSdk.getConfigurationBuilder()
+    .setAccessToken("your-token")
+    .build();
 
 UofSdk uofSdk = new UofSdk(globalEventsListener, config);
 
+// Create separate sessions for different message priorities
 UofSessionBuilder sessionBuilder = uofSdk.getSessionBuilder();
-sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.HiPrioMessagesOnly).build();
-sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.LoPrioMessagesOnly).build();
+
+// High-priority session
+sessionBuilder.setListener(listener)
+    .setMessageInterest(MessageInterest.HiPrioMessagesOnly)
+    .build();
+
+// Low-priority session  
+sessionBuilder.setListener(listener)
+    .setMessageInterest(MessageInterest.LoPrioMessagesOnly)
+    .build();
 
 uofSdk.open();
 ```
 
-Note that the same listener is used for both channels, but when creating the two different sessions, different
-[MessageInterest](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MessageInterest.html)
-levels are provided. In this case, you will get two different threads doing the processing of the different types of messages.
+This approach creates dedicated processing threads for each [MessageInterest](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MessageInterest.html) level, ensuring optimal performance.
 
-#### *Live Only Processing*
-If you wish to only process live events in your system and maybe process prematch events in a completely different system,
-you can do this in a similar manner.
+### Live-Only Event Processing
+
+For systems that exclusively handle live events, configure the SDK to process only live messages:
 
 ```java
-sessionBuilder.setListener(listener).setMessageInterest(MessageInterest.LiveMessagesOnly).build();
+sessionBuilder.setListener(listener)
+    .setMessageInterest(MessageInterest.LiveMessagesOnly)
+    .build();
 ```
-This kind of session will receive all messages except
-[OddsChange](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/OddsChange.html)
-happening before the game starts
-(you will start receiving
-[OddsChange](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/OddsChange.html)
-some minutes before the game starts) and
-[BetSettlement](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html)
-resulting from confirmed results (you will still receive
-[BetSettlments](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html)
-when the game ends, but only after 15minutes or even later after the game confirms the match results).
 
-### Localization
-By default all the data is available in English. You can add additional desired "prefetch" languages
-and set the default locale with the use of the
-[UofConfigurationBuilder](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html)
-([addDesiredLocales](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#addDesiredLocales-java.util.List-),
-[setDefaultLocale](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html#setDefaultLocale-java.util.Locale-)).
-If you need to access a locale that was not specified as the default locale and neither added to the desired locales
-list, you can still access the locale translated content through the
-[SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
-and
-[MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html).
+**Live-Only Mode Behavior:**
+- Excludes pre-match [OddsChange](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/OddsChange.html) events (starts receiving a few minutes before game begins)
+- Filters out [BetSettlement](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html) messages from confirmed results
+- Still receives settlements when games end, but only after result confirmation (typically 15+ minutes post-game)
 
-### System Failures
-The Unified Odds SDK is designed to help you handle various networking outages and Sportradar subsystem failures.
-If some malfunction of the system is detected(Sportradar subsystem stops working, alive interval violations,...),
-the SDK will dispatch a
-[ProducerDown](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/ProducerDown.html)
-event, when this happens it is advised that you disable all the markets related to this producer.
+## 🌍 Internationalization Support
 
-When the SDK detects that the malfunction is corrected it will automatically reconnect and request the most recent
-odds information and any other missed messages(a recovery request will be executed), after the recovery is completed the
-[ProducerUp](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/ProducerUp.html)
-event is dispatched, after the producer is up again you can safely re-enable all the markets.
-
-If your system crashes or if you take down/restart your system you need to provide the timestamp of the last processed
-message per producer, so the SDK performs the recovery for the missed messages(the max time from the last processed
-message can not be more than 3 days). You can do this through the
-[ProducerManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/ProducerManager.html)
-available on the
-[UofSdk](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/UofSdk.html)
-instance. If the last processed message timestamp is not provided, the SDK will perform a
-full recovery, beware: with a full recovery you do not recover any lost
-[BetSettlement](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html)
-messages!
+### Default Localization
+The SDK provides English content by default. Customize language preferences using [UofConfigurationBuilder](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html):
 
 ```java
-// as an example, we set the last message received timestamp to 2 days ago for the producer with the id 1(LiveOdds)
+UofConfiguration config = UofSdk.getConfigurationBuilder()
+    .setAccessToken("your-token")
+    .setDefaultLocale(Locale.GERMAN)
+    .addDesiredLocales(Arrays.asList(Locale.FRENCH, Locale.SPANISH))
+    .build();
+```
+
+### Dynamic Locale Access
+Access additional locales on-demand through:
+- [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
+- [MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html)
+
+## 🛠️ System Resilience & Recovery
+
+### Automatic Failure Detection
+The SDK continuously monitors system health and automatically handles various failure scenarios:
+
+**When Issues Are Detected:**
+- Network outages
+- Sportradar subsystem failures  
+- Alive interval violations
+
+The SDK dispatches [ProducerDown](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/ProducerDown.html) events. **Recommended action:** Disable all markets for the affected producer.
+
+### Automatic Recovery Process
+When systems recover, the SDK:
+1. Automatically reconnects
+2. Requests latest odds information
+3. Retrieves missed messages via recovery requests
+4. Dispatches [ProducerUp](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/ProducerUp.html) events
+
+**After ProducerUp:** Safely re-enable all markets for the producer.
+
+### Manual Recovery Configuration
+For system restarts or crashes, provide the last processed message timestamp to ensure complete data recovery:
+
+```java
+// Example: Set recovery point to 2 days ago for LiveOdds producer (ID: 1)
 Calendar cal = Calendar.getInstance();
 cal.add(Calendar.DATE, -2);
+
 ProducerManager producerManager = uofSdk.getProducerManager();
 producerManager.setProducerLastMessageTimestamp(1, cal.getTime().getTime());
 
-// session creation,...
+// Configure sessions...
 
-uofSdk.open(); // finally we open the feed
+uofSdk.open(); // Start the feed
 ```
 
-### Further reading
-* [Online Javadocs](https://sportradar.github.io/UnifiedOddsSdkJava/)
+**Important Recovery Notes:**
+- Maximum recovery window: 3 days
+- Without timestamp: Full recovery is performed
+- **Warning:** Full recovery does NOT restore missed [BetSettlement](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/oddsentities/BetSettlement.html) messages
+
+### Performance Optimization Tips
+
+⚠️ **Critical Performance Consideration:** Each session uses a single thread for message reception and listener callbacks. Keep your listener processing as lightweight as possible to prevent message queue backups.
+
+## 📚 Additional Resources
+
+- **[Complete API Documentation](https://sportradar.github.io/UnifiedOddsSdkJava/)** - Comprehensive Javadocs
+- **[Migration Guides](migration-guide-v4.md)** - Version upgrade instructions
+- **[SDK Examples](sdk-example/)** - Sample implementations and use cases

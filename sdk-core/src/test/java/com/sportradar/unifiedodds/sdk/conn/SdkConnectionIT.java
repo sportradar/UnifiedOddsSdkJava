@@ -1063,7 +1063,14 @@ public class SdkConnectionIT {
         feed.open();
 
         // check if any recovery is done (without alive message), because of missing alive messages, it will be interrupted
-        await().atMost(70, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
+        int recoveryIsIssuedAfter60SecondsOfNoAlives = 60;
+        int schedulerInitiallyIsKickedOffAfter20Seconds = 20;
+        int reserve10Seconds = 10;
+        int timeout =
+            recoveryIsIssuedAfter60SecondsOfNoAlives +
+            schedulerInitiallyIsKickedOffAfter20Seconds +
+            reserve10Seconds;
+        await().atMost(timeout, SECONDS).until(() -> producerIsMarkedAsRecovering(producerId));
 
         producer = feed.getProducerManager().getProducer(producerId);
         List<String> recoveryCalled = feed.TestHttpHelper.CalledUrls

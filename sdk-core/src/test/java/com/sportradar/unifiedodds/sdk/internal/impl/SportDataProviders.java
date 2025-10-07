@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.internal.caching.*;
+import com.sportradar.unifiedodds.sdk.internal.caching.impl.ProfileCacheImpl;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Locale;
 import lombok.val;
@@ -36,6 +37,21 @@ public class SportDataProviders {
 
         public SportDataProvidersBuilder with(SportEntityFactory entityFactory) {
             this.entityFactory = entityFactory;
+            return this;
+        }
+
+        public SportDataProvidersBuilder with(SportEventCache eventCache) {
+            this.eventCache = eventCache;
+            return this;
+        }
+
+        public SportDataProvidersBuilder with(SportsDataCache sportsDataCache) {
+            this.sportsDataCache = sportsDataCache;
+            return this;
+        }
+
+        public SportDataProvidersBuilder with(ProfileCacheImpl profileCache) {
+            this.profileCache = profileCache;
             return this;
         }
 

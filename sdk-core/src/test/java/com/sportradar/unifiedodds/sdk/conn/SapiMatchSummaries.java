@@ -815,4 +815,238 @@ public final class SapiMatchSummaries {
             return basic;
         }
     }
+
+    public static final class Soccer {
+
+        public static class RussiaZoneNorthWest {
+
+            public static SapiMatchSummaryEndpoint soccerMatchFkTosnoGuorKarelia() {
+                SapiMatchSummaryEndpoint summary = new SapiMatchSummaryEndpoint();
+                summary.setGeneratedAt(forDate(LocalDate.of(2025, 9, 23)));
+                summary.setSportEvent(fkTosnoVsGuorKareliaSportEvent());
+                summary.setSportEventConditions(new SapiSportEventConditions());
+                summary.setSportEventStatus(fkTosnoVsGuorKareliaSportEventStatus());
+                summary.setStatistics(fkTosnoVsGuorKareliaStatistics());
+                return summary;
+            }
+
+            private static SapiSportEvent fkTosnoVsGuorKareliaSportEvent() {
+                SapiSportEvent event = new SapiSportEvent();
+                event.setId("sr:match:63629821");
+                event.setScheduled(forDate(LocalDate.of(2025, 9, 23)));
+                event.setStartTimeTbd(false);
+                event.setTournamentRound(zoneNorthWestTournamentRound());
+                event.setTournament(zoneNorthWestTournament());
+                event.setCompetitors(fkTosnoVsGuorKareliaCompetitors());
+                return event;
+            }
+
+            private static SapiMatchRound zoneNorthWestTournamentRound() {
+                SapiMatchRound round = new SapiMatchRound();
+                round.setBetradarId(16315);
+                round.setBetradarName("Zone North-West");
+                return round;
+            }
+
+            private static SapiTournament zoneNorthWestTournament() {
+                SapiTournament tournament = new SapiTournament();
+                tournament.setId("sr:simple_tournament:16315");
+                tournament.setName("Zone North-West");
+                tournament.setSport(soccer());
+                tournament.setCategory(russiaCategory());
+                return tournament;
+            }
+
+            private static SapiCategory russiaCategory() {
+                SapiCategory category = new SapiCategory();
+                category.setId("sr:category:21");
+                category.setName("Russia");
+                category.setCountryCode("RUS");
+                return category;
+            }
+
+            private static SapiSportEventCompetitors fkTosnoVsGuorKareliaCompetitors() {
+                SapiSportEventCompetitors competitors = new SapiSportEventCompetitors();
+                competitors.getCompetitor().add(fkTosnoCompetitor());
+                competitors.getCompetitor().add(guorKareliaCompetitor());
+                return competitors;
+            }
+
+            private static SapiTeamCompetitor fkTosnoCompetitor() {
+                SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+                competitor.setQualifier("home");
+                competitor.setId("sr:competitor:107219");
+                competitor.setName("FK Tosno");
+                competitor.setAbbreviation("TOS");
+                competitor.setCountry("Russia");
+                competitor.setCountryCode("RUS");
+                competitor.setGender("male");
+                competitor.setReferenceIds(fkTosnoReferenceIds());
+                return competitor;
+            }
+
+            private static SapiCompetitorReferenceIds fkTosnoReferenceIds() {
+                SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+                SapiReferenceId betradarId = new SapiReferenceId();
+                betradarId.setName("betradar");
+                betradarId.setValue("25160633");
+                referenceIds.getReferenceId().add(betradarId);
+                return referenceIds;
+            }
+
+            private static SapiTeamCompetitor guorKareliaCompetitor() {
+                SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+                competitor.setQualifier("away");
+                competitor.setId("sr:competitor:1269770");
+                competitor.setName("Guor Karelia");
+                competitor.setAbbreviation("GUO");
+                competitor.setCountry("Russia");
+                competitor.setCountryCode("RUS");
+                competitor.setGender("male");
+                competitor.setReferenceIds(guorKareliaReferenceIds());
+                return competitor;
+            }
+
+            private static SapiCompetitorReferenceIds guorKareliaReferenceIds() {
+                SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+                SapiReferenceId betradarId = new SapiReferenceId();
+                betradarId.setName("betradar");
+                betradarId.setValue("24896299");
+                referenceIds.getReferenceId().add(betradarId);
+                return referenceIds;
+            }
+
+            private static SapiSportEventStatus fkTosnoVsGuorKareliaSportEventStatus() {
+                SapiSportEventStatus status = new SapiSportEventStatus();
+                status.setHomeScore("1");
+                status.setAwayScore("0");
+                status.setStatusCode(4);
+                status.setMatchStatusCode(100);
+                status.setStatus("closed");
+                status.setMatchStatus("ended");
+                status.setWinnerId("sr:competitor:107219");
+                return status;
+            }
+
+            private static SapiMatchStatistics fkTosnoVsGuorKareliaStatistics() {
+                SapiMatchStatistics statistics = new SapiMatchStatistics();
+                statistics.setTotals(fkTosnoVsGuorKareliaTotals());
+                statistics.setPeriods(fkTosnoVsGuorKareliaPeriods());
+                return statistics;
+            }
+
+            private static SapiStatisticsTotals fkTosnoVsGuorKareliaTotals() {
+                SapiStatisticsTotals totals = new SapiStatisticsTotals();
+                SapiStatisticsTeam teams = new SapiStatisticsTeam();
+                teams.getTeam().add(fkTosnoTotalStatistics());
+                teams.getTeam().add(guorKareliaTotalStatistics());
+                totals.getTeams().add(teams);
+                return totals;
+            }
+
+            private static SapiTeamStatistics fkTosnoTotalStatistics() {
+                SapiTeamStatistics.SapiStatistics stats = new SapiTeamStatistics.SapiStatistics();
+                stats.setCards("3");
+                stats.setCornerKicks("6");
+                stats.setYellowCards("3");
+
+                SapiTeamStatistics team = new SapiTeamStatistics();
+                team.setId("sr:competitor:107219");
+                team.setName("FK Tosno");
+                team.setStatistics(stats);
+                return team;
+            }
+
+            private static SapiTeamStatistics guorKareliaTotalStatistics() {
+                SapiTeamStatistics.SapiStatistics stats = new SapiTeamStatistics.SapiStatistics();
+                stats.setCards("4");
+                stats.setCornerKicks("1");
+                stats.setYellowCards("4");
+
+                SapiTeamStatistics team = new SapiTeamStatistics();
+                team.setId("sr:competitor:1269770");
+                team.setName("Guor Karelia");
+                team.setStatistics(stats);
+                return team;
+            }
+
+            private static SapiStatisticsPeriods fkTosnoVsGuorKareliaPeriods() {
+                SapiStatisticsPeriods periods = new SapiStatisticsPeriods();
+                periods.getPeriod().add(firstHalfPeriodStatistics());
+                periods.getPeriod().add(secondHalfPeriodStatistics());
+                return periods;
+            }
+
+            private static SapiMatchPeriod firstHalfPeriodStatistics() {
+                SapiMatchPeriod period = new SapiMatchPeriod();
+                period.setName("1st half");
+
+                SapiStatisticsTeam teams = new SapiStatisticsTeam();
+                teams.getTeam().add(fkTosnoFirstHalfStatistics());
+                teams.getTeam().add(guorKareliaFirstHalfStatistics());
+                period.getTeams().add(teams);
+                return period;
+            }
+
+            private static SapiTeamStatistics fkTosnoFirstHalfStatistics() {
+                SapiTeamStatistics.SapiStatistics stats = new SapiTeamStatistics.SapiStatistics();
+                stats.setCards("0");
+                stats.setCornerKicks("4");
+
+                SapiTeamStatistics team = new SapiTeamStatistics();
+                team.setId("sr:competitor:107219");
+                team.setName("FK Tosno");
+                team.setStatistics(stats);
+                return team;
+            }
+
+            private static SapiTeamStatistics guorKareliaFirstHalfStatistics() {
+                SapiTeamStatistics.SapiStatistics stats = new SapiTeamStatistics.SapiStatistics();
+                stats.setCards("0");
+
+                SapiTeamStatistics team = new SapiTeamStatistics();
+                team.setId("sr:competitor:1269770");
+                team.setName("Guor Karelia");
+                team.setStatistics(stats);
+                return team;
+            }
+
+            private static SapiMatchPeriod secondHalfPeriodStatistics() {
+                SapiMatchPeriod period = new SapiMatchPeriod();
+                period.setName("2nd half");
+
+                SapiStatisticsTeam teams = new SapiStatisticsTeam();
+                teams.getTeam().add(fkTosnoSecondHalfStatistics());
+                teams.getTeam().add(guorKareliaSecondHalfStatistics());
+                period.getTeams().add(teams);
+                return period;
+            }
+
+            private static SapiTeamStatistics fkTosnoSecondHalfStatistics() {
+                SapiTeamStatistics.SapiStatistics stats = new SapiTeamStatistics.SapiStatistics();
+                stats.setCards("3");
+                stats.setCornerKicks("2");
+                stats.setYellowCards("3");
+
+                SapiTeamStatistics team = new SapiTeamStatistics();
+                team.setId("sr:competitor:107219");
+                team.setName("FK Tosno");
+                team.setStatistics(stats);
+                return team;
+            }
+
+            private static SapiTeamStatistics guorKareliaSecondHalfStatistics() {
+                SapiTeamStatistics.SapiStatistics stats = new SapiTeamStatistics.SapiStatistics();
+                stats.setCards("4");
+                stats.setCornerKicks("1");
+                stats.setYellowCards("4");
+
+                SapiTeamStatistics team = new SapiTeamStatistics();
+                team.setId("sr:competitor:1269770");
+                team.setName("Guor Karelia");
+                team.setStatistics(stats);
+                return team;
+            }
+        }
+    }
 }

@@ -948,6 +948,20 @@ public class ApiSimulator {
         );
     }
 
+    public void stubMatchTimeline(Locale language, SapiMatchTimelineEndpoint sapiMatchTimeline) {
+        String id = sapiMatchTimeline.getSportEvent().getId();
+        val timelineElement = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "match_timeline"),
+            SapiMatchTimelineEndpoint.class,
+            sapiMatchTimeline
+        );
+        stub(
+            HttpStatus.SC_OK,
+            format("/v1/sports/%s/sport_events/%s/timeline.xml", language.getLanguage(), id),
+            timelineElement
+        );
+    }
+
     @Value
     @SuppressWarnings("VisibilityModifier")
     public static class ApiStubQueryParameter {

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.oddEvenMarket;
 import static com.sportradar.unifiedodds.sdk.conn.UfSportEventStatuses.soccerMatchFeedStatus;
 import static com.sportradar.unifiedodds.sdk.conn.UfSportEventStatuses.withEveryStatistic;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
@@ -14,6 +15,7 @@ import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credent
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
@@ -40,7 +42,7 @@ public class SportEventStatisticsIT {
     @RegisterExtension
     private static WireMockExtension wireMock = WireMockExtension
         .newInstance()
-        .options(wireMockConfig().dynamicPort().dynamicPort())
+        .options(wireMockConfig().dynamicPort().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
 
     private final GlobalVariables globalVariables = new GlobalVariables();
@@ -166,6 +168,101 @@ public class SportEventStatisticsIT {
             StatisticsAssert
                 .assertThat(statistics)
                 .totalsEqualToThoseIn(withEveryStatistic(soccerMatchFeedStatus()));
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ExceptionHandlingStrategy.class)
+    public void forSportDataProviderApiIsCalledForStatisticsIfPreviouslyReceivedMessageHadStatisticsMissing(
+        ExceptionHandlingStrategy strategy
+    ) throws Exception {
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        val matchId = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(matchId);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+
+        Locale aLanguage = Locale.ENGLISH;
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubAllSports(aLanguage);
+        apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
+        apiSimulator.stubMatchSummary(aLanguage, soccerMatchGermanyScotlandEuro2024());
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(strategy)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange());
+
+            listinerWaitingFor.theOnlyOddsChange();
+
+            val sportDataProvider = sdk.getSportDataProvider();
+            val match = (Match) sportDataProvider.getSportEvent(matchId);
+            val statistics = match.getStatus().getStatistics();
+
+            StatisticsAssert
+                .assertThat(statistics)
+                .totalsEqualToThoseIn(soccerMatchGermanyScotlandEuro2024().getStatistics());
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ExceptionHandlingStrategy.class)
+    public void apiIsCalledWhenAcquiringStatisticsFromMessageWithNoStatistics(
+        ExceptionHandlingStrategy strategy
+    ) throws Exception {
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        val matchId = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(matchId);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+
+        Locale aLanguage = Locale.ENGLISH;
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubAllSports(aLanguage);
+        apiSimulator.stubAllTournaments(aLanguage, tournamentEuro2024());
+        apiSimulator.stubMatchSummary(aLanguage, soccerMatchGermanyScotlandEuro2024());
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(strategy)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange());
+
+            val oddsChange = listinerWaitingFor.theOnlyOddsChange();
+
+            val match = (Match) oddsChange.getEvent();
+            val statistics = match.getStatus().getStatistics();
+
+            StatisticsAssert
+                .assertThat(statistics)
+                .totalsEqualToThoseIn(soccerMatchGermanyScotlandEuro2024().getStatistics());
         }
     }
 }

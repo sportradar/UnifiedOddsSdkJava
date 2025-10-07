@@ -37,7 +37,7 @@ class TimelineEventImpl implements TimelineEvent {
      * @return the timeline event identifier
      */
     @Override
-    public int getId() {
+    public long getId() {
         return cacheItem.getId();
     }
 

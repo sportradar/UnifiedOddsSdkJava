@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.5.1**
+**4.6.0**
+ - breaking change: Sport Event timeline now uses long event IDs (previously int) to support larger identifiers introduced by the Unified API.
+
+**4.5.1 (2025-08-25)**
  - Fixed an issue with producer recovery urls not being properly rewritten for custom environment setups. 
 
 **4.5.0 (2025-08-06)**

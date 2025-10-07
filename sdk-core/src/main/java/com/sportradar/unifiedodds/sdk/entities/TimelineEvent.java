@@ -18,7 +18,7 @@ public interface TimelineEvent {
      *
      * @return the timeline event identifier
      */
-    int getId();
+    long getId();
 
     /**
      * Returns the timeline event home score

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class TimelineEventCi {
 
-    private final int id;
+    private final long id;
     private final BigDecimal awayScore;
     private final BigDecimal homeScore;
     private final Integer matchTime;
@@ -97,7 +97,7 @@ public class TimelineEventCi {
         matchClock = exportable.getMatchClock();
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
