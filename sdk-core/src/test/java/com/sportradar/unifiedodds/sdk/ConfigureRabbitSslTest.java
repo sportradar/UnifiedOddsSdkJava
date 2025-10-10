@@ -44,19 +44,11 @@ public class ConfigureRabbitSslTest {
             .setDefaultLanguage(anyLanguage)
             .setMessagingUseSsl(isSslEnabled)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(isSslEnabled, config.getRabbit().getUseSsl());
         assertEquals(isSslEnabled, internalConfig.getUseMessagingSsl());
         assertEquals(isSslEnabled, internalConfigForReplay.getUseMessagingSsl());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

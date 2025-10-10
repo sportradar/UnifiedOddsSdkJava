@@ -7,7 +7,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2Token;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
@@ -34,27 +37,37 @@ public class HttpHelper {
     );
     private static final String EMPTY_RESPONSE = "EMPTY_RESPONSE";
     private static final String TRACE_ID_HEADER = "trace-id";
-    private final SdkInternalConfiguration config;
+    private static final String AUTHORIZATION = "Authorization";
+    private final SdkInternalConfiguration deprecatedConfig;
     private final CloseableHttpClient httpClient;
     private final MessageAndActionExtractor messageExtractor;
     private final UserAgentProvider userAgent;
     private final TraceIdProvider traceIdProvider;
+    private final UofConfiguration configuration;
+    private final OAuth2TokenCache tokenCache;
 
     @Inject
+    @SuppressWarnings("ParameterNumber")
     public HttpHelper(
-        SdkInternalConfiguration config,
+        SdkInternalConfiguration deprecatedConfig,
+        UofConfiguration configuration,
+        OAuth2TokenCache tokenCache,
         CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
         UserAgentProvider userAgent,
         TraceIdProvider traceIdProvider
     ) {
-        Preconditions.checkNotNull(config);
+        Preconditions.checkNotNull(deprecatedConfig);
+        Preconditions.checkNotNull(configuration);
+        Preconditions.checkNotNull(tokenCache);
         Preconditions.checkNotNull(httpClient);
         Preconditions.checkNotNull(messageExtractor);
         Preconditions.checkNotNull(userAgent, "userAgent");
         Preconditions.checkNotNull(traceIdProvider, "traceIdProvider");
 
-        this.config = config;
+        this.deprecatedConfig = deprecatedConfig;
+        this.configuration = configuration;
+        this.tokenCache = tokenCache;
         this.httpClient = httpClient;
         this.messageExtractor = messageExtractor;
         this.userAgent = userAgent;
@@ -112,7 +125,12 @@ public class HttpHelper {
         String traceId = traceIdProvider.generateTraceId();
         ResponseData responseData;
         try {
-            httpRequest.addHeader("x-access-token", config.getAccessToken());
+            if (configuration.getClientAuthentication() != null) {
+                OAuth2Token token = tokenCache.getToken();
+                httpRequest.addHeader(AUTHORIZATION, token.getTokenType() + " " + token.getAccessToken());
+            } else if (configuration.getAccessToken() != null) {
+                httpRequest.addHeader("x-access-token", configuration.getAccessToken());
+            }
             httpRequest.addHeader("User-Agent", userAgent.asHeaderValue());
             httpRequest.addHeader(TRACE_ID_HEADER, traceId);
             responseData =
@@ -130,6 +148,15 @@ public class HttpHelper {
                 e
             );
             throw new CommunicationException("An exception occurred while performing HTTP request", path, e);
+        } catch (OAuth2TokenCache.OAuth2TokenRetrievalHttpException e) {
+            throw new CommunicationException(
+                "Failed to retrieve OAuth2 access token",
+                e.getPath(),
+                e.getStatusCode(),
+                e
+            );
+        } catch (OAuth2TokenCache.OAuth2TokenRetrievalException e) {
+            throw new CommunicationException("Failed to retrieve OAuth2 access token", "", e);
         }
         return responseData;
     }

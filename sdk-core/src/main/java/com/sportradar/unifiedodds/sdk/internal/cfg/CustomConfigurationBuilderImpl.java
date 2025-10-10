@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofClientAuthenticationImpl.PrivateKeyJwtImpl;
 
 /**
  * A basic implementation of the {@link CustomConfigurationBuilder}
@@ -79,6 +80,44 @@ class CustomConfigurationBuilderImpl
     public CustomConfigurationBuilder setApiUseSsl(boolean useSsl) {
         UofApiConfigurationImpl apiConfiguration = (UofApiConfigurationImpl) configuration.getApi();
         apiConfiguration.useSsl(useSsl);
+        return this;
+    }
+
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationHost(String host) {
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(host),
+            "Client Authentication Host can not be null/empty"
+        );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication host"
+        );
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setHost(host);
+        return this;
+    }
+
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationPort(int port) {
+        Preconditions.checkArgument(port > 0, "Client Authentication Port must be greater than 0");
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication port"
+        );
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setPort(port);
+        return this;
+    }
+
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationUseSsl(boolean useSsl) {
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication ssl usage setting"
+        );
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setUseSsl(useSsl);
         return this;
     }
 

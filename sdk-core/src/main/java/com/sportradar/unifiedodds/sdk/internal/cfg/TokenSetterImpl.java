@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import java.util.Optional;
@@ -47,9 +48,7 @@ public class TokenSetterImpl implements TokenSetter {
     @Override
     public EnvironmentSelector setAccessToken(String token) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Access token can not be null/empty");
-
         configuration.setAccessToken(token);
-
         return new EnvironmentSelectorImpl(
             configuration,
             sdkConfigurationPropertiesReader,
@@ -133,6 +132,18 @@ public class TokenSetterImpl implements TokenSetter {
             sdkConfigurationPropertiesReader,
             sdkConfigurationYamlReader
         );
+    }
+
+    /**
+     * Sets the authentication used to access feed resources (AMQP broker, Sports API, ...)
+     *
+     * @param authentication the authentication used to access feed resources
+     * @return the {@link TokenSetter} instance allowing further configuration
+     */
+    @Override
+    public TokenSetter setClientAuthentication(UofClientAuthentication.PrivateKeyJwtData authentication) {
+        configuration.setAuthentication(authentication);
+        return this;
     }
 
     /**

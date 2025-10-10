@@ -45,8 +45,8 @@ public class ConfigureHttpClientTimeoutTest {
             .setDefaultLanguage(anyLanguage)
             .setHttpClientTimeout(amount)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(asDuration(amount), config.getApi().getHttpClientTimeout());
         assertEquals(amount, internalConfig.getHttpClientTimeout());
@@ -55,13 +55,5 @@ public class ConfigureHttpClientTimeoutTest {
 
     private Duration asDuration(int amountOfSeconds) {
         return Duration.of(amountOfSeconds, ChronoUnit.SECONDS);
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

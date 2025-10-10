@@ -44,19 +44,11 @@ public class ConfigureNodeIdTest {
             .setDefaultLanguage(anyLanguage)
             .setNodeId(nodeId)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertThat(config.getNodeId()).isEqualTo(nodeId);
         assertThat(internalConfig.getSdkNodeId()).isEqualTo(nodeId);
         assertThat(internalConfigForReplay.getSdkNodeId()).isEqualTo(nodeId);
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

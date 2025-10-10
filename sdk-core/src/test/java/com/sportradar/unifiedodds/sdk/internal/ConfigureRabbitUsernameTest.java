@@ -43,19 +43,11 @@ public class ConfigureRabbitUsernameTest {
             .setDefaultLanguage(anyLanguage)
             .setMessagingUsername(username)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(username, config.getRabbit().getUsername());
         assertEquals(username, internalConfig.getMessagingUsername());
         assertEquals(username, internalConfigForReplay.getMessagingUsername());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

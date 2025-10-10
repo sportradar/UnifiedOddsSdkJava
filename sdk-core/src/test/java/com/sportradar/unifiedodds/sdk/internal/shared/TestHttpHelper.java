@@ -1,7 +1,11 @@
 package com.sportradar.unifiedodds.sdk.internal.shared;
 
+import static org.mockito.Mockito.mock;
+
 import com.google.inject.Inject;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
@@ -58,13 +62,22 @@ public class TestHttpHelper extends HttpHelper {
 
     @Inject
     public TestHttpHelper(
-        SdkInternalConfiguration config,
+        SdkInternalConfiguration deprecatedConfig,
+        UofConfiguration configuration,
         CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider
     ) {
-        super(config, httpClient, messageExtractor, userAgentProvider, traceIdProvider);
+        super(
+            deprecatedConfig,
+            configuration,
+            mock(OAuth2TokenCache.class),
+            httpClient,
+            messageExtractor,
+            userAgentProvider,
+            traceIdProvider
+        );
         UriReplacements = new HashMap<>();
         PostResponses = new ArrayList<>();
         PutResponses = new ArrayList<>();

@@ -6,42 +6,44 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
-import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.forHeader;
+import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
+import static com.sportradar.unifiedodds.sdk.internal.cfg.TestConfigHelper.setHostAndPort;
+import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.*;
 import static com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.createDataProviderFor;
 import static com.sportradar.unifiedodds.sdk.internal.impl.Deserializers.sportsApiDeserializer;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpClients.createStartedAsyncHttpClientFor;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpDataFetchers.createLogDataFetcher;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpDataFetchers.createLogFastDataFetcher;
-import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.in;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
+import com.sportradar.uf.sportsapi.datamodel.SapiTournamentExtended;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentsEndpoint;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofPrivateKeyJwtAuthenticationStub;
 import com.sportradar.unifiedodds.sdk.conn.ApiSimulator;
-import com.sportradar.unifiedodds.sdk.impl.assertions.LogsAssert;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.HttpFetcherType;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.LogsMock;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
+import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import lombok.val;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.params.provider.EnumSource;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MagicNumber", "IllegalCatch" })
 public class DataProviderHeadersTest {
@@ -52,227 +54,320 @@ public class DataProviderHeadersTest {
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
 
-    private static final String DATA_FETCHERS =
-        "com.sportradar.unifiedodds.sdk.internal.impl.DataProviderHeadersTest#dataFetchers";
     private static final String SPORTS_EN_TOURNAMENTS_URL = "/sports/en/tournaments.xml";
     private static final String TRACE_HEADER_NAME = "trace-id";
-    private static final String TRACE_ID_NORMAL = "trace-id-123-normal";
-    private static final String TRACE_ID_CRITICAL = "trace-id-123-critical";
+    private static final String USERS_WHOAMI_XML = "/users/whoami.xml";
+    private static final String V1_PATH_PREFIX_REQUIRED_FOR_ASSERTIONS_ONLY = "/v1";
 
-    private static final TraceIdProvider normalTraceIdProvider = mock(TraceIdProvider.class);
-    private static final TraceIdProvider criticalTraceIdProvider = mock(TraceIdProvider.class);
+    private final LogsMock logs = LogsMock.createCapturingFor(LoggerDefinitions.UfSdkRestTrafficLog.class);
 
-    private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
-
-    private ListAppender<ILoggingEvent> logAppender;
     private BaseUrl apiBaseUrl;
     private ApiSimulator apiSimulator;
-
-    @BeforeAll
-    static void initTraceProviders() {
-        when(normalTraceIdProvider.generateTraceId()).thenReturn(TRACE_ID_NORMAL);
-        when(criticalTraceIdProvider.generateTraceId()).thenReturn(TRACE_ID_CRITICAL);
-    }
 
     @BeforeEach
     void initTestContext() {
         apiBaseUrl = BaseUrl.of("localhost", wireMock.getPort());
         apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
-        logAppender = attachLogAppender();
     }
 
-    @MethodSource(DATA_FETCHERS)
-    @ParameterizedTest(name = "{0}")
-    void sendTraceIdHeaderOnSuccessfulRequest(
-        String description,
-        DataFetcherProvider providerFactory,
-        String traceId
-    ) throws Exception {
-        val cfg = createConfig(apiBaseUrl.get());
-        val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
-            .with(cfg)
-            .with(providerFactory.getFor(cfg))
-            .with(sportsApiDeserializer())
-            .<SapiTournamentsEndpoint>build();
+    @Nested
+    public class AuthorizationRelated {
 
-        val tournament = euro2024TournamentInfo().getTournament();
+        @Test
+        void clientAuthorizationIsPreferredAuthenticationMethodOverAccessToken() throws Exception {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+            config.setAccessToken("some-access-token");
+
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+            val tokenCache = providingBearerToken("abc123");
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .with(tokenCache)
+                .build();
+            apiSimulator.defineBookmaker(
+                requiringHeader("Authorization", "Bearer abc123"),
+                requiringNoHeader("x-access-token")
+            );
+
+            assertThat(provider.getData().getBookmakerId()).isNotNull();
+        }
+
+        @Test
+        void sendsOAuthAuthorizationHeaderWhenClientAuthenticationIsConfigured() throws Exception {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+            val tokenCache = providingBearerToken("abc123");
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .with(tokenCache)
+                .build();
+            apiSimulator.defineBookmaker(requiringHeader("Authorization", "Bearer abc123"));
+
+            assertThat(provider.getData().getBookmakerId()).isNotNull();
+        }
+
+        @Test
+        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthHttpException() {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+            val failingTokenCache = failingWithOAuth2TokenRetrievalHttpException("/oauth/token", 500);
+
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .with(failingTokenCache)
+                .build();
+
+            assertThatThrownBy(provider::getData)
+                .isInstanceOf(DataProviderException.class)
+                .satisfies(exception -> {
+                    val dpe = (DataProviderException) exception;
+                    assertThat(dpe.getMessage())
+                        .contains("The requested data was not accessible on the provided URL");
+                    assertThat(dpe.tryExtractCommunicationExceptionHttpStatusCode(400)).isEqualTo(500);
+                    assertThat(dpe.tryExtractCommunicationExceptionUrl("")).isEqualTo("/oauth/token");
+                })
+                .hasRootCauseInstanceOf(OAuth2TokenCache.OAuth2TokenRetrievalHttpException.class);
+        }
+
+        @Test
+        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthException() {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val failingTokenCache = failingWithOAuth2TokenRetrievalException();
+
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .with(failingTokenCache)
+                .build();
+            assertThatThrownBy(provider::getData)
+                .isInstanceOf(DataProviderException.class)
+                .hasRootCauseInstanceOf(OAuth2TokenCache.OAuth2TokenRetrievalException.class);
+        }
+
+        @Test
+        void doesNotSendAuthorizationHeaderWhenClientAuthenticationIsNotConfigured() throws Exception {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setClientAuthentication(null);
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+            val tokenCache = mock(OAuth2TokenCache.class);
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .with(tokenCache)
+                .build();
+            apiSimulator.defineBookmaker(requiringNoHeader("Authorization"));
+
+            assertThat(provider.getData().getBookmakerId()).isNotNull();
+
+            verify(tokenCache, never()).getToken();
+        }
+
+        @Test
+        void sendsAccessTokenHeader() throws Exception {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setAccessToken("some-token-1234");
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .build();
+            apiSimulator.defineBookmaker(requiringHeader("x-access-token", "some-token-1234"));
+
+            val bookmaker = provider.getData();
+
+            assertThat(bookmaker.getBookmakerId()).isNotNull();
+        }
+
+        @Test
+        void doesNotSendAccessTokenHeaderWhenAccessTokenIsNotConfigured() throws Exception {
+            val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            config.setAccessToken(null);
+            DataProvider<BookmakerDetails> provider = createDataProviderFor(USERS_WHOAMI_XML)
+                .with(config)
+                .with(deprecatedCfg)
+                .with(sportsApiDeserializer())
+                .build();
+            apiSimulator.defineBookmaker(requiringNoHeader("x-access-token"));
+
+            assertThat(provider.getData().getBookmakerId()).isNotNull();
+        }
+    }
+
+    @Nested
+    public class TraceId {
+
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void sendTraceIdHeaderOnSuccessfulRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
+                .with(cfg)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
+                .with(sportsApiDeserializer())
+                .<SapiTournamentsEndpoint>build();
+
+            val tournament = euro2024TournamentInfo().getTournament();
+            stubTournamentRequiringTraceIdUuidHeader(tournament);
+
+            val result = provider.getData(Locale.ENGLISH);
+            assertThat(result).isNotNull();
+
+            val traceId = getTheOnlyTraceIdForAllTournamentsRequest();
+            logs.verifyLoggedLineContaining(traceId);
+        }
+
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void sendTraceIdHeaderOnFailedRequest(HttpFetcherType httpFetcherType) {
+            val cfg = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
+                .with(cfg)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
+                .with(sportsApiDeserializer())
+                .<SapiTournamentsEndpoint>build();
+
+            apiSimulator.stubAllTournamentsWithBadRequestErrorResponse(
+                Locale.ENGLISH,
+                requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
+            );
+
+            assertThatThrownBy(() -> provider.getData(Locale.ENGLISH))
+                .isInstanceOf(DataProviderException.class);
+
+            val traceId = getTheOnlyTraceIdForAllTournamentsRequest();
+            logs.verifyLoggedLineContaining(traceId);
+        }
+
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void sendTraceIdHeaderOnTimeoutRequest(HttpFetcherType httpFetcherType) {
+            val cfg = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
+                .with(cfg)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
+                .with(sportsApiDeserializer())
+                .<SapiTournamentsEndpoint>build();
+
+            apiSimulator.stubApiGetRequest(
+                SPORTS_EN_TOURNAMENTS_URL,
+                requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME),
+                toBeDelayedBy(cfg.getApi().getHttpClientTimeout().getSeconds() + 1, SECONDS)
+            );
+
+            assertThatThrownBy(() -> provider.getData(Locale.ENGLISH))
+                .isInstanceOf(DataProviderException.class);
+
+            val traceId = getTheOnlyTraceIdForAllTournamentsRequest();
+            logs.verifyLoggedLineContaining(traceId);
+        }
+
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void sendNewTraceIdHeaderPerRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+            val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
+                .with(cfg)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
+                .with(sportsApiDeserializer())
+                .<SapiTournamentsEndpoint>build();
+
+            val tournament = euro2024TournamentInfo().getTournament();
+            stubTournamentRequiringTraceIdUuidHeader(tournament);
+            val tournamentData1 = provider.getData(Locale.ENGLISH);
+            stubTournamentRequiringTraceIdUuidHeader(tournament);
+            val tournamentData2 = provider.getData(Locale.ENGLISH);
+
+            val traceIds = getTraceIdsForAllTournamentsRequests();
+            assertThat(traceIds.stream().distinct()).hasSize(traceIds.size());
+
+            assertThat(tournamentData1).isNotNull();
+            assertThat(tournamentData2).isNotNull();
+            traceIds.forEach(logs::verifyLoggedLineContaining);
+        }
+    }
+
+    private static List<String> getTraceIdsForAllTournamentsRequests() {
+        val events = wireMock.getAllServeEvents();
+        val traceIds = events
+            .stream()
+            .filter(e -> e.getRequest().getUrl().equals(SPORTS_EN_TOURNAMENTS_URL))
+            .map(e -> e.getRequest().getHeader("trace-id"))
+            .collect(Collectors.toList());
+        return traceIds;
+    }
+
+    private static String getTheOnlyTraceIdForAllTournamentsRequest() {
+        val events = wireMock.getAllServeEvents();
+        val traceIds = events
+            .stream()
+            .filter(e ->
+                e
+                    .getRequest()
+                    .getUrl()
+                    .equals(V1_PATH_PREFIX_REQUIRED_FOR_ASSERTIONS_ONLY + SPORTS_EN_TOURNAMENTS_URL)
+            )
+            .map(e -> e.getRequest().getHeader("trace-id"))
+            .collect(Collectors.toList());
+        assertThat(traceIds).hasSize(1);
+        return traceIds.get(0);
+    }
+
+    private void stubTournamentRequiringTraceIdUuidHeader(SapiTournamentExtended tournament) {
         apiSimulator.stubAllTournaments(
             in(Locale.ENGLISH),
             tournament,
-            forHeader(TRACE_HEADER_NAME, traceId)
+            requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
         );
-
-        val result = provider.getData(Locale.ENGLISH);
-
-        assertThat(result).isNotNull();
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId);
     }
 
-    @MethodSource(DATA_FETCHERS)
-    @ParameterizedTest(name = "{0}")
-    void sendTraceIdHeaderOnFailedRequest(
-        String description,
-        DataFetcherProvider providerFactory,
-        String traceId
-    ) throws Exception {
-        val cfg = createConfig(apiBaseUrl.get());
-        val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
-            .with(cfg)
-            .with(providerFactory.getFor(cfg))
-            .with(sportsApiDeserializer())
-            .<SapiTournamentsEndpoint>build();
-
-        apiSimulator.stubAllTournamentsWithBadRequestErrorResponse(
-            Locale.ENGLISH,
-            forHeader(TRACE_HEADER_NAME, traceId)
-        );
-
-        assertThatThrownBy(() -> provider.getData(Locale.ENGLISH)).isInstanceOf(DataProviderException.class);
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId);
-    }
-
-    @MethodSource(DATA_FETCHERS)
-    @ParameterizedTest(name = "{0}")
-    void sendTraceIdHeaderOnTimeoutRequest(
-        String description,
-        DataFetcherProvider providerFactory,
-        String traceId
-    ) throws Exception {
-        val timeoutInSeconds = 1;
-        val cfg = createConfig(apiBaseUrl.get(), timeoutInSeconds);
-        val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
-            .with(cfg)
-            .with(providerFactory.getFor(cfg))
-            .with(sportsApiDeserializer())
-            .<SapiTournamentsEndpoint>build();
-
-        apiSimulator.stubApiGetRequest(
-            SPORTS_EN_TOURNAMENTS_URL,
-            forHeader(TRACE_HEADER_NAME, traceId),
-            toBeDelayedBy(timeoutInSeconds + 1, SECONDS)
-        );
-
-        assertThatThrownBy(() -> provider.getData(Locale.ENGLISH)).isInstanceOf(DataProviderException.class);
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId);
-    }
-
-    @Test
-    void sendNewTraceIdHeaderPerRequest() throws Exception {
-        val traceId1 = "randomTraceId-1";
-        val traceId2 = "randomTraceId-2";
-        val cfg = createConfig(apiBaseUrl.get());
-        val dataFetcher = createLogDataFetcher()
-            .with(createStartedAsyncHttpClientFor(cfg))
-            .with(cfg)
-            .with(traceIdProvider)
-            .build();
-        val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
-            .with(cfg)
-            .with(dataFetcher)
-            .with(sportsApiDeserializer())
-            .<SapiTournamentsEndpoint>build();
-
-        when(traceIdProvider.generateTraceId()).thenReturn(traceId1);
-        val tournamentData1 = getTournamentDataWithTraceId(traceId1, provider);
-        when(traceIdProvider.generateTraceId()).thenReturn(traceId2);
-        val tournamentData2 = getTournamentDataWithTraceId(traceId2, provider);
-
-        assertThat(tournamentData1).isNotNull();
-        assertThat(tournamentData2).isNotNull();
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId1);
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId2);
-    }
-
-    @Test
-    void sendNewTraceIdHeaderPerFastRequest() throws Exception {
-        val traceId1 = "randomTraceId-1";
-        val traceId2 = "randomTraceId-2";
-        val cfg = createConfig(apiBaseUrl.get());
-        val dataFetcher = createLogFastDataFetcher()
-            .with(createStartedAsyncHttpClientFor(cfg))
-            .with(cfg)
-            .with(traceIdProvider)
-            .build();
-        val provider = createDataProviderFor(SPORTS_EN_TOURNAMENTS_URL)
-            .with(cfg)
-            .with(dataFetcher)
-            .with(sportsApiDeserializer())
-            .<SapiTournamentsEndpoint>build();
-
-        when(traceIdProvider.generateTraceId()).thenReturn(traceId1);
-        val tournamentData1 = getTournamentDataWithTraceId(traceId1, provider);
-        when(traceIdProvider.generateTraceId()).thenReturn(traceId2);
-        val tournamentData2 = getTournamentDataWithTraceId(traceId2, provider);
-
-        assertThat(tournamentData1).isNotNull();
-        assertThat(tournamentData2).isNotNull();
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId1);
-        LogsAssert.assertThat(logAppender).hasLogLineContaining(traceId2);
-    }
-
-    private SapiTournamentsEndpoint getTournamentDataWithTraceId(
-        String traceId,
-        DataProvider<SapiTournamentsEndpoint> provider
-    ) throws DataProviderException {
-        val anyTournament = euro2024TournamentInfo().getTournament();
-        apiSimulator.stubAllTournaments(
-            in(Locale.ENGLISH),
-            anyTournament,
-            forHeader(TRACE_HEADER_NAME, traceId)
-        );
-        return provider.getData(Locale.ENGLISH);
-    }
-
-    private SdkInternalConfiguration createConfig(String host) {
-        return createConfig(host, 5);
-    }
-
-    private SdkInternalConfiguration createConfig(String host, long timeoutInSeconds) {
+    private SdkInternalConfiguration internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(
+        String authorityOfUri
+    ) {
         val cfg = mock(SdkInternalConfiguration.class);
-        when(cfg.getApiHostAndPort()).thenReturn(host);
+        when(cfg.getApiHostAndPort()).thenReturn(authorityOfUri);
         when(cfg.getUseApiSsl()).thenReturn(false);
-        when(cfg.getHttpClientTimeout()).thenReturn((int) timeoutInSeconds);
-        when(cfg.getFastHttpClientTimeout()).thenReturn(timeoutInSeconds);
+        when(cfg.getHttpClientTimeout()).thenReturn(1);
+        when(cfg.getFastHttpClientTimeout()).thenReturn(1L);
         return cfg;
     }
 
-    private ListAppender<ILoggingEvent> attachLogAppender() {
-        Logger logger = LoggerFactory.getLogger(LoggerDefinitions.UfSdkRestTrafficLog.class);
-        val logbackLogger = (ch.qos.logback.classic.Logger) logger;
-
-        val appender = new ListAppender<ILoggingEvent>();
-        appender.start();
-        logbackLogger.addAppender(appender);
-
-        return appender;
-    }
-
-    private static Stream<Arguments> dataFetchers() {
-        return Stream.of(
-            Arguments.arguments(
-                "NormalDataFetcher",
-                (DataFetcherProvider) cfg ->
-                    createLogDataFetcher()
-                        .with(createStartedAsyncHttpClientFor(cfg))
-                        .with(cfg)
-                        .with(normalTraceIdProvider)
-                        .build(),
-                TRACE_ID_NORMAL
-            ),
-            Arguments.arguments(
-                "FastDataFetcher",
-                (DataFetcherProvider) cfg ->
-                    createLogFastDataFetcher()
-                        .with(createStartedAsyncHttpClientFor(cfg))
-                        .with(cfg)
-                        .with(criticalTraceIdProvider)
-                        .build(),
-                TRACE_ID_CRITICAL
-            )
-        );
-    }
-
-    interface DataFetcherProvider {
-        HttpDataFetcher getFor(SdkInternalConfiguration cfg);
+    private UofConfigurationStub uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(
+        String authorityOfUri
+    ) {
+        val apiConfig = new UofApiConfigurationStub();
+        apiConfig.setHttpClientTimeout(Duration.ofSeconds(1));
+        apiConfig.setHttpClientFastFailingTimeout(Duration.ofSeconds(1));
+        apiConfig.setUseSsl(false);
+        setHostAndPort(from(authorityOfUri), to(apiConfig));
+        UofConfigurationStub config = new UofConfigurationStub();
+        config.setApi(apiConfig);
+        return config;
     }
 }

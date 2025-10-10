@@ -373,10 +373,6 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
-        <property name="files" value="SapiMatchSummaries.java"/>
-    </module>
-    <module name="SuppressionSingleFilter">
-        <property name="checks" value="FileLength"/>
         <property name="files" value="UofConfigurationImpl.java"/>
     </module>
     <module name="SuppressionSingleFilter">
@@ -1701,6 +1697,10 @@
         <property name="files" value=".*src[\\/](?:test[\\/]).*Test.java"/>
     </module>
     <module name="SuppressionSingleFilter">
+        <property name="checks" value="MagicNumber"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]).*Test.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
         <property name="files" value="SapiMarketDescriptions.java|SapiTournaments.java"/>
     </module>
@@ -1709,7 +1709,7 @@
         <module name="SuppressWarningsHolder"/>
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="0"/>
-            <property name="allowedAbbreviations" value="I,IT"/>
+            <property name="allowedAbbreviations" value="I,IT,O"/>
         </module>
         <module name="AnnotationLocation"/>
         <module name="AnonInnerLength"/>

@@ -43,19 +43,11 @@ public class ConfigureRabbitPortTest {
             .setDefaultLanguage(anyLanguage)
             .setMessagingPort(port)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(port, config.getRabbit().getPort());
         assertEquals(port, internalConfig.getPort());
         assertEquals(port, internalConfigForReplay.getPort());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

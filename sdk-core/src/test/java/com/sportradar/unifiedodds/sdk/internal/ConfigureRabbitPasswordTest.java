@@ -43,19 +43,11 @@ public class ConfigureRabbitPasswordTest {
             .setDefaultLanguage(anyLanguage)
             .setMessagingPassword(password)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(password, config.getRabbit().getPassword());
         assertEquals(password, internalConfig.getMessagingPassword());
         assertEquals(password, internalConfigForReplay.getMessagingPassword());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

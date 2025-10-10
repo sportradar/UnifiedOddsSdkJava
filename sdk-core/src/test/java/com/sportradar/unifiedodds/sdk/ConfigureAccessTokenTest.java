@@ -47,8 +47,8 @@ public class ConfigureAccessTokenTest {
         propsFileContent.put("uf.sdk.environment", environment.toString());
 
         val config = tokenSetter.buildConfigFromSdkProperties();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(accessToken, config.getAccessToken());
         assertEquals(accessToken, internalConfig.getAccessToken());
@@ -63,8 +63,8 @@ public class ConfigureAccessTokenTest {
         yamlFileContent.put("uf.sdk.environment", environment.toString());
 
         val config = tokenSetter.buildConfigFromApplicationYml();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(accessToken, config.getAccessToken());
         assertEquals(accessToken, internalConfig.getAccessToken());
@@ -78,8 +78,8 @@ public class ConfigureAccessTokenTest {
             .selectCustom()
             .setDefaultLanguage(anyLanguage)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(accessToken, config.getAccessToken());
         assertEquals(accessToken, internalConfig.getAccessToken());
@@ -88,13 +88,5 @@ public class ConfigureAccessTokenTest {
 
     public static Object[][] allEnvironments() {
         return Stream.of(Environment.values()).map(e -> new Object[] { e }).toArray(Object[][]::new);
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

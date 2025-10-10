@@ -15,8 +15,10 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.google.inject.util.Modules;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.Deserializer;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
@@ -36,7 +38,8 @@ public class HttpHelperIT {
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
-    private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+    private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+    private final UofConfiguration configuration = mock(UofConfiguration.class);
     private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
     private final Injector injector = Guice.createInjector(
         Modules.override(new MockedMasterModule()).with(new TestingModule())
@@ -49,7 +52,9 @@ public class HttpHelperIT {
     private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
     private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor();
     private final HttpHelper httpHelper = new HttpHelper(
-        config,
+        deprecatedConfig,
+        configuration,
+        mock(OAuth2TokenCache.class),
         httpClient,
         messageExtractor,
         userAgent,

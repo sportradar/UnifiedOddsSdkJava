@@ -240,6 +240,24 @@ public class FeedMessageBuilder {
         return buildAlive(productId, new Date(), true);
     }
 
+    public String alive() {
+        UfAlive message = new UfAlive();
+        message.setProduct(globalVariables.getProducer().get());
+        message.setTimestamp(new Date().getTime());
+        message.setSubscribed(1);
+
+        return Helper.serializeToJaxbXml(message);
+    }
+
+    public String snapshotComplete(long requestId) {
+        UfSnapshotComplete message = new UfSnapshotComplete();
+        message.setProduct(globalVariables.getProducer().get());
+        message.setTimestamp(new Date().getTime());
+        message.setRequestId(requestId);
+
+        return Helper.serializeToJaxbXml(message);
+    }
+
     /**
      * Builds UfSnapshotComplete message
      * @param productId the product id message belongs to

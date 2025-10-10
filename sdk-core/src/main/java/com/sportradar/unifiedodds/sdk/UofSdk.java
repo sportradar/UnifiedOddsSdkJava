@@ -174,9 +174,7 @@ public class UofSdk implements AutoCloseable {
         this.oddsFeedConfiguration =
             new SdkInternalConfiguration(
                 config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
+                asList(Replay, GlobalReplay).contains(config.getEnvironment())
             );
         this.injector = createSdkInjector(listener, null);
         checkLocales();
@@ -205,9 +203,7 @@ public class UofSdk implements AutoCloseable {
         this.oddsFeedConfiguration =
             new SdkInternalConfiguration(
                 config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
+                asList(Replay, GlobalReplay).contains(config.getEnvironment())
             );
         this.injector = createSdkInjector(listener, null);
         this.uofExtListener = uofExtListener;
@@ -234,13 +230,7 @@ public class UofSdk implements AutoCloseable {
 
         this.uofConfiguration = config;
 
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                useReplay,
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, useReplay);
         this.injector = createSdkInjector(listener, customisableSdkModule);
         this.uofExtListener = uofExtListener;
     }
@@ -262,9 +252,7 @@ public class UofSdk implements AutoCloseable {
         this.oddsFeedConfiguration =
             new SdkInternalConfiguration(
                 config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
+                asList(Replay, GlobalReplay).contains(config.getEnvironment())
             );
         this.injector = injector;
 
@@ -302,9 +290,7 @@ public class UofSdk implements AutoCloseable {
                 uofConfiguration,
                 new SdkInternalConfiguration(
                     uofConfiguration,
-                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment()),
-                    SdkConfigurationPropertiesReaderFactory.create(),
-                    SdkConfigurationYamlReaderFactory.create()
+                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment())
                 )
             )
         );
@@ -677,9 +663,7 @@ public class UofSdk implements AutoCloseable {
                 listener,
                 new SdkInternalConfiguration(
                     uofConfiguration,
-                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment()),
-                    SdkConfigurationPropertiesReaderFactory.create(),
-                    SdkConfigurationYamlReaderFactory.create()
+                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment())
                 ),
                 this.uofConfiguration,
                 customisableSdkModule

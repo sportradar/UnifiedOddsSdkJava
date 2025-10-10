@@ -20,11 +20,21 @@ public class ApiHostUpdater {
         ((UofApiConfigurationImpl) config.getApi()).setHost(
                 EnvironmentManager.getApiHost(Environment.Production)
             );
+        if (config.getClientAuthentication() != null) {
+            ((UofClientAuthenticationImpl.PrivateKeyJwtImpl) config.getClientAuthentication()).setHost(
+                    EnvironmentManager.getSetting(Environment.Production).getClientAuthenticationHost()
+                );
+        }
     }
 
     public void updateToIntegration() {
         ((UofApiConfigurationImpl) config.getApi()).setHost(
                 EnvironmentManager.getApiHost(Environment.Integration)
             );
+        if (config.getClientAuthentication() != null) {
+            ((UofClientAuthenticationImpl.PrivateKeyJwtImpl) config.getClientAuthentication()).setHost(
+                    EnvironmentManager.getSetting(Environment.Integration).getClientAuthenticationHost()
+                );
+        }
     }
 }

@@ -7,6 +7,14 @@ package com.sportradar.unifiedodds.example;
 import com.sportradar.unifiedodds.example.examples.*;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Scanner;
 
 /**
@@ -25,14 +33,14 @@ import java.util.Scanner;
 )
 public class UofSdkExamples {
 
-    public static void main(String[] args) throws IOException, InitException, InterruptedException {
+    public static void main(String[] args) throws Exception {
         System.out.println("UofSdkExamples - example selector, START");
         System.out.println();
 
         doExampleSelection();
     }
 
-    private static void doExampleSelection() throws IOException, InitException, InterruptedException {
+    private static void doExampleSelection() throws Exception {
         System.out.println("Available examples: (select the one you would like to run)");
         System.out.println("  1 - Basic SDK Setup");
         System.out.println(
@@ -124,57 +132,163 @@ public class UofSdkExamples {
         String selection = getConsoleInput();
 
         boolean isReplayEnvironment = selection.equals("7");
-        String environment = isReplayEnvironment ? "Replay" : "Integration";
-        System.out.println("Please enter a valid Unified Feed token for '" + environment + "' environment:");
-        String token = getConsoleInput();
+        if (isReplayEnvironment) {
+            //also exemplifies yml file based configuration
+            System.out.println(
+                "Please confirm that application.yml file is configured in the src/main/resources folder:"
+            );
+            getConsoleInput();
 
-        switch (selection) {
-            case "1":
-                SingleSessionSetup singleSessionSetup = new SingleSessionSetup();
-                singleSessionSetup.run(false);
-                break;
-            case "2":
-                MultiSessionSetup multiSessionSetup = new MultiSessionSetup(token);
-                multiSessionSetup.run();
-                break;
-            case "3":
-                SingleSessionSetup singleSessionSetupRecovery = new SingleSessionSetup();
-                singleSessionSetupRecovery.run(true);
-                break;
-            case "4":
-                DataSessionSetup dataSessionSetup = new DataSessionSetup(token);
-                dataSessionSetup.run(true);
-                break;
-            case "5":
-                AvailableMarketsPrinter availableMarketsPrinter = new AvailableMarketsPrinter(token);
-                availableMarketsPrinter.print();
-                break;
-            case "6":
-                AvailableMarketsPrinter availableMarketsPrinterMappings = new AvailableMarketsPrinter(token);
-                availableMarketsPrinterMappings.print(true);
-                break;
-            case "7":
-                ReplaySessionSetup replaySessionSetup = new ReplaySessionSetup();
-                replaySessionSetup.run();
-                break;
-            case "8":
-                SportEventDataPrinter sportEventDataPrinter = new SportEventDataPrinter(token);
-                sportEventDataPrinter.print();
-                break;
-            case "9":
-                AdvancedConfigurationSetup advancedConfigurationSetup = new AdvancedConfigurationSetup(token);
-                advancedConfigurationSetup.run();
-                break;
-            case "10":
-                ExportImportSetup exportImportSetup = new ExportImportSetup(token);
-                exportImportSetup.run();
-                break;
-            default:
-                System.out.println();
-                System.out.println("Invalid example id selected, please select a valid example id.");
-                System.out.println();
-                doExampleSelection();
-                break;
+            ReplaySessionSetup replaySessionSetup = new ReplaySessionSetup();
+            replaySessionSetup.run();
+        } else {
+            System.out.println(
+                "Please enter an absolute path " +
+                "to a private key (RSA SHA256 PCKS#8 key in PEM format) for 'Integration' environment:"
+            );
+            String pemFilePath = getConsoleInput();
+            Path path = Paths.get(pemFilePath);
+            String pemFileContent = new String(Files.readAllBytes(path), StandardCharsets.US_ASCII).trim();
+            PrivateKey privateKey = parsePkcs8RsaUnencryptedPrivateKey(pemFileContent);
+
+            System.out.println(
+                "Please enter a OAuth client id (Sportradar service id) for 'Integration' environment. " +
+                "It was supplied by Sportradar after uploading the public key:"
+            );
+            String clientId = getConsoleInput();
+
+            System.out.println(
+                "Please enter a signing key id for 'Integration' environment. " +
+                "It was supplied by Sportradar after uploading the public key:"
+            );
+            String keyId = getConsoleInput();
+
+            String token;
+            switch (selection) {
+                case "1":
+                    // exemplifies properties file based configuration
+                    System.out.println(
+                        "Please confirm that UFSdkConfiguration.properties file is configured in the src/main/resources folder:"
+                    );
+                    getConsoleInput();
+                    SingleSessionSetup singleSessionSetup = new SingleSessionSetup(
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    singleSessionSetup.run(false);
+                    break;
+                case "2":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    MultiSessionSetup multiSessionSetup = new MultiSessionSetup(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    multiSessionSetup.run();
+                    break;
+                case "3":
+                    // exemplifies properties file based configuration
+                    System.out.println(
+                        "Please confirm that UFSdkConfiguration.properties file is configured in the src/main/resources folder:"
+                    );
+                    getConsoleInput();
+                    SingleSessionSetup singleSessionSetupRecovery = new SingleSessionSetup(
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    singleSessionSetupRecovery.run(true);
+                    break;
+                case "4":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    DataSessionSetup dataSessionSetup = new DataSessionSetup(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    dataSessionSetup.run(true);
+                    break;
+                case "5":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    AvailableMarketsPrinter availableMarketsPrinter = new AvailableMarketsPrinter(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    availableMarketsPrinter.print();
+                    break;
+                case "6":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    AvailableMarketsPrinter availableMarketsPrinterMappings = new AvailableMarketsPrinter(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    availableMarketsPrinterMappings.print(true);
+                    break;
+                case "8":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    SportEventDataPrinter sportEventDataPrinter = new SportEventDataPrinter(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    sportEventDataPrinter.print();
+                    break;
+                case "9":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    AdvancedConfigurationSetup advancedConfigurationSetup = new AdvancedConfigurationSetup(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    advancedConfigurationSetup.run();
+                    break;
+                case "10":
+                    System.out.println(
+                        "Please enter a valid Unified Feed token for 'Integration' environment:"
+                    );
+                    token = getConsoleInput();
+                    ExportImportSetup exportImportSetup = new ExportImportSetup(
+                        token,
+                        privateKey,
+                        clientId,
+                        keyId
+                    );
+                    exportImportSetup.run();
+                    break;
+                default:
+                    System.out.println();
+                    System.out.println("Invalid example id selected, please select a valid example id.");
+                    System.out.println();
+                    doExampleSelection();
+                    break;
+            }
         }
     }
 
@@ -185,5 +299,22 @@ public class UofSdkExamples {
         } else {
             return getConsoleInput();
         }
+    }
+
+    public static PrivateKey parsePkcs8RsaUnencryptedPrivateKey(String pemFileContent) throws Exception {
+        int start = pemFileContent.indexOf("-----BEGIN PRIVATE KEY-----");
+        int end = pemFileContent.indexOf("-----END PRIVATE KEY-----");
+        if (start < 0 || end < 0) {
+            throw new IllegalArgumentException("Not a PKCS#8 PEM: missing BEGIN/END PRIVATE KEY markers.");
+        }
+
+        String base64 = pemFileContent
+            .substring(start + "-----BEGIN PRIVATE KEY-----".length(), end)
+            .replaceAll("\\s", "");
+        byte[] der = Base64.getDecoder().decode(base64);
+
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(der);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePrivate(spec);
     }
 }

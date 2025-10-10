@@ -14,6 +14,7 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.google.inject.util.Modules;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
@@ -36,7 +37,7 @@ public class BookingManagerTest {
 
     private final Urn eventId = Urn.parse("sr:match:12345");
     private final SportEventCache sportEventCache = mock(SportEventCache.class);
-    private final SdkInternalConfiguration configInternal = mock(SdkInternalConfiguration.class);
+    private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
     private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
     private final Injector injector = Guice.createInjector(
         Modules.override(new MockedMasterModule()).with(new TestingModule())
@@ -51,11 +52,18 @@ public class BookingManagerTest {
         Deserializer deserializer = injector.getInstance(
             Key.get(Deserializer.class, Names.named("SportsApiJaxbDeserializer"))
         );
-        when(configInternal.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
+        when(deprecatedConfig.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
         val messageExtractor = new MessageAndActionExtractor();
         testHttpHelper =
-            new TestHttpHelper(configInternal, httpClient, messageExtractor, userAgent, traceIdProvider);
-        bookingManager = new BookingManagerImpl(sportEventCache, configInternal, testHttpHelper);
+            new TestHttpHelper(
+                deprecatedConfig,
+                mock(UofConfiguration.class),
+                httpClient,
+                messageExtractor,
+                userAgent,
+                traceIdProvider
+            );
+        bookingManager = new BookingManagerImpl(sportEventCache, deprecatedConfig, testHttpHelper);
     }
 
     @Test
@@ -131,7 +139,7 @@ public class BookingManagerTest {
             HttpStatus.SC_NOT_FOUND
         );
         testHttpHelper.UriExceptions.put(xml, notFoundException);
-        when(configInternal.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
+        when(deprecatedConfig.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
 
         boolean isBooked = bookingManager.bookLiveOddsEvent(eventId);
         Assert.assertFalse(isBooked);

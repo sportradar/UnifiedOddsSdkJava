@@ -25,6 +25,10 @@ public final class EnvironmentManager {
         return ENVIRONMENT_SETTINGS;
     }
 
+    public static final String STG_AUTH_SPORTRADAR_COM = "stg-auth.sportradar.com";
+
+    public static final String AUTH_SPORTRADAR_COM = "auth.sportradar.com";
+
     static {
         List<Environment> basicRetryList = Lists.newArrayList(
             Environment.Integration,
@@ -36,6 +40,7 @@ public final class EnvironmentManager {
                     Environment.Production,
                     "mq.betradar.com",
                     "api.betradar.com",
+                    AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     Lists.newArrayList(Environment.Integration)
@@ -44,6 +49,7 @@ public final class EnvironmentManager {
                     Environment.Integration,
                     "stgmq.betradar.com",
                     "stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     Lists.newArrayList(Environment.Production)
@@ -52,6 +58,7 @@ public final class EnvironmentManager {
                     Environment.Replay,
                     "replaymq.betradar.com",
                     "stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     basicRetryList
@@ -60,6 +67,7 @@ public final class EnvironmentManager {
                     Environment.GlobalReplay,
                     "global.replaymq.betradar.com",
                     "stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     basicRetryList
@@ -68,6 +76,7 @@ public final class EnvironmentManager {
                     Environment.GlobalProduction,
                     "global.mq.betradar.com",
                     "global.api.betradar.com",
+                    AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     basicRetryList
@@ -76,6 +85,7 @@ public final class EnvironmentManager {
                     Environment.GlobalIntegration,
                     "global.stgmq.betradar.com",
                     "global.stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     basicRetryList

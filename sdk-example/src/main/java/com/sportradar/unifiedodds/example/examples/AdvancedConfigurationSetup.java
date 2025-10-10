@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.example.examples;
 
+import static com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication.privateKeyJwt;
+
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
@@ -11,9 +13,14 @@ import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Locale;
 
 /**
@@ -25,12 +32,17 @@ public class AdvancedConfigurationSetup {
     public static final int SECONDS_IN_HOUR = 60 * 60;
     private final UofSdk uofSdk;
 
-    public AdvancedConfigurationSetup(String token) {
+    public AdvancedConfigurationSetup(String token, PrivateKey privateKey, String clientId, String keyId)
+        throws Exception {
         logEntry("Running the UofSdk SDK Basic example - advanced configuration setup");
 
-        logEntry("Building the configuration using the provided token");
+        logEntry("Building the configuration using the provided token and client authentication");
+
         ConfigurationBuilder cfgBuilder = UofSdk
             .getUofConfigurationBuilder()
+            .setClientAuthentication(
+                privateKeyJwt().setClientId(clientId).setPrivateKey(privateKey).setSigningKeyId(keyId).build()
+            )
             .setAccessToken(token)
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID);

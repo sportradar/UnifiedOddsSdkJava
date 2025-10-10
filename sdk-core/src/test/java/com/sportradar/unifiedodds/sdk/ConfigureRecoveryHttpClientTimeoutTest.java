@@ -45,8 +45,8 @@ public class ConfigureRecoveryHttpClientTimeoutTest {
             .setDefaultLanguage(anyLanguage)
             .setHttpClientRecoveryTimeout(amount)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(asDuration(amount), config.getApi().getHttpClientRecoveryTimeout());
         assertEquals(amount, internalConfig.getRecoveryHttpClientTimeout());
@@ -55,13 +55,5 @@ public class ConfigureRecoveryHttpClientTimeoutTest {
 
     private Duration asDuration(int amountOfSeconds) {
         return Duration.of(amountOfSeconds, ChronoUnit.SECONDS);
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

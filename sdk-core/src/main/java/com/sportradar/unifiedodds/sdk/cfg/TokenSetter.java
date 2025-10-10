@@ -19,7 +19,6 @@ public interface TokenSetter {
 
     /**
      * Sets the access token used to access feed resources (AMQP broker, Sports API, ...) to value read from the sdk properties
-     *
      * The properties file should be named "UFSdkConfiguration.properties" and localed in the application resources folder
      *
      * @return the {@link EnvironmentSelector} instance allowing the selection of target environment
@@ -28,7 +27,6 @@ public interface TokenSetter {
 
     /**
      * Sets the access token used to access feed resources (AMQP broker, Sports API, ...) to value read from the application.yml
-     *
      * The YAML file should be named "application.properties" and localed in the application resources folder
      *
      * @return the {@link EnvironmentSelector} instance allowing the selection of target environment
@@ -47,7 +45,6 @@ public interface TokenSetter {
      * Sets the general configuration properties to values read from configuration file. Only value which can be set
      * through {@link ConfigurationBuilderBase} methods are set. Any values already set by methods on the current instance
      * are overridden. Builds and returns a {@link UofConfiguration} instance
-     *
      * The properties file should be named "UFSdkConfiguration.properties" and localed in the application resources folder
      *
      * @return builds and returns a {@link UofConfiguration} instance
@@ -64,4 +61,12 @@ public interface TokenSetter {
      * @return builds and returns a {@link UofConfiguration} instance
      */
     UofConfiguration buildConfigFromApplicationYml();
+
+    /**
+     * Sets the authentication used to access Sportradar resources (AMQP broker, Sports API, ...)
+     *
+     * @param authentication the authentication object
+     * @return the {@link TokenSetter} instance allowing further configuration
+     */
+    TokenSetter setClientAuthentication(UofClientAuthentication.PrivateKeyJwtData authentication);
 }

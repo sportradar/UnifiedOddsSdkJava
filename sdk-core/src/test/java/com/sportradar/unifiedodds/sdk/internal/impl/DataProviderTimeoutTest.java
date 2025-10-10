@@ -7,9 +7,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
 import static com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.createDataProviderFor;
 import static com.sportradar.unifiedodds.sdk.internal.impl.Deserializers.sportsApiDeserializer;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpClients.createStartedAsyncHttpClientFor;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpDataFetchers.*;
-import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.in;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Locale.ENGLISH;
 import static java.util.concurrent.Executors.newFixedThreadPool;
@@ -21,21 +19,26 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.conn.ApiSimulator;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.impl.CompletableFutureAssert;
+import com.sportradar.unifiedodds.sdk.internal.cfg.TestConfigHelper;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.HttpFetcherType;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.VoidCallables;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
@@ -46,11 +49,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 @Slf4j
-@SuppressWarnings({ "MagicNumber", "IllegalCatch" })
+@SuppressWarnings({ "MagicNumber", "IllegalCatch", "ClassFanOutComplexity" })
 public class DataProviderTimeoutTest {
 
     @RegisterExtension
@@ -58,9 +60,6 @@ public class DataProviderTimeoutTest {
         .newInstance()
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
-
-    private static final String DATA_FETCHERS =
-        "com.sportradar.unifiedodds.sdk.internal.impl.DataProviderTimeoutTest#dataFetchers";
 
     private BaseUrl apiBaseUrl;
     private ApiSimulator apiSimulator;
@@ -70,6 +69,10 @@ public class DataProviderTimeoutTest {
     void setup() throws Exception {
         apiBaseUrl = BaseUrl.of("localhost", wireMock.getPort());
         apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
+    }
+
+    private static String localhost(int port) {
+        return "localhost:" + port;
     }
 
     @Nested
@@ -124,16 +127,17 @@ public class DataProviderTimeoutTest {
             serverRequestsExecutor.shutdownNow();
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void respectsConfiguredResponseTimeoutForResponsesWhichProduceBytesButDoNotCompleteWithinGivenTimeout(
-            String description,
-            DataFetcherProvider dataFetcherProvider
-        ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn("localhost:" + serverPort);
+            HttpFetcherType httpFetcherType
+        ) {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(localhost(serverPort));
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(localhost(serverPort));
             val provider = createDataProviderFor("/sports/en/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .build();
 
@@ -159,13 +163,12 @@ public class DataProviderTimeoutTest {
 
         @Test
         void respectsConfiguredHttpClientTimeout() throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
-            val httpClientWith1sTimeout = createStartedAsyncHttpClientFor(cfg);
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/en/sports.xml")
                 .with(cfg)
-                .with(
-                    createDataFetcherWith20sRequestTimeout().with(httpClientWith1sTimeout).with(cfg).build()
-                )
+                .with(deprecatedCfg)
+                .withForcefullyOverriddenFetcherTimeoutInSeconds(20)
                 .with(sportsApiDeserializer())
                 .build();
 
@@ -209,13 +212,12 @@ public class DataProviderTimeoutTest {
 
         @Test
         void respectsConfiguredHttpClientTimeout() throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn("localhost:" + busySocketPort);
-            val httpClientWith1sTimeout = createStartedAsyncHttpClientFor(cfg);
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(localhost(busySocketPort));
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(localhost(busySocketPort));
             val provider = createDataProviderFor("/sports/en/sports.xml")
                 .with(cfg)
-                .with(
-                    createDataFetcherWith20sRequestTimeout().with(httpClientWith1sTimeout).with(cfg).build()
-                )
+                .with(deprecatedCfg)
+                .withForcefullyOverriddenFetcherTimeoutInSeconds(20)
                 .with(sportsApiDeserializer())
                 .build();
 
@@ -265,13 +267,23 @@ public class DataProviderTimeoutTest {
         await().atMost(10, TimeUnit.SECONDS).untilTrue(httpExecutionStarted);
     }
 
-    private SdkInternalConfiguration configurationForApiWith1sClientTimeoutNoSslOn(String anyFreePort) {
+    private SdkInternalConfiguration internalConfigForApiWith1sClientTimeoutNoSslOn(String anyFreePort) {
         SdkInternalConfiguration cfg = mock(SdkInternalConfiguration.class);
         when(cfg.getApiHostAndPort()).thenReturn(anyFreePort);
         when(cfg.getUseApiSsl()).thenReturn(false);
         when(cfg.getHttpClientTimeout()).thenReturn(1);
         when(cfg.getFastHttpClientTimeout()).thenReturn(1L);
         return cfg;
+    }
+
+    private UofConfiguration uofConfigForApiWith1sClientTimeoutNoSslOn(String hostAndPort) {
+        UofConfigurationStub config = new UofConfigurationStub();
+        UofApiConfigurationStub apiConfig = (UofApiConfigurationStub) config.getApi();
+        TestConfigHelper.setHostAndPort(from(hostAndPort), to(apiConfig));
+        apiConfig.setUseSsl(false);
+        apiConfig.setHttpClientTimeout(Duration.ofSeconds(1));
+        apiConfig.setHttpClientFastFailingTimeout(Duration.ofSeconds(1));
+        return config;
     }
 
     private CompletableFuture<?> runAsync(VoidCallables.ThrowingRunnable runnable) {
@@ -283,24 +295,5 @@ public class DataProviderTimeoutTest {
                 throw new CompletionException(e);
             }
         });
-    }
-
-    static Stream<Arguments> dataFetchers() {
-        return Stream.of(
-            Arguments.arguments(
-                "NormalDataFetcher",
-                (DataFetcherProvider) cfg ->
-                    createLogDataFetcher().with(createStartedAsyncHttpClientFor(cfg)).with(cfg).build()
-            ),
-            Arguments.arguments(
-                "FastDataFetcher",
-                (DataFetcherProvider) cfg ->
-                    createLogFastDataFetcher().with(createStartedAsyncHttpClientFor(cfg)).with(cfg).build()
-            )
-        );
-    }
-
-    interface DataFetcherProvider {
-        HttpDataFetcher getFor(SdkInternalConfiguration cfg);
     }
 }

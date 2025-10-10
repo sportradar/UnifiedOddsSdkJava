@@ -79,4 +79,38 @@ public interface CustomConfigurationBuilder extends RecoveryConfigurationBuilder
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     CustomConfigurationBuilder setMessagingUseSsl(boolean useSsl);
+
+    /**
+     * Sets the host name of the client authentication server
+     *
+     * @param host the host name of the client authentication server
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    CustomConfigurationBuilder setClientAuthenticationHost(String host);
+
+    /**
+     * Sets the port of the client authentication server
+     *
+     * @param port the port of the client authentication server
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    CustomConfigurationBuilder setClientAuthenticationPort(int port);
+
+    /**
+     * Sets the value specifying whether SSL should be used to communicate with the client authentication server
+     * <p>
+     * This setting determines whether HTTPS (SSL/TLS) or HTTP will be used for client authentication requests.
+     * When set to {@code true}, the SDK will use HTTPS for secure communication with the authentication server.
+     * When set to {@code false}, the SDK will use HTTP for communication.
+     * </p>
+     * <p>
+     * <strong>Security Note:</strong> It is strongly recommended to use SSL ({@code true}) in production
+     * environments to ensure secure transmission of authentication credentials and tokens.
+     * </p>
+     *
+     * @param useSsl {@code true} if SSL should be used for client authentication communication,
+     *               {@code false} if HTTP should be used instead
+     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
+     */
+    CustomConfigurationBuilder setClientAuthenticationUseSsl(boolean useSsl);
 }

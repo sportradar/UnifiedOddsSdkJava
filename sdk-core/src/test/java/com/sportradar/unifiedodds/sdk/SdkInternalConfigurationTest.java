@@ -7,7 +7,6 @@ import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.prov
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.internal.cfg.*;
@@ -39,44 +38,17 @@ public class SdkInternalConfigurationTest {
         anyConfig -> producerDataProvider
     );
 
-    private final SdkConfigurationPropertiesReader propertiesReader = mock(
-        SdkConfigurationPropertiesReader.class
-    );
-
-    private final SdkConfigurationYamlReader ymlReader = mock(SdkConfigurationYamlReader.class);
     private final UofConfigurationStub config = new UofConfigurationStub();
 
     @Test
     public void shouldNotInstantiateWithNullConfiguration() {
-        assertThatThrownBy(() -> new SdkInternalConfiguration(null, propertiesReader, ymlReader))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("cfg");
 
-        assertThatThrownBy(() -> new SdkInternalConfiguration(null, false, propertiesReader, ymlReader))
+        assertThatThrownBy(() -> new SdkInternalConfiguration(null, false))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("cfg");
-    }
-
-    @Test
-    public void shouldNotInstantiateWithNullPropertiesReader() {
-        assertThatThrownBy(() -> new SdkInternalConfiguration(config, null, ymlReader))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("sdkConfigurationPropertiesReader");
-
-        assertThatThrownBy(() -> new SdkInternalConfiguration(config, false, null, ymlReader))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("sdkConfigurationPropertiesReader");
-    }
-
-    @Test
-    public void shouldNotInstantiateWithNullYmlReader() {
-        assertThatThrownBy(() -> new SdkInternalConfiguration(config, propertiesReader, null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("sdkConfigurationYamlReader");
-
-        assertThatThrownBy(() -> new SdkInternalConfiguration(config, false, propertiesReader, null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("sdkConfigurationYamlReader");
     }
 
     @ParameterizedTest
@@ -90,9 +62,7 @@ public class SdkInternalConfigurationTest {
                 .selectCustom()
                 .setDefaultLanguage(ANY_LANGUAGE)
                 .setMessagingHost(host)
-                .build(),
-            propertiesReader,
-            ymlReader
+                .build()
         );
 
         assertEquals(host, internalConfig.getMessagingHost());
@@ -113,7 +83,7 @@ public class SdkInternalConfigurationTest {
         ((UofApiConfigurationStub) config.getApi()).setHttpClientRecoveryTimeout(ANY_DURATION);
         val replaySession = true;
 
-        val internalConfig = new SdkInternalConfiguration(config, replaySession, propertiesReader, ymlReader);
+        val internalConfig = new SdkInternalConfiguration(config, replaySession);
 
         assertEquals(host, internalConfig.getMessagingHost());
     }

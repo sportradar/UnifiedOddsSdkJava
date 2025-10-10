@@ -4,7 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.internal.cfg;
 
+import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 
 /**
@@ -30,9 +32,22 @@ class ConfigurationBuilderImpl
      */
     @Override
     public UofConfiguration build() {
+        verifyNotReplayWithAuthenticationConfigured();
+
         configuration.validateMinimumSettings();
         configuration.acquireBookmakerDetailsAndProducerData();
 
         return configuration;
+    }
+
+    private void verifyNotReplayWithAuthenticationConfigured() {
+        boolean isReplay =
+            configuration.getEnvironment() == Environment.Replay ||
+            configuration.getEnvironment() == Environment.GlobalReplay;
+        boolean hasAuthConfigured = configuration.getClientAuthentication() != null;
+        Preconditions.checkArgument(
+            !hasAuthConfigured || !isReplay,
+            "Client Authentication is not supported in Replay environments"
+        );
     }
 }

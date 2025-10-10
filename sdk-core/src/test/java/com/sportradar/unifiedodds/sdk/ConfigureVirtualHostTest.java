@@ -43,19 +43,11 @@ public class ConfigureVirtualHostTest {
             .setDefaultLanguage(anyLanguage)
             .setMessagingVirtualHost(virtualHost)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(virtualHost, config.getRabbit().getVirtualHost());
         assertEquals(virtualHost, internalConfig.getMessagingVirtualHost());
         assertEquals(virtualHost, internalConfigForReplay.getMessagingVirtualHost());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

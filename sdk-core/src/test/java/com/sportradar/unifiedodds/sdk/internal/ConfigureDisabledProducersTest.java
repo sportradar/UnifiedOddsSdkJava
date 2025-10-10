@@ -45,19 +45,11 @@ public class ConfigureDisabledProducersTest {
             .setDefaultLanguage(anyLanguage)
             .setDisabledProducers(disabledProducers)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(disabledProducers, config.getProducer().getDisabledProducers());
         assertEquals(disabledProducers, internalConfig.getDisabledProducers());
         assertEquals(disabledProducers, internalConfigForReplay.getDisabledProducers());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

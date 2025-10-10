@@ -10,7 +10,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
@@ -31,13 +33,22 @@ public abstract class HttpHelperWithStubbedHttpClientTest {
     private static final String ANY_MESSAGE = "anyMessage";
     private static final int HTTP_OK = 200;
     private static final int HTTP_ACCEPTED = 202;
-    private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+    private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+    private final UofConfiguration configuration = mock(UofConfiguration.class);
     private final CloseableHttpClientFixture httpClient = new CloseableHttpClientFixture();
     private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
     private final UserAgentProvider userAgentProvider = mock(UserAgentProvider.class);
     private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
     private final InvokeHelpersHttpMethod httpMethod = httpMethodInvocationOn(
-        new HttpHelper(config, httpClient, messageExtractor, userAgentProvider, traceIdProvider)
+        new HttpHelper(
+            deprecatedConfig,
+            configuration,
+            mock(OAuth2TokenCache.class),
+            httpClient,
+            messageExtractor,
+            userAgentProvider,
+            traceIdProvider
+        )
     );
     private final SportsApiXmlResponseProvider xmlResponses = new SportsApiXmlResponseProvider();
     private final String anyPath = "/path/resource";
@@ -50,16 +61,64 @@ public abstract class HttpHelperWithStubbedHttpClientTest {
     @Test
     public void shouldNotInstantiateWithNullArguments() {
         assertThatThrownBy(() ->
-                new HttpHelper(null, httpClient, messageExtractor, userAgentProvider, traceIdProvider)
+                new HttpHelper(
+                    null,
+                    configuration,
+                    mock(OAuth2TokenCache.class),
+                    httpClient,
+                    messageExtractor,
+                    userAgentProvider,
+                    traceIdProvider
+                )
             )
             .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() ->
-                new HttpHelper(config, null, messageExtractor, userAgentProvider, traceIdProvider)
+                new HttpHelper(
+                    deprecatedConfig,
+                    null,
+                    mock(OAuth2TokenCache.class),
+                    httpClient,
+                    messageExtractor,
+                    userAgentProvider,
+                    traceIdProvider
+                )
             )
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new HttpHelper(config, httpClient, null, userAgentProvider, traceIdProvider))
+        assertThatThrownBy(() ->
+                new HttpHelper(
+                    deprecatedConfig,
+                    configuration,
+                    mock(OAuth2TokenCache.class),
+                    null,
+                    messageExtractor,
+                    userAgentProvider,
+                    traceIdProvider
+                )
+            )
             .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new HttpHelper(config, httpClient, messageExtractor, null, traceIdProvider))
+        assertThatThrownBy(() ->
+                new HttpHelper(
+                    deprecatedConfig,
+                    configuration,
+                    mock(OAuth2TokenCache.class),
+                    httpClient,
+                    null,
+                    userAgentProvider,
+                    traceIdProvider
+                )
+            )
+            .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() ->
+                new HttpHelper(
+                    deprecatedConfig,
+                    configuration,
+                    mock(OAuth2TokenCache.class),
+                    httpClient,
+                    messageExtractor,
+                    null,
+                    traceIdProvider
+                )
+            )
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("userAgent");
     }

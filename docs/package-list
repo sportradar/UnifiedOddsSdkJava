@@ -14,6 +14,7 @@ com.sportradar.unifiedodds.sdk.internal.caching.impl.ci
 com.sportradar.unifiedodds.sdk.internal.caching.markets
 com.sportradar.unifiedodds.sdk.internal.cfg
 com.sportradar.unifiedodds.sdk.internal.common.telemetry
+com.sportradar.unifiedodds.sdk.internal.commoniam
 com.sportradar.unifiedodds.sdk.internal.di
 com.sportradar.unifiedodds.sdk.internal.exceptions
 com.sportradar.unifiedodds.sdk.internal.exportable

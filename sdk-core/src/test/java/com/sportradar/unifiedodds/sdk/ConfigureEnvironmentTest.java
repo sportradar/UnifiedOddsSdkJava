@@ -42,14 +42,6 @@ public class ConfigureEnvironmentTest {
 
     private ConfigureEnvironmentTest() {}
 
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
-    }
-
     @Nested
     public class ConfigurationItself {
 
@@ -74,12 +66,10 @@ public class ConfigureEnvironmentTest {
             public void noEnvironmentSetDefaultsToIntegration() {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isEqualTo(Integration);
@@ -92,12 +82,10 @@ public class ConfigureEnvironmentTest {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, "inventedEnvironment");
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isEqualTo(Integration);
@@ -111,12 +99,10 @@ public class ConfigureEnvironmentTest {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, nonReplayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isEqualTo(nonReplayEnvironment);
@@ -130,12 +116,7 @@ public class ConfigureEnvironmentTest {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, replayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
-                val internalConfigForReplay = new SdkInternalConfiguration(
-                    config,
-                    replayMode,
-                    anyProps(),
-                    anyYaml()
-                );
+                val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
                 assertThat(config.getEnvironment()).isEqualTo(replayEnvironment);
                 assertThat(internalConfigForReplay).representsReplay();
@@ -168,12 +149,10 @@ public class ConfigureEnvironmentTest {
             public void noEnvironmentSetDefaultsToIntegration() {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isEqualTo(Integration);
@@ -186,12 +165,10 @@ public class ConfigureEnvironmentTest {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, "inventedEnvironment");
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isEqualTo(Integration);
@@ -205,12 +182,10 @@ public class ConfigureEnvironmentTest {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, nonReplayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isEqualTo(nonReplayEnvironment);
@@ -224,12 +199,7 @@ public class ConfigureEnvironmentTest {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, replayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
-                val internalConfigForReplay = new SdkInternalConfiguration(
-                    config,
-                    replayMode,
-                    anyProps(),
-                    anyYaml()
-                );
+                val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
                 assertThat(config.getEnvironment()).isEqualTo(replayEnvironment);
                 assertThat(internalConfigForReplay).representsReplay();
@@ -263,12 +233,10 @@ public class ConfigureEnvironmentTest {
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .build();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
+                val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForNonReplayExplicitly = new SdkInternalConfiguration(
                     config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
+                    nonReplayMode
                 );
 
                 assertThat(config.getEnvironment()).isNotEqualTo(Replay);
@@ -283,12 +251,7 @@ public class ConfigureEnvironmentTest {
                     .selectReplay()
                     .setDefaultLanguage(anyLanguage)
                     .build();
-                val internalConfigForReplay = new SdkInternalConfiguration(
-                    config,
-                    replayMode,
-                    anyProps(),
-                    anyYaml()
-                );
+                val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
                 assertThat(config.getEnvironment()).isEqualTo(Replay);
                 assertThat(internalConfigForReplay).representsReplay();
@@ -301,13 +264,8 @@ public class ConfigureEnvironmentTest {
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .build();
-                val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-                val internalConfigForReplay = new SdkInternalConfiguration(
-                    config,
-                    nonReplayMode,
-                    anyProps(),
-                    anyYaml()
-                );
+                val internalConfig = new SdkInternalConfiguration(config);
+                val internalConfigForReplay = new SdkInternalConfiguration(config, nonReplayMode);
 
                 assertThat(config.getEnvironment()).isNotEqualTo(Replay);
                 assertThat(internalConfig).representsNonReplay(Custom);

@@ -1,5 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
+**5.0.0-rc1**
+ - Introduced ClientAuthentication configuration as a more secure and recommended alternative to access tokens.
+ - Added a dependency to com.auth0:java-jvt:4.5.0 to support Common IAM authentication.
+
 **4.6.0**
  - breaking change: Sport Event timeline now uses long event IDs (previously int) to support larger identifiers introduced by the Unified API.
 

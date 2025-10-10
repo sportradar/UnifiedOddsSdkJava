@@ -10,20 +10,26 @@ import static java.util.Collections.emptyList;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
 import com.sportradar.unifiedodds.sdk.extended.UofSdkExt;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofClientAuthenticationImpl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
+import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.CommonIamData;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("ClassFanOutComplexity")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SdkSetup {
 
@@ -42,10 +48,13 @@ public final class SdkSetup {
     private Optional<UofExtListener> rawMessagesListener = Optional.empty();
 
     private Optional<UofListener> messagesListener = Optional.empty();
+    private Optional<UofGlobalEventsListener> globalMessagesListener = Optional.empty();
     private Optional<ExceptionHandlingStrategy> exceptionHandlingStrategy = Optional.empty();
     private boolean useDefaultExceptionHandlingStrategy;
     private Optional<Locale> defaultLanguage = Optional.empty();
     private Optional<List<Locale>> desiredLanguages = Optional.empty();
+    private Optional<BaseUrl> commonIamApiBaseUrl = Optional.empty();
+    private Optional<CommonIamData> comonIamCredentials = Optional.empty();
 
     public static SdkSetup with(
         Credentials sdkCredentials,
@@ -68,6 +77,11 @@ public final class SdkSetup {
 
     public SdkSetup with(ListenerCollectingMessages collectingMessagesListener) {
         this.messagesListener = Optional.of(collectingMessagesListener);
+        return this;
+    }
+
+    public SdkSetup with(UofGlobalEventsListener collectingRawMessagesListener) {
+        this.globalMessagesListener = Optional.of(collectingRawMessagesListener);
         return this;
     }
 
@@ -101,9 +115,20 @@ public final class SdkSetup {
         return this;
     }
 
+    public SdkSetup withCommonIamApiBaseUrl(BaseUrl baseUrl) {
+        this.commonIamApiBaseUrl = Optional.of(baseUrl);
+        return this;
+    }
+
+    public SdkSetup withCommonIamCredentials(CommonIamData commonIamData) {
+        this.comonIamCredentials = Optional.of(commonIamData);
+        return this;
+    }
+
     public UofSdk withoutFeed() throws InitException {
-        CustomConfigurationBuilder configBuilder = UofSdk
-            .getUofConfigurationBuilder()
+        val tokenSetter = UofSdk.getUofConfigurationBuilder();
+        comonIamCredentials.ifPresent(setOn(tokenSetter));
+        val configBuilder = tokenSetter
             .setAccessToken(sdkCredentials.getUsername())
             .selectCustom()
             .setApiUseSsl(false)
@@ -116,15 +141,46 @@ public final class SdkSetup {
         setHttpClientFastFailingTimeout(configBuilder);
         setHttpClientTimeout(configBuilder);
         setExceptionHandlingStrategy(configBuilder);
+        setCommonIamApiBaseUrl(configBuilder);
 
         UofConfiguration config = configBuilder.build();
 
         return createSdk(config);
     }
 
+    @NotNull
+    private static Consumer<CommonIamData> setOn(TokenSetter tokenSetter) {
+        return credentials ->
+            tokenSetter.setClientAuthentication(
+                UofClientAuthenticationImpl.PrivateKeyJwtDataImpl.create(
+                    credentials.getClientId(),
+                    credentials.getKeyId(),
+                    credentials.getPrivateKey()
+                )
+            );
+    }
+
     public UofSdk withOpenedFeed() throws InitException {
-        CustomConfigurationBuilder configBuilder = UofSdk
-            .getUofConfigurationBuilder()
+        UofConfiguration config = createUofConfiguration();
+        UofSdk sdk = createSdk(config);
+
+        if (configureSession) {
+            configure1Session(sdk);
+        }
+
+        sdk.open();
+        return sdk;
+    }
+
+    public UofConfiguration buildConfigurationWithoutSdk() {
+        return createUofConfiguration();
+    }
+
+    private UofConfiguration createUofConfiguration() {
+        val tokenSetter = UofSdk.getUofConfigurationBuilder();
+        comonIamCredentials.ifPresent(setOn(tokenSetter));
+
+        val configBuilder = tokenSetter
             .setAccessToken(sdkCredentials.getUsername())
             .selectCustom()
             .setApiUseSsl(false)
@@ -143,16 +199,10 @@ public final class SdkSetup {
         setHttpClientFastFailingTimeout(configBuilder);
         setHttpClientTimeout(configBuilder);
         setExceptionHandlingStrategy(configBuilder);
+        setCommonIamApiBaseUrl(configBuilder);
 
         UofConfiguration config = configBuilder.build();
-        UofSdk sdk = createSdk(config);
-
-        if (configureSession) {
-            configure1Session(sdk);
-        }
-
-        sdk.open();
-        return sdk;
+        return config;
     }
 
     private void setHttpClientTimeout(CustomConfigurationBuilder configBuilder) {
@@ -173,11 +223,22 @@ public final class SdkSetup {
         }
     }
 
+    private void setCommonIamApiBaseUrl(CustomConfigurationBuilder configBuilder) {
+        commonIamApiBaseUrl.ifPresent(baseUrl -> {
+            configBuilder.setClientAuthenticationHost(baseUrl.getHost());
+            configBuilder.setClientAuthenticationPort(baseUrl.getPort());
+            configBuilder.setClientAuthenticationUseSsl(false);
+        });
+    }
+
     private UofSdk createSdk(UofConfiguration config) {
+        UofGlobalEventsListener globalEventsListener = globalMessagesListener.orElse(
+            new NoOpUofGlobalEventsListener()
+        );
         if (rawMessagesListener.isPresent()) {
-            return new UofSdkExt(new NoOpUofGlobalEventsListener(), config, rawMessagesListener.get());
+            return new UofSdkExt(globalEventsListener, config, rawMessagesListener.get());
         } else {
-            return new UofSdk(new NoOpUofGlobalEventsListener(), config);
+            return new UofSdk(globalEventsListener, config);
         }
     }
 

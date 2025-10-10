@@ -63,6 +63,7 @@ public class MasterInjectionModule extends AbstractModule {
         install(new DeserializerModule());
         install(new HttpClientModule(configInternal));
         install(new WhoAmIReaderModule(configInternal));
+        install(new CommonIamModule());
         install(new ProducersDataProviderModule(configInternal));
         install(new GeneralModule(sdkListener));
         install(new ReadersModule());

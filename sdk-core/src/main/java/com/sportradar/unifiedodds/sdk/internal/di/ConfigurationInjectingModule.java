@@ -7,6 +7,8 @@ import com.google.inject.AbstractModule;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
+import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 
 @SuppressWarnings({ "ClassDataAbstractionCoupling" })
@@ -30,6 +32,7 @@ public class ConfigurationInjectingModule extends AbstractModule {
         bind(SdkInternalConfiguration.class).toInstance(internalConfiguration);
         bind(UofConfiguration.class).toInstance(configuration);
         bind(UofConfigurationImpl.class).toInstance((UofConfigurationImpl) configuration);
+        bind(TimeUtils.class).to(TimeUtilsImpl.class);
 
         install(new GlobalVariablesModule(new ResourceReader()));
         install(new NoopJmxModule());
@@ -37,6 +40,7 @@ public class ConfigurationInjectingModule extends AbstractModule {
         install(new DeserializerModule());
         install(new HttpClientModule(internalConfiguration));
         install(new WhoAmIReaderModule(internalConfiguration));
+        install(new CommonIamModule());
         install(new ProducersDataProviderModule(internalConfiguration));
     }
 }

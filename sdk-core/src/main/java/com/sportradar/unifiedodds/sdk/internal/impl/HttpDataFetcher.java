@@ -5,7 +5,10 @@
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
 import com.google.common.base.Preconditions;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2Token;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.http.ApiResponseHandlingException;
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUnreachableCode;
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUntestableCheckedException;
@@ -27,38 +30,42 @@ abstract class HttpDataFetcher {
 
     private static final String TRACE_ID_HEADER = "trace-id";
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpDataFetcher.class);
-    private final SdkInternalConfiguration config;
+    private final UofConfiguration uofConfiguration;
     private final CloseableHttpAsyncClient httpClient;
     private final UnifiedOddsStatistics statsBean;
     private final HttpResponseHandler responseHandler;
     private final long timeoutSeconds;
     private final UserAgentProvider userAgentProvider;
     private final TraceIdProvider traceIdProvider;
+    private final OAuth2TokenCache oauthTokenCache;
 
     HttpDataFetcher(
-        SdkInternalConfiguration config,
+        UofConfiguration uofConfiguration,
         CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler responseHandler,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider,
-        long timeoutSeconds
+        long timeoutSeconds,
+        OAuth2TokenCache oauthTokenCache
     ) {
-        Preconditions.checkNotNull(config);
+        Preconditions.checkNotNull(uofConfiguration);
         Preconditions.checkNotNull(httpClient);
         Preconditions.checkNotNull(statsBean);
         Preconditions.checkNotNull(responseHandler);
         Preconditions.checkNotNull(userAgentProvider, "userAgentProvider");
         Preconditions.checkNotNull(traceIdProvider, "traceIdProvider");
         Preconditions.checkArgument(timeoutSeconds > 0, "timeout cannot be 0");
+        Preconditions.checkNotNull(oauthTokenCache, "oauthTokenCache");
 
-        this.config = config;
+        this.uofConfiguration = uofConfiguration;
         this.httpClient = httpClient;
         this.statsBean = statsBean;
         this.responseHandler = responseHandler;
         this.userAgentProvider = userAgentProvider;
         this.traceIdProvider = traceIdProvider;
         this.timeoutSeconds = timeoutSeconds;
+        this.oauthTokenCache = oauthTokenCache;
     }
 
     public HttpData get(String path) throws CommunicationException {
@@ -73,11 +80,18 @@ abstract class HttpDataFetcher {
 
     protected HttpData send(ClassicHttpRequest httpRequest, String path) throws CommunicationException {
         statsBean.onStreamingHttpGet(path);
-        httpRequest.addHeader("x-access-token", config.getAccessToken());
+
         httpRequest.addHeader("User-Agent", userAgentProvider.asHeaderValue());
         httpRequest.addHeader(TRACE_ID_HEADER, traceIdProvider.generateTraceId());
 
         try {
+            if (uofConfiguration.getClientAuthentication() != null) {
+                OAuth2Token token = oauthTokenCache.getToken();
+                httpRequest.addHeader("Authorization", token.getTokenType() + " " + token.getAccessToken());
+            } else if (uofConfiguration.getAccessToken() != null) {
+                httpRequest.addHeader("x-access-token", uofConfiguration.getAccessToken());
+            }
+
             Optional<byte[]> requestBody = readBody(httpRequest, path);
             SimpleRequestBuilder request = SimpleRequestBuilder.copy(httpRequest);
             requestBody.ifPresent(bytes ->
@@ -91,6 +105,15 @@ abstract class HttpDataFetcher {
             throw new CommunicationException("There was a problem retrieving the requested data", path, ex);
         } catch (ApiResponseHandlingException e) {
             throw new CommunicationException(e.getMessage(), path, e.getHttpStatusCode(), e);
+        } catch (OAuth2TokenCache.OAuth2TokenRetrievalHttpException e) {
+            throw new CommunicationException(
+                "Failed to retrieve OAuth2 access token",
+                e.getPath(),
+                e.getStatusCode(),
+                e
+            );
+        } catch (OAuth2TokenCache.OAuth2TokenRetrievalException e) {
+            throw new CommunicationException("Failed to retrieve OAuth2 access token", "", e);
         } catch (TimeoutException ex) {
             throw new CommunicationException(
                 "API response taking too long to complete - timeout reached",

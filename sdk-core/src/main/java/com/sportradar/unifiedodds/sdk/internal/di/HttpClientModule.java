@@ -9,6 +9,8 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
@@ -111,15 +113,20 @@ public class HttpClientModule implements Module {
      */
     @Provides
     @Named("RecoveryHttpHelper")
+    @SuppressWarnings({ "ParameterNumber", "HiddenField" })
     private HttpHelper provideRecoveryHttpHelper(
-        SdkInternalConfiguration config,
+        SdkInternalConfiguration deprecatedConfiguration,
+        UofConfiguration configuration,
         @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
         @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer,
+        OAuth2TokenCache tokenCache,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider
     ) {
         return new HttpHelper(
-            config,
+            deprecatedConfiguration,
+            configuration,
+            tokenCache,
             httpClient,
             new MessageAndActionExtractor(),
             userAgentProvider,

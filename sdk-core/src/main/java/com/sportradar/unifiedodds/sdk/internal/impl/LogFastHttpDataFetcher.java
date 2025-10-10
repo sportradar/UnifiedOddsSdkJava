@@ -8,7 +8,9 @@ import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import java.util.concurrent.TimeUnit;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -18,7 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Wrapper class for the {@link HttpDataFetcher} with the sole purpose of API request logging
  */
-@SuppressWarnings({ "ConstantName" })
+@SuppressWarnings({ "ConstantName", "ClassFanOutComplexity" })
 public class LogFastHttpDataFetcher extends HttpDataFetcher {
 
     private static final Logger logger = LoggerFactory.getLogger(LogFastHttpDataFetcher.class);
@@ -27,22 +29,25 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
     );
 
     @Inject
+    @SuppressWarnings("ParameterNumber")
     public LogFastHttpDataFetcher(
-        SdkInternalConfiguration config,
+        UofConfiguration uofConfiguration,
         @Named("FastHttpClient") CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler responseDataHandler,
         UserAgentProvider userAgentProvider,
-        TraceIdProvider traceIdProvider
+        TraceIdProvider traceIdProvider,
+        OAuth2TokenCache oauthTokenCache
     ) {
         super(
-            config,
+            uofConfiguration,
             httpClient,
             statsBean,
             responseDataHandler,
             userAgentProvider,
             traceIdProvider,
-            config.getFastHttpClientTimeout()
+            uofConfiguration.getApi().getHttpClientFastFailingTimeout().getSeconds(),
+            oauthTokenCache
         );
     }
 

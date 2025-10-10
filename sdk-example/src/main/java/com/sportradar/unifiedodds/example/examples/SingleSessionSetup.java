@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.example.examples;
 
+import static com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication.privateKeyJwt;
+
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
@@ -12,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.managers.ProducerManager;
 import java.io.IOException;
+import java.security.PrivateKey;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,12 +25,17 @@ public class SingleSessionSetup {
 
     private final UofSdk uofSdk;
 
-    public SingleSessionSetup() {
+    public SingleSessionSetup(PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK Basic example - single session");
 
-        logEntry("Building the configuration using the provided token");
+        logEntry("Building the configuration using the provided token and client authentication");
 
-        UofConfiguration configuration = UofSdk.getUofConfigurationBuilder().buildConfigFromSdkProperties();
+        UofConfiguration configuration = UofSdk
+            .getUofConfigurationBuilder()
+            .setClientAuthentication(
+                privateKeyJwt().setClientId(clientId).setPrivateKey(privateKey).setSigningKeyId(keyId).build()
+            )
+            .buildConfigFromSdkProperties();
 
         logEntry(configuration.toString());
         logEntry("Creating a new UofSdk instance");

@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerData;
@@ -54,6 +55,7 @@ public class UofConfigurationImpl implements UofConfiguration {
     private UofUsageConfigurationImpl usageConfiguration;
     private final Function<UofConfiguration, WhoAmIReader> buildWhoAmIReader;
     private final Function<UofConfiguration, ProducerDataProvider> buildProducerDataProvider;
+    private UofClientAuthenticationImpl.PrivateKeyJwtImpl authentication;
 
     public UofConfigurationImpl(
         Function<UofConfiguration, WhoAmIReader> buildWhoAmIReader,
@@ -74,11 +76,6 @@ public class UofConfigurationImpl implements UofConfiguration {
         additionalConfiguration = new UofAdditionalConfigurationImpl();
         usageConfiguration = new UofUsageConfigurationImpl();
         environment = Environment.Integration;
-    }
-
-    @Override
-    public String getAccessToken() {
-        return accessToken;
     }
 
     @Override
@@ -147,6 +144,22 @@ public class UofConfigurationImpl implements UofConfiguration {
         }
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAuthentication(UofClientAuthentication.PrivateKeyJwtData authentication) {
+        this.authentication =
+            Optional
+                .ofNullable(authentication)
+                .map(UofClientAuthenticationImpl.PrivateKeyJwtImpl::create)
+                .orElse(null);
+    }
+
+    public UofClientAuthentication.PrivateKeyJwt getClientAuthentication() {
+        return authentication;
+    }
+
     public void setDefaultLanguage(Locale language) {
         Preconditions.checkNotNull(language);
 
@@ -188,6 +201,12 @@ public class UofConfigurationImpl implements UofConfiguration {
             if (environment != Environment.Custom) {
                 rabbitConfiguration.setHost(EnvironmentManager.getMqHost(environment));
                 apiConfiguration.setHost(EnvironmentManager.getApiHost(environment));
+                if (authentication != null) {
+                    String defaultAuthHostForNonCustomEnvironment = EnvironmentManager
+                        .getSetting(environment)
+                        .getClientAuthenticationHost();
+                    authentication.setHost(defaultAuthHostForNonCustomEnvironment);
+                }
             } else {
                 if (SdkHelper.stringIsNullOrEmpty(rabbitConfiguration.getHost())) {
                     rabbitConfiguration.setHost(EnvironmentManager.getMqHost(Environment.Integration));
@@ -195,6 +214,12 @@ public class UofConfigurationImpl implements UofConfiguration {
 
                 if (SdkHelper.stringIsNullOrEmpty(apiConfiguration.getHost())) {
                     apiConfiguration.setHost(EnvironmentManager.getApiHost(Environment.Integration));
+                }
+
+                if (authentication != null && SdkHelper.stringIsNullOrEmpty(authentication.getHost())) {
+                    authentication.setHost(
+                        EnvironmentManager.getSetting(Environment.Integration).getClientAuthenticationHost()
+                    );
                 }
             }
 
@@ -223,14 +248,6 @@ public class UofConfigurationImpl implements UofConfiguration {
         }
     }
 
-    public String getApiHostAndPort() {
-        final int defaultHttpPort = 80;
-        String portString = apiConfiguration.getPort() == defaultHttpPort || apiConfiguration.getPort() == 0
-            ? ""
-            : ":" + apiConfiguration.getPort();
-        return apiConfiguration.getHost() + portString;
-    }
-
     public void validateMinimumSettings() {
         if (defaultLanguage == null && !languages.isEmpty()) {
             defaultLanguage = languages.get(0);
@@ -241,9 +258,8 @@ public class UofConfigurationImpl implements UofConfiguration {
         if (defaultLanguage == null) {
             throw new InvalidParameterException("Missing default language");
         }
-
         if (SdkHelper.stringIsNullOrEmpty(accessToken)) {
-            throw new InvalidParameterException("Missing access token");
+            throw new InvalidParameterException("Missing access token or authentication");
         }
     }
 
@@ -299,7 +315,7 @@ public class UofConfigurationImpl implements UofConfiguration {
             ? ""
             : String.valueOf(bookmakerDetails.getBookmakerId());
 
-        return new StringJoiner(", ", "UofConfiguration{", "}")
+        StringJoiner joiner = new StringJoiner(", ", "UofConfiguration{", "}")
             .add("accessToken=" + obfuscatedToken)
             .add("environment=" + environment)
             .add("nodeId=" + nodeId)
@@ -312,7 +328,10 @@ public class UofConfigurationImpl implements UofConfiguration {
             .add(cacheConfiguration.toString())
             .add(producerConfiguration.toString())
             .add(additionalConfiguration.toString())
-            .add(usageConfiguration.toString())
-            .toString();
+            .add(usageConfiguration.toString());
+        if (authentication != null) {
+            joiner.add(authentication.toString());
+        }
+        return joiner.toString();
     }
 }

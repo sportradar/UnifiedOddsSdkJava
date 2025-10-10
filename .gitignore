@@ -42,6 +42,9 @@ target/
 # IntelliJ
 /out/
 
+# Visual studio code
+.vscode
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 

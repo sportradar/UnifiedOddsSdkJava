@@ -5,6 +5,8 @@ package com.sportradar.unifiedodds.sdk.integrationtest.unifiedapi;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.sportradar.unifiedodds.sdk.internal.cfg.TestConfigHelper.setHostAndPort;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.from;
 import static com.sportradar.utils.Urns.SportEvents.urnForAnyTournament;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -19,16 +21,22 @@ import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterManagerImpl;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.utils.Urn;
+import java.time.Duration;
 import java.util.Locale;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import lombok.val;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.junit.Before;
 import org.junit.Rule;
@@ -81,6 +89,7 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
         return String.format("/v1" + TOURNAMENT_SCHEDULE_PATH_FORMAT, language, tournamentUrn.toString());
     }
 
+    @SuppressWarnings("ClassFanOutComplexity")
     public static class TournamentScheduleDaoModule extends AbstractModule {
 
         private final String apiHost;
@@ -132,34 +141,44 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
         @Provides
         @Named("TournamentScheduleProvider")
         private DataProvider<Object> tournamentSchedules() {
+            val cfg = uofConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish();
+            val deprecatedCfg = internalConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish();
             return new DataProvider<>(
                 TOURNAMENT_SCHEDULE_PATH_FORMAT,
-                configWiremockHostAndEnglishByDefault(),
+                deprecatedCfg,
                 new LogHttpDataFetcher(
-                    configWithTokenAndTimeouts(),
+                    cfg,
                     HttpAsyncClientBuilder.create().build(),
                     mock(UnifiedOddsStatistics.class),
                     new HttpResponseHandler(),
                     mock(UserAgentProvider.class),
-                    mock(TraceIdProvider.class)
+                    mock(TraceIdProvider.class),
+                    mock(OAuth2TokenCache.class)
                 ),
                 deserializer
             );
         }
 
-        private SdkInternalConfiguration configWithTokenAndTimeouts() {
-            SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
-            when(config.getAccessToken()).thenReturn("someToken");
-            when(config.getHttpClientTimeout()).thenReturn(5000);
-            when(config.getFastHttpClientTimeout()).thenReturn(1000L);
-            return config;
-        }
-
-        private SdkInternalConfiguration configWiremockHostAndEnglishByDefault() {
+        private SdkInternalConfiguration internalConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish() {
             SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
             when(config.getApiHostAndPort()).thenReturn(apiHost);
             when(config.getUseApiSsl()).thenReturn(false);
+            when(config.getHttpClientTimeout()).thenReturn(5000);
+            when(config.getFastHttpClientTimeout()).thenReturn(1000L);
             when(config.getDefaultLocale()).thenReturn(Locale.ENGLISH);
+            when(config.getAccessToken()).thenReturn("someToken");
+            return config;
+        }
+
+        private UofConfiguration uofConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish() {
+            UofConfigurationStub config = new UofConfigurationStub();
+            UofApiConfigurationStub apiConfig = (UofApiConfigurationStub) config.getApi();
+            apiConfig.setHttpClientTimeout(Duration.ofSeconds(5));
+            apiConfig.setHttpClientFastFailingTimeout(Duration.ofSeconds(1));
+            setHostAndPort(from(apiHost), apiConfig);
+            apiConfig.setUseSsl(false);
+            config.setDefaultLanguage(Locale.ENGLISH);
+            config.setAccessToken("someToken");
             return config;
         }
 

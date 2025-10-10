@@ -45,8 +45,8 @@ public class ConfigureMaxRecoveryExecutionTimeTest {
             .setDefaultLanguage(anyLanguage)
             .setMaxRecoveryTime(amountInSeconds)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(asDuration(amountInSeconds), config.getProducer().getMaxRecoveryTime());
         assertEquals(amountInSeconds, internalConfig.getMaxRecoveryExecutionSeconds());
@@ -55,13 +55,5 @@ public class ConfigureMaxRecoveryExecutionTimeTest {
 
     private Duration asDuration(int amountOfSeconds) {
         return Duration.of(amountOfSeconds, ChronoUnit.SECONDS);
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

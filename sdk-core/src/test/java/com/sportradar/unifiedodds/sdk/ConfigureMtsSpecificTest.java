@@ -42,8 +42,8 @@ public class ConfigureMtsSpecificTest {
             .selectCustom()
             .setDefaultLanguage(anyLanguage)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(false, internalConfig.isCleanTrafficLogEntriesEnabled());
         assertEquals(false, internalConfigForReplay.isCleanTrafficLogEntriesEnabled());
@@ -56,18 +56,10 @@ public class ConfigureMtsSpecificTest {
             .selectCustom()
             .setDefaultLanguage(anyLanguage)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertThat(internalConfig.getSchedulerTasksToSkip()).isEmpty();
         assertThat(internalConfigForReplay.getSchedulerTasksToSkip()).isEmpty();
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

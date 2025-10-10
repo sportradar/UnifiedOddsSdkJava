@@ -43,19 +43,11 @@ public class ConfigureRabbitHostTest {
             .setDefaultLanguage(anyLanguage)
             .setMessagingHost(host)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(host, config.getRabbit().getHost());
         assertEquals(host, internalConfig.getMessagingHost());
         assertEquals(host, internalConfigForReplay.getMessagingHost());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

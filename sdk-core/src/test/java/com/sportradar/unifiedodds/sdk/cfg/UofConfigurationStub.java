@@ -12,15 +12,27 @@ import java.util.Locale;
 public class UofConfigurationStub implements UofConfiguration {
 
     private UofCacheConfiguration cache = new UofCacheConfigurationStub();
-    private final UofApiConfiguration apiConfig = new UofApiConfigurationStub();
+    private UofApiConfigurationStub apiConfig = new UofApiConfigurationStub();
     private UofRabbitConfiguration rabbit = new UofRabbitConfigurationStub();
     private final UofProducerConfiguration producerConfig = new UofProducerConfigurationStub();
     private Environment environment;
     private Integer nodeId;
+    private String accessToken;
+    private Locale defaultLanguage;
+    private List<Locale> languages;
+    private ExceptionHandlingStrategy exceptionHandlingStrategy;
+    private BookmakerDetails bookmakerDetails;
+    private UofAdditionalConfiguration additional;
+    private UofUsageConfiguration usage;
+    private UofPrivateKeyJwtAuthenticationStub clientAuthentication;
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 
     @Override
     public String getAccessToken() {
-        return null;
+        return accessToken;
     }
 
     public void setEnvironment(Environment environment) {
@@ -32,14 +44,22 @@ public class UofConfigurationStub implements UofConfiguration {
         return environment;
     }
 
+    public void setDefaultLanguage(Locale defaultLanguage) {
+        this.defaultLanguage = defaultLanguage;
+    }
+
     @Override
     public Locale getDefaultLanguage() {
-        return null;
+        return defaultLanguage;
     }
 
     @Override
     public List<Locale> getLanguages() {
-        return null;
+        return languages;
+    }
+
+    public void setLanguages(List<Locale> languages) {
+        this.languages = languages;
     }
 
     @Override
@@ -53,12 +73,25 @@ public class UofConfigurationStub implements UofConfiguration {
 
     @Override
     public ExceptionHandlingStrategy getExceptionHandlingStrategy() {
-        return null;
+        return exceptionHandlingStrategy;
+    }
+
+    public void setExceptionHandlingStrategy(ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
     @Override
     public BookmakerDetails getBookmakerDetails() {
-        return null;
+        return bookmakerDetails;
+    }
+
+    public void setBookmakerDetails(BookmakerDetails bookmakerDetails) {
+        this.bookmakerDetails = bookmakerDetails;
+    }
+
+    @SuppressWarnings("HiddenField")
+    public void setApi(UofApiConfigurationStub apiConfig) {
+        this.apiConfig = apiConfig;
     }
 
     @Override
@@ -91,11 +124,36 @@ public class UofConfigurationStub implements UofConfiguration {
 
     @Override
     public UofAdditionalConfiguration getAdditional() {
-        return null;
+        return additional;
+    }
+
+    public void setAdditional(UofAdditionalConfiguration additional) {
+        this.additional = additional;
     }
 
     @Override
     public UofUsageConfiguration getUsage() {
-        return null;
+        return usage;
+    }
+
+    public void setUsage(UofUsageConfiguration usage) {
+        this.usage = usage;
+    }
+
+    @Override
+    public UofClientAuthentication.PrivateKeyJwt getClientAuthentication() {
+        return clientAuthentication;
+    }
+
+    public void setClientAuthentication(UofPrivateKeyJwtAuthenticationStub clientAuthentication) {
+        this.clientAuthentication = clientAuthentication;
+    }
+
+    public UofPrivateKeyJwtAuthenticationStub getClientAuthenticationStub() {
+        return clientAuthentication;
+    }
+
+    public UofApiConfigurationStub getApiStub() {
+        return apiConfig;
     }
 }

@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.example.examples;
 
+import static com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication.privateKeyJwt;
+
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
@@ -16,6 +18,7 @@ import com.sportradar.unifiedodds.sdk.managers.CacheType;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCi;
 import java.io.*;
+import java.security.PrivateKey;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,12 +31,15 @@ public class ExportImportSetup {
     private final UofSdk uofSdk;
     private final File cacheFile = new File("cache");
 
-    public ExportImportSetup(String token) {
+    public ExportImportSetup(String token, PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK Basic example - cache export/import");
 
-        logEntry("Building the configuration using the provided token");
+        logEntry("Building the configuration using the provided token and client authentication");
         UofConfiguration configuration = UofSdk
             .getUofConfigurationBuilder()
+            .setClientAuthentication(
+                privateKeyJwt().setClientId(clientId).setPrivateKey(privateKey).setSigningKeyId(keyId).build()
+            )
             .setAccessToken(token)
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID)
