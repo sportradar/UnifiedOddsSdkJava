@@ -591,7 +591,7 @@ public class DataRouterImpl implements DataRouter {
             return null;
         }
 
-        Map<HomeAway, String> result = new HashMap<>(2);
+        Map<HomeAway, String> result = new EnumMap<>(HomeAway.class);
         result.put(HomeAway.Home, home.getId());
         result.put(HomeAway.Away, away.getId());
 

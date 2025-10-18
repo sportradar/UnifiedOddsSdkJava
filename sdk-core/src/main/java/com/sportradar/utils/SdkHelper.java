@@ -304,66 +304,46 @@ public final class SdkHelper {
         if (set == null || set.isEmpty()) {
             return null;
         }
-        String result = "";
-        for (String key : set) {
-            result += "," + key;
-        }
-        if (result.length() > 1) {
-            result = result.substring(1);
-        }
-        return result;
+        return String.join(",", set);
     }
 
     public static String integerSetToString(Set<Integer> set) {
         if (set == null || set.isEmpty()) {
             return null;
         }
-        String result = "";
-        for (int key : set) {
-            result += "," + key;
-        }
-        if (result.length() > 1) {
-            result = result.substring(1);
-        }
-        return result;
+        return set.stream().map(String::valueOf).collect(Collectors.joining(","));
     }
 
     public static String dictionaryToString(Map<String, String> dict) {
         if (dict == null || dict.isEmpty()) {
             return null;
         }
-        String result = null;
-        for (String key : dict.keySet()) {
-            result += "," + key + "=" + dict.get(key);
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<String, String> entry : dict.entrySet()) {
+            result.append(',').append(entry.getKey()).append('=').append(entry.getValue());
         }
-        return result;
+        return result.toString();
     }
 
     public static String specifierListToString(List<Specifier> specifiers) {
         if (specifiers == null || specifiers.isEmpty()) {
             return null;
         }
-        String result = specifiers
-            .stream()
-            .map(n -> String.valueOf(n))
-            .collect(Collectors.joining("|", "{", "}"));
-        return result;
+        return specifiers.stream().map(String::valueOf).collect(Collectors.joining("|", "{", "}"));
     }
 
     public static String specifierKeyListToString(List<Specifier> specifiers) {
         if (specifiers == null || specifiers.isEmpty()) {
             return null;
         }
-        String result = specifiers.stream().map(n -> n.getName()).collect(Collectors.joining("|", "{", "}"));
-        return result;
+        return specifiers.stream().map(Specifier::getName).collect(Collectors.joining("|", "{", "}"));
     }
 
     public static String localeListToString(List<Locale> locales) {
         if (locales == null || locales.isEmpty()) {
             return null;
         }
-        String result = locales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
-        return result;
+        return locales.stream().map(Locale::getLanguage).collect(Collectors.joining(", "));
     }
 
     public static boolean checkCauseReason(Throwable cause, String message) {

@@ -84,7 +84,7 @@ public class MarketMappingDataImpl implements MarketMappingData {
     public String getMarketId() {
         StringBuilder sb = new StringBuilder(String.valueOf(marketTypeId));
         if (marketSubTypeId != null) {
-            sb.append(":").append(getMarketSubTypeId());
+            sb.append(':').append(getMarketSubTypeId());
         }
         return sb.toString();
     }
