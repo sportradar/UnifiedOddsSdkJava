@@ -42,6 +42,14 @@ public class CommonIamTokens {
         );
     }
 
+    public static OAuth2Token expiringInFourSecondsCommonIamToken() {
+        return new OAuth2Token(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYSIsIm5hbWUiOiJKIiwiaWF0IjoxNTE2MjM5MDIyfQ.E3boLopq4Cz9Axeye1kN6vSfpTwvdY_nv79lJwohlys",
+            "Bearer",
+            4
+        );
+    }
+
     public static OAuth2Token immediatelyExpiredCommonIamToken() {
         return new OAuth2Token(
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYiIsIm5hbWUiOiJKZCIsImlhdCI6MTUxNjIzOTAyMn0.B8dR7uL5lY8hoUSBYhHrrXJmIctvbVMYTfsvmn5bB-k",
@@ -97,6 +105,11 @@ public class CommonIamTokens {
         @JsonIgnore
         public String getHeaderValue() {
             return tokenType + " " + accessToken;
+        }
+
+        @JsonIgnore
+        public com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2Token asCacheToken() {
+            return new com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2Token(tokenType, accessToken);
         }
     }
 }

@@ -4,22 +4,30 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.sportradar.unifiedodds.sdk.CapiCustomBet.getCalculationWithHarmonization;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
+import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.BodyCondition.forRequestBody;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
 import static com.sportradar.unifiedodds.sdk.internal.cfg.TestConfigHelper.setHostAndPort;
 import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.*;
 import static com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.createDataProviderFor;
+import static com.sportradar.unifiedodds.sdk.internal.impl.Deserializers.customBetApiDeserializer;
 import static com.sportradar.unifiedodds.sdk.internal.impl.Deserializers.sportsApiDeserializer;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiSelectionType;
+import com.sportradar.uf.custombet.datamodel.CapiSelections;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentExtended;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentsEndpoint;
@@ -28,14 +36,15 @@ import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.cfg.UofPrivateKeyJwtAuthenticationStub;
 import com.sportradar.unifiedodds.sdk.conn.ApiSimulator;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2Token;
 import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.HttpFetcherType;
 import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.LogsMock;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
+import com.sportradar.utils.Urns;
 import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +54,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MagicNumber", "IllegalCatch" })
+@SuppressWarnings(
+    { "ClassFanOutComplexity", "ConstantName", "MagicNumber", "IllegalCatch", "MultipleStringLiterals" }
+)
 public class DataProviderHeadersTest {
 
     @RegisterExtension
@@ -55,6 +66,7 @@ public class DataProviderHeadersTest {
         .build();
 
     private static final String SPORTS_EN_TOURNAMENTS_URL = "/sports/en/tournaments.xml";
+    private static final String CUSTOM_BET_CALCULATE_URL = "/custombet/calculate";
     private static final String TRACE_HEADER_NAME = "trace-id";
     private static final String USERS_WHOAMI_XML = "/users/whoami.xml";
     private static final String V1_PATH_PREFIX_REQUIRED_FOR_ASSERTIONS_ONLY = "/v1";
@@ -210,6 +222,154 @@ public class DataProviderHeadersTest {
 
             assertThat(provider.getData().getBookmakerId()).isNotNull();
         }
+
+        @Nested
+        class Retries {
+
+            @Test
+            void apiGetRequestRejectedWith401FailsAfterOneRetryWithNewTokenWhichAlsoResultsIn401() {
+                val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+                config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+                val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+                val tokenCache = providingBearerTokens("abc123", "newToken");
+                DataProvider<SapiTournamentsEndpoint> provider = createDataProviderFor(
+                    SPORTS_EN_TOURNAMENTS_URL
+                )
+                    .with(config)
+                    .with(deprecatedCfg)
+                    .with(sportsApiDeserializer())
+                    .with(tokenCache)
+                    .build();
+                apiSimulator.stubAllTournamentsWithUnauthorizedErrorResponse(in(ENGLISH));
+
+                assertThatThrownBy(provider::getData).isInstanceOf(DataProviderException.class);
+
+                verify(tokenCache).invalidateToken(withAccessToken("abc123"));
+                apiSimulator.verifyAllTournamentsCalled(
+                    exactly(1),
+                    with(ENGLISH),
+                    requiringHeader("Authorization", "Bearer abc123")
+                );
+                apiSimulator.verifyAllTournamentsCalled(
+                    exactly(1),
+                    with(ENGLISH),
+                    requiringHeader("Authorization", "Bearer newToken")
+                );
+            }
+
+            @Test
+            void apiGetRequestRejectedWith401SucceedsAfterOneRetry() throws Exception {
+                val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+                config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+                val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+                val tokenCache = providingBearerTokens("firstToken", "secondToken");
+                DataProvider<SapiTournamentsEndpoint> provider = createDataProviderFor(
+                    SPORTS_EN_TOURNAMENTS_URL
+                )
+                    .with(config)
+                    .with(deprecatedCfg)
+                    .with(sportsApiDeserializer())
+                    .with(tokenCache)
+                    .build();
+                val tournament = euro2024TournamentInfo().getTournament();
+                apiSimulator.stubAllTournamentsWithUnauthorizedErrorResponse(
+                    in(ENGLISH),
+                    requiringHeader("Authorization", "Bearer firstToken")
+                );
+                apiSimulator.stubAllTournaments(
+                    in(ENGLISH),
+                    tournament,
+                    requiringHeader("Authorization", "Bearer secondToken")
+                );
+
+                val actual = provider.getData(ENGLISH);
+
+                assertThat(actual.getTournament()).extracting("id").containsOnly(tournament.getId());
+            }
+
+            @Test
+            void apiPostRequestRejectedWith401FailsAfterOneRetryWithNewTokenWhichAlsoResultsIn401() {
+                val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+                config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+                val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+                val tokenCache = providingBearerTokens("firstCbToken", "secondCbToken");
+                DataProvider<SapiTournamentsEndpoint> provider = createDataProviderFor(
+                    CUSTOM_BET_CALCULATE_URL
+                )
+                    .with(config)
+                    .with(deprecatedCfg)
+                    .with(customBetApiDeserializer())
+                    .with(tokenCache)
+                    .build();
+
+                apiSimulator.stubCustomBetCalculateWithUnauthorizedResponse();
+
+                assertThatThrownBy(() -> provider.postData(new CapiSelections()))
+                    .isInstanceOf(DataProviderException.class);
+
+                verify(tokenCache).invalidateToken(withAccessToken("firstCbToken"));
+                apiSimulator.verifyCustomBetCalculateCalled(
+                    exactly(1),
+                    requiringHeader("Authorization", "Bearer firstCbToken")
+                );
+                apiSimulator.verifyCustomBetCalculateCalled(
+                    exactly(1),
+                    requiringHeader("Authorization", "Bearer secondCbToken")
+                );
+            }
+
+            @Test
+            void apiPostRequestRejectedWith401SucceedsAfterOneRetry() throws Exception {
+                val config = uofConfigurationWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+                config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+                val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
+
+                val tokenCache = providingBearerTokens("firstCbToken", "secondCbToken");
+                DataProvider<CapiCalculationResponse> provider = createDataProviderFor(
+                    CUSTOM_BET_CALCULATE_URL
+                )
+                    .with(config)
+                    .with(deprecatedCfg)
+                    .with(customBetApiDeserializer())
+                    .with(tokenCache)
+                    .build();
+
+                apiSimulator.stubCustomBetCalculateWithUnauthorizedResponse(
+                    requiringHeader("Authorization", "Bearer firstCbToken")
+                );
+                val selections = customBetSelections();
+                apiSimulator.stubCustomBetCalculate(
+                    getCalculationWithHarmonization(true),
+                    forRequestBody(selections),
+                    requiringHeader("Authorization", "Bearer secondCbToken")
+                );
+
+                val actual = provider.postData(selections);
+
+                assertThat(actual.getCalculation().getOdds())
+                    .isEqualTo(getCalculationWithHarmonization(true).getCalculation().getOdds());
+            }
+
+            private OAuth2Token withAccessToken(String expected) {
+                return argThat(t -> t.getAccessToken().equals(expected));
+            }
+
+            public CapiSelections customBetSelections() {
+                CapiSelectionType eventSelection = new CapiSelectionType();
+                eventSelection.setId(Urns.SportEvents.getForAnyMatch().toString());
+                eventSelection.setMarketId(19);
+                eventSelection.setSpecifiers("total=1.5");
+                eventSelection.setOutcomeId("12");
+                eventSelection.setOdds(1.2);
+
+                CapiSelections selections = new CapiSelections();
+                selections.getSelections().add(eventSelection);
+                return selections;
+            }
+        }
     }
 
     @Nested
@@ -230,7 +390,7 @@ public class DataProviderHeadersTest {
             val tournament = euro2024TournamentInfo().getTournament();
             stubTournamentRequiringTraceIdUuidHeader(tournament);
 
-            val result = provider.getData(Locale.ENGLISH);
+            val result = provider.getData(ENGLISH);
             assertThat(result).isNotNull();
 
             val traceId = getTheOnlyTraceIdForAllTournamentsRequest();
@@ -250,12 +410,11 @@ public class DataProviderHeadersTest {
                 .<SapiTournamentsEndpoint>build();
 
             apiSimulator.stubAllTournamentsWithBadRequestErrorResponse(
-                Locale.ENGLISH,
+                ENGLISH,
                 requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
             );
 
-            assertThatThrownBy(() -> provider.getData(Locale.ENGLISH))
-                .isInstanceOf(DataProviderException.class);
+            assertThatThrownBy(() -> provider.getData(ENGLISH)).isInstanceOf(DataProviderException.class);
 
             val traceId = getTheOnlyTraceIdForAllTournamentsRequest();
             logs.verifyLoggedLineContaining(traceId);
@@ -279,8 +438,7 @@ public class DataProviderHeadersTest {
                 toBeDelayedBy(cfg.getApi().getHttpClientTimeout().getSeconds() + 1, SECONDS)
             );
 
-            assertThatThrownBy(() -> provider.getData(Locale.ENGLISH))
-                .isInstanceOf(DataProviderException.class);
+            assertThatThrownBy(() -> provider.getData(ENGLISH)).isInstanceOf(DataProviderException.class);
 
             val traceId = getTheOnlyTraceIdForAllTournamentsRequest();
             logs.verifyLoggedLineContaining(traceId);
@@ -300,9 +458,9 @@ public class DataProviderHeadersTest {
 
             val tournament = euro2024TournamentInfo().getTournament();
             stubTournamentRequiringTraceIdUuidHeader(tournament);
-            val tournamentData1 = provider.getData(Locale.ENGLISH);
+            val tournamentData1 = provider.getData(ENGLISH);
             stubTournamentRequiringTraceIdUuidHeader(tournament);
-            val tournamentData2 = provider.getData(Locale.ENGLISH);
+            val tournamentData2 = provider.getData(ENGLISH);
 
             val traceIds = getTraceIdsForAllTournamentsRequests();
             assertThat(traceIds.stream().distinct()).hasSize(traceIds.size());
@@ -315,12 +473,11 @@ public class DataProviderHeadersTest {
 
     private static List<String> getTraceIdsForAllTournamentsRequests() {
         val events = wireMock.getAllServeEvents();
-        val traceIds = events
+        return events
             .stream()
             .filter(e -> e.getRequest().getUrl().equals(SPORTS_EN_TOURNAMENTS_URL))
             .map(e -> e.getRequest().getHeader("trace-id"))
             .collect(Collectors.toList());
-        return traceIds;
     }
 
     private static String getTheOnlyTraceIdForAllTournamentsRequest() {
@@ -341,7 +498,7 @@ public class DataProviderHeadersTest {
 
     private void stubTournamentRequiringTraceIdUuidHeader(SapiTournamentExtended tournament) {
         apiSimulator.stubAllTournaments(
-            in(Locale.ENGLISH),
+            in(ENGLISH),
             tournament,
             requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
         );

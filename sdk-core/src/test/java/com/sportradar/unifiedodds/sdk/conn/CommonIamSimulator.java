@@ -95,6 +95,74 @@ public class CommonIamSimulator {
         register(post(urlPathEqualTo("/oauth/token")).willReturn(ok(tokenResponse)));
     }
 
+    @SneakyThrows
+    public void stubTokenEndpoint(OAuth2Token firstToken, OAuth2Token secondToken, OAuth2Token nextToken) {
+        val firstTokenResponse = new ObjectMapper().writeValueAsString(firstToken);
+        val secondTokenResponse = new ObjectMapper().writeValueAsString(secondToken);
+        val nextTokenResponse = new ObjectMapper().writeValueAsString(nextToken);
+
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .willReturn(ok(firstTokenResponse))
+                .willSetStateTo("SECOND")
+        );
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .whenScenarioStateIs("SECOND")
+                .willReturn(ok(secondTokenResponse))
+                .willSetStateTo("NEXT")
+        );
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .whenScenarioStateIs("NEXT")
+                .willReturn(ok(nextTokenResponse))
+                .willSetStateTo("NEXT")
+        );
+    }
+
+    @SneakyThrows
+    public void stubTokenEndpoint(
+        OAuth2Token firstToken,
+        OAuth2Token secondToken,
+        OAuth2Token thirdToken,
+        OAuth2Token nextToken
+    ) {
+        val firstTokenResponse = new ObjectMapper().writeValueAsString(firstToken);
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .willReturn(ok(firstTokenResponse))
+                .willSetStateTo("SECOND")
+        );
+        val secondTokenResponse = new ObjectMapper().writeValueAsString(secondToken);
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .whenScenarioStateIs("SECOND")
+                .willReturn(ok(secondTokenResponse))
+                .willSetStateTo("THIRD")
+        );
+        val thirdTokenResponse = new ObjectMapper().writeValueAsString(thirdToken);
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .whenScenarioStateIs("THIRD")
+                .willReturn(ok(thirdTokenResponse))
+                .willSetStateTo("NEXT")
+        );
+        val nextTokenResponse = new ObjectMapper().writeValueAsString(nextToken);
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .inScenario("tokens")
+                .whenScenarioStateIs("NEXT")
+                .willReturn(ok(nextTokenResponse))
+                .willSetStateTo("NEXT")
+        );
+    }
+
     private void register(MappingBuilder mappingBuilder) {
         stubRegistrar.accept(mappingBuilder);
     }

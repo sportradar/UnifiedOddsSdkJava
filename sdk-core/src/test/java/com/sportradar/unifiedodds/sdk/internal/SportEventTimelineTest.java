@@ -185,14 +185,13 @@ class SportEventTimelineTest {
             .with(sportEventCache)
             .build();
 
-        val sportDataProvider = SportDataProviders
+        return SportDataProviders
             .stubbingOutSportDataProvider()
             .with(dataRouterManager)
             .with(sportEntityFactory)
             .with(sportEventCache)
             .withDesiredLocale(ENGLISH)
             .build();
-        return sportDataProvider;
     }
 
     private SapiMatchTimelineEndpoint finished(SapiMatchTimelineEndpoint timeline) {

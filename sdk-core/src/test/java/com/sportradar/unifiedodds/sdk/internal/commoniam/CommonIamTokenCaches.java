@@ -29,6 +29,7 @@ public class CommonIamTokenCaches {
         private UofConfiguration configuration;
         private SdkInternalConfiguration deprecatedConfiguration;
         private TimeUtils timeUtils;
+        private ResourceAudience resourceAudience;
 
         @SuppressWarnings("HiddenField")
         public CommonIamTokenCacheBuilder with(UofConfiguration configuration) {
@@ -48,6 +49,12 @@ public class CommonIamTokenCaches {
             return this;
         }
 
+        @SuppressWarnings("HiddenField")
+        public CommonIamTokenCacheBuilder withResourceAudience(ResourceAudience resourceAudience) {
+            this.resourceAudience = resourceAudience;
+            return this;
+        }
+
         public CommonIamTokenCache build() {
             val config = ofNullable(this.configuration).orElse(mock(UofConfiguration.class));
             val deprecatedConfig = ofNullable(this.deprecatedConfiguration)
@@ -57,7 +64,7 @@ public class CommonIamTokenCaches {
             val objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            return new CommonIamTokenCache(config, client, timeUtilsInstance, objectMapper);
+            return new CommonIamTokenCache(config, client, timeUtilsInstance, objectMapper, resourceAudience);
         }
 
         public CloseableHttpAsyncClient createStartedAsyncHttpClientFor(SdkInternalConfiguration cfg) {

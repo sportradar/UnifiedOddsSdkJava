@@ -547,6 +547,38 @@ public class ApiSimulator {
         );
     }
 
+    public void stubAllSportsWithUnauthorizedResponseFirstThenSuccess(
+        Locale language,
+        HeaderEquality initialTokenHeader,
+        HeaderEquality refreshedTokenHeader
+    ) {
+        val allSportsJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sports"),
+            SapiSportsEndpoint.class,
+            allSports()
+        );
+
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(initialTokenHeader.name, initialTokenHeader.valuePattern)
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(refreshedTokenHeader.name, refreshedTokenHeader.valuePattern)
+                .willReturn(ok(JaxbContexts.SportsApi.marshall(allSportsJaxb)))
+        );
+    }
+
+    public void stubAllSportsWithUnauthorizedResponse(Locale language, HeaderEquality token) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(token.name, token.valuePattern)
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+    }
+
     public void stubEmptyAllTournaments(Locale language) {
         val allTournaments = new SapiTournamentsEndpoint();
         val allTournamentsJaxb = new JAXBElement<>(
@@ -595,6 +627,36 @@ public class ApiSimulator {
             get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
                 .withHeader(headerEquality.name, headerEquality.valuePattern)
                 .willReturn(badRequest().withBody("<response/>"))
+        );
+    }
+
+    public void stubAllTournamentsWithUnauthorizedErrorResponse(
+        Locale language,
+        HeaderEquality headerEquality
+    ) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+    }
+
+    public void stubAllTournamentsWithUnauthorizedErrorResponse(Locale language) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+    }
+
+    public void verifyAllTournamentsCalled(
+        CountMatchingStrategy countMatchingStrategy,
+        Locale language,
+        HeaderEquality headerEquality
+    ) {
+        verifyThat(
+            countMatchingStrategy,
+            getRequestedFor(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
         );
     }
 
@@ -711,6 +773,50 @@ public class ApiSimulator {
                         .withStatus(HttpStatus.SC_OK)
                         .withBody(JaxbContexts.CustomBetApi.marshall(response))
                 )
+        );
+    }
+
+    public void stubCustomBetCalculate(
+        CapiCalculationResponse response,
+        BodyCondition requestBodyCondition,
+        HeaderEquality headerEquality
+    ) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .withRequestBody(equalTo(JaxbContexts.CustomBetApi.marshall(requestBodyCondition.value)))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
+                )
+        );
+    }
+
+    public void stubCustomBetCalculateWithUnauthorizedResponse() {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED))
+        );
+    }
+
+    public void stubCustomBetCalculateWithUnauthorizedResponse(HeaderEquality headerEquality) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED))
+        );
+    }
+
+    public void verifyCustomBetCalculateCalled(
+        CountMatchingStrategy countMatchingStrategy,
+        HeaderEquality headerEquality
+    ) {
+        verifyThat(
+            countMatchingStrategy,
+            postRequestedFor(urlPathMatching("/v1/custombet/calculate"))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
         );
     }
 
@@ -989,6 +1095,20 @@ public class ApiSimulator {
                     .withStatus(HttpStatus.SC_NOT_FOUND)
                     .withBody(JaxbContexts.SportsApi.marshall(sapiNotFoundResponse()))
             )
+        );
+    }
+
+    public void stubMatchTimeline(Locale language, SapiMatchTimelineEndpoint sapiMatchTimeline) {
+        String id = sapiMatchTimeline.getSportEvent().getId();
+        val timelineElement = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "match_timeline"),
+            SapiMatchTimelineEndpoint.class,
+            sapiMatchTimeline
+        );
+        stub(
+            HttpStatus.SC_OK,
+            format("/v1/sports/%s/sport_events/%s/timeline.xml", language.getLanguage(), id),
+            timelineElement
         );
     }
 

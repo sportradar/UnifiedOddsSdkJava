@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>5.0.0-rc1</version>
+    <version>5.0.0-rc2</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -882,6 +882,18 @@
                         <configuration>
                             <skip>${skipITs}</skip>
                             <mainClass>com.sportradar.unifiedodds.sdk.integrationtest.preconditions.PreconditionsForIntegrationTests</mainClass>
+                            <classpathScope>test</classpathScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>require-preconditions-for-unit-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <mainClass>com.sportradar.unifiedodds.sdk.build.preconditions.PreconditionsForRabbitRequiringUnitTests</mainClass>
                             <classpathScope>test</classpathScope>
                         </configuration>
                     </execution>

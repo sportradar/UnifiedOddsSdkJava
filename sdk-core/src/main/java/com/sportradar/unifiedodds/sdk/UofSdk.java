@@ -25,10 +25,7 @@ import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationPropertiesRea
 import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationYamlReaderFactory;
 import com.sportradar.unifiedodds.sdk.internal.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
-import com.sportradar.unifiedodds.sdk.internal.di.ConfigurationInjectingModule;
-import com.sportradar.unifiedodds.sdk.internal.di.CustomisableSdkModule;
-import com.sportradar.unifiedodds.sdk.internal.di.InternalCachesProvider;
-import com.sportradar.unifiedodds.sdk.internal.di.MasterInjectionModule;
+import com.sportradar.unifiedodds.sdk.internal.di.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.AmqpConnectionFactory;
@@ -591,6 +588,13 @@ public class UofSdk implements AutoCloseable {
             internalCachesProvider.close();
         } catch (Exception ex) {
             logger.warn("Error during close - InternalCachesProvider", ex);
+        }
+
+        try {
+            MetricsRegisterer metricsRegisterer = injector.getInstance(Key.get(MetricsRegisterer.class));
+            metricsRegisterer.close();
+        } catch (Exception ex) {
+            logger.warn("Error during close - MetricsRegisterer", ex);
         }
     }
 

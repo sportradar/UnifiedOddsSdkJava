@@ -24,7 +24,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.conn.*;
-import com.sportradar.unifiedodds.sdk.conn.RoutingKeys;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
@@ -33,15 +32,17 @@ import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
 import java.rmi.registry.LocateRegistry;
 import java.util.Locale;
-import javax.management.*;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 import javax.management.remote.*;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@SuppressWarnings({ "ClassDataAbstractionCoupling", "ClassFanOutComplexity" })
+@SuppressWarnings({ "ClassDataAbstractionCoupling", "ClassFanOutComplexity", "MagicNumber" })
 class UnifiedOddsStatisticsJmxIT {
 
     @RegisterExtension
@@ -85,6 +86,7 @@ class UnifiedOddsStatisticsJmxIT {
     );
 
     private BaseUrl sportsApiBaseUrl;
+    private JMXConnectorServer connectorServer;
 
     UnifiedOddsStatisticsJmxIT() throws Exception {}
 
@@ -98,8 +100,14 @@ class UnifiedOddsStatisticsJmxIT {
         LocateRegistry.createRegistry(jmxPort);
         jmxUrl = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:" + jmxPort + "/jmxrmi");
 
-        val connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
+        connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
         connectorServer.start();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        connectorServer.stop();
+        rabbitMqUserSetup.revertChangesMade();
     }
 
     @Test

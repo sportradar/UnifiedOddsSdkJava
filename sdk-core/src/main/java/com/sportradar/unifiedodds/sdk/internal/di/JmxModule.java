@@ -23,8 +23,18 @@ public class JmxModule implements Module {
      */
     @Provides
     @Singleton
-    private UnifiedOddsStatistics provideUnifiedOddsStatistics() {
-        return new MetricsRegisterer(ManagementFactory.getPlatformMBeanServer())
-            .createUnifiedOddsStatistics();
+    private UnifiedOddsStatistics provideUnifiedOddsStatistics(MetricsRegisterer metricsRegisterer) {
+        return metricsRegisterer.createUnifiedOddsStatistics();
+    }
+
+    /**
+     * Returns the JMX metrics registerer
+     *
+     * @return the JMX metrics registerer
+     */
+    @Provides
+    @Singleton
+    private MetricsRegisterer provideMetricsRegisterer() {
+        return new MetricsRegisterer(ManagementFactory.getPlatformMBeanServer());
     }
 }

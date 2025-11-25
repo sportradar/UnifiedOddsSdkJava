@@ -86,21 +86,10 @@ abstract class HttpDataFetcher {
 
         try {
             if (uofConfiguration.getClientAuthentication() != null) {
-                OAuth2Token token = oauthTokenCache.getToken();
-                httpRequest.addHeader("Authorization", token.getTokenType() + " " + token.getAccessToken());
-            } else if (uofConfiguration.getAccessToken() != null) {
-                httpRequest.addHeader("x-access-token", uofConfiguration.getAccessToken());
+                return sendForClientAuthentication(httpRequest, path);
+            } else {
+                return sendForAccessToken(httpRequest, path);
             }
-
-            Optional<byte[]> requestBody = readBody(httpRequest, path);
-            SimpleRequestBuilder request = SimpleRequestBuilder.copy(httpRequest);
-            requestBody.ifPresent(bytes ->
-                request.setBody(bytes, ContentType.parse(httpRequest.getEntity().getContentType()))
-            );
-
-            Future<SimpleHttpResponse> future = httpClient.execute(request.build(), noopFutureCallback());
-            SimpleHttpResponse response = getResponseWithTimeout(future, path);
-            return responseHandler.extractHttpDataFromHttpResponse(response, path);
         } catch (ExecutionException ex) {
             throw new CommunicationException("There was a problem retrieving the requested data", path, ex);
         } catch (ApiResponseHandlingException e) {
@@ -121,6 +110,56 @@ abstract class HttpDataFetcher {
                 ex
             );
         }
+    }
+
+    private HttpData sendForClientAuthentication(ClassicHttpRequest httpRequest, String path)
+        throws CommunicationException, ExecutionException, TimeoutException {
+        SimpleRequestBuilder request = createSimpleRequestFrom(httpRequest, path);
+        OAuth2Token token = oauthTokenCache.getToken();
+        request.setHeader("Authorization", token.getTokenType() + " " + token.getAccessToken());
+
+        Future<SimpleHttpResponse> future = httpClient.execute(request.build(), noopFutureCallback());
+        SimpleHttpResponse response = getResponseWithTimeout(future, path);
+        if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
+            oauthTokenCache.invalidateToken(token);
+            response = retryApiCallWithNewToken(path, request);
+        }
+        return responseHandler.extractHttpDataFromHttpResponse(response, path);
+    }
+
+    private SimpleHttpResponse retryApiCallWithNewToken(String path, SimpleRequestBuilder request)
+        throws ExecutionException, TimeoutException, CommunicationException {
+        OAuth2Token refreshedToken = oauthTokenCache.getToken();
+        request.setHeader(
+            "Authorization",
+            refreshedToken.getTokenType() + " " + refreshedToken.getAccessToken()
+        );
+
+        Future<SimpleHttpResponse> retryFuture = httpClient.execute(request.build(), noopFutureCallback());
+        return getResponseWithTimeout(retryFuture, path);
+    }
+
+    private HttpData sendForAccessToken(ClassicHttpRequest httpRequest, String path)
+        throws CommunicationException, ExecutionException, TimeoutException {
+        SimpleRequestBuilder request = createSimpleRequestFrom(httpRequest, path);
+        if (uofConfiguration.getAccessToken() != null) {
+            request.setHeader("x-access-token", uofConfiguration.getAccessToken());
+        }
+        Future<SimpleHttpResponse> future = httpClient.execute(request.build(), noopFutureCallback());
+        SimpleHttpResponse response = getResponseWithTimeout(future, path);
+
+        return responseHandler.extractHttpDataFromHttpResponse(response, path);
+    }
+
+    private SimpleRequestBuilder createSimpleRequestFrom(ClassicHttpRequest httpRequest, String path)
+        throws CommunicationException {
+        Optional<byte[]> requestBody = readBody(httpRequest, path);
+        SimpleRequestBuilder request = SimpleRequestBuilder.copy(httpRequest);
+
+        requestBody.ifPresent(bytes ->
+            request.setBody(bytes, ContentType.parse(httpRequest.getEntity().getContentType()))
+        );
+        return request;
     }
 
     @ExcludeFromJacocoGeneratedReportUntestableCheckedException

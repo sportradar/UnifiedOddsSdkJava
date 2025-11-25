@@ -5,17 +5,14 @@ package com.sportradar.unifiedodds.sdk.di;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.internal.di.MetricsRegisterer;
 import java.util.stream.Stream;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.JMException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.NotCompliantMBeanException;
+import javax.management.*;
 import lombok.val;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -23,18 +20,46 @@ public class MetricsRegistererTest {
 
     @ParameterizedTest
     @MethodSource("jmExceptions")
-    public void failingToRegisterMetricsIsNotCriticalHenceSwallowsException(JMException exception)
-        throws NotCompliantMBeanException, InstanceAlreadyExistsException, MBeanRegistrationException {
-        MBeanServer server = mock(MBeanServer.class);
+    void failingToRegisterMetricsIsNotCriticalHenceSwallowsException(JMException exception) throws Exception {
+        val server = mock(MBeanServer.class);
         when(server.registerMBean(any(), any())).thenThrow(exception);
-        val metricsRegisterer = new MetricsRegisterer(server);
+        try (val metricsRegisterer = new MetricsRegisterer(server)) {
+            assertThat(metricsRegisterer.createUnifiedOddsStatistics()).isNotNull();
+        }
+    }
 
-        assertThat(metricsRegisterer.createUnifiedOddsStatistics()).isNotNull();
+    @Nested
+    class Close {
+
+        @Test
+        void closingRemovesSdkBean() throws Exception {
+            val sdkStatisticsObjectName = sdkStatisticsObjectName();
+            val server = mock(MBeanServer.class);
+            when(server.isRegistered(sdkStatisticsObjectName)).thenReturn(true);
+
+            new MetricsRegisterer(server).close();
+
+            verify(server).unregisterMBean(sdkStatisticsObjectName);
+        }
+
+        @Test
+        void closingDoesNothingIfSdkBeanDidNotExist() throws Exception {
+            val sdkStatisticsObjectName = sdkStatisticsObjectName();
+            val server = mock(MBeanServer.class);
+            when(server.isRegistered(any())).thenReturn(false);
+
+            new MetricsRegisterer(server).close();
+
+            verify(server, never()).unregisterMBean(sdkStatisticsObjectName);
+        }
+
+        private ObjectName sdkStatisticsObjectName() throws MalformedObjectNameException {
+            return new ObjectName("com.sportradar.unifiedodds.sdk.impl:type=UnifiedOdds");
+        }
     }
 
     private static Stream<JMException> jmExceptions() {
         return Stream.of(
-            //new MalformedObjectNameException(),
             new NotCompliantMBeanException(),
             new MBeanRegistrationException(new RuntimeException()),
             new InstanceAlreadyExistsException()

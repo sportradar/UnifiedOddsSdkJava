@@ -55,18 +55,23 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
     private final Object refreshLock = new Object();
     private volatile OAuth2Token cachedToken;
     private volatile long tokenExpirationTime;
+    private final CommonIamTokenRetrievalCircuitBreaker circuitBreaker;
+    private final ResourceAudience resourceAudience;
 
     @Inject
     public CommonIamTokenCache(
         UofConfiguration configuration,
         @Named("FastHttpClient") CloseableHttpAsyncClient httpClient,
         TimeUtils timeUtils,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        @Named("UfRestApiAudience") ResourceAudience resourceAudience
     ) {
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.timeUtils = timeUtils;
         this.objectMapper = objectMapper;
+        this.circuitBreaker = new CommonIamTokenRetrievalCircuitBreaker(timeUtils);
+        this.resourceAudience = resourceAudience;
     }
 
     @Override
@@ -83,12 +88,22 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
         }
     }
 
+    @Override
+    public void invalidateToken(OAuth2Token token) {
+        if (cachedToken != null && cachedToken.equals(token)) {
+            cachedToken = null;
+            tokenExpirationTime = 0;
+        }
+    }
+
     private boolean isTokenValid() {
         return cachedToken != null && timeUtils.now() < tokenExpirationTime;
     }
 
     @SuppressWarnings("IllegalCatch")
     private OAuth2Token refreshToken() {
+        circuitBreaker.throwIfOpen();
+
         try {
             String requestBody = clientCredentialsWithJwtBearerClientAssertionRequest();
             SimpleHttpResponse response = postAccessTokenRequest(requestBody);
@@ -97,10 +112,11 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
 
             cachedToken = new OAuth2Token(tokenResponse.getTokenType(), tokenResponse.getAccessToken());
             tokenExpirationTime = timeUtils.now() + (tokenResponse.getExpiresIn() * SECONDS_TO_MILLIS);
-
+            circuitBreaker.recordSuccess();
             return cachedToken;
         } catch (Exception e) {
             logger.warn(FAILED_TO_RETRIEVE_O_AUTH_TOKEN, e);
+            circuitBreaker.recordFailure();
             throw new OAuth2TokenRetrievalException(FAILED_TO_RETRIEVE_O_AUTH_TOKEN, e);
         }
     }
@@ -165,7 +181,7 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
             "grant_type=client_credentials&client_assertion_type=%s&client_assertion=%s&audience=%s",
             "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             java.net.URLEncoder.encode(jwtAssertion, "UTF-8"),
-            "UF-RestAPI"
+            resourceAudience.getValue()
         );
     }
 

@@ -13,7 +13,7 @@ public class RoutingKeys {
         this.globalVariables = globalVariables;
     }
 
-    public String alive() {
+    public static String alive() {
         return "-.-.-.alive.-.-.-.-";
     }
 

@@ -77,6 +77,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="CommonIamTokenCacheTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="MdcScheduledExecutorService.java"/>
     </module>
     <module name="SuppressionSingleFilter">
@@ -370,6 +374,10 @@
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
         <property name="files" value="SportEventCacheMatchSummaryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="SapiMatchSummaries.java"/>
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>

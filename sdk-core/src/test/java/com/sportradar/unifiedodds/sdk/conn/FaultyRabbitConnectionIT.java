@@ -128,7 +128,7 @@ public class FaultyRabbitConnectionIT {
             periodicAlives.startSendingToLiveProducer();
             assertThatSdkReceivesSystemAlivesForLiveProducer();
 
-            goThroughOver3minuteNetworkOutage();
+            goThroughOver3minuteNetworkOutageToTriggerConnectionRestartWhenRabbitAutorecovering();
 
             waitEnoughTimeForSdkToRecoverConnectionAndChannels();
             assertThatSdkNotDuplicatesMessages();
@@ -183,12 +183,7 @@ public class FaultyRabbitConnectionIT {
     }
 
     private void assertThatSdkNotDuplicatesMessages() throws InterruptedException {
-        letSdkToReceiveInflightMessages();
         messagesAssertions.assertThatSystemAlivesHaveNotDuplicates();
-    }
-
-    private static void letSdkToReceiveInflightMessages() throws InterruptedException {
-        Thread.sleep(5);
     }
 
     private void waitUntil(VoidCallables.ThrowingRunnable condition) {
@@ -220,7 +215,8 @@ public class FaultyRabbitConnectionIT {
         }
     }
 
-    private void goThroughOver3minuteNetworkOutage() throws IOException {
+    private void goThroughOver3minuteNetworkOutageToTriggerConnectionRestartWhenRabbitAutorecovering()
+        throws IOException {
         proxy.disable();
         sleepSeconds(3 * 60 + 30);
         proxy.enable();

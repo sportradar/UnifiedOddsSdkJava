@@ -5,7 +5,6 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import static com.sportradar.unifiedodds.sdk.caching.markets.DataProviderAnswers.withGetDataThrowingByDefault;
 import static com.sportradar.utils.generic.testing.Urls.anyHttpUrl;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -33,10 +32,8 @@ public class MatchTimelineDataProviders {
     ) {
         val dataProvider = mock(DataProvider.class, withGetDataThrowingByDefault());
         val sportEventId = timeline.getSportEvent().getId();
-        doReturn(timeline).when(dataProvider).getData(eq(language.get()), eq(sportEventId));
-        doReturn(anyHttpUrl().toString())
-            .when(dataProvider)
-            .getFinalUrl(eq(language.get()), eq(sportEventId));
+        doReturn(timeline).when(dataProvider).getData(language.get(), sportEventId);
+        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language.get(), sportEventId);
         return dataProvider;
     }
 }

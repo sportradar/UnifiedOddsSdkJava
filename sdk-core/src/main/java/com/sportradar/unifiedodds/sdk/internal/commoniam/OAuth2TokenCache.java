@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.commoniam;
 
 public interface OAuth2TokenCache {
     OAuth2Token getToken();
+    void invalidateToken(OAuth2Token token);
 
     class OAuth2TokenCacheException extends RuntimeException {
 
