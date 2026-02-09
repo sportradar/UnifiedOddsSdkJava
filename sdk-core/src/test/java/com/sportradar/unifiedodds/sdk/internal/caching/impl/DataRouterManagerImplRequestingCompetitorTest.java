@@ -57,7 +57,6 @@ public class DataRouterManagerImplRequestingCompetitorTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

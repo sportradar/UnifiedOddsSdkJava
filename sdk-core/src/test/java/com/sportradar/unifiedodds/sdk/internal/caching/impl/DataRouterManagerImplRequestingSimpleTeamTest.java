@@ -57,7 +57,6 @@ public class DataRouterManagerImplRequestingSimpleTeamTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

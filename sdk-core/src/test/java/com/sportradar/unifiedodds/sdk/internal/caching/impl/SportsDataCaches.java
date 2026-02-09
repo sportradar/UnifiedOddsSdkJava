@@ -4,6 +4,8 @@
 package com.sportradar.unifiedodds.sdk.internal.caching.impl;
 
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategies.anyErrorHandlingStrategy;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.Mockito.*;
 
@@ -26,10 +28,8 @@ import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.LanguageHolder;
 import com.sportradar.utils.domain.names.Languages;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -43,6 +43,53 @@ public class SportsDataCaches {
     @SneakyThrows
     public static ChainableSportsDataCacheMock providing(LanguageHolder language, SapiSport sport) {
         return new ChainableSportsDataCacheMock().providing(language, sport);
+    }
+
+    public static SportsDataCache providing(
+        LanguageHolder language,
+        SapiSportAndCategory sapiSportAndCategory
+    ) throws IllegalCacheStateException, CacheItemNotFoundException {
+        val cache = mock(SportsDataCache.class);
+
+        val sportId = Urn.parse(sapiSportAndCategory.getSport().getId());
+        val sapiCategory = sapiSportAndCategory.getCategory();
+        val categoryData = createCategoryDataWithNoTournaments(language, from(sapiCategory));
+        val categoryId = categoryData.getId();
+        val categoryCi = new CategoryCiStubWithNoSupportForMergingAndTournamentsIds(sportId, categoryData);
+        doReturn(categoryCi).when(cache).getCategory(categoryId, singletonList(language.get()));
+
+        val sapiSport = sapiSportAndCategory.getSport();
+        val sportData = createSportData(in(language), from(sapiSport), with(categoryData));
+        doReturn(sportData).when(cache).getSport(sportId, ImmutableList.of(language.get()));
+        doReturn(ImmutableList.of(sportData)).when(cache).getSports(ImmutableList.of(language.get()));
+
+        return cache;
+    }
+
+    private static SportData createSportData(
+        LanguageHolder language,
+        SapiSport sport,
+        CategoryData categoryData
+    ) {
+        val sportId = Urn.parse(sport.getId());
+        return new SportData(
+            sportId,
+            ImmutableMap.of(language.get(), sport.getName()),
+            singletonList(categoryData)
+        );
+    }
+
+    private static CategoryData createCategoryDataWithNoTournaments(
+        LanguageHolder language,
+        SapiCategory category
+    ) {
+        val categoryId = Urn.parse(category.getId());
+        return new CategoryData(
+            categoryId,
+            ImmutableMap.of(language.get(), category.getName()),
+            Collections.emptyList(),
+            category.getCountryCode()
+        );
     }
 
     public static class BuilderStubbingOutDataRouterManager {
@@ -147,5 +194,59 @@ public class SportsDataCaches {
             doReturn(ImmutableList.of(sportData)).when(cache).getSports(ImmutableList.of(language.get()));
             return this;
         }
+    }
+
+    @RequiredArgsConstructor
+    public static class CategoryCiStubWithNoSupportForMergingAndTournamentsIds implements CategoryCi {
+
+        private final Urn sportId;
+        private final CategoryData categoryData;
+
+        @Override
+        public Urn getSportId() {
+            return sportId;
+        }
+
+        @Override
+        public String getCountryCode() {
+            return categoryData.getCountryCode();
+        }
+
+        @Override
+        public List<Urn> getTournamentIds() {
+            throw new RuntimeException(
+                "Tournaments were neither injected into Category Category CI, " +
+                "nor Test DSL supports injecting tournaments into CI yet"
+            );
+        }
+
+        @Override
+        public Urn getId() {
+            return categoryData.getId();
+        }
+
+        @Override
+        public Map<Locale, String> getNames(List<Locale> locales) {
+            return categoryData.getNames();
+        }
+
+        @Override
+        public boolean hasTranslationsLoadedFor(List<Locale> localeList) {
+            throw new RuntimeException("This is a dead method, which is not used in production code at all");
+        }
+
+        @Override
+        public <T> void merge(T endpointData, Locale dataLocale) {
+            throw new RuntimeException(
+                "Merging behaviour for Category CI was neither configured, " +
+                "nor Test DSL supports merging in Category CI yet"
+            );
+        }
+    }
+
+    public static interface SapiSportAndCategory {
+        public SapiSport getSport();
+
+        public SapiCategory getCategory();
     }
 }

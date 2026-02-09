@@ -6,10 +6,8 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
-import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.BodyMatchCondition.forRequestBodyMatching;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.requiringAuthorizationHeader;
-import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.immediatelyExpiredCommonIamToken;
-import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.validCommonIamToken;
+import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiFixtureChanges.fixtureChanges;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.kaiHavertzProfile;
@@ -57,9 +55,7 @@ import com.sportradar.utils.Urns;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -67,9 +63,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@SuppressWarnings(
-    { "ClassFanOutComplexity", "UnnecessaryParentheses", "ClassDataAbstractionCoupling", "MagicNumber" }
-)
+@SuppressWarnings({ "ClassFanOutComplexity", "ClassDataAbstractionCoupling", "MagicNumber" })
 class CommonIamTokenCacheIT {
 
     @RegisterExtension
@@ -84,16 +78,13 @@ class CommonIamTokenCacheIT {
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
 
-    private static final String JWT_REGEX = "[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+";
     private static final Urn ANY_MATCH = Urn.parse("sr:match:12345");
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    private final int oneForRabbitAndOneForApi = 2;
+    private final String bookmakerIdOf1 = "1";
     private final GlobalVariables globalVariables = new GlobalVariables();
     private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
     private final MessagesInMemoryStorage messagesStorage = new MessagesInMemoryStorage();
-
-    private final Credentials sdkCredentials = Credentials.with(
-        Constants.SDK_USERNAME,
-        Constants.SDK_PASSWORD
-    );
 
     private final CommonIamData commonIamData = CommonIamData.with(
         Constants.COMMON_IAM_CLIENT_ID,
@@ -110,6 +101,7 @@ class CommonIamTokenCacheIT {
         VhostLocation.at(RABBIT_BASE_URL, UF_VIRTUALHOST),
         rabbitMqClient
     );
+    private final RabbitConnections connections = new RabbitConnections(rabbitMqClient);
 
     private final VhostLocation vhostLocation = VhostLocation.at(RABBIT_BASE_URL, Constants.UF_VIRTUALHOST);
     private final ExchangeLocation exchangeLocation = ExchangeLocation.at(
@@ -132,7 +124,6 @@ class CommonIamTokenCacheIT {
 
     @BeforeEach
     void setup() throws Exception {
-        rabbitMqUserSetup.setupUser(sdkCredentials);
         sportsApiBaseUrl = BaseUrl.of("localhost", wireMock.getPort());
         commonIamApiBaseUrl = BaseUrl.of("localhost", commonIamWireMock.getPort());
         commonIamSimulator = new CommonIamSimulator(commonIamWireMock.getRuntimeInfo().getWireMock());
@@ -141,14 +132,21 @@ class CommonIamTokenCacheIT {
     @AfterEach
     void tearDown() {
         rabbitMqUserSetup.revertChangesMade();
+        executor.shutdownNow();
     }
 
     @Test
     void dueToDesignFlawBuildingConfigurationRequests2TokensMeanwhileSdkStartsWithCleanCacheToo()
         throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
+
         globalVariables.setProducer(ProducerId.LIVE_ODDS);
 
-        apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
         apiSimulator.activateOnlyLiveProducer();
         apiSimulator.stubEmptyAllTournaments(ENGLISH);
         apiSimulator.stubAllSports(
@@ -156,16 +154,14 @@ class CommonIamTokenCacheIT {
             requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
         );
 
-        commonIamSimulator.stubTokenEndpoint(
-            validCommonIamToken(),
-            forRequestBodyMatching(jwtClientAssertionPattern())
-        );
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
 
         AtomicReference<UofConfiguration> config = new AtomicReference<>();
         commonIamSimulator.verifyTokenEndpointCalled2TimesDuringConfiguration(() ->
             config.set(
                 SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .withCommonIamCredentials(commonIamData)
                     .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
@@ -191,12 +187,16 @@ class CommonIamTokenCacheIT {
                 .build();
             sdk.open();
             sdk.getSportDataProvider().getSports(ENGLISH);
-            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledOnce();
+
+            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledTimes(oneForRabbitAndOneForApi);
         }
     }
 
     @Test
     void uponReceivingFeedMessageRetrievesSportEvenSummaryWithCommonIamToken() throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
         val id = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
         globalVariables.setProducer(ProducerId.LIVE_ODDS);
         globalVariables.setSportEventUrn(id);
@@ -204,7 +204,9 @@ class CommonIamTokenCacheIT {
         val messages = new FeedMessageBuilder(globalVariables);
         val routingKeys = new RoutingKeys(globalVariables);
 
-        apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
         apiSimulator.activateOnlyLiveProducer();
         apiSimulator.stubEmptyAllTournaments(ENGLISH);
         apiSimulator.stubMatchSummary(
@@ -213,10 +215,9 @@ class CommonIamTokenCacheIT {
             requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
         );
 
-        commonIamSimulator.stubTokenEndpoint(
-            validCommonIamToken(),
-            forRequestBodyMatching(jwtClientAssertionPattern())
-        );
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
 
         try (
             val rabbitProducer = connectDeclaringExchange(
@@ -226,7 +227,7 @@ class CommonIamTokenCacheIT {
                 new TimeUtilsImpl()
             );
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
@@ -244,7 +245,137 @@ class CommonIamTokenCacheIT {
             assertThat(event)
                 .hasName(of(matchName(soccerMatchGermanyScotlandEuro2024(ENGLISH)), in(ENGLISH)));
 
-            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledOnce();
+            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledTimes(oneForRabbitAndOneForApi);
+        }
+    }
+
+    @Test
+    void rabbitTokenIsCachedAndReusedForSubsequentReconnections() throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
+        val id = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(id);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        val messages = new FeedMessageBuilder(globalVariables);
+        val routingKeys = new RoutingKeys(globalVariables);
+
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubEmptyAllTournaments(ENGLISH);
+        apiSimulator.stubMatchSummary(
+            ENGLISH,
+            soccerMatchGermanyScotlandEuro2024(ENGLISH),
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
+
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .withCommonIamCredentials(commonIamData)
+                .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
+                .with(Throw)
+                .withDefaultLanguage(ENGLISH)
+                .with1Session()
+                .withOpenedFeed();
+        ) {
+            rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange());
+            listenerWaitingFor.theOnlyOddsChange();
+
+            connections.killExistingConnectionForUser(bookmakerIdOf1);
+
+            executor.scheduleAtFixedRate(
+                () -> rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange()),
+                1,
+                500,
+                TimeUnit.MILLISECONDS
+            );
+
+            listenerWaitingFor.secondOddsChange();
+
+            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledTimes(oneForRabbitAndOneForApi);
+        }
+    }
+
+    @Test
+    void rabbitTokenIsRotatedAfterExpiryForSubsequentReconnections() throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, immediatelyExpiredCommonIamToken().getAccessToken())
+        );
+        val id = Urn.parse(soccerMatchGermanyScotlandEuro2024().getSportEvent().getId());
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(id);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        val messages = new FeedMessageBuilder(globalVariables);
+        val routingKeys = new RoutingKeys(globalVariables);
+
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubEmptyAllTournaments(ENGLISH);
+        apiSimulator.stubMatchSummary(
+            ENGLISH,
+            soccerMatchGermanyScotlandEuro2024(ENGLISH),
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
+
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+
+        commonIamSimulator.stubTokenEndpointForRabbit(immediatelyExpiredCommonIamToken());
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .withCommonIamCredentials(commonIamData)
+                .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
+                .with(Throw)
+                .withDefaultLanguage(ENGLISH)
+                .with1Session()
+                .withOpenedFeed();
+        ) {
+            rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange());
+            listenerWaitingFor.theOnlyOddsChange();
+
+            commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
+            rabbitMqUserSetup.updateUser(
+                Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+            );
+
+            connections.killExistingConnectionForUser(bookmakerIdOf1);
+
+            executor.scheduleAtFixedRate(
+                () -> rabbitProducer.send(messages.oddsChange(oddEvenMarket()), routingKeys.liveOddsChange()),
+                1,
+                500,
+                TimeUnit.MILLISECONDS
+            );
+
+            listenerWaitingFor.secondOddsChange();
+
+            val twoForRabbitOneForApi = 3;
+            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledTimes(twoForRabbitOneForApi);
         }
     }
 
@@ -252,10 +383,7 @@ class CommonIamTokenCacheIT {
     void retrievesDataFromSportDataProviderWithCommonIamToken() throws Exception {
         globalVariables.setProducer(ProducerId.LIVE_ODDS);
 
-        commonIamSimulator.stubTokenEndpoint(
-            validCommonIamToken(),
-            forRequestBodyMatching(jwtClientAssertionPattern())
-        );
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
         apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
         apiSimulator.activateOnlyLiveProducer();
         apiSimulator.stubEmptyAllTournaments(ENGLISH);
@@ -266,7 +394,7 @@ class CommonIamTokenCacheIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
@@ -283,17 +411,20 @@ class CommonIamTokenCacheIT {
     }
 
     @Test
-    void tokenIsCachedAndReusedForSubsequentRecoveryApiCalls() throws Exception {
-        List<ProducerId> tenProducerIds = tenProducers();
+    void apiTokenIsCachedAndReusedForSubsequentRecoveryApiCalls() throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
 
         val messages = new FeedMessageBuilder(globalVariables);
         val routingKeys = new RoutingKeys(globalVariables);
 
-        commonIamSimulator.stubTokenEndpoint(
-            validCommonIamToken(),
-            forRequestBodyMatching(jwtClientAssertionPattern())
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
         );
-        apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
+        List<ProducerId> tenProducerIds = tenProducers();
         apiSimulator.activateProducers(tenProducerIds);
         tenProducerIds.forEach(apiSimulator::stubRecovery);
 
@@ -305,7 +436,7 @@ class CommonIamTokenCacheIT {
                 new TimeUtilsImpl()
             );
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
                 .with(Throw)
@@ -324,7 +455,7 @@ class CommonIamTokenCacheIT {
             int expectedApiCallCount = 10;
             apiSimulator.verifyTotalCallsAtLeast(expectedApiCallCount);
 
-            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledOnce();
+            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledTimes(oneForRabbitAndOneForApi);
         }
     }
 
@@ -349,13 +480,10 @@ class CommonIamTokenCacheIT {
     }
 
     @Test
-    void tokenIsCachedAndReusedForSubsequentSportsApiCalls() throws Exception {
+    void apiTokenIsCachedAndReusedForSubsequentSportsApiCalls() throws Exception {
         globalVariables.setProducer(ProducerId.LIVE_ODDS);
 
-        commonIamSimulator.stubTokenEndpoint(
-            validCommonIamToken(),
-            forRequestBodyMatching(jwtClientAssertionPattern())
-        );
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
         apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
         apiSimulator.activateOnlyLiveProducer();
         apiSimulator.stubEmptyAllTournaments(ENGLISH);
@@ -368,7 +496,7 @@ class CommonIamTokenCacheIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
@@ -387,17 +515,21 @@ class CommonIamTokenCacheIT {
 
     @Test
     @SuppressWarnings("ExecutableStatementCount")
-    void tokenIsCachedAndReusedForDifferentApiCalls() throws Exception {
+    void apiTokenIsCachedAndReusedForDifferentApiCalls() throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
+
         Urn germanyVsScotlandMatchUrn = Urn.parse(GERMANY_SCOTLAND_MATCH_URN);
         globalVariables.setProducer(ProducerId.LIVE_ODDS);
         globalVariables.setSportEventUrn(germanyVsScotlandMatchUrn);
         globalVariables.setSportUrn(Sport.FOOTBALL);
 
-        commonIamSimulator.stubTokenEndpoint(
-            validCommonIamToken(),
-            forRequestBodyMatching(jwtClientAssertionPattern())
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
         );
-        apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
         apiSimulator.activateOnlyLiveProducer();
         apiSimulator.stubAllTournaments(ENGLISH, tournamentEuro2024());
         apiSimulator.stubAllSports(ENGLISH);
@@ -423,7 +555,7 @@ class CommonIamTokenCacheIT {
                 new TimeUtilsImpl()
             );
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
@@ -455,7 +587,7 @@ class CommonIamTokenCacheIT {
             int expectedApiCallCount = 12;
             apiSimulator.verifyTotalCallsAtLeast(expectedApiCallCount);
 
-            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledOnce();
+            commonIamSimulator.verifyAfterSdkStartupTokenEndpointCalledTimes(oneForRabbitAndOneForApi);
         }
     }
 
@@ -488,7 +620,7 @@ class CommonIamTokenCacheIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
@@ -517,7 +649,7 @@ class CommonIamTokenCacheIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .with(ExceptionHandlingStrategy.Throw)
                 .withCommonIamCredentials(commonIamData)
@@ -552,19 +684,6 @@ class CommonIamTokenCacheIT {
         for (int i = 0; i < times; i++) {
             action.run();
         }
-    }
-
-    private static String jwtClientAssertionPattern() {
-        return (
-            "^" +
-            "(?=.*grant_type=client_credentials)" +
-            "(?=.*client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer)" +
-            "(?=.*client_assertion=" +
-            JWT_REGEX +
-            ")" +
-            "(?=.*audience=UF-RestAPI)" +
-            "[^&]*(&[^&]*){3}$"
-        );
     }
 
     private String matchName(SapiMatchSummaryEndpoint match) {

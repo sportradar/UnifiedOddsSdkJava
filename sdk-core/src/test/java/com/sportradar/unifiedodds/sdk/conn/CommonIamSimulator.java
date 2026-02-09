@@ -4,18 +4,24 @@
 package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.sportradar.unifiedodds.sdk.internal.commoniam.ClientCredentialsJwtAssertionRequestBodyPatterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.MatchResult;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.OAuth2Token;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.utils.URLEncodedUtils;
 
 @SuppressWarnings(
     { "ClassFanOutComplexity", "ClassDataAbstractionCoupling", "MultipleStringLiterals", "MagicNumber" }
@@ -50,19 +56,34 @@ public class CommonIamSimulator {
     }
 
     public void verifyAfterSdkStartupTokenEndpointCalledOnce() {
+        verifyAfterSdkStartupTokenEndpointCalledTimes(1);
+    }
+
+    public void verifyAfterSdkStartupTokenEndpointCalledTimes(int times) {
         wireMock.verifyThat(
-            exactly(1 + ADDITIONAL_TIMES_TOKEN_IS_REQUESTED_DURING_SDK_CONFIGURATION),
+            exactly(times + ADDITIONAL_TIMES_TOKEN_IS_REQUESTED_DURING_SDK_CONFIGURATION),
             postRequestedFor(urlPathEqualTo("/oauth/token"))
         );
     }
 
     @SneakyThrows
-    public void stubTokenEndpoint(OAuth2Token token, ApiSimulator.BodyMatchCondition bodyCondition) {
+    public void stubTokenEndpointForApi(OAuth2Token token) {
         val tokenResponse = new ObjectMapper().writeValueAsString(token);
 
         register(
             post(urlPathEqualTo("/oauth/token"))
-                .withRequestBody(matching(bodyCondition.pattern))
+                .withRequestBody(matching(jwtClientAssertionForApiPattern()))
+                .willReturn(ok(tokenResponse))
+        );
+    }
+
+    @SneakyThrows
+    public void stubTokenEndpointForRabbit(OAuth2Token token) {
+        val tokenResponse = new ObjectMapper().writeValueAsString(token);
+
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .withRequestBody(matching(jwtClientAssertionForRabbitPattern()))
                 .willReturn(ok(tokenResponse))
         );
     }
@@ -161,6 +182,38 @@ public class CommonIamSimulator {
                 .willReturn(ok(nextTokenResponse))
                 .willSetStateTo("NEXT")
         );
+    }
+
+    @SneakyThrows
+    public void stubTokenEndpointWhenClientAssertionAudienceIs(String jwtAudience, OAuth2Token token) {
+        val tokenResponse = new ObjectMapper().writeValueAsString(token);
+
+        register(
+            post(urlPathEqualTo("/oauth/token"))
+                .andMatching(request -> {
+                    val body = request.getBodyAsString();
+                    val audience = getAudienceFromJwtClientAssertion(body);
+
+                    if (audience.equals(jwtAudience)) {
+                        return MatchResult.exactMatch();
+                    } else {
+                        return MatchResult.noMatch();
+                    }
+                })
+                .willReturn(ok(tokenResponse))
+        );
+    }
+
+    private static String getAudienceFromJwtClientAssertion(String requestBody) {
+        val bodyAsNameValue = URLEncodedUtils.parse(requestBody, StandardCharsets.UTF_8);
+        val clientAssertions = bodyAsNameValue
+            .stream()
+            .filter(p -> p.getName().equals("client_assertion"))
+            .findFirst()
+            .get()
+            .getValue();
+        val decodedAssertions = JWT.decode(clientAssertions);
+        return getOnlyElement(decodedAssertions.getAudience());
     }
 
     private void register(MappingBuilder mappingBuilder) {

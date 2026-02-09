@@ -3,7 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
-import com.sportradar.unifiedodds.sdk.MessageInterest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -17,10 +17,14 @@ public class RabbitMessagesInMemoryStorage {
         messages.add(message);
     }
 
-    public List<ReceivedRabbitMessage> findAlivesOf(MessageInterest interest) {
+    public List<ReceivedRabbitMessage> findAlivesOf() {
         return messages
             .stream()
             .filter(m -> m.getRoutingKey().contains("-.-.-.alive"))
             .collect(Collectors.toList());
+    }
+
+    public List<ReceivedRabbitMessage> allMessages() {
+        return new ArrayList<>(messages);
     }
 }

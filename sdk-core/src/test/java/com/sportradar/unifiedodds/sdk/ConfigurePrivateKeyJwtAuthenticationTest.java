@@ -31,7 +31,6 @@ public class ConfigurePrivateKeyJwtAuthenticationTest {
     public static final String ANY_CLIENT_ID = "irrelevantClientId";
     public static final PrivateKey ANY_PRIVATE_KEY = anyPrivateKey();
     public static final String ANY_KEY_ID = "irrelevantKeyId";
-    public static final String ANY_TOKEN = "anyToken";
     private final Locale anyLanguage = Locale.FRENCH;
     private final Map<String, String> propsFileContent = new HashMap<>();
     private final Map<String, String> yamlFileContent = new HashMap<>();
@@ -56,7 +55,6 @@ public class ConfigurePrivateKeyJwtAuthenticationTest {
 
         val config = tokenSetter
             .setClientAuthentication(authentication)
-            .setAccessToken(ANY_TOKEN)
             .selectCustom()
             .setDefaultLanguage(anyLanguage)
             .build();
@@ -76,7 +74,6 @@ public class ConfigurePrivateKeyJwtAuthenticationTest {
 
         val config = tokenSetter
             .setClientAuthentication(authentication)
-            .setAccessToken(ANY_TOKEN)
             .selectCustom()
             .setDefaultLanguage(anyLanguage)
             .build();
@@ -96,7 +93,6 @@ public class ConfigurePrivateKeyJwtAuthenticationTest {
 
         val config = tokenSetter
             .setClientAuthentication(authentication)
-            .setAccessToken(ANY_TOKEN)
             .selectCustom()
             .setDefaultLanguage(anyLanguage)
             .build();

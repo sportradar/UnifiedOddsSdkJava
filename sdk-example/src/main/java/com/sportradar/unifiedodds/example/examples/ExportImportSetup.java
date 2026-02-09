@@ -31,16 +31,15 @@ public class ExportImportSetup {
     private final UofSdk uofSdk;
     private final File cacheFile = new File("cache");
 
-    public ExportImportSetup(String token, PrivateKey privateKey, String clientId, String keyId) {
+    public ExportImportSetup(PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK Basic example - cache export/import");
 
-        logEntry("Building the configuration using the provided token and client authentication");
+        logEntry("Building the configuration using the provided client authentication");
         UofConfiguration configuration = UofSdk
             .getUofConfigurationBuilder()
             .setClientAuthentication(
                 privateKeyJwt().setClientId(clientId).setPrivateKey(privateKey).setSigningKeyId(keyId).build()
             )
-            .setAccessToken(token)
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID)
             .setDefaultLanguage(Locale.ENGLISH)

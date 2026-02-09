@@ -92,26 +92,6 @@ public class CustomConfigurationBuilderTests extends ConfigurationBuilderSetup {
     }
 
     @Test
-    public void messagingUsernameHasCorrectValue() {
-        final String customValue = "MyCustomValue";
-        UofConfiguration config = buildCustomConfig().setMessagingUsername(customValue).build();
-
-        Assert.assertEquals(customValue, config.getRabbit().getUsername());
-        validateRabbitConfigForEnvironment(config, config.getEnvironment());
-        validateApiConfigForEnvironment(config, config.getEnvironment());
-    }
-
-    @Test
-    public void messagingPasswordHasCorrectValue() {
-        final String customValue = "MyCustomValue";
-        UofConfiguration config = buildCustomConfig().setMessagingPassword(customValue).build();
-
-        Assert.assertEquals(customValue, config.getRabbit().getPassword());
-        validateRabbitConfigForEnvironment(config, config.getEnvironment());
-        validateApiConfigForEnvironment(config, config.getEnvironment());
-    }
-
-    @Test
     public void messagingVirtualHostHasCorrectValue() {
         final String customValue = "/customVhost";
         UofConfiguration config = buildCustomConfig().setMessagingVirtualHost(customValue).build();

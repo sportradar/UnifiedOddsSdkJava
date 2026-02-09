@@ -77,7 +77,6 @@ public interface CacheItemFactory {
     DrawCi buildDrawCi(Urn id);
     DrawCi buildDrawCi(Urn id, SapiDrawEvent data, Locale dataLocale);
     DrawCi buildDrawCi(Urn id, SapiDrawSummary data, Locale dataLocale);
-    DrawCi buildDrawCi(Urn id, SapiDrawFixture data, Locale dataLocale);
 
     SportEventCi buildSportEventCi(ExportableCi exportable);
 

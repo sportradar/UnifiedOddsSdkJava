@@ -232,7 +232,10 @@ public class DataProviderHeadersTest {
                 config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
                 val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
 
-                val tokenCache = providingBearerTokens("abc123", "newToken");
+                val tokenCache = builder()
+                    .providingBearerToken("abc123")
+                    .afterFirstInvalidationProviding("newToken")
+                    .build();
                 DataProvider<SapiTournamentsEndpoint> provider = createDataProviderFor(
                     SPORTS_EN_TOURNAMENTS_URL
                 )
@@ -245,7 +248,6 @@ public class DataProviderHeadersTest {
 
                 assertThatThrownBy(provider::getData).isInstanceOf(DataProviderException.class);
 
-                verify(tokenCache).invalidateToken(withAccessToken("abc123"));
                 apiSimulator.verifyAllTournamentsCalled(
                     exactly(1),
                     with(ENGLISH),
@@ -264,7 +266,10 @@ public class DataProviderHeadersTest {
                 config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
                 val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
 
-                val tokenCache = providingBearerTokens("firstToken", "secondToken");
+                val tokenCache = builder()
+                    .providingBearerToken("firstToken")
+                    .afterFirstInvalidationProviding("secondToken")
+                    .build();
                 DataProvider<SapiTournamentsEndpoint> provider = createDataProviderFor(
                     SPORTS_EN_TOURNAMENTS_URL
                 )
@@ -295,7 +300,10 @@ public class DataProviderHeadersTest {
                 config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
                 val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
 
-                val tokenCache = providingBearerTokens("firstCbToken", "secondCbToken");
+                val tokenCache = builder()
+                    .providingBearerToken("firstCbToken")
+                    .afterFirstInvalidationProviding("secondCbToken")
+                    .build();
                 DataProvider<SapiTournamentsEndpoint> provider = createDataProviderFor(
                     CUSTOM_BET_CALCULATE_URL
                 )
@@ -310,7 +318,6 @@ public class DataProviderHeadersTest {
                 assertThatThrownBy(() -> provider.postData(new CapiSelections()))
                     .isInstanceOf(DataProviderException.class);
 
-                verify(tokenCache).invalidateToken(withAccessToken("firstCbToken"));
                 apiSimulator.verifyCustomBetCalculateCalled(
                     exactly(1),
                     requiringHeader("Authorization", "Bearer firstCbToken")
@@ -327,7 +334,10 @@ public class DataProviderHeadersTest {
                 config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
                 val deprecatedCfg = internalConfigWith1sClientTimeoutNoSslAndUnifiedApiOn(apiBaseUrl.get());
 
-                val tokenCache = providingBearerTokens("firstCbToken", "secondCbToken");
+                val tokenCache = builder()
+                    .providingBearerToken("firstCbToken")
+                    .afterFirstInvalidationProviding("secondCbToken")
+                    .build();
                 DataProvider<CapiCalculationResponse> provider = createDataProviderFor(
                     CUSTOM_BET_CALCULATE_URL
                 )

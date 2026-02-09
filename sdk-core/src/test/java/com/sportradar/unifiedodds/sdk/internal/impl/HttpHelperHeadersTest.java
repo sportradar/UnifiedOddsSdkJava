@@ -8,11 +8,11 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static com.sportradar.unifiedodds.sdk.fixtures.api.generic.GenericApiSimulator.ApiStubDelay.toBeDelayedBy;
 import static com.sportradar.unifiedodds.sdk.fixtures.api.generic.GenericApiSimulator.HeaderEquality.*;
 import static com.sportradar.unifiedodds.sdk.fixtures.api.generic.GenericApiSimulator.MappingBuilderFromMethod.*;
+import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.builder;
 import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.providingBearerToken;
 import static com.sportradar.unifiedodds.sdk.internal.impl.HttpDataFetchers.createHttpHelperBuilder;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,25 +24,41 @@ import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.cfg.UofPrivateKeyJwtAuthenticationStub;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.fixtures.api.generic.GenericApiSimulator;
+import com.sportradar.unifiedodds.sdk.fixtures.api.generic.GenericApiSimulator.MappingBuilderFromMethod;
 import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
+import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper.ResponseData;
 import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.LogsMock;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.List;
 import java.util.stream.Collectors;
+import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.hc.core5.http.HttpStatus;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-@SuppressWarnings({ "ClassFanOutComplexity", "ConstantName", "MagicNumber" })
+@SuppressWarnings(
+    { "ClassFanOutComplexity", "ConstantName", "MagicNumber", "MultipleStringLiterals", "LineLength" }
+)
 public class HttpHelperHeadersTest {
 
     @RegisterExtension
     private static final WireMockExtension wireMock = WireMockExtension
         .newInstance()
-        .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
+        .options(
+            wireMockConfig()
+                .dynamicPort()
+                .notifier(new ConsoleNotifier(true))
+                .extensions(new TwoRequestDelayingBarrier())
+        )
         .build();
 
     private static final String SOME_PATH = "/v1/api/any-url.xml";
@@ -62,7 +78,272 @@ public class HttpHelperHeadersTest {
     }
 
     @Nested
+    class RetryRequestsWithClientAuthentication {
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void requestRetriesWithNewTokenAfter401unauthorized(MappingBuilderFromMethod httpVerb)
+            throws Exception {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = builder()
+                .providingBearerToken("firstToken")
+                .afterFirstInvalidationProviding("secondToken")
+                .build();
+
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer firstToken")
+            );
+
+            apiSimulator.stubStatus200For(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer secondToken")
+            );
+
+            val responseData = sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH);
+
+            assertThat(responseData.getStatusCode()).isEqualTo(200);
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void requestRetriesExactlyOnceWithNewTokenAfterInitial401(MappingBuilderFromMethod httpVerb)
+            throws Exception {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = builder()
+                .providingBearerToken("firstToken")
+                .afterFirstInvalidationProviding("secondToken")
+                .build();
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer firstToken")
+            );
+            apiSimulator.stubStatus200For(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer secondToken")
+            );
+
+            sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH);
+
+            apiSimulator.verifyTotalCalls(2, SOME_PATH);
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void requestDoesNotRetryAfter401WhenSsoTokenIsConfigured(MappingBuilderFromMethod httpVerb)
+            throws Exception {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setAccessToken("access_token");
+
+            val httpHelper = createHttpHelperBuilder().with(deprecatedConfiguration).with(config).build();
+
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(X_ACCESS_TOKEN, "access_token")
+            );
+
+            sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH);
+
+            apiSimulator.verifyTotalCalls(1, SOME_PATH);
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void requestRetriesOnceWhenApiKeepsFailingWith401(MappingBuilderFromMethod httpVerb)
+            throws Exception {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = providingBearerToken("token-for-failing-request");
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer token-for-failing-request")
+            );
+
+            val response = sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_UNAUTHORIZED);
+            apiSimulator.verifyTotalCalls(2, SOME_PATH);
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void requestSendsUniqueTraceIdWhenRetries(MappingBuilderFromMethod httpVerb) throws Exception {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = builder()
+                .providingBearerToken("firstToken")
+                .afterFirstInvalidationProviding("secondToken")
+                .build();
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer firstToken")
+            );
+            apiSimulator.stubStatus200For(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer secondToken")
+            );
+
+            sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH);
+
+            val traceIds = getUniqueTraceIdsFromWiremockRequests();
+            assertThat(traceIds).hasSize(2);
+        }
+
+        @NotNull
+        private List<String> getUniqueTraceIdsFromWiremockRequests() {
+            val events = wireMock.getAllServeEvents();
+            return events
+                .stream()
+                .map(e -> e.getRequest().getHeader(TRACE_HEADER_NAME))
+                .distinct()
+                .collect(Collectors.toList());
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void attemptingToGetTokenFailsWithDataProviderExceptionWrappedAroundOAuthExceptionAfterInvalidation(
+            MappingBuilderFromMethod httpVerb
+        ) {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = OAuth2TokenCacheFixtures.failingWithOAuth2TokenRetrievalExceptionAfterInvalidationOf(
+                "aToken"
+            );
+
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer aToken")
+            );
+
+            assertThatThrownBy(() -> sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH))
+                .isInstanceOf(CommunicationException.class)
+                .hasRootCauseInstanceOf(OAuth2TokenCache.OAuth2TokenRetrievalException.class);
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthHttpExceptionAfterInvalidation(
+            MappingBuilderFromMethod httpVerb
+        ) {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = OAuth2TokenCacheFixtures.failingWithOAuth2TokenRetrievalHttpExceptionAfterInvalidationOf(
+                "aToken"
+            );
+
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+            apiSimulator.stubUnauthorizedRequest(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer aToken")
+            );
+
+            assertThatThrownBy(() -> sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH))
+                .isInstanceOf(CommunicationException.class)
+                .hasRootCauseInstanceOf(OAuth2TokenCache.OAuth2TokenRetrievalHttpException.class);
+        }
+
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void concurrentRequestsDoNotAccidentallyInvalidateNewlyRefreshedTokens(
+            MappingBuilderFromMethod httpVerb
+        ) throws Exception {
+            val deprecatedConfiguration = createConfig();
+            val config = new UofConfigurationStub();
+            config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
+
+            val tokenCache = builder()
+                .providingBearerToken("firstToken")
+                .afterFirstInvalidationProviding("secondToken")
+                .afterSecondInvalidationProviding("thirdToken")
+                .build();
+            val httpHelper = createHttpHelperBuilder()
+                .with(deprecatedConfiguration)
+                .with(config)
+                .with(tokenCache)
+                .build();
+
+            apiSimulator.accumulates2UnauthorizedRequestsBeforeReleasingThem1SecondApartFromEachOther(
+                httpVerb,
+                SOME_PATH,
+                requiringHeader(AUTHORIZATION, "Bearer firstToken")
+            );
+
+            val thread1 = new Thread(() -> sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH));
+
+            val thread2 = new Thread(() -> sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH));
+
+            thread1.start();
+            thread2.start();
+
+            thread1.join();
+            thread2.join();
+
+            tokenCache.verifyCalledWithSingleToken();
+        }
+    }
+
+    @Nested
     class AuthorizationRelated {
+
+        private static final String ACCESS_TOKEN = "access_token";
 
         @Test
         void clientAuthorizationIsPreferredAuthenticationMethodOverAccessToken()
@@ -70,7 +351,7 @@ public class HttpHelperHeadersTest {
             val deprecatedConfiguration = createConfig();
             val config = new UofConfigurationStub();
             config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
-            config.setAccessToken("some_access_token");
+            config.setAccessToken(ACCESS_TOKEN);
 
             val tokenCache = providingBearerToken("some_jwt_token");
 
@@ -80,7 +361,7 @@ public class HttpHelperHeadersTest {
                 .with(tokenCache)
                 .build();
 
-            apiSimulator.stubRequest(
+            apiSimulator.stubStatus200For(
                 POST,
                 SOME_PATH,
                 requiringHeader(AUTHORIZATION, "Bearer some_jwt_token"),
@@ -107,7 +388,7 @@ public class HttpHelperHeadersTest {
                 .with(tokenCache)
                 .build();
 
-            apiSimulator.stubRequest(
+            apiSimulator.stubStatus200For(
                 POST,
                 SOME_PATH,
                 requiringHeader(AUTHORIZATION, "Bearer some_jwt_token")
@@ -131,15 +412,18 @@ public class HttpHelperHeadersTest {
                 .with(tokenCache)
                 .build();
 
-            apiSimulator.stubRequest(POST, SOME_PATH, requiringNoHeader(AUTHORIZATION));
+            apiSimulator.stubStatus200For(POST, SOME_PATH, requiringNoHeader(AUTHORIZATION));
 
             val responseData = httpHelper.post(baseUrl + SOME_PATH);
 
             assertThat(responseData.getStatusCode()).isEqualTo(200);
         }
 
-        @Test
-        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthException() {
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthException(
+            MappingBuilderFromMethod httpVerb
+        ) {
             val deprecatedConfiguration = createConfig();
             val config = new UofConfigurationStub();
             config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
@@ -152,13 +436,16 @@ public class HttpHelperHeadersTest {
                 .with(tokenCache)
                 .build();
 
-            assertThatThrownBy(() -> httpHelper.post(baseUrl + SOME_PATH))
+            assertThatThrownBy(() -> sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH))
                 .isInstanceOf(CommunicationException.class)
                 .hasRootCauseInstanceOf(OAuth2TokenCache.OAuth2TokenRetrievalException.class);
         }
 
-        @Test
-        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthHttpException() {
+        @ParameterizedTest
+        @EnumSource(MappingBuilderFromMethod.class)
+        void attemptingToGetTokenFailsWithDataProviderExceptionWrapperAroundOAuthHttpException(
+            MappingBuilderFromMethod httpVerb
+        ) {
             val deprecatedConfiguration = createConfig();
             val config = new UofConfigurationStub();
             config.setClientAuthentication(new UofPrivateKeyJwtAuthenticationStub());
@@ -174,7 +461,7 @@ public class HttpHelperHeadersTest {
                 .with(tokenCache)
                 .build();
 
-            assertThatThrownBy(() -> httpHelper.post(baseUrl + SOME_PATH))
+            assertThatThrownBy(() -> sendRequestUsing(httpHelper, httpVerb, baseUrl + SOME_PATH))
                 .isInstanceOf(CommunicationException.class)
                 .hasRootCauseInstanceOf(OAuth2TokenCache.OAuth2TokenRetrievalHttpException.class);
         }
@@ -183,11 +470,11 @@ public class HttpHelperHeadersTest {
         void sendsAccessTokenHeader() throws Exception {
             val deprecatedConfiguration = createConfig();
             val config = new UofConfigurationStub();
-            config.setAccessToken("some_access_token");
+            config.setAccessToken(ACCESS_TOKEN);
 
             val httpHelper = createHttpHelperBuilder().with(deprecatedConfiguration).with(config).build();
 
-            apiSimulator.stubRequest(POST, SOME_PATH, requiringHeader(X_ACCESS_TOKEN, "some_access_token"));
+            apiSimulator.stubStatus200For(POST, SOME_PATH, requiringHeader(X_ACCESS_TOKEN, ACCESS_TOKEN));
 
             val responseData = httpHelper.post(baseUrl + SOME_PATH);
 
@@ -201,7 +488,7 @@ public class HttpHelperHeadersTest {
 
             val httpHelper = createHttpHelperBuilder().with(deprecatedConfiguration).with(config).build();
 
-            apiSimulator.stubRequest(POST, SOME_PATH, requiringNoHeader(X_ACCESS_TOKEN));
+            apiSimulator.stubStatus200For(POST, SOME_PATH, requiringNoHeader(X_ACCESS_TOKEN));
 
             val responseData = httpHelper.post(baseUrl + SOME_PATH);
 
@@ -219,7 +506,11 @@ public class HttpHelperHeadersTest {
 
             val httpHelper = createHttpHelperBuilder().with(deprecatedConfiguration).with(config).build();
 
-            apiSimulator.stubRequest(POST, SOME_PATH, requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME));
+            apiSimulator.stubStatus200For(
+                POST,
+                SOME_PATH,
+                requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
+            );
 
             val responseData = httpHelper.post(baseUrl + SOME_PATH);
 
@@ -234,9 +525,17 @@ public class HttpHelperHeadersTest {
 
             val httpHelper = createHttpHelperBuilder().with(deprecatedConfiguration).with(config).build();
 
-            apiSimulator.stubRequest(POST, SOME_PATH, requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME));
+            apiSimulator.stubStatus200For(
+                POST,
+                SOME_PATH,
+                requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
+            );
             val responseData1 = httpHelper.post(baseUrl + SOME_PATH);
-            apiSimulator.stubRequest(POST, SOME_PATH, requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME));
+            apiSimulator.stubStatus200For(
+                POST,
+                SOME_PATH,
+                requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
+            );
             val responseData2 = httpHelper.post(baseUrl + SOME_PATH);
 
             val traceIds = getTraceIdsForAllRequestsToPath(SOME_PATH);
@@ -278,7 +577,7 @@ public class HttpHelperHeadersTest {
             val cfg = createConfig();
             val httpHelper = createHttpHelperBuilder().with(cfg).build();
 
-            apiSimulator.stubRequest(PUT, SOME_PATH, requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME));
+            apiSimulator.stubStatus200For(PUT, SOME_PATH, requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME));
 
             val responseData = httpHelper.put(baseUrl + SOME_PATH);
 
@@ -317,7 +616,11 @@ public class HttpHelperHeadersTest {
             val cfg = createConfig();
             val httpHelper = createHttpHelperBuilder().with(cfg).build();
 
-            apiSimulator.stubRequest(DELETE, SOME_PATH, requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME));
+            apiSimulator.stubStatus200For(
+                DELETE,
+                SOME_PATH,
+                requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME)
+            );
 
             val responseData = httpHelper.delete(baseUrl + SOME_PATH);
 
@@ -360,7 +663,7 @@ public class HttpHelperHeadersTest {
             val cfg = createConfig(1);
             val httpHelper = createHttpHelperBuilder().with(cfg).build();
 
-            apiSimulator.stubRequest(
+            apiSimulator.stubStatus200For(
                 POST,
                 SOME_PATH,
                 requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME),
@@ -379,7 +682,7 @@ public class HttpHelperHeadersTest {
             val cfg = createConfig(1);
             val httpHelper = createHttpHelperBuilder().with(cfg).build();
 
-            apiSimulator.stubRequest(
+            apiSimulator.stubStatus200For(
                 PUT,
                 SOME_PATH,
                 requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME),
@@ -397,7 +700,7 @@ public class HttpHelperHeadersTest {
             val cfg = createConfig(1);
             val httpHelper = createHttpHelperBuilder().with(cfg).build();
 
-            apiSimulator.stubRequest(
+            apiSimulator.stubStatus200For(
                 DELETE,
                 SOME_PATH,
                 requiringHeaderWithAnyUuidValue(TRACE_HEADER_NAME),
@@ -412,7 +715,7 @@ public class HttpHelperHeadersTest {
     }
 
     private SdkInternalConfiguration createConfig() {
-        return createConfig(5);
+        return createConfig(30);
     }
 
     private SdkInternalConfiguration createConfig(int timeoutInSeconds) {
@@ -442,5 +745,23 @@ public class HttpHelperHeadersTest {
             .filter(e -> e.getRequest().getUrl().equals(url))
             .map(e -> e.getRequest().getHeader("trace-id"))
             .collect(Collectors.toList());
+    }
+
+    @SneakyThrows
+    private static ResponseData sendRequestUsing(
+        HttpHelper httpHelper,
+        MappingBuilderFromMethod httpVerb,
+        String url
+    ) {
+        switch (httpVerb) {
+            case POST:
+                return httpHelper.post(url);
+            case PUT:
+                return httpHelper.put(url);
+            case DELETE:
+                return httpHelper.delete(url);
+            default:
+                throw new IllegalArgumentException("Unsupported HTTP verb: " + httpVerb);
+        }
     }
 }

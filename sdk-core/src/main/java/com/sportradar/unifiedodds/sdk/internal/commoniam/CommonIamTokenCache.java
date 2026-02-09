@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
@@ -43,6 +41,7 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
     @SuppressWarnings("ConstantName")
     private static final Logger logger = LoggerFactory.getLogger(CommonIamTokenCache.class);
 
+    private static final double PROACTIVE_REFRESH_THRESHOLD = 0.9;
     private static final long SECONDS_TO_MILLIS = 1000L;
     private static final int ONE_MIN_IN_MILLIS = 60 * 1000;
     private static final String FAILED_TO_RETRIEVE_O_AUTH_TOKEN = "Failed to retrieve OAuth token";
@@ -55,16 +54,16 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
     private final Object refreshLock = new Object();
     private volatile OAuth2Token cachedToken;
     private volatile long tokenExpirationTime;
+    private volatile long tokenIsAboutToExpireTime;
     private final CommonIamTokenRetrievalCircuitBreaker circuitBreaker;
     private final ResourceAudience resourceAudience;
 
-    @Inject
     public CommonIamTokenCache(
         UofConfiguration configuration,
-        @Named("FastHttpClient") CloseableHttpAsyncClient httpClient,
+        CloseableHttpAsyncClient httpClient,
         TimeUtils timeUtils,
         ObjectMapper objectMapper,
-        @Named("UfRestApiAudience") ResourceAudience resourceAudience
+        ResourceAudience resourceAudience
     ) {
         this.configuration = configuration;
         this.httpClient = httpClient;
@@ -75,17 +74,31 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
     }
 
     @Override
+    @SuppressWarnings("IllegalCatch")
     public OAuth2Token getToken() {
-        if (isTokenValid()) {
+        if (cachedToken != null && !isTokenAboutToExpire()) {
             return cachedToken;
         }
 
         synchronized (refreshLock) {
-            if (isTokenValid()) {
+            if (cachedToken != null && !isTokenAboutToExpire()) {
                 return cachedToken;
             }
-            return refreshToken();
+
+            try {
+                return refreshToken();
+            } catch (Exception e) {
+                if (isTokenNotExpired()) {
+                    return cachedToken;
+                } else {
+                    throw e;
+                }
+            }
         }
+    }
+
+    private boolean isTokenNotExpired() {
+        return timeUtils.now() < tokenExpirationTime;
     }
 
     @Override
@@ -96,8 +109,8 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
         }
     }
 
-    private boolean isTokenValid() {
-        return cachedToken != null && timeUtils.now() < tokenExpirationTime;
+    private boolean isTokenAboutToExpire() {
+        return timeUtils.now() >= tokenIsAboutToExpireTime;
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -112,6 +125,12 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
 
             cachedToken = new OAuth2Token(tokenResponse.getTokenType(), tokenResponse.getAccessToken());
             tokenExpirationTime = timeUtils.now() + (tokenResponse.getExpiresIn() * SECONDS_TO_MILLIS);
+            tokenIsAboutToExpireTime =
+                (long) (
+                    timeUtils.now() +
+                    PROACTIVE_REFRESH_THRESHOLD *
+                    (tokenResponse.getExpiresIn() * SECONDS_TO_MILLIS)
+                );
             circuitBreaker.recordSuccess();
             return cachedToken;
         } catch (Exception e) {
@@ -137,8 +156,9 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
         if (response.getCode() != HttpStatus.SC_OK) {
             String body = Objects.toString(response.getBodyText());
             trafficLogger.info(
-                "Request[OAuth2]: {}, response - FAILED(HTTP {}): {}",
+                "Request[OAuth2]: {} ({}), response - FAILED(HTTP {}): {}",
                 getAuthServerUrl() + OAUTH_TOKEN_PATH,
+                resourceAudience,
                 response.getCode(),
                 anonymizeJwts(body)
             );
@@ -149,8 +169,9 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
             String body = Objects.toString(response.getBodyText());
             String anonymizedResponse = anonymizeJwts(body);
             trafficLogger.info(
-                "Request[OAuth2]: {}, response - OK(HTTP {}): {}",
+                "Request[OAuth2]: {} ({}), response - OK(HTTP {}): {}",
                 getAuthServerUrl() + OAUTH_TOKEN_PATH,
+                resourceAudience,
                 response.getCode(),
                 anonymizedResponse
             );
@@ -194,10 +215,24 @@ public class CommonIamTokenCache implements OAuth2TokenCache {
             .toString();
     }
 
+    private String getAuthServerTenant() {
+        UofClientAuthentication.PrivateKeyJwt auth = configuration.getClientAuthentication();
+        if (auth.getTenant() != null) {
+            return auth.getTenant();
+        }
+
+        String authServerUrl = baseUrl()
+            .setUseSsl(auth.getUseSsl())
+            .setHost(auth.getHost())
+            .setPort(auth.getPort())
+            .toString();
+        return authServerUrl + "/";
+    }
+
     private String createJwtAssertion() {
         UofClientAuthentication.PrivateKeyJwt auth = configuration.getClientAuthentication();
         long now = timeUtils.now();
-        String audience = getAuthServerUrl() + "/";
+        String audience = getAuthServerTenant();
 
         return JWT
             .create()

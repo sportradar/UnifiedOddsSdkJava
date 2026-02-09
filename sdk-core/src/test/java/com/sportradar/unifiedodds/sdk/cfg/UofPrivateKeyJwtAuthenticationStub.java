@@ -13,6 +13,7 @@ public class UofPrivateKeyJwtAuthenticationStub implements UofClientAuthenticati
     private int port;
     private String host;
     private boolean useSsl;
+    private String tenant;
 
     @Override
     public String getSigningKeyId() {
@@ -53,6 +54,15 @@ public class UofPrivateKeyJwtAuthenticationStub implements UofClientAuthenticati
     @Override
     public String getHost() {
         return host;
+    }
+
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
+
+    @Override
+    public String getTenant() {
+        return tenant;
     }
 
     public void setUseSsl(boolean useSsl) {

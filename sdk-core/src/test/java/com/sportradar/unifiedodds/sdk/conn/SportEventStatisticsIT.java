@@ -5,10 +5,11 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Kabaddi.kabaddiTelguTitansTamilThalaivas;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Kabaddi.kabaddiTelguTitansTamilThalaivasTournament;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.oddEvenMarket;
-import static com.sportradar.unifiedodds.sdk.conn.UfSportEventStatuses.soccerMatchFeedStatus;
-import static com.sportradar.unifiedodds.sdk.conn.UfSportEventStatuses.withEveryStatistic;
+import static com.sportradar.unifiedodds.sdk.conn.UfSportEventStatuses.*;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.UF_VIRTUALHOST;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
@@ -169,6 +170,57 @@ public class SportEventStatisticsIT {
                 .assertThat(statistics)
                 .totalsEqualToThoseIn(withEveryStatistic(soccerMatchFeedStatus()));
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ExceptionHandlingStrategy.class)
+    public void feedMessageStatisticsAreReturnedWithoutApiCallInFeedMessageContext(
+        ExceptionHandlingStrategy strategy
+    ) throws Exception {
+        val messages = new FeedMessageBuilder(globalVariables);
+        val matchId = Urn.parse(kabaddiTelguTitansTamilThalaivas().getSportEvent().getId());
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(matchId);
+        globalVariables.setSportUrn(Sport.KABADDI);
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+
+        val aLanguage = Locale.ENGLISH;
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubAllSports(aLanguage);
+        apiSimulator.stubAllTournaments(aLanguage, kabaddiTelguTitansTamilThalaivasTournament());
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(strategy)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            val ufStatus = withOnlyKabaddiStatistics(kabaddiMatchFeedStatus());
+            rabbitProducer.send(messages.oddsChange(ufStatus), routingKeys.liveOddsChange());
+
+            val oddsChange = listinerWaitingFor.theOnlyOddsChange();
+
+            val match = (Match) oddsChange.getEvent();
+            val statistics = match.getStatus().getStatistics();
+
+            StatisticsAssert.assertThat(statistics).totalsEqualToThoseIn(ufStatus).totalsHavingNoTeamNames();
+        }
+    }
+
+    private UfSportEventStatus withOnlyKabaddiStatistics(UfSportEventStatus status) {
+        val fullStats = withEveryStatistic(status);
+        fullStats.getStatistics().setCorners(null);
+        return fullStats;
     }
 
     @ParameterizedTest

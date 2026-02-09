@@ -1,6 +1,12 @@
 ### Unified Feed SDK 5.x changelog
 
-**5.0.0-rc2**
+**5.0.0-rc3**
+- Client Authentication is supported for Rabbit MQ connections.
+- Configurable Authentication Tenant
+- When using custom configuration builder replaced setUsername and setPassword with setMessagingCredentials
+- Upgraded dependencies to latest supported versions
+
+**5.0.0-rc2 (2025-11-25)**
 - UoF API call is retried once if the response has a status code 401 (Unauthorized).
 - Internal resiliency improvements for Common IAM communication.
 

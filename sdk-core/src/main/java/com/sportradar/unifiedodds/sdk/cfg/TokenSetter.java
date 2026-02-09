@@ -66,7 +66,7 @@ public interface TokenSetter {
      * Sets the authentication used to access Sportradar resources (AMQP broker, Sports API, ...)
      *
      * @param authentication the authentication object
-     * @return the {@link TokenSetter} instance allowing further configuration
+     * @return the {@link EnvironmentSelector} instance allowing the selection of target environment
      */
-    TokenSetter setClientAuthentication(UofClientAuthentication.PrivateKeyJwtData authentication);
+    EnvironmentSelector setClientAuthentication(UofClientAuthentication.PrivateKeyJwtData authentication);
 }

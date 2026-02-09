@@ -99,6 +99,22 @@ class CustomConfigurationBuilderImpl
     }
 
     @Override
+    public CustomConfigurationBuilder setClientAuthenticationTenant(String tenant) {
+        Preconditions.checkArgument(
+            tenant != null && !Strings.isNullOrEmpty(tenant.trim()),
+            "Client Authentication tenant can not be null/empty"
+        );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication tenant"
+        );
+
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setTenant(tenant);
+        return this;
+    }
+
+    @Override
     public CustomConfigurationBuilder setClientAuthenticationPort(int port) {
         Preconditions.checkArgument(port > 0, "Client Authentication Port must be greater than 0");
         Preconditions.checkArgument(
@@ -150,30 +166,16 @@ class CustomConfigurationBuilderImpl
     }
 
     /**
-     * Sets the username used to authenticate with the messaging server
+     * Sets the username and password used to authenticate with the messaging server
      *
      * @param username the username used to authenticate with the messaging server
-     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
-     */
-    @Override
-    public CustomConfigurationBuilder setMessagingUsername(String username) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(username));
-        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
-        rabbitConfiguration.setUsername(username);
-        return this;
-    }
-
-    /**
-     * Sets the password used to authenticate with the messaging server
-     *
      * @param password the password used to authenticate with the messaging server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     @Override
-    public CustomConfigurationBuilder setMessagingPassword(String password) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(password));
-        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
-        rabbitConfiguration.setPassword(password);
+    public CustomConfigurationBuilder setMessagingCredentials(String username, String password) {
+        setMessagingUsername(username);
+        setMessagingPassword(password);
         return this;
     }
 
@@ -218,5 +220,23 @@ class CustomConfigurationBuilderImpl
         configuration.acquireBookmakerDetailsAndProducerData();
 
         return configuration;
+    }
+
+    private void setMessagingUsername(String username) {
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(username),
+            "messaging username cannot be null or not empty"
+        );
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setUsername(username);
+    }
+
+    private void setMessagingPassword(String password) {
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(password),
+            "messaging password cannot be null or not empty"
+        );
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setPassword(password);
     }
 }

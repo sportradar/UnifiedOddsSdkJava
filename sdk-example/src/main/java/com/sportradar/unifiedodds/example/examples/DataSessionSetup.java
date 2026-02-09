@@ -29,10 +29,10 @@ public class DataSessionSetup {
     private final UofSdk uofSdk;
     private final UofConfiguration configuration;
 
-    public DataSessionSetup(String token, PrivateKey privateKey, String clientId, String keyId) {
+    public DataSessionSetup(PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK data example - single session");
 
-        logEntry("Building the configuration using the provided token and client authentication");
+        logEntry("Building the configuration using the provided client authentication");
         configuration =
             UofSdk
                 .getUofConfigurationBuilder()
@@ -43,7 +43,6 @@ public class DataSessionSetup {
                         .setSigningKeyId(keyId)
                         .build()
                 )
-                .setAccessToken(token)
                 .selectEnvironment(Environment.GlobalIntegration)
                 .setNodeId(SdkConstants.NODE_ID)
                 .setDefaultLanguage(Locale.ENGLISH)

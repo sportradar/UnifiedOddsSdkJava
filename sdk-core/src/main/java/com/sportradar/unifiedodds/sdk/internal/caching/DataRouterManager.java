@@ -34,8 +34,6 @@ public interface DataRouterManager {
 
     void requestDrawSummary(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
-    void requestDrawFixture(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
-
     void requestAllTournamentsForAllSportsEndpoint(Locale locale) throws CommunicationException;
 
     void requestAllSportsEndpoint(Locale locale) throws CommunicationException;

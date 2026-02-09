@@ -246,15 +246,6 @@ public class DataProvidersModule extends AbstractModule {
     }
 
     @Provides
-    private DataProvider<SapiDrawFixtures> provideDrawFixtureProvider(
-        SdkInternalConfiguration cfg,
-        LogHttpDataFetcher httpDataFetcher,
-        @Named("SportsApiJaxbDeserializer") Deserializer deserializer
-    ) {
-        return new DataProvider<>("/wns/%s/sport_events/%s/fixture.xml", cfg, httpDataFetcher, deserializer);
-    }
-
-    @Provides
     private DataProvider<SapiLotterySchedule> provideLotteryScheduleProvider(
         SdkInternalConfiguration cfg,
         LogHttpDataFetcher httpDataFetcher,

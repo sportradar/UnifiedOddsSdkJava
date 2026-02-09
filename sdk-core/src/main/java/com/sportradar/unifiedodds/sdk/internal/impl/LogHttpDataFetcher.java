@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
@@ -36,7 +37,7 @@ public class LogHttpDataFetcher extends HttpDataFetcher {
         HttpResponseHandler httpResponseHandler,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider,
-        OAuth2TokenCache oauthTokenCache
+        @Named("OAuth2TokenCacheForApiCalls") OAuth2TokenCache oauthTokenCache
     ) {
         super(
             uofConfiguration,

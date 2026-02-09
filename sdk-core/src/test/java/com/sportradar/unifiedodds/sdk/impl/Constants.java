@@ -35,7 +35,10 @@ public class Constants {
     public static final int PROXIED_RABBIT_PORT = 8089;
     public static final BaseUrl PROXIED_RABBIT_BASE_URL = BaseUrl.of(TOXIPROXY_IP, PROXIED_RABBIT_PORT);
     public static final BaseUrl RABBIT_BASE_URL = BaseUrl.of(RABBIT_IP, 5672);
-    public static final BaseUrl RABBIT_BASE_URL_WITHIN_DOCKER_NETWORK = BaseUrl.of(TOXIPROXY_IP, 5672);
+    public static final BaseUrl RABBIT_BASE_URL_WITHIN_DOCKER_NETWORK = BaseUrl.of(
+        IS_LOCAL ? "rabbitmq" : TOXIPROXY_IP,
+        5672
+    );
     public static final String SDK_USERNAME = "testuser";
     public static final String SDK_PASSWORD = "testpass";
     public static final String UF_EXCHANGE = "unifiedfeed";

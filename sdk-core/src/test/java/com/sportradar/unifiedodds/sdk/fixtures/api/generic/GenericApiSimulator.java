@@ -5,15 +5,18 @@ package com.sportradar.unifiedodds.sdk.fixtures.api.generic;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import com.sportradar.unifiedodds.sdk.conn.JaxbContexts;
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import lombok.val;
 
@@ -27,12 +30,16 @@ public class GenericApiSimulator {
     public static final String UNIFIED_XML_NAMESPACE = "http://schemas.sportradar.com/sportsapi/v1/unified";
     private final Consumer<MappingBuilder> stubRegistrar;
 
+    private final WireMockVerifier wireMockVerifier;
+
     public GenericApiSimulator(WireMockRule wireMockRule) {
         this.stubRegistrar = wireMockRule::stubFor;
+        wireMockVerifier = new WireMockVerifier(wireMockRule);
     }
 
     public GenericApiSimulator(WireMock wireMock) {
         this.stubRegistrar = wireMock::register;
+        wireMockVerifier = new WireMockVerifier(wireMock);
     }
 
     public void stubApiGetRequest(String url, HeaderEquality headerEquality, ApiStubDelay delay) {
@@ -69,7 +76,11 @@ public class GenericApiSimulator {
         stubRegistrar.accept(mappingBuilder);
     }
 
-    public void stubRequest(MappingBuilderFromMethod method, String url, HeaderEquality... headerEqualities) {
+    public void stubStatus200For(
+        MappingBuilderFromMethod method,
+        String url,
+        HeaderEquality... headerEqualities
+    ) {
         val finalMapping = Arrays
             .stream(headerEqualities)
             .reduce(
@@ -81,7 +92,7 @@ public class GenericApiSimulator {
         register(finalMapping);
     }
 
-    public void stubRequest(
+    public void stubStatus200For(
         MappingBuilderFromMethod method,
         String url,
         HeaderEquality headerEquality,
@@ -99,6 +110,37 @@ public class GenericApiSimulator {
         register(method.withUrl(url).willReturn(aResponse().withFault(fault)));
     }
 
+    public void stubUnauthorizedRequest(
+        MappingBuilderFromMethod method,
+        String url,
+        HeaderEquality headerEquality
+    ) {
+        register(
+            method
+                .withUrl(url)
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(unauthorized())
+        );
+    }
+
+    public void accumulates2UnauthorizedRequestsBeforeReleasingThem1SecondApartFromEachOther(
+        MappingBuilderFromMethod method,
+        String url,
+        HeaderEquality headerEquality
+    ) {
+        register(
+            method
+                .withUrl(url)
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(
+                    unauthorized()
+                        .withTransformers("two-request-delaying-barrier")
+                        .withTransformerParameter("firstDelayMs", 1000)
+                        .withTransformerParameter("secondDelayMs", 0)
+                )
+        );
+    }
+
     public void stubBadRequest(MappingBuilderFromMethod method, String url, HeaderEquality headerEquality) {
         register(
             method
@@ -106,6 +148,17 @@ public class GenericApiSimulator {
                 .withHeader(headerEquality.name, headerEquality.valuePattern)
                 .willReturn(badRequest())
         );
+    }
+
+    public void verifyTotalCalls(int expectedApiCallCount, String path) {
+        verifyThat(exactly(expectedApiCallCount), anyRequestedFor(urlPathEqualTo(path)));
+    }
+
+    private void verifyThat(
+        CountMatchingStrategy countMatchingStrategy,
+        RequestPatternBuilder requestPatternBuilder
+    ) {
+        wireMockVerifier.verifyThat(countMatchingStrategy, requestPatternBuilder);
     }
 
     public static enum MappingBuilderFromMethod {
@@ -173,6 +226,26 @@ public class GenericApiSimulator {
 
         public static HeaderEquality requiringNoHeader(String name) {
             return new HeaderEquality(name, absent());
+        }
+    }
+
+    public static class WireMockVerifier {
+
+        private final BiConsumer<CountMatchingStrategy, RequestPatternBuilder> stubVerifier;
+
+        public WireMockVerifier(WireMockRule wireMockRule) {
+            stubVerifier = wireMockRule::verify;
+        }
+
+        public WireMockVerifier(WireMock wireMock) {
+            stubVerifier = wireMock::verifyThat;
+        }
+
+        public void verifyThat(
+            CountMatchingStrategy countMatchingStrategy,
+            RequestPatternBuilder requestPatternBuilder
+        ) {
+            stubVerifier.accept(countMatchingStrategy, requestPatternBuilder);
         }
     }
 }

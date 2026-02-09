@@ -182,11 +182,6 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<SapiDrawSummary> drawSummaryDataProvider;
 
     /**
-     * A {@link DataProvider} used to fetch draw fixtures
-     */
-    private final DataProvider<SapiDrawFixtures> drawFixtureDataProvider;
-
-    /**
      * A {@link DataProvider} used to fetch all lotteries
      */
     private final DataProvider<SapiLotteries> lotteriesListProvider;
@@ -281,7 +276,6 @@ public class DataRouterManagerImpl implements DataRouterManager {
         DataProvider<SapiMatchTimelineEndpoint> matchTimelineEndpointDataProvider,
         DataProvider<SapiSportCategoriesEndpoint> sportCategoriesEndpointDataProvider,
         DataProvider<SapiDrawSummary> drawSummaryDataProvider,
-        DataProvider<SapiDrawFixtures> drawFixtureDataProvider,
         DataProvider<SapiLotteries> lotteriesListProvider,
         DataProvider<SapiLotterySchedule> lotteryScheduleProvider,
         DataProvider<CapiAvailableSelections> availableSelectionsTypeDataProvider,
@@ -312,7 +306,6 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(matchTimelineEndpointDataProvider);
         Preconditions.checkNotNull(sportCategoriesEndpointDataProvider);
         Preconditions.checkNotNull(drawSummaryDataProvider);
-        Preconditions.checkNotNull(drawFixtureDataProvider);
         Preconditions.checkNotNull(lotteriesListProvider);
         Preconditions.checkNotNull(lotteryScheduleProvider);
         Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
@@ -348,7 +341,6 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.matchTimelineEndpointDataProvider = matchTimelineEndpointDataProvider;
         this.sportCategoriesEndpointDataProvider = sportCategoriesEndpointDataProvider;
         this.drawSummaryDataProvider = drawSummaryDataProvider;
-        this.drawFixtureDataProvider = drawFixtureDataProvider;
         this.lotteriesListProvider = lotteriesListProvider;
         this.lotteryScheduleProvider = lotteryScheduleProvider;
         this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
@@ -528,46 +520,6 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         Urn drawId = Urn.parse(endpoint.getDrawFixture().getId());
         dataRouter.onDrawSummaryFetched(drawId, endpoint, locale, requester);
-    }
-
-    @Override
-    public void requestDrawFixture(Locale locale, Urn id, CacheItem requester) throws CommunicationException {
-        Preconditions.checkNotNull(locale);
-        Preconditions.checkNotNull(id);
-
-        SapiDrawFixtures endpoint;
-        try (
-            LatencyTracker ignored = telemetryFactory.latencyHistogram(
-                LongSdkHistogram.DATA_ROUTER_MANAGER,
-                TELEMETRY_TAG_KEY,
-                "DrawFixture"
-            )
-        ) {
-            endpoint = drawFixtureDataProvider.getData(locale, id.toString());
-        } catch (DataProviderException e) {
-            throw new CommunicationException(
-                String.format("Error executing draw fixture request for id=%s, locale=%s", id, locale),
-                e.tryExtractCommunicationExceptionUrl(
-                    String.format("draw_fixture[%s]: %s", locale.getISO3Language(), id)
-                ),
-                e.tryExtractCommunicationExceptionHttpStatusCode(-1),
-                e
-            );
-        }
-
-        dispatchReceivedRawApiData(drawFixtureDataProvider.getFinalUrl(locale, id.toString()), endpoint);
-
-        SapiDrawFixture drawFixture = endpoint.getDrawFixture();
-        if (drawFixture != null) {
-            Urn drawId = Urn.parse(drawFixture.getId());
-            dataRouter.onDrawFixtureFetched(drawId, drawFixture, locale, requester);
-        } else {
-            logger.warn(
-                "Requested draw fixture returned an empty response - drawFixture == null [{} - {}]",
-                id,
-                locale
-            );
-        }
     }
 
     @Override

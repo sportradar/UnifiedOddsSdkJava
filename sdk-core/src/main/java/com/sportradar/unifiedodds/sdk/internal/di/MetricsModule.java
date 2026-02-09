@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.di;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -14,6 +15,7 @@ import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryImpl;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
@@ -24,7 +26,9 @@ import io.opentelemetry.sdk.metrics.export.AggregationTemporalitySelector;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
 import io.opentelemetry.sdk.resources.Resource;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @SuppressWarnings("ClassFanOutComplexity")
 public class MetricsModule implements Module {
@@ -62,11 +66,16 @@ public class MetricsModule implements Module {
     @Named("UsageTelemetryFactory")
     private TelemetryFactory provideUsageTelemetryFactory(
         UofConfiguration configuration,
+        @Named("OAuth2TokenCacheForApiCalls") OAuth2TokenCache oAuth2TokenCache,
         @Named("version") String sdkVersion
     ) {
         String instrumentationScopeName = "UofSdk-Java";
 
-        OpenTelemetry usageOpenTelemetry = createUsageOpenTelemetry(configuration, sdkVersion);
+        OpenTelemetry usageOpenTelemetry = createUsageOpenTelemetry(
+            configuration,
+            sdkVersion,
+            oAuth2TokenCache
+        );
         TelemetryImpl uofSdkTelemetry = new TelemetryImpl(
             usageOpenTelemetry,
             instrumentationScopeName,
@@ -75,7 +84,11 @@ public class MetricsModule implements Module {
         return new TelemetryFactory(uofSdkTelemetry, new TimeUtilsImpl());
     }
 
-    public OpenTelemetry createUsageOpenTelemetry(UofConfiguration configuration, String sdkVersion) {
+    public OpenTelemetry createUsageOpenTelemetry(
+        UofConfiguration configuration,
+        String sdkVersion,
+        OAuth2TokenCache tokenCache
+    ) {
         if (!configuration.getUsage().isExportEnabled()) {
             return OpenTelemetry.noop();
         }
@@ -87,10 +100,10 @@ public class MetricsModule implements Module {
         OtlpHttpMetricExporter metricExporter = OtlpHttpMetricExporter
             .builder()
             .setEndpoint(usageServiceEndpointUrl)
-            .addHeader("x-access-token", configuration.getAccessToken())
             .addHeader("x-environment", environmentName)
             .addHeader("x-node-id", configuration.getNodeId().toString())
             .addHeader("x-sdk-version", sdkVersion)
+            .setHeaders(getAccessTokenHeaderSupplier(configuration, tokenCache))
             .setAggregationTemporalitySelector(AggregationTemporalitySelector.deltaPreferred())
             .setTimeout(configuration.getUsage().getExportTimeoutInSec(), SECONDS)
             .build();
@@ -123,5 +136,17 @@ public class MetricsModule implements Module {
             .build();
 
         return OpenTelemetrySdk.builder().setMeterProvider(meterProvider).build();
+    }
+
+    private static Supplier<Map<String, String>> getAccessTokenHeaderSupplier(
+        UofConfiguration configuration,
+        OAuth2TokenCache tokenCache
+    ) {
+        return () -> {
+            String accessToken = configuration.getClientAuthentication() != null
+                ? tokenCache.getToken().getAccessToken()
+                : configuration.getAccessToken();
+            return ImmutableMap.of("x-access-token", accessToken);
+        };
     }
 }

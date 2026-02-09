@@ -49,7 +49,6 @@ public class DataRouterManagerImplRequestingLotteryScheduleTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         lotterySchedule,
         mock(DataProvider.class),
         mock(DataProvider.class),

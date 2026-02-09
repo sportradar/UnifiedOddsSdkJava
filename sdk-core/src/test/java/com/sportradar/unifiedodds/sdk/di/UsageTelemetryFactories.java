@@ -13,6 +13,7 @@ import com.google.inject.name.Names;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryImpl;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.di.MetricsModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import io.opentelemetry.api.OpenTelemetry;
@@ -32,6 +33,7 @@ public class UsageTelemetryFactories {
 
         private String sdkVersion;
         private UofConfiguration uofConfiguration;
+        private OAuth2TokenCache oAuth2TokenCache;
 
         public MetricsModuleBuilder withVersion(String version) {
             this.sdkVersion = version;
@@ -43,9 +45,14 @@ public class UsageTelemetryFactories {
             return this;
         }
 
+        public MetricsModuleBuilder withOAuth2TokenCache(OAuth2TokenCache tokenCache) {
+            this.oAuth2TokenCache = tokenCache;
+            return this;
+        }
+
         public TelemetryFactory build() {
             val injector = Guice.createInjector(
-                moduleWithBoundSdkVersionAndUofConfiguration(),
+                moduleWithBoundSdkVersionUofConfigurationAndTokenCache(),
                 new MetricsModule()
             );
 
@@ -54,12 +61,15 @@ public class UsageTelemetryFactories {
             );
         }
 
-        private AbstractModule moduleWithBoundSdkVersionAndUofConfiguration() {
+        private AbstractModule moduleWithBoundSdkVersionUofConfigurationAndTokenCache() {
             return new AbstractModule() {
                 @Override
                 protected void configure() {
                     bind(String.class).annotatedWith(Names.named("version")).toInstance(sdkVersion);
                     bind(UofConfiguration.class).toInstance(uofConfiguration);
+                    bind(OAuth2TokenCache.class)
+                        .annotatedWith(Names.named("OAuth2TokenCacheForApiCalls"))
+                        .toInstance(ofNullable(oAuth2TokenCache).orElse(mock(OAuth2TokenCache.class)));
                 }
             };
         }

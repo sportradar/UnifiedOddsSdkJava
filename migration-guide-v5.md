@@ -6,11 +6,13 @@ This guide offers practical advice to ensure your transition is not only efficie
 
 ## 1. Upgrade Dependencies
 
-The following new dependency has been added:
-
-* **com.auth0:java-jwt 4.5.0** - required for the new client authentication feature
-
-Make sure to update your project's dependency management to include this new library.
+* **com.auth0:java-jwt 4.5.0** (added) - required for the new client authentication feature
+* **ch.qos.logback:logback-classic 1.3.16**
+* **com.rabbitmq:amqp-client 5.28.0**
+* **io.opentelemetry:opentelemetry-sdk, io.opentelemetry:opentelemetry-api, io.opentelemetry:opentelemetry-sdk-metrics 1.51.0**
+* **com.google.guava:guava 33.5.0-jre**
+* **com.ibm.icu:icu4j 77.1**
+* **org.yaml:snakeyaml 2.5**
 
 ## 2. New Features
 
@@ -86,7 +88,7 @@ Configuration via properties and yml files is not supported for client authentic
 
 - Access token is mandatory to be configured along with optional client authentication configuration.
 - setClientAuthentication must be set before setAccessToken when configuring SDK.
-- Client authentication only affects API calls, RabbitMQ still uses access token for authentication.
+- Rabbit credentials cannot be overridden when using Client Authentication.
 - SDK integrations via SSL-terminating proxies is not supported. This is because custom Client Authentication server fields (e.g.`.setClientAuthenticationHost()`) works correctly only for staging and production URLs.  
 - Replay does not support Client Authentication.
 

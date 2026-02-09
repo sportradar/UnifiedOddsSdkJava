@@ -7,7 +7,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.common.internal.UofConfigurationsForUsage.BuilderForUsageUsingMocks.UsageBuilderUsingMocks.usageConfigurationForUsageTelemetry;
 import static com.sportradar.unifiedodds.sdk.common.internal.UofConfigurationsForUsage.BuilderForUsageUsingMocks.uofConfigurationForUsageTelemetry;
+import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.immediatelyExpiredCommonIamToken;
+import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.validCommonIamToken;
 import static com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory.GaugeValue.gaugeValue;
+import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.providingBearerToken;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -17,9 +20,11 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.UofPrivateKeyJwtAuthenticationStub;
 import com.sportradar.unifiedodds.sdk.di.UsageTelemetryFactories;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.UsageGauge;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.BookmakerDetailsImpl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
 import io.opentelemetry.exporter.internal.http.HttpExporterBuilder;
@@ -27,6 +32,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 import lombok.val;
+import org.awaitility.core.ConditionFactory;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,16 +113,113 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
 
         String environmentName = configuration.getEnvironment().name().toLowerCase();
         try (val g = factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))) {
-            await()
-                .atMost(Duration.of(5, ChronoUnit.SECONDS))
-                .with()
-                .pollInterval(Duration.ofSeconds(1))
-                .ignoreExceptions()
-                .until(openTelemetryExportHappened(with(environmentName)));
+            awaitIgnoringExceptions().until(openTelemetryExportHappened(with(environmentName)));
         }
         wireMock.verify(
             postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))
                 .withHeader("x-access-token", equalTo(configuration.getAccessToken()))
+                .withHeader("x-environment", equalTo(environmentName))
+                .withHeader("x-node-id", equalTo(configuration.getNodeId().toString()))
+                .withHeader("x-sdk-version", equalTo("2.0.1"))
+        );
+    }
+
+    @Test
+    void exportsUsageMetricsWithAppropriateHeadersForClientAuthentication() throws Exception {
+        val configuration = uofConfigurationForUsageTelemetry()
+            .withClientAuthentication(new UofPrivateKeyJwtAuthenticationStub())
+            .withEnvironment(Environment.Production)
+            .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(4))
+            .withUsageConfiguration(
+                usageConfigurationForUsageTelemetry()
+                    .withExportEnabled(true)
+                    .withExportIntervalInSec((int) EXPORT_INTERVAL.getSeconds())
+                    .withExportTimeoutInSec((int) EXPORT_TIMEOUT.getSeconds())
+                    .withHost(usageServiceMetricsApiUrl)
+                    .build()
+            )
+            .build();
+
+        val commonIamTokenCache = providingBearerToken(validCommonIamToken());
+
+        val factory = UsageTelemetryFactories
+            .createFromDi()
+            .withVersion("2.0.1")
+            .withConfiguration(configuration)
+            .withOAuth2TokenCache(commonIamTokenCache)
+            .build();
+
+        String environmentName = configuration.getEnvironment().name().toLowerCase();
+        try (val g = factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))) {
+            awaitIgnoringExceptions().until(openTelemetryExportHappened(with(environmentName)));
+        }
+        wireMock.verify(
+            postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))
+                .withHeader("x-access-token", equalTo(validCommonIamToken().getAccessToken()))
+                .withHeader("x-environment", equalTo(environmentName))
+                .withHeader("x-node-id", equalTo(configuration.getNodeId().toString()))
+                .withHeader("x-sdk-version", equalTo("2.0.1"))
+        );
+    }
+
+    @Test
+    void exportsUsageMetricsWithAppropriateHeadersForClientAuthenticationFetchingNewTokenOnNewExportIfOldOneExpires()
+        throws Exception {
+        val configuration = uofConfigurationForUsageTelemetry()
+            .withClientAuthentication(new UofPrivateKeyJwtAuthenticationStub())
+            .withEnvironment(Environment.Production)
+            .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(4))
+            .withUsageConfiguration(
+                usageConfigurationForUsageTelemetry()
+                    .withExportEnabled(true)
+                    .withExportIntervalInSec((int) EXPORT_INTERVAL.getSeconds())
+                    .withExportTimeoutInSec((int) EXPORT_TIMEOUT.getSeconds())
+                    .withHost(usageServiceMetricsApiUrl)
+                    .build()
+            )
+            .build();
+
+        val commonIamTokenCache = OAuth2TokenCacheFixtures
+            .builder()
+            .providingBearerToken(immediatelyExpiredCommonIamToken())
+            .afterExpiryProviding(validCommonIamToken())
+            .build();
+
+        val factory = UsageTelemetryFactories
+            .createFromDi()
+            .withVersion("2.0.1")
+            .withConfiguration(configuration)
+            .withOAuth2TokenCache(commonIamTokenCache)
+            .build();
+
+        try (val g = factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))) {
+            awaitIgnoringExceptions()
+                .until(
+                    openTelemetryExportHappenedWithAccessToken(
+                        immediatelyExpiredCommonIamToken().getAccessToken()
+                    )
+                );
+
+            commonIamTokenCache.firstTokenExpires();
+
+            awaitIgnoringExceptions()
+                .until(openTelemetryExportHappenedWithAccessToken(validCommonIamToken().getAccessToken()));
+        }
+
+        val environmentName = configuration.getEnvironment().name().toLowerCase();
+        wireMock.verify(
+            postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))
+                .withHeader("x-access-token", equalTo(immediatelyExpiredCommonIamToken().getAccessToken()))
+                .withHeader("x-environment", equalTo(environmentName))
+                .withHeader("x-node-id", equalTo(configuration.getNodeId().toString()))
+                .withHeader("x-sdk-version", equalTo("2.0.1"))
+        );
+
+        wireMock.verify(
+            postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))
+                .withHeader("x-access-token", equalTo(validCommonIamToken().getAccessToken()))
                 .withHeader("x-environment", equalTo(environmentName))
                 .withHeader("x-node-id", equalTo(configuration.getNodeId().toString()))
                 .withHeader("x-sdk-version", equalTo("2.0.1"))
@@ -149,12 +252,7 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
         factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()));
 
         String environmentName = configuration.getEnvironment().name().toLowerCase();
-        await()
-            .atMost(Duration.of(5, ChronoUnit.SECONDS))
-            .with()
-            .pollInterval(EXPORT_INTERVAL)
-            .ignoreExceptions()
-            .until(openTelemetryExportHappened(with(environmentName)));
+        awaitIgnoringExceptions().until(openTelemetryExportHappened(with(environmentName)));
 
         wireMock.verify(
             postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))
@@ -212,11 +310,7 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
 
         factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(System.nanoTime(), emptyMap()));
 
-        await()
-            .atMost(Duration.ofSeconds(HttpExporterBuilder.DEFAULT_TIMEOUT_SECS))
-            .with()
-            .pollInterval(Duration.ofMillis(100))
-            .ignoreExceptions()
+        awaitIgnoringExceptions()
             .until(() -> {
                 wireMock.verify(moreThanOrExactly(2), postRequestedFor(WireMock.urlEqualTo("/v1/metrics")));
                 return true;
@@ -233,7 +327,25 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
         };
     }
 
+    private static Callable<Boolean> openTelemetryExportHappenedWithAccessToken(String accessToken) {
+        return () -> {
+            wireMock.verify(
+                postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))
+                    .withHeader("x-access-token", equalTo(accessToken))
+            );
+            return true;
+        };
+    }
+
     private BookmakerDetails bookmakerDetailsWithBookmakerId(int bookmakerId) {
         return new BookmakerDetailsImpl(bookmakerId, "vhost", null, null, "message", Duration.ZERO);
+    }
+
+    private static ConditionFactory awaitIgnoringExceptions() {
+        return await()
+            .atMost(Duration.of(10, ChronoUnit.SECONDS))
+            .with()
+            .pollInterval(EXPORT_INTERVAL)
+            .ignoreExceptions();
     }
 }

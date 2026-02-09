@@ -75,6 +75,8 @@ public class ConfigureEnvironmentTest {
                 assertThat(config.getEnvironment()).isEqualTo(Integration);
                 assertThat(internalConfig).representsNonReplay(Integration);
                 assertThat(internalConfigForNonReplayExplicitly).representsNonReplay(Integration);
+
+                assertThat(String.valueOf(internalConfig)).contains("selectedEnvironment=Integration");
             }
 
             @Test

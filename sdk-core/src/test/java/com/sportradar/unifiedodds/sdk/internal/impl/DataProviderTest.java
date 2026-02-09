@@ -164,7 +164,7 @@ public class DataProviderTest {
         @ParameterizedTest
         void sendsAccessTokenAsHeader(HttpFetcherType httpFetcherType) throws Exception {
             val cfg = uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
-            val deprecatedCfg = internalConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/de/tournaments.xml")
                 .with(cfg)
                 .with(deprecatedCfg)
@@ -187,7 +187,7 @@ public class DataProviderTest {
         @Test
         void sendsUserAgentAsHeader() throws Exception {
             val cfg = uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
-            val deprecatedCfg = internalConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val userAgentProvider = new UserAgentProvider(
                 "Java-SDK 9.10.11",
                 Instant.ofEpochMilli(1740586231)
@@ -465,16 +465,6 @@ public class DataProviderTest {
 
     private List<String> idAndNameListOf(SapiSportsEndpoint sapiResponse) {
         return sapiResponse.getSport().stream().map(s -> s.getId() + "-" + s.getName()).collect(toList());
-    }
-
-    private SdkInternalConfiguration internalConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(
-        String authorityOfUri
-    ) {
-        SdkInternalConfiguration cfg = internalConfigForApiWith10MaxConnectionsAnd1sClientTimeoutNoSslOn(
-            authorityOfUri
-        );
-        when(cfg.getAccessToken()).thenReturn("some-token-1234");
-        return cfg;
     }
 
     private UofConfiguration uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(String authorityOfUri) {

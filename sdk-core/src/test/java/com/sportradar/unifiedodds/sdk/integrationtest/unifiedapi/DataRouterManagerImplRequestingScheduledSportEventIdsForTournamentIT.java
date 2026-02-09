@@ -142,7 +142,7 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
         @Named("TournamentScheduleProvider")
         private DataProvider<Object> tournamentSchedules() {
             val cfg = uofConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish();
-            val deprecatedCfg = internalConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish();
+            val deprecatedCfg = internalConfigWith5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish();
             return new DataProvider<>(
                 TOURNAMENT_SCHEDULE_PATH_FORMAT,
                 deprecatedCfg,
@@ -159,14 +159,13 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
             );
         }
 
-        private SdkInternalConfiguration internalConfigWithToken5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish() {
+        private SdkInternalConfiguration internalConfigWith5sNormalAnd1sFastTimeoutsWiremockHostAndEnglish() {
             SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
             when(config.getApiHostAndPort()).thenReturn(apiHost);
             when(config.getUseApiSsl()).thenReturn(false);
             when(config.getHttpClientTimeout()).thenReturn(5000);
             when(config.getFastHttpClientTimeout()).thenReturn(1000L);
             when(config.getDefaultLocale()).thenReturn(Locale.ENGLISH);
-            when(config.getAccessToken()).thenReturn("someToken");
             return config;
         }
 
@@ -219,11 +218,6 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
         @Provides
         private DataProvider<SapiDrawSummary> drawSummaries() {
-            return mock(DataProvider.class);
-        }
-
-        @Provides
-        private DataProvider<SapiDrawFixtures> drawFixtures() {
             return mock(DataProvider.class);
         }
 

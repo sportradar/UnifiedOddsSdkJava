@@ -54,7 +54,6 @@ public class DataRouterManagerImplRequestingResultChangesTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         resultChanges,
         mock(DataProvider.class),
         mock(DataProvider.class),

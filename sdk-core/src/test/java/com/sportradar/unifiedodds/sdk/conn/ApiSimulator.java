@@ -119,6 +119,10 @@ public class ApiSimulator {
     }
 
     public void defineBookmaker(HeaderEquality... requiredHeaders) {
+        defineBookmakerWithIdOf1(requiredHeaders);
+    }
+
+    public void defineBookmakerWithIdOf1(HeaderEquality... requiredHeaders) {
         val finalMapping = Arrays
             .stream(requiredHeaders)
             .reduce(
@@ -168,6 +172,13 @@ public class ApiSimulator {
 
     public void stubEmptyMarketList(Locale language) {
         stub(new MarketDescriptions(), format("/v1/descriptions/%s/markets.xml.*", language.toString()));
+    }
+
+    public ApiSimulator stubMarketList(Locale language, DescMarket... markets) {
+        val descriptions = new MarketDescriptions();
+        descriptions.getMarket().addAll(Arrays.asList(markets));
+        stub(descriptions, format("/v1/descriptions/%s/markets.xml.*", language.toString()));
+        return this;
     }
 
     public ApiSimulator stubMarketListContaining(DescMarket market, Locale language) {
@@ -1223,20 +1234,6 @@ public class ApiSimulator {
 
         public static BodyCondition forRequestBody(Object value) {
             return new BodyCondition(value);
-        }
-    }
-
-    @SuppressWarnings("VisibilityModifier")
-    public static class BodyMatchCondition {
-
-        public final String pattern;
-
-        public BodyMatchCondition(String value) {
-            this.pattern = value;
-        }
-
-        public static BodyMatchCondition forRequestBodyMatching(String pattern) {
-            return new BodyMatchCondition(pattern);
         }
     }
 

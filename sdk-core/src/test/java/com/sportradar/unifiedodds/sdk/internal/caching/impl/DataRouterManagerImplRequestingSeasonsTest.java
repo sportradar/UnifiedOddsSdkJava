@@ -55,7 +55,6 @@ public class DataRouterManagerImplRequestingSeasonsTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

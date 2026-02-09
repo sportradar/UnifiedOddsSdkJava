@@ -32,18 +32,16 @@ public class AdvancedConfigurationSetup {
     public static final int SECONDS_IN_HOUR = 60 * 60;
     private final UofSdk uofSdk;
 
-    public AdvancedConfigurationSetup(String token, PrivateKey privateKey, String clientId, String keyId)
-        throws Exception {
+    public AdvancedConfigurationSetup(PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK Basic example - advanced configuration setup");
 
-        logEntry("Building the configuration using the provided token and client authentication");
+        logEntry("Building the configuration using the provided client authentication");
 
         ConfigurationBuilder cfgBuilder = UofSdk
             .getUofConfigurationBuilder()
             .setClientAuthentication(
                 privateKeyJwt().setClientId(clientId).setPrivateKey(privateKey).setSigningKeyId(keyId).build()
             )
-            .setAccessToken(token)
             .selectEnvironment(Environment.GlobalIntegration)
             .setNodeId(SdkConstants.NODE_ID);
 

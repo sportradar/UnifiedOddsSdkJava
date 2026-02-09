@@ -86,9 +86,9 @@ abstract class HttpDataFetcher {
 
         try {
             if (uofConfiguration.getClientAuthentication() != null) {
-                return sendForClientAuthentication(httpRequest, path);
+                return sendUsingClientAuthentication(httpRequest, path);
             } else {
-                return sendForAccessToken(httpRequest, path);
+                return sendUsingAccessToken(httpRequest, path);
             }
         } catch (ExecutionException ex) {
             throw new CommunicationException("There was a problem retrieving the requested data", path, ex);
@@ -112,7 +112,7 @@ abstract class HttpDataFetcher {
         }
     }
 
-    private HttpData sendForClientAuthentication(ClassicHttpRequest httpRequest, String path)
+    private HttpData sendUsingClientAuthentication(ClassicHttpRequest httpRequest, String path)
         throws CommunicationException, ExecutionException, TimeoutException {
         SimpleRequestBuilder request = createSimpleRequestFrom(httpRequest, path);
         OAuth2Token token = oauthTokenCache.getToken();
@@ -139,7 +139,7 @@ abstract class HttpDataFetcher {
         return getResponseWithTimeout(retryFuture, path);
     }
 
-    private HttpData sendForAccessToken(ClassicHttpRequest httpRequest, String path)
+    private HttpData sendUsingAccessToken(ClassicHttpRequest httpRequest, String path)
         throws CommunicationException, ExecutionException, TimeoutException {
         SimpleRequestBuilder request = createSimpleRequestFrom(httpRequest, path);
         if (uofConfiguration.getAccessToken() != null) {

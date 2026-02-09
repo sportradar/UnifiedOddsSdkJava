@@ -27,10 +27,10 @@ public class SportEventDataPrinter {
     private final UofSdk uofSdk;
     private final UofConfiguration configuration;
 
-    public SportEventDataPrinter(String token, PrivateKey privateKey, String clientId, String keyId) {
+    public SportEventDataPrinter(PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK Basic example - multiple session");
 
-        logEntry("Building the configuration using the provided token and client authentication");
+        logEntry("Building the configuration using the provided client authentication");
         configuration =
             UofSdk
                 .getUofConfigurationBuilder()
@@ -41,7 +41,6 @@ public class SportEventDataPrinter {
                         .setSigningKeyId(keyId)
                         .build()
                 )
-                .setAccessToken(token)
                 .selectEnvironment(Environment.GlobalIntegration)
                 .setNodeId(SdkConstants.NODE_ID)
                 .setDefaultLanguage(Locale.ENGLISH)

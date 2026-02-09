@@ -18,6 +18,14 @@ public class CommonIamTokens {
         );
     }
 
+    public static OAuth2Token anotherValidCommonIamToken() {
+        return new OAuth2Token(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6IkoiLCJpYXQiOjE1MTYyMzkwMjJ9.rPRmVAlq4GEPeMX1bVVYvlNyL7f7W_W-plMHnjdj_K5",
+            "Bearer",
+            3600
+        );
+    }
+
     public static OAuth2Token refreshedCommonIamToken() {
         return new OAuth2Token(
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwibmFtZSI6IkoiLCJpYXQiOjE1MTYyMzkwMjJ9.caBHnojVfbObpP725YppQcEKeGOD-MtyKOJZiMt0C_4",

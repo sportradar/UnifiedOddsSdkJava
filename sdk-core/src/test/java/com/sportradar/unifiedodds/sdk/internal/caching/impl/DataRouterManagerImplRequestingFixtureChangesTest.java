@@ -53,7 +53,6 @@ public class DataRouterManagerImplRequestingFixtureChangesTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         fixtureChanges,
         mock(DataProvider.class),
         mock(DataProvider.class),

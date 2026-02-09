@@ -5,11 +5,9 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
-import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.requiringAuthorizationHeader;
+import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.anotherValidCommonIamToken;
 import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.validCommonIamToken;
-import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.Euro2024.soccerMatchGermanyScotlandEuro2024;
-import static com.sportradar.unifiedodds.sdk.conn.SapiSports.allSports;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
@@ -21,7 +19,6 @@ import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
-import com.sportradar.uf.sportsapi.datamodel.SapiMatchSummaryEndpoint;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
@@ -34,9 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@SuppressWarnings(
-    { "ClassFanOutComplexity", "UnnecessaryParentheses", "ClassDataAbstractionCoupling", "MagicNumber" }
-)
+@SuppressWarnings({ "ClassFanOutComplexity", "ClassDataAbstractionCoupling", "MagicNumber" })
 class RecoveryIT {
 
     @RegisterExtension
@@ -51,15 +46,11 @@ class RecoveryIT {
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
 
+    private final String bookmakerIdOf1 = "1";
     private final GlobalVariables globalVariables = new GlobalVariables();
     private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
     private final MessagesInMemoryStorage messagesStorage = new MessagesInMemoryStorage();
     private final GlobalMessagesInMemoryStorage globalMessagesStorage = new GlobalMessagesInMemoryStorage();
-
-    private final Credentials sdkCredentials = Credentials.with(
-        Constants.SDK_USERNAME,
-        Constants.SDK_PASSWORD
-    );
 
     private final CommonIamData commonIamData = CommonIamData.with(
         Constants.COMMON_IAM_CLIENT_ID,
@@ -88,7 +79,6 @@ class RecoveryIT {
     );
     private final ConnectionFactory factory = new ConnectionFactory();
 
-    private final WaiterForSingleMessage listenerWaitingFor = new WaiterForSingleMessage(messagesStorage);
     private final WaitingGlobalMessagesReader globalMessagesReaderWaitingFor = new WaitingGlobalMessagesReader(
         globalMessagesStorage
     );
@@ -101,7 +91,6 @@ class RecoveryIT {
 
     @BeforeEach
     void setup() throws Exception {
-        rabbitMqUserSetup.setupUser(sdkCredentials);
         sportsApiBaseUrl = BaseUrl.of("localhost", wireMock.getPort());
         commonIamApiBaseUrl = BaseUrl.of("localhost", commonIamWireMock.getPort());
         commonIamSimulator = new CommonIamSimulator(commonIamWireMock.getRuntimeInfo().getWireMock());
@@ -114,14 +103,22 @@ class RecoveryIT {
 
     @Test
     void tokenIsCachedAndReusedForSubsequentRecoveryApiCalls() throws Exception {
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
+
         val producerId = ProducerId.LIVE_ODDS;
         globalVariables.setProducer(producerId);
 
         val messages = new FeedMessageBuilder(globalVariables);
         val routingKeys = new RoutingKeys(globalVariables);
 
-        commonIamSimulator.stubTokenEndpoint(validCommonIamToken());
-        apiSimulator.defineBookmaker(requiringAuthorizationHeader(validCommonIamToken().getHeaderValue()));
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
+
+        apiSimulator.defineBookmakerWithIdOf1(
+            requiringAuthorizationHeader(validCommonIamToken().getHeaderValue())
+        );
         apiSimulator.activateProducer(producerId);
         apiSimulator.stubRecovery(producerId);
 
@@ -133,7 +130,7 @@ class RecoveryIT {
                 new TimeUtilsImpl()
             );
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .withCommonIam(RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(GlobalListenerCollectingMessages.to(globalMessagesStorage))
                 .withCommonIamCredentials(commonIamData)
                 .withCommonIamApiBaseUrl(commonIamApiBaseUrl)

@@ -5,12 +5,14 @@
 package com.sportradar.unifiedodds.example;
 
 import static com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication.privateKeyJwt;
+import static java.util.Locale.ENGLISH;
 
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.UofSessionBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager;
 import com.sportradar.unifiedodds.sdk.managers.ProducerManager;
@@ -25,7 +27,7 @@ import java.util.Base64;
  * prints out some information about all the messages it receives.
  */
 @SuppressWarnings({ "HideUtilityClassConstructor", "MagicNumber", "MethodLength" })
-public class BasicUofSdkExampleMain {
+public class BasicUofSdkExampleCommonIam {
 
     public static void main(String[] args) throws Exception {
         // first you need to prepare a configuration suitable to your use. The most important thing is
@@ -54,7 +56,10 @@ public class BasicUofSdkExampleMain {
                     .setPrivateKey(privateKey)
                     .build()
             )
-            .buildConfigFromSdkProperties();
+            .selectEnvironment(Environment.GlobalIntegration)
+            .setNodeId(123)
+            .setDefaultLanguage(ENGLISH)
+            .build();
         // create the new feed
         UofSdk uofSdk = new UofSdk(new GlobalEventsListener(), config);
 

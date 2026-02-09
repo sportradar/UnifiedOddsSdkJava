@@ -28,6 +28,23 @@ public class DrawSummaryDataProviders {
     }
 
     @SneakyThrows
+    public static DataProvider<SapiDrawSummary> providing(
+        LanguageHolder language1,
+        String drawId1,
+        SapiDrawSummary drawSummary1,
+        LanguageHolder language2,
+        String drawId2,
+        SapiDrawSummary drawSummary2
+    ) {
+        DataProvider<SapiDrawSummary> dataProvider = mock(DataProvider.class, withGetDataThrowingByDefault());
+        doReturn(drawSummary1).when(dataProvider).getData(language1.get(), drawId1);
+        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language1.get(), drawId1);
+        doReturn(drawSummary2).when(dataProvider).getData(language2.get(), drawId2);
+        doReturn(anyHttpUrl().toString()).when(dataProvider).getFinalUrl(language2.get(), drawId2);
+        return dataProvider;
+    }
+
+    @SneakyThrows
     public static DataProvider<SapiDrawSummary> notProvidingAnyData() {
         DataProvider<SapiDrawSummary> dataProvider = mock(DataProvider.class, withGetDataThrowingByDefault());
         return dataProvider;

@@ -377,6 +377,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="RabbitClientCredentialsTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="SapiMatchSummaries.java"/>
     </module>
     <module name="SuppressionSingleFilter">

@@ -7,9 +7,7 @@ import static java.util.Optional.ofNullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.cfg.UofUsageConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
 
 class UofConfigurationsForUsage {
@@ -25,6 +23,13 @@ class UofConfigurationsForUsage {
 
         public BuilderForUsageUsingMocks withAccessToken(String token) {
             when(uofConfiguration.getAccessToken()).thenReturn(token);
+            return this;
+        }
+
+        public BuilderForUsageUsingMocks withClientAuthentication(
+            UofClientAuthentication.PrivateKeyJwt clientAuthentication
+        ) {
+            when(uofConfiguration.getClientAuthentication()).thenReturn(clientAuthentication);
             return this;
         }
 

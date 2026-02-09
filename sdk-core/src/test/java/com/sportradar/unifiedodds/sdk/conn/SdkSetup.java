@@ -10,6 +10,7 @@ import static java.util.Collections.emptyList;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.EnvironmentSelector;
 import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
@@ -23,17 +24,16 @@ import com.sportradar.utils.domain.names.Languages;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("ClassFanOutComplexity")
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SdkSetup {
 
-    private final Credentials sdkCredentials;
+    private final Authentication authentication;
 
     private final BaseUrl rabbitBaseUrl;
 
@@ -56,13 +56,34 @@ public final class SdkSetup {
     private Optional<BaseUrl> commonIamApiBaseUrl = Optional.empty();
     private Optional<CommonIamData> comonIamCredentials = Optional.empty();
 
+    private SdkSetup(
+        Authentication authentication,
+        BaseUrl rabbitBaseUrl,
+        BaseUrl sportsApiBaseUrl,
+        int nodeId
+    ) {
+        this.authentication = authentication;
+        this.rabbitBaseUrl = rabbitBaseUrl;
+        this.sportsApiBaseUrl = sportsApiBaseUrl;
+        this.nodeId = nodeId;
+    }
+
+    public static SdkSetup withCommonIam(BaseUrl rabbitBaseUrl, BaseUrl sportsApiBaseUrl, int nodeId) {
+        return new SdkSetup(Authentication.commonIam(), rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+    }
+
     public static SdkSetup with(
         Credentials sdkCredentials,
         BaseUrl rabbitBaseUrl,
         BaseUrl sportsApiBaseUrl,
         int nodeId
     ) {
-        return new SdkSetup(sdkCredentials, rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+        return new SdkSetup(
+            Authentication.nonCommonIam(sdkCredentials),
+            rabbitBaseUrl,
+            sportsApiBaseUrl,
+            nodeId
+        );
     }
 
     public SdkSetup with(ListenerCollectingRawMessages collectingRawMessagesListener) {
@@ -127,9 +148,10 @@ public final class SdkSetup {
 
     public UofSdk withoutFeed() throws InitException {
         val tokenSetter = UofSdk.getUofConfigurationBuilder();
-        comonIamCredentials.ifPresent(setOn(tokenSetter));
-        val configBuilder = tokenSetter
-            .setAccessToken(sdkCredentials.getUsername())
+        val environmentSelector = comonIamCredentials
+            .map(setOn(tokenSetter))
+            .orElseGet(() -> setAccessTokenOn(tokenSetter));
+        val configBuilder = environmentSelector
             .selectCustom()
             .setApiUseSsl(false)
             .setApiHost(sportsApiBaseUrl.get())
@@ -149,7 +171,7 @@ public final class SdkSetup {
     }
 
     @NotNull
-    private static Consumer<CommonIamData> setOn(TokenSetter tokenSetter) {
+    private static Function<CommonIamData, EnvironmentSelector> setOn(TokenSetter tokenSetter) {
         return credentials ->
             tokenSetter.setClientAuthentication(
                 UofClientAuthenticationImpl.PrivateKeyJwtDataImpl.create(
@@ -158,6 +180,14 @@ public final class SdkSetup {
                     credentials.getPrivateKey()
                 )
             );
+    }
+
+    private EnvironmentSelector setAccessTokenOn(TokenSetter tokenSetter) {
+        val accessToken = Optional
+            .ofNullable(authentication.getNonCommonIamCredentials())
+            .map(Credentials::getUsername)
+            .orElse("notUsed");
+        return tokenSetter.setAccessToken(accessToken);
     }
 
     public UofSdk withOpenedFeed() throws InitException {
@@ -178,14 +208,12 @@ public final class SdkSetup {
 
     private UofConfiguration createUofConfiguration() {
         val tokenSetter = UofSdk.getUofConfigurationBuilder();
-        comonIamCredentials.ifPresent(setOn(tokenSetter));
-
-        val configBuilder = tokenSetter
-            .setAccessToken(sdkCredentials.getUsername())
+        val environmentSelector = comonIamCredentials
+            .map(setOn(tokenSetter))
+            .orElseGet(() -> setAccessTokenOn(tokenSetter));
+        val configBuilder = environmentSelector
             .selectCustom()
             .setApiUseSsl(false)
-            .setMessagingUsername(sdkCredentials.getUsername())
-            .setMessagingPassword(sdkCredentials.getPassword())
             .setMessagingHost(rabbitBaseUrl.getHost())
             .setMessagingPort(rabbitBaseUrl.getPort())
             .setMessagingUseSsl(false)
@@ -195,6 +223,13 @@ public final class SdkSetup {
             .setMessagingVirtualHost(UF_VIRTUALHOST)
             .setNodeId(nodeId)
             .enableUsageExport(false);
+
+        if (!authentication.isCommonIam()) {
+            configBuilder.setMessagingCredentials(
+                authentication.getNonCommonIamCredentials().getUsername(),
+                authentication.getNonCommonIamCredentials().getPassword()
+            );
+        }
 
         setHttpClientFastFailingTimeout(configBuilder);
         setHttpClientTimeout(configBuilder);
@@ -248,5 +283,27 @@ public final class SdkSetup {
             .setListener(messagesListener.orElse(new NoOpUofListener()))
             .setMessageInterest(MessageInterest.AllMessages)
             .build();
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class Authentication {
+
+        private final Credentials credentials;
+
+        private static Authentication nonCommonIam(Credentials credentials) {
+            return new Authentication(credentials);
+        }
+
+        private static Authentication commonIam() {
+            return new Authentication(null);
+        }
+
+        private boolean isCommonIam() {
+            return credentials == null;
+        }
+
+        private Credentials getNonCommonIamCredentials() {
+            return credentials;
+        }
     }
 }

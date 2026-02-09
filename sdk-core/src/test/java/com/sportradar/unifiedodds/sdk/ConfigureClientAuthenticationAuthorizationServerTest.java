@@ -158,7 +158,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void rejectsNullOrEmptyHost(String noHost) {
             val config = configBuilder
                 .setClientAuthentication(anyAuthentication)
-                .setAccessToken(ANY_TOKEN)
                 .selectCustom()
                 .setDefaultLanguage(anyLanguage);
             assertThatThrownBy(() -> config.setClientAuthenticationHost(noHost).build())
@@ -170,7 +169,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void rejectsNonPositivePorts(int nonPositivePort) {
             val config = configBuilder
                 .setClientAuthentication(anyAuthentication)
-                .setAccessToken(ANY_TOKEN)
                 .selectCustom()
                 .setDefaultLanguage(anyLanguage);
             assertThatThrownBy(() -> config.setClientAuthenticationPort(nonPositivePort).build())
@@ -182,7 +180,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void configureAuthorizationServerOriginWithSsl(int arbitraryPort) {
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationUseSsl(true)
@@ -203,7 +200,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void configureAuthorizationServerOriginWithoutSsl() {
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationUseSsl(false)
@@ -224,7 +220,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void configureDefaultCustomEnvironmentUrlWithoutSsl() {
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationUseSsl(false)
@@ -244,7 +239,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             val hostWithHttpScheme = "http://custom.com";
             val configurationBuilder =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage);
             assertThatThrownBy(() ->
@@ -260,7 +254,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage);
             assertThatThrownBy(() -> config.setClientAuthenticationHost(hostWithHttpsScheme).build())
@@ -274,7 +267,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage);
             assertThatThrownBy(() -> config.setClientAuthenticationHost(hostWithPort).build())
@@ -288,7 +280,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage);
             assertThatThrownBy(() -> config.setClientAuthenticationHost(hostWithSchemeAndPort).build())
@@ -302,7 +293,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationHost(ARBITRARY_HOST)
@@ -321,7 +311,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .loadConfigFromSdkProperties()
@@ -343,7 +332,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationHost(ARBITRARY_HOST)
@@ -369,7 +357,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
 
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectEnvironment(environment1)
                     .setDefaultLanguage(anyLanguage)
                     .loadConfigFromSdkProperties()
@@ -412,7 +399,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void defaultHttpPortIsNotVisibleInTheUrl() {
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationUseSsl(false)
@@ -431,7 +417,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void notSetPortResultsInDefaultPortWhichIsNotVisibleInTheUrl() {
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectCustom()
                     .setDefaultLanguage(anyLanguage)
                     .setClientAuthenticationHost(ARBITRARY_HOST)
@@ -455,9 +440,7 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         ) {
             val integrationHost = getAuthenticationHost(Integration);
 
-            val environmentSelector = configBuilder
-                .setClientAuthentication(anyAuthentication)
-                .setAccessToken(ANY_TOKEN);
+            val environmentSelector = configBuilder.setClientAuthentication(anyAuthentication);
             val customBuilder = selector.selectCustom(environmentSelector);
             val config = customBuilder.setDefaultLanguage(anyLanguage).build();
 
@@ -482,9 +465,7 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             propsFileContent.put(ENVIRONMENT_PROPERTY, Custom.toString());
             val integrationHost = getAuthenticationHost(Integration);
 
-            val environmentSelector = configBuilder
-                .setClientAuthentication(anyAuthentication)
-                .setAccessToken(ANY_TOKEN);
+            val environmentSelector = configBuilder.setClientAuthentication(anyAuthentication);
             val customBuilder = selector.selectCustom(environmentSelector);
             val config = customBuilder.setDefaultLanguage(anyLanguage).loadConfigFromSdkProperties().build();
 
@@ -501,7 +482,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             assertThatThrownBy(() ->
                     configBuilder
                         .setClientAuthentication(anyAuthentication)
-                        .setAccessToken(ANY_TOKEN)
                         .selectReplay()
                         .setDefaultLanguage(anyLanguage)
                         .build()
@@ -511,7 +491,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             assertThatThrownBy(() ->
                     configBuilder
                         .setClientAuthentication(anyAuthentication)
-                        .setAccessToken(ANY_TOKEN)
                         .selectEnvironment(Replay)
                         .setDefaultLanguage(anyLanguage)
                         .build()
@@ -521,7 +500,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             assertThatThrownBy(() ->
                     configBuilder
                         .setClientAuthentication(anyAuthentication)
-                        .setAccessToken(ANY_TOKEN)
                         .selectEnvironment(GlobalReplay)
                         .setDefaultLanguage(anyLanguage)
                         .build()
@@ -537,7 +515,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         ) {
             val config =
                 this.configBuilder.setClientAuthentication(anyAuthentication)
-                    .setAccessToken(ANY_TOKEN)
                     .selectEnvironment(environment)
                     .setDefaultLanguage(anyLanguage)
                     .build();
@@ -640,7 +617,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void updateToIntegrationEnvironmentFromCustom() {
             val config = builder
                 .setClientAuthentication(anyAuthentication)
-                .setAccessToken(ANY_TOKEN)
                 .selectCustom()
                 .setDefaultLanguage(anyLanguage)
                 .setClientAuthenticationHost("urlWhichShouldBeReplaced")
@@ -656,7 +632,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
         void updateToProductionEnvironmentFromCustom() {
             val config = builder
                 .setClientAuthentication(anyAuthentication)
-                .setAccessToken(ANY_TOKEN)
                 .selectCustom()
                 .setDefaultLanguage(anyLanguage)
                 .setClientAuthenticationHost("urlWhichShouldBeReplaced")

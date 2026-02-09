@@ -21,6 +21,7 @@ public class UofClientAuthenticationImpl {
         private final String clientId;
         private final PrivateKey privateKey;
         private final BaseUrl authServerBaseUrl = baseUrl();
+        private String tenant;
 
         private PrivateKeyJwtImpl(String signingKeyId, String clientId, PrivateKey privateKey) {
             this.signingKeyId = signingKeyId;
@@ -63,6 +64,15 @@ public class UofClientAuthenticationImpl {
         @Override
         public String getHost() {
             return authServerBaseUrl.getHost();
+        }
+
+        public void setTenant(String tenant) {
+            this.tenant = tenant;
+        }
+
+        @Override
+        public String getTenant() {
+            return tenant;
         }
 
         @Override

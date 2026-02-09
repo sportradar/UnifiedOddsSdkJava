@@ -7,6 +7,7 @@ import com.sportradar.uf.sportsapi.datamodel.SapiCompetitorReferenceIds;
 import com.sportradar.uf.sportsapi.datamodel.SapiTeamCompetitor;
 import lombok.val;
 
+@SuppressWarnings("MultipleStringLiterals")
 public class SapiTeamCompetitors {
 
     public static SapiTeamCompetitor scotland() {
@@ -39,5 +40,52 @@ public class SapiTeamCompetitors {
         reference.setValue("6171");
         competitor.getReferenceIds().getReferenceId().add(reference);
         return competitor;
+    }
+
+    public static final class Kabaddi {
+
+        public static SapiTeamCompetitor teluguTitansCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            competitor.setQualifier("home");
+            competitor.setId("sr:competitor:372836");
+            competitor.setName("Telugu Titans");
+            competitor.setAbbreviation("TEL");
+            competitor.setCountry("India");
+            competitor.setCountryCode("IND");
+            competitor.setGender("male");
+            competitor.setReferenceIds(teluguTitansReferenceIds());
+            return competitor;
+        }
+
+        private static SapiCompetitorReferenceIds teluguTitansReferenceIds() {
+            SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+            SapiCompetitorReferenceIds.SapiReferenceId betradarId = new SapiCompetitorReferenceIds.SapiReferenceId();
+            betradarId.setName("betradar");
+            betradarId.setValue("10097760");
+            referenceIds.getReferenceId().add(betradarId);
+            return referenceIds;
+        }
+
+        public static SapiTeamCompetitor tamilThalaivasCompetitor() {
+            SapiTeamCompetitor competitor = new SapiTeamCompetitor();
+            competitor.setQualifier("away");
+            competitor.setId("sr:competitor:377018");
+            competitor.setName("Tamil Thalaivas");
+            competitor.setAbbreviation("TAM");
+            competitor.setCountry("India");
+            competitor.setCountryCode("IND");
+            competitor.setGender("male");
+            competitor.setReferenceIds(tamilThalaivasReferenceIds());
+            return competitor;
+        }
+
+        private static SapiCompetitorReferenceIds tamilThalaivasReferenceIds() {
+            SapiCompetitorReferenceIds referenceIds = new SapiCompetitorReferenceIds();
+            SapiCompetitorReferenceIds.SapiReferenceId betradarId = new SapiCompetitorReferenceIds.SapiReferenceId();
+            betradarId.setName("betradar");
+            betradarId.setValue("10080440");
+            referenceIds.getReferenceId().add(betradarId);
+            return referenceIds;
+        }
     }
 }

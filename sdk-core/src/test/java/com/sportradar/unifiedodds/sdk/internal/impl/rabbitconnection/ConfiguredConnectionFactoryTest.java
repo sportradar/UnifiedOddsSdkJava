@@ -9,6 +9,8 @@ import static org.mockito.Mockito.*;
 
 import com.rabbitmq.client.ConnectionFactory;
 import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.RuntimeConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
@@ -33,7 +35,9 @@ import org.mockito.Mockito;
 public class ConfiguredConnectionFactoryTest {
 
     private static final String ANY = "any";
-    private final SdkInternalConfiguration config = createSuitableConfig();
+    private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+
+    private final UofConfiguration uofConfiguration = mock(UofConfiguration.class);
 
     private final ConnectionFactory rabbitConnectionFactory = mock(ConnectionFactory.class);
 
@@ -43,13 +47,17 @@ public class ConfiguredConnectionFactoryTest {
 
     private final ExecutorService executorService = mock(ExecutorService.class);
 
+    private final OAuth2TokenCache tokenCache = mock(OAuth2TokenCache.class);
+
     private final ConfiguredConnectionFactory configuredConnectionFactory = new ConfiguredConnectionFactory(
         rabbitConnectionFactory,
-        config,
+        deprecatedConfig,
+        uofConfiguration,
         ANY,
         mock(SdkConnectionStatusListener.class),
         executorService,
-        timeUtils
+        timeUtils,
+        tokenCache
     );
 
     @BeforeEach
@@ -62,11 +70,13 @@ public class ConfiguredConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new ConfiguredConnectionFactory(
                     null,
-                    config,
+                    deprecatedConfig,
+                    uofConfiguration,
                     ANY,
                     mock(SdkConnectionStatusListener.class),
                     mock(ExecutorService.class),
-                    timeUtils
+                    timeUtils,
+                    tokenCache
                 )
             )
             .isInstanceOf(NullPointerException.class)
@@ -79,10 +89,12 @@ public class ConfiguredConnectionFactoryTest {
                 new ConfiguredConnectionFactory(
                     rabbitConnectionFactory,
                     null,
+                    uofConfiguration,
                     ANY,
                     mock(SdkConnectionStatusListener.class),
                     mock(ExecutorService.class),
-                    timeUtils
+                    timeUtils,
+                    tokenCache
                 )
             )
             .isInstanceOf(NullPointerException.class)
@@ -94,11 +106,13 @@ public class ConfiguredConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new ConfiguredConnectionFactory(
                     rabbitConnectionFactory,
-                    config,
+                    deprecatedConfig,
+                    uofConfiguration,
                     ANY,
                     null,
                     mock(ExecutorService.class),
-                    timeUtils
+                    timeUtils,
+                    tokenCache
                 )
             )
             .isInstanceOf(NullPointerException.class)
@@ -110,11 +124,13 @@ public class ConfiguredConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new ConfiguredConnectionFactory(
                     rabbitConnectionFactory,
-                    config,
+                    deprecatedConfig,
+                    uofConfiguration,
                     ANY,
                     mock(SdkConnectionStatusListener.class),
                     null,
-                    timeUtils
+                    timeUtils,
+                    tokenCache
                 )
             )
             .isInstanceOf(NullPointerException.class)
@@ -126,11 +142,13 @@ public class ConfiguredConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new ConfiguredConnectionFactory(
                     rabbitConnectionFactory,
-                    config,
+                    deprecatedConfig,
+                    uofConfiguration,
                     ANY,
                     mock(SdkConnectionStatusListener.class),
                     mock(ExecutorService.class),
-                    null
+                    null,
+                    tokenCache
                 )
             )
             .isInstanceOf(NullPointerException.class)
@@ -144,17 +162,9 @@ public class ConfiguredConnectionFactoryTest {
     }
 
     @Test
-    public void shouldNotCreateConnectionWithoutToken() {
-        when(config.getAccessToken()).thenReturn(null);
-
-        assertThatThrownBy(() -> configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     public void shouldCreateConnectionForConfiguredHost() throws Exception {
         final val host = "http://host";
-        when(config.getMessagingHost()).thenReturn(host);
+        when(deprecatedConfig.getMessagingHost()).thenReturn(host);
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
 
@@ -164,7 +174,7 @@ public class ConfiguredConnectionFactoryTest {
     @Test
     public void shouldCreateConnectionForConfiguredPort() throws Exception {
         final int port = 9034;
-        when(config.getPort()).thenReturn(port);
+        when(deprecatedConfig.getPort()).thenReturn(port);
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
 
@@ -173,7 +183,7 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldNotSetSslVersionIfConfiguredNotTo() throws Exception {
-        when(config.getUseMessagingSsl()).thenReturn(false);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(false);
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
 
@@ -184,7 +194,7 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldSetSslVersionIfConfiguredTo() throws Exception {
-        when(config.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         String desiredTlsVersion = "TLSv1.3";
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, desiredTlsVersion);
@@ -195,7 +205,7 @@ public class ConfiguredConnectionFactoryTest {
     @Test
     public void shouldSetConfiguredVirtualHost() throws Exception {
         final val virtualHost = "specifiedVirtualHost";
-        when(config.getMessagingVirtualHost()).thenReturn(virtualHost);
+        when(deprecatedConfig.getMessagingVirtualHost()).thenReturn(virtualHost);
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
 
@@ -204,7 +214,7 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldSetDefaultVirtualHostIfNotConfigured() throws Exception {
-        when(config.getMessagingVirtualHost()).thenReturn(null);
+        when(deprecatedConfig.getMessagingVirtualHost()).thenReturn(null);
         final int bookmakerId = 5;
         when(whoAmIReader.getBookmakerId()).thenReturn(bookmakerId);
         final val defaultVirtualHost = "/unifiedfeed/" + bookmakerId;
@@ -217,7 +227,7 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldValidateBookmakerIdWhenItIsZero() throws Exception {
-        when(config.getMessagingVirtualHost()).thenReturn(null);
+        when(deprecatedConfig.getMessagingVirtualHost()).thenReturn(null);
         when(whoAmIReader.getBookmakerId()).thenReturn(0);
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
@@ -231,11 +241,13 @@ public class ConfiguredConnectionFactoryTest {
         final val version = "specifiedVersion";
         final val factory = new ConfiguredConnectionFactory(
             rabbitConnectionFactory,
-            config,
+            deprecatedConfig,
+            uofConfiguration,
             version,
             mock(SdkConnectionStatusListener.class),
             mock(ExecutorService.class),
-            timeUtils
+            timeUtils,
+            tokenCache
         );
 
         factory.createConfiguredConnection(whoAmIReader, ANY);
@@ -329,7 +341,7 @@ public class ConfiguredConnectionFactoryTest {
     @Test
     public void shouldSetConfiguredUsername() throws Exception {
         final val username = "specifiedUsername";
-        when(config.getMessagingUsername()).thenReturn(username);
+        when(deprecatedConfig.getMessagingUsername()).thenReturn(username);
 
         configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
 
@@ -337,27 +349,18 @@ public class ConfiguredConnectionFactoryTest {
     }
 
     @Test
-    public void shouldSetTokenAsUsernameIfUsernameWasNotConfigured() throws Exception {
-        final val token = "specifiedToken";
-        when(config.getAccessToken()).thenReturn(token);
-        when(config.getMessagingUsername()).thenReturn(null);
-
-        configuredConnectionFactory.createConfiguredConnection(whoAmIReader, ANY);
-
-        verifyConnectionCreatedWith(v -> v.verify(rabbitConnectionFactory).setUsername(token));
-    }
-
-    @Test
     public void shouldSetConfiguredPassword() throws Exception {
         final val password = "specifiedPassword";
-        when(config.getMessagingPassword()).thenReturn(password);
+        when(deprecatedConfig.getMessagingPassword()).thenReturn(password);
         final val factory = new ConfiguredConnectionFactory(
             rabbitConnectionFactory,
-            config,
+            deprecatedConfig,
+            uofConfiguration,
             ANY,
             mock(SdkConnectionStatusListener.class),
             executorService,
-            timeUtils
+            timeUtils,
+            tokenCache
         );
 
         factory.createConfiguredConnection(whoAmIReader, ANY);
@@ -367,14 +370,16 @@ public class ConfiguredConnectionFactoryTest {
 
     @Test
     public void shouldSetEmptyStringAsPasswordIfPasswordWasNotConfigured() throws Exception {
-        when(config.getMessagingPassword()).thenReturn(null);
+        when(deprecatedConfig.getMessagingPassword()).thenReturn(null);
         final val factory = new ConfiguredConnectionFactory(
             rabbitConnectionFactory,
-            config,
+            deprecatedConfig,
+            uofConfiguration,
             ANY,
             mock(SdkConnectionStatusListener.class),
             executorService,
-            timeUtils
+            timeUtils,
+            tokenCache
         );
 
         factory.createConfiguredConnection(whoAmIReader, ANY);
@@ -434,12 +439,6 @@ public class ConfiguredConnectionFactoryTest {
         ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
         verify(factory).setClientProperties(captor.capture());
         verification.accept(captor.getValue());
-    }
-
-    private static SdkInternalConfiguration createSuitableConfig() {
-        SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
-        when(config.getAccessToken()).thenReturn("anyAccessToken");
-        return config;
     }
 
     private static interface ThrowingConsumer<T> {

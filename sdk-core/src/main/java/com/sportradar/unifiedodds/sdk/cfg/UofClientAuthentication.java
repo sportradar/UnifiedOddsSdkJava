@@ -128,6 +128,13 @@ public interface UofClientAuthentication {
         String getHost();
 
         /**
+         * Gets the tenant for the authentication server.
+         *
+         * @return the authentication server tenant, never null
+         */
+        String getTenant();
+
+        /**
          * Gets the SSL usage setting for client authentication server communication.
          *
          * @return {@code true} if SSL is used for client authentication communication,

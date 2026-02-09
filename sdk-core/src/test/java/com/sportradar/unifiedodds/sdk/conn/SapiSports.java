@@ -522,4 +522,11 @@ public class SapiSports {
         formula1.setName("Baseball");
         return formula1;
     }
+
+    public static SapiSport kabaddi() {
+        SapiSport kabaddi = new SapiSport();
+        kabaddi.setId("sr:sport:138");
+        kabaddi.setName("Kabaddi");
+        return kabaddi;
+    }
 }

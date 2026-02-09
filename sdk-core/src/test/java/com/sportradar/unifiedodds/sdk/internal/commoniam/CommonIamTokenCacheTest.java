@@ -51,6 +51,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -58,10 +59,7 @@ import java.util.function.Supplier;
 import lombok.val;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 @SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "MultipleStringLiterals" })
@@ -79,8 +77,6 @@ class CommonIamTokenCacheTest {
         .newInstance()
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
-
-    private static final String JWT_REGEX = "[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*";
 
     private BaseUrl apiBaseUrl;
     private CommonIamSimulator commonIamSimulator;
@@ -151,7 +147,8 @@ class CommonIamTokenCacheTest {
             .build();
 
         OAuth2Token firstCall = tokenCache.getToken();
-        time.travelTo(FIXED_TIME.plusSeconds(9));
+        int lessThan90PercentOfExpiration = 8;
+        time.travelTo(FIXED_TIME.plusSeconds(lessThan90PercentOfExpiration));
         OAuth2Token secondCall = tokenCache.getToken();
 
         assertThat(firstCall.getAccessToken())
@@ -228,6 +225,82 @@ class CommonIamTokenCacheTest {
             assertThat(refreshedToken.getAccessToken()).isEqualTo(refreshedCommonIamToken().getAccessToken());
 
             assertThatSubmitted2TokenIdsAreUnique(extractsJwtFrom(commonIamSimulator.getAllRequestBodies()));
+        }
+
+        @Test
+        void refreshesTokenProactivelyAfter90PercentOfExpirationTimeHasPassed() throws Exception {
+            commonIamSimulator.stubTokenEndpoint(expiringInTenSecondsCommonIamToken());
+
+            time.travelTo(FIXED_TIME);
+
+            CommonIamTokenCache tokenCache = createCommonIamTokenCache()
+                .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
+                .with(internalConfigWith1sTimeoutAndMax1Connection())
+                .with(time)
+                .withResourceAudience(UF_REST_API)
+                .build();
+
+            OAuth2Token initialToken = tokenCache.getToken();
+
+            time.travelTo(FIXED_TIME.plusSeconds(9));
+            commonIamSimulator.stubTokenEndpoint(refreshedCommonIamToken());
+
+            OAuth2Token refreshedToken = tokenCache.getToken();
+
+            assertThat(initialToken.getAccessToken())
+                .isEqualTo(expiringInTenSecondsCommonIamToken().getAccessToken());
+            assertThat(refreshedToken.getAccessToken()).isEqualTo(refreshedCommonIamToken().getAccessToken());
+        }
+
+        @Test
+        void returnsCachedTokenIfProactiveTokenRefreshFailsRepeatedly() throws Exception {
+            commonIamSimulator.stubTokenEndpoint(expiringInTenSecondsCommonIamToken());
+
+            time.travelTo(FIXED_TIME);
+
+            CommonIamTokenCache tokenCache = createCommonIamTokenCache()
+                .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
+                .with(internalConfigWith1sTimeoutAndMax1Connection())
+                .with(time)
+                .withResourceAudience(UF_REST_API)
+                .build();
+
+            OAuth2Token initialToken = tokenCache.getToken();
+
+            time.travelTo(FIXED_TIME.plusSeconds(9));
+            commonIamSimulator.stubTokenEndpointWithInternalServerErrorResponse();
+
+            OAuth2Token refreshedToken1 = tokenCache.getToken();
+            OAuth2Token refreshedToken2 = tokenCache.getToken();
+
+            assertThat(initialToken).isEqualTo(refreshedToken1);
+            assertThat(refreshedToken1).isEqualTo(refreshedToken2);
+        }
+
+        @Test
+        void preventsHammeringCommonIamDuringProactiveTokenRefreshPeriodWhileReturningCachedToken()
+            throws Exception {
+            commonIamSimulator.stubTokenEndpoint(expiringInTenSecondsCommonIamToken());
+
+            time.travelTo(FIXED_TIME);
+
+            CommonIamTokenCache tokenCache = createCommonIamTokenCache()
+                .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
+                .with(internalConfigWith1sTimeoutAndMax1Connection())
+                .with(time)
+                .withResourceAudience(UF_REST_API)
+                .build();
+
+            tokenCache.getToken();
+
+            int ninetyPercentOfExpiryPassed = 9;
+            time.travelTo(FIXED_TIME.plusSeconds(ninetyPercentOfExpiryPassed));
+            commonIamSimulator.stubTokenEndpointWithInternalServerErrorResponse();
+
+            tokenCache.getToken();
+            tokenCache.getToken();
+
+            commonIamSimulator.verifyTokenEndpointCalledTimes(2);
         }
 
         @Test
@@ -441,6 +514,42 @@ class CommonIamTokenCacheTest {
     }
 
     @Test
+    void returnsTokenUsingCustomTenantWhenTenantIsConfigured() throws Exception {
+        val customTenant = "custom-tenant";
+        commonIamSimulator.stubTokenEndpointWhenClientAssertionAudienceIs(
+            customTenant,
+            validCommonIamToken()
+        );
+        CommonIamTokenCache tokenCache = createCommonIamTokenCache()
+            .with(uofConfigWith1sFastFailingTimeoutAndOAuthOnWithTenant(customTenant, apiBaseUrl.get()))
+            .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
+            .build();
+
+        OAuth2Token token = tokenCache.getToken();
+
+        assertThat(token.getAccessToken()).isEqualTo(validCommonIamToken().getAccessToken());
+    }
+
+    @Test
+    void returnsTokenUsingAuthUrlAsTenantWhenTenantIsNotConfigured() throws Exception {
+        val authServerUrl = "http://" + apiBaseUrl.get() + "/";
+        commonIamSimulator.stubTokenEndpointWhenClientAssertionAudienceIs(
+            authServerUrl,
+            validCommonIamToken()
+        );
+        CommonIamTokenCache tokenCache = createCommonIamTokenCache()
+            .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
+            .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
+            .build();
+
+        OAuth2Token token = tokenCache.getToken();
+
+        assertThat(token.getAccessToken()).isEqualTo(validCommonIamToken().getAccessToken());
+    }
+
+    @Test
     void requestsTokenForApiViaClientCredentialsWithJwtBearerClientAssertion() throws Exception {
         commonIamSimulator.stubTokenEndpoint(validCommonIamToken());
 
@@ -459,15 +568,11 @@ class CommonIamTokenCacheTest {
         tokenCache.getToken();
 
         String requestBody = commonIamSimulator.getLastRequestBody();
-        Map<String, String> requestFormData = UrlEncodedParams.parseFormData(requestBody);
-
-        assertThat(requestFormData)
-            .containsOnlyKeys("grant_type", "client_assertion_type", "client_assertion", "audience");
-        assertThat(requestFormData.get("grant_type")).isEqualTo("client_credentials");
-        assertThat(requestFormData.get("client_assertion_type"))
-            .matches("urn.*ietf.*params.*oauth.*client-assertion-type.*jwt-bearer");
-        assertThat(requestFormData.get("client_assertion")).matches(JWT_REGEX);
-        assertThat(requestFormData.get("audience")).isEqualTo("UF-RestAPI");
+        assertThat(requestBody)
+            .matches(
+                ClientCredentialsJwtAssertionRequestBodyPatterns::matchesRequestForRestApi,
+                "Request pattern for Rest Api"
+            );
     }
 
     @Test
@@ -489,15 +594,11 @@ class CommonIamTokenCacheTest {
         tokenCache.getToken();
 
         String requestBody = commonIamSimulator.getLastRequestBody();
-        Map<String, String> requestFormData = UrlEncodedParams.parseFormData(requestBody);
-
-        assertThat(requestFormData)
-            .containsOnlyKeys("grant_type", "client_assertion_type", "client_assertion", "audience");
-        assertThat(requestFormData.get("grant_type")).isEqualTo("client_credentials");
-        assertThat(requestFormData.get("client_assertion_type"))
-            .matches("urn.*ietf.*params.*oauth.*client-assertion-type.*jwt-bearer");
-        assertThat(requestFormData.get("client_assertion")).matches(JWT_REGEX);
-        assertThat(requestFormData.get("audience")).isEqualTo("UF-RabbitMQ");
+        assertThat(requestBody)
+            .matches(
+                ClientCredentialsJwtAssertionRequestBodyPatterns::matchesRequestForRabbit,
+                "Request pattern for RabbitMQ"
+            );
     }
 
     @Test
@@ -529,15 +630,11 @@ class CommonIamTokenCacheTest {
         tokenCache.getToken();
 
         String requestBody = commonIamSimulator.getLastRequestBody();
-
-        assertThat(requestBody).contains("grant_type=client_credentials");
         assertThat(requestBody)
-            .contains("client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-
-        Map<String, String> parsedFormData = UrlEncodedParams.parseFormData(requestBody);
-        assertThat(parsedFormData.get("client_assertion_type"))
-            .isEqualTo("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-        assertThat(parsedFormData.get("client_assertion")).matches(JWT_REGEX);
+            .matches(
+                ClientCredentialsJwtAssertionRequestBodyPatterns::matchesRequestForRestApi,
+                "Request pattern for Rest Api"
+            );
     }
 
     @Test
@@ -765,6 +862,16 @@ class CommonIamTokenCacheTest {
         return config;
     }
 
+    private UofConfigurationStub uofConfigWith1sFastFailingTimeoutAndOAuthOnWithTenant(
+        String tenant,
+        String authorityOfUrl
+    ) throws NoSuchAlgorithmException {
+        val config = uofConfigWith1sFastFailingTimeoutAndOAuthOn(authorityOfUrl);
+        config.getClientAuthenticationStub().setTenant(tenant);
+
+        return config;
+    }
+
     private SdkInternalConfiguration internalConfigWith1sTimeoutAndMax1Connection() {
         SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
         when(config.getHttpClientTimeout()).thenReturn(1);
@@ -970,6 +1077,7 @@ class CommonIamTokenCacheTest {
             private final int expectedClockTicks = 1000;
             private final AtomicInteger getTokenExecutions = new AtomicInteger(0);
             private final AtomicInteger actualClockTicks = new AtomicInteger(0);
+            private final AtomicBoolean tokenCallBeforeTheVeryFirstTickHappened = new AtomicBoolean(false);
             private final ScheduledExecutorService executor = newScheduledThreadPool(40);
 
             @AfterEach
@@ -995,20 +1103,25 @@ class CommonIamTokenCacheTest {
                     } catch (Exception e) {
                         // noop
                     }
+                    if (!tokenCallBeforeTheVeryFirstTickHappened.get()) {
+                        tokenCallBeforeTheVeryFirstTickHappened.set(true);
+                    }
                 };
 
                 executeNonStopByMultipleThreads(getToken);
 
                 val tickClockRef = new AtomicReference<Runnable>();
                 Runnable tickClock = () -> {
-                    if (actualClockTicks.get() >= expectedClockTicks) {
+                    if (actualClockTicks.get() == expectedClockTicks) {
                         return;
                     }
-                    actualClockTicks.incrementAndGet();
+                    if (tokenCallBeforeTheVeryFirstTickHappened.get()) {
+                        time.tick(fiveSecondsForFirst10CallsAnd5MinutesForTheRest());
 
-                    time.tick(fiveSecondsForFirst10CallsAnd5MinutesForTheRest());
-                    getTokenExecutions.set(0);
-                    await().until(() -> getTokenExecutions.get() > threadCount * 3);
+                        actualClockTicks.incrementAndGet();
+
+                        waitUntilTokenEndpointFullyInvokedByAtLeastOneThread();
+                    }
 
                     executor.execute(() -> {
                         tickClockRef.get().run();
@@ -1018,13 +1131,24 @@ class CommonIamTokenCacheTest {
 
                 executor.execute(tickClock);
 
-                await().atMost(ofSeconds(200)).until(() -> actualClockTicks.get() >= expectedClockTicks);
+                await().atMost(ofSeconds(200)).until(() -> actualClockTicks.get() == expectedClockTicks);
 
-                commonIamSimulator.verifyTokenEndpointCalledTimes(actualClockTicks.get());
+                waitUntilTokenEndpointFullyInvokedByAtLeastOneThread();
+
+                int initialTokenCallBeforeTheFirstTick = 1;
+                commonIamSimulator.verifyTokenEndpointCalledTimes(
+                    actualClockTicks.get() + initialTokenCallBeforeTheFirstTick
+                );
+            }
+
+            private void waitUntilTokenEndpointFullyInvokedByAtLeastOneThread() {
+                getTokenExecutions.set(0);
+                await().until(() -> getTokenExecutions.get() > threadCount * 3);
             }
 
             private TimeInterval fiveSecondsForFirst10CallsAnd5MinutesForTheRest() {
-                return seconds(actualClockTicks.get() < 10 ? 5 : 300);
+                int checkIsDoneBeforeTickIncrement = 1;
+                return seconds(actualClockTicks.get() + checkIsDoneBeforeTickIncrement < 10 ? 5 : 300);
             }
 
             private ConditionFactory await() {

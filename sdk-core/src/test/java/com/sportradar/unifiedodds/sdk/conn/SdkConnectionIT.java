@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.rabbitmq.http.client.Client;
-import com.rabbitmq.http.client.domain.ChannelInfo;
-import com.rabbitmq.http.client.domain.ConnectionInfo;
 import com.sportradar.uf.datamodel.UfSnapshotComplete;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofSdk;
@@ -35,7 +33,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.shared.*;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
-import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitConnectionUtils;
+import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitConnections;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqUserSetup;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.VhostLocation;
 import java.io.IOException;
@@ -97,7 +95,7 @@ public class SdkConnectionIT {
         with(ADMIN_USERNAME, ADMIN_PASSWORD),
         Client::new
     );
-    private RabbitConnectionUtils connectionUtils = new RabbitConnectionUtils(rabbitMqClient);
+    private RabbitConnections connectionUtils = new RabbitConnections(rabbitMqClient);
     private RabbitMqUserSetup rabbitMqUserSetup = RabbitMqUserSetup.create(
         VhostLocation.at(RABBIT_BASE_URL, UF_VIRTUALHOST),
         rabbitMqClient
@@ -119,8 +117,7 @@ public class SdkConnectionIT {
                 .setAccessToken("testuser")
                 .selectCustom()
                 .setApiUseSsl(false)
-                .setMessagingUsername(Constants.SDK_USERNAME)
-                .setMessagingPassword(Constants.SDK_PASSWORD)
+                .setMessagingCredentials(Constants.SDK_USERNAME, Constants.SDK_PASSWORD)
                 .setMessagingHost(RABBIT_IP)
                 .setMessagingUseSsl(false)
                 .setApiHost("localhost:" + wireMockRule.port())
@@ -1732,7 +1729,7 @@ public class SdkConnectionIT {
 
         sdkListener.CalledEvents.clear();
 
-        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
+        rabbitMqUserSetup.updateUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
 
         // reset alives and check all
         waitAndCheckTillTimeout(
@@ -1872,7 +1869,7 @@ public class SdkConnectionIT {
         rabbitProducer.addProducersAlive(producerId3, 6000);
         rabbitProducer.addProducersAlive(producerId6, 7000);
         // reset sdk connection user
-        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
+        rabbitMqUserSetup.updateUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
 
         assertTrue(sdkListener.CalledEvents.isEmpty());
 
@@ -2139,7 +2136,7 @@ public class SdkConnectionIT {
                     .and()
                     .virtualProducerDownDueToConnectionDown()
             );
-        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
+        rabbitMqUserSetup.updateUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
 
         // reset alives and check all
         waitAndCheckTillTimeout(
@@ -2358,7 +2355,7 @@ public class SdkConnectionIT {
     private void invalidateSdkCredentialAndKillSdkConnectionFromServer() {
         assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
         connectionUtils.assertThatConnectionForUsername(Constants.SDK_USERNAME).exists();
-        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, "invalidatedPassword"));
+        rabbitMqUserSetup.updateUser(Credentials.with(Constants.SDK_USERNAME, "invalidatedPassword"));
         connectionUtils.killExistingConnectionForUser(Constants.SDK_USERNAME);
         Helper.sleep(2000);
         assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(1);

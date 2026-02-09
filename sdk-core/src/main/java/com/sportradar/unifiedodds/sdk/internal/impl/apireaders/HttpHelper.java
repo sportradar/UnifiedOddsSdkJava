@@ -3,9 +3,11 @@
  */
 package com.sportradar.unifiedodds.sdk.internal.impl.apireaders;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
@@ -38,6 +40,7 @@ public class HttpHelper {
     private static final String EMPTY_RESPONSE = "EMPTY_RESPONSE";
     private static final String TRACE_ID_HEADER = "trace-id";
     private static final String AUTHORIZATION = "Authorization";
+    private static final String X_ACCESS_TOKEN = "x-access-token";
     private final SdkInternalConfiguration deprecatedConfig;
     private final CloseableHttpClient httpClient;
     private final MessageAndActionExtractor messageExtractor;
@@ -51,7 +54,7 @@ public class HttpHelper {
     public HttpHelper(
         SdkInternalConfiguration deprecatedConfig,
         UofConfiguration configuration,
-        OAuth2TokenCache tokenCache,
+        @Named("OAuth2TokenCacheForApiCalls") OAuth2TokenCache tokenCache,
         CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
         UserAgentProvider userAgent,
@@ -76,9 +79,8 @@ public class HttpHelper {
 
     public ResponseData post(String path) throws CommunicationException {
         LOGGER.info("POST request: " + path);
-        HttpPost httpPost = new HttpPost(path);
         try {
-            return executeRequest(httpPost, path);
+            return sendRequestWithRetryOn401WhenClientAuthenticationIsUsed(path, HttpPost::new);
         } catch (CommunicationException e) {
             throw new CommunicationException(
                 "Problems executing POST request",
@@ -91,9 +93,8 @@ public class HttpHelper {
 
     public ResponseData put(String path) throws CommunicationException {
         LOGGER.info("PUT request: " + path);
-        HttpPut httpPut = new HttpPut(path);
         try {
-            return executeRequest(httpPut, path);
+            return sendRequestWithRetryOn401WhenClientAuthenticationIsUsed(path, HttpPut::new);
         } catch (CommunicationException e) {
             throw new CommunicationException(
                 "Problems performing PUT request",
@@ -106,9 +107,8 @@ public class HttpHelper {
 
     public ResponseData delete(String path) throws CommunicationException {
         LOGGER.info("DELETE request: {}", path);
-        HttpDelete httpDelete = new HttpDelete(path);
         try {
-            return executeRequest(httpDelete, path);
+            return sendRequestWithRetryOn401WhenClientAuthenticationIsUsed(path, HttpDelete::new);
         } catch (CommunicationException e) {
             throw new CommunicationException(
                 "Problems executing DELETE request",
@@ -125,12 +125,6 @@ public class HttpHelper {
         String traceId = traceIdProvider.generateTraceId();
         ResponseData responseData;
         try {
-            if (configuration.getClientAuthentication() != null) {
-                OAuth2Token token = tokenCache.getToken();
-                httpRequest.addHeader(AUTHORIZATION, token.getTokenType() + " " + token.getAccessToken());
-            } else if (configuration.getAccessToken() != null) {
-                httpRequest.addHeader("x-access-token", configuration.getAccessToken());
-            }
             httpRequest.addHeader("User-Agent", userAgent.asHeaderValue());
             httpRequest.addHeader(TRACE_ID_HEADER, traceId);
             responseData =
@@ -148,15 +142,6 @@ public class HttpHelper {
                 e
             );
             throw new CommunicationException("An exception occurred while performing HTTP request", path, e);
-        } catch (OAuth2TokenCache.OAuth2TokenRetrievalHttpException e) {
-            throw new CommunicationException(
-                "Failed to retrieve OAuth2 access token",
-                e.getPath(),
-                e.getStatusCode(),
-                e
-            );
-        } catch (OAuth2TokenCache.OAuth2TokenRetrievalException e) {
-            throw new CommunicationException("Failed to retrieve OAuth2 access token", "", e);
         }
         return responseData;
     }
@@ -207,6 +192,58 @@ public class HttpHelper {
             timer.stop(),
             responseContent
         );
+    }
+
+    private ResponseData sendRequestWithRetryOn401WhenClientAuthenticationIsUsed(
+        String path,
+        Function<String, ClassicHttpRequest> requestBuilder
+    ) throws CommunicationException {
+        if (configuration.getClientAuthentication() != null) {
+            return sendRequestWithOAuthRetry(path, requestBuilder);
+        } else {
+            ClassicHttpRequest request = requestBuilder.apply(path);
+            if (configuration.getAccessToken() != null) {
+                request.addHeader(X_ACCESS_TOKEN, configuration.getAccessToken());
+            }
+            return executeRequest(request, path);
+        }
+    }
+
+    private ResponseData sendRequestWithOAuthRetry(
+        String path,
+        Function<String, ClassicHttpRequest> requestBuilder
+    ) throws CommunicationException {
+        ClassicHttpRequest request = requestBuilder.apply(path);
+        OAuth2Token existingToken = getOAuth2Token();
+        request.addHeader(AUTHORIZATION, existingToken.getTokenType() + " " + existingToken.getAccessToken());
+        ResponseData responseData = executeRequest(request, path);
+
+        if (responseData.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+            tokenCache.invalidateToken(existingToken);
+            ClassicHttpRequest retryRequest = requestBuilder.apply(path);
+            OAuth2Token refreshedToken = getOAuth2Token();
+            retryRequest.addHeader(
+                AUTHORIZATION,
+                refreshedToken.getTokenType() + " " + refreshedToken.getAccessToken()
+            );
+            responseData = executeRequest(retryRequest, path);
+        }
+        return responseData;
+    }
+
+    private OAuth2Token getOAuth2Token() throws CommunicationException {
+        try {
+            return tokenCache.getToken();
+        } catch (OAuth2TokenCache.OAuth2TokenRetrievalException e) {
+            throw new CommunicationException("Failed to retrieve OAuth2 access token", "", e);
+        } catch (OAuth2TokenCache.OAuth2TokenRetrievalHttpException e) {
+            throw new CommunicationException(
+                "Failed to retrieve OAuth2 access token",
+                e.getPath(),
+                e.getStatusCode(),
+                e
+            );
+        }
     }
 
     @ExcludeFromJacocoGeneratedReportUntestableCheckedException

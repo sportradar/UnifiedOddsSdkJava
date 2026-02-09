@@ -57,7 +57,6 @@ public class DataRouterManagerImplRequestingEventSummaryTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

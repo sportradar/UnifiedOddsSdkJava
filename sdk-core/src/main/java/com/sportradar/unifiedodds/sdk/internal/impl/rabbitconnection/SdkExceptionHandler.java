@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({ "ConstantName" })
-class SdkExceptionHandler extends DefaultExceptionHandler {
+public class SdkExceptionHandler extends DefaultExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SdkExceptionHandler.class);
 

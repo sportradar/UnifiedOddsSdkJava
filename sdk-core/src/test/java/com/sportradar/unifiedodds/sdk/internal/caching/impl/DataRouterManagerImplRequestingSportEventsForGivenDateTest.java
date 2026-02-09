@@ -55,7 +55,6 @@ public class DataRouterManagerImplRequestingSportEventsForGivenDateTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

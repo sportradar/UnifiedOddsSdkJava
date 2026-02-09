@@ -330,18 +330,6 @@ public class ConfigurationBuilderWithCustomPropertiesTests extends Configuration
     }
 
     @Test
-    public void passwordHasDefaultValue() {
-        final String propertyKey = "uf.sdk.messagingPassword";
-        final String propertyValue = "customPassword";
-        customSection.put(propertyKey, null);
-
-        Assert.assertNull(custBuilder().build().getRabbit().getPassword());
-
-        customSection.put(propertyKey, propertyValue);
-        Assert.assertEquals(propertyValue, custBuilder().build().getRabbit().getPassword());
-    }
-
-    @Test
     public void virtualHostHasDefaultValue() {
         final String propertyKey = "uf.sdk.messagingVirtualHost";
         final String propertyValue = "/custom-virtual-host";

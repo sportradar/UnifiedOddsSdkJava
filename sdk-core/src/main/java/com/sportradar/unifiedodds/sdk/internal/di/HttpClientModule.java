@@ -119,7 +119,7 @@ public class HttpClientModule implements Module {
         UofConfiguration configuration,
         @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
         @Named("SportsApiJaxbDeserializer") Deserializer apiDeserializer,
-        OAuth2TokenCache tokenCache,
+        @Named("OAuth2TokenCacheForApiCalls") OAuth2TokenCache tokenCache,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider
     ) {

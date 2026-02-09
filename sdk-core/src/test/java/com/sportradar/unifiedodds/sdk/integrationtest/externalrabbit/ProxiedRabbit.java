@@ -10,6 +10,7 @@ import static java.lang.String.format;
 
 import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import java.io.IOException;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -42,6 +43,14 @@ public class ProxiedRabbit implements AutoCloseable {
 
     public void disable() throws IOException {
         proxy.disable();
+    }
+
+    public void dropAllPackets() throws IOException {
+        proxy.toxics().bandwidth("throttle", ToxicDirection.DOWNSTREAM, 0);
+    }
+
+    public void passAllPackets() throws IOException {
+        proxy.toxics().get("throttle").remove();
     }
 
     @Override

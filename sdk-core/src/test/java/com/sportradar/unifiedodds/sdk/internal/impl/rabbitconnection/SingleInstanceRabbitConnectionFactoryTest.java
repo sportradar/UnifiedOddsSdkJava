@@ -11,6 +11,8 @@ import static org.mockito.Mockito.*;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
@@ -39,7 +41,8 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     private static final String CONNECTION_HAS_BEEN_SHUT_DOWN = "connection has been shut-down";
     private static final String INITIATED_BY_APPLICATION = "initiated by application";
     private ConnectionFixture openConnection = new ConnectionFixture.Holder().get();
-    private SdkInternalConfiguration configWithToken = createConfigWithToken();
+    private SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+    private UofConfiguration uofConfiguration = mock(UofConfiguration.class);
     private FirewallChecker firewallChecker = mock(FirewallChecker.class);
     private TimeUtils timeUtils = mock(TimeUtils.class);
     private ConnectionFactory rabbitConnectionFactory = mock(ConnectionFactory.class);
@@ -49,17 +52,20 @@ public class SingleInstanceRabbitConnectionFactoryTest {
 
     private SslProtocolsProvider sslProtocolsProvider = mock(SslProtocolsProvider.class);
     private SdkConnectionStatusListener connectionStatusListener = mock(SdkConnectionStatusListener.class);
+    private OAuth2TokenCache tokenCache = mock(OAuth2TokenCache.class);
     private ConfiguredConnectionFactory configuredConnectionFactory = new ConfiguredConnectionFactory(
         rabbitConnectionFactory,
-        configWithToken,
+        deprecatedConfig,
+        uofConfiguration,
         "any",
         connectionStatusListener,
         executorService,
-        timeUtils
+        timeUtils,
+        tokenCache
     );
     private AmqpConnectionFactory factory = new SingleInstanceAmqpConnectionFactory(
         configuredConnectionFactory,
-        configWithToken,
+        deprecatedConfig,
         connectionStatusListener,
         mock(WhoAmIReader.class),
         firewallChecker,
@@ -74,7 +80,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new SingleInstanceAmqpConnectionFactory(
                     configuredConnectionFactory,
-                    configWithToken,
+                    deprecatedConfig,
                     connectionStatusListener,
                     mock(WhoAmIReader.class),
                     null,
@@ -91,7 +97,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new SingleInstanceAmqpConnectionFactory(
                     configuredConnectionFactory,
-                    configWithToken,
+                    deprecatedConfig,
                     connectionStatusListener,
                     mock(WhoAmIReader.class),
                     firewallChecker,
@@ -108,7 +114,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         assertThatThrownBy(() ->
                 new SingleInstanceAmqpConnectionFactory(
                     configuredConnectionFactory,
-                    configWithToken,
+                    deprecatedConfig,
                     connectionStatusListener,
                     mock(WhoAmIReader.class),
                     firewallChecker,
@@ -150,7 +156,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void creatingConnectionShouldCheckFirewall()
         throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
-        when(configWithToken.getApiHost()).thenReturn("https://sportradar.com");
+        when(deprecatedConfig.getApiHost()).thenReturn("https://sportradar.com");
 
         factory.getConnection();
 
@@ -260,7 +266,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void shouldNotSetSslProtocolIfConfiguredNotToUseSsl() throws Exception {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class))).thenReturn(openConnection);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(false);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(false);
 
         assertNotNull(at(NOON.get(), () -> factory.getConnection()));
 
@@ -270,7 +276,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void shouldAttemptToCreateConnectionWithFirstDiscoveredEnabledSslVersion() throws Exception {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class))).thenReturn(openConnection);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         final val discoveredProtocol = "discoveredProtocol";
         when(sslProtocolsProvider.provideSupportedPrioritised())
             .thenReturn(Arrays.asList(discoveredProtocol));
@@ -284,7 +290,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     public void shouldNotAttemptToCreateConnectionWithSecondDiscoveredEnabledSslVersionIfFirstSucceeds()
         throws Exception {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class))).thenReturn(openConnection);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         final val p1 = "protocol1";
         final val p2 = "protocol2";
         when(sslProtocolsProvider.provideSupportedPrioritised()).thenReturn(Arrays.asList(p1, p2));
@@ -300,7 +306,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     @Test
     public void shouldNotCreateConnectionWhenNoSslVersionsAreDiscovered() throws Exception {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class))).thenReturn(openConnection);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         when(sslProtocolsProvider.provideSupportedPrioritised()).thenReturn(Collections.emptyList());
 
         assertNull(at(NOON.get(), () -> factory.getConnection()));
@@ -310,7 +316,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
     public void shouldNotCreateConnectionIfWithTheOnlyDiscoveredSslVersionConnectionCreationFails()
         throws Exception {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class))).thenThrow(IOException.class);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         final val discoveredProtocol = "discoveredProtocol";
         when(sslProtocolsProvider.provideSupportedPrioritised())
             .thenReturn(Arrays.asList(discoveredProtocol));
@@ -324,7 +330,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class)))
             .thenThrow(IOException.class)
             .thenReturn(openConnection);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         final val p1 = "firstProtocol";
         final val p2 = "secondProtocol";
         when(sslProtocolsProvider.provideSupportedPrioritised()).thenReturn(Arrays.asList(p1, p2));
@@ -344,7 +350,7 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         when(rabbitConnectionFactory.newConnection(any(ExecutorService.class)))
             .thenThrow(IOException.class)
             .thenReturn(openConnection);
-        when(configWithToken.getUseMessagingSsl()).thenReturn(true);
+        when(deprecatedConfig.getUseMessagingSsl()).thenReturn(true);
         final val p1 = "firstProtocol";
         final val p2 = "secondProtocol";
         when(sslProtocolsProvider.provideSupportedPrioritised()).thenReturn(Arrays.asList(p1, p2));
@@ -475,11 +481,5 @@ public class SingleInstanceRabbitConnectionFactoryTest {
         when(timeUtils.now()).thenReturn(epochMillis);
         when(timeUtils.nowInstant()).thenReturn(Instant.ofEpochMilli(epochMillis));
         return factoryInvocation.call();
-    }
-
-    private static SdkInternalConfiguration createConfigWithToken() {
-        SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
-        when(config.getAccessToken()).thenReturn("someAccessToken");
-        return config;
     }
 }

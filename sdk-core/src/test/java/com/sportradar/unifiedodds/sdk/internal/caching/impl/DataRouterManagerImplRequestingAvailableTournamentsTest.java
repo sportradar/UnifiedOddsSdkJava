@@ -54,7 +54,6 @@ public class DataRouterManagerImplRequestingAvailableTournamentsTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         tournaments,
         mock(DataProvider.class)
     );

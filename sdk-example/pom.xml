@@ -8,11 +8,11 @@
 
     <groupId>com.sportradar.unifiedodds.sdk.example</groupId>
     <artifactId>unified-feed-sdk-example</artifactId>
-    <version>5.0.0-rc2</version>
+    <version>5.0.0-rc3</version>
     <name>Unified Odds Feed SDK - Examples and Tools</name>
 
     <properties>
-        <logback.version>1.3.8</logback.version>
+        <logback.version>1.3.16</logback.version>
     </properties>
 
     <dependencies>

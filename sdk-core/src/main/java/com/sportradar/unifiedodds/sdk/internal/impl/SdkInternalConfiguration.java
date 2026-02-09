@@ -20,7 +20,6 @@ import java.util.*;
 )
 public class SdkInternalConfiguration {
 
-    private final String accessToken;
     private final Locale defaultLocale;
     private final List<Locale> desiredLocales;
     private final String host;
@@ -66,7 +65,6 @@ public class SdkInternalConfiguration {
         useMessagingSsl = cfg.getRabbit().getUseSsl();
         port = cfg.getRabbit().getPort();
 
-        accessToken = cfg.getAccessToken();
         defaultLocale = cfg.getDefaultLanguage();
         desiredLocales = cfg.getLanguages();
         inactivitySeconds = (int) (cfg.getProducer().getInactivitySeconds().toMillis() / 1000);
@@ -143,14 +141,6 @@ public class SdkInternalConfiguration {
      */
     public int getMinIntervalBetweenRecoveryRequests() {
         return minIntervalBetweenRecoveryRequests;
-    }
-
-    /**
-     *
-     * @return your access token that is used to identify and verify your identity
-     */
-    public String getAccessToken() {
-        return accessToken;
     }
 
     /**
@@ -362,10 +352,7 @@ public class SdkInternalConfiguration {
 
     @Override
     public String toString() {
-        String obfuscatedToken = SdkHelper.obfuscate(accessToken);
-
         return new StringJoiner(", ", SdkInternalConfiguration.class.getSimpleName() + "[", "]")
-            .add("accessToken='" + obfuscatedToken + "'")
             .add("defaultLocale=" + defaultLocale)
             .add("desiredLocales=" + desiredLocales)
             .add("host='" + host + "'")

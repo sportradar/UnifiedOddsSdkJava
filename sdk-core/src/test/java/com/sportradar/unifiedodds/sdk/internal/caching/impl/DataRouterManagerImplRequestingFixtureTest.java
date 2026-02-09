@@ -66,7 +66,6 @@ public class DataRouterManagerImplRequestingFixtureTest {
             mock(DataProvider.class),
             mock(DataProvider.class),
             mock(DataProvider.class),
-            mock(DataProvider.class),
             mock(DataProvider.class)
         );
 
@@ -174,7 +173,6 @@ public class DataRouterManagerImplRequestingFixtureTest {
             mock(ExecutionPathDataProvider.class),
             cachedFixtures,
             fixtures,
-            mock(DataProvider.class),
             mock(DataProvider.class),
             mock(DataProvider.class),
             mock(DataProvider.class),

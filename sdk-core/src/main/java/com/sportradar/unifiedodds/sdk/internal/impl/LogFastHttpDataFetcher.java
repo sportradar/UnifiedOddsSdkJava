@@ -37,7 +37,7 @@ public class LogFastHttpDataFetcher extends HttpDataFetcher {
         HttpResponseHandler responseDataHandler,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider,
-        OAuth2TokenCache oauthTokenCache
+        @Named("OAuth2TokenCacheForApiCalls") OAuth2TokenCache oauthTokenCache
     ) {
         super(
             uofConfiguration,

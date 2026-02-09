@@ -47,7 +47,6 @@ public class DataRouterManagerImplRequestingFilteredProbabilityCalculationTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         probabilityCalculations,
         mock(DataProvider.class),
         mock(DataProvider.class),

@@ -258,8 +258,8 @@ public class UofConfigurationImpl implements UofConfiguration {
         if (defaultLanguage == null) {
             throw new InvalidParameterException("Missing default language");
         }
-        if (SdkHelper.stringIsNullOrEmpty(accessToken)) {
-            throw new InvalidParameterException("Missing access token or authentication");
+        if (SdkHelper.stringIsNullOrEmpty(accessToken) && authentication == null) {
+            throw new InvalidParameterException("Both access token and authentication are missing");
         }
     }
 
