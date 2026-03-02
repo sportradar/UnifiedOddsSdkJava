@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.6.0**
+**4.7.0**
+- Added support for In-Play Bet Settlements and In-Play Rollback Bet Settlements with markets with outcomes.
+
+**4.6.0 (2025-10-07)**
  - breaking change: Sport Event timeline now uses long event IDs (previously int) to support larger identifiers introduced by the Unified API.
 
 **4.5.1 (2025-08-25)**

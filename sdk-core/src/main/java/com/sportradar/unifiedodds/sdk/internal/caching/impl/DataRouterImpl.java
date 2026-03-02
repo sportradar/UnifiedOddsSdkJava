@@ -161,27 +161,6 @@ public class DataRouterImpl implements DataRouter {
     }
 
     @Override
-    public void onDrawFixtureFetched(
-        Urn drawId,
-        SapiDrawFixture endpoint,
-        Locale locale,
-        CacheItem requester
-    ) {
-        Preconditions.checkNotNull(drawId);
-        Preconditions.checkNotNull(endpoint);
-        Preconditions.checkNotNull(locale);
-        Preconditions.checkNotNull(requester);
-
-        if (endpoint.getLottery() != null) {
-            Urn lotteryId = Urn.parse(endpoint.getLottery().getId());
-            dataListeners.forEach(l -> l.onLotteryFetched(lotteryId, endpoint.getLottery(), locale, requester)
-            );
-        }
-
-        dataListeners.forEach(l -> l.onDrawFixtureFetched(drawId, endpoint, locale, requester));
-    }
-
-    @Override
     public void onAllTournamentsListFetched(SapiTournamentsEndpoint endpoint, Locale locale) {
         Preconditions.checkNotNull(endpoint);
         Preconditions.checkNotNull(locale);

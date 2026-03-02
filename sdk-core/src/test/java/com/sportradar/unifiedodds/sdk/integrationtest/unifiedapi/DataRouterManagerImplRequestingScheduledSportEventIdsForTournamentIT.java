@@ -204,11 +204,6 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
         }
 
         @Provides
-        private DataProvider<SapiDrawFixtures> drawFixtures() {
-            return mock(DataProvider.class);
-        }
-
-        @Provides
         private DataProvider<SapiLotteries> lotteries() {
             return mock(DataProvider.class);
         }

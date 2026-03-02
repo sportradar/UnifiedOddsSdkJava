@@ -152,7 +152,6 @@ public class DataRouterManagerBuilder {
             sportCategories,
             drawSummaryProvider,
             mock(DataProvider.class),
-            mock(DataProvider.class),
             lotterySchedule,
             cbAvailableSelections,
             cbCalculate,

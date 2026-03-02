@@ -9,7 +9,7 @@
 '/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/src/main/java:/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/target/generated-sources/messages:/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/target/generated-sources/sportsapi:/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/target/generated-sources/custombet:/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/target/generated-sources/annotations'
 -author
 -bottom
-'Copyright &#169; 2016&#x2013;2025. All rights reserved.'
+'Copyright &#169; 2016&#x2013;2026. All rights reserved.'
 -charset
 'UTF-8'
 -d
@@ -18,10 +18,10 @@
 'UTF-8'
 -Xdoclint:all,-missing
 -doctitle
-'Unified Odds SDK 4.6.0 API'
+'Unified Odds SDK 4.7.0 API'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/builds/unifiedoddssdk/unifiedodds.sdk.java/github-export/sdk-core/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'Unified Odds SDK 4.6.0 API'
+'Unified Odds SDK 4.7.0 API'

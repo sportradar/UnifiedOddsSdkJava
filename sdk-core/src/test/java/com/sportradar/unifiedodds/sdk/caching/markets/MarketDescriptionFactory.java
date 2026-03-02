@@ -3,6 +3,9 @@
  */
 package com.sportradar.unifiedodds.sdk.caching.markets;
 
+import static java.util.stream.Collectors.toList;
+
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.unifiedodds.sdk.entities.markets.MarketDescription;
@@ -19,6 +22,45 @@ import lombok.var;
 public final class MarketDescriptionFactory {
 
     private MarketDescriptionFactory() {}
+
+    public static MarketDescription descriptionFrom(DescMarket descMarket) {
+        MarketDescriptionStub stub = new MarketDescriptionStub()
+            .withId(descMarket.getId())
+            .with(Translations.importFrom(ImmutableMap.of(Locale.ENGLISH, descMarket.getName())));
+
+        if (descMarket.getGroups() != null) {
+            List<String> groups = Arrays.asList(descMarket.getGroups().split("\\|"));
+            stub.withGroups(groups);
+        }
+
+        if (descMarket.getAttributes() != null) {
+            stub.withAttributes(
+                descMarket
+                    .getAttributes()
+                    .getAttribute()
+                    .stream()
+                    .map(MarketDescriptionStub.MarketAttributeStub::attributeFrom)
+                    .collect(toList())
+            );
+        }
+
+        if (descMarket.getMappings() != null) {
+            stub.withMappings(
+                descMarket
+                    .getMappings()
+                    .getMapping()
+                    .stream()
+                    .map(MarketDescriptionStub.MarketMappingDataStub::mappingFrom)
+                    .collect(toList())
+            );
+        }
+
+        if (descMarket.getOutcomes() != null) {
+            stub.with(Collections.emptyList());
+        }
+
+        return stub;
+    }
 
     public static MarketDescription namesOf(DescMarket sapiMarketDesc, LanguageHolder language) {
         return MarketDescriptionFactory.NameFocused.singleMarketFrom(Maps.of(language.get(), sapiMarketDesc));
@@ -80,7 +122,7 @@ public final class MarketDescriptionFactory {
                 .stream()
                 .map(DescMarket::getId)
                 .distinct()
-                .collect(Collectors.toList());
+                .collect(toList());
             if (marketIds.size() > 1) {
                 throw new IllegalStateException("Test fixture is not designed to hold more than one market");
             }

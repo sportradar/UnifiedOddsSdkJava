@@ -445,6 +445,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="LineLength"/>
+        <property name="files" value="application.properties"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
         <property name="files" value="odds-sdk-install-pom.xml"/>
     </module>
     <module name="SuppressionSingleFilter">
@@ -1698,6 +1702,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="MethodLength"/>
+        <property name="files" value=".*src[\\/](?:test[\\/]).*Test.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="MagicNumber"/>
         <property name="files" value=".*src[\\/](?:test[\\/]).*Test.java"/>
     </module>
     <module name="SuppressionSingleFilter">

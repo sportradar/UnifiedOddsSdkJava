@@ -5,10 +5,13 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.UfOddsChangeOutcomeBuilder.activeOutcome;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.UfOddsChangeOutcomeBuilder.outcome;
+import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfVariantSpecifier.variant;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.ChampionshipFreeTextMarketIds.nflAfcConferenceOutrightsVariant;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.EXACT_GOALS_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FlexScoreMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.FREE_TEXT_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.OneXtwoMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.OVER_TOTAL_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.UNDER_TOTAL_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.from;
@@ -18,6 +21,7 @@ import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.*;
 import com.sportradar.unifiedodds.sdk.conn.marketids.*;
 import java.util.List;
+import lombok.val;
 
 public class UfMarkets {
 
@@ -27,6 +31,56 @@ public class UfMarkets {
             UfMarket market = new UfMarket();
             market.setId(ODD_EVEN_MARKET_ID);
             return market;
+        }
+
+        public static UfMarket winnerCompetitorMarket() {
+            UfMarket market = new UfMarket();
+            market.setId(WinnerCompetitorMarketIds.WINNER_COMPETITOR_MARKET_ID);
+            return market;
+        }
+
+        public static UfMarket exactGoalsMarket(MarketVariant marketVariant) {
+            UfMarket market = new UfMarket();
+            market.setId(EXACT_GOALS_MARKET_ID);
+            market.setSpecifiers(variant(marketVariant.id()).getKeyValue());
+            marketVariant
+                .outcomeIds()
+                .forEach(id -> {
+                    UfMarket.UfOutcome outcome = new UfMarket.UfOutcome();
+                    outcome.setId(id);
+                    market.getOutcome().add(outcome);
+                });
+            return market;
+        }
+
+        public static UfMarket handicapMarket(
+            UfHandicapSpecifier hcp,
+            UfHandicapForTheRestSpecifier handicapForTheRest
+        ) {
+            UfMarket market = new UfMarket();
+            market.setId(HandicapMarketIds.HANDICAP_MARKET_MARKET_ID);
+            market.setSpecifiers(hcp.getKeyValue());
+            market.setExtendedSpecifiers(handicapForTheRest.getKeyValue());
+            populateOutcomeIds(from(HandicapMarketIds.handicapMarket()), to(market));
+            return market;
+        }
+
+        public static UfMarket correctScoreFlexMarket() {
+            UfMarket market = new UfMarket();
+            market.setId(CORRECT_SCORE_FLEX_SCORE_MARKET_ID);
+            market.setSpecifiers(THREE_TO_ONE_SCORE_SPECIFIER);
+            populateOutcomeIds(from(FlexScoreMarketIds.correctScoreFlexScoreMarket()), to(market));
+            return market;
+        }
+
+        private static void populateOutcomeIds(MarketVariant fromVariant, UfMarket toMarket) {
+            fromVariant
+                .outcomeIds()
+                .forEach(id -> {
+                    val outcome = new UfMarket.UfOutcome();
+                    outcome.setId(id);
+                    toMarket.getOutcome().add(outcome);
+                });
         }
     }
 
@@ -83,7 +137,7 @@ public class UfMarkets {
         public static UfOddsChangeMarket exactGoalsMarket(MarketVariant variant) {
             UfOddsChangeMarket market = new UfOddsChangeMarket();
             market.setId(EXACT_GOALS_MARKET_ID);
-            market.setSpecifiers("variant=" + variant.id());
+            market.setSpecifiers(UfSpecifiers.join(variant(variant.id())));
             populateOutcomeIds(from(variant), to(market));
             return market;
         }
@@ -95,7 +149,7 @@ public class UfMarkets {
         public static UfOddsChangeMarket nascarOutrightsMarket() {
             UfOddsChangeMarket market = new UfOddsChangeMarket();
             market.setId(FREE_TEXT_MARKET_ID);
-            market.setSpecifiers("variant=" + FreeTextMarketIds.nascarOutrightsVariant().id());
+            market.setSpecifiers(UfSpecifiers.join(variant(FreeTextMarketIds.nascarOutrightsVariant().id())));
             populateOutcomeIds(from(FreeTextMarketIds.nascarOutrightsVariant()), to(market));
             return market;
         }
@@ -103,7 +157,9 @@ public class UfMarkets {
         public static UfOddsChangeMarket nascarOutrightsOddEvenMarket() {
             UfOddsChangeMarket market = new UfOddsChangeMarket();
             market.setId(FREE_TEXT_MARKET_ID);
-            market.setSpecifiers("variant=" + FreeTextMarketIds.nascarOutrightsOddEvenVariant().id());
+            market.setSpecifiers(
+                UfSpecifiers.join(variant(FreeTextMarketIds.nascarOutrightsOddEvenVariant().id()))
+            );
             populateOutcomeIds(from(FreeTextMarketIds.nascarOutrightsOddEvenVariant()), to(market));
             return market;
         }
@@ -295,6 +351,14 @@ public class UfMarkets {
             return market;
         }
 
+        public static UfOddsChangeMarket nflAfcConferenceOutrightsMarket() {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(ChampionshipFreeTextMarketIds.CHAMPIONSHIP_FREE_TEXT_MARKET_ID);
+            market.setSpecifiers(UfSpecifiers.join(variant(nflAfcConferenceOutrightsVariant().id())));
+            populateOutcomeIds(from(nflAfcConferenceOutrightsVariant()), to(market));
+            return market;
+        }
+
         public static class UfOddsChangeOutcomeBuilder {
 
             private final UfOddsChangeMarket.UfOutcome outcome = new UfOddsChangeMarket.UfOutcome();
@@ -343,15 +407,46 @@ public class UfMarkets {
             UfBetSettlementMarket market = new UfBetSettlementMarket();
             market.setId(ODD_EVEN_MARKET_ID);
 
-            market.getOutcome().add(UfBetSettlementOutcomeBuilder.activeOutcome().wonWithId(ODD_OUTCOME_ID));
+            market.getOutcome().add(UfBetSettlementOutcomeBuilder.activeOutcome().won().id(ODD_OUTCOME_ID));
+            market.getOutcome().add(UfBetSettlementOutcomeBuilder.activeOutcome().lost().id(EVEN_OUTCOME_ID));
+
+            return market;
+        }
+
+        public static UfBetSettlementMarket oneXtwoMarketCompetitor1WonDrawUndecidedCompetitor2Lost() {
+            UfBetSettlementMarket market = new UfBetSettlementMarket();
+            market.setId(ONE_X_TWO_MARKET_ID);
+
             market
                 .getOutcome()
-                .add(UfBetSettlementOutcomeBuilder.activeOutcome().lostWithId(EVEN_OUTCOME_ID));
+                .add(UfBetSettlementOutcomeBuilder.activeOutcome().won().id(COMPETITOR_1_OUTCOME_ID));
+            market
+                .getOutcome()
+                .add(UfBetSettlementOutcomeBuilder.activeOutcome().undecidedYet().id(DRAW_OUTCOME_ID));
+            market
+                .getOutcome()
+                .add(UfBetSettlementOutcomeBuilder.activeOutcome().lost().id(COMPETITOR_2_OUTCOME_ID));
+
+            return market;
+        }
+
+        public static UfBetSettlementMarket oddEvenMarketWhereOddHasResultUnsupportedBySdk() {
+            UfBetSettlementMarket market = new UfBetSettlementMarket();
+            market.setId(ODD_EVEN_MARKET_ID);
+
+            market
+                .getOutcome()
+                .add(
+                    UfBetSettlementOutcomeBuilder.activeOutcome().resultUnsupportedBySdk().id(ODD_OUTCOME_ID)
+                );
+            market.getOutcome().add(UfBetSettlementOutcomeBuilder.activeOutcome().lost().id(EVEN_OUTCOME_ID));
 
             return market;
         }
 
         public static class UfBetSettlementOutcomeBuilder {
+
+            private final UfBetSettlementMarket.UfOutcome outcome = new UfBetSettlementMarket.UfOutcome();
 
             private UfBetSettlementOutcomeBuilder() {}
 
@@ -359,19 +454,54 @@ public class UfMarkets {
                 return new UfBetSettlementOutcomeBuilder();
             }
 
-            private UfBetSettlementMarket.UfOutcome wonWithId(String id) {
-                UfBetSettlementMarket.UfOutcome outcome = new UfBetSettlementMarket.UfOutcome();
-                outcome.setId(id);
+            public UfBetSettlementOutcomeBuilder won() {
                 outcome.setResult(UfResult.WON);
-                return outcome;
+                return this;
             }
 
-            private UfBetSettlementMarket.UfOutcome lostWithId(String id) {
-                UfBetSettlementMarket.UfOutcome outcome = new UfBetSettlementMarket.UfOutcome();
-                outcome.setId(id);
+            public UfBetSettlementOutcomeBuilder lost() {
                 outcome.setResult(UfResult.LOST);
+                return this;
+            }
+
+            public UfBetSettlementOutcomeBuilder undecidedYet() {
+                outcome.setResult(UfResult.UNDECIDED_YET);
+                return this;
+            }
+
+            public UfBetSettlementOutcomeBuilder resultUnsupportedBySdk() {
+                outcome.setResult(null);
+                return this;
+            }
+
+            public UfBetSettlementMarket.UfOutcome id(String id) {
+                outcome.setId(id);
                 return outcome;
             }
+        }
+    }
+
+    public static class WithRollbackSettlementOutcomes {
+
+        public static UfMarket oddEvenMarketWithBothOutcomes() {
+            UfMarket market = new UfMarket();
+            market.setId(ODD_EVEN_MARKET_ID);
+            UfMarket.UfOutcome oddOutcome = new UfMarket.UfOutcome();
+            oddOutcome.setId(ODD_OUTCOME_ID);
+            market.getOutcome().add(oddOutcome);
+            UfMarket.UfOutcome evenOutcome = new UfMarket.UfOutcome();
+            evenOutcome.setId(EVEN_OUTCOME_ID);
+            market.getOutcome().add(evenOutcome);
+            return market;
+        }
+
+        public static UfMarket oneXtwoMarketOnlyWithCompetitor1OutcomeOthersSkipped() {
+            UfMarket market = new UfMarket();
+            market.setId(ONE_X_TWO_MARKET_ID);
+            UfMarket.UfOutcome outcome = new UfMarket.UfOutcome();
+            outcome.setId(COMPETITOR_1_OUTCOME_ID);
+            market.getOutcome().add(outcome);
+            return market;
         }
     }
 }

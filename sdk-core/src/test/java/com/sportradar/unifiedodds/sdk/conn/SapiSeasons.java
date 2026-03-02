@@ -3,6 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk.conn;
 
+import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
+
 import com.sportradar.uf.sportsapi.datamodel.SapiCurrentSeason;
 import com.sportradar.uf.sportsapi.datamodel.SapiSeasonCoverageInfo;
 import com.sportradar.uf.sportsapi.datamodel.SapiSeasonExtended;
@@ -68,6 +70,20 @@ public class SapiSeasons {
             season.setEndDate(XmlGregorianCalendars.forDate(LocalDate.parse("2024-07-14")));
             season.setYear("2024");
             season.setTournamentId("sr:tournament:1");
+            return season;
+        }
+    }
+
+    public static final class Kabaddi {
+
+        public static SapiSeasonExtended kabaddiTelguTitansTamilThalaivasSeason() {
+            SapiSeasonExtended season = new SapiCurrentSeason();
+            season.setId("sr:season:133388");
+            season.setStartDate(forDate(LocalDate.of(2025, 8, 29)));
+            season.setEndDate(forDate(LocalDate.of(2025, 10, 31)));
+            season.setYear("2025");
+            season.setTournamentId("sr:tournament:26816");
+            season.setName("Pro Kabaddi League 2025");
             return season;
         }
     }

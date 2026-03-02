@@ -33,12 +33,13 @@ public class StatisticsAssert extends AbstractAssert<StatisticsAssert, MatchStat
         return new StatisticsAssert(statistics);
     }
 
-    public void totalsEqualToThoseIn(UfSportEventStatus feedStats) {
+    public StatisticsAssert totalsEqualToThoseIn(UfSportEventStatus feedStats) {
         awayHasTotalStatsEqualTo(feedStats);
         homeHasTotalStatsEqualTo(feedStats);
+        return this;
     }
 
-    public void totalsEqualToThoseIn(SapiMatchStatistics matchStats) {
+    public StatisticsAssert totalsEqualToThoseIn(SapiMatchStatistics matchStats) {
         final int firstInList = 0;
         final int secondInList = 1;
         Statistics expectedFirstTeamStats = expectedTotalStatsForTeam(firstInList, matchStats.getTotals());
@@ -53,6 +54,7 @@ public class StatisticsAssert extends AbstractAssert<StatisticsAssert, MatchStat
             Assertions.assertThat(actualHomeStats).isEqualTo(expectedSecondTeamStats);
             Assertions.assertThat(actualAwayStats).isEqualTo(expectedFirstTeamStats);
         }
+        return this;
     }
 
     public void forPeriodsEqualToThoseIn(SapiMatchStatistics matchStats) {
@@ -197,6 +199,14 @@ public class StatisticsAssert extends AbstractAssert<StatisticsAssert, MatchStat
                     .build()
             )
             .collect(Collectors.toList());
+    }
+
+    public void totalsHavingNoTeamNames() {
+        val totals = actual.getTotalStatistics();
+        val home = totals.get(0);
+        Assertions.assertThat(home.getName()).isNull();
+        val away = totals.get(1);
+        Assertions.assertThat(away.getName()).isNull();
     }
 
     @Builder

@@ -242,15 +242,6 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
     }
 
     @Override
-    public void onDrawFixtureFetched(Urn id, SapiDrawFixture data, Locale locale, CacheItem requester) {
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(locale);
-
-        onLotteryReceived(data.getLottery(), locale);
-    }
-
-    @Override
     public void onSportCategoriesFetched(
         Urn sportId,
         SapiSportCategoriesEndpoint data,
@@ -265,22 +256,6 @@ public class SportsDataCacheImpl implements SportsDataCache, DataRouterListener,
             ? data.getCategories().getCategory()
             : new ArrayList<>();
         onSportAndCategoriesReceived(null, data, data.getSport(), categories, locale);
-    }
-
-    private void onLotteryReceived(SapiLottery lottery, Locale dataLocale) {
-        Preconditions.checkNotNull(dataLocale);
-
-        if (lottery == null) {
-            return;
-        }
-
-        onSportAndCategoryReceived(
-            Urn.parse(lottery.getId()),
-            lottery,
-            lottery.getSport(),
-            lottery.getCategory(),
-            dataLocale
-        );
     }
 
     private void onLotteryReceived(Urn lotteryId, SapiLottery lottery, Locale dataLocale) {

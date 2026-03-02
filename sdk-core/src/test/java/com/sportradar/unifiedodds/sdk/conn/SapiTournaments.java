@@ -1445,4 +1445,24 @@ public class SapiTournaments {
             return t;
         }
     }
+
+    public static final class Kabaddi {
+
+        public static SapiTournamentExtended kabaddiTelguTitansTamilThalaivasTournament() {
+            SapiTournamentExtended tournament = new SapiTournamentExtended();
+            tournament.setId("sr:tournament:26816");
+            tournament.setName("Pro Kabaddi League");
+            tournament.setSport(SapiSports.kabaddi());
+            tournament.setCategory(kabaddiIndiaCategory());
+            return tournament;
+        }
+
+        private static SapiCategory kabaddiIndiaCategory() {
+            SapiCategory category = new SapiCategory();
+            category.setId("sr:category:1530");
+            category.setName("India");
+            category.setCountryCode("IND");
+            return category;
+        }
+    }
 }

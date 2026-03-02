@@ -12,4 +12,5 @@ public enum OutcomeResult {
     Lost,
     Won,
     UndecidedYet,
+    UnsupportedBySdk,
 }

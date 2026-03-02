@@ -277,7 +277,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
             val oneOfOutcomes = market.getOutcomeProbabilities().get(0);
             assertThat(oneOfOutcomes)
-                .methodsBackedByMarketDescriptionFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+                .getNameTemplateMethodsFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest
@@ -300,10 +300,7 @@ public class MarketFactoryImplWithProbabilitiesTest {
 
             val oneOfOutcomes = market.getOutcomeProbabilities().get(0);
             assertThat(oneOfOutcomes)
-                .methodsBackedByMarketDescriptionFailForNonDefaultLanguage(
-                    anotherLanguage,
-                    willRespectSdkStrategy
-                );
+                .getNameTemplateMethodsFailForNonDefaultLanguage(anotherLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest

@@ -134,6 +134,13 @@ public class ApiSimulator {
         stub(new MarketDescriptions(), format("/v1/descriptions/%s/markets.xml.*", language.toString()));
     }
 
+    public ApiSimulator stubMarketList(Locale language, DescMarket... markets) {
+        val descriptions = new MarketDescriptions();
+        descriptions.getMarket().addAll(Arrays.asList(markets));
+        stub(descriptions, format("/v1/descriptions/%s/markets.xml.*", language.toString()));
+        return this;
+    }
+
     public ApiSimulator stubMarketListContaining(DescMarket market, Locale language) {
         val descriptions = new MarketDescriptions();
         descriptions.getMarket().add(market);

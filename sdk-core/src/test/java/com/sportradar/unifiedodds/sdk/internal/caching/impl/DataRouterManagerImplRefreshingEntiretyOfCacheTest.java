@@ -86,7 +86,6 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
-                    mock(DataProvider.class),
                     mock(DataProvider.class)
                 );
         }
@@ -176,7 +175,6 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataRouter.class),
                     mock(TelemetryFactory.class),
                     mock(ExecutionPathDataProvider.class),
-                    mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -307,7 +305,6 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
-                    mock(DataProvider.class),
                     mock(DataProvider.class)
                 );
         }
@@ -402,7 +399,6 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     allSports,
-                    mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),

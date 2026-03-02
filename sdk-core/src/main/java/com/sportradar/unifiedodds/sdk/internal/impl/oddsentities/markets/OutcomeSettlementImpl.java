@@ -4,6 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets;
 
+import static com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult.UnsupportedBySdk;
+
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.datamodel.UfResult;
 import com.sportradar.uf.datamodel.UfVoidFactor;
 import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProvider;
@@ -11,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeSettlement;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created on 26/06/2017.
@@ -18,6 +22,13 @@ import java.util.Locale;
  */
 @SuppressWarnings({ "ParameterNumber" })
 class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
+
+    private static final Map<UfResult, OutcomeResult> OUTCOME_RESULTS = ImmutableMap
+        .<UfResult, OutcomeResult>builder()
+        .put(UfResult.WON, OutcomeResult.Won)
+        .put(UfResult.LOST, OutcomeResult.Lost)
+        .put(UfResult.UNDECIDED_YET, OutcomeResult.UndecidedYet)
+        .build();
 
     private final double voidFactor;
     private final double deadHeatFactor;
@@ -35,21 +46,7 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
         super(id, nameProvider, outcomeDefinition, defaultLocale);
         this.voidFactor = voidFactor == null ? 0.0 : voidFactor.value();
         this.deadHeatFactor = deadHeatFactor == null ? 1 : deadHeatFactor;
-
-        switch (result) {
-            case WON:
-                outcomeResult = OutcomeResult.Won;
-                break;
-            case LOST:
-                outcomeResult = OutcomeResult.Lost;
-                break;
-            case UNDECIDED_YET:
-                outcomeResult = OutcomeResult.UndecidedYet;
-                break;
-            default:
-                outcomeResult = OutcomeResult.Lost;
-                break;
-        }
+        this.outcomeResult = OUTCOME_RESULTS.getOrDefault(result, UnsupportedBySdk);
     }
 
     /**

@@ -12,7 +12,9 @@ public enum Sport {
     ESPORT_DOTA(Urn.parse("sr:sport:111")),
     GOLF(Urn.parse("sr:sport:9")),
     TENNIS(Urn.parse("sr:sport:5")),
-    BASEBALL(Urn.parse("sr:sport:3"));
+    BASEBALL(Urn.parse("sr:sport:3")),
+    KABADDI(Urn.parse("sr:sport:138")),
+    AMERICAN_FOOTBALL(Urn.parse("sr:sport:16"));
 
     private final Urn urn;
 

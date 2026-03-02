@@ -3,9 +3,12 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
+import com.sportradar.uf.sportsapi.datamodel.DescMarket;
+import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.val;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
@@ -33,6 +36,20 @@ public class OutcomesAssert extends AbstractAssert<OutcomesAssert, List<? extend
 
     public OutcomesAssert isEmpty() {
         Assertions.assertThat(actual).isEmpty();
+        return this;
+    }
+
+    public OutcomesAssert hasExactlyNamesAndIdsEqualTo(DescMarket marketDescription) {
+        val expectedIdToName = marketDescription
+            .getOutcomes()
+            .getOutcome()
+            .stream()
+            .collect(Collectors.toMap(DescOutcomes.Outcome::getId, DescOutcomes.Outcome::getName));
+
+        val actualIdToName = actual.stream().collect(Collectors.toMap(Outcome::getId, Outcome::getName));
+
+        Assertions.assertThat(actualIdToName).isEqualTo(expectedIdToName);
+
         return this;
     }
 

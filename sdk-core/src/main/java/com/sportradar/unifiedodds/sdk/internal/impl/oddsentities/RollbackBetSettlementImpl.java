@@ -8,10 +8,7 @@ import com.google.common.base.Preconditions;
 import com.sportradar.uf.datamodel.UfRollbackBetSettlement;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketFactory;
-import com.sportradar.unifiedodds.sdk.oddsentities.Market;
-import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
-import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
-import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement;
+import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +26,7 @@ class RollbackBetSettlementImpl<T extends SportEvent>
     implements RollbackBetSettlement<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(RollbackBetSettlementImpl.class);
-    private final List<Market> affectedMarkets;
+    private final List<MarketWithRollbackSettlement> affectedMarkets;
 
     RollbackBetSettlementImpl(
         T sportEvent,
@@ -47,7 +44,7 @@ class RollbackBetSettlementImpl<T extends SportEvent>
                 message
                     .getMarket()
                     .stream()
-                    .map(m -> factory.buildMarket(sportEvent, m, message.getProduct()))
+                    .map(m -> factory.buildMarketWithRollbackSettlement(sportEvent, m, message.getProduct()))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
@@ -65,7 +62,7 @@ class RollbackBetSettlementImpl<T extends SportEvent>
      * @return the list of markets that are affected
      */
     @Override
-    public List<Market> getMarkets() {
+    public List<MarketWithRollbackSettlement> getMarkets() {
         return affectedMarkets;
     }
 }

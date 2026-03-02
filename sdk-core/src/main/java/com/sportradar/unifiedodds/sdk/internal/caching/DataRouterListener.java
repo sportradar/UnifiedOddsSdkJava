@@ -106,8 +106,6 @@ public interface DataRouterListener {
         CacheItem requester
     ) {}
 
-    default void onDrawFixtureFetched(Urn id, SapiDrawFixture data, Locale locale, CacheItem requester) {}
-
     default void onDrawFetched(Urn id, SapiDrawEvent data, Locale locale, CacheItem requester) {}
 
     default void onSportEventStatusFetched(

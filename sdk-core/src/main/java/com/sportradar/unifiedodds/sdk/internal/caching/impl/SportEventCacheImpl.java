@@ -630,26 +630,6 @@ public class SportEventCacheImpl implements SportEventCache, DataRouterListener,
 
     @Override
     @SuppressWarnings("Duplicates") // it is not a duplicate, different CI factory method
-    public void onDrawFixtureFetched(Urn id, SapiDrawFixture data, Locale dataLocale, CacheItem requester) {
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(dataLocale);
-
-        SportEventCi ifPresent = sportEventsCache.getIfPresent(id);
-
-        if (requester != null && !Equivalence.identity().equivalent(ifPresent, requester)) {
-            requester.merge(data, dataLocale);
-        }
-
-        if (ifPresent == null) {
-            sportEventsCache.put(id, cacheItemFactory.buildDrawCi(id, data, dataLocale));
-        } else {
-            ifPresent.merge(data, dataLocale);
-        }
-    }
-
-    @Override
-    @SuppressWarnings("Duplicates") // it is not a duplicate, different CI factory method
     public void onDrawSummaryEndpointFetched(
         Urn id,
         SapiDrawSummary data,

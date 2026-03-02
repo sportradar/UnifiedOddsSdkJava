@@ -7,6 +7,7 @@ import static com.sportradar.unifiedodds.sdk.SapiCategories.getSapiCategory;
 import static com.sportradar.unifiedodds.sdk.caching.impl.SportEntityFactories.BuilderStubbingOutAllCachesAndStatusFactory.stubbingOutAllCachesAndStatusFactory;
 import static com.sportradar.unifiedodds.sdk.conn.SapiDrawSummaries.MarruecosKenoLottery.marruecosKenoLotteryDrawSummary;
 import static com.sportradar.unifiedodds.sdk.conn.SapiLotterySchedules.marruecosKenoLottery;
+import static com.sportradar.unifiedodds.sdk.conn.SapiLotterySchedules.sportAndCategoryFrom;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.WORLD_LOTTERY_SPORT_ID;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.getSapiSport;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
@@ -15,7 +16,11 @@ import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Pr
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.ENGLISH;
+import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 
 import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.sportsapi.datamodel.*;
@@ -30,6 +35,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportsDataCaches;
 import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertyGetterFrom;
 import com.sportradar.unifiedodds.sdk.testutil.parameterized.PropertySetterTo;
 import com.sportradar.utils.Urn;
+import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.val;
 import org.junit.jupiter.api.Named;
@@ -37,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 @SuppressWarnings("ClassFanOutComplexity")
 class SportEventCacheLotteryTest {
@@ -79,9 +86,10 @@ class SportEventCacheLotteryTest {
             .with(dataRouter)
             .build();
 
-        val sportsDataCache = SportsDataCaches
-            .providing(in(ENGLISH), categoryFrom(marruecosKenoLottery()))
-            .providing(in(ENGLISH), sportFrom(marruecosKenoLottery()));
+        val sportsDataCache = SportsDataCaches.providing(
+            in(ENGLISH),
+            sportAndCategoryFrom(marruecosKenoLottery())
+        );
 
         val sportEventCache = stubbingOutDataRouterManager()
             .withDefaultLanguage(ENGLISH)
@@ -126,9 +134,10 @@ class SportEventCacheLotteryTest {
             .with(dataRouter)
             .build();
 
-        val sportsDataCache = SportsDataCaches
-            .providing(in(ENGLISH), categoryFrom(marruecosKenoLottery()))
-            .providing(in(ENGLISH), sportFrom(marruecosKenoLottery()));
+        val sportsDataCache = SportsDataCaches.providing(
+            in(ENGLISH),
+            sportAndCategoryFrom(marruecosKenoLottery())
+        );
 
         val sportEventCache = stubbingOutDataRouterManager()
             .withDefaultLanguage(ENGLISH)
@@ -146,13 +155,11 @@ class SportEventCacheLotteryTest {
         val lottery = (Lottery) sportEntityFactory.buildSportEvent(lotteryId, singletonList(ENGLISH), false);
         val actualCategory = lottery.getCategory();
 
-        val expectedCategory = getSapiCategory(categoryIdFrom(lotterySchedule), in(ENGLISH));
+        val expectedCategory = lotterySchedule.getLottery().getCategory();
         assertThat(actualCategory.getId()).isEqualTo(categoryIdFrom(lotterySchedule));
-        assertThat(actualCategory.getCountryCode())
-            .isEqualTo(expectedCategory.getCategory().getCountryCode());
-        assertThat(actualCategory.getNames())
-            .isEqualTo(ImmutableMap.of(ENGLISH, expectedCategory.getCategory().getName()));
-        assertThat(actualCategory.getName(ENGLISH)).isEqualTo(expectedCategory.getCategory().getName());
+        assertThat(actualCategory.getCountryCode()).isEqualTo(expectedCategory.getCountryCode());
+        assertThat(actualCategory.getNames()).isEqualTo(ImmutableMap.of(ENGLISH, expectedCategory.getName()));
+        assertThat(actualCategory.getName(ENGLISH)).isEqualTo(expectedCategory.getName());
     }
 
     @ParameterizedTest
@@ -186,9 +193,10 @@ class SportEventCacheLotteryTest {
             .with(dataRouter)
             .build();
 
-        val sportsDataCache = SportsDataCaches
-            .providing(in(ENGLISH), categoryFrom(marruecosKenoLottery()))
-            .providing(in(ENGLISH), sportFrom(marruecosKenoLottery()));
+        val sportsDataCache = SportsDataCaches.providing(
+            in(ENGLISH),
+            sportAndCategoryFrom(marruecosKenoLottery())
+        );
 
         val sportEventCache = stubbingOutDataRouterManager()
             .withDefaultLanguage(ENGLISH)
@@ -239,9 +247,10 @@ class SportEventCacheLotteryTest {
             .with(dataRouter)
             .build();
 
-        val sportsDataCache = SportsDataCaches
-            .providing(in(ENGLISH), categoryFrom(marruecosKenoLottery()))
-            .providing(in(ENGLISH), sportFrom(marruecosKenoLottery()));
+        val sportsDataCache = SportsDataCaches.providing(
+            in(ENGLISH),
+            sportAndCategoryFrom(marruecosKenoLottery())
+        );
 
         val sportEventCache = stubbingOutDataRouterManager()
             .withDefaultLanguage(ENGLISH)
@@ -263,12 +272,47 @@ class SportEventCacheLotteryTest {
         assertThat(firstDraw.getLottery().getId()).isEqualTo(lotteryId);
     }
 
-    private String firstDrawId(SapiLotterySchedule schedule) {
-        return schedule.getDrawEvents().getDrawEvent().get(0).getId();
+    @Test
+    void lotteryNamesSupportsOnlyLanguagesSuppliedOnCreationOfLotteryAndCannotBeExpandedToNotYetSeenLanguages()
+        throws Exception {
+        val lotteryScheduleEnglish = marruecosKenoLottery();
+
+        DataRouterImpl dataRouter = new DataRouterImpl();
+
+        Urn lotteryId = Urn.parse(lotteryScheduleEnglish.getLottery().getId());
+        val lotteryScheduleProvider = LotteryScheduleDataProviders.providing(
+            in(ENGLISH),
+            with(lotteryId.toString()),
+            lotteryScheduleEnglish
+        );
+
+        val dataRouterManager = dataRouterManagerBuilder
+            .withLotterySchedule(lotteryScheduleProvider)
+            .with(dataRouter)
+            .build();
+
+        val sportEventCache = stubbingOutDataRouterManager()
+            .withDefaultLanguage(ENGLISH)
+            .with(dataRouterManager)
+            .build();
+
+        dataRouter.setDataListeners(singletonList(sportEventCache));
+
+        val sportEntityFactory = stubbingOutAllCachesAndStatusFactory()
+            .withDefaultLanguage(ENGLISH)
+            .with(sportEventCache)
+            .build();
+
+        val sportEvent = sportEntityFactory.buildSportEvent(lotteryId, singletonList(ENGLISH), false);
+
+        Lottery lottery = (Lottery) sportEvent;
+        assertThat(lottery.getName(ENGLISH)).isNotNull();
+        assertThat(lottery.getName(FRENCH)).isNull();
+        Mockito.verify(lotteryScheduleProvider, times(1)).getData(any(Locale.class), anyString());
     }
 
-    private SapiCategory categoryFrom(SapiLotterySchedule lotterySchedule) {
-        return lotterySchedule.getLottery().getCategory();
+    private String firstDrawId(SapiLotterySchedule schedule) {
+        return schedule.getDrawEvents().getDrawEvent().get(0).getId();
     }
 
     private Urn categoryIdFrom(SapiLotterySchedule lotterySchedule) {

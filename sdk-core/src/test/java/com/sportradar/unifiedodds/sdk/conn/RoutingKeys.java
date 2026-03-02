@@ -13,6 +13,10 @@ public class RoutingKeys {
         this.globalVariables = globalVariables;
     }
 
+    public static String alive() {
+        return "-.-.-.alive.-.-.-.-";
+    }
+
     public String liveOddsChange() {
         return format(
             "hi.-.live.odds_change.%d.sr:%s.%d.%s",
@@ -36,6 +40,15 @@ public class RoutingKeys {
     public String liveBetSettlement() {
         return format(
             "lo.pre.-.bet_settlement.%d.sr:%s.%d.-",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId()
+        );
+    }
+
+    public String liveRollbackBetSettlement() {
+        return format(
+            "hi.-.live.rollback_bet_settlement.%d.sr:%s.%d.-",
             globalVariables.getSportUrn().getUrn().getId(),
             globalVariables.getSportEventUrn().getType(),
             globalVariables.getSportEventUrn().getId()

@@ -613,7 +613,8 @@ public final class SapiMarketDescriptions {
         @RequiredArgsConstructor
         @Getter
         private enum MarketTranslation {
-            EN(Locale.ENGLISH, "1x2", "{$competitor1}", "Match nul", "{$competitor2}");
+            EN(Locale.ENGLISH, "1x2", "{$competitor1}", "draw", "{$competitor2}"),
+            FR(Locale.FRENCH, "1x2", "{$competitor1}", "Match nul", "{$competitor2}");
 
             private final Locale language;
             private final String marketName;

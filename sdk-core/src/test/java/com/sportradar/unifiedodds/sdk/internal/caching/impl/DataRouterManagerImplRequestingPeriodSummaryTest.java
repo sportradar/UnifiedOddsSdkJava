@@ -59,7 +59,6 @@ public class DataRouterManagerImplRequestingPeriodSummaryTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         periodSummaries
     );
 

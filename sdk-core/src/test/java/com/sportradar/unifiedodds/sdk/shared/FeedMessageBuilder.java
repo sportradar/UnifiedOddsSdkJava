@@ -79,6 +79,15 @@ public class FeedMessageBuilder {
         return Helper.serializeToJaxbXml(message);
     }
 
+    public String rollbackBetSettlement(UfMarket market) {
+        val message = new UfRollbackBetSettlement();
+        message.getMarket().add(market);
+        message.setProduct(globalVariables.getProducer().get());
+        message.setEventId(globalVariables.getSportEventUrn().toString());
+        message.setTimestamp(new Date().getTime());
+        return Helper.serializeToJaxbXml(message);
+    }
+
     public String betCancel(UfOddsChangeMarket market) {
         val message = new UfBetCancel();
         message.setEventId(globalVariables.getSportEventUrn().toString());

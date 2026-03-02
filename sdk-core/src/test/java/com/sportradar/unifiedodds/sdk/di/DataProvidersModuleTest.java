@@ -220,23 +220,6 @@ public class DataProvidersModuleTest {
         }
 
         @Test
-        void dataProvidersModuleShouldProvideCorrectWorldNumberServiceFixtureEndpointPath() {
-            setup(Environment.Integration, 0, true);
-            when(internalConfig.getApiHostAndPort()).thenReturn("stgapi.betradar.com");
-            when(internalConfig.getUseApiSsl()).thenReturn(true);
-
-            String host = EnvironmentManager.getApiHost(Environment.Integration);
-
-            DataProvider<SapiDrawFixtures> sapiDrawFixturesDataProvider = dataProviderInjector.getInstance(
-                DataProviders.class
-            )
-                .drawFixturesProvider;
-
-            assertThat(sapiDrawFixturesDataProvider.getFinalUrl(locale, WNS_EVENT_ID))
-                .isEqualTo(HTTPS_PREFIX + host + "/v1/wns/en/sport_events/" + WNS_EVENT_ID + "/fixture.xml");
-        }
-
-        @Test
         void dataProvidersModuleShouldProvideCorrectWorldNumberServiceSummaryEndpointPath() {
             setup(Environment.Production, 0, true);
             when(internalConfig.getApiHostAndPort()).thenReturn("api.betradar.com");
@@ -286,7 +269,6 @@ public class DataProvidersModuleTest {
         private final DataProvider<SapiFixturesEndpoint> fixtureChangeFixtureEndpoint;
         private final DataProvider<SapiLotterySchedule> lotteryScheduleProvider;
         private final DataProvider<SapiLotteries> lotteriesProvider;
-        private final DataProvider<SapiDrawFixtures> drawFixturesProvider;
         private final DataProvider<SapiDrawSummary> drawSummaryProvider;
         private final DataProvider<Object> timeCriticalSummaryEndpointDataProvider;
         private final DataProvider<Object> nonTimeCriticalSummaryEndpointDataProvider;
@@ -301,7 +283,6 @@ public class DataProvidersModuleTest {
             ) DataProvider<SapiFixturesEndpoint> fixtureChangeFixtureEndpoint,
             DataProvider<SapiLotterySchedule> lotteryScheduleProvider,
             DataProvider<SapiLotteries> lotteriesProvider,
-            DataProvider<SapiDrawFixtures> drawFixturesProvider,
             DataProvider<SapiDrawSummary> drawSummaryProvider,
             @Named(
                 "SummaryEndpointDataProvider"
@@ -318,7 +299,6 @@ public class DataProvidersModuleTest {
             this.fixtureChangeFixtureEndpoint = fixtureChangeFixtureEndpoint;
             this.lotteryScheduleProvider = lotteryScheduleProvider;
             this.lotteriesProvider = lotteriesProvider;
-            this.drawFixturesProvider = drawFixturesProvider;
             this.drawSummaryProvider = drawSummaryProvider;
             this.timeCriticalSummaryEndpointDataProvider = timeCriticalSummaryEndpointDataProvider;
             this.nonTimeCriticalSummaryEndpointDataProvider = nonTimeCriticalSummaryEndpointDataProvider;

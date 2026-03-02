@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.BetCancel;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetSettlement;
 import com.sportradar.unifiedodds.sdk.oddsentities.BetStop;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
+import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetSettlement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -62,6 +63,23 @@ public class WaiterForSingleMessage {
             .orElseThrow(() -> new IllegalStateException("Expected 1 bet cancel message"));
     }
 
+    public RollbackBetSettlement<SportEvent> theOnlyRollbackBetSettlement() {
+        final int tenForSlowMachines = 10;
+        Awaitility
+            .await()
+            .atMost(tenForSlowMachines, SECONDS)
+            .until(anyRollbackBetSettlementMessageReceived());
+        List<RollbackBetSettlement<SportEvent>> all = new ArrayList<>(
+            messagesStorage.findAllRollbackBetSettlement()
+        );
+        if (all.size() != 1) {
+            throw new IllegalStateException(
+                "Expected 1 rollback bet settlement message, but found " + all.size()
+            );
+        }
+        return all.get(0);
+    }
+
     public OddsChange<com.sportradar.unifiedodds.sdk.entities.SportEvent> secondOddsChange() {
         final int tenForSlowMachines = 10;
         Awaitility.await().atMost(tenForSlowMachines, SECONDS).until(multipleOddsChangeMessageReceived());
@@ -86,6 +104,10 @@ public class WaiterForSingleMessage {
 
     private Callable<Boolean> anyBetSettlementMessageReceived() {
         return () -> !messagesStorage.findAllBetSettlement().isEmpty();
+    }
+
+    private Callable<Boolean> anyRollbackBetSettlementMessageReceived() {
+        return () -> !messagesStorage.findAllRollbackBetSettlement().isEmpty();
     }
 
     private Callable<Boolean> multipleOddsChangeMessageReceived() {

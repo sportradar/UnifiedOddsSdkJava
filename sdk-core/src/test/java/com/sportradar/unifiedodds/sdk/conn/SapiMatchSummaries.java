@@ -5,10 +5,13 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.sportradar.unifiedodds.sdk.SapiCategories.international;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMatchSummaries.SapiCoverages.*;
+import static com.sportradar.unifiedodds.sdk.conn.SapiSeasons.Kabaddi.kabaddiTelguTitansTamilThalaivasSeason;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.soccer;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTeamCompetitors.Kabaddi.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.*;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Germany2024Uefa.germanyCompetitor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTeams.Scotland.scotlandCompetitor;
+import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Kabaddi.kabaddiTelguTitansTamilThalaivasTournament;
 import static com.sportradar.unifiedodds.sdk.conn.SapiVenues.munichFootballArena;
 import static com.sportradar.unifiedodds.sdk.testutil.jaxb.XmlGregorianCalendars.forDate;
 
@@ -1047,6 +1050,100 @@ public final class SapiMatchSummaries {
                 team.setStatistics(stats);
                 return team;
             }
+        }
+    }
+
+    public static final class Kabaddi {
+
+        public static SapiMatchSummaryEndpoint kabaddiTelguTitansTamilThalaivas() {
+            SapiMatchSummaryEndpoint summary = new SapiMatchSummaryEndpoint();
+            summary.setGeneratedAt(forDate(LocalDate.of(2025, 11, 30)));
+            summary.setSportEvent(kabaddiTelguTitansTamilThalaivasSportEvent());
+            summary.setSportEventConditions(new SapiSportEventConditions());
+            summary.setSportEventStatus(kabaddiTelguTitansTamilThalaivasSportEventStatus());
+            summary.setCoverageInfo(kabaddiTelguTitansTamilThalaivasCoverage());
+            return summary;
+        }
+
+        private static SapiCoverageInfo kabaddiTelguTitansTamilThalaivasCoverage() {
+            SapiCoverageInfo coverage = new SapiCoverageInfo();
+            coverage.setLevel("bronze");
+            coverage.setLiveCoverage(false);
+            coverage.getCoverage().add(SapiCoverages.basicScore());
+            return coverage;
+        }
+
+        private static SapiSportEventStatus kabaddiTelguTitansTamilThalaivasSportEventStatus() {
+            SapiSportEventStatus status = new SapiSportEventStatus();
+            status.setHomeScore("35");
+            status.setAwayScore("38");
+            status.setStatusCode(4);
+            status.setMatchStatusCode(100);
+            status.setStatus("closed");
+            status.setMatchStatus("ended");
+            status.setWinnerId("sr:competitor:377018");
+            status.setPeriodScores(kabaddiTelguTitansTamilThalaivasPeriodScores());
+            status.setResults(kabaddiTelguTitansTamilThalaivasResults());
+            return status;
+        }
+
+        private static SapiResultScores kabaddiTelguTitansTamilThalaivasResults() {
+            SapiResultScores results = new SapiResultScores();
+            results.getResult().add(kabaddiTelguTitansTamilThalaivasResult());
+            return results;
+        }
+
+        private static SapiResultScore kabaddiTelguTitansTamilThalaivasResult() {
+            SapiResultScore result = new SapiResultScore();
+            result.setHomeScore("35");
+            result.setAwayScore("38");
+            result.setMatchStatusCode(100);
+            return result;
+        }
+
+        private static SapiPeriodScores kabaddiTelguTitansTamilThalaivasPeriodScores() {
+            SapiPeriodScores scores = new SapiPeriodScores();
+            scores.getPeriodScore().add(kabaddiTelguTitansTamilThalaivasFirstPeriodScore());
+            return scores;
+        }
+
+        private static SapiPeriodScore kabaddiTelguTitansTamilThalaivasFirstPeriodScore() {
+            SapiPeriodScore score = new SapiPeriodScore();
+            score.setHomeScore("13");
+            score.setAwayScore("14");
+            score.setMatchStatusCode(6);
+            score.setType("regular_period");
+            score.setNumber(1);
+            return score;
+        }
+
+        private static SapiSportEvent kabaddiTelguTitansTamilThalaivasSportEvent() {
+            SapiSportEvent event = new SapiSportEvent();
+            event.setId("sr:match:62565914");
+            event.setScheduled(forDate(LocalDate.of(2025, 8, 29)));
+            event.setStartTimeTbd(false);
+            event.setTournamentRound(kabaddiTelguTitansTamilThalaivasTournamentRound());
+            event.setSeason(kabaddiTelguTitansTamilThalaivasSeason());
+            event.setTournament(kabaddiTelguTitansTamilThalaivasTournament());
+            event.setCompetitors(kabaddiTelguTitansTamilThalaivasCompetitors());
+            return event;
+        }
+
+        public static SapiSportEventCompetitors kabaddiTelguTitansTamilThalaivasCompetitors() {
+            SapiSportEventCompetitors competitors = new SapiSportEventCompetitors();
+            competitors.getCompetitor().add(teluguTitansCompetitor());
+            competitors.getCompetitor().add(tamilThalaivasCompetitor());
+            return competitors;
+        }
+
+        private static SapiMatchRound kabaddiTelguTitansTamilThalaivasTournamentRound() {
+            SapiMatchRound round = new SapiMatchRound();
+            round.setType("group");
+            round.setNumber(1);
+            round.setGroupLongName("Pro Kabaddi League");
+            round.setBetradarId(62922);
+            round.setBetradarName("Pro Kabaddi League");
+            return round;
         }
     }
 }

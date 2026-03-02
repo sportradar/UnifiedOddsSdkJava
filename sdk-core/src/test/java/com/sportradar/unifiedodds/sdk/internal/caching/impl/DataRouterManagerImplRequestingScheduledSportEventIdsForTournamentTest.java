@@ -52,7 +52,6 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentT
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

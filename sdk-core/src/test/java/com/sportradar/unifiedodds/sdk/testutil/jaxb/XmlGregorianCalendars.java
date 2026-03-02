@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.testutil.jaxb;
 import java.time.*;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
@@ -91,5 +92,18 @@ public class XmlGregorianCalendars {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(new Date());
         return DatatypeFactory.newInstance().newXMLGregorianCalendar();
+    }
+
+    @SneakyThrows
+    public static XMLGregorianCalendar date(int year, int month, int day) {
+        try {
+            XMLGregorianCalendar cal = DatatypeFactory
+                .newInstance()
+                .newXMLGregorianCalendar(year, month, day, 0, 0, 0, 0, 0);
+            cal.setTimezone(0);
+            return cal;
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

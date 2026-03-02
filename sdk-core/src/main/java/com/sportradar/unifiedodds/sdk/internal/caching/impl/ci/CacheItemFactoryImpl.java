@@ -428,18 +428,6 @@ public class CacheItemFactoryImpl implements CacheItemFactory {
     }
 
     @Override
-    public DrawCi buildDrawCi(Urn id, SapiDrawFixture data, Locale dataLocale) {
-        return new DrawCiImpl(
-            id,
-            dataRouterManager,
-            defaultLocale,
-            exceptionHandlingStrategy,
-            data,
-            dataLocale
-        );
-    }
-
-    @Override
     public SportEventCi buildSportEventCi(ExportableCi exportable) {
         if (exportable instanceof ExportableMatchCi) return new MatchCiImpl(
             (ExportableMatchCi) exportable,

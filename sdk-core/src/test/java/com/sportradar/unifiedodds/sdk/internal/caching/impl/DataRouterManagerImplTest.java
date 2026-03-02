@@ -46,7 +46,6 @@ public class DataRouterManagerImplTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         fixtureChangeDataProvider,
         mock(DataProvider.class),
         mock(DataProvider.class),

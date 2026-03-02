@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -326,6 +328,99 @@ public class MarketFactoryImpl implements MarketFactory {
         );
     }
 
+    @Override
+    public Optional<MarketWithRollbackSettlement> buildMarketWithRollbackSettlement(
+        SportEvent sportEvent,
+        UfMarket market,
+        int producerId
+    ) {
+        Preconditions.checkNotNull(sportEvent);
+        Preconditions.checkNotNull(market);
+
+        Map<String, String> specifiersMap = parseSpecifiers(market.getSpecifiers());
+
+        MarketDescription marketDescriptor = null;
+        try {
+            marketDescriptor =
+                getMarketDescription(market.getId(), sportEvent.getSportId(), specifiersMap, producerId);
+        } catch (CacheItemNotFoundException e) {
+            logger.warn(
+                "Failed to build buildMarketWithRollbackSettlement id={}, reason:",
+                market.getId(),
+                e
+            );
+        }
+
+        NameProvider nameProvider = nameProviderFactory.buildNameProvider(
+            sportEvent,
+            market.getId(),
+            specifiersMap,
+            producerId
+        );
+
+        MarketDefinition marketDefinition = new MarketDefinitionImpl(
+            market.getId(),
+            sportEvent,
+            marketDescriptor,
+            sportEvent.getSportId(),
+            producerId,
+            specifiersMap,
+            marketDescriptionProvider,
+            defaultLocale,
+            exceptionHandlingStrategy
+        );
+        List<OutcomeRollbackSettlement> outcomes = buildRollbackSettlementOutcomes(
+            market.getId(),
+            nameProvider,
+            sportEvent,
+            producerId,
+            specifiersMap,
+            market.getOutcome()
+        );
+        return Optional.of(
+            new MarketWithRollbackSettlementImpl(
+                market.getId(),
+                nameProvider,
+                specifiersMap,
+                parseSpecifiers(market.getExtendedSpecifiers()),
+                marketDefinition,
+                defaultLocale,
+                outcomes
+            )
+        );
+    }
+
+    private List<OutcomeRollbackSettlement> buildRollbackSettlementOutcomes(
+        int marketId,
+        NameProvider nameProvider,
+        SportEvent sportEvent,
+        int producerId,
+        Map<String, String> specifiersMap,
+        List<UfMarket.UfOutcome> outcomes
+    ) {
+        return outcomes
+            .stream()
+            .map(o -> {
+                OutcomeDefinition outcomeDefinition = new OutcomeDefinitionImpl(
+                    marketId,
+                    o.getId(),
+                    sportEvent.getSportId(),
+                    producerId,
+                    specifiersMap,
+                    marketDescriptionProvider,
+                    defaultLocale,
+                    exceptionHandlingStrategy
+                );
+                return new OutcomeRollbackSettlementImpl(
+                    o.getId(),
+                    nameProvider,
+                    outcomeDefinition,
+                    defaultLocale
+                );
+            })
+            .collect(toList());
+    }
+
     private Map<String, String> parseSpecifiers(String specifiers) {
         if (Strings.isNullOrEmpty(specifiers)) {
             return Collections.emptyMap();
@@ -511,7 +606,7 @@ public class MarketFactoryImpl implements MarketFactory {
                     buildAdditionalProbabilities(o)
                 )
             )
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     private boolean isValidPlayerOutcome(

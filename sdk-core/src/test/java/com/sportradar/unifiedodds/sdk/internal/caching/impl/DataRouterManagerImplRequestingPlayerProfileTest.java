@@ -57,7 +57,6 @@ public class DataRouterManagerImplRequestingPlayerProfileTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 

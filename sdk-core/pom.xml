@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>4.6.0</version>
+    <version>4.7.0</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -166,10 +166,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.27.2</version>
+            <version>3.27.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -854,6 +853,18 @@
                         <configuration>
                             <skip>${skipITs}</skip>
                             <mainClass>com.sportradar.unifiedodds.sdk.integrationtest.preconditions.PreconditionsForIntegrationTests</mainClass>
+                            <classpathScope>test</classpathScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>require-preconditions-for-unit-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <mainClass>com.sportradar.unifiedodds.sdk.build.preconditions.PreconditionsForRabbitRequiringUnitTests</mainClass>
                             <classpathScope>test</classpathScope>
                         </configuration>
                     </execution>

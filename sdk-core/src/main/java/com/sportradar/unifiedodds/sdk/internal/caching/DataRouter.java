@@ -67,8 +67,6 @@ public interface DataRouter {
 
     void onDrawSummaryFetched(Urn drawId, SapiDrawSummary endpoint, Locale locale, CacheItem requester);
 
-    void onDrawFixtureFetched(Urn drawId, SapiDrawFixture endpoint, Locale locale, CacheItem requester);
-
     void onAllLotteriesListFetched(SapiLotteries endpoint, Locale locale);
 
     void onLotteryScheduleFetched(SapiLotterySchedule endpoint, Locale locale, CacheItem requester);

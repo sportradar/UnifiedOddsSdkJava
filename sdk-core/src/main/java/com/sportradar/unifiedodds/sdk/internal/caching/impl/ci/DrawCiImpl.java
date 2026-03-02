@@ -72,21 +72,6 @@ public class DrawCiImpl implements DrawCi, ExportableCacheItem {
         DataRouterManager dataRouterManager,
         Locale defaultLocale,
         ExceptionHandlingStrategy exceptionHandlingStrategy,
-        SapiDrawFixture data,
-        Locale dataLocale
-    ) {
-        this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
-        Preconditions.checkNotNull(data);
-        Preconditions.checkNotNull(dataLocale);
-
-        merge(data, dataLocale);
-    }
-
-    DrawCiImpl(
-        Urn id,
-        DataRouterManager dataRouterManager,
-        Locale defaultLocale,
-        ExceptionHandlingStrategy exceptionHandlingStrategy,
         SapiDrawEvent data,
         Locale dataLocale
     ) {

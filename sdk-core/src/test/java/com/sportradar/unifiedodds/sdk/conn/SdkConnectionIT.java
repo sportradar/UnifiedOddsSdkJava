@@ -12,6 +12,7 @@ import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Pr
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
 
@@ -33,6 +34,8 @@ import com.sportradar.unifiedodds.sdk.internal.shared.TestHttpHelper;
 import com.sportradar.unifiedodds.sdk.oddsentities.OddsChange;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.shared.*;
+import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
+import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitConnectionUtils;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqUserSetup;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.VhostLocation;
 import java.io.IOException;
@@ -44,6 +47,8 @@ import lombok.val;
 import org.apache.hc.core5.http.HttpStatus;
 import org.awaitility.core.ConditionFactory;
 import org.junit.*;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 @SuppressWarnings(
     {
@@ -65,6 +70,19 @@ import org.junit.*;
 public class SdkConnectionIT {
 
     @Rule
+    public TestWatcher testWatcher = new TestWatcher() {
+        @Override
+        protected void starting(Description description) {
+            System.out.println("Starting test: " + description.getMethodName());
+        }
+
+        @Override
+        protected void finished(Description description) {
+            System.out.println("Finished test: " + description.getMethodName());
+        }
+    };
+
+    @Rule
     public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
     private RabbitProducer rabbitProducer;
@@ -79,6 +97,7 @@ public class SdkConnectionIT {
         with(ADMIN_USERNAME, ADMIN_PASSWORD),
         Client::new
     );
+    private RabbitConnectionUtils connectionUtils = new RabbitConnectionUtils(rabbitMqClient);
     private RabbitMqUserSetup rabbitMqUserSetup = RabbitMqUserSetup.create(
         VhostLocation.at(RABBIT_BASE_URL, UF_VIRTUALHOST),
         rabbitMqClient
@@ -1694,28 +1713,7 @@ public class SdkConnectionIT {
         );
         final long producerRecoveryRequestId2 = producer.getRecoveryInfo().getRequestId();
 
-        List<ConnectionInfo> connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(2, connections.size()); // producer and sdk connection
-        Optional<ConnectionInfo> sdkConnection = connections
-            .stream()
-            .filter(f -> f.getUser().equals(Constants.SDK_USERNAME))
-            .findFirst();
-        assertTrue(sdkConnection.isPresent());
-        List<ChannelInfo> channels = rabbitProducer.ManagementClient.getChannels(
-            sdkConnection.get().getName()
-        );
-        assertEquals(2, channels.size());
-
-        // close connection and wait to auto restart
-        rabbitProducer.ManagementClient.updateUser(
-            Constants.SDK_USERNAME,
-            ("1" + Constants.SDK_PASSWORD).toCharArray(),
-            Collections.singletonList("administrator")
-        ); // disable sdk rabbit connection user
-        rabbitProducer.ManagementClient.closeConnection(sdkConnection.get().getName(), "test invoked");
-        Helper.sleep(2000);
-        connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(1, connections.size()); // producer connection only
+        invalidateSdkCredentialAndKillSdkConnectionFromServer();
 
         waitAndCheckTillTimeout(
             w -> checkListContainsString(sdkListener.CalledEvents, "Producer LO is down", 2),
@@ -1734,12 +1732,7 @@ public class SdkConnectionIT {
 
         sdkListener.CalledEvents.clear();
 
-        // reset user so sdk connection can be made
-        rabbitProducer.ManagementClient.updateUser(
-            Constants.SDK_USERNAME,
-            Constants.SDK_PASSWORD.toCharArray(),
-            Collections.singletonList("administrator")
-        );
+        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
 
         // reset alives and check all
         waitAndCheckTillTimeout(
@@ -1765,14 +1758,8 @@ public class SdkConnectionIT {
 
         Helper.sleep(5000); // so all connection and channels are set up
 
-        // check for new connection is done and new alives arrive
-        connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(2, connections.size()); // producer and sdk connection
-        sdkConnection =
-            connections.stream().filter(f -> f.getUser().equals(Constants.SDK_USERNAME)).findFirst();
-        assertTrue(sdkConnection.isPresent());
-        channels = rabbitProducer.ManagementClient.getChannels(sdkConnection.get().getName());
-        assertEquals(2, channels.size());
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
+        connectionUtils.assertThatConnectionForUsername(Constants.SDK_USERNAME).hasNumberOfChannels(2);
 
         // send 2 changeOdds and snapshotComplete for recovery request id - should trigger producerUp
         rabbitProducer.send(
@@ -1885,11 +1872,7 @@ public class SdkConnectionIT {
         rabbitProducer.addProducersAlive(producerId3, 6000);
         rabbitProducer.addProducersAlive(producerId6, 7000);
         // reset sdk connection user
-        rabbitProducer.ManagementClient.updateUser(
-            Constants.SDK_USERNAME,
-            Constants.SDK_PASSWORD.toCharArray(),
-            Collections.singletonList("administrator")
-        );
+        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
 
         assertTrue(sdkListener.CalledEvents.isEmpty());
 
@@ -2156,11 +2139,8 @@ public class SdkConnectionIT {
                     .and()
                     .virtualProducerDownDueToConnectionDown()
             );
-        rabbitProducer.ManagementClient.updateUser(
-            Constants.SDK_USERNAME,
-            Constants.SDK_PASSWORD.toCharArray(),
-            Collections.singletonList("administrator")
-        );
+        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD));
+
         // reset alives and check all
         waitAndCheckTillTimeout(
             w -> checkListContainsString(sdkListener.CalledEvents, "Recovery initiated", 3),
@@ -2205,18 +2185,8 @@ public class SdkConnectionIT {
                 .count()
         );
 
-        // check for new connection is done and new alives arrive
-        List<ConnectionInfo> connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(2, connections.size()); // producer and sdk connection
-        Optional<ConnectionInfo> sdkConnection = connections
-            .stream()
-            .filter(f -> f.getUser().equals(Constants.SDK_USERNAME))
-            .findFirst();
-        assertTrue(sdkConnection.isPresent());
-        List<ChannelInfo> channels = rabbitProducer.ManagementClient.getChannels(
-            sdkConnection.get().getName()
-        );
-        assertEquals(4, channels.size());
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
+        connectionUtils.assertThatConnectionForUsername(Constants.SDK_USERNAME).hasNumberOfChannels(4);
 
         // send 2 changeOdds and snapshotComplete for recovery request id - should trigger producerUp
         rabbitProducer.send(
@@ -2386,38 +2356,17 @@ public class SdkConnectionIT {
     }
 
     private void invalidateSdkCredentialAndKillSdkConnectionFromServer() {
-        List<ConnectionInfo> connections = rabbitProducer.ManagementClient.getConnections();
-        Optional<ConnectionInfo> sdkConnection = connections
-            .stream()
-            .filter(f -> f.getUser().equals(Constants.SDK_USERNAME))
-            .findFirst();
-        assertTrue(sdkConnection.isPresent());
-
-        // close connection and wait to auto restart
-        rabbitProducer.ManagementClient.updateUser(
-            Constants.SDK_USERNAME,
-            ("1" + Constants.SDK_PASSWORD).toCharArray(),
-            Collections.singletonList("administrator")
-        ); // disable sdk rabbit connection user
-
-        rabbitProducer.ManagementClient.closeConnection(sdkConnection.get().getName(), "test invoked");
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
+        connectionUtils.assertThatConnectionForUsername(Constants.SDK_USERNAME).exists();
+        rabbitMqUserSetup.setupUser(Credentials.with(Constants.SDK_USERNAME, "invalidatedPassword"));
+        connectionUtils.killExistingConnectionForUser(Constants.SDK_USERNAME);
         Helper.sleep(2000);
-        connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(1, connections.size()); // producer connection only
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(1);
     }
 
     private void validateSdkConnectionHas4Channels() {
-        List<ConnectionInfo> connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(2, connections.size()); // producer and sdk connection
-        Optional<ConnectionInfo> sdkConnection = connections
-            .stream()
-            .filter(f -> f.getUser().equals(Constants.SDK_USERNAME))
-            .findFirst();
-        assertTrue(sdkConnection.isPresent());
-        List<ChannelInfo> channels = rabbitProducer.ManagementClient.getChannels(
-            sdkConnection.get().getName()
-        );
-        assertEquals(4, channels.size());
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
+        connectionUtils.assertThatConnectionForUsername(Constants.SDK_USERNAME).hasNumberOfChannels(4);
     }
 
     //@Test
@@ -2521,20 +2470,11 @@ public class SdkConnectionIT {
         rabbitProducer.ProducersAlive.clear();
 
         Helper.writeToOutput("First connection and channels checks");
-        List<ConnectionInfo> connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(2, connections.size()); // producer and sdk connection
-        Optional<ConnectionInfo> sdkConnection = connections
-            .stream()
-            .filter(f -> f.getUser().equals(Constants.SDK_USERNAME))
-            .findFirst();
-        assertTrue(sdkConnection.isPresent());
-        List<ChannelInfo> channels = rabbitProducer.ManagementClient.getChannels(
-            sdkConnection.get().getName()
-        );
-        assertEquals(2, channels.size());
-        String channelId1 = channels.get(0).getName();
-        String channelId2 = channels.get(1).getName();
-        assertNotEquals(channelId1, channelId2);
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
+        connectionUtils
+            .assertThatConnectionForUsername(Constants.SDK_USERNAME)
+            .hasNumberOfChannels(2)
+            .hasChannelsWithUniqueNames();
 
         Helper.writeToOutput("Pause for channel timeout");
         Helper.sleep(Duration.ofSeconds(220).toMillis()); // timeout for creating new channel
@@ -2543,15 +2483,12 @@ public class SdkConnectionIT {
 
         Helper.writeToOutput("Second connection and channels checks");
         // new channel should be made
-        connections = rabbitProducer.ManagementClient.getConnections();
-        assertEquals(2, connections.size()); // producer and sdk connection
-        sdkConnection =
-            connections.stream().filter(f -> f.getUser().equals(Constants.SDK_USERNAME)).findFirst();
-        assertTrue(sdkConnection.isPresent());
-        channels = rabbitProducer.ManagementClient.getChannels(sdkConnection.get().getName());
-        assertEquals(2, channels.size());
-        assertNotEquals(channelId1, channels.get(1).getName());
-        assertNotEquals(channelId2, channels.get(1).getName());
+
+        assertThat(connectionUtils.getNumberOfConnections()).isEqualTo(2);
+        connectionUtils
+            .assertThatConnectionForUsername(Constants.SDK_USERNAME)
+            .hasNumberOfChannels(2)
+            .hasChannelsWithUniqueNames();
 
         assertEquals(
             3,

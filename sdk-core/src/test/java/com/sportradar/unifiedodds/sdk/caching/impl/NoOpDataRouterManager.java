@@ -41,10 +41,6 @@ public class NoOpDataRouterManager implements DataRouterManager {
         throws CommunicationException {}
 
     @Override
-    public void requestDrawFixture(Locale locale, Urn id, CacheItem requester)
-        throws CommunicationException {}
-
-    @Override
     public void requestAllTournamentsForAllSportsEndpoint(Locale locale) throws CommunicationException {}
 
     @Override

@@ -45,7 +45,6 @@ public class DataRouterManagerImplRequestingAvailableSelectionsTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         availableSelections,
         mock(DataProvider.class),
         mock(DataProvider.class),

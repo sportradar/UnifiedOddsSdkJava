@@ -57,7 +57,6 @@ public class DataRouterManagerImplRequestingEventTimelinesTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
-        mock(DataProvider.class),
         mock(DataProvider.class)
     );
 
