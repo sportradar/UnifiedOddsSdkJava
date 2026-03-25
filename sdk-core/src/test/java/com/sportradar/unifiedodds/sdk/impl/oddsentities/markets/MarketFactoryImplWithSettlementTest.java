@@ -3,11 +3,15 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
+import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Catch;
+import static com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy.Throw;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptionFactory.namesOf;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.noMarketDescribingProvider;
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.providing;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
-import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithSettlementOutcomes.oddEvenMarketWhereWonOdd;
+import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithSettlementOutcomes.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.ODD_OUTCOME_ID;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.OneXtwoMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert.assertThat;
@@ -16,6 +20,7 @@ import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketDef
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketDefinitionAssert.assertThat;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactories.BuilderStubbingOutSportEventAndCaches.stubbingOutCaches;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.OutcomeAssert.assertThat;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.OutcomeSettlementsAssert.assertThat;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.TranslationHolder.of;
 import static com.sportradar.utils.domain.producers.ProducerIds.PREMIUM_CRICKET_PRODUCER_ID;
@@ -50,18 +55,15 @@ public class MarketFactoryImplWithSettlementTest {
             .stream(ProducerIds.nonPremiumCricketProducerIds())
             .flatMap(id ->
                 Stream.of(
-                    new Object[] { id, ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-                    new Object[] { id, ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS }
+                    new Object[] { id, Throw, WILL_THROW_EXCEPTIONS },
+                    new Object[] { id, Catch, WILL_CATCH_EXCEPTIONS }
                 )
             )
             .toArray(Object[]::new);
     }
 
     private static Object[] exceptionHandlingStrategies() {
-        return new Object[][] {
-            { ExceptionHandlingStrategy.Throw, WILL_THROW_EXCEPTIONS },
-            { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
-        };
+        return new Object[][] { { Throw, WILL_THROW_EXCEPTIONS }, { Catch, WILL_CATCH_EXCEPTIONS } };
     }
 
     @Nested
@@ -256,7 +258,7 @@ public class MarketFactoryImplWithSettlementTest {
 
             val oneOfOutcomes = market.getOutcomeSettlements().get(0);
             assertThat(oneOfOutcomes)
-                .methodsBackedByMarketDescriptionFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+                .getNameTemplateMethodsFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest
@@ -279,10 +281,7 @@ public class MarketFactoryImplWithSettlementTest {
 
             val oneOfOutcomes = market.getOutcomeSettlements().get(0);
             assertThat(oneOfOutcomes)
-                .methodsBackedByMarketDescriptionFailForNonDefaultLanguage(
-                    anotherLanguage,
-                    willRespectSdkStrategy
-                );
+                .getNameTemplateMethodsFailForNonDefaultLanguage(anotherLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest
@@ -369,6 +368,53 @@ public class MarketFactoryImplWithSettlementTest {
 
             assertThat(market.getMarketDefinition().getNameTemplate(langB))
                 .isEqualTo(oddEvenMarketDescription().getName());
+        }
+    }
+
+    @Nested
+    class WhenMarketIsCreatedWithSettledOutcomes {
+
+        @Test
+        void wonLostAndUndecidedOutcomeResultsAreAvailable() {
+            val aLanguage = Languages.any();
+            val marketFactory = stubbingOutCaches()
+                .with(noMarketDescribingProvider())
+                .withDefaultLanguage(aLanguage)
+                .with(Throw)
+                .build();
+
+            val market = marketFactory
+                .buildMarketWithSettlement(
+                    SportEvents.any(),
+                    oneXtwoMarketCompetitor1WonDrawUndecidedCompetitor2Lost(),
+                    anyProducerId()
+                )
+                .get();
+
+            val outcomes = market.getOutcomeSettlements();
+            assertThat(outcomes).hasWinningOutcome().withId(COMPETITOR_1_OUTCOME_ID);
+            assertThat(outcomes).hasUndecidedOutcome().withId(DRAW_OUTCOME_ID);
+            assertThat(outcomes).hasLostOutcome().withId(COMPETITOR_2_OUTCOME_ID);
+        }
+
+        @Test
+        void unknownOutcomeResultIsMappedToUnsupportedBySdk() {
+            val aLanguage = Languages.any();
+            val marketFactory = stubbingOutCaches()
+                .with(noMarketDescribingProvider())
+                .withDefaultLanguage(aLanguage)
+                .with(Throw)
+                .build();
+
+            val market = marketFactory
+                .buildMarketWithSettlement(
+                    SportEvents.any(),
+                    oddEvenMarketWhereOddHasResultUnsupportedBySdk(),
+                    anyProducerId()
+                )
+                .get();
+
+            assertThat(market.getOutcomeSettlements()).hasUnsupportedBySdkOutcome().withId(ODD_OUTCOME_ID);
         }
     }
 }

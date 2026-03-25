@@ -49,4 +49,13 @@ public class RoutingKeys {
             globalVariables.getSportEventUrn().getId()
         );
     }
+
+    public String liveRollbackBetSettlement() {
+        return format(
+            "hi.-.live.rollback_bet_settlement.%d.sr:%s.%d.-",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId()
+        );
+    }
 }

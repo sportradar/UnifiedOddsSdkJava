@@ -284,7 +284,7 @@ public class MarketFactoryImplWithOddsTest {
             val oneOfOutcomes = market.getOutcomeOdds().get(0);
             assertThat(oneOfOutcomes)
                 .isNonPlayerOutcome()
-                .methodsBackedByMarketDescriptionFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+                .getNameTemplateMethodsFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest
@@ -308,10 +308,7 @@ public class MarketFactoryImplWithOddsTest {
             val oneOfOutcomes = market.getOutcomeOdds().get(0);
             assertThat(oneOfOutcomes)
                 .isNonPlayerOutcome()
-                .methodsBackedByMarketDescriptionFailForNonDefaultLanguage(
-                    anotherLanguage,
-                    willRespectSdkStrategy
-                );
+                .getNameTemplateMethodsFailForNonDefaultLanguage(anotherLanguage, willRespectSdkStrategy);
         }
 
         @Test
@@ -348,7 +345,7 @@ public class MarketFactoryImplWithOddsTest {
             val oneOfOutcomes = market.getOutcomeOdds().get(0);
             assertThat(oneOfOutcomes)
                 .isPlayerOutcome()
-                .methodsBackedByMarketDescriptionFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
+                .getNameTemplateMethodsFailForDefaultLanguage(aLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest
@@ -370,10 +367,7 @@ public class MarketFactoryImplWithOddsTest {
             val oneOfOutcomes = market.getOutcomeOdds().get(0);
             assertThat(oneOfOutcomes)
                 .isPlayerOutcome()
-                .methodsBackedByMarketDescriptionFailForNonDefaultLanguage(
-                    anotherLanguage,
-                    willRespectSdkStrategy
-                );
+                .getNameTemplateMethodsFailForNonDefaultLanguage(anotherLanguage, willRespectSdkStrategy);
         }
 
         @ParameterizedTest

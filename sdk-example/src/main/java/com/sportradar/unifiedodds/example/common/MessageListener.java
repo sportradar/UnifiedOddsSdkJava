@@ -102,11 +102,7 @@ public class MessageListener implements UofListener {
         for (MarketWithSettlement marketSettlement : clearBets.getMarkets()) {
             // Then iterate through the result for each outcome (win or loss)
             for (OutcomeSettlement result : marketSettlement.getOutcomeSettlements()) {
-                if (result.getOutcomeResult().equals(OutcomeResult.Won)) {
-                    logger.info("Outcome {} is a win", result.getId());
-                } else {
-                    logger.info("Outcome {} is a loss", result.getId());
-                }
+                logger.info("Outcome {} is a {}", result.getId(), result.getOutcomeResult());
             }
         }
     }

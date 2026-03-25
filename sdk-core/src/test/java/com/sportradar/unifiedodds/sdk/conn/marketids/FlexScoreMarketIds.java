@@ -15,6 +15,7 @@ import lombok.val;
 public class FlexScoreMarketIds {
 
     public static final int CORRECT_SCORE_FLEX_SCORE_MARKET_ID = 401;
+    public static final String FLEX_SCORE_MARKET_MAPPING_MARKET_ID = "8:188";
 
     public static final String SCORE_SPECIFIER = "score=%d:%d";
     public static final String THREE_TO_ONE_SCORE_SPECIFIER = String.format(SCORE_SPECIFIER, 3, 1);

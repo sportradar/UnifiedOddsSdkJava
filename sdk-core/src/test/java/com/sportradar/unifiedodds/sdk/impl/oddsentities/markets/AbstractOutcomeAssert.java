@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.sportradar.unifiedodds.sdk.exceptions.NameGenerationException;
 import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
-import com.sportradar.utils.domain.names.LanguageHolder;
 import java.util.Locale;
 import lombok.val;
 import org.assertj.core.api.AbstractAssert;
@@ -89,7 +88,7 @@ public abstract class AbstractOutcomeAssert<SELF extends AbstractAssert<SELF, AC
         return this;
     }
 
-    public AbstractOutcomeAssert methodsBackedByMarketDescriptionFailForDefaultLanguage(
+    public AbstractOutcomeAssert getNameTemplateMethodsFailForDefaultLanguage(
         Locale aLanguage,
         ExpectationTowardsSdkErrorHandlingStrategy errorHandling
     ) {
@@ -104,7 +103,7 @@ public abstract class AbstractOutcomeAssert<SELF extends AbstractAssert<SELF, AC
         return this;
     }
 
-    public AbstractOutcomeAssert methodsBackedByMarketDescriptionFailForNonDefaultLanguage(
+    public AbstractOutcomeAssert getNameTemplateMethodsFailForNonDefaultLanguage(
         Locale aLanguage,
         ExpectationTowardsSdkErrorHandlingStrategy errorHandling
     ) {

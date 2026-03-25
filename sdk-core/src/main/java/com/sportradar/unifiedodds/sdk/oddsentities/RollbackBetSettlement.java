@@ -5,9 +5,13 @@
 package com.sportradar.unifiedodds.sdk.oddsentities;
 
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
+import java.util.List;
 
 /**
  * Rollback is sent when a previously sent bet_settlement was sent in error and needs to be
  * rollbacked
  */
-public interface RollbackBetSettlement<T extends SportEvent> extends MarketMessage<T> {}
+public interface RollbackBetSettlement<T extends SportEvent> extends MarketMessage<T> {
+    @Override
+    List<MarketWithRollbackSettlement> getMarkets();
+}

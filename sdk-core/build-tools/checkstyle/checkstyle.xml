@@ -453,6 +453,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="LineLength"/>
+        <property name="files" value="application.properties"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLength"/>
         <property name="files" value="odds-sdk-install-pom.xml"/>
     </module>
     <module name="SuppressionSingleFilter">

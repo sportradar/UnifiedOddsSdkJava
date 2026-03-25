@@ -1,6 +1,9 @@
 ### Unified Feed SDK 5.x changelog
 
-**5.0.0-rc3**
+**5.0.0-rc4**
+- Added support for In-Play bet settlements, see release notes for v.4.7.0 for more details.
+
+**5.0.0-rc3 (2026-02-09)**
 - Client Authentication is supported for Rabbit MQ connections.
 - Configurable Authentication Tenant
 - When using custom configuration builder replaced setUsername and setPassword with setMessagingCredentials
@@ -13,6 +16,9 @@
 **5.0.0-rc1 (2025-10-10)**
  - Introduced ClientAuthentication configuration as a more secure and recommended alternative to access tokens.
  - Added a dependency to com.auth0:java-jvt:4.5.0 to support Common IAM authentication.
+
+**4.7.0 (2026-03-02)**
+- Added support for In-Play Bet Settlements and In-Play Rollback Bet Settlements with markets with outcomes.
 
 **4.6.0 (2025-10-07)**
  - breaking change: Sport Event timeline now uses long event IDs (previously int) to support larger identifiers introduced by the Unified API.

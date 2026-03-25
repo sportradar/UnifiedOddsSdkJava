@@ -48,7 +48,7 @@ public class FeedMessageValidatorImpl implements FeedMessageValidator {
     private final NamedValuesProvider namedValuesProvider;
 
     @Inject
-    FeedMessageValidatorImpl(
+    public FeedMessageValidatorImpl(
         MarketDescriptionProvider marketDescriptionProvider,
         SdkInternalConfiguration configuration,
         NamedValuesProvider namedValuesProvider

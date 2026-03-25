@@ -34,7 +34,7 @@ public class RabbitMqMessageReceiver implements MessageReceiver {
      * @param channelMessageConsumer the raw message consumer
      */
     @Inject
-    RabbitMqMessageReceiver(
+    public RabbitMqMessageReceiver(
         ChannelSupervisor channelSupervisor,
         ChannelMessageConsumer channelMessageConsumer
     ) {

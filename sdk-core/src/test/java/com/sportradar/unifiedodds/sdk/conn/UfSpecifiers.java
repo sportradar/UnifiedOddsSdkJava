@@ -95,6 +95,17 @@ public final class UfSpecifiers {
         }
     }
 
+    public static final class UfHandicapForTheRestSpecifier extends UfSpecifier<Double> {
+
+        private UfHandicapForTheRestSpecifier(double value) {
+            super("hcp_for_the_rest", value);
+        }
+
+        public static UfHandicapForTheRestSpecifier handicapForTheRest(double value) {
+            return new UfHandicapForTheRestSpecifier(value);
+        }
+    }
+
     public static final class UfHoleNrSpecifier extends UfSpecifier<Integer> {
 
         private UfHoleNrSpecifier(Integer value) {
@@ -224,6 +235,17 @@ public final class UfSpecifiers {
 
         public static UfTypeSpecifier type(String value) {
             return new UfTypeSpecifier(value);
+        }
+    }
+
+    public static final class UfVariantSpecifier extends UfSpecifier<String> {
+
+        private UfVariantSpecifier(String value) {
+            super("variant", value);
+        }
+
+        public static UfVariantSpecifier variant(String value) {
+            return new UfVariantSpecifier(value);
         }
     }
 

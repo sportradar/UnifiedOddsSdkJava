@@ -12,7 +12,7 @@ import com.sportradar.uf.datamodel.UfFixtureChange;
 public class NoOpProcessedFixtureChangesTracker implements ProcessedFixtureChangesTracker {
 
     @Inject
-    NoOpProcessedFixtureChangesTracker() {
+    public NoOpProcessedFixtureChangesTracker() {
         // empty
     }
 

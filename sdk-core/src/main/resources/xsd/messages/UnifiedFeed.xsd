@@ -222,6 +222,7 @@
     <xs:attribute name="away_drive_count" type="xs:int" use="optional"/>
     <xs:attribute name="home_play_count" type="xs:int" use="optional"/>
     <xs:attribute name="away_play_count" type="xs:int" use="optional"/>
+    <xs:attribute name="batting_team" type="xs:string" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="oddsGenerationProperties">
@@ -276,6 +277,7 @@
       <xs:element name="yellow_red_cards" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
       <xs:element name="corners" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
       <xs:element name="green_cards" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="tries" type="statisticsScoreType" maxOccurs="1" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -391,6 +393,13 @@
   </xs:attributeGroup>
 
   <xs:complexType name="market">
+    <xs:sequence>
+      <xs:element name="outcome" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="id" type="outcomeId" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
     <xs:attributeGroup ref="marketAttributes"/>
     <xs:attribute name="void_reason" type="xs:int"/>
   </xs:complexType>

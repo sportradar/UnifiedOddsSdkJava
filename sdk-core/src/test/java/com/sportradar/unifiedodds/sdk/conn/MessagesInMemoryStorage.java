@@ -59,4 +59,8 @@ public class MessagesInMemoryStorage {
     public List<BetCancel<SportEvent>> findAllBetCancel() {
         return betCancelMessages.stream().collect(Collectors.toList());
     }
+
+    public List<RollbackBetSettlement<SportEvent>> findAllRollbackBetSettlement() {
+        return rollbackBetSettlementMessages.stream().collect(Collectors.toList());
+    }
 }

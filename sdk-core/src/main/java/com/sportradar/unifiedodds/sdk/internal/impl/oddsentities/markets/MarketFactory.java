@@ -37,4 +37,10 @@ public interface MarketFactory {
     );
 
     Optional<MarketCancel> buildMarketCancel(SportEvent sportEvent, UfMarket market, int producerId);
+
+    Optional<MarketWithRollbackSettlement> buildMarketWithRollbackSettlement(
+        SportEvent sportEvent,
+        UfMarket market,
+        int producerId
+    );
 }
