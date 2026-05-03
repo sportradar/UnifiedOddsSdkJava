@@ -18,6 +18,7 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.domain.names.Languages;
 import lombok.val;
 import org.junit.jupiter.api.Nested;
@@ -26,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.stubbing.Stubber;
 
+@OldStyleTest
 public class RaceStageCiImplStageTypeTest {
 
     private static final String PACKAGE_NAME = "com.sportradar.unifiedodds.sdk.internal.caching.impl.ci";

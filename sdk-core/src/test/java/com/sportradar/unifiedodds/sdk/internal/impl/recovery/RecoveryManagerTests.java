@@ -23,6 +23,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.FeedMessageFactoryImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
+import com.sportradar.utils.OldStyleTest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import org.junit.Test;
  * Created on 09/04/2018.
  * // TODO @eti: Javadoc
  */
+@OldStyleTest
 @SuppressWarnings(
     {
         "ClassFanOutComplexity",
@@ -508,7 +510,7 @@ public class RecoveryManagerTests {
         assertEquals(1, taskScheduler.getOneTimeTaskRuns());
         assertTrue(producer.isFlaggedDown());
 
-        adjustMockedTimeUtils(65 * 60);
+        adjustMockedTimeUtils(65);
         recoveryManager.onAliveReceived(1, getAdjustedMilliseconds(-3), mockedTimeUtils.now(), true, true);
         assertEquals(2, taskScheduler.getOneTimeTaskRuns());
         assertTrue(producer.isFlaggedDown());

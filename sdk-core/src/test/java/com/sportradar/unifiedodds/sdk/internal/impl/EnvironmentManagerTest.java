@@ -9,10 +9,12 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.utils.OldStyleTest;
 import java.util.List;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class EnvironmentManagerTest {
 
     @Test

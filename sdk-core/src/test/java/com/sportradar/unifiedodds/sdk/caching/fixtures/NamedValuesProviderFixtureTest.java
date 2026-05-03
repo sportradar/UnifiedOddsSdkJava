@@ -7,9 +7,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class NamedValuesProviderFixtureTest {
 
     private final int id = 43;

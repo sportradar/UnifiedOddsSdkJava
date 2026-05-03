@@ -5,10 +5,12 @@ import static org.junit.Assert.assertFalse;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
+@OldStyleTest
 @SuppressWarnings({ "LineLength", "MagicNumber" })
 public class SdkConfigurationReaderTest {
 

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 import static com.sportradar.unifiedodds.sdk.internal.impl.RoutingKeysTest.TokenName.*;
 import static org.junit.Assert.*;
 
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urns;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import java.util.stream.IntStream;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class RoutingKeysTest {
 
     private static final String DOT = "\\.";

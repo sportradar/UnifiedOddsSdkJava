@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedMessageInterestCombination;
 import com.sportradar.unifiedodds.sdk.internal.impl.OddsFeedRoutingKeyBuilder;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
@@ -16,10 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- * Created on 03/07/2018.
- * // TODO @eti: Javadoc
- */
+@OldStyleTest
 @SuppressWarnings({ "LambdaBodyLength", "MagicNumber", "MultipleStringLiterals" })
 public class RoutingKeyBuilderTests {
 

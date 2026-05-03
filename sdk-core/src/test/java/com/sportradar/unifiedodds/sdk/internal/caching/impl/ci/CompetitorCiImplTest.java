@@ -15,10 +15,12 @@ import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.DivisionCi;
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCompetitorCi;
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableDivisionCi;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class CompetitorCiImplTest {
 
     private final Urn anyUrn = new Urn("sr", "competitor", 1);

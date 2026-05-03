@@ -6,10 +6,12 @@ package com.sportradar.unifiedodds.sdk.shared;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.xmlunit.matchers.EvaluateXPathMatcher;
 
+@OldStyleTest
 @SuppressWarnings({ "DeclarationOrder", "LineLength" })
 public class DynamicMarketResponseProviderTest {
 

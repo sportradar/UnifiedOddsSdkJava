@@ -5,6 +5,8 @@ package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
+import com.sportradar.uf.sportsapi.datamodel.DescVariant;
+import com.sportradar.uf.sportsapi.datamodel.DescVariantOutcomes;
 import com.sportradar.unifiedodds.sdk.oddsentities.Outcome;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +47,22 @@ public class OutcomesAssert extends AbstractAssert<OutcomesAssert, List<? extend
             .getOutcome()
             .stream()
             .collect(Collectors.toMap(DescOutcomes.Outcome::getId, DescOutcomes.Outcome::getName));
+
+        val actualIdToName = actual.stream().collect(Collectors.toMap(Outcome::getId, Outcome::getName));
+
+        Assertions.assertThat(actualIdToName).isEqualTo(expectedIdToName);
+
+        return this;
+    }
+
+    public OutcomesAssert hasExactlyNamesAndIdsEqualTo(DescVariant variantDescription) {
+        val expectedIdToName = variantDescription
+            .getOutcomes()
+            .getOutcome()
+            .stream()
+            .collect(
+                Collectors.toMap(DescVariantOutcomes.Outcome::getId, DescVariantOutcomes.Outcome::getName)
+            );
 
         val actualIdToName = actual.stream().collect(Collectors.toMap(Outcome::getId, Outcome::getName));
 

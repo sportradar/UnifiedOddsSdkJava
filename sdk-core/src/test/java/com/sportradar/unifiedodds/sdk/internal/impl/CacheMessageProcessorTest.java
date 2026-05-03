@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.processing.pipeline.Processe
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.shared.TestProducersProvider;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class CacheMessageProcessorTest {
 

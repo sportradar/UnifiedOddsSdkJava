@@ -3,7 +3,6 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
-import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,10 +35,6 @@ import org.junit.platform.commons.util.ExceptionUtils;
 @WireMockTest
 class CustomBetIT {
 
-    private final Credentials sdkCredentials = Credentials.with(
-        Constants.SDK_USERNAME,
-        Constants.SDK_PASSWORD
-    );
     private ApiSimulator apiSimulator;
     private UofSdk sdk;
 
@@ -55,11 +50,7 @@ class CustomBetIT {
         apiSimulator.activateOnlyLiveProducer();
 
         BaseUrl sportsApiBaseUrl = BaseUrl.of("localhost", wmRuntimeInfo.getHttpPort());
-        sdk =
-            SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, 1)
-                .with(ExceptionHandlingStrategy.Throw)
-                .withoutFeed();
+        sdk = SdkSetup.with(sportsApiBaseUrl, 1).withoutFeed();
     }
 
     @AfterEach

@@ -6,9 +6,11 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import static org.junit.Assert.assertEquals;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableTimelineEventCi;
+import com.sportradar.utils.OldStyleTest;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ExportableTimelineEventCiTest {
 
     private final int anyId = 1;

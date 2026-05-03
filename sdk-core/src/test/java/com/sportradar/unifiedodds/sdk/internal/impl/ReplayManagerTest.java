@@ -9,8 +9,10 @@ import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.Test;
 
+@OldStyleTest
 public class ReplayManagerTest {
 
     private final double anySpeedUpFactor = 2;

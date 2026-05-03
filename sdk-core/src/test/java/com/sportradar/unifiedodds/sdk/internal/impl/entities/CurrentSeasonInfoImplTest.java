@@ -27,6 +27,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.TournamentCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.SeasonCi;
 import com.sportradar.unifiedodds.sdk.internal.caching.impl.SportEventCacheImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class CurrentSeasonInfoImplTest {
 
     public static final String TRANSLATIONS =

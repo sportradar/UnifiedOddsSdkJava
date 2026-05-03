@@ -6,10 +6,12 @@ package com.sportradar.unifiedodds.sdk.internal.caching.ci;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiHole;
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class HoleCiTest {
 
     @Nested

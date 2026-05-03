@@ -12,6 +12,7 @@ import static com.sportradar.unifiedodds.sdk.cfg.Environment.Production;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sportradar.utils.OldStyleTest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class EnvironmentsTest {
 
     @Test

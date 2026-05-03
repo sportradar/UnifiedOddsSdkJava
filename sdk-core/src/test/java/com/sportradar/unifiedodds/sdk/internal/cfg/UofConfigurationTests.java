@@ -28,6 +28,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.BookmakerDetailsImpl;
+import com.sportradar.utils.OldStyleTest;
 import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.util.*;
@@ -36,6 +37,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 public class UofConfigurationTests {
 
     private final Function<UofConfiguration, WhoAmIReader> anyBookmaker = c -> emptyBookmakerDetailsReader();

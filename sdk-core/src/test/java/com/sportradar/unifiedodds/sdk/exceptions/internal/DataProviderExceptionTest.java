@@ -7,9 +7,11 @@ import static org.junit.Assert.assertEquals;
 
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class DataProviderExceptionTest {
 
     private static final int ANY_STATUS_CODE = -14;

@@ -8,11 +8,13 @@ import static com.sportradar.unifiedodds.sdk.impl.util.javaclass.ClassResolverSt
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+import com.sportradar.utils.OldStyleTest;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.yaml.snakeyaml.Yaml;
 
+@OldStyleTest
 public class SdkConfigurationYamlReaderRequiresYamlTest {
 
     @ParameterizedTest

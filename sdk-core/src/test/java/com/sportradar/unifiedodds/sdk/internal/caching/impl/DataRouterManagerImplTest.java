@@ -10,6 +10,7 @@ import com.sportradar.uf.sportsapi.datamodel.SapiFixtureChangesEndpoint;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+@OldStyleTest
 public class DataRouterManagerImplTest {
 
     private final DataProvider fixtureChangeDataProvider = mock(DataProvider.class);
@@ -28,6 +30,7 @@ public class DataRouterManagerImplTest {
         mock(DataRouter.class),
         mock(TelemetryFactory.class),
         mock(ExecutionPathDataProvider.class),
+        mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),

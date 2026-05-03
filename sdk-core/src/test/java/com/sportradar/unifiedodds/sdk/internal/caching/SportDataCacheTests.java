@@ -26,6 +26,7 @@ import com.sportradar.unifiedodds.sdk.internal.shared.TestDataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.shared.TestFeed;
 import com.sportradar.unifiedodds.sdk.shared.RestMessageBuilder;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
 import java.util.Random;
@@ -33,6 +34,7 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings(
     { "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ClassFanOutComplexity", "MagicNumber" }
 )

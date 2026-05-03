@@ -10,6 +10,7 @@ import com.google.inject.util.Modules;
 import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.internal.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.utils.OldStyleTest;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber", "VisibilityModifier" })
 public class ChannelMessageConsumerTest {
 

@@ -21,12 +21,14 @@ import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class OddsChangeFeedMessageFactoryTest {
 
     private final UfOddsChange message = new UfOddsChange();

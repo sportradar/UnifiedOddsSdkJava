@@ -9,6 +9,7 @@ import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sportradar.utils.OldStyleTest;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class DrawResultImplTest {
 
     private static final String UNDER_20_EN = "Under 20";

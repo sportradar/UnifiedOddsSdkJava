@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.internal.caching;
 
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
@@ -11,6 +12,8 @@ import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
 import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
+import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBets;
+import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.utils.Urn;
@@ -68,6 +71,8 @@ public interface DataRouterManager {
 
     CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
         throws CommunicationException;
+
+    PrebuiltBets requestCustomBetPrebuiltBets(PrebuiltBetsRequest request) throws CommunicationException;
 
     List<FixtureChange> requestFixtureChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException;

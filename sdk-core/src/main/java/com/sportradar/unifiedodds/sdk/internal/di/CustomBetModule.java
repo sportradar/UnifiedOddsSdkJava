@@ -11,6 +11,7 @@ import com.google.inject.name.Named;
 import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.unifiedodds.sdk.internal.impl.CustomBetSelectionBuilderImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.Deserializer;
@@ -56,5 +57,20 @@ public class CustomBetModule extends AbstractModule {
         @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
     ) {
         return new DataProvider<>("/custombet/calculate-filter", cfg, httpDataFetcher, deserializer);
+    }
+
+    @Provides
+    @Named("CustomBetPrebuiltBetsDataProvider")
+    private DataProvider<CapiPreBuiltBets> providesCustomBetPrebuiltBetsDataProvider(
+        SdkInternalConfiguration cfg,
+        LogHttpDataFetcher httpDataFetcher,
+        @Named("CustomBetApiJaxbDeserializer") Deserializer deserializer
+    ) {
+        return new DataProvider<>(
+            "/custombet/prebuilt?event_urn=%s&user=%s&count=%s&length=%s",
+            cfg,
+            httpDataFetcher,
+            deserializer
+        );
     }
 }

@@ -247,6 +247,13 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
+    public com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBets requestCustomBetPrebuiltBets(
+        com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest request
+    ) throws CommunicationException {
+        return null;
+    }
+
+    @Override
     public List<FixtureChange> requestFixtureChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException {
         return null;

@@ -11,12 +11,14 @@ import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals" })
 public class ConfigurationBuilderWithCustomPropertiesTests extends ConfigurationBuilderSetup {
 

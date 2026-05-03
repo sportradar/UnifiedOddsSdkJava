@@ -6,12 +6,14 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStubs;
+import com.sportradar.utils.OldStyleTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 public class UofProducerConfigurationTests {
 
     private final UofProducerConfigurationImpl config = new UofProducerConfigurationImpl();

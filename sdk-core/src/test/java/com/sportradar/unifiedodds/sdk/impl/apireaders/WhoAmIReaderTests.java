@@ -24,6 +24,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.DataWrapper;
 import com.sportradar.unifiedodds.sdk.internal.impl.TestingDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -31,11 +32,10 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.assertj.core.api.Assertions;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings(
     {
         "IllegalCatch",

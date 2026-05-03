@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings("ClassFanOutComplexity")
 public class NoOpDataRouterManager implements DataRouterManager {
 
     @Override
@@ -108,6 +109,13 @@ public class NoOpDataRouterManager implements DataRouterManager {
     @Override
     public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
         throws CommunicationException {
+        return null;
+    }
+
+    @Override
+    public com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBets requestCustomBetPrebuiltBets(
+        com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest request
+    ) throws CommunicationException {
         return null;
     }
 

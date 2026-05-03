@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProviderImpl.StatusMessage;
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,7 @@ import lombok.val;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class NameProviderStatusMessageTest {
 
     public static final int INVALID_MARKET_ID = 0;

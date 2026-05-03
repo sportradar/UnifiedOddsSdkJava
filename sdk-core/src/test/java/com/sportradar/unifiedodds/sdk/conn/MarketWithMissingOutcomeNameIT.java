@@ -150,7 +150,7 @@ class MarketWithMissingOutcomeNameIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(aLanguage)

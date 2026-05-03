@@ -9,8 +9,10 @@ import static org.junit.Assert.*;
 import com.sportradar.unifiedodds.sdk.entities.Division;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.DivisionCi;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.DivisionImpl;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class DivisionImplTest {
 
     private final Integer anyDivisionId = 1;

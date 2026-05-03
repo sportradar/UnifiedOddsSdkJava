@@ -14,10 +14,12 @@ import com.sportradar.unifiedodds.sdk.di.MockedMasterModule;
 import com.sportradar.unifiedodds.sdk.internal.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ConstantName", "MagicNumber" })
 public class ProducerManagerTest {
 

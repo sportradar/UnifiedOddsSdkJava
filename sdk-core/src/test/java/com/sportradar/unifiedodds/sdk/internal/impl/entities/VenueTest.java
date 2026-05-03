@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.impl.XmlMessageReader;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.VenueCi;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DeserializationException;
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableVenueCi;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MultipleStringLiterals" })
 public class VenueTest {
 

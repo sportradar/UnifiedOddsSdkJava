@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
+import com.sportradar.utils.OldStyleTest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
 public class EnvironmentSelectorTests extends ConfigurationBuilderSetup {
 

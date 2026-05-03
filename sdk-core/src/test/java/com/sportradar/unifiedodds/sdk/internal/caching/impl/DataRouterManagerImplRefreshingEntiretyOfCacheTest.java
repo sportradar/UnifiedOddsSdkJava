@@ -21,12 +21,14 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.LogsMock;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Collections;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
 
     private static final String ERROR_ON_PROVIDING_TOURNAMENT =
@@ -67,6 +69,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     allTournaments,
+                    mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -197,6 +200,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
+                    mock(DataProvider.class),
                     mock(DataProvider.class)
                 );
         }
@@ -289,6 +293,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     allSports,
+                    mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
@@ -407,6 +412,7 @@ public class DataRouterManagerImplRefreshingEntiretyOfCacheTest {
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     allLotteries,
+                    mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),
                     mock(DataProvider.class),

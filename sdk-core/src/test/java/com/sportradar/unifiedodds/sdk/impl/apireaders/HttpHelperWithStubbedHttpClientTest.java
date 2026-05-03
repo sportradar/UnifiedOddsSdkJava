@@ -18,6 +18,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
 import com.sportradar.unifiedodds.sdk.shared.CloseableHttpClientFixture;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
+import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import lombok.val;
 import org.apache.hc.core5.http.ProtocolException;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 @SuppressWarnings({ "ClassFanOutComplexity", "ConstantName" })
 public abstract class HttpHelperWithStubbedHttpClientTest {
 

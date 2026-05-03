@@ -22,9 +22,11 @@ import com.sportradar.unifiedodds.sdk.internal.impl.processing.pipeline.Composit
 import com.sportradar.unifiedodds.sdk.internal.impl.processing.pipeline.ProcessedFixtureChangesTracker;
 import com.sportradar.unifiedodds.sdk.managers.RecoveryManager;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ClassFanOutComplexity" })
 public class InjectionModuleTests {
 

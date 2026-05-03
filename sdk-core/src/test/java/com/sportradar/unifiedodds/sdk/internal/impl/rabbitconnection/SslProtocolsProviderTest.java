@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.sportradar.utils.OldStyleTest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+@OldStyleTest
 public class SslProtocolsProviderTest {
 
     private final SslProtocolsProvider sslProtocolsProvider = new SslProtocolsProvider();

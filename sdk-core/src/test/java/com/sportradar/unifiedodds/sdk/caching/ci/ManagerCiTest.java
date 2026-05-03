@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.ManagerCi;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Locale;
 import lombok.val;
 import org.assertj.core.api.Assertions;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class ManagerCiTest {
 
     private static final String UNDER_20_EN = "Under 20";

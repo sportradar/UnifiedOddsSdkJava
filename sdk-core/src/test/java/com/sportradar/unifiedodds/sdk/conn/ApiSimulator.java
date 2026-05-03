@@ -20,6 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.utils.Urn;
@@ -498,6 +499,19 @@ public class ApiSimulator {
         );
     }
 
+    public void stubAllSports(Locale language, HeaderEquality header) {
+        val allSportsJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sports"),
+            SapiSportsEndpoint.class,
+            allSports()
+        );
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(header.name, header.valuePattern)
+                .willReturn(ok(JaxbContexts.SportsApi.marshall(allSportsJaxb)))
+        );
+    }
+
     public void stubAllSportsWithEmptyErrorResponse(Locale language) {
         register(
             get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
@@ -685,6 +699,18 @@ public class ApiSimulator {
             post(urlPathMatching("/v1/custombet/calculate-filter"))
                 .willReturn(
                     WireMock.aResponse().withBody(toXml(response)).withStatus(HttpStatus.SC_NOT_FOUND)
+                )
+        );
+    }
+
+    public void stubCustomBetPrebuiltSelections(CapiPreBuiltBets response) {
+        register(
+            get(urlPathEqualTo("/v1/custombet/prebuilt"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
                 )
         );
     }

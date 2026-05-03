@@ -19,6 +19,7 @@ import com.sportradar.unifiedodds.sdk.internal.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "VisibilityModifier", "MagicNumber" })
 public class CompetitorTest {
 

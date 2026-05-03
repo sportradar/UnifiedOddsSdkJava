@@ -17,6 +17,8 @@ public class UofConfigurationStub implements UofConfiguration {
     private final UofProducerConfiguration producerConfig = new UofProducerConfigurationStub();
     private Environment environment;
     private Integer nodeId;
+    private ExceptionHandlingStrategy exceptionHandlingStrategy;
+    private BookmakerDetails bookmakerDetails;
 
     @Override
     public String getAccessToken() {
@@ -53,12 +55,20 @@ public class UofConfigurationStub implements UofConfiguration {
 
     @Override
     public ExceptionHandlingStrategy getExceptionHandlingStrategy() {
-        return null;
+        return exceptionHandlingStrategy;
+    }
+
+    public void setExceptionHandlingStrategy(ExceptionHandlingStrategy exceptionHandlingStrategy) {
+        this.exceptionHandlingStrategy = exceptionHandlingStrategy;
     }
 
     @Override
     public BookmakerDetails getBookmakerDetails() {
-        return null;
+        return bookmakerDetails;
+    }
+
+    public void setBookmakerDetails(BookmakerDetails bookmakerDetails) {
+        this.bookmakerDetails = bookmakerDetails;
     }
 
     @Override

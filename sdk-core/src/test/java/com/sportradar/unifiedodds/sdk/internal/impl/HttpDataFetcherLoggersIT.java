@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,7 +88,7 @@ public class HttpDataFetcherLoggersIT {
             get(urlPathEqualTo(anyPath)).willReturn(WireMock.aResponse().withBody(apiXmlResponseString))
         );
 
-        HttpData responseData = httpDataFetcher.get(localhost);
+        HttpData responseData = httpDataFetcher.get(localhost, emptyMap());
         assertEquals(apiXmlResponseString, responseData.getResponse());
     }
 

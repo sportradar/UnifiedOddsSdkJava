@@ -8,9 +8,11 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ExchangeLocationTest {
 
     private final String anyName = "any";

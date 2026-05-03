@@ -13,6 +13,7 @@ import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiVenue;
 import com.sportradar.unifiedodds.sdk.exceptions.UnsupportedUrnFormatException;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.VenueCi;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
@@ -21,6 +22,7 @@ import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class VenueCiCourseCiIdTest {
 
     private VenueCiCourseCiIdTest() {}

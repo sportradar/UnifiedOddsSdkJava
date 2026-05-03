@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.custombet.datamodel.CapiSelectionType;
@@ -159,6 +160,44 @@ public class DataProviderTest {
 
             assertThat(calculationResponse.getCalculation().getOdds())
                 .isEqualTo(getCalculationWithHarmonization(true).getCalculation().getOdds());
+        }
+
+        @MethodSource(DATA_FETCHERS)
+        @ParameterizedTest(name = "{0}")
+        void returnsDataForGetWithHeadersRequest(String description, DataFetcherProvider dataFetcherProvider)
+            throws Exception {
+            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val provider = createDataProviderFor("/sports/de/sports.xml")
+                .with(cfg)
+                .with(dataFetcherProvider.getFor(cfg))
+                .with(sportsApiDeserializer())
+                .<SapiSportsEndpoint>build();
+
+            apiSimulator.stubAllSports(Locale.GERMAN, forHeader("Custom-Header", "HeaderValue"));
+
+            val allSports = provider.getDataWithHeaders(ImmutableMap.of("Custom-Header", "HeaderValue"));
+
+            assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
+        }
+
+        @MethodSource(DATA_FETCHERS)
+        @ParameterizedTest(name = "{0}")
+        void returnsDataForGetWithHeadersRequestWithEmptyHeadersMap(
+            String description,
+            DataFetcherProvider dataFetcherProvider
+        ) throws Exception {
+            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val provider = createDataProviderFor("/sports/%s/sports.xml")
+                .with(cfg)
+                .with(dataFetcherProvider.getFor(cfg))
+                .with(sportsApiDeserializer())
+                .<SapiSportsEndpoint>build();
+
+            apiSimulator.stubAllSports(Locale.GERMAN);
+
+            val allSports = provider.getDataWithHeaders(ImmutableMap.of(), Locale.GERMAN.getLanguage());
+
+            assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
         }
 
         @MethodSource(DATA_FETCHERS)

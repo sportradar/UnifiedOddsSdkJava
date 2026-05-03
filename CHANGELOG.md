@@ -1,6 +1,10 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.7.0**
+**4.8.0**
+- Added PreBuilt Bets support: CustomBetManager now allows retrieving available prebuilt bets for an event and obtaining prebuilt bet selections based on event recommendations.
+- Fixed the unit of `maxRecoveryTime` configuration property to seconds (previously it was treated as minutes).
+
+**4.7.0 (2026-03-02)**
 - Added support for In-Play Bet Settlements and In-Play Rollback Bet Settlements with markets with outcomes.
 
 **4.6.0 (2025-10-07)**

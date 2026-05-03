@@ -6,8 +6,10 @@ package com.sportradar.unifiedodds.sdk.cfg;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class EnvironmentTest {
 
     @Test

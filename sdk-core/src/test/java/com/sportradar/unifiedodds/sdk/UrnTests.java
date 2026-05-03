@@ -3,9 +3,11 @@ package com.sportradar.unifiedodds.sdk;
 import static org.junit.Assert.*;
 
 import com.sportradar.unifiedodds.sdk.entities.ResourceTypeGroup;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
 public class UrnTests {
 

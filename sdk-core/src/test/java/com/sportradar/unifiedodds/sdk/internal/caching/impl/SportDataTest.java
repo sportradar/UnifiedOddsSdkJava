@@ -11,6 +11,7 @@ import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertNull;
 
+import com.sportradar.utils.OldStyleTest;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class SportDataTest {
 
     private static final String UNDER_20_EN = "Under 20";

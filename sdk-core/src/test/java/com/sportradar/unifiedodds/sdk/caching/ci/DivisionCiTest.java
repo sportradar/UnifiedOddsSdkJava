@@ -8,8 +8,10 @@ import static org.junit.Assert.*;
 
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.DivisionCi;
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableDivisionCi;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class DivisionCiTest {
 
     private final Integer division = 1;

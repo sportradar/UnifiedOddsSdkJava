@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.caching.exportable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableVenueCi;
+import com.sportradar.utils.OldStyleTest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -13,6 +14,7 @@ import java.util.Map;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ExportableVenueCiTest {
 
     public static final String ANY_ID = "anyId";

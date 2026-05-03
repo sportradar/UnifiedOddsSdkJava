@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.EnvironmentSelector;
 import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+@OldStyleTest
 @SuppressWarnings({ "ConstantName" })
 public class TokenSetterTests extends ConfigurationBuilderSetup {
 

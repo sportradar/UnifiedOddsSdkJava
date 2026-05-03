@@ -5,9 +5,11 @@ import static org.junit.Assert.assertNotNull;
 
 import com.sportradar.uf.sportsapi.datamodel.DescOutcomes;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.markets.MarketOutcomeCi;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class MarketOutcomeCiTest {
 
     private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;

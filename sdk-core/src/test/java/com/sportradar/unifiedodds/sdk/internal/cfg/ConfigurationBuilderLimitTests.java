@@ -8,10 +8,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
+import com.sportradar.utils.OldStyleTest;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 public class ConfigurationBuilderLimitTests extends ConfigurationBuilderSetup {
 
     @Test

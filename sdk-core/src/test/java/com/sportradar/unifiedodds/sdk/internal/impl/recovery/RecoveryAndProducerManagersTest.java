@@ -37,6 +37,7 @@ import com.sportradar.utils.time.TimeUtilsStub;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import lombok.Value;
 import lombok.val;
@@ -198,6 +199,46 @@ class RecoveryAndProducerManagersTest {
                     (minutes(oneHourMaxWindow).getInMillis() - minutes(TEN_MINUTES).getInMillis())
                 )
             );
+    }
+
+    @Test
+    void stuckRecoveryIsRestartedAfterMaxRecoveryExecutionSecondsHaveElapsed() {
+        val maxRecoveryExecutionSeconds = 600;
+        val httpClient = acceptingPostRequests();
+        val recoveryCount = new AtomicInteger(0);
+        val producers = providingSuccessfully(
+            liveOddsProducer(p -> p.setStatefulRecoveryWindowInMinutes(oneHourMaxWindow))
+        );
+        val config = mock(SdkInternalConfiguration.class);
+        when(config.getMaxRecoveryExecutionSeconds()).thenReturn(maxRecoveryExecutionSeconds);
+
+        val managers = stubbingOutProducerDataProviderAndHttpClient()
+            .withOnRecoveryInitiated(ri -> recoveryCount.incrementAndGet())
+            .withProducerDataProvider(producers)
+            .withHttpClient(httpClient)
+            .withSdkInternalConfig(config)
+            .withTime(time)
+            .build();
+        managers.markFeedAsOpened();
+
+        managers
+            .recoveryManager()
+            .onAliveReceived(1, midnightTimestampMillis, midnightTimestampMillis, true, true);
+        assertThat(recoveryCount.get()).isEqualTo(1);
+
+        time.tick(seconds(maxRecoveryExecutionSeconds + 1));
+
+        managers
+            .recoveryManager()
+            .onAliveReceived(
+                1,
+                midnightTimestampMillis + seconds(maxRecoveryExecutionSeconds + 1).getInMillis(),
+                midnightTimestampMillis + seconds(maxRecoveryExecutionSeconds + 1).getInMillis(),
+                true,
+                true
+            );
+
+        assertThat(recoveryCount.get()).isEqualTo(2);
     }
 
     @Nested

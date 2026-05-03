@@ -12,12 +12,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Locale;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+@OldStyleTest
 public class DiExerciserForUnitTestsToGainCoverageAsDiIsTestedAtIntegrationLevelTest {
 
     @Rule

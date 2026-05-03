@@ -7,11 +7,13 @@ import static org.mockito.Mockito.when;
 
 import com.rabbitmq.client.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
+import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber" })
 public class ChannelFixtureTest {
 

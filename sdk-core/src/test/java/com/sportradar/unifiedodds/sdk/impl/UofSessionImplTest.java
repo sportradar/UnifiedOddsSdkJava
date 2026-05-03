@@ -24,6 +24,7 @@ import com.sportradar.unifiedodds.sdk.managers.RecoveryManager;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
+import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 @SuppressWarnings("ClassFanOutComplexity")
 public class UofSessionImplTest {
 

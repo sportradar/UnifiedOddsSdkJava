@@ -8,8 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class CommunicationExceptionTest {
 
     private static final String ANY_URL = "https://anyurl.com";

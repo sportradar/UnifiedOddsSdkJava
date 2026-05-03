@@ -5,10 +5,12 @@
 package com.sportradar.unifiedodds.sdk.internal.cfg;
 
 import com.sportradar.unifiedodds.sdk.cfg.UofUsageConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.SdkHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 public class UofUsageConfigurationTests {
 
     @Test

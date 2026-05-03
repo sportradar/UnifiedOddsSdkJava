@@ -33,6 +33,7 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.ExecutionPathDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.time.ZoneId;
@@ -44,6 +45,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ClassFanOutComplexity", "IllegalCatch", "MagicNumber", "ClassDataAbstractionCoupling" })
 public class SportEventCiTest {
 

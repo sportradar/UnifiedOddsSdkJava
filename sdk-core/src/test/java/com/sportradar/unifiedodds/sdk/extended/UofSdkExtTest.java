@@ -9,8 +9,10 @@ import static org.mockito.Mockito.mock;
 import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class UofSdkExtTest {
 
     private final UofGlobalEventsListener listener = mock(UofGlobalEventsListener.class);

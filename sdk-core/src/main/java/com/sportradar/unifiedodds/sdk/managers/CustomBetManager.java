@@ -7,6 +7,8 @@ package com.sportradar.unifiedodds.sdk.managers;
 import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
 import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
+import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBets;
+import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.utils.Urn;
@@ -24,11 +26,20 @@ public interface CustomBetManager {
     CustomBetSelectionBuilder getCustomBetSelectionBuilder();
 
     /**
+     * Returns a {@link PrebuiltBetsRequestBuilder} instance used to build prebuilt bets requests.
+     *
+     * @return a {@link PrebuiltBetsRequestBuilder} instance
+     */
+    default PrebuiltBetsRequestBuilder getPrebuiltBetsRequestBuilder() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
      * Returns an {@link AvailableSelections} instance providing the available selections
      * for the event associated with the provided {@link Urn} identifier
      *
      * @param eventId the {@link Urn} identifier of the event for which the available selections should be returned
-     * @return an {@link AvailableSelections} providing the the available selections of the associated event
+     * @return an {@link AvailableSelections} providing the available selections of the associated event
      */
     AvailableSelections getAvailableSelections(Urn eventId) throws CommunicationException;
 
@@ -47,4 +58,14 @@ public interface CustomBetManager {
      * @return an {@link CalculationFilter} providing the probability for the specified selections
      */
     CalculationFilter calculateProbabilityFilter(List<Selection> selections) throws CommunicationException;
+
+    /**
+     * Returns prebuilt bets for the event
+     *
+     * @param request the {@link PrebuiltBetsRequest} containing request parameters
+     * @return prebuilt bets for the event
+     */
+    default PrebuiltBets getPrebuiltBets(PrebuiltBetsRequest request) throws CommunicationException {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }

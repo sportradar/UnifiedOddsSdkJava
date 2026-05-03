@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SdkSetup {
@@ -54,6 +53,10 @@ public final class SdkSetup {
         int nodeId
     ) {
         return new SdkSetup(sdkCredentials, rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+    }
+
+    public static SdkSetup with(BaseUrl sportsApiBaseUrl, int nodeId) {
+        return new SdkSetup(Credentials.any(), null, sportsApiBaseUrl, nodeId);
     }
 
     public SdkSetup with(ListenerCollectingRawMessages collectingRawMessagesListener) {

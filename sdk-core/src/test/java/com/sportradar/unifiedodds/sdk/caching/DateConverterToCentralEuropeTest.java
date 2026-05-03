@@ -5,10 +5,12 @@ package com.sportradar.unifiedodds.sdk.caching;
 
 import static org.junit.Assert.assertEquals;
 
+import com.sportradar.utils.OldStyleTest;
 import java.time.ZoneId;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber" })
 public class DateConverterToCentralEuropeTest {
 

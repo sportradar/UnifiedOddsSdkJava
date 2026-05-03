@@ -30,10 +30,7 @@ import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
-import com.sportradar.uf.datamodel.UfBetSettlement;
-import com.sportradar.uf.datamodel.UfOddsChangeMarket;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
-import com.sportradar.uf.sportsapi.datamodel.DescSpecifiers;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
@@ -140,7 +137,7 @@ class MarketWithMissingNameIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .with(exceptionHandlingStrategy)
                 .withDefaultLanguage(aLanguage)

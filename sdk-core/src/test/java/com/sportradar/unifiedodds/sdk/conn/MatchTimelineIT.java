@@ -123,7 +123,7 @@ public class MatchTimelineIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(enLanguage)
                     .with1Session()
@@ -154,7 +154,7 @@ public class MatchTimelineIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(enLanguage)
                     .with1Session()

@@ -24,7 +24,6 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.nascarCup2024TournamentInfo;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Nascar2024.replaceFirstCompetitorWithVirtual;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.tournamentEuro2024;
-import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static com.sportradar.utils.Urns.CompetitorProfiles.urnForAnyCompetitor;
@@ -81,10 +80,6 @@ class CompetitorsIT {
     private final GlobalVariables globalVariables = new GlobalVariables();
     private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
 
-    private final Credentials sdkCredentials = Credentials.with(
-        Constants.SDK_USERNAME,
-        Constants.SDK_PASSWORD
-    );
     private final MessagesInMemoryStorage messagesStorage = new MessagesInMemoryStorage();
 
     private BaseUrl sportsApiBaseUrl;
@@ -120,7 +115,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -166,7 +161,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -209,7 +204,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -259,7 +254,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -296,7 +291,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -345,7 +340,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -386,7 +381,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -439,7 +434,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -490,7 +485,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -535,7 +530,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -584,7 +579,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -618,7 +613,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ExceptionHandlingStrategy.Catch)
                     .withDefaultLanguage(aLanguage)
                     .withoutFeed()
@@ -668,7 +663,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)
@@ -706,7 +701,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .withDefaultLanguage(aLanguage)
                     .with(exceptionHandlingStrategy)
@@ -733,7 +728,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .withDefaultLanguage(aLanguage)
                     .withDefaultExceptionHandlingStrategy()
@@ -767,7 +762,7 @@ class CompetitorsIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(strategy)
                     .withDefaultLanguage(aLanguage)

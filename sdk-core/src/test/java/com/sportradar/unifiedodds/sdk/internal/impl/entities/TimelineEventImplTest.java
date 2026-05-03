@@ -9,10 +9,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.TimelineEventCi;
+import com.sportradar.utils.OldStyleTest;
 import java.math.BigDecimal;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class TimelineEventImplTest {
 
     private final TimelineEventCi timelineEventCi = mock(TimelineEventCi.class);

@@ -359,6 +359,16 @@ public class UfMarkets {
             return market;
         }
 
+        public static UfOddsChangeMarket playerPointsMarket() {
+            UfOddsChangeMarket market = new UfOddsChangeMarket();
+            market.setId(PlayerPointsMarketIds.PLAYER_POINTS_MARKET_ID);
+            market.setSpecifiers(
+                UfSpecifiers.join(variant(PlayerPointsMarketIds.playerPointsVariant().id()))
+            );
+            populateOutcomeIds(from(PlayerPointsMarketIds.playerPointsVariant()), to(market));
+            return market;
+        }
+
         public static class UfOddsChangeOutcomeBuilder {
 
             private final UfOddsChangeMarket.UfOutcome outcome = new UfOddsChangeMarket.UfOutcome();

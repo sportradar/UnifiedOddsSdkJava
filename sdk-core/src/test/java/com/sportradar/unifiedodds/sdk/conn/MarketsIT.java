@@ -9,7 +9,6 @@ import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OneXtwo.oneXtwoMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.ODD_EVEN_MARKET_ID;
-import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.from;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.TranslationHolder.of;
@@ -58,10 +57,6 @@ class MarketsIT {
 
     private final GlobalVariables globalVariables = new GlobalVariables();
     private final ApiSimulator apiSimulator = new ApiSimulator(wireMock.getRuntimeInfo().getWireMock());
-    private final Credentials sdkCredentials = Credentials.with(
-        Constants.SDK_USERNAME,
-        Constants.SDK_PASSWORD
-    );
     private final MessagesInMemoryStorage messagesStorage = new MessagesInMemoryStorage();
 
     private BaseUrl sportsApiBaseUrl;
@@ -90,7 +85,7 @@ class MarketsIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .with(Throw)
                 .withDefaultLanguage(ENGLISH)

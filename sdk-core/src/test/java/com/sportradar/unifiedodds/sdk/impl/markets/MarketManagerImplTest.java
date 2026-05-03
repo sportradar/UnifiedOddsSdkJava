@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.markets.VariantDescriptio
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.markets.MarketManagerImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.Market;
+import com.sportradar.utils.OldStyleTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class MarketManagerImplTest {
 
     private static final List<Locale> LIST_OF_2_LOCALES = new ArrayList<>(

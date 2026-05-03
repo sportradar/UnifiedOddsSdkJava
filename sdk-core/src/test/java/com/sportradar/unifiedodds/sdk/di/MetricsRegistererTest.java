@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.internal.di.MetricsRegisterer;
+import com.sportradar.utils.OldStyleTest;
 import java.util.stream.Stream;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMException;
@@ -19,6 +20,7 @@ import lombok.val;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class MetricsRegistererTest {
 
     @ParameterizedTest

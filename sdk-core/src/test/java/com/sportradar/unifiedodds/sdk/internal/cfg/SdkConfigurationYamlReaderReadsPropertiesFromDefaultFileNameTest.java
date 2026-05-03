@@ -9,11 +9,13 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
+@OldStyleTest
 public class SdkConfigurationYamlReaderReadsPropertiesFromDefaultFileNameTest {
 
     public static final String DEFAULT_YAML_FILENAME = "/application.yml";

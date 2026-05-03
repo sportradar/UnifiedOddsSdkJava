@@ -21,6 +21,7 @@ import com.sportradar.unifiedodds.sdk.internal.di.TestingModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
 import com.sportradar.unifiedodds.sdk.internal.shared.TestHttpHelper;
 import com.sportradar.unifiedodds.sdk.managers.BookingManager;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import lombok.val;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -29,6 +30,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ConstantName", "MagicNumber", "ClassFanOutComplexity" })
 public class BookingManagerTest {
 

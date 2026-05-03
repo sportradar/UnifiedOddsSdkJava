@@ -9,11 +9,13 @@ import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
+import com.sportradar.utils.OldStyleTest;
 import java.util.List;
 import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilderSetup {
 

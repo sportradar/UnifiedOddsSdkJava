@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+@OldStyleTest
 public class UrnsTest {
 
     public static final String SR = "sr";

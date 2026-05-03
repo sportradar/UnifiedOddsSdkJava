@@ -15,6 +15,8 @@ import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.unifiedodds.sdk.CapiCustomBet;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
@@ -55,12 +57,10 @@ public class CustomBetManagerImplTest {
 
         List<Locale> desiredLocales = new ArrayList<Locale>();
         desiredLocales.add(Locale.ENGLISH);
-        SdkInternalConfiguration configThrow = mock(SdkInternalConfiguration.class);
-        when(configThrow.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Throw);
-        when(configThrow.getDesiredLocales()).thenReturn(desiredLocales);
-        SdkInternalConfiguration configCatch = mock(SdkInternalConfiguration.class);
-        when(configCatch.getExceptionHandlingStrategy()).thenReturn(ExceptionHandlingStrategy.Catch);
-        when(configCatch.getDesiredLocales()).thenReturn(desiredLocales);
+        UofConfigurationStub configThrow = new UofConfigurationStub();
+        configThrow.setExceptionHandlingStrategy(ExceptionHandlingStrategy.Throw);
+        UofConfigurationStub configCatch = new UofConfigurationStub();
+        configCatch.setExceptionHandlingStrategy(ExceptionHandlingStrategy.Catch);
         DataRouterImpl dataRouter = new DataRouterImpl();
         dataRouter.setDataListeners(new ArrayList<>());
         DataRouterManager dataRouterManager = new DataRouterManagerBuilder()
@@ -91,7 +91,7 @@ public class CustomBetManagerImplTest {
         @Test
         void shouldNotBeCreatedWithNullDataRouterManager() {
             assertThatNullPointerException()
-                .isThrownBy(() -> new CustomBetManagerImpl(null, mock(SdkInternalConfiguration.class)))
+                .isThrownBy(() -> new CustomBetManagerImpl(null, mock(UofConfiguration.class)))
                 .withMessage("dataRouterManager");
         }
 

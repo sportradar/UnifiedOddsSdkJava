@@ -15,6 +15,7 @@ import static com.sportradar.unifiedodds.sdk.conn.marketids.HoleNrCompetitorUnde
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OneXtwoMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PenaltyShootoutCompetitor2TotalMarketIds.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.PlayerPointsMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PlayerToScoreMarketIds.PLAYER_TO_SCORE_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.PlayerToStrikeOutAppearanceTimeAtBatMarketIds.PLAYER_TO_STRIKE_OUT_APPEARANCE_TIME_AT_BAT_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.TotalHolesWonMarketIds.TOTAL_HOLES_WON_MARKET_ID;
@@ -2464,6 +2465,98 @@ public final class SapiMarketDescriptions {
                     .filter(t -> t.language.equals(language))
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Unsupported language in test fixture"));
+            }
+        }
+    }
+
+    public static class PlayerPoints {
+
+        private static final Map<String, String> ENGLISH_OUTCOME_NAMES = ImmutableMap
+            .<String, String>builder()
+            .put("pre:playerprops:43067097:1876136:31", "PlayerName PlayerSurname 31+")
+            .put("pre:playerprops:43067097:1876136:33", "PlayerName PlayerSurname 33+")
+            .put("pre:playerprops:43067097:1876136:35", "PlayerName PlayerSurname 35+")
+            .put("pre:playerprops:43067097:1876136:37", "PlayerName PlayerSurname 37+")
+            .put("pre:playerprops:43067097:1876136:39", "PlayerName PlayerSurname 39+")
+            .build();
+
+        public static DescMarket playerPointsInvariantMarketDescription(Locale language) {
+            val description = playerPointsVariantMarketDescription(PlayerPointsTranslation.getFor(language));
+            clearOutcomesBecauseInvariantMarketDescriptionDoesNotSpecifyThem(description);
+            return description;
+        }
+
+        private static void clearOutcomesBecauseInvariantMarketDescriptionDoesNotSpecifyThem(
+            DescMarket description
+        ) {
+            description.getOutcomes().getOutcome().clear();
+        }
+
+        public static DescMarket playerPointsVariantMarketDescription() {
+            return playerPointsVariantMarketDescription(PlayerPointsTranslation.EN);
+        }
+
+        public static DescMarket playerPointsVariantMarketDescription(Locale language) {
+            return playerPointsVariantMarketDescription(PlayerPointsTranslation.getFor(language));
+        }
+
+        private static DescMarket playerPointsVariantMarketDescription(PlayerPointsTranslation translation) {
+            val market = new DescMarket();
+            market.setId(PLAYER_POINTS_MARKET_ID);
+            market.setName(translation.getMarketName());
+            market.setVariant(playerPointsVariant().id());
+            populateOutcomes(from(playerPointsVariant()), to(market), translation);
+            return market;
+        }
+
+        private static void populateOutcomes(
+            MarketVariant fromVariant,
+            DescMarket toMarket,
+            PlayerPointsTranslation translation
+        ) {
+            val outcomes = new DescOutcomes();
+            populateOutcomes(fromVariant, outcomes, translation);
+            toMarket.setOutcomes(outcomes);
+        }
+
+        private static void populateOutcomes(
+            MarketVariant fromVariant,
+            DescOutcomes toOutcomes,
+            PlayerPointsTranslation translation
+        ) {
+            fromVariant
+                .outcomeIds()
+                .forEach(id ->
+                    toOutcomes.getOutcome().add(outcome(id, translation.getOutcomeTranslations().get(id)))
+                );
+        }
+
+        private static DescOutcomes.Outcome outcome(String id, String name) {
+            val outcome = new DescOutcomes.Outcome();
+            outcome.setId(id);
+            outcome.setName(name);
+            return outcome;
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        public enum PlayerPointsTranslation {
+            EN(Locale.ENGLISH, "Player points (incl. overtime)", ENGLISH_OUTCOME_NAMES),
+            FR_SAME_AS_ENGLISH_IN_PROD(
+                Locale.FRENCH,
+                "Player points (incl. overtime)",
+                ENGLISH_OUTCOME_NAMES
+            );
+
+            private final Locale language;
+            private final String marketName;
+            private final Map<String, String> outcomeTranslations;
+
+            public static PlayerPointsTranslation getFor(Locale locale) {
+                return stream(PlayerPointsTranslation.values())
+                    .filter(translation -> translation.language.equals(locale))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException(LANGUAGE_NOT_SUPPORTED_BY_TEST_FIXTURE));
             }
         }
     }

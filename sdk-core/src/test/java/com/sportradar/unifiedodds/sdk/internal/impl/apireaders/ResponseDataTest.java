@@ -6,9 +6,11 @@ package com.sportradar.unifiedodds.sdk.internal.impl.apireaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class ResponseDataTest {
 
     private static final int HTTP_OK = 200;

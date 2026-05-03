@@ -12,11 +12,13 @@ import static org.mockito.Mockito.verify;
 import com.rabbitmq.client.BlockedListener;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
+import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+@OldStyleTest
 public class ConnectionFixtureTest {
 
     private final ConnectionFixture connection = new ConnectionFixture.Holder().get();

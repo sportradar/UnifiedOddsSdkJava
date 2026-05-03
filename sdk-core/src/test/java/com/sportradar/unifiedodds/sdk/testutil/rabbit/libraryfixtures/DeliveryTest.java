@@ -9,9 +9,11 @@ import static org.mockito.Mockito.mock;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class DeliveryTest {
 
     @Test

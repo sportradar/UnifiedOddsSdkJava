@@ -22,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.internal.shared.TestDataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.shared.TestFeed;
 import com.sportradar.unifiedodds.sdk.managers.CustomBetSelectionBuilder;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.Urn;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings(
     {
         "ClassFanOutComplexity",

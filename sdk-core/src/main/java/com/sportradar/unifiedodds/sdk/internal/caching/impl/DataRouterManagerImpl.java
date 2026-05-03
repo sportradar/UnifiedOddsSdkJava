@@ -15,10 +15,7 @@ import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
-import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
-import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
-import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
-import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
+import com.sportradar.unifiedodds.sdk.entities.custombet.*;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
 import com.sportradar.unifiedodds.sdk.internal.caching.*;
@@ -31,6 +28,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.PrebuiltBetsImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.FixtureChangeImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.PeriodStatusImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.ResultChangeImpl;
@@ -217,6 +215,11 @@ public class DataRouterManagerImpl implements DataRouterManager {
     private final DataProvider<CapiFilteredCalculationResponse> calculateProbabilityFilterDataProvider;
 
     /**
+     * A {@link DataProvider} used to fetch custom bet prebuilt bets
+     */
+    private final DataProvider<CapiPreBuiltBets> customBetPrebuiltBetsDataProvider;
+
+    /**
      * A {@link DataProvider} used to fetch fixture changes
      */
     private final DataProvider<SapiFixtureChangesEndpoint> fixtureChangesDataProvider;
@@ -281,6 +284,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
         DataProvider<CapiAvailableSelections> availableSelectionsTypeDataProvider,
         DataProvider<CapiCalculationResponse> calculateProbabilityDataProvider,
         DataProvider<CapiFilteredCalculationResponse> calculateProbabilityFilterDataProvider,
+        @Named(
+            "CustomBetPrebuiltBetsDataProvider"
+        ) DataProvider<CapiPreBuiltBets> customBetPrebuiltBetsDataProvider,
         DataProvider<SapiFixtureChangesEndpoint> fixtureChangesDataProvider,
         DataProvider<SapiResultChangesEndpoint> resultChangesDataProvider,
         @Named("ListSportEventsDataProvider") DataProvider<SapiScheduleEndpoint> listSportEventsProvider,
@@ -311,6 +317,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         Preconditions.checkNotNull(availableSelectionsTypeDataProvider);
         Preconditions.checkNotNull(calculateProbabilityDataProvider);
         Preconditions.checkNotNull(calculateProbabilityFilterDataProvider);
+        Preconditions.checkNotNull(customBetPrebuiltBetsDataProvider);
         Preconditions.checkNotNull(fixtureChangesDataProvider);
         Preconditions.checkNotNull(resultChangesDataProvider);
         Preconditions.checkNotNull(listSportEventsProvider);
@@ -346,6 +353,7 @@ public class DataRouterManagerImpl implements DataRouterManager {
         this.availableSelectionsTypeDataProvider = availableSelectionsTypeDataProvider;
         this.calculateProbabilityDataProvider = calculateProbabilityDataProvider;
         this.calculateProbabilityFilterDataProvider = calculateProbabilityFilterDataProvider;
+        this.customBetPrebuiltBetsDataProvider = customBetPrebuiltBetsDataProvider;
         this.fixtureChangesDataProvider = fixtureChangesDataProvider;
         this.resultChangesDataProvider = resultChangesDataProvider;
         this.listSportEventsProvider = listSportEventsProvider;
@@ -1140,6 +1148,44 @@ public class DataRouterManagerImpl implements DataRouterManager {
 
         dataRouter.onCalculateProbabilityFilterFetched(selections, calculation);
         return new CalculationFilterImpl(calculation);
+    }
+
+    @Override
+    public PrebuiltBets requestCustomBetPrebuiltBets(PrebuiltBetsRequest request)
+        throws CommunicationException {
+        Preconditions.checkNotNull(request);
+
+        try (
+            LatencyTracker ignored = telemetryFactory.latencyHistogram(
+                LongSdkHistogram.DATA_ROUTER_MANAGER,
+                TELEMETRY_TAG_KEY,
+                "CustomBetPrebuilt"
+            )
+        ) {
+            Map<String, String> headers = Collections.singletonMap(
+                "x-sub-bookmaker",
+                String.valueOf(request.getSubBookmakerId())
+            );
+            CapiPreBuiltBets result = customBetPrebuiltBetsDataProvider.getDataWithHeaders(
+                headers,
+                valueOrEmptyString(request.getEventId()),
+                valueOrEmptyString(request.getUser()),
+                valueOrEmptyString(request.getCount()),
+                valueOrEmptyString(request.getLength())
+            );
+            return new PrebuiltBetsImpl(result);
+        } catch (DataProviderException e) {
+            throw new CommunicationException(
+                String.format("Error executing custom bet prebuilt bets request for %s", request),
+                e.tryExtractCommunicationExceptionUrl("custombet_prebuilt"),
+                e.tryExtractCommunicationExceptionHttpStatusCode(-1),
+                e
+            );
+        }
+    }
+
+    private static String valueOrEmptyString(Object value) {
+        return value != null ? value.toString() : "";
     }
 
     @Override

@@ -14,7 +14,8 @@ public enum Sport {
     TENNIS(Urn.parse("sr:sport:5")),
     BASEBALL(Urn.parse("sr:sport:3")),
     KABADDI(Urn.parse("sr:sport:138")),
-    AMERICAN_FOOTBALL(Urn.parse("sr:sport:16"));
+    AMERICAN_FOOTBALL(Urn.parse("sr:sport:16")),
+    NASCAR_CUP_SERIES(Urn.parse("sr:sport:70"));
 
     private final Urn urn;
 
