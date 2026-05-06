@@ -14,11 +14,11 @@
 
     <description>UnifiedFeed SDK is a client library that enables easier integration with the Betradar XML feeds. SDK exposes XML feed service interface in a more user-friendly way and isolates the client from having to do XML feed parsing, proper connection handling, error recovery, event queuing, data caching and dispatching. It also makes a client solution more stable and robust when it comes to feed handling, especially with the release of new and updated XML feed versions.</description>
     <inceptionYear>2016</inceptionYear>
-    <url>http://sdk.sportradar.com/unifiedfeed/java2</url>
+    <url>https://sdk.sportradar.com/unifiedfeed/java2</url>
     <licenses>
         <license>
             <name>SDK licence</name>
-            <url>http://sdk.sportradar.com/unifiedfeed/java2</url>
+            <url>https://sdk.sportradar.com/unifiedfeed/java2</url>
             <comments>See end-user agreement on sdk website</comments>
         </license>
     </licenses>
@@ -27,9 +27,9 @@
             <id>sportradar</id>
             <name>Sportradar AG</name>
             <email>sdk@sportradar.com</email>
-            <url>http://sdk.sportradar.com</url>
+            <url>https://sdk.sportradar.com</url>
             <organization>Sportradar AG</organization>
-            <organizationUrl>http://www.sportradar.com</organizationUrl>
+            <organizationUrl>https://sportradar.com</organizationUrl>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
