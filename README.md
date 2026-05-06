@@ -47,7 +47,7 @@ uofSdk.open();
 
 ## 📊 Accessing Sports Data
 
-Retrieve sports information, tournaments, and events using the [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html):
+Retrieve sports information, tournaments, and events using the [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/managers/SportDataProvider.html):
 
 ```java
 SportDataProvider sportDataProvider = uofSdk.getSportDataProvider();
@@ -141,8 +141,8 @@ UofConfiguration config = UofSdk.getConfigurationBuilder()
 
 ### Dynamic Locale Access
 Access additional locales on-demand through:
-- [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
-- [MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html)
+- [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/managers/SportDataProvider.html)
+- [MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/managers/MarketDescriptionManager.html)
 
 ## 🛠️ System Resilience & Recovery
 
