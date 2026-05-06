@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.EventChangeListener;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
+import com.sportradar.unifiedodds.sdk.entities.Change;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
@@ -61,6 +62,9 @@ public class EventChangeManagerImpl implements EventChangeManager {
     private static final Logger executionLogger = LoggerFactory.getLogger(EventChangeManagerImpl.class);
     private static final Logger clientInteractionLogger = LoggerFactory.getLogger(
         LoggerDefinitions.UfSdkClientInteractionLog.class
+    );
+    private static final Comparator<Change> BY_UPDATE_TIME = Comparator.comparing(change ->
+        change.getUpdateTime().getTime()
     );
     private final SdkInternalConfiguration configuration;
     private final SportDataProviderImpl sportDataProvider;
@@ -330,11 +334,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
             }
 
             if (changes != null) {
-                changes =
-                    changes
-                        .stream()
-                        .sorted(Comparator.comparing(c -> c.getUpdateTime().getTime()))
-                        .collect(Collectors.toList());
+                changes = changes.stream().sorted(BY_UPDATE_TIME).collect(Collectors.toList());
             }
 
             for (FixtureChange fixtureChange : changes) {
@@ -413,11 +413,7 @@ public class EventChangeManagerImpl implements EventChangeManager {
             }
 
             if (changes != null) {
-                changes =
-                    changes
-                        .stream()
-                        .sorted(Comparator.comparing(c -> c.getUpdateTime().getTime()))
-                        .collect(Collectors.toList());
+                changes = changes.stream().sorted(BY_UPDATE_TIME).collect(Collectors.toList());
             }
 
             for (ResultChange resultChange : changes) {

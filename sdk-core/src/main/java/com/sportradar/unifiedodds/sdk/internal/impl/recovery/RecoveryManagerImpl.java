@@ -405,9 +405,10 @@ public class RecoveryManagerImpl
         MDC.setContextMap(sdkMdcContextDescription);
         long now = timeUtils.now();
 
-        StringBuilder notificationString = new StringBuilder(
-            "Connection reestablished. Last valid producers alive(w\\s=1 && producer up) messages received: "
-        );
+        StringBuilder notificationString = new StringBuilder(200)
+            .append(
+                "Connection reestablished. Last valid producers alive(w\\s=1 && producer up) messages received: "
+            );
         for (ProducerInfo pi : perProducerInfo.values()) {
             if (pi.isDisabled()) continue;
 
@@ -418,7 +419,7 @@ public class RecoveryManagerImpl
             } else {
                 secondsAgo = -99;
             }
-            notificationString.append("(").append(pi).append(":").append(secondsAgo).append(")");
+            notificationString.append('(').append(pi).append(':').append(secondsAgo).append(')');
         }
         notificationString.append(
             " seconds ago. Recovery will be initiated when the Alive messages start to process."
@@ -668,19 +669,19 @@ public class RecoveryManagerImpl
     ) {
         long systemInactivityInterval = now - pi.getLastSystemAliveReceivedTimestamp();
         heartBeatBuilder
-            .append("(")
+            .append('(')
             .append(pi)
-            .append(":")
+            .append(':')
             .append(systemInactivityInterval / 1000)
-            .append(")");
+            .append(')');
 
-        statusBuilder.append("(").append(pi);
+        statusBuilder.append('(').append(pi);
         long lastMessageReceivedAgo = 0;
         if (pi.getLastMessageReceivedTimestamp() != 0) {
             lastMessageReceivedAgo =
                 TimeUnit.SECONDS.convert(now - pi.getLastMessageReceivedTimestamp(), TimeUnit.MILLISECONDS);
         }
-        statusBuilder.append(":").append(lastMessageReceivedAgo);
+        statusBuilder.append(':').append(lastMessageReceivedAgo);
 
         long lastMessageProcessingDelay = 0;
         if (pi.getLastProcessedMessageGenTimestamp() != 0) {
@@ -690,9 +691,7 @@ public class RecoveryManagerImpl
                     TimeUnit.MILLISECONDS
                 );
         }
-        statusBuilder.append(":").append(lastMessageProcessingDelay);
-
-        statusBuilder.append(":");
+        statusBuilder.append(':').append(lastMessageProcessingDelay).append(':');
         if (!pi.isFlaggedDown()) {
             statusBuilder.append("UP");
         } else {
@@ -707,7 +706,7 @@ public class RecoveryManagerImpl
             }
             statusBuilder.append(", RecoveryState=").append(pi.getRecoveryState());
         }
-        statusBuilder.append(")");
+        statusBuilder.append(')');
     }
 
     private void performProducerRecovery(ProducerInfo pi) {
@@ -1245,11 +1244,11 @@ public class RecoveryManagerImpl
             reqBuilder.append("recovery/initiate_request?");
 
             if (fromTimestamp != 0) {
-                reqBuilder.append("after=").append(fromTimestamp).append("&");
+                reqBuilder.append("after=").append(fromTimestamp).append('&');
             }
 
             if (config.getSdkNodeId() != null) {
-                reqBuilder.append("node_id=").append(config.getSdkNodeId()).append("&");
+                reqBuilder.append("node_id=").append(config.getSdkNodeId()).append('&');
             }
 
             reqBuilder.append("request_id=").append(recoveryId);
