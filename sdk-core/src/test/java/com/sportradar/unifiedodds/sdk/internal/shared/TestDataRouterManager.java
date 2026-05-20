@@ -18,11 +18,13 @@ import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
+import com.sportradar.unifiedodds.sdk.internal.impl.CalculateRequestBuilderImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.TestingDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationImpl;
+import com.sportradar.unifiedodds.sdk.managers.CalculateRequestBuilder;
 import com.sportradar.unifiedodds.sdk.shared.Helper;
 import com.sportradar.unifiedodds.sdk.shared.StaticRandom;
 import com.sportradar.utils.SdkHelper;
@@ -178,8 +180,10 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException {
+    public Calculation requestCalculateProbability(CalculateRequestBuilder request)
+        throws CommunicationException {
         recordCall("requestCalculateProbability");
+        List<Selection> selections = extractAndSelections(request);
         DataProvider<CapiCalculationResponse> dataProvider = new TestingDataProvider<>(
             "test/rest/custombet/calculate_response.xml"
         );
@@ -212,9 +216,10 @@ public class TestDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
+    public CalculationFilter requestCalculateProbabilityFilter(CalculateRequestBuilder request)
         throws CommunicationException {
         recordCall("requestCalculateProbabilityFilter");
+        List<Selection> selections = extractAndSelections(request);
         DataProvider<CapiFilteredCalculationResponse> dataProvider = new TestingDataProvider<>(
             "test/rest/custombet/calculate_filter_response.xml"
         );
@@ -244,6 +249,17 @@ public class TestDataRouterManager implements DataRouterManager {
         }
 
         return null;
+    }
+
+    private static List<Selection> extractAndSelections(CalculateRequestBuilder request) {
+        CalculateRequestBuilderImpl builderImpl = (CalculateRequestBuilderImpl) request;
+        List<Selection> selections = new ArrayList<>();
+        for (Object item : builderImpl.getItems()) {
+            if (item instanceof Selection) {
+                selections.add((Selection) item);
+            }
+        }
+        return selections;
     }
 
     @Override

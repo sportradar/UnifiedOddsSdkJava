@@ -3,6 +3,8 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
+import static com.sportradar.unifiedodds.sdk.BookmakerDetailsDataProviders.providing;
+import static com.sportradar.unifiedodds.sdk.ConfigurationUnitBuilders.stubbingOutDataProviders;
 import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
 import static java.util.Arrays.asList;
@@ -23,20 +25,14 @@ public class ConfigureDesiredLanguagesTest {
     private final boolean replayMode = true;
     private final List<Locale> desiredLanguages = asList(Locale.ENGLISH, Locale.FRENCH);
     private final Locale anyLanguage = Locale.FRENCH;
-    private final Map<String, String> yamlFileContent = new HashMap<>();
-    private final Map<String, String> propsFileContent = new HashMap<>();
-    private final WhoAmIReader whoAmIReader = emptyBookmakerDetailsReader();
-    private final ProducerDataProvider producerDataProvider = providerOfSingleEmptyProducer();
-    private final TokenSetter buildFromPropsFile = new TokenSetterImpl(
-        new StubSdkConfigurationPropertiesReader(propsFileContent),
-        new StubSdkConfigurationYamlReader(yamlFileContent),
-        anyConfig -> whoAmIReader,
-        anyConfig -> producerDataProvider
-    );
 
     @Test
     public void configureViaJavaApi() {
-        UofConfiguration config = buildFromPropsFile
+        TokenSetter tokenSetter = stubbingOutDataProviders()
+            .withOneProducerAndEmptyBookmakerDetails()
+            .buildTokenSetter();
+
+        UofConfiguration config = tokenSetter
             .setAccessToken("any")
             .selectCustom()
             .setDefaultLanguage(anyLanguage)

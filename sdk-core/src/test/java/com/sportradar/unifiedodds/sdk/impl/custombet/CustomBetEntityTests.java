@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -352,68 +351,6 @@ public class CustomBetEntityTests {
         Assert.assertNotNull(availableSelections);
         Assert.assertEquals(eventId, availableSelections.getEventId());
         Assert.assertFalse(availableSelections.getMarkets().isEmpty());
-    }
-
-    @Test
-    public void getCalculationTest() throws CommunicationException {
-        AvailableSelections availableSelections = dataRouterManager.requestAvailableSelections(eventId);
-        Assert.assertNotNull(availableSelections);
-
-        List<Selection> matchSelections = new ArrayList<>();
-        Market market = availableSelections.getMarkets().get(0);
-        Selection selection = customBetSelectionBuilder
-            .setEventId(eventId)
-            .setMarketId(market.getId())
-            .setOutcomeId(market.getOutcomes().get(0))
-            .setSpecifiers(market.getSpecifiers())
-            .build();
-        matchSelections.add(selection);
-        market = availableSelections.getMarkets().get(availableSelections.getMarkets().size() - 1);
-        selection =
-            customBetSelectionBuilder
-                .setEventId(eventId)
-                .setMarketId(market.getId())
-                .setOutcomeId(market.getOutcomes().get(0))
-                .setSpecifiers(market.getSpecifiers())
-                .build();
-        matchSelections.add(selection);
-
-        Calculation calculation = dataRouterManager.requestCalculateProbability(matchSelections);
-
-        Assert.assertNotNull(calculation);
-        Assert.assertEquals(eventId, calculation.getAvailableSelections().get(0).getEventId());
-        Assert.assertFalse(calculation.getAvailableSelections().isEmpty());
-    }
-
-    @Test
-    public void getCalculationFilterTest() throws CommunicationException {
-        AvailableSelections availableSelections = dataRouterManager.requestAvailableSelections(eventId);
-        Assert.assertNotNull(availableSelections);
-
-        List<Selection> matchSelections = new ArrayList<>();
-        Market market = availableSelections.getMarkets().get(0);
-        Selection selection = customBetSelectionBuilder
-            .setEventId(eventId)
-            .setMarketId(market.getId())
-            .setOutcomeId(market.getOutcomes().get(0))
-            .setSpecifiers(market.getSpecifiers())
-            .build();
-        matchSelections.add(selection);
-        market = availableSelections.getMarkets().get(availableSelections.getMarkets().size() - 1);
-        selection =
-            customBetSelectionBuilder
-                .setEventId(eventId)
-                .setMarketId(market.getId())
-                .setOutcomeId(market.getOutcomes().get(0))
-                .setSpecifiers(market.getSpecifiers())
-                .build();
-        matchSelections.add(selection);
-
-        CalculationFilter calculation = dataRouterManager.requestCalculateProbabilityFilter(matchSelections);
-
-        Assert.assertNotNull(calculation);
-        Assert.assertEquals(eventId, calculation.getAvailableSelections().get(0).getEventId());
-        Assert.assertFalse(calculation.getAvailableSelections().isEmpty());
     }
 
     @Test

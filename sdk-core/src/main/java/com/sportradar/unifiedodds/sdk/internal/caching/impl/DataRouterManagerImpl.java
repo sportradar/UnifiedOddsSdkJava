@@ -25,6 +25,7 @@ import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataRouterStreamException;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.unifiedodds.sdk.internal.impl.CalculateRequestBuilderImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.AvailableSelectionsImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationFilterImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.CalculationImpl;
@@ -32,6 +33,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.custombetentities.PrebuiltBe
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.FixtureChangeImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.PeriodStatusImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.ResultChangeImpl;
+import com.sportradar.unifiedodds.sdk.managers.CalculateRequestBuilder;
 import com.sportradar.utils.SdkHelper;
 import com.sportradar.utils.Urn;
 import java.net.URI;
@@ -73,6 +75,8 @@ import org.slf4j.LoggerFactory;
 public class DataRouterManagerImpl implements DataRouterManager {
 
     public static final String TELEMETRY_TAG_KEY = "endpoint";
+
+    private static final String ERROR_CALCULATE_PROBABILITY = "Error executing calculate probability request";
 
     /**
      * The {@link Logger} instance used to log {@link DataRouterManagerImpl} events
@@ -1065,8 +1069,9 @@ public class DataRouterManagerImpl implements DataRouterManager {
     }
 
     @Override
-    public Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException {
-        Preconditions.checkNotNull(selections);
+    public Calculation requestCalculateProbability(CalculateRequestBuilder request)
+        throws CommunicationException {
+        Preconditions.checkNotNull(request);
 
         CapiCalculationResponse calculation;
         try (
@@ -1076,42 +1081,26 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 "CalculateProbability"
             )
         ) {
-            CapiSelections content = new CapiSelections();
-            content
-                .getSelections()
-                .addAll(
-                    selections
-                        .stream()
-                        .map(s -> {
-                            CapiSelectionType selection = new CapiSelectionType();
-                            selection.setId(s.getEventId().toString());
-                            selection.setMarketId(s.getMarketId());
-                            selection.setSpecifiers(s.getSpecifiers());
-                            selection.setOutcomeId(s.getOutcomeId());
-                            selection.setOdds(s.getOdds());
-                            return selection;
-                        })
-                        .collect(Collectors.toList())
+            calculation =
+                calculateProbabilityDataProvider.postData(
+                    buildCapiSelections((CalculateRequestBuilderImpl) request)
                 );
-
-            calculation = calculateProbabilityDataProvider.postData(content);
         } catch (DataProviderException e) {
             throw new CommunicationException(
-                "Error executing calculate probability request",
+                ERROR_CALCULATE_PROBABILITY,
                 e.tryExtractCommunicationExceptionUrl("calculate_probability"),
                 e.tryExtractCommunicationExceptionHttpStatusCode(-1),
                 e
             );
         }
 
-        dataRouter.onCalculateProbabilityFetched(selections, calculation);
         return new CalculationImpl(calculation);
     }
 
     @Override
-    public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
+    public CalculationFilter requestCalculateProbabilityFilter(CalculateRequestBuilder request)
         throws CommunicationException {
-        Preconditions.checkNotNull(selections);
+        Preconditions.checkNotNull(request);
 
         CapiFilteredCalculationResponse calculation;
         try (
@@ -1121,33 +1110,89 @@ public class DataRouterManagerImpl implements DataRouterManager {
                 "CalculateProbabilityFiltered"
             )
         ) {
-            CapiFilterSelections content = new CapiFilterSelections();
-
-            for (Selection selection : selections) {
-                CapiFilterSelectionMarketType filterSelectionMarketType = new CapiFilterSelectionMarketType();
-                filterSelectionMarketType.setMarketId(selection.getMarketId());
-                filterSelectionMarketType.setOutcomeId(selection.getOutcomeId());
-                filterSelectionMarketType.setSpecifiers(selection.getSpecifiers());
-                filterSelectionMarketType.setOdds(selection.getOdds());
-
-                CapiFilterSelectionType filterSelectionType = new CapiFilterSelectionType();
-                filterSelectionType.setId(selection.getEventId().toString());
-                filterSelectionType.getMarkets().add(filterSelectionMarketType);
-                content.getSelections().add(filterSelectionType);
-            }
-
-            calculation = calculateProbabilityFilterDataProvider.postData(content);
+            calculation =
+                calculateProbabilityFilterDataProvider.postData(
+                    buildCapiFilterSelections((CalculateRequestBuilderImpl) request)
+                );
         } catch (DataProviderException e) {
             throw new CommunicationException(
-                "Error executing calculate probability request",
+                ERROR_CALCULATE_PROBABILITY,
                 e.tryExtractCommunicationExceptionUrl("calculate_probability_filter"),
                 e.tryExtractCommunicationExceptionHttpStatusCode(-1),
                 e
             );
         }
 
-        dataRouter.onCalculateProbabilityFilterFetched(selections, calculation);
         return new CalculationFilterImpl(calculation);
+    }
+
+    private static CapiSelections buildCapiSelections(CalculateRequestBuilderImpl builderImpl) {
+        CapiSelections content = new CapiSelections();
+        for (Object item : builderImpl.getItems()) {
+            if (item instanceof Selection) {
+                content.getSelectionsAndOrSelections().add(toCapiSelectionType((Selection) item));
+            } else {
+                @SuppressWarnings("unchecked")
+                List<Selection> orGroup = (List<Selection>) item;
+                content.getSelectionsAndOrSelections().add(toCapiOrSelectionType(orGroup));
+            }
+        }
+        return content;
+    }
+
+    private static CapiSelectionType toCapiSelectionType(Selection s) {
+        CapiSelectionType selection = new CapiSelectionType();
+        selection.setId(s.getEventId().toString());
+        selection.setMarketId(s.getMarketId());
+        selection.setSpecifiers(s.getSpecifiers());
+        selection.setOutcomeId(s.getOutcomeId());
+        selection.setOdds(s.getOdds());
+        return selection;
+    }
+
+    private static CapiOrSelectionType toCapiOrSelectionType(List<Selection> orGroup) {
+        CapiOrSelectionType orSelectionType = new CapiOrSelectionType();
+        orGroup.forEach(s -> orSelectionType.getSelections().add(toCapiSelectionType(s)));
+        return orSelectionType;
+    }
+
+    private static CapiFilterSelections buildCapiFilterSelections(CalculateRequestBuilderImpl builderImpl) {
+        CapiFilterSelections content = new CapiFilterSelections();
+        for (Object item : builderImpl.getItems()) {
+            if (item instanceof Selection) {
+                content.getSelections().add(toCapiFilterSelectionType((Selection) item));
+            } else {
+                @SuppressWarnings("unchecked")
+                List<Selection> orGroup = (List<Selection>) item;
+                content.getSelections().add(toCapiFilterOrSelectionType(orGroup));
+            }
+        }
+        return content;
+    }
+
+    private static CapiFilterSelectionType toCapiFilterSelectionType(Selection s) {
+        CapiFilterSelectionType filterSelectionType = new CapiFilterSelectionType();
+        filterSelectionType.setId(s.getEventId().toString());
+        filterSelectionType.getMarketsAndOrSelections().add(toCapiFilterSelectionMarketType(s));
+        return filterSelectionType;
+    }
+
+    private static CapiFilterSelectionType toCapiFilterOrSelectionType(List<Selection> orGroup) {
+        CapiFilterOrSelectionsType orSelectionsType = new CapiFilterOrSelectionsType();
+        orGroup.forEach(s -> orSelectionsType.getMarkets().add(toCapiFilterSelectionMarketType(s)));
+        CapiFilterSelectionType filterSelectionType = new CapiFilterSelectionType();
+        orGroup.stream().findFirst().ifPresent(s -> filterSelectionType.setId(s.getEventId().toString()));
+        filterSelectionType.getMarketsAndOrSelections().add(orSelectionsType);
+        return filterSelectionType;
+    }
+
+    private static CapiFilterSelectionMarketType toCapiFilterSelectionMarketType(Selection s) {
+        CapiFilterSelectionMarketType market = new CapiFilterSelectionMarketType();
+        market.setMarketId(s.getMarketId());
+        market.setOutcomeId(s.getOutcomeId());
+        market.setSpecifiers(s.getSpecifiers());
+        market.setOdds(s.getOdds());
+        return market;
     }
 
     @Override

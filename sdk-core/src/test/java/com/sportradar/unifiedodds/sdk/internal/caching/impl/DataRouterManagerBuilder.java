@@ -10,6 +10,7 @@ import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.impl.CalculationDataProviders;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
@@ -68,11 +69,23 @@ public class DataRouterManagerBuilder {
         return this;
     }
 
+    public DataRouterManagerBuilder withCbCalculation(
+        CalculationDataProviders.Verifiable<?, CapiCalculationResponse> provider
+    ) {
+        return withCbCalculation(provider.provider());
+    }
+
     public DataRouterManagerBuilder withCbCalculationFilter(
         DataProvider<CapiFilteredCalculationResponse> cbCalculateFilter
     ) {
         this.cbCalculateFilter = cbCalculateFilter;
         return this;
+    }
+
+    public DataRouterManagerBuilder withCbCalculationFilter(
+        CalculationDataProviders.Verifiable<?, CapiFilteredCalculationResponse> provider
+    ) {
+        return withCbCalculationFilter(provider.provider());
     }
 
     public DataRouterManagerBuilder withCbPrebuiltBets(DataProvider<CapiPreBuiltBets> cbPrebuiltBets) {

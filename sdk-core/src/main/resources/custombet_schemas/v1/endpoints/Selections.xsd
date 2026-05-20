@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.sportradar.com/custombet/v1/endpoints"
+  targetNamespace="http://schemas.sportradar.com/custombet/v1/endpoints"
+  elementFormDefault="qualified">
+
+  <xs:element name="selections" type="SelectionsType">
+    <xs:annotation>
+      <xs:documentation>Root element holding selected markets for this bet</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="SelectionsType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="selection" type="SelectionType"/>
+      <xs:element name="orSelections" type="OrSelectionType"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="SelectionType">
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Valid event URN, such as sr:match:123456</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="market_id" type="xs:int" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique id for a market</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="specifiers" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>
+          Market specifiers to identify markets with additional parameters, if applicable, such as
+          "total=1.5"
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="outcome_id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique id of the market outcome</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="odds" type="xs:double">
+      <xs:annotation>
+        <xs:documentation>Odds for the selection</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="OrSelectionType">
+    <xs:sequence>
+      <xs:element name="selection" type="SelectionType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
 import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
+import com.sportradar.unifiedodds.sdk.managers.CalculateRequestBuilder;
 import com.sportradar.unifiedodds.sdk.managers.CustomBetManager;
 import com.sportradar.unifiedodds.sdk.managers.CustomBetSelectionBuilder;
 import com.sportradar.utils.Urn;
@@ -50,5 +51,39 @@ class CustomBetManagerDefaultMethodsTest {
     void getPrebuiltBetsThrowsUnsupportedOperationException() {
         assertThatThrownBy(() -> minimalImplementation.getPrebuiltBets(null))
             .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void getCalculateRequestBuilderThrowsUnsupportedOperationException() {
+        assertThatThrownBy(minimalImplementation::getCalculateRequestBuilder)
+            .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void calculateProbabilityForRequestBuilderThrowsUnsupportedOperationException() {
+        assertThatThrownBy(() -> minimalImplementation.calculateProbability(new NoOpCalculateRequestBuilder())
+            )
+            .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void calculateProbabilityFilterForRequestBuilderThrowsUnsupportedOperationException() {
+        assertThatThrownBy(() ->
+                minimalImplementation.calculateProbabilityFilter(new NoOpCalculateRequestBuilder())
+            )
+            .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    private static final class NoOpCalculateRequestBuilder implements CalculateRequestBuilder {
+
+        @Override
+        public CalculateRequestBuilder andSelection(Selection selection) {
+            return null;
+        }
+
+        @Override
+        public CalculateRequestBuilder andAnyOfSelections(Selection... selections) {
+            return null;
+        }
     }
 }

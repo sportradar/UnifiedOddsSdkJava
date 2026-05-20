@@ -17,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
+import com.sportradar.unifiedodds.sdk.managers.CalculateRequestBuilder;
 import com.sportradar.unifiedodds.sdk.managers.CustomBetManager;
 import com.sportradar.unifiedodds.sdk.managers.CustomBetSelectionBuilder;
 import com.sportradar.unifiedodds.sdk.managers.PrebuiltBetsRequestBuilder;
@@ -48,6 +49,11 @@ public class CustomBetManagerImpl implements CustomBetManager {
     }
 
     @Override
+    public CalculateRequestBuilder getCalculateRequestBuilder() {
+        return new CalculateRequestBuilderImpl();
+    }
+
+    @Override
     public CustomBetSelectionBuilder getCustomBetSelectionBuilder() {
         return new CustomBetSelectionBuilderImpl();
     }
@@ -75,17 +81,46 @@ public class CustomBetManagerImpl implements CustomBetManager {
 
     @Override
     @SuppressWarnings("IllegalCatch")
+    public Calculation calculateProbability(CalculateRequestBuilder request) throws CommunicationException {
+        Preconditions.checkNotNull(request);
+
+        clientInteractionLogger.info("CustomBetManager.calculateProbability(CalculateRequestBuilder)");
+
+        try {
+            return dataRouterManager.requestCalculateProbability(request);
+        } catch (CommunicationException e) {
+            return handleException("Calculating probabilities failed", e);
+        } catch (RuntimeException e) {
+            return handleException("Calculating probabilities failed", e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("IllegalCatch")
     public Calculation calculateProbability(List<Selection> selections) throws CommunicationException {
         Preconditions.checkNotNull(selections);
 
         clientInteractionLogger.info("CustomBetManager.calculateProbability()");
 
+        CalculateRequestBuilder request = getCalculateRequestBuilder();
+        selections.forEach(request::andSelection);
+        return calculateProbability(request);
+    }
+
+    @Override
+    @SuppressWarnings("IllegalCatch")
+    public CalculationFilter calculateProbabilityFilter(CalculateRequestBuilder request)
+        throws CommunicationException {
+        Preconditions.checkNotNull(request);
+
+        clientInteractionLogger.info("CustomBetManager.calculateProbabilityFilter(CalculateRequestBuilder)");
+
         try {
-            return dataRouterManager.requestCalculateProbability(selections);
+            return dataRouterManager.requestCalculateProbabilityFilter(request);
         } catch (CommunicationException e) {
-            return handleException("Calculating probabilities failed", e);
+            return handleException("Calculating probabilities (filtered) failed", e);
         } catch (RuntimeException e) {
-            return handleException("Calculating probabilities failed", e);
+            return handleException("Calculating probabilities (filtered) failed", e);
         }
     }
 
@@ -97,13 +132,9 @@ public class CustomBetManagerImpl implements CustomBetManager {
 
         clientInteractionLogger.info("CustomBetManager.calculateProbabilityFilter()");
 
-        try {
-            return dataRouterManager.requestCalculateProbabilityFilter(selections);
-        } catch (CommunicationException e) {
-            return handleException("Calculating probabilities (filtered) failed", e);
-        } catch (RuntimeException e) {
-            return handleException("Calculating probabilities (filtered) failed", e);
-        }
+        CalculateRequestBuilder request = getCalculateRequestBuilder();
+        selections.forEach(request::andSelection);
+        return calculateProbabilityFilter(request);
     }
 
     @Override

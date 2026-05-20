@@ -167,7 +167,7 @@ public class CustomBetManagerImplTest {
         @Test
         void shouldRequireNonNullSelection() {
             assertThatNullPointerException()
-                .isThrownBy(() -> customBetManagerThrow.calculateProbability(null));
+                .isThrownBy(() -> customBetManagerThrow.calculateProbability((List<Selection>) null));
         }
 
         @Test
@@ -237,7 +237,7 @@ public class CustomBetManagerImplTest {
         @Test
         void shouldRequireNonNullSelection() {
             assertThatNullPointerException()
-                .isThrownBy(() -> customBetManagerThrow.calculateProbabilityFilter(null));
+                .isThrownBy(() -> customBetManagerThrow.calculateProbabilityFilter((List<Selection>) null));
         }
 
         @Test

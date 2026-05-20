@@ -8,7 +8,7 @@
 
     <groupId>com.sportradar.unifiedodds.sdk</groupId>
     <artifactId>unified-feed-sdk</artifactId>
-    <version>4.8.0</version>
+    <version>4.9.0</version>
 
     <name>Unified Odds Feed SDK</name>
 
@@ -406,7 +406,6 @@
                             <target>
                                 <echo message="unzipping file" />
                                 <unzip src="src/main/resources/sportsapi_unified_schemas.zip" dest="${basedir}/target/schemas" />
-                                <unzip src="src/main/resources/custombet_schemas.zip" dest="${basedir}/target/schemas-custombet" />
                             </target>
                         </configuration>
                         <goals>
@@ -576,7 +575,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.build.directory}/schemas-custombet/v1/endpoints</source>
+                                <source>${basedir}/src/main/resources/custombet_schemas/v1/endpoints</source>
                             </sources>
                             <packageName>com.sportradar.uf.custombet.datamodel</packageName>
                             <xjbSources>

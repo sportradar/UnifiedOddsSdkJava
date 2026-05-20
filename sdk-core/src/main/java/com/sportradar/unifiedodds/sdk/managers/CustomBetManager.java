@@ -17,7 +17,17 @@ import java.util.List;
 /**
  * Defines methods used to perform various custom bet operations
  */
+@SuppressWarnings("MultipleStringLiterals")
 public interface CustomBetManager {
+    /**
+     * Returns a {@link CalculateRequestBuilder} instance used to build requests with AND and OR selections.
+     *
+     * @return a {@link CalculateRequestBuilder} instance
+     */
+    default CalculateRequestBuilder getCalculateRequestBuilder() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
     /**
      * Returns an {@link CustomBetSelectionBuilder} instance used to build selections
      *
@@ -45,11 +55,34 @@ public interface CustomBetManager {
 
     /**
      * Returns an {@link Calculation} instance providing the probability for the specified selections
+     * using a {@link CalculateRequestBuilder} that supports both AND and OR groups.
+     *
+     * @param request the {@link CalculateRequestBuilder} containing AND selections and OR groups
+     * @return an {@link Calculation} providing the probability for the specified selections
+     */
+    default Calculation calculateProbability(CalculateRequestBuilder request) throws CommunicationException {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
+
+    /**
+     * Returns an {@link Calculation} instance providing the probability for the specified selections
      *
      * @param selections the {@link List} containing selections for which the probability should be calculated
      * @return an {@link Calculation} providing the probability for the specified selections
      */
     Calculation calculateProbability(List<Selection> selections) throws CommunicationException;
+
+    /**
+     * Returns an {@link CalculationFilter} instance providing the probability for the specified selections
+     * (filtered) using a {@link CalculateRequestBuilder} that supports both AND and OR groups.
+     *
+     * @param request the {@link CalculateRequestBuilder} containing AND selections and OR groups
+     * @return an {@link CalculationFilter} providing the probability for the specified selections
+     */
+    default CalculationFilter calculateProbabilityFilter(CalculateRequestBuilder request)
+        throws CommunicationException {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 
     /**
      * Returns an {@link CalculationFilter} instance providing the probability for the specified selections (filtered)

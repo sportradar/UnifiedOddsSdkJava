@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.8.0**
+**4.9.0**
+- Added OR-selections support to `CustomBetManager`: multiple selections can now be combined with OR logic when building custom bet calculate requests.
+
+**4.8.0 (2026-05-04)**
 - Added PreBuilt Bets support: CustomBetManager now allows retrieving available prebuilt bets for an event and obtaining prebuilt bet selections based on event recommendations.
 - Fixed the unit of `maxRecoveryTime` configuration property to seconds (previously it was treated as minutes).
 
