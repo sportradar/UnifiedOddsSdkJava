@@ -27,6 +27,7 @@ import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -96,9 +97,9 @@ public class UofSessionImplTest {
         when(producerManager.isProducerEnabled(LIVE_PRODUCER_ID)).thenReturn(true);
         when(messageValidator.validate(any(), any())).thenReturn(ValidationResult.Success);
 
-        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp);
+        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp, Collections.emptyMap());
 
-        verify(processor).processMessage(any(), any(), any(), any());
+        verify(processor).processMessage(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -111,9 +112,9 @@ public class UofSessionImplTest {
         when(producerManager.isProducerEnabled(LIVE_PRODUCER_ID)).thenReturn(true);
         when(messageValidator.validate(any(), any())).thenReturn(ValidationResult.Success);
 
-        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp);
+        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp, Collections.emptyMap());
 
-        verify(processor, times(0)).processMessage(any(), any(), any(), any());
+        verify(processor, times(0)).processMessage(any(), any(), any(), any(), any());
     }
 
     @ParameterizedTest
@@ -126,9 +127,9 @@ public class UofSessionImplTest {
         val oddsChange = new UfOddsChange();
         when(producerManager.isProducerEnabled(LIVE_PRODUCER_ID)).thenReturn(false);
 
-        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp);
+        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp, Collections.emptyMap());
 
-        verify(processor, times(0)).processMessage(any(), any(), any(), any());
+        verify(processor, times(0)).processMessage(any(), any(), any(), any(), any());
     }
 
     @ParameterizedTest
@@ -143,9 +144,9 @@ public class UofSessionImplTest {
         when(producerManager.isProducerEnabled(LIVE_PRODUCER_ID)).thenReturn(false);
         when(messageValidator.validate(any(), any())).thenReturn(ValidationResult.Success);
 
-        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp);
+        session.onMessageReceived(oddsChange, new byte[0], anyRoutingKey, timestamp, Collections.emptyMap());
 
-        verify(processor).processMessage(any(), any(), any(), any());
+        verify(processor).processMessage(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -154,7 +155,7 @@ public class UofSessionImplTest {
 
         val ufOddsChange = new FeedMessageBuilder(new GlobalVariables()).buildOddsChangeFor1x2Market();
 
-        session.processMessage(ufOddsChange, new byte[0], anyRoutingKey, timestamp);
+        session.processMessage(ufOddsChange, new byte[0], anyRoutingKey, timestamp, Collections.emptyMap());
 
         verify(listener).onOddsChange(same(session), any());
     }

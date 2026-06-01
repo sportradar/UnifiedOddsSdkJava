@@ -27,9 +27,39 @@ public class RoutingKeys {
         );
     }
 
+    public String liveBetStop() {
+        return format(
+            "hi.-.live.bet_stop.%d.sr:%s.%d.%s",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId(),
+            globalVariables.getNodeId()
+        );
+    }
+
+    public String liveFixtureChange() {
+        return format(
+            "hi.-.live.fixture_change.%d.sr:%s.%d.%s",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId(),
+            globalVariables.getNodeId()
+        );
+    }
+
     public String liveBetCancel() {
         return format(
             "hi.-.live.bet_cancel.%d.sr:%s.%d.%s",
+            globalVariables.getSportUrn().getUrn().getId(),
+            globalVariables.getSportEventUrn().getType(),
+            globalVariables.getSportEventUrn().getId(),
+            globalVariables.getNodeId()
+        );
+    }
+
+    public String liveRollbackBetCancel() {
+        return format(
+            "hi.-.live.rollback_bet_cancel.%d.sr:%s.%d.%s",
             globalVariables.getSportUrn().getUrn().getId(),
             globalVariables.getSportEventUrn().getType(),
             globalVariables.getSportEventUrn().getId(),

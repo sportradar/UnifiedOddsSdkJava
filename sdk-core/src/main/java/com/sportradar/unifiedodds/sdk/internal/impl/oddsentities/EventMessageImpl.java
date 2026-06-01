@@ -10,6 +10,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.EventMessage;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
+import java.util.Map;
 
 /**
  * Created on 22/06/2017.
@@ -22,17 +23,20 @@ abstract class EventMessageImpl<T extends SportEvent> implements EventMessage<T>
     private final T sportEvent;
     private final byte[] rawMessage; // TODO unmodifiable collection
     private final Long requestId;
+    private final Map<String, String> messageHeaders;
 
     EventMessageImpl(
         final T sportEvent,
         final byte[] rawMessage,
         Producer producer,
         final MessageTimestamp timestamp,
-        Long requestId
+        Long requestId,
+        Map<String, String> messageHeaders
     ) {
         Preconditions.checkNotNull(sportEvent, "sportEvent");
         Preconditions.checkNotNull(rawMessage, "rawMessage");
         Preconditions.checkNotNull(timestamp, "timestamp");
+        Preconditions.checkNotNull(messageHeaders, "messageHeaders");
         this.producer = producer;
         this.timestamp =
             new MessageTimestampImpl(
@@ -44,6 +48,7 @@ abstract class EventMessageImpl<T extends SportEvent> implements EventMessage<T>
         this.sportEvent = sportEvent;
         this.rawMessage = rawMessage;
         this.requestId = requestId;
+        this.messageHeaders = messageHeaders;
     }
 
     /**
@@ -93,5 +98,14 @@ abstract class EventMessageImpl<T extends SportEvent> implements EventMessage<T>
     @Override
     public MessageTimestamp getTimestamps() {
         return timestamp;
+    }
+
+    /**
+     * Gets the AMQP message headers delivered with the feed message
+     * @return the AMQP headers as a string map, never null
+     */
+    @Override
+    public Map<String, String> getMessageHeaders() {
+        return messageHeaders;
     }
 }

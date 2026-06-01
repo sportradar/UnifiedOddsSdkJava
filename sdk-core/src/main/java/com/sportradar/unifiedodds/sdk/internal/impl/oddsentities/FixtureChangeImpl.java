@@ -12,11 +12,8 @@ import com.sportradar.unifiedodds.sdk.oddsentities.FixtureChangeType;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Date;
+import java.util.Map;
 
-/**
- * Created on 22/06/2017.
- * // TODO @eti: Javadoc
- */
 class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implements FixtureChange<T> {
 
     private final FixtureChangeType changeType;
@@ -28,9 +25,10 @@ class FixtureChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implem
         UfFixtureChange message,
         Producer producer,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
-        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId(), messageHeaders);
         UfChangeType type = message.getChangeType();
         if (type == null) {
             changeType = FixtureChangeType.NotAvailable;

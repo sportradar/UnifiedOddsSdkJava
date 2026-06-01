@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.internal.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
@@ -14,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.Urn;
+import java.util.Map;
 
 /**
  * Created on 22/06/2017.
@@ -81,14 +83,16 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         UfBetStop message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new BetStopImpl<>(
             sportEvent,
             message,
             producerManager.getProducer(message.getProduct()),
             rawMessage,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -97,14 +101,16 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         UfFixtureChange message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new FixtureChangeImpl<>(
             sportEvent,
             message,
             producerManager.getProducer(message.getProduct()),
             rawMessage,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -113,7 +119,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         UfBetSettlement message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new BetSettlementImpl<>(
             sportEvent,
@@ -121,7 +128,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
             producerManager.getProducer(message.getProduct()),
             rawMessage,
             marketFactory,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -130,7 +138,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         UfRollbackBetSettlement message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new RollbackBetSettlementImpl<>(
             sportEvent,
@@ -138,7 +147,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
             producerManager.getProducer(message.getProduct()),
             rawMessage,
             marketFactory,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -147,7 +157,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         final UfOddsChange message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         Preconditions.checkNotNull(message, "message");
         return new OddsChangeImpl<>(
@@ -157,7 +168,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
             rawMessage,
             marketFactory,
             namedValuesProvider,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -166,7 +178,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         UfRollbackBetCancel message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new RollbackBetCancelImpl<>(
             sportEvent,
@@ -174,7 +187,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
             producerManager.getProducer(message.getProduct()),
             rawMessage,
             marketFactory,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -183,7 +197,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         UfBetCancel message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new BetCancelImpl<>(
             sportEvent,
@@ -191,7 +206,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
             producerManager.getProducer(message.getProduct()),
             rawMessage,
             marketFactory,
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 
@@ -207,7 +223,8 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
             producerManager.getProducer(cashoutData.getProduct()),
             marketFactory,
             namedValuesProvider,
-            timestamp
+            timestamp,
+            ImmutableMap.of()
         );
     }
 
@@ -216,13 +233,15 @@ public class FeedMessageFactoryImpl implements FeedMessageFactory {
         T sportEvent,
         Integer producerId,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         return new UnparsableMessageImpl<>(
             sportEvent,
             rawMessage,
             producerId == null ? null : producerManager.getProducer(producerId),
-            timestamp
+            timestamp,
+            messageHeaders
         );
     }
 }

@@ -7,6 +7,9 @@ package com.sportradar.unifiedodds.sdk.internal.impl.oddsentities;
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.Urn;
+import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUnreachableCode;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * A basic implementation of the {@link RecoveryInitiated}
@@ -97,5 +100,15 @@ class RecoveryInitiatedImpl implements RecoveryInitiated {
     @Override
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Gets the AMQP message headers delivered with the feed message
+     * @return the AMQP headers as a string map, never null
+     */
+    @Override
+    @ExcludeFromJacocoGeneratedReportUnreachableCode
+    public Map<String, String> getMessageHeaders() {
+        return Collections.emptyMap();
     }
 }

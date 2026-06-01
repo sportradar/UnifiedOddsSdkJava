@@ -59,7 +59,9 @@ public class ChannelMessageConsumerTest {
         chanMsgConsumer.onMessageReceived(ODDS_CHANGE_KEY, nullData, null, 0L);
 
         //Verify
-        Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.any(), Mockito.any());
+        Mockito
+            .verify(msgConsumer)
+            .onMessageDeserializationFailed(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -74,7 +76,9 @@ public class ChannelMessageConsumerTest {
         chanMsgConsumer.onMessageReceived(ODDS_CHANGE_KEY, emptyData, null, 0L);
 
         //Verify
-        Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.any(), Mockito.any());
+        Mockito
+            .verify(msgConsumer)
+            .onMessageDeserializationFailed(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -99,7 +103,7 @@ public class ChannelMessageConsumerTest {
         //Verify
         Mockito
             .verify(msgConsumer)
-            .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any());
+            .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -128,7 +132,7 @@ public class ChannelMessageConsumerTest {
         //Verify
         Mockito
             .verify(msgConsumer)
-            .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any());
+            .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -143,7 +147,9 @@ public class ChannelMessageConsumerTest {
         chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
 
         //Verify
-        Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.eq(data), Mockito.any());
+        Mockito
+            .verify(msgConsumer)
+            .onMessageDeserializationFailed(Mockito.eq(data), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -178,7 +184,7 @@ public class ChannelMessageConsumerTest {
         //Verify
         Mockito
             .verify(msgConsumer, times(invocationsPerThread * totalThreads))
-            .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any());
+            .onMessageReceived(Mockito.any(), Mockito.eq(data), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -190,7 +196,9 @@ public class ChannelMessageConsumerTest {
 
         chanMsgConsumer.onMessageReceived(ROUTING_KEY, data, null, 0L);
 
-        Mockito.verify(msgConsumer).onMessageDeserializationFailed(Mockito.eq(data), Mockito.any());
+        Mockito
+            .verify(msgConsumer)
+            .onMessageDeserializationFailed(Mockito.eq(data), Mockito.any(), Mockito.any());
     }
 
     @Test

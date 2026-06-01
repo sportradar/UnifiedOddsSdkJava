@@ -11,16 +11,13 @@ import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketF
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created on 23/06/2017.
- * // TODO @eti: Javadoc
- */
-@SuppressWarnings({ "ConstantName" })
+@SuppressWarnings({ "ConstantName", "ParameterNumber" })
 class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implements BetSettlement<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(BetSettlementImpl.class);
@@ -33,9 +30,10 @@ class BetSettlementImpl<T extends SportEvent> extends EventMessageImpl<T> implem
         Producer producer,
         byte[] rawMessage,
         MarketFactory marketFactory,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
-        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId(), messageHeaders);
         Preconditions.checkNotNull(marketFactory);
 
         if (message.getCertainty() == 1) {

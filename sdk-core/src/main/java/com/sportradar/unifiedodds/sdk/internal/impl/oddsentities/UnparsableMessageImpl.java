@@ -8,6 +8,7 @@ import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnparsableMessage;
+import java.util.Map;
 
 /**
  * The {@link UnparsableMessage} basic impl
@@ -17,8 +18,14 @@ class UnparsableMessageImpl<T extends SportEvent> extends MessageImpl implements
     private final T sportEvent;
     private final byte[] rawMessage;
 
-    UnparsableMessageImpl(T sportEvent, byte[] rawMessage, Producer producer, MessageTimestamp timestamp) {
-        super(producer, timestamp);
+    UnparsableMessageImpl(
+        T sportEvent,
+        byte[] rawMessage,
+        Producer producer,
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
+    ) {
+        super(producer, timestamp, messageHeaders);
         this.sportEvent = sportEvent;
         this.rawMessage = rawMessage;
     }

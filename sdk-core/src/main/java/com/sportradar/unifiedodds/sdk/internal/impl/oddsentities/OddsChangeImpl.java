@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketF
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -41,9 +42,10 @@ class OddsChangeImpl<T extends SportEvent> extends EventMessageImpl<T> implement
         byte[] rawMessage,
         final MarketFactory marketFactory,
         final NamedValuesProvider namedValuesProvider,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
-        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId(), messageHeaders);
         Preconditions.checkNotNull(marketFactory, "marketFactory");
         Preconditions.checkNotNull(namedValuesProvider, "namedValuesProvider");
         this.namedValuesProvider = namedValuesProvider;

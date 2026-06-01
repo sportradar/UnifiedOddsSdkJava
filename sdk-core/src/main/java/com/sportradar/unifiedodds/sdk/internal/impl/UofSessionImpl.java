@@ -29,6 +29,7 @@ import com.sportradar.utils.Urn;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -159,7 +160,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
         UnmarshalledMessage unmarshalledMessage,
         byte[] body,
         RoutingKeyInfo routingKeyInfo,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         if (isFeedClosed) {
             return;
@@ -208,7 +210,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                     body,
                     event,
                     FeedMessageHelper.provideProducerIdFromMessage(unmarshalledMessage),
-                    timestamp
+                    timestamp,
+                    messageHeaders
                 );
                 return;
             default:
@@ -232,7 +235,7 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
             FeedMessageHelper.provideRequestIdFromMessage(unmarshalledMessage),
             now
         );
-        messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp);
+        messageProcessor.processMessage(unmarshalledMessage, body, routingKeyInfo, timestamp, messageHeaders);
         recoveryManager.onMessageProcessingEnded(
             this.hashCode(),
             producerId,
@@ -260,7 +263,11 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
      * @param eventId - if available the related sport event id; otherwise null
      */
     @Override
-    public void onMessageDeserializationFailed(byte[] rawMessage, Urn eventId) {
+    public void onMessageDeserializationFailed(
+        byte[] rawMessage,
+        Urn eventId,
+        Map<String, String> messageHeaders
+    ) {
         SportEvent se = null;
         if (eventId != null) {
             se =
@@ -270,7 +277,7 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
         }
 
         long time = new TimeUtilsImpl().now();
-        dispatchUnparsableMessage(rawMessage, se, null, new MessageTimestampImpl(time));
+        dispatchUnparsableMessage(rawMessage, se, null, new MessageTimestampImpl(time), messageHeaders);
     }
 
     /**
@@ -295,7 +302,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
         UnmarshalledMessage o,
         byte[] body,
         RoutingKeyInfo routingKeyInfo,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         //        long now = System.currentTimeMillis();
         try {
@@ -309,7 +317,13 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                         new TimeUtilsImpl().now()
                     );
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                OddsChange<SportEvent> oc = messageFactory.buildOddsChange(se, message, body, timestamp);
+                OddsChange<SportEvent> oc = messageFactory.buildOddsChange(
+                    se,
+                    message,
+                    body,
+                    timestamp,
+                    messageHeaders
+                );
                 checkUserException(() -> uofListener.onOddsChange(this, oc));
             } else if (o instanceof UfBetStop) {
                 UfBetStop message = (UfBetStop) o;
@@ -321,7 +335,13 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                         new TimeUtilsImpl().now()
                     );
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                BetStop<SportEvent> sdkBetStop = messageFactory.buildBetStop(se, message, body, timestamp);
+                BetStop<SportEvent> sdkBetStop = messageFactory.buildBetStop(
+                    se,
+                    message,
+                    body,
+                    timestamp,
+                    messageHeaders
+                );
                 checkUserException(() -> uofListener.onBetStop(this, sdkBetStop));
             } else if (o instanceof UfBetSettlement) {
                 UfBetSettlement message = (UfBetSettlement) o;
@@ -337,7 +357,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                     se,
                     message,
                     body,
-                    timestamp
+                    timestamp,
+                    messageHeaders
                 );
                 logger.trace("Bet Settlement");
                 checkUserException(() -> uofListener.onBetSettlement(this, bs));
@@ -355,7 +376,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                     se,
                     message,
                     body,
-                    timestamp
+                    timestamp,
+                    messageHeaders
                 );
                 checkUserException(() -> uofListener.onRollbackBetSettlement(this, rbs));
             } else if (o instanceof UfBetCancel) {
@@ -368,7 +390,13 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                         new TimeUtilsImpl().now()
                     );
                 SportEvent se = getSportEventFor(message.getEventId(), routingKeyInfo.getSportId());
-                BetCancel<SportEvent> cb = messageFactory.buildBetCancel(se, message, body, timestamp);
+                BetCancel<SportEvent> cb = messageFactory.buildBetCancel(
+                    se,
+                    message,
+                    body,
+                    timestamp,
+                    messageHeaders
+                );
                 logger.trace("Bet Cancel");
                 checkUserException(() -> uofListener.onBetCancel(this, cb));
             } else if (o instanceof UfFixtureChange) {
@@ -385,7 +413,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                     se,
                     message,
                     body,
-                    timestamp
+                    timestamp,
+                    messageHeaders
                 );
                 logger.trace("Fixture Change");
                 checkUserException(() -> uofListener.onFixtureChange(this, fc));
@@ -403,7 +432,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                     se,
                     message,
                     body,
-                    timestamp
+                    timestamp,
+                    messageHeaders
                 );
                 logger.trace("Rollback Bet Cancel");
                 checkUserException(() -> uofListener.onRollbackBetCancel(this, rbc));
@@ -451,7 +481,8 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
                     ? null
                     : getSportEventFor(routingKeyInfo.getEventId(), routingKeyInfo.getSportId()),
                 FeedMessageHelper.provideProducerIdFromMessage(o),
-                timestamp
+                timestamp,
+                messageHeaders
             );
         }
     }
@@ -542,12 +573,13 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
         byte[] body,
         SportEvent event,
         Integer producerId,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         try {
             uofListener.onUnparsableMessage(
                 this,
-                messageFactory.buildUnparsableMessage(event, producerId, body, timestamp)
+                messageFactory.buildUnparsableMessage(event, producerId, body, timestamp, messageHeaders)
             );
         } catch (Exception re) {
             logger.warn(

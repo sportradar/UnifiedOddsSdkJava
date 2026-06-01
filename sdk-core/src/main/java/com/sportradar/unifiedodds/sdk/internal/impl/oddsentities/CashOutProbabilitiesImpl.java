@@ -5,6 +5,7 @@
 package com.sportradar.unifiedodds.sdk.internal.impl.oddsentities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.datamodel.UfCashout;
 import com.sportradar.unifiedodds.sdk.entities.NamedValue;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
@@ -16,6 +17,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,15 +33,17 @@ public class CashOutProbabilitiesImpl<T extends SportEvent>
     private final List<MarketWithProbabilities> marketList;
     private final NamedValuesProvider namedValuesProvider;
 
+    @SuppressWarnings("ParameterNumber")
     CashOutProbabilitiesImpl(
         T sportEvent,
         UfCashout cashoutData,
         Producer producer,
         MarketFactory marketFactory,
         NamedValuesProvider namedValuesProvider,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
-        super(sportEvent, new byte[0], producer, timestamp, cashoutData.getRequestId());
+        super(sportEvent, new byte[0], producer, timestamp, cashoutData.getRequestId(), messageHeaders);
         Preconditions.checkNotNull(marketFactory);
         Preconditions.checkNotNull(namedValuesProvider);
 

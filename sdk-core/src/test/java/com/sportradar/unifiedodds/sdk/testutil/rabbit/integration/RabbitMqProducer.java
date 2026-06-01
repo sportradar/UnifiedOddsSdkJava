@@ -62,6 +62,13 @@ public class RabbitMqProducer implements AutoCloseable {
         });
     }
 
+    public void send(String message, String routingKey, AMQP.BasicProperties properties) {
+        rethrowExceptions(() -> {
+            byte[] body = message.getBytes(StandardCharsets.UTF_8);
+            channel.basicPublish(exchangeName, routingKey, properties, body);
+        });
+    }
+
     @SuppressWarnings("IllegalCatch")
     private void rethrowExceptions(VoidCallables.ThrowingRunnable thrower) {
         try {

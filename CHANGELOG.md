@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.9.0**
+**4.10.0**
+- Extended feed messages with `getMessageHeaders()` method to expose raw AMQP message headers on all feed message types.
+
+**4.9.0 (2026-05-20)**
 - Added OR-selections support to `CustomBetManager`: multiple selections can now be combined with OR logic when building custom bet calculate requests.
 
 **4.8.0 (2026-05-04)**

@@ -15,16 +15,13 @@ import com.sportradar.unifiedodds.sdk.oddsentities.RollbackBetCancel;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created on 23/06/2017.
- * // TODO @eti: Javadoc
- */
-@SuppressWarnings({ "ConstantName" })
+@SuppressWarnings({ "ConstantName", "ParameterNumber" })
 class RollbackBetCancelImpl<T extends SportEvent>
     extends EventMessageImpl<T>
     implements RollbackBetCancel<T> {
@@ -40,9 +37,10 @@ class RollbackBetCancelImpl<T extends SportEvent>
         Producer producer,
         byte[] rawMessage,
         MarketFactory factory,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
-        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId(), messageHeaders);
         Preconditions.checkNotNull(factory);
 
         startTime = message.getStartTime() == null ? null : new Date(message.getStartTime());
