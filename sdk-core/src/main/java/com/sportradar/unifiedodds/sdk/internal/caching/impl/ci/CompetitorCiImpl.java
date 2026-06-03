@@ -195,7 +195,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         if (data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
-            this.lastTimeCompetitorProfileIsFetched = Calendar.getInstance().getTime();
+            this.lastTimeCompetitorProfileIsFetched = new Date();
             if (cultureCompetitorProfileFetched == null) {
                 this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
             }
@@ -215,7 +215,7 @@ class CompetitorCiImpl implements CompetitorCi, ExportableCacheItem {
     ) {
         this(id, dataRouterManager, defaultLocale, exceptionHandlingStrategy);
         if (data != null && data.getPlayers() != null && !data.getPlayers().getPlayer().isEmpty()) {
-            this.lastTimeCompetitorProfileIsFetched = Calendar.getInstance().getTime();
+            this.lastTimeCompetitorProfileIsFetched = new Date();
             if (cultureCompetitorProfileFetched == null) {
                 this.cultureCompetitorProfileFetched = Collections.synchronizedList(new ArrayList<>());
             }

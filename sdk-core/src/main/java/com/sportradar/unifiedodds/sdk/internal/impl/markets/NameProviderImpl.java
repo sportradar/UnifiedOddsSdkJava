@@ -604,9 +604,6 @@ public class NameProviderImpl implements NameProvider {
 
         @Override
         public String toString() {
-            StringBuilder sb = new StringBuilder("An error occurred while generating the name for event=[")
-                .append(sportEvent)
-                .append("], market=[");
             String specifierString = marketSpecifiers == null
                 ? "null"
                 : marketSpecifiers
@@ -614,19 +611,24 @@ public class NameProviderImpl implements NameProvider {
                     .stream()
                     .map(e -> "{" + e.getKey() + "}={" + e.getValue() + "}")
                     .collect(Collectors.joining("|"));
-            sb.append(" MarketId=").append(marketId);
-            sb.append(" Specifiers=[").append(specifierString).append("]");
+
+            StringBuilder sb = new StringBuilder(200)
+                .append("An error occurred while generating the name for event=[")
+                .append(sportEvent)
+                .append("], market=[ MarketId=")
+                .append(marketId)
+                .append(" Specifiers=[")
+                .append(specifierString)
+                .append(']');
 
             if (outcomeId != null) {
                 sb.append(" OutcomeId=").append(outcomeId);
             }
 
-            sb.append("]");
-
-            sb.append(" Locale=").append(locales);
+            sb.append("] Locale=").append(locales);
 
             if (outcomeName != null) {
-                sb.append(" Retrieved nameDescriptor=[").append(outcomeName).append("]");
+                sb.append(" Retrieved nameDescriptor=[").append(outcomeName).append(']');
             }
 
             sb.append("]. Additional message: ").append(message);
