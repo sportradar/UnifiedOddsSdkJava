@@ -14,13 +14,16 @@ import com.sportradar.unifiedodds.sdk.internal.impl.processing.pipeline.Processe
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.shared.TestProducersProvider;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class CacheMessageProcessorTest {
 
@@ -73,7 +76,13 @@ public class CacheMessageProcessorTest {
         fixtureChange.setEventId(routingKey.getEventId().toString());
         fixtureChange.setProduct(1);
         Assert.assertEquals(eventId.toString(), fixtureChange.getEventId());
-        cacheMessageProcessor.processMessage(fixtureChange, new byte[0], routingKey, timestamp);
+        cacheMessageProcessor.processMessage(
+            fixtureChange,
+            new byte[0],
+            routingKey,
+            timestamp,
+            Collections.emptyMap()
+        );
 
         verify(sportEventCache, times(1)).purgeCacheItem(eventId);
         verify(sportEventCache, times(1)).addFixtureTimestamp(eventId);
@@ -99,7 +108,13 @@ public class CacheMessageProcessorTest {
         fixtureChange.setProduct(virtualProducerId);
         Assert.assertEquals(eventId.toString(), fixtureChange.getEventId());
         setupCacheMessageProcessor();
-        cacheMessageProcessor.processMessage(fixtureChange, new byte[0], routingKey, timestamp);
+        cacheMessageProcessor.processMessage(
+            fixtureChange,
+            new byte[0],
+            routingKey,
+            timestamp,
+            Collections.emptyMap()
+        );
 
         verify(sportEventCache, times(1)).purgeCacheItem(eventId);
         verify(sportEventCache, times(0)).addFixtureTimestamp(eventId);

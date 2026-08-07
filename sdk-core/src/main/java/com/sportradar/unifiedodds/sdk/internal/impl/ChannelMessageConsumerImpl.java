@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
+import static java.util.Collections.unmodifiableMap;
+
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -18,6 +20,9 @@ import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.Urn;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -163,11 +168,27 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         long createAt = 0;
         long sentAt = 0;
 
+        Map<String, String> messageHeaders;
         if (properties != null && properties.getHeaders() != null) {
+            messageHeaders =
+                unmodifiableMap(
+                    properties
+                        .getHeaders()
+                        .entrySet()
+                        .stream()
+                        .collect(
+                            HashMap::new,
+                            (acc, e) ->
+                                acc.put(e.getKey(), e.getValue() == null ? null : e.getValue().toString()),
+                            HashMap::putAll
+                        )
+                );
             sentAt =
-                properties.getHeaders().containsKey("timestamp_in_ms")
-                    ? Long.parseLong(properties.getHeaders().get("timestamp_in_ms").toString())
+                messageHeaders.containsKey("timestamp_in_ms")
+                    ? Long.parseLong(messageHeaders.get("timestamp_in_ms"))
                     : createAt;
+        } else {
+            messageHeaders = Collections.emptyMap();
         }
 
         MessageTimestamp timestamp = new MessageTimestampImpl(createAt, sentAt, receivedAt, 0);
@@ -187,7 +208,8 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                 String.format("Received a null message from routingKey:%s", routingKey),
                 null,
                 routingKeyInfo.getEventId(),
-                timestamp
+                timestamp,
+                messageHeaders
             );
             return;
         }
@@ -242,7 +264,8 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                 ),
                 body,
                 routingKeyInfo.getEventId(),
-                timestamp
+                timestamp,
+                messageHeaders
             );
             return;
         } catch (Exception e) {
@@ -263,7 +286,8 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
                 ),
                 body,
                 routingKeyInfo.getEventId(),
-                timestamp
+                timestamp,
+                messageHeaders
             );
             return;
         }
@@ -284,7 +308,13 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         // continue normal processing
 
         // there are other checks on
-        messageConsumer.onMessageReceived(unmarshalledMessage, body, routingKeyInfo, timestamp);
+        messageConsumer.onMessageReceived(
+            unmarshalledMessage,
+            body,
+            routingKeyInfo,
+            timestamp,
+            messageHeaders
+        );
     }
 
     @Override
@@ -292,9 +322,15 @@ public class ChannelMessageConsumerImpl implements ChannelMessageConsumer {
         return messageConsumer.getConsumerDescription();
     }
 
-    private void dispatchUnparsableMessage(String msg, byte[] body, Urn eventId, MessageTimestamp timestamp) {
+    private void dispatchUnparsableMessage(
+        String msg,
+        byte[] body,
+        Urn eventId,
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
+    ) {
         logger.warn(msg);
-        messageConsumer.onMessageDeserializationFailed(body, eventId);
+        messageConsumer.onMessageDeserializationFailed(body, eventId, messageHeaders);
     }
 
     private String provideCleanMsgForLog(byte[] body) {

@@ -6,8 +6,10 @@ package com.sportradar.unifiedodds.sdk.impl.entities;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.OddsGenerationImpl;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class OddsGenerationImplTest {
 
     @Test

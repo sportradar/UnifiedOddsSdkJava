@@ -23,6 +23,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.MatchImpl;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class MatchImplGetSportTest {
 
     private static final Urn MATCH_URN = Urns.SportEvents.getForAnyMatch();

@@ -4,16 +4,12 @@
 
 package com.sportradar.unifiedodds.example;
 
+import static com.sportradar.unifiedodds.example.common.ConsoleHelper.readLine;
+
+import com.sportradar.unifiedodds.example.common.Pkcs8PrivateKeyLoader;
+import com.sportradar.unifiedodds.example.credentialcheck.CredentialCheckExample;
 import com.sportradar.unifiedodds.example.examples.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyFactory;
 import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.Scanner;
 
 /**
  * The SDK basic example selector
@@ -40,6 +36,13 @@ public class UofSdkExamples {
 
     private static void doExampleSelection() throws Exception {
         System.out.println("Available examples: (select the one you would like to run)");
+        System.out.println("  0 - Credential troubleshooting");
+        System.out.println(
+            "      → Check SSO token or CommonIAM credentials against Integration & Production"
+        );
+        System.out.println("      → Demonstrates: credential diagnostics without starting the SDK");
+        System.out.println();
+
         System.out.println("  1a - Basic SDK Setup (Access Token)");
         System.out.println(
             "      → Single UofSession using Access Token with MessageInterest.AllMessages, full odds recovery from all producers"
@@ -136,7 +139,12 @@ public class UofSdkExamples {
             "      → Demonstrates: Cache management, state persistence, performance optimization"
         );
 
-        String selection = getConsoleInput();
+        String selection = readLine();
+
+        if (selection.equals("0")) {
+            CredentialCheckExample.run();
+            return;
+        }
 
         String accessToken = null;
         PrivateKey privateKey = null;
@@ -146,28 +154,26 @@ public class UofSdkExamples {
         boolean isAccessTokenCase = selection.equals("7") || selection.equals("1a");
         if (isAccessTokenCase) {
             System.out.println("Please enter a valid Unified Feed token for 'Integration' environment:");
-            accessToken = getConsoleInput();
+            accessToken = readLine();
         } else {
             System.out.println(
                 "Please enter an absolute path " +
                 "to a private key (RSA SHA256 PCKS#8 key in PEM format) for 'Integration' environment:"
             );
-            String pemFilePath = getConsoleInput();
-            Path path = Paths.get(pemFilePath);
-            String pemFileContent = new String(Files.readAllBytes(path), StandardCharsets.US_ASCII).trim();
-            privateKey = parsePkcs8RsaUnencryptedPrivateKey(pemFileContent);
+            String pemFilePath = readLine();
+            privateKey = Pkcs8PrivateKeyLoader.loadFromPath(pemFilePath);
 
             System.out.println(
                 "Please enter a OAuth client id (Sportradar service id) for 'Integration' environment. " +
                 "It was supplied by Sportradar after uploading the public key:"
             );
-            clientId = getConsoleInput();
+            clientId = readLine();
 
             System.out.println(
                 "Please enter a signing key id for 'Integration' environment. " +
                 "It was supplied by Sportradar after uploading the public key:"
             );
-            keyId = getConsoleInput();
+            keyId = readLine();
         }
 
         switch (selection) {
@@ -242,31 +248,5 @@ public class UofSdkExamples {
                 doExampleSelection();
                 break;
         }
-    }
-
-    private static String getConsoleInput() {
-        Scanner scanner = new Scanner(System.in);
-        if (scanner.hasNextLine()) {
-            return scanner.nextLine();
-        } else {
-            return getConsoleInput();
-        }
-    }
-
-    public static PrivateKey parsePkcs8RsaUnencryptedPrivateKey(String pemFileContent) throws Exception {
-        int start = pemFileContent.indexOf("-----BEGIN PRIVATE KEY-----");
-        int end = pemFileContent.indexOf("-----END PRIVATE KEY-----");
-        if (start < 0 || end < 0) {
-            throw new IllegalArgumentException("Not a PKCS#8 PEM: missing BEGIN/END PRIVATE KEY markers.");
-        }
-
-        String base64 = pemFileContent
-            .substring(start + "-----BEGIN PRIVATE KEY-----".length(), end)
-            .replaceAll("\\s", "");
-        byte[] der = Base64.getDecoder().decode(base64);
-
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(der);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return kf.generatePrivate(spec);
     }
 }

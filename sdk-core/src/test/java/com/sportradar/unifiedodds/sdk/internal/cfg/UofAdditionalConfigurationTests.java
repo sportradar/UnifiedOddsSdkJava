@@ -6,9 +6,11 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sportradar.utils.OldStyleTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 public class UofAdditionalConfigurationTests {
 
     @Test

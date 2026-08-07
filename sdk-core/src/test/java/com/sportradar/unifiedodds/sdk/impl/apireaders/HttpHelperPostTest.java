@@ -4,7 +4,9 @@
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
+import com.sportradar.utils.OldStyleTest;
 
+@OldStyleTest
 public class HttpHelperPostTest extends HttpHelperWithStubbedHttpClientTest {
 
     @Override

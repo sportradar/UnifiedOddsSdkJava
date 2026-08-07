@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+@OldStyleTest
 @RunWith(JUnitParamsRunner.class)
 @Category(ConfigurationBuilderSetup.class)
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })

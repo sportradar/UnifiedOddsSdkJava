@@ -5,7 +5,6 @@
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static com.sportradar.unifiedodds.sdk.impl.Constants.RABBIT_BASE_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.platform.commons.util.CollectionUtils.getOnlyElement;
 
@@ -50,10 +49,6 @@ class ProducerManagerIT {
     private final GlobalVariables globalVariables = new GlobalVariables();
     private final ApiSimulator apiSimulator = new ApiSimulator(WIRE_MOCK.getRuntimeInfo().getWireMock());
 
-    private final Credentials sdkCredentials = Credentials.with(
-        Constants.SDK_USERNAME,
-        Constants.SDK_PASSWORD
-    );
     private final Locale enLanguage = Locale.ENGLISH;
 
     private BaseUrl sportsApiBaseUrl;
@@ -72,7 +67,7 @@ class ProducerManagerIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ExceptionHandlingStrategy.Throw)
                 .withDefaultLanguage(enLanguage)
                 .with1Session()
@@ -98,7 +93,7 @@ class ProducerManagerIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ExceptionHandlingStrategy.Throw)
                 .withDefaultLanguage(enLanguage)
                 .with1Session()
@@ -124,7 +119,7 @@ class ProducerManagerIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ExceptionHandlingStrategy.Throw)
                 .withDefaultLanguage(enLanguage)
                 .with1Session()

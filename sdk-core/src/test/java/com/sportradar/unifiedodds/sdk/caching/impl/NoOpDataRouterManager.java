@@ -10,16 +10,17 @@ import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
 import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
-import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.caching.CacheItem;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.caching.RequestOptions;
+import com.sportradar.unifiedodds.sdk.managers.CalculateRequestBuilder;
 import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings("ClassFanOutComplexity")
 public class NoOpDataRouterManager implements DataRouterManager {
 
     @Override
@@ -101,13 +102,21 @@ public class NoOpDataRouterManager implements DataRouterManager {
     }
 
     @Override
-    public Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException {
+    public Calculation requestCalculateProbability(CalculateRequestBuilder request)
+        throws CommunicationException {
         return null;
     }
 
     @Override
-    public CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
+    public CalculationFilter requestCalculateProbabilityFilter(CalculateRequestBuilder request)
         throws CommunicationException {
+        return null;
+    }
+
+    @Override
+    public com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBets requestCustomBetPrebuiltBets(
+        com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest request
+    ) throws CommunicationException {
         return null;
     }
 

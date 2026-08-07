@@ -4,9 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
-import static java.util.Arrays.asList;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.isReplay;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -168,11 +166,7 @@ public class UofSdk implements AutoCloseable {
 
         this.uofConfiguration = config;
 
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment())
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, isReplay(config.getEnvironment()));
         this.injector = createSdkInjector(listener, null);
         checkLocales();
         this.uofExtListener = null;
@@ -197,11 +191,7 @@ public class UofSdk implements AutoCloseable {
 
         this.uofConfiguration = config;
 
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment())
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, isReplay(config.getEnvironment()));
         this.injector = createSdkInjector(listener, null);
         this.uofExtListener = uofExtListener;
     }
@@ -246,11 +236,7 @@ public class UofSdk implements AutoCloseable {
         logger.info("UofSdk instance created with \n{}", config);
 
         this.uofConfiguration = config;
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment())
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, isReplay(config.getEnvironment()));
         this.injector = injector;
 
         logger.warn("UofSdk initialised with a provided predefined injector");
@@ -285,10 +271,7 @@ public class UofSdk implements AutoCloseable {
         return Guice.createInjector(
             new ConfigurationInjectingModule(
                 uofConfiguration,
-                new SdkInternalConfiguration(
-                    uofConfiguration,
-                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment())
-                )
+                new SdkInternalConfiguration(uofConfiguration, isReplay(uofConfiguration.getEnvironment()))
             )
         );
     }
@@ -665,10 +648,7 @@ public class UofSdk implements AutoCloseable {
         return Guice.createInjector(
             new MasterInjectionModule(
                 listener,
-                new SdkInternalConfiguration(
-                    uofConfiguration,
-                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment())
-                ),
+                new SdkInternalConfiguration(uofConfiguration, isReplay(uofConfiguration.getEnvironment())),
                 this.uofConfiguration,
                 customisableSdkModule
             )

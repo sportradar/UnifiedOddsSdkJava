@@ -4,9 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
-import static java.util.Arrays.asList;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.isReplay;
 
 import com.sportradar.unifiedodds.sdk.UofGlobalEventsListener;
 import com.sportradar.unifiedodds.sdk.UofSdk;
@@ -36,7 +34,7 @@ public class CustomisableUofSdk extends UofSdk {
         super(
             listener,
             config,
-            config == null ? false : asList(Replay, GlobalReplay).contains(config.getEnvironment()),
+            config == null ? false : isReplay(config.getEnvironment()),
             customisableSdkModule,
             null
         );
@@ -59,7 +57,7 @@ public class CustomisableUofSdk extends UofSdk {
         super(
             listener,
             config,
-            config == null ? false : asList(Replay, GlobalReplay).contains(config.getEnvironment()),
+            config == null ? false : isReplay(config.getEnvironment()),
             customisableSdkModule,
             uofExtListener
         );

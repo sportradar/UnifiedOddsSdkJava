@@ -4,15 +4,12 @@
 package com.sportradar.unifiedodds.sdk;
 
 import static com.sportradar.unifiedodds.sdk.ConfigureEnvironmentTest.ToolsForTests.SdkInternalConfigurationAssertions.assertThat;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Custom;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Integration;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.*;
 import static com.sportradar.unifiedodds.sdk.cfg.Environments.getNonReplayEnvironments;
 import static com.sportradar.unifiedodds.sdk.cfg.Environments.getReplayEnvironments;
 import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.internal.cfg.*;
@@ -30,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ConfigureEnvironmentTest {
+class ConfigureEnvironmentTest {
 
     public static final String REPLAY_ENVIRONMENTS =
         "com.sportradar.unifiedodds.sdk.ConfigureEnvironmentTest#replayEnvironments";
@@ -43,15 +40,15 @@ public class ConfigureEnvironmentTest {
     private ConfigureEnvironmentTest() {}
 
     @Nested
-    public class ConfigurationItself {
+    class ConfigurationItself {
 
         @Nested
-        public class ViaPropertiesFile {
+        class ViaPropertiesFile {
 
             public static final String ENVIRONMENT_PROPERTY = "uf.sdk.environment";
             private final boolean replayMode = true;
             private final boolean nonReplayMode = false;
-            private final Map<String, String> anyYamlFileContent = mock(Map.class);
+            private final Map<String, String> anyYamlFileContent = new HashMap<>();
             private final Map<String, String> propsFileContent = new HashMap<>();
             private final WhoAmIReader whoAmIReader = emptyBookmakerDetailsReader();
             private final ProducerDataProvider producerDataProvider = providerOfSingleEmptyProducer();
@@ -63,7 +60,7 @@ public class ConfigureEnvironmentTest {
             );
 
             @Test
-            public void noEnvironmentSetDefaultsToIntegration() {
+            void noEnvironmentSetDefaultsToIntegration() {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
                 val internalConfig = new SdkInternalConfiguration(config);
@@ -80,7 +77,7 @@ public class ConfigureEnvironmentTest {
             }
 
             @Test
-            public void notExistingEnvironmentSetDefaultsToIntegration() {
+            void notExistingEnvironmentSetDefaultsToIntegration() {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, "inventedEnvironment");
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
@@ -97,7 +94,7 @@ public class ConfigureEnvironmentTest {
 
             @ParameterizedTest
             @MethodSource(NON_REPLAY_ENVIRONMENTS)
-            public void configureNonReplayMode(Environment nonReplayEnvironment) {
+            void configureNonReplayMode(Environment nonReplayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, nonReplayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
@@ -114,7 +111,7 @@ public class ConfigureEnvironmentTest {
 
             @ParameterizedTest
             @MethodSource(REPLAY_ENVIRONMENTS)
-            public void configureReplayMode(Environment replayEnvironment) {
+            void configureReplayMode(Environment replayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(propsFileContent);
                 propsFileContent.put(ENVIRONMENT_PROPERTY, replayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromSdkProperties();
@@ -131,13 +128,13 @@ public class ConfigureEnvironmentTest {
         }
 
         @Nested
-        public class ViaYamlFile {
+        class ViaYamlFile {
 
             public static final String ENVIRONMENT_PROPERTY = "uf.sdk.environment";
             private final boolean replayMode = true;
             private final boolean nonReplayMode = false;
             private final Map<String, String> yamlFileContent = new HashMap<>();
-            private final Map<String, String> anyPropsFileContent = mock(Map.class);
+            private final Map<String, String> anyPropsFileContent = new HashMap<>();
             private final WhoAmIReader whoAmIReader = emptyBookmakerDetailsReader();
             private final ProducerDataProvider producerDataProvider = providerOfSingleEmptyProducer();
             private final TokenSetter builder = new TokenSetterImpl(
@@ -148,7 +145,7 @@ public class ConfigureEnvironmentTest {
             );
 
             @Test
-            public void noEnvironmentSetDefaultsToIntegration() {
+            void noEnvironmentSetDefaultsToIntegration() {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
                 val internalConfig = new SdkInternalConfiguration(config);
@@ -163,7 +160,7 @@ public class ConfigureEnvironmentTest {
             }
 
             @Test
-            public void notExistingEnvironmentSetDefaultsToIntegration() {
+            void notExistingEnvironmentSetDefaultsToIntegration() {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, "inventedEnvironment");
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
@@ -180,7 +177,7 @@ public class ConfigureEnvironmentTest {
 
             @ParameterizedTest
             @MethodSource(NON_REPLAY_ENVIRONMENTS)
-            public void configureNonReplayMode(Environment nonReplayEnvironment) {
+            void configureNonReplayMode(Environment nonReplayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, nonReplayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
@@ -197,7 +194,7 @@ public class ConfigureEnvironmentTest {
 
             @ParameterizedTest
             @MethodSource(REPLAY_ENVIRONMENTS)
-            public void configureReplayMode(Environment replayEnvironment) {
+            void configureReplayMode(Environment replayEnvironment) {
                 configureAnyTokenAndAnyDefaultLanguage(yamlFileContent);
                 yamlFileContent.put(ENVIRONMENT_PROPERTY, replayEnvironment.toString());
                 UofConfiguration config = builder.buildConfigFromApplicationYml();
@@ -214,7 +211,8 @@ public class ConfigureEnvironmentTest {
         }
 
         @Nested
-        public class ViaJavaApi {
+        @SuppressWarnings("ClassFanOutComplexity")
+        class ViaJavaApiWithToken {
 
             private final boolean replayMode = true;
             private final boolean nonReplayMode = false;
@@ -229,7 +227,7 @@ public class ConfigureEnvironmentTest {
             );
 
             @Test
-            public void configureNonReplayMode() {
+            void configureNonReplayMode() {
                 UofConfiguration config = builder
                     .setAccessToken(ANY_TOKEN)
                     .selectCustom()
@@ -241,26 +239,13 @@ public class ConfigureEnvironmentTest {
                     nonReplayMode
                 );
 
-                assertThat(config.getEnvironment()).isNotEqualTo(Replay);
+                assertThat(Environment.isReplay(config.getEnvironment())).isFalse();
                 assertThat(internalConfig).representsNonReplay();
                 assertThat(internalConfigForNonReplayExplicitly).representsNonReplay();
             }
 
             @Test
-            public void configureReplayMode() {
-                UofConfiguration config = builder
-                    .setAccessToken(ANY_TOKEN)
-                    .selectReplay()
-                    .setDefaultLanguage(anyLanguage)
-                    .build();
-                val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
-
-                assertThat(config.getEnvironment()).isEqualTo(Replay);
-                assertThat(internalConfigForReplay).representsReplay();
-            }
-
-            @Test
-            public void configureProductionEnvironment() {
+            void configureProductionEnvironment() {
                 UofConfiguration config = builder
                     .setAccessToken(ANY_TOKEN)
                     .selectCustom()
@@ -269,9 +254,35 @@ public class ConfigureEnvironmentTest {
                 val internalConfig = new SdkInternalConfiguration(config);
                 val internalConfigForReplay = new SdkInternalConfiguration(config, nonReplayMode);
 
-                assertThat(config.getEnvironment()).isNotEqualTo(Replay);
+                assertThat(Environment.isReplay(config.getEnvironment())).isFalse();
                 assertThat(internalConfig).representsNonReplay(Custom);
                 assertThat(internalConfigForReplay).representsNonReplay(Custom);
+            }
+
+            @Test
+            void configureReplayWithProductionCredentials() {
+                UofConfiguration config = builder
+                    .setAccessToken(ANY_TOKEN)
+                    .selectEnvironment(ReplayWithProductionCredentials)
+                    .setDefaultLanguage(anyLanguage)
+                    .build();
+                val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
+
+                assertThat(config.getEnvironment()).isEqualTo(ReplayWithProductionCredentials);
+                assertThat(internalConfigForReplay).representsReplay();
+            }
+
+            @Test
+            void configureReplayWithIntegrationCredentials() {
+                UofConfiguration config = builder
+                    .setAccessToken(ANY_TOKEN)
+                    .selectEnvironment(ReplayWithIntegrationCredentials)
+                    .setDefaultLanguage(anyLanguage)
+                    .build();
+                val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
+
+                assertThat(config.getEnvironment()).isEqualTo(ReplayWithIntegrationCredentials);
+                assertThat(internalConfigForReplay).representsReplay();
             }
         }
     }

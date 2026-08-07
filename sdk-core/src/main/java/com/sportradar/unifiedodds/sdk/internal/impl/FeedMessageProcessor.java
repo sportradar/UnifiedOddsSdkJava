@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
+import java.util.Map;
 
 /**
  * Defines methods implemented by classes capable of processing feed messages
@@ -33,7 +34,8 @@ public interface FeedMessageProcessor {
         UnmarshalledMessage message,
         byte[] body,
         RoutingKeyInfo routingKeyInfo,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     /**

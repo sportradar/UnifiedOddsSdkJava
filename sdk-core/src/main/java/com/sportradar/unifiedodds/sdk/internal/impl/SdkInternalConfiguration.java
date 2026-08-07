@@ -24,7 +24,7 @@ public class SdkInternalConfiguration {
     private final List<Locale> desiredLocales;
     private final String host;
     private final int inactivitySeconds;
-    private final int maxRecoveryExecutionMinutes;
+    private final int maxRecoveryExecutionSeconds;
     private final int minIntervalBetweenRecoveryRequests;
     private final boolean useMessagingSsl;
     private final boolean useApiSsl;
@@ -68,7 +68,7 @@ public class SdkInternalConfiguration {
         defaultLocale = cfg.getDefaultLanguage();
         desiredLocales = cfg.getLanguages();
         inactivitySeconds = (int) (cfg.getProducer().getInactivitySeconds().toMillis() / 1000);
-        maxRecoveryExecutionMinutes = (int) (cfg.getProducer().getMaxRecoveryTime().toMillis() / 1000);
+        maxRecoveryExecutionSeconds = (int) (cfg.getProducer().getMaxRecoveryTime().toMillis() / 1000);
         minIntervalBetweenRecoveryRequests =
             (int) (cfg.getProducer().getMinIntervalBetweenRecoveryRequests().toMillis() / 1000);
         messagingUsername = cfg.getRabbit().getUsername();
@@ -130,10 +130,10 @@ public class SdkInternalConfiguration {
     }
 
     /**
-     * @return The max recovery execution time, after which the recovery request is repeated(minutes)
+     * @return The max recovery execution time, after which the recovery request is repeated(seconds)
      */
     public int getMaxRecoveryExecutionSeconds() {
-        return maxRecoveryExecutionMinutes;
+        return maxRecoveryExecutionSeconds;
     }
 
     /**
@@ -357,7 +357,7 @@ public class SdkInternalConfiguration {
             .add("desiredLocales=" + desiredLocales)
             .add("host='" + host + "'")
             .add("inactivitySeconds=" + inactivitySeconds)
-            .add("maxRecoveryExecutionMinutes=" + maxRecoveryExecutionMinutes)
+            .add("maxRecoveryExecutionSeconds=" + maxRecoveryExecutionSeconds)
             .add("minIntervalBetweenRecoveryRequests=" + minIntervalBetweenRecoveryRequests)
             .add("useMessagingSsl=" + useMessagingSsl)
             .add("useApiSsl=" + useApiSsl)

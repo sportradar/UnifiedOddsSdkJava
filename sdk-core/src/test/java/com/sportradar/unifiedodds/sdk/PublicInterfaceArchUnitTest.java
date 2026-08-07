@@ -5,14 +5,17 @@ package com.sportradar.unifiedodds.sdk;
 
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+import com.tngtech.archunit.library.freeze.FreezingArchRule;
 import java.util.List;
 import lombok.val;
 
@@ -91,4 +94,24 @@ class PublicInterfaceArchUnitTest {
         .resideInAnyPackage(PUBLIC_PACKAGES)
         .should()
         .notHaveRawParameterTypes(ofClassesFromInternalPackage());
+
+    @ArchTest
+    static final ArchRule interfaceMethodsShouldHaveDefaultImplementations = FreezingArchRule.freeze(
+        methods()
+            .that()
+            .areDeclaredInClassesThat()
+            .areInterfaces()
+            .and()
+            .areDeclaredInClassesThat()
+            .resideInAPackage("com.sportradar.unifiedodds.sdk..")
+            .and()
+            .areDeclaredInClassesThat()
+            .resideOutsideOfPackage("com.sportradar.unifiedodds.sdk.internal..")
+            .should()
+            .notHaveModifier(JavaModifier.ABSTRACT)
+            .as(
+                "interface methods in public SDK packages should have default implementations" +
+                " - use 'default' keyword when adding new methods to existing interfaces"
+            )
+    );
 }

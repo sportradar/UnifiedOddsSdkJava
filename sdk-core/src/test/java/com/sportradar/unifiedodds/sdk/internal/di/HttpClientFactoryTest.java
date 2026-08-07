@@ -2,9 +2,11 @@ package com.sportradar.unifiedodds.sdk.internal.di;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.sportradar.utils.OldStyleTest;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber" })
 public class HttpClientFactoryTest {
 

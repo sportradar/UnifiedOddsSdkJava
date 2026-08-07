@@ -22,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.recovery.SingleRecoveryManagerSupervisor;
 import com.sportradar.unifiedodds.sdk.managers.RecoveryManager;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.time.TimeUtilsStub;
 import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber", "ClassFanOutComplexity" })
 public class SingleRecoveryManagerSupervisorTest {
 

@@ -28,7 +28,7 @@ public class ClientCredentialsJwtAssertionRequestBodyPatterns {
             "(?=.*client_assertion=" +
             JWT_REGEX +
             ")" +
-            "(?=.*audience=UF-RestAPI)" +
+            "(?=.*audience=https://api.betradar.com)" +
             "[^&]*(&[^&]*){3}$"
         );
     }
@@ -41,7 +41,7 @@ public class ClientCredentialsJwtAssertionRequestBodyPatterns {
             "(?=.*client_assertion=" +
             JWT_REGEX +
             ")" +
-            "(?=.*audience=UF-RabbitMQ)" +
+            "(?=.*audience=https://mq.betradar.com)" +
             "[^&]*(&[^&]*){3}$"
         );
     }

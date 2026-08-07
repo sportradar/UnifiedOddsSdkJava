@@ -1,6 +1,15 @@
 ### Unified Feed SDK 5.x changelog
 
-**5.0.0-rc4**
+**5.0.0-rc5**
+- Added PreBuilt Bets support: CustomBetManager now allows retrieving available prebuilt bets for an event and obtaining prebuilt bet selections based on event recommendations.
+- Added OR-selections support to CustomBetManager: multiple selections can now be combined with OR logic when building custom bet calculate requests.
+- Extended feed messages with getMessageHeaders() method to expose raw AMQP message headers on all feed message types.
+- Replaced Environment.Replay and Environment.GlobalReplay with ReplayWithIntegrationCredentials and ReplayWithProductionCredentials; removed selectReplay() from the environment selector (breaking change).
+- Upgraded dependencies to the latest supported versions.
+- ClientAuthentication is supported for Replay Server connections.
+  - NOTE: ClientAuthentication for Replay Server is currently supported only for `Environment.ReplayWithIntegrationCredentials`.
+
+**5.0.0-rc4 (2026-03-25)**
 - Added support for In-Play bet settlements, see release notes for v.4.7.0 for more details.
 
 **5.0.0-rc3 (2026-02-09)**
@@ -16,6 +25,19 @@
 **5.0.0-rc1 (2025-10-10)**
  - Introduced ClientAuthentication configuration as a more secure and recommended alternative to access tokens.
  - Added a dependency to com.auth0:java-jvt:4.5.0 to support Common IAM authentication.
+
+**4.11.0**
+- Added missing default method to `getMessageHeaders` in the `Message` interface
+
+**4.10.0 (2026-06-01)**
+- Extended feed messages with `getMessageHeaders()` method to expose raw AMQP message headers on all feed message types.
+
+**4.9.0 (2026-05-20)**
+- Added OR-selections support to `CustomBetManager`: multiple selections can now be combined with OR logic when building custom bet calculate requests.
+
+**4.8.0 (2026-05-04)**
+- Added PreBuilt Bets support: CustomBetManager now allows retrieving available prebuilt bets for an event and obtaining prebuilt bet selections based on event recommendations.
+- Fixed the unit of `maxRecoveryTime` configuration property to seconds (previously it was treated as minutes).
 
 **4.7.0 (2026-03-02)**
 - Added support for In-Play Bet Settlements and In-Play Rollback Bet Settlements with markets with outcomes.

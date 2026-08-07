@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.internal.caching;
 
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.sportsapi.datamodel.SapiMatchTimelineEndpoint;
 import com.sportradar.unifiedodds.sdk.entities.FixtureChange;
 import com.sportradar.unifiedodds.sdk.entities.PeriodStatus;
@@ -11,8 +12,10 @@ import com.sportradar.unifiedodds.sdk.entities.ResultChange;
 import com.sportradar.unifiedodds.sdk.entities.custombet.AvailableSelections;
 import com.sportradar.unifiedodds.sdk.entities.custombet.Calculation;
 import com.sportradar.unifiedodds.sdk.entities.custombet.CalculationFilter;
-import com.sportradar.unifiedodds.sdk.entities.custombet.Selection;
+import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBets;
+import com.sportradar.unifiedodds.sdk.entities.custombet.PrebuiltBetsRequest;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.managers.CalculateRequestBuilder;
 import com.sportradar.utils.Urn;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +25,7 @@ import java.util.Locale;
  * Created on 26/10/2017.
  * // TODO @eti: Javadoc
  */
-@SuppressWarnings({ "OverloadMethodsDeclarationOrder" })
+@SuppressWarnings({ "ClassFanOutComplexity", "OverloadMethodsDeclarationOrder" })
 public interface DataRouterManager {
     void requestSummaryEndpoint(Locale locale, Urn id, CacheItem requester) throws CommunicationException;
 
@@ -64,10 +67,12 @@ public interface DataRouterManager {
 
     AvailableSelections requestAvailableSelections(Urn id) throws CommunicationException;
 
-    Calculation requestCalculateProbability(List<Selection> selections) throws CommunicationException;
+    Calculation requestCalculateProbability(CalculateRequestBuilder request) throws CommunicationException;
 
-    CalculationFilter requestCalculateProbabilityFilter(List<Selection> selections)
+    CalculationFilter requestCalculateProbabilityFilter(CalculateRequestBuilder request)
         throws CommunicationException;
+
+    PrebuiltBets requestCustomBetPrebuiltBets(PrebuiltBetsRequest request) throws CommunicationException;
 
     List<FixtureChange> requestFixtureChanges(Date after, Urn sportId, Locale locale)
         throws CommunicationException;

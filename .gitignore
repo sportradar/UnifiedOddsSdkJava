@@ -81,6 +81,7 @@ application.yml
 !/sdk-integration-tests/**/src/test/resources/application.yml
 
 **/generatedsources
+**/src/test/java/META-INF/
 /git-ignored-playground/
 
 # logs

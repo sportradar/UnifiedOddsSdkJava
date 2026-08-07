@@ -11,16 +11,13 @@ import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketF
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created on 23/06/2017.
- * // TODO @eti: Javadoc
- */
-@SuppressWarnings({ "ConstantName" })
+@SuppressWarnings({ "ConstantName", "ParameterNumber" })
 class RollbackBetSettlementImpl<T extends SportEvent>
     extends EventMessageImpl<T>
     implements RollbackBetSettlement<T> {
@@ -34,9 +31,10 @@ class RollbackBetSettlementImpl<T extends SportEvent>
         Producer producer,
         byte[] rawMessage,
         MarketFactory factory,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
-        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId());
+        super(sportEvent, rawMessage, producer, timestamp, message.getRequestId(), messageHeaders);
         Preconditions.checkNotNull(factory);
 
         if (message.getMarket() != null) {

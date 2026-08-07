@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
+import static java.util.Collections.emptyMap;
+
 import com.google.common.base.Preconditions;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
@@ -13,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.http.ApiResponseHandlingExce
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUnreachableCode;
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUntestableCheckedException;
 import java.io.*;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.*;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
@@ -68,8 +71,10 @@ abstract class HttpDataFetcher {
         this.oauthTokenCache = oauthTokenCache;
     }
 
-    public HttpData get(String path) throws CommunicationException {
-        return send(new HttpGet(path), path);
+    public HttpData get(String path, Map<String, String> headers) throws CommunicationException {
+        HttpGet httpGet = new HttpGet(path);
+        headers.forEach(httpGet::addHeader);
+        return send(httpGet, path);
     }
 
     public HttpData post(String path, HttpEntity content) throws CommunicationException {

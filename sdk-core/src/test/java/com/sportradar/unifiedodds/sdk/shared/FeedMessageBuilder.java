@@ -1,11 +1,7 @@
 package com.sportradar.unifiedodds.sdk.shared;
 
 import com.sportradar.uf.datamodel.*;
-import com.sportradar.uf.sportsapi.datamodel.DescMarket;
-import com.sportradar.uf.sportsapi.datamodel.DescSpecifiers;
 import com.sportradar.unifiedodds.sdk.conn.GlobalVariables;
-import com.sportradar.unifiedodds.sdk.conn.ProducerId;
-import com.sportradar.unifiedodds.sdk.conn.SportEvent;
 import java.util.Date;
 import lombok.val;
 
@@ -97,6 +93,33 @@ public class FeedMessageBuilder {
         betCancelMarket.setId(market.getId());
         betCancelMarket.setSpecifiers(market.getSpecifiers());
         message.getMarket().add(betCancelMarket);
+        return Helper.serializeToJaxbXml(message);
+    }
+
+    public String rollbackBetCancel(UfMarket market) {
+        val message = new UfRollbackBetCancel();
+        message.getMarket().add(market);
+        message.setProduct(globalVariables.getProducer().get());
+        message.setEventId(globalVariables.getSportEventUrn().toString());
+        message.setTimestamp(new Date().getTime());
+        return Helper.serializeToJaxbXml(message);
+    }
+
+    public String betStop() {
+        val message = new UfBetStop();
+        message.setProduct(globalVariables.getProducer().get());
+        message.setEventId(globalVariables.getSportEventUrn().toString());
+        message.setTimestamp(new Date().getTime());
+        message.setGroups("all");
+        return Helper.serializeToJaxbXml(message);
+    }
+
+    public String fixtureChange() {
+        val message = new UfFixtureChange();
+        message.setProduct(globalVariables.getProducer().get());
+        message.setEventId(globalVariables.getSportEventUrn().toString());
+        message.setTimestamp(new Date().getTime());
+        message.setStartTime(new Date().getTime());
         return Helper.serializeToJaxbXml(message);
     }
 

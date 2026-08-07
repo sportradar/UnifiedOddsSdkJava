@@ -19,6 +19,7 @@ public class MessagesInMemoryStorage {
     private final Queue<BetCancel<SportEvent>> betCancelMessages = new LinkedBlockingDeque<>();
     private final Queue<RollbackBetCancel<SportEvent>> rollbackBetCancelMessages = new LinkedBlockingDeque<>();
     private final Queue<FixtureChange<SportEvent>> fixtureChangeMessages = new LinkedBlockingDeque<>();
+    private final Queue<UnparsableMessage<SportEvent>> unparsableMessages = new LinkedBlockingDeque<>();
 
     public void append(OddsChange<SportEvent> oddsChange) {
         oddsChangeMessages.add(oddsChange);
@@ -48,8 +49,16 @@ public class MessagesInMemoryStorage {
         fixtureChangeMessages.add(message);
     }
 
+    public void append(UnparsableMessage<SportEvent> message) {
+        unparsableMessages.add(message);
+    }
+
     public List<OddsChange<SportEvent>> findAllOddsChange() {
         return oddsChangeMessages.stream().collect(Collectors.toList());
+    }
+
+    public List<BetStop<SportEvent>> findAllBetStop() {
+        return betStopMessages.stream().collect(Collectors.toList());
     }
 
     public List<BetSettlement<SportEvent>> findAllBetSettlement() {
@@ -60,7 +69,19 @@ public class MessagesInMemoryStorage {
         return betCancelMessages.stream().collect(Collectors.toList());
     }
 
+    public List<RollbackBetCancel<SportEvent>> findAllRollbackBetCancel() {
+        return rollbackBetCancelMessages.stream().collect(Collectors.toList());
+    }
+
     public List<RollbackBetSettlement<SportEvent>> findAllRollbackBetSettlement() {
         return rollbackBetSettlementMessages.stream().collect(Collectors.toList());
+    }
+
+    public List<FixtureChange<SportEvent>> findAllFixtureChange() {
+        return fixtureChangeMessages.stream().collect(Collectors.toList());
+    }
+
+    public List<UnparsableMessage<SportEvent>> findAllUnparsableMessages() {
+        return unparsableMessages.stream().collect(Collectors.toList());
     }
 }

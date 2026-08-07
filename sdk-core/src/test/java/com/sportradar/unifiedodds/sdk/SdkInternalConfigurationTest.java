@@ -13,6 +13,7 @@ import com.sportradar.unifiedodds.sdk.internal.cfg.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
+import com.sportradar.utils.OldStyleTest;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Locale;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 @SuppressWarnings("ClassFanOutComplexity")
 public class SdkInternalConfigurationTest {
 
@@ -72,7 +74,7 @@ public class SdkInternalConfigurationTest {
     public void shouldPreserveMessagingHostIfReplaySession() {
         val host = "rabbit.com";
         config.setRabbit(new UofRabbitConfigurationStub().setHost(host));
-        config.setEnvironment(Environment.Replay);
+        config.setEnvironment(Environment.ReplayWithIntegrationCredentials);
         ((UofProducerConfigurationStub) config.getProducer()).setInactivitySeconds(ANY_DURATION);
         ((UofProducerConfigurationStub) config.getProducer()).setMaxRecoveryTime(ANY_DURATION);
         ((UofProducerConfigurationStub) config.getProducer()).setMinIntervalBetweenRecoveryRequests(

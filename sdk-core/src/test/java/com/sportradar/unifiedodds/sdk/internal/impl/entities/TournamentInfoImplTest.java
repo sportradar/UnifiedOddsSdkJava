@@ -16,6 +16,7 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.internal.caching.SportEventCache;
 import com.sportradar.unifiedodds.sdk.internal.caching.TournamentCi;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
+import com.sportradar.utils.OldStyleTest;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class TournamentInfoImplTest {
 
     private static final String NAME_EN = "Worldcup";

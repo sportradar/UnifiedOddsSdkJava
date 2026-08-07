@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.unifiedodds.sdk.internal.di.MetricsRegisterer;
+import com.sportradar.utils.OldStyleTest;
 import java.util.stream.Stream;
 import javax.management.*;
 import lombok.val;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class MetricsRegistererTest {
 
     @ParameterizedTest

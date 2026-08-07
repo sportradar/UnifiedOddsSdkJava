@@ -8,6 +8,7 @@ import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.Urn;
+import java.util.Map;
 
 /**
  * Created on 22/06/2017.
@@ -36,49 +37,56 @@ public interface FeedMessageFactory {
         T sportEvent,
         UfBetStop message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> FixtureChange<T> buildFixtureChange(
         T sportEvent,
         UfFixtureChange message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> BetSettlement<T> buildBetSettlement(
         T sportEvent,
         UfBetSettlement message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> RollbackBetSettlement<T> buildRollbackBetSettlement(
         T sportEvent,
         UfRollbackBetSettlement message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> OddsChange<T> buildOddsChange(
         T sportEvent,
         UfOddsChange message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> RollbackBetCancel<T> buildRollbackBetCancel(
         T sportEvent,
         UfRollbackBetCancel message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> BetCancel<T> buildBetCancel(
         T sportEvent,
         UfBetCancel message,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     <T extends SportEvent> CashOutProbabilities<T> buildCashOutProbabilities(
@@ -91,6 +99,7 @@ public interface FeedMessageFactory {
         T sportEvent,
         Integer producerId,
         byte[] rawMessage,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 }

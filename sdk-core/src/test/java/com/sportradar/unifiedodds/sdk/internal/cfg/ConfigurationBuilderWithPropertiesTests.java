@@ -9,11 +9,13 @@ import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
+import com.sportradar.utils.OldStyleTest;
 import java.util.List;
 import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilderSetup {
 
@@ -482,7 +484,7 @@ public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilde
             prodBuilder().build().getRabbit().getHost()
         );
         Assert.assertEquals(
-            EnvironmentManager.getMqHost(Environment.Replay),
+            EnvironmentManager.getMqHost(Environment.ReplayWithIntegrationCredentials),
             replayBuilder().build().getRabbit().getHost()
         );
     }
@@ -591,7 +593,7 @@ public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilde
             prodBuilder().build().getApi().getHost()
         );
         Assert.assertEquals(
-            EnvironmentManager.getApiHost(Environment.Replay),
+            EnvironmentManager.getApiHost(Environment.ReplayWithIntegrationCredentials),
             replayBuilder().build().getApi().getHost()
         );
 
@@ -604,7 +606,7 @@ public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilde
             productionBuilder("token").setDefaultLanguage(defaultLanguage).build().getApi().getHost()
         );
         Assert.assertEquals(
-            EnvironmentManager.getApiHost(Environment.Replay),
+            EnvironmentManager.getApiHost(Environment.ReplayWithIntegrationCredentials),
             replayBuilder("token").setDefaultLanguage(defaultLanguage).build().getApi().getHost()
         );
     }

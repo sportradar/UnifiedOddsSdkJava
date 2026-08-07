@@ -28,6 +28,7 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.MatchImpl;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.*;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class MatchImplTest {
 
     public static final String TRANSLATIONS =

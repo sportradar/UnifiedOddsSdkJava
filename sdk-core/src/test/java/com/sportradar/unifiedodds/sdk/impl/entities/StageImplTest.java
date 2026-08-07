@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.StageCi;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEventStatusFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.StageImpl;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@OldStyleTest
 class StageImplTest {
 
     private SportEventCache sportEventCache;

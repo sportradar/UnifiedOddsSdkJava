@@ -16,6 +16,7 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.CacheItemNotFoundExcep
 import com.sportradar.unifiedodds.sdk.internal.exceptions.IllegalCacheStateException;
 import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.CompetitorImpl;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class CompetitorImplTest {
 
     private final Urn competitorUrn = new Urn("sr", "competitor", 1);

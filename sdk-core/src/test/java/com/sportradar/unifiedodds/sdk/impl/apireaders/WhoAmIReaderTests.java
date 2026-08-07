@@ -5,13 +5,10 @@
 package com.sportradar.unifiedodds.sdk.impl.apireaders;
 
 import static com.sportradar.uf.sportsapi.datamodel.BookmakerDetailsDtos.bet365;
-import static com.sportradar.uf.sportsapi.datamodel.BookmakerDetailsDtos.notForRequestedEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
@@ -24,6 +21,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.DataWrapper;
 import com.sportradar.unifiedodds.sdk.internal.impl.TestingDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -31,11 +29,10 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.assertj.core.api.Assertions;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings(
     {
         "IllegalCatch",
@@ -60,8 +57,8 @@ public class WhoAmIReaderTests {
             config,
             ANY_ENVIRONMENT_UPDATER,
             getValidProductionDataProvider(),
-            getValidProductionDataProvider(),
-            getInvalidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
         whoAmIReader.validateBookmakerDetails();
 
@@ -78,8 +75,8 @@ public class WhoAmIReaderTests {
             config,
             ANY_ENVIRONMENT_UPDATER,
             getValidIntegrationDataProvider(),
-            getInvalidProductionDataProvider(),
-            getValidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
         whoAmIReader.validateBookmakerDetails();
 
@@ -96,8 +93,8 @@ public class WhoAmIReaderTests {
             config,
             ANY_ENVIRONMENT_UPDATER,
             getInvalidProductionDataProvider(),
-            getInvalidProductionDataProvider(),
-            getInvalidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
 
         try {
@@ -123,8 +120,8 @@ public class WhoAmIReaderTests {
             config,
             ANY_ENVIRONMENT_UPDATER,
             getInvalidIntegrationDataProvider(),
-            getInvalidProductionDataProvider(),
-            getInvalidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
 
         try {
@@ -142,63 +139,52 @@ public class WhoAmIReaderTests {
     }
 
     @Test
-    public void replayServerConfigSelectionTestValidProductionEndpoint() throws DataProviderException {
+    public void replayWithProductionCredentialsValidToken() throws DataProviderException {
         StubUofConfiguration config = new StubUofConfiguration();
-        config.setEnvironment(Environment.Production);
-        config.resetNbrSetEnvironmentCalled();
+        config.setEnvironment(Environment.ReplayWithProductionCredentials);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             config,
             ANY_ENVIRONMENT_UPDATER,
             getValidProductionDataProvider(),
-            getValidProductionDataProvider(),
-            getInvalidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
         whoAmIReader.validateBookmakerDetails();
 
-        Assert.assertEquals(0, config.getNbrSetEnvironmentCalled());
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 33);
         Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
     }
 
     @Test
-    public void replayServerConfigSelectionTestValidIntegrationEndpoint() throws DataProviderException {
+    public void replayWithIntegrationCredentialsValidToken() throws DataProviderException {
         StubUofConfiguration config = new StubUofConfiguration();
-        config.setEnvironment(Environment.Replay);
-        config.resetNbrSetEnvironmentCalled();
-        val environmentUpdater = mock(ApiHostUpdater.class);
-        doAnswer(p -> {
-                config.setEnvironment(Environment.Integration);
-                return null;
-            })
-            .when(environmentUpdater)
-            .updateToIntegration();
+        config.setEnvironment(Environment.ReplayWithIntegrationCredentials);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             config,
-            environmentUpdater,
-            getInvalidProductionDataProvider(),
-            getInvalidProductionDataProvider(),
-            getValidIntegrationDataProvider()
+            ANY_ENVIRONMENT_UPDATER,
+            getValidIntegrationDataProvider(),
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
         whoAmIReader.validateBookmakerDetails();
 
-        Assert.assertEquals(Environment.Integration, config.getEnvironment());
         Assert.assertEquals(whoAmIReader.getBookmakerId(), 3311);
         Assert.assertEquals(whoAmIReader.getResponseCode(), ResponseCode.OK);
     }
 
     @Test
-    public void replayServerConfigSelectionTestBothEndpointsInvalid() throws DataProviderException {
+    public void replayWithProductionCredentialsInvalidToken() throws DataProviderException {
         StubUofConfiguration config = new StubUofConfiguration();
-        config.setEnvironment(Environment.Replay);
+        config.setEnvironment(Environment.ReplayWithProductionCredentials);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             config,
             ANY_ENVIRONMENT_UPDATER,
             getInvalidProductionDataProvider(),
-            getInvalidProductionDataProvider(),
-            getInvalidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
 
         try {
@@ -206,7 +192,7 @@ public class WhoAmIReaderTests {
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
             Assert.assertEquals(
-                "Looks like the access token has expired (or is invalid) - Access was denied. [msg: FORBIDDEN]",
+                "UOF SDK failed to fetch required bookmaker details, check logs for additional information",
                 e.getMessage()
             );
             return;
@@ -216,43 +202,16 @@ public class WhoAmIReaderTests {
     }
 
     @Test
-    public void switchedTokenProductionIntegrationConfig() throws DataProviderException {
+    public void replayWithIntegrationCredentialsInvalidToken() throws DataProviderException {
         StubUofConfiguration config = new StubUofConfiguration();
-        config.setEnvironment(Environment.Production);
-
-        WhoAmIReader whoAmIReader = new WhoAmIReader(
-            config,
-            ANY_ENVIRONMENT_UPDATER,
-            getInvalidProductionDataProvider(),
-            getInvalidProductionDataProvider(),
-            getValidIntegrationDataProvider()
-        );
-
-        try {
-            whoAmIReader.validateBookmakerDetails();
-        } catch (Exception e) {
-            Assert.assertEquals(IllegalStateException.class, e.getClass());
-            Assert.assertEquals(
-                "The provided access token is for the 'Integration' environment but the SDK is configured to access the 'Production' environment",
-                e.getMessage()
-            );
-            return;
-        }
-
-        Assert.fail("Should not be reached");
-    }
-
-    @Test
-    public void switchedTokenIntegrationProductionConfig() throws DataProviderException {
-        StubUofConfiguration config = new StubUofConfiguration();
-        config.setEnvironment(Environment.Integration);
+        config.setEnvironment(Environment.ReplayWithIntegrationCredentials);
 
         WhoAmIReader whoAmIReader = new WhoAmIReader(
             config,
             ANY_ENVIRONMENT_UPDATER,
             getInvalidIntegrationDataProvider(),
-            getValidProductionDataProvider(),
-            getInvalidIntegrationDataProvider()
+            ANY_DATA_PROVIDER,
+            ANY_DATA_PROVIDER
         );
 
         try {
@@ -260,7 +219,7 @@ public class WhoAmIReaderTests {
         } catch (Exception e) {
             Assert.assertEquals(IllegalStateException.class, e.getClass());
             Assert.assertEquals(
-                "The provided access token is for the 'Production' environment but the SDK is configured to access the 'Integration' environment",
+                "UOF SDK failed to fetch required bookmaker details, check logs for additional information",
                 e.getMessage()
             );
             return;
@@ -398,73 +357,6 @@ public class WhoAmIReaderTests {
         when(productionDataProvider.getDataWithAdditionalInfo(Locale.ENGLISH)).thenReturn(dataWrapperWith);
 
         return productionDataProvider;
-    }
-
-    @Test
-    public void changesEnvironmentToProductionIfTokenIsForProduction()
-        throws DataProviderException, DatatypeConfigurationException {
-        val productionBookmakers = mock(DataProvider.class);
-        final DataWrapper dataWrapper = wrapped(bet365());
-        when(productionBookmakers.getDataWithAdditionalInfo(any())).thenReturn(dataWrapper);
-        ApiHostUpdater apiHostUpdater = mock(ApiHostUpdater.class);
-        WhoAmIReader whoAmIReader = new WhoAmIReader(
-            replayConfig(),
-            apiHostUpdater,
-            ANY_DATA_PROVIDER,
-            productionBookmakers,
-            ANY_DATA_PROVIDER
-        );
-        whoAmIReader.getBookmakerId();
-
-        verify(apiHostUpdater).updateToProduction();
-    }
-
-    @Test
-    public void changesEnvironmentToIntegrationIfTokenIsForIntegration()
-        throws DataProviderException, DatatypeConfigurationException {
-        final DataWrapper productionBookmaker = wrapped(notForRequestedEnvironment());
-        val productionBookmakers = mock(DataProvider.class);
-        when(productionBookmakers.getDataWithAdditionalInfo(any())).thenReturn(productionBookmaker);
-        final DataWrapper integrationBookmaker = wrapped(bet365());
-        val integrationBookmakers = mock(DataProvider.class);
-        when(integrationBookmakers.getDataWithAdditionalInfo(any())).thenReturn(integrationBookmaker);
-        ApiHostUpdater apiHostUpdater = mock(ApiHostUpdater.class);
-        WhoAmIReader whoAmIReader = new WhoAmIReader(
-            replayConfig(),
-            apiHostUpdater,
-            ANY_DATA_PROVIDER,
-            productionBookmakers,
-            integrationBookmakers
-        );
-        whoAmIReader.getBookmakerId();
-
-        verify(apiHostUpdater).updateToIntegration();
-    }
-
-    @Test
-    public void changesEnvironmentToIntegrationIfTokenIsForIntegrationEvenIfProductionCheckFails()
-        throws DataProviderException, DatatypeConfigurationException {
-        val productionBookmakers = mock(DataProvider.class);
-        when(productionBookmakers.getDataWithAdditionalInfo(any())).thenThrow(DataProviderException.class);
-        final DataWrapper integrationBookmaker = wrapped(bet365());
-        val integrationBookmakers = mock(DataProvider.class);
-        when(integrationBookmakers.getDataWithAdditionalInfo(any())).thenReturn(integrationBookmaker);
-        ApiHostUpdater apiHostUpdater = mock(ApiHostUpdater.class);
-        WhoAmIReader whoAmIReader = new WhoAmIReader(
-            replayConfig(),
-            apiHostUpdater,
-            ANY_DATA_PROVIDER,
-            productionBookmakers,
-            integrationBookmakers
-        );
-        whoAmIReader.getBookmakerId();
-        verify(apiHostUpdater).updateToIntegration();
-    }
-
-    private static UofConfigurationStub replayConfig() {
-        UofConfigurationStub config = new UofConfigurationStub();
-        config.setEnvironment(Environment.Replay);
-        return config;
     }
 
     @Test

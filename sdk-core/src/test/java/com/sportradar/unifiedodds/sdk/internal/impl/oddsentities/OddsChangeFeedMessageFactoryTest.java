@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.datamodel.UfOddsChange;
 import com.sportradar.uf.datamodel.UfOddsChange.UfOdds;
 import com.sportradar.uf.datamodel.UfOddsChangeMarket;
@@ -21,18 +22,22 @@ import com.sportradar.unifiedodds.sdk.internal.impl.SdkProducerManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets.MarketFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class OddsChangeFeedMessageFactoryTest {
 
     private final UfOddsChange message = new UfOddsChange();
     private final MarketFactory marketFactory = mock(MarketFactory.class);
     private final NamedValuesProviderFixture namedValuesProviderFixture = new NamedValuesProviderFixture();
     private final SdkProducerManager producerManager = mock(SdkProducerManager.class);
+    private final Map<String, String> emptyHeaders = ImmutableMap.of();
     private final byte[] rawMessage = new byte[0];
     private final MessageTimestamp timestamp = mock(MessageTimestamp.class);
     private final SportEvent sportEvent = mock(SportEvent.class);
@@ -44,21 +49,23 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldNotConstructWithoutSportEvent() {
-        assertThatThrownBy(() -> factory.buildOddsChange(null, message, rawMessage, timestamp))
+        assertThatThrownBy(() -> factory.buildOddsChange(null, message, rawMessage, timestamp, emptyHeaders))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("sportEvent");
     }
 
     @Test
     public void shouldNotConstructWithoutOddsChangeMessage() {
-        assertThatThrownBy(() -> factory.buildOddsChange(sportEvent, null, rawMessage, timestamp))
+        assertThatThrownBy(() ->
+                factory.buildOddsChange(sportEvent, null, rawMessage, timestamp, emptyHeaders)
+            )
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("message");
     }
 
     @Test
     public void shouldNotConstructWithoutRawMessage() {
-        assertThatThrownBy(() -> factory.buildOddsChange(sportEvent, message, null, timestamp))
+        assertThatThrownBy(() -> factory.buildOddsChange(sportEvent, message, null, timestamp, emptyHeaders))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("rawMessage");
     }
@@ -81,7 +88,8 @@ public class OddsChangeFeedMessageFactoryTest {
                     rawMessage,
                     null,
                     namedValuesProviderFixture,
-                    timestamp
+                    timestamp,
+                    emptyHeaders
                 )
             )
             .isInstanceOf(NullPointerException.class)
@@ -98,7 +106,16 @@ public class OddsChangeFeedMessageFactoryTest {
     @Test
     public void shouldNotConstructWithoutNamedValueProvider() {
         assertThatThrownBy(() ->
-                new OddsChangeImpl<>(sportEvent, message, null, rawMessage, marketFactory, null, timestamp)
+                new OddsChangeImpl<>(
+                    sportEvent,
+                    message,
+                    null,
+                    rawMessage,
+                    marketFactory,
+                    null,
+                    timestamp,
+                    emptyHeaders
+                )
             )
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("namedValuesProvider");
@@ -113,7 +130,7 @@ public class OddsChangeFeedMessageFactoryTest {
 
     @Test
     public void shouldNotConstructWithoutTimestamp() {
-        assertThatThrownBy(() -> factory.buildOddsChange(sportEvent, message, rawMessage, null))
+        assertThatThrownBy(() -> factory.buildOddsChange(sportEvent, message, rawMessage, null, emptyHeaders))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("timestamp");
     }
@@ -125,7 +142,7 @@ public class OddsChangeFeedMessageFactoryTest {
         props.setExpectedTotals(expectedTotals);
         message.setOddsGenerationProperties(props);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals((Double) expectedTotals, oddsChange.getOddsGenerationProperties().getExpectedTotals());
     }
@@ -137,7 +154,7 @@ public class OddsChangeFeedMessageFactoryTest {
         props.setExpectedSupremacy(expectedSupremacy);
         message.setOddsGenerationProperties(props);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(
             (Double) expectedSupremacy,
@@ -149,7 +166,7 @@ public class OddsChangeFeedMessageFactoryTest {
     public void shouldBuildNoMarketsIfMassageCarriesNoOdds() {
         message.setOdds(null);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(Collections.emptyList(), oddsChange.getMarkets());
     }
@@ -160,7 +177,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(odds.getMarket()).thenReturn(null);
         message.setOdds(odds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(Collections.emptyList(), oddsChange.getMarkets());
     }
@@ -171,7 +188,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(odds.getMarket()).thenReturn(Collections.emptyList());
         message.setOdds(odds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(Collections.emptyList(), oddsChange.getMarkets());
     }
@@ -184,7 +201,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(marketFactory.buildMarketWithOdds(any(), eq(market), anyInt())).thenReturn(Optional.empty());
         message.setOdds(odds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(Collections.emptyList(), oddsChange.getMarkets());
     }
@@ -199,7 +216,7 @@ public class OddsChangeFeedMessageFactoryTest {
             .thenReturn(Optional.of(market));
         message.setOdds(xmlOdds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(Arrays.asList(market), oddsChange.getMarkets());
     }
@@ -214,7 +231,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(xmlOdds.getBetstopReason()).thenReturn(betstopReasonId);
         message.setOdds(xmlOdds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(betstopReasonDescription, oddsChange.getBetstopReason());
         assertEquals(betstopReason, oddsChange.getBetstopReasonValue());
@@ -226,7 +243,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(xmlOdds.getBetstopReason()).thenReturn(null);
         message.setOdds(xmlOdds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertNull(oddsChange.getBetstopReason());
         assertNull(oddsChange.getBetstopReasonValue());
@@ -242,7 +259,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(xmlOdds.getBettingStatus()).thenReturn(bettingStatusId);
         message.setOdds(xmlOdds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertEquals(description, oddsChange.getBettingStatus());
         assertEquals(bettingStatus, oddsChange.getBettingStatusValue());
@@ -254,7 +271,7 @@ public class OddsChangeFeedMessageFactoryTest {
         when(xmlOdds.getBettingStatus()).thenReturn(null);
         message.setOdds(xmlOdds);
 
-        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp);
+        val oddsChange = factory.buildOddsChange(sportEvent, message, rawMessage, timestamp, emptyHeaders);
 
         assertNull(oddsChange.getBettingStatus());
         assertNull(oddsChange.getBettingStatusValue());

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.uf.sportsapi.datamodel.Response;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.impl.http.ApiResponseHandlingException;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import lombok.val;
@@ -21,6 +22,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class HttpResponseHandlerTest {
 
     private static final String ANY_RESPONSE_BODY = "any";

@@ -5,8 +5,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ProducerDownReasonTest {
 
     @Test

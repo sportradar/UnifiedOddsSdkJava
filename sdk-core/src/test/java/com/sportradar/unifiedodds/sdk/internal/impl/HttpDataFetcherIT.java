@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,7 +80,7 @@ public abstract class HttpDataFetcherIT {
             get(urlPathEqualTo(anyPath)).willReturn(WireMock.aResponse().withBody(apiXmlResponseString))
         );
 
-        HttpData responseData = httpFetcher.get(localhost);
+        HttpData responseData = httpFetcher.get(localhost, emptyMap());
         assertEquals(apiXmlResponseString, responseData.getResponse());
     }
 
@@ -96,7 +97,7 @@ public abstract class HttpDataFetcherIT {
                 )
         );
 
-        HttpData actualResponse = httpFetcher.get(createLocalhostString(whoAmIPath));
+        HttpData actualResponse = httpFetcher.get(createLocalhostString(whoAmIPath), emptyMap());
         assertEquals(anyResponseString, actualResponse.getResponse());
     }
 
@@ -117,7 +118,7 @@ public abstract class HttpDataFetcherIT {
             "Invalid server response w/status code: " + anyErrorResponseCode + ", message: no message";
 
         try {
-            httpFetcher.get(createLocalhostString(anyPath));
+            httpFetcher.get(createLocalhostString(anyPath), emptyMap());
         } catch (CommunicationException e) {
             assertEquals(expectedInternalErrorString, e.getCause().getMessage());
         }
@@ -135,7 +136,7 @@ public abstract class HttpDataFetcherIT {
         String expectedInternalErrorString =
             "Invalid server response w/status code: " + anySuccessfulResponseCode + ", message: no message";
         try {
-            httpFetcher.get(createLocalhostString(anyPath));
+            httpFetcher.get(createLocalhostString(anyPath), emptyMap());
         } catch (CommunicationException e) {
             assertEquals(expectedInternalErrorString, e.getCause().getMessage());
         }
@@ -163,7 +164,7 @@ public abstract class HttpDataFetcherIT {
             failedApiResponseMessage;
 
         try {
-            httpFetcher.get(createLocalhostString(anyPath));
+            httpFetcher.get(createLocalhostString(anyPath), emptyMap());
         } catch (CommunicationException e) {
             assertEquals(expectedInternalErrorString, e.getCause().getMessage());
         }

@@ -10,11 +10,13 @@ import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiHole;
 import com.sportradar.uf.sportsapi.datamodel.SapiVenue;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.VenueCi;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.Urns;
 import com.sportradar.utils.domain.names.Languages;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class VenueImplTest {
 
     @Test

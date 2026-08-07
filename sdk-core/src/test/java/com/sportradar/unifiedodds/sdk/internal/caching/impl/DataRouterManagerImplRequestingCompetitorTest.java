@@ -18,10 +18,12 @@ import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class DataRouterManagerImplRequestingCompetitorTest {
 
     private static final String NON_NULL_URL = "http://nonNullUrl.com";
@@ -43,6 +45,7 @@ public class DataRouterManagerImplRequestingCompetitorTest {
         mock(DataProvider.class),
         mock(DataProvider.class),
         competitors,
+        mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),
         mock(DataProvider.class),

@@ -5,14 +5,15 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 
 import com.google.inject.Inject;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 
 public class ApiHostUpdater {
 
-    private UofConfigurationImpl config;
+    private final UofConfiguration config;
 
     @Inject
-    ApiHostUpdater(UofConfigurationImpl config) {
+    public ApiHostUpdater(UofConfiguration config) {
         this.config = config;
     }
 

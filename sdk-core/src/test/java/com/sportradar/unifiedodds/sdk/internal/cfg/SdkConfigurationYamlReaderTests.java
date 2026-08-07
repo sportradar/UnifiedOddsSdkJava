@@ -17,11 +17,13 @@ import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+import com.sportradar.utils.OldStyleTest;
 import java.util.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber" })
 public class SdkConfigurationYamlReaderTests {
 

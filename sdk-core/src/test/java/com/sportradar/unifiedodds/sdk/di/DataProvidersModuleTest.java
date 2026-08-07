@@ -19,6 +19,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.ExecutionPathDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.val;
@@ -28,6 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 @SuppressWarnings(
     { "ConstantName", "InnerTypeLast", "MagicNumber", "VisibilityModifier", "ClassFanOutComplexity" }
 )
@@ -41,6 +43,8 @@ public class DataProvidersModuleTest {
     private static final Locale locale = Locale.ENGLISH;
     private static final String REPLAY_PATH_PREFIX = "/v1/replay/";
     private static final String ENDPOINT_DATA_PROVIDERS_WITH_REPLAY = "endpointDataProvidersWithReplay";
+    private static final String ENDPOINT_DATA_PROVIDERS_WITH_REPLAY_AND_REPLAY_ENVIRONMENT =
+        "endpointDataProvidersWithReplayAndReplayEnvironment";
 
     private final SdkInternalConfiguration internalConfig = configurationWithTimeouts();
 
@@ -66,9 +70,12 @@ public class DataProvidersModuleTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ENDPOINT_DATA_PROVIDERS_WITH_REPLAY)
-    void endpointIsInjectedReplayPath(DataProviderSupplier dataProviderSupplier) {
-        setup(Environment.Replay, NODE_ID, true);
+    @MethodSource(ENDPOINT_DATA_PROVIDERS_WITH_REPLAY_AND_REPLAY_ENVIRONMENT)
+    void endpointIsInjectedReplayPath(
+        DataProviderSupplier dataProviderSupplier,
+        Environment replayEnvironment
+    ) {
+        setup(replayEnvironment, NODE_ID, true);
         when(internalConfig.isReplaySession()).thenReturn(true);
 
         val dataProviders = injector.getInstance(DataProviders.class);
@@ -78,9 +85,12 @@ public class DataProvidersModuleTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ENDPOINT_DATA_PROVIDERS_WITH_REPLAY)
-    void endpointIsInjectedNodeIdWhenReplaying(DataProviderSupplier dataProviderSupplier) {
-        setup(Environment.Replay, NODE_ID, true);
+    @MethodSource(ENDPOINT_DATA_PROVIDERS_WITH_REPLAY_AND_REPLAY_ENVIRONMENT)
+    void endpointIsInjectedNodeIdWhenReplaying(
+        DataProviderSupplier dataProviderSupplier,
+        Environment replayEnvironment
+    ) {
+        setup(replayEnvironment, NODE_ID, true);
         when(internalConfig.isReplaySession()).thenReturn(true);
         when(internalConfig.getSdkNodeId()).thenReturn(314);
 
@@ -91,9 +101,12 @@ public class DataProvidersModuleTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ENDPOINT_DATA_PROVIDERS_WITH_REPLAY)
-    void endpointIsNotInjectedNodeIdWheNullEvenWhenReplaying(DataProviderSupplier dataProviderSupplier) {
-        setup(Environment.Replay, NODE_ID, true);
+    @MethodSource(ENDPOINT_DATA_PROVIDERS_WITH_REPLAY_AND_REPLAY_ENVIRONMENT)
+    void endpointIsNotInjectedNodeIdWheNullEvenWhenReplaying(
+        DataProviderSupplier dataProviderSupplier,
+        Environment replayEnvironment
+    ) {
+        setup(replayEnvironment, NODE_ID, true);
         when(internalConfig.isReplaySession()).thenReturn(true);
         when(internalConfig.getSdkNodeId()).thenReturn(null);
 
@@ -105,7 +118,7 @@ public class DataProvidersModuleTest {
 
     @Test
     void fixtureEndpointInvokesCorrespondingEndpointWhenReplaying() {
-        setup(Environment.Replay, NODE_ID, true);
+        setup(Environment.ReplayWithIntegrationCredentials, NODE_ID, true);
         when(internalConfig.isReplaySession()).thenReturn(true);
         when(internalConfig.getSdkNodeId()).thenReturn(314);
 
@@ -143,7 +156,7 @@ public class DataProvidersModuleTest {
 
         @Test
         void fixtureEndpointInvokesCorrespondingEndpoint() {
-            setup(Environment.Replay, NODE_ID, true);
+            setup(Environment.ReplayWithIntegrationCredentials, NODE_ID, true);
 
             val dataProviders = injector.getInstance(DataProviders.class);
 
@@ -167,7 +180,7 @@ public class DataProvidersModuleTest {
 
         @Test
         void fixtureChangeIsRedirectedToFixtureEndpointOnlyWhenInReplay() {
-            setup(Environment.Replay, NODE_ID, true);
+            setup(Environment.ReplayWithIntegrationCredentials, NODE_ID, true);
             when(internalConfig.isReplaySession()).thenReturn(true);
 
             val dataProviders = injector.getInstance(DataProviders.class);
@@ -248,8 +261,72 @@ public class DataProvidersModuleTest {
         );
     }
 
+    @SuppressWarnings("unused")
+    static Stream<Arguments> endpointDataProvidersWithReplayAndReplayEnvironment() {
+        return Stream.of(
+            arguments(
+                "Fixture",
+                module -> module.fixtureProvider,
+                Environment.ReplayWithIntegrationCredentials
+            ),
+            arguments(
+                "Fixture",
+                module -> module.fixtureProvider,
+                Environment.ReplayWithProductionCredentials
+            ),
+            arguments(
+                "FixtureChange",
+                module -> module.fixtureChangeFixtureEndpoint,
+                Environment.ReplayWithIntegrationCredentials
+            ),
+            arguments(
+                "FixtureChange",
+                module -> module.fixtureChangeFixtureEndpoint,
+                Environment.ReplayWithProductionCredentials
+            ),
+            arguments(
+                "NonTimeCriticalSummary",
+                module -> module.nonTimeCriticalSummaryEndpointDataProvider,
+                Environment.ReplayWithIntegrationCredentials
+            ),
+            arguments(
+                "NonTimeCriticalSummary",
+                module -> module.nonTimeCriticalSummaryEndpointDataProvider,
+                Environment.ReplayWithProductionCredentials
+            ),
+            arguments(
+                "TimeCriticalSummary",
+                module -> module.timeCriticalSummaryEndpointDataProvider,
+                Environment.ReplayWithIntegrationCredentials
+            ),
+            arguments(
+                "TimeCriticalSummary",
+                module -> module.timeCriticalSummaryEndpointDataProvider,
+                Environment.ReplayWithProductionCredentials
+            ),
+            arguments(
+                "MatchTimeline",
+                module -> module.matchTimelineEndpointDataProvider,
+                Environment.ReplayWithIntegrationCredentials
+            ),
+            arguments(
+                "MatchTimeline",
+                module -> module.matchTimelineEndpointDataProvider,
+                Environment.ReplayWithProductionCredentials
+            )
+        );
+    }
+
     static Arguments arguments(String provider, DataProviderSupplier dataProviderSupplier) {
         return Arguments.of(named(provider, dataProviderSupplier));
+    }
+
+    static Arguments arguments(
+        String provider,
+        DataProviderSupplier dataProviderSupplier,
+        Environment environment
+    ) {
+        return Arguments.of(named(provider, dataProviderSupplier), environment);
     }
 
     interface DataProviderSupplier {

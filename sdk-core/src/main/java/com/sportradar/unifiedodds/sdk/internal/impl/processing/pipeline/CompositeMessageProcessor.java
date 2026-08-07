@@ -11,6 +11,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.FeedMessageProcessor;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -98,12 +99,13 @@ public class CompositeMessageProcessor implements CompositeFeedMessageProcessor 
         UnmarshalledMessage message,
         byte[] body,
         RoutingKeyInfo routingKeyInfo,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         if (!initialized) {
             throw new IllegalStateException("The composite message processor needs to be initialized");
         }
-        this.firstProcessor.processMessage(message, body, routingKeyInfo, timestamp);
+        this.firstProcessor.processMessage(message, body, routingKeyInfo, timestamp, messageHeaders);
     }
 
     /**

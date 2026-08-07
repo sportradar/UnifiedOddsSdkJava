@@ -57,7 +57,9 @@ public class ListenerCollectingMessages implements UofListener {
     }
 
     @Override
-    public void onUnparsableMessage(UofSession sender, UnparsableMessage unparsableMessage) {}
+    public void onUnparsableMessage(UofSession sender, UnparsableMessage unparsableMessage) {
+        messageStorage.append(unparsableMessage);
+    }
 
     @Override
     public void onUserUnhandledException(UofSession sender, Exception exception) {}

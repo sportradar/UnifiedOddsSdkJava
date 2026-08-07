@@ -351,8 +351,8 @@ public class ConfigureClientAuthenticationTest {
             public void configure() {}
 
             @Provides
-            public UofConfigurationImpl sdkConfiguration() {
-                return (UofConfigurationImpl) configuration;
+            public UofConfiguration sdkConfiguration() {
+                return configuration;
             }
         }
     }

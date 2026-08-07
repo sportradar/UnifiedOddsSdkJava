@@ -30,6 +30,8 @@ import java.util.List;
 )
 public class CapiCustomBet {
 
+    public static final Urn ANY_EVENT_ID = Urn.parse("sr:match:349921");
+
     public static CustomBetSelectionBuilder getDefaultImplCustomBetSelectionBuilder() {
         return new CustomBetSelectionBuilder() {
             @Override
@@ -252,6 +254,10 @@ public class CapiCustomBet {
         return availableSelections;
     }
 
+    public static CapiCalculationResponse getCalculationResponse() {
+        return getCalculationResponse(ANY_EVENT_ID, 4);
+    }
+
     public static CapiCalculationResponse getCalculationResponse(Urn eventId, int nbrSelections) {
         List<CapiEventType> eventTypes = new ArrayList<>();
         for (int i = 0; i < nbrSelections; i++) {
@@ -272,6 +278,10 @@ public class CapiCustomBet {
         calculationResponse.setCalculation(calculation);
 
         return calculationResponse;
+    }
+
+    public static CapiFilteredCalculationResponse getFilteredCalculationResponse() {
+        return getFilteredCalculationResponse(ANY_EVENT_ID, 4);
     }
 
     public static CapiFilteredCalculationResponse getFilteredCalculationResponse(

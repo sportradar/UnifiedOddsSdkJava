@@ -9,6 +9,7 @@ import com.sportradar.unifiedodds.sdk.extended.RoutingKeyInfo;
 import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.Urn;
+import java.util.Map;
 
 /**
  * Defines methods implemented by classes that can consume messages
@@ -26,7 +27,8 @@ public interface MessageConsumer {
         UnmarshalledMessage unmarshalledMessage,
         byte[] body,
         RoutingKeyInfo routingKeyInfo,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     );
 
     /**
@@ -34,8 +36,9 @@ public interface MessageConsumer {
      *
      * @param rawMessage - the raw message payload
      * @param eventId - if available the related sport event id; otherwise null
+     * @param messageHeaders - map of message headers
      */
-    void onMessageDeserializationFailed(byte[] rawMessage, Urn eventId);
+    void onMessageDeserializationFailed(byte[] rawMessage, Urn eventId, Map<String, String> messageHeaders);
 
     /**
      * Returns a {@link String} which describes the consumer

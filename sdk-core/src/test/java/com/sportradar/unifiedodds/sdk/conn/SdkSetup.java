@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +69,10 @@ public final class SdkSetup {
         this.nodeId = nodeId;
     }
 
+    public SdkSetup(Credentials credentials, BaseUrl rabbitBaseUrl, BaseUrl sportsApiBaseUrl, int nodeId) {
+        this(Authentication.nonCommonIam(credentials), rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+    }
+
     public static SdkSetup withCommonIam(BaseUrl rabbitBaseUrl, BaseUrl sportsApiBaseUrl, int nodeId) {
         return new SdkSetup(Authentication.commonIam(), rabbitBaseUrl, sportsApiBaseUrl, nodeId);
     }
@@ -84,6 +89,10 @@ public final class SdkSetup {
             sportsApiBaseUrl,
             nodeId
         );
+    }
+
+    public static SdkSetup with(BaseUrl sportsApiBaseUrl, int nodeId) {
+        return new SdkSetup(Credentials.any(), null, sportsApiBaseUrl, nodeId);
     }
 
     public SdkSetup with(ListenerCollectingRawMessages collectingRawMessagesListener) {

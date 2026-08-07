@@ -6,15 +6,30 @@ This guide offers practical advice to ensure your transition is not only efficie
 
 ## 1. Upgrade Dependencies
 
-* **com.auth0:java-jwt 4.5.0** (added) - required for the new client authentication feature
+* **com.auth0:java-jwt 4.6.0** (added) - required for the new client authentication feature
 * **ch.qos.logback:logback-classic 1.3.16**
-* **com.rabbitmq:amqp-client 5.28.0**
+* **com.rabbitmq:amqp-client 5.34.0**
+* **org.apache.httpcomponents.client5:httpclient5 5.4.4** (includes CVE-2025-27820 fix)
+* **org.slf4j:slf4j-api 2.0.17**
+* **com.fasterxml.jackson.core:jackson-databind 2.22.1**
 * **io.opentelemetry:opentelemetry-sdk, io.opentelemetry:opentelemetry-api, io.opentelemetry:opentelemetry-sdk-metrics 1.51.0**
-* **com.google.guava:guava 33.5.0-jre**
+* **com.google.guava:guava 33.6.0-jre**
 * **com.ibm.icu:icu4j 77.1**
-* **org.yaml:snakeyaml 2.5**
+* **org.yaml:snakeyaml 2.6**
 
-## 2. New Features
+## 2. Update the Methods and Classes in Your Code
+
+### Replay changes
+Removed EnvironmentSelector.selectReplay() and Environment.Replay/Environment.GlobalReplay enum values. Use selectEnvironment(env) instead.
+
+Be specific about credentials and select either ReplayWithIntegrationCredentials or ReplayWithProductionCredentials depending on your use case.
+
+### Removed Methods
+
+ - `EnvironmentSelector.selectReplay()`
+ - enum values `Environment.Replay` and `Environment.GlobalReplay`
+
+## 3. New Features
 
 #### Client Authentication with Private Key JWT
 

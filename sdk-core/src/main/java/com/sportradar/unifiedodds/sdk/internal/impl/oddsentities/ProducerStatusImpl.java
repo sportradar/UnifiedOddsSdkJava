@@ -9,6 +9,9 @@ import com.sportradar.unifiedodds.sdk.oddsentities.MessageTimestamp;
 import com.sportradar.unifiedodds.sdk.oddsentities.Producer;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatus;
 import com.sportradar.unifiedodds.sdk.oddsentities.ProducerStatusReason;
+import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportUnreachableCode;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * A basic implementation of the {@link ProducerStatus}
@@ -86,5 +89,15 @@ class ProducerStatusImpl implements ProducerStatus {
     @Override
     public MessageTimestamp getTimestamps() {
         return new MessageTimestampImpl(timestamp);
+    }
+
+    /**
+     * Gets the AMQP message headers delivered with the feed message
+     * @return the AMQP headers as a string map, never null
+     */
+    @Override
+    @ExcludeFromJacocoGeneratedReportUnreachableCode
+    public Map<String, String> getMessageHeaders() {
+        return Collections.emptyMap();
     }
 }

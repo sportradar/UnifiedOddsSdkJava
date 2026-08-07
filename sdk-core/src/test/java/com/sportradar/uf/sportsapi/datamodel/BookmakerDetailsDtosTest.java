@@ -5,12 +5,14 @@ package com.sportradar.uf.sportsapi.datamodel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sportradar.utils.OldStyleTest;
 import java.time.ZonedDateTime;
 import javax.xml.datatype.DatatypeConfigurationException;
 import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class BookmakerDetailsDtosTest {
 
     @Nested

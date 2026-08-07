@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sportradar.unifiedodds.sdk.internal.di.GlobalVariablesModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class GlobalVariablesModuleTest {
 
     public static final String RESOURCE_NAME = "/sr-sdk-version.properties";

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +21,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
+@OldStyleTest
 public class SdkConfigurationYamlReaderOnUnexpectedYamlElementTest {
 
     public static final String ANY_FILENAME = "anyFileName";

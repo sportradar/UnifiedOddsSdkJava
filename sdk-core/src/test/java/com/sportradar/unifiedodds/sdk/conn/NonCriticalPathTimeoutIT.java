@@ -149,7 +149,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -188,7 +188,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -229,7 +229,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -271,7 +271,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -312,7 +312,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -352,7 +352,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -392,7 +392,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)
@@ -433,7 +433,7 @@ class NonCriticalPathTimeoutIT {
 
             try (
                 val sdk = SdkSetup
-                    .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                    .with(sportsApiBaseUrl, globalVariables.getNodeId())
                     .with(ListenerCollectingMessages.to(messagesStorage))
                     .with(ExceptionHandlingStrategy.Throw)
                     .withDefaultLanguage(language)

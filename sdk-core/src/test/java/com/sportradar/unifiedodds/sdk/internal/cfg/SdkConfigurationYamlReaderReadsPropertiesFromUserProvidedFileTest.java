@@ -10,12 +10,14 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.util.javaclass.ClassResolver;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.yaml.snakeyaml.Yaml;
 
+@OldStyleTest
 @SuppressWarnings("MultipleStringLiterals")
 public class SdkConfigurationYamlReaderReadsPropertiesFromUserProvidedFileTest {
 

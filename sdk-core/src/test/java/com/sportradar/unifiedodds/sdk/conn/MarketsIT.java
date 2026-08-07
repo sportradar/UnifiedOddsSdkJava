@@ -134,7 +134,7 @@ class MarketsIT {
 
         try (
             val sdk = SdkSetup
-                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(sportsApiBaseUrl, globalVariables.getNodeId())
                 .with(ListenerCollectingMessages.to(messagesStorage))
                 .with(Throw)
                 .withDefaultLanguage(ENGLISH)

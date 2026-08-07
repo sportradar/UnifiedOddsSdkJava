@@ -10,11 +10,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.sportradar.uf.sportsapi.datamodel.SapiCourse;
 import com.sportradar.uf.sportsapi.datamodel.SapiHole;
 import com.sportradar.unifiedodds.sdk.internal.caching.ci.CourseCi;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class CourseImplTest {
 
     @Test

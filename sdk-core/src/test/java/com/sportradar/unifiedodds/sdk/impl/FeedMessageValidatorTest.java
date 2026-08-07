@@ -18,12 +18,14 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.DeserializationExcepti
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import java.util.Locale;
 import java.util.function.Consumer;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ClassFanOutComplexity", "MultipleStringLiterals", "VisibilityModifier", "MagicNumber" })
 public class FeedMessageValidatorTest {
 

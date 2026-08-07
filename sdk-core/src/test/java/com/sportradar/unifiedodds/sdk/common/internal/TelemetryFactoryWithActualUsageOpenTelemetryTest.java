@@ -64,7 +64,7 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
     void doesNotExportMetricWhenUsageExportIsDisabled() throws Exception {
         val configuration = uofConfigurationForUsageTelemetry()
             .withAccessToken("access-token")
-            .withEnvironment(Environment.Replay)
+            .withEnvironment(Environment.Production)
             .withNodeId(1)
             .withUsageConfiguration(usageConfigurationForUsageTelemetry().withExportEnabled(false).build())
             .build();

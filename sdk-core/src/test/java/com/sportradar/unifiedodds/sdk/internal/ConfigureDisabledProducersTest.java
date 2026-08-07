@@ -14,6 +14,7 @@ import com.sportradar.unifiedodds.sdk.internal.cfg.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
+import com.sportradar.utils.OldStyleTest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +22,7 @@ import java.util.Map;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ConfigureDisabledProducersTest {
 
     private final boolean replayMode = true;

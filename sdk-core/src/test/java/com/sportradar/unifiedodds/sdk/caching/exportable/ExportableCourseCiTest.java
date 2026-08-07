@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.ExportableCourseCi;
 import com.sportradar.unifiedodds.sdk.testutil.generic.collections.Maps;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urns;
 import com.sportradar.utils.domain.names.Languages;
 import com.sportradar.utils.domain.names.Names;
@@ -17,6 +18,7 @@ import java.util.Map;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ExportableCourseCiTest {
 
     private Map<Locale, String> anyName = Maps.of(Languages.any(), Names.any());

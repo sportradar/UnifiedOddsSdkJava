@@ -1,4 +1,4 @@
-# Sportradar Unified Odds SDK for Java 4.x
+# Sportradar Unified Odds SDK for Java 5.x
 
 A comprehensive Java SDK that simplifies access to Sportradar's real-time odds and sports data for bookmakers. This SDK seamlessly integrates message subscriptions with RESTful API calls, providing a unified interface while handling complex recovery mechanisms automatically.
 
@@ -6,6 +6,7 @@ A comprehensive Java SDK that simplifies access to Sportradar's real-time odds a
 
 - **Upgrading from version 2.x to 3.x?** See our [Migration Guide v3](migration-guide-v3.md)
 - **Upgrading from version 3.x to 4.x?** See our [Migration Guide v4](migration-guide-v4.md)
+- **Upgrading from version 4.x to 5.x?** See our [Migration Guide v5](migration-guide-v5.md)
 
 ## 🚀 Quick Start Guide
 
@@ -47,7 +48,8 @@ uofSdk.open();
 
 ## 📊 Accessing Sports Data
 
-Retrieve sports information, tournaments, and events using the [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html):
+Retrieve sports information, tournaments, and events using
+the [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/managers/SportDataProvider.html):
 
 ```java
 SportDataProvider sportDataProvider = uofSdk.getSportDataProvider();
@@ -141,8 +143,9 @@ UofConfiguration config = UofSdk.getConfigurationBuilder()
 
 ### Dynamic Locale Access
 Access additional locales on-demand through:
-- [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/SportDataProvider.html)
-- [MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/MarketDescriptionManager.html)
+
+- [SportDataProvider](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/managers/SportDataProvider.html)
+- [MarketDescriptionManager](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/managers/MarketDescriptionManager.html)
 
 ## 🛠️ System Resilience & Recovery
 
@@ -193,5 +196,5 @@ uofSdk.open(); // Start the feed
 ## 📚 Additional Resources
 
 - **[Complete API Documentation](https://sportradar.github.io/UnifiedOddsSdkJava/)** - Comprehensive Javadocs
-- **[Migration Guides](migration-guide-v4.md)** - Version upgrade instructions
+- **[Migration Guides](migration-guide-v5.md)** - Version upgrade instructions (see also [v3](migration-guide-v3.md), [v4](migration-guide-v4.md))
 - **[SDK Examples](sdk-example/)** - Sample implementations and use cases

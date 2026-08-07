@@ -17,7 +17,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
 import com.sportradar.unifiedodds.sdk.cfg.*;
-import com.sportradar.unifiedodds.sdk.internal.cfg.*;
+import com.sportradar.unifiedodds.sdk.internal.cfg.StubSdkConfigurationPropertiesReader;
+import com.sportradar.unifiedodds.sdk.internal.cfg.StubSdkConfigurationYamlReader;
+import com.sportradar.unifiedodds.sdk.internal.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentSetting;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
@@ -58,8 +60,8 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             .stream()
             .filter(e ->
                 e.getEnvironment() != Custom &&
-                e.getEnvironment() != Replay &&
-                e.getEnvironment() != GlobalReplay
+                e.getEnvironment() != ReplayWithProductionCredentials &&
+                e.getEnvironment() != ReplayWithIntegrationCredentials
             )
             .map(setting -> Arguments.of(setting.getEnvironment(), setting.getClientAuthenticationHost()));
     }
@@ -81,8 +83,8 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             .stream()
             .filter(e ->
                 e.getEnvironment() != Custom &&
-                e.getEnvironment() != Replay &&
-                e.getEnvironment() != GlobalReplay
+                e.getEnvironment() != ReplayWithIntegrationCredentials &&
+                e.getEnvironment() != ReplayWithProductionCredentials
             )
             .map(EnvironmentSetting::getEnvironment)
             .collect(Collectors.toList());
@@ -477,36 +479,6 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
                 );
         }
 
-        @Test
-        void replayIsNotConfigurableWithAuthenticationAsStoryIsNotYetPlayed() {
-            assertThatThrownBy(() ->
-                    configBuilder
-                        .setClientAuthentication(anyAuthentication)
-                        .selectReplay()
-                        .setDefaultLanguage(anyLanguage)
-                        .build()
-                )
-                .isInstanceOf(IllegalArgumentException.class);
-
-            assertThatThrownBy(() ->
-                    configBuilder
-                        .setClientAuthentication(anyAuthentication)
-                        .selectEnvironment(Replay)
-                        .setDefaultLanguage(anyLanguage)
-                        .build()
-                )
-                .isInstanceOf(IllegalArgumentException.class);
-
-            assertThatThrownBy(() ->
-                    configBuilder
-                        .setClientAuthentication(anyAuthentication)
-                        .selectEnvironment(GlobalReplay)
-                        .setDefaultLanguage(anyLanguage)
-                        .build()
-                )
-                .isInstanceOf(IllegalArgumentException.class);
-        }
-
         @ParameterizedTest
         @MethodSource(HOST_OF_NON_CUSTOM_NON_REPLAY_ENVIRONMENTS)
         void shouldHaveDefaultAuthHostAndPortForNonCustomEnvironments(
@@ -665,8 +637,8 @@ class ConfigureClientAuthenticationAuthorizationServerTest {
             }
 
             @Provides
-            public UofConfigurationImpl sdkConfiguration() {
-                return (UofConfigurationImpl) configuration;
+            public UofConfiguration sdkConfiguration() {
+                return configuration;
             }
         }
     }

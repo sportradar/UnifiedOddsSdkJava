@@ -152,21 +152,27 @@ public class ConfigureApiHostAndPortTest {
                 .build();
 
             assertThat(config1)
-                .hasReplayHostAndPort(EnvironmentManager.getApiHost(Replay) + V1_REPLAY_PATH_PREFIX);
+                .hasReplayHostAndPort(
+                    EnvironmentManager.getApiHost(ReplayWithIntegrationCredentials) + V1_REPLAY_PATH_PREFIX
+                );
             assertThat(config2)
-                .hasReplayHostAndPort(EnvironmentManager.getApiHost(Replay) + V1_REPLAY_PATH_PREFIX);
+                .hasReplayHostAndPort(
+                    EnvironmentManager.getApiHost(ReplayWithIntegrationCredentials) + V1_REPLAY_PATH_PREFIX
+                );
         }
 
         @Test
         void replayHostConfigItemIsUnaffectedBySettingReplayEnvironment() {
             UofConfiguration config = configBuilder
                 .setAccessToken(ANY_TOKEN)
-                .selectReplay()
+                .selectEnvironment(ReplayWithIntegrationCredentials)
                 .setDefaultLanguage(anyLanguage)
                 .build();
 
             assertThat(config)
-                .hasReplayHostAndPort(EnvironmentManager.getApiHost(Replay) + V1_REPLAY_PATH_PREFIX);
+                .hasReplayHostAndPort(
+                    EnvironmentManager.getApiHost(ReplayWithIntegrationCredentials) + V1_REPLAY_PATH_PREFIX
+                );
         }
 
         @Test
@@ -180,7 +186,9 @@ public class ConfigureApiHostAndPortTest {
                 .build();
 
             assertThat(config)
-                .hasReplayHostAndPort(EnvironmentManager.getApiHost(Replay) + V1_REPLAY_PATH_PREFIX);
+                .hasReplayHostAndPort(
+                    EnvironmentManager.getApiHost(ReplayWithIntegrationCredentials) + V1_REPLAY_PATH_PREFIX
+                );
         }
 
         @Test
@@ -311,7 +319,7 @@ public class ConfigureApiHostAndPortTest {
         void configureHostAndPortForReplayViaJavaApi() {
             UofConfiguration config = configBuilder
                 .setAccessToken(ANY_TOKEN)
-                .selectReplay()
+                .selectEnvironment(ReplayWithIntegrationCredentials)
                 .setDefaultLanguage(anyLanguage)
                 .build();
             assertThat(config)
@@ -530,8 +538,8 @@ public class ConfigureApiHostAndPortTest {
             public void configure() {}
 
             @Provides
-            public UofConfigurationImpl sdkConfiguration() {
-                return (UofConfigurationImpl) configuration;
+            public UofConfiguration sdkConfiguration() {
+                return configuration;
             }
         }
     }

@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.internal.di.DeserializerModule;
+import com.sportradar.utils.OldStyleTest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import org.junit.jupiter.api.Nested;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+@OldStyleTest
 public class DeserializerModuleTest {
 
     @Nested

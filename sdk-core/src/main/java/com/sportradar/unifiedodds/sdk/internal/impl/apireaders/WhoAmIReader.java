@@ -4,8 +4,6 @@
 
 package com.sportradar.unifiedodds.sdk.internal.impl.apireaders;
 
-import static java.util.Arrays.asList;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
@@ -13,13 +11,11 @@ import com.google.inject.name.Named;
 import com.ibm.icu.util.Calendar;
 import com.sportradar.uf.sportsapi.datamodel.BookmakerDetails;
 import com.sportradar.uf.sportsapi.datamodel.ResponseCode;
-import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.cfg.ApiHostUpdater;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.DataWrapper;
-import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.BookmakerDetailsImpl;
 import java.time.Duration;
 import java.time.Instant;
@@ -32,7 +28,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings(
-    { "ClassFanOutComplexity", "ConstantName", "HiddenField", "LineLength", "MagicNumber", "MethodLength" }
+    {
+        "ClassFanOutComplexity",
+        "ConstantName",
+        "HiddenField",
+        "LineLength",
+        "MagicNumber",
+        "MethodLength",
+        "UnusedPrivateField",
+    }
 )
 public class WhoAmIReader {
 
@@ -179,20 +183,17 @@ public class WhoAmIReader {
             return;
         }
 
-        BookmakerDetails bookmakerDetails = asList(Environment.GlobalReplay, Environment.Replay)
-                .contains(config.getEnvironment())
-            ? fetchReplayBookmakerDetails()
-            : fetchBookmakerDetails();
+        BookmakerDetails fetchBookmakerDetails = fetchBookmakerDetails();
 
         dataFetched = true;
 
-        if (bookmakerDetails == null) {
+        if (fetchBookmakerDetails == null) {
             throw new IllegalStateException(
                 "UOF SDK failed to fetch required bookmaker details, check logs for additional information"
             );
         }
 
-        this.bookmakerDetails = new BookmakerDetailsImpl(bookmakerDetails, serverTimeDifference);
+        this.bookmakerDetails = new BookmakerDetailsImpl(fetchBookmakerDetails, serverTimeDifference);
     }
 
     private BookmakerDetails fetchBookmakerDetails() {
@@ -207,9 +208,9 @@ public class WhoAmIReader {
             bookmakerDetails = provideBookmakerDetails(configDataProvider);
         } catch (DataProviderException e) {
             logger.warn(
-                "Bookmaker settings failed to fetch from the configured environment[{}], exc:",
+                "Bookmaker details fetch failed from the configured environment[{}]: {}",
                 config.getEnvironment(),
-                e
+                e.getMessage()
             );
         }
 
@@ -217,106 +218,8 @@ public class WhoAmIReader {
             return bookmakerDetails;
         }
 
-        logger.warn(
-            "Bookmaker details fetch failed from the configured environment, checking token status on other available environments..."
-        );
-
-        if (
-            !config
-                .getApi()
-                .getHost()
-                .equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Integration))
-        ) {
-            attemptTokenValidationOn(
-                Environment.Integration,
-                EnvironmentManager.getApiHost(Environment.Integration),
-                integrationDataProvider
-            );
-        }
-        if (
-            !config.getApi().getHost().equalsIgnoreCase(EnvironmentManager.getApiHost(Environment.Production))
-        ) {
-            attemptTokenValidationOn(
-                Environment.Production,
-                EnvironmentManager.getApiHost(Environment.Production),
-                productionDataProvider
-            );
-        }
-
-        logger.info("Bookmaker details fetch failed on all available environments");
-
+        logger.info("Bookmaker details fetch failed for environment[{}]", config.getEnvironment());
         return null;
-    }
-
-    private void attemptTokenValidationOn(
-        Environment environment,
-        String environmentApiUrl,
-        DataProvider<BookmakerDetails> dataProvider
-    ) {
-        logger.info(
-            "Attempting bookmaker details fetch from the '{}' environment, API URL: '{}'",
-            environment,
-            environmentApiUrl
-        );
-
-        BookmakerDetails bookmakerDetails = null;
-        try {
-            bookmakerDetails = provideBookmakerDetails(dataProvider);
-        } catch (DataProviderException e) {
-            logger.warn(
-                "Bookmaker settings failed to fetch from the '{}' environment with exc:",
-                environment,
-                e
-            );
-        }
-
-        if (isBookmakerResponseOk(bookmakerDetails)) {
-            String message = String.format(
-                "The provided access token is for the '%s' environment but the SDK is configured to access the '%s' environment",
-                environment,
-                config.getEnvironment()
-            );
-            logger.error(message);
-            throw new IllegalStateException(message);
-        }
-
-        logger.info("Bookmaker details fetch failed on '{}'", environment);
-    }
-
-    private BookmakerDetails fetchReplayBookmakerDetails() {
-        logger.info("Fetching 'production' WhoAmI endpoint");
-
-        BookmakerDetails bookmakerDetails = null;
-        try {
-            bookmakerDetails = provideBookmakerDetails(productionDataProvider);
-            if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
-                logger.info(
-                    "Production WhoAmI request successful, switching SDK configuration to production API"
-                );
-
-                apiHostUpdater.updateToProduction();
-
-                return bookmakerDetails;
-            }
-        } catch (DataProviderException e) {
-            logger.warn("Replay WhoAmI fetch failed on 'production' with exc:", e);
-        }
-
-        logger.info("Production API request failed, fetching 'integration' WhoAmI endpoint");
-        try {
-            bookmakerDetails = provideBookmakerDetails(integrationDataProvider);
-        } catch (DataProviderException e) {
-            logger.warn("Replay WhoAmI fetch failed on 'integration' with exc:", e);
-        }
-
-        if (bookmakerDetails != null && bookmakerDetails.getResponseCode() != ResponseCode.FORBIDDEN) {
-            logger.info(
-                "Integration WhoAmI request successful, switching SDK configuration to integration API"
-            );
-
-            apiHostUpdater.updateToIntegration();
-        }
-        return bookmakerDetails;
     }
 
     private BookmakerDetails provideBookmakerDetails(DataProvider<BookmakerDetails> provider)

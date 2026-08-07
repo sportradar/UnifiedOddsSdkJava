@@ -8,7 +8,9 @@ import static org.mockito.Mockito.mock;
 import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.impl.CalculationDataProviders;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouter;
 import com.sportradar.unifiedodds.sdk.internal.caching.DataRouterManager;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
@@ -25,6 +27,7 @@ public class DataRouterManagerBuilder {
     private DataProvider<CapiAvailableSelections> cbAvailableSelections = mock(DataProvider.class);
     private DataProvider<CapiCalculationResponse> cbCalculate = mock(DataProvider.class);
     private DataProvider<CapiFilteredCalculationResponse> cbCalculateFilter = mock(DataProvider.class);
+    private DataProvider<CapiPreBuiltBets> cbPrebuiltBets = mock(DataProvider.class);
     private DataProvider<SapiFixturesEndpoint> fixtures = mock(DataProvider.class);
     private DataProvider<SapiTournamentsEndpoint> tournaments = mock(DataProvider.class);
     private DataProvider<SapiSportsEndpoint> sports = mock(DataProvider.class);
@@ -33,6 +36,7 @@ public class DataRouterManagerBuilder {
     private DataProvider<Object> tournamentSchedule = mock(DataProvider.class);
     private DataProvider<SapiMatchTimelineEndpoint> matchTimelineProvider = mock(DataProvider.class);
     private DataProvider<SapiDrawSummary> drawSummaryProvider = mock(DataProvider.class);
+    private TelemetryFactory telemetryFactory = mock(TelemetryFactory.class);
 
     public static DataRouterManagerBuilder create() {
         return new DataRouterManagerBuilder();
@@ -65,10 +69,27 @@ public class DataRouterManagerBuilder {
         return this;
     }
 
+    public DataRouterManagerBuilder withCbCalculation(
+        CalculationDataProviders.Verifiable<?, CapiCalculationResponse> provider
+    ) {
+        return withCbCalculation(provider.provider());
+    }
+
     public DataRouterManagerBuilder withCbCalculationFilter(
         DataProvider<CapiFilteredCalculationResponse> cbCalculateFilter
     ) {
         this.cbCalculateFilter = cbCalculateFilter;
+        return this;
+    }
+
+    public DataRouterManagerBuilder withCbCalculationFilter(
+        CalculationDataProviders.Verifiable<?, CapiFilteredCalculationResponse> provider
+    ) {
+        return withCbCalculationFilter(provider.provider());
+    }
+
+    public DataRouterManagerBuilder withCbPrebuiltBets(DataProvider<CapiPreBuiltBets> cbPrebuiltBets) {
+        this.cbPrebuiltBets = cbPrebuiltBets;
         return this;
     }
 
@@ -130,13 +151,18 @@ public class DataRouterManagerBuilder {
         return this;
     }
 
+    public DataRouterManagerBuilder withTelemetry(TelemetryFactory telemetryFactory) {
+        this.telemetryFactory = telemetryFactory;
+        return this;
+    }
+
     public DataRouterManager build() {
         return new DataRouterManagerImpl(
             mock(SdkInternalConfiguration.class),
             mock(SdkTaskScheduler.class),
             mock(SdkProducerManager.class),
             dataRouter,
-            mock(TelemetryFactory.class),
+            telemetryFactory,
             summaries,
             fixtures,
             mock(DataProvider.class),
@@ -156,6 +182,7 @@ public class DataRouterManagerBuilder {
             cbAvailableSelections,
             cbCalculate,
             cbCalculateFilter,
+            cbPrebuiltBets,
             mock(DataProvider.class),
             mock(DataProvider.class),
             mock(DataProvider.class),

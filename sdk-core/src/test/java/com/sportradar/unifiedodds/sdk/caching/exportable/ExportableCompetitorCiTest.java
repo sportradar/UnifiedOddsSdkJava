@@ -7,11 +7,13 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import com.sportradar.unifiedodds.sdk.oddsentities.exportable.*;
+import com.sportradar.utils.OldStyleTest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ExportableCompetitorCiTest {
 
     @Test

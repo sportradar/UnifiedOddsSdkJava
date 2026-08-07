@@ -15,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.internal.exceptions.IllegalCacheStateExcep
 import com.sportradar.unifiedodds.sdk.internal.exportable.ExportableSdkCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.*;
 import lombok.val;
@@ -22,6 +23,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "VisibilityModifier" })
 public class SportEventCacheTest {
 

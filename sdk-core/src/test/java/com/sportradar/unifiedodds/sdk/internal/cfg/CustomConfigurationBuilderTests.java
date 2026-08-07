@@ -7,9 +7,11 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
 public class CustomConfigurationBuilderTests extends ConfigurationBuilderSetup {
 

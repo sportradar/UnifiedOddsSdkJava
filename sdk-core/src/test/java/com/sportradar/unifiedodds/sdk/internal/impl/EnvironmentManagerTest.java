@@ -3,68 +3,45 @@
  */
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.*;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.ReplayWithIntegrationCredentials;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.ReplayWithProductionCredentials;
 import static com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager.getEnvironmentSettings;
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
-import java.util.List;
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class EnvironmentManagerTest {
-
-    @Test
-    public void globalAndNonGlobalStgApisSitUnderSameIpsHoweverReplayShouldPointToNonGlobalAsItIsLongTermStrategy() {
-        val nonGlobalApiHost = "stgapi.betradar.com";
-        assertThatPointsToApiHost(Replay, nonGlobalApiHost);
-        assertThatPointsToApiHost(GlobalReplay, nonGlobalApiHost);
-    }
-
-    private void assertThatPointsToApiHost(Environment globalReplay, String nonGlobalApiHost) {
-        assertEquals(nonGlobalApiHost, findEnvironmentSetting(globalReplay).getApiHost());
-        assertEquals(nonGlobalApiHost, EnvironmentManager.getApiHost(globalReplay));
-    }
-
-    @Test
-    public void replayShouldPointToNonGlobalMessagingEndpointAsItIsLongTermStrategy() {
-        assertThatPointsToMessagingHost(Replay, "replaymq.betradar.com");
-    }
-
-    @Test
-    public void untilIpConsolidationInTheBackendGlobalReplayShouldPointToNonGlobalMessagingEndpoint() {
-        assertThatPointsToMessagingHost(GlobalReplay, "global.replaymq.betradar.com");
-    }
-
-    private void assertThatPointsToMessagingHost(Environment replay, String nonGlobalMessagingHost) {
-        assertEquals(nonGlobalMessagingHost, findEnvironmentSetting(replay).getMqHost());
-        assertEquals(nonGlobalMessagingHost, EnvironmentManager.getMqHost(replay));
-    }
 
     @Test
     public void replayShouldPointToStandardHttpPort() {
         final int standardHttpPort = 80;
-        assertThatPointsToApiPost(Replay, standardHttpPort);
-        assertThatPointsToApiPost(GlobalReplay, standardHttpPort);
+        assertThatPointsToApiPort(ReplayWithIntegrationCredentials, standardHttpPort);
+        assertThatPointsToApiPort(ReplayWithProductionCredentials, standardHttpPort);
     }
 
-    private void assertThatPointsToApiPost(Environment environment, int apiPort) {
+    private void assertThatPointsToApiPort(Environment environment, int apiPort) {
         assertEquals(apiPort, findEnvironmentSetting(environment).getApiPort());
         assertEquals(apiPort, EnvironmentManager.getApiPort(environment));
     }
 
     @Test
     public void replayEnvironmentsShouldSupportSslOnly() {
-        assertTrue(findEnvironmentSetting(Replay).isOnlySsl());
-        assertTrue(findEnvironmentSetting(GlobalReplay).isOnlySsl());
+        assertTrue(findEnvironmentSetting(ReplayWithIntegrationCredentials).isOnlySsl());
+        assertTrue(findEnvironmentSetting(ReplayWithProductionCredentials).isOnlySsl());
     }
 
     @Test
     public void retryListShouldBeDeprecated_ItIsDeadCode_ExposedThroughStaticContextCanCauseBreakingChange() {
-        List<Environment> retryList = asList(Integration, Production);
-        assertEquals(retryList, findEnvironmentSetting(Replay).getEnvironmentRetryList());
-        assertEquals(retryList, findEnvironmentSetting(GlobalReplay).getEnvironmentRetryList());
+        assertThat(findEnvironmentSetting(ReplayWithIntegrationCredentials).getEnvironmentRetryList())
+            .isEmpty();
+        assertThat(findEnvironmentSetting(ReplayWithProductionCredentials).getEnvironmentRetryList())
+            .isEmpty();
     }
 
     private EnvironmentSetting findEnvironmentSetting(Environment environment) {

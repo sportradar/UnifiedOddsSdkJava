@@ -20,6 +20,7 @@ import com.google.inject.name.Named;
 import com.sportradar.uf.custombet.datamodel.CapiAvailableSelections;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
@@ -31,6 +32,7 @@ import com.sportradar.unifiedodds.sdk.internal.caching.impl.DataRouterManagerImp
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.time.Duration;
 import java.util.Locale;
@@ -43,6 +45,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @SuppressWarnings("MagicNumber")
+@OldStyleTest
 public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentIT {
 
     private static final String TOURNAMENT_SCHEDULE_PATH_FORMAT = "/sports/%s/tournaments/%s/schedule.xml";
@@ -269,6 +272,12 @@ public class DataRouterManagerImplRequestingScheduledSportEventIdsForTournamentI
 
         @Provides
         private DataProvider<SapiStagePeriodEndpoint> stagePeriods() {
+            return mock(DataProvider.class);
+        }
+
+        @Provides
+        @Named("CustomBetPrebuiltBetsDataProvider")
+        private DataProvider<CapiPreBuiltBets> customBetPrebuiltBets() {
             return mock(DataProvider.class);
         }
 

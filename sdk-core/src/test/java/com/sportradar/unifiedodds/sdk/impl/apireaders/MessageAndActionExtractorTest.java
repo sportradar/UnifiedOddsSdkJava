@@ -9,6 +9,7 @@ import com.google.common.base.Charsets;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.Response;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@OldStyleTest
 public class MessageAndActionExtractorTest {
 
     private final MessageAndActionExtractor messageExtractor = new MessageAndActionExtractor();

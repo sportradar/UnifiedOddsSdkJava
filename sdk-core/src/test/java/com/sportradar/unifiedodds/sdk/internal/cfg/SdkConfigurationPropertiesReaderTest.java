@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 import com.sportradar.unifiedodds.sdk.internal.impl.util.files.ResourceReader;
+import com.sportradar.utils.OldStyleTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+@OldStyleTest
 public class SdkConfigurationPropertiesReaderTest {
 
     public static final String SLASH = "/";

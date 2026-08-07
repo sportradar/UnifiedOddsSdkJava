@@ -6,11 +6,13 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import static org.junit.Assert.*;
 
+import com.sportradar.utils.OldStyleTest;
 import java.io.IOException;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class ClosableHttpResponseStubsTest {
 
     private static final String NO_CONTENT = "";

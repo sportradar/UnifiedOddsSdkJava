@@ -22,6 +22,7 @@ import com.sportradar.unifiedodds.sdk.oddsentities.ProducerScope;
 import com.sportradar.unifiedodds.sdk.oddsentities.UnmarshalledMessage;
 import com.sportradar.utils.Urn;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -105,7 +106,8 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         UnmarshalledMessage message,
         byte[] body,
         RoutingKeyInfo routingKeyInfo,
-        MessageTimestamp timestamp
+        MessageTimestamp timestamp,
+        Map<String, String> messageHeaders
     ) {
         if (message instanceof UfOddsChange) {
             UfOddsChange fm = (UfOddsChange) message;
@@ -142,7 +144,7 @@ public class CacheMessageProcessor implements FeedMessageProcessor {
         }
 
         if (nextMessageProcessor != null) {
-            nextMessageProcessor.processMessage(message, body, routingKeyInfo, timestamp);
+            nextMessageProcessor.processMessage(message, body, routingKeyInfo, timestamp, messageHeaders);
         }
     }
 

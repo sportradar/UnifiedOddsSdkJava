@@ -34,7 +34,7 @@ public class ReplaySessionSetup {
         UofConfiguration configuration = UofSdk
             .getUofConfigurationBuilder()
             .setAccessToken(token)
-            .selectEnvironment(Environment.GlobalReplay)
+            .selectEnvironment(Environment.ReplayWithIntegrationCredentials)
             .setNodeId(3435)
             .setDefaultLanguage(ENGLISH)
             .build();

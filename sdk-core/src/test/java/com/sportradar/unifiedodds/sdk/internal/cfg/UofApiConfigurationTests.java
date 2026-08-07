@@ -4,9 +4,11 @@
 
 package com.sportradar.unifiedodds.sdk.internal.cfg;
 
+import com.sportradar.utils.OldStyleTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 public class UofApiConfigurationTests {
 
     private final UofApiConfigurationImpl config = new UofApiConfigurationImpl();

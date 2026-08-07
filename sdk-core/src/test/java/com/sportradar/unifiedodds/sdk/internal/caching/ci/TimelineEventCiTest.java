@@ -10,10 +10,12 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 import com.sportradar.uf.sportsapi.datamodel.SapiBasicEvent;
+import com.sportradar.utils.OldStyleTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@OldStyleTest
 public class TimelineEventCiTest {
 
     @Test

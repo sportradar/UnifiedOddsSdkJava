@@ -4,6 +4,7 @@ import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Injector;
 import com.sportradar.uf.datamodel.*;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
@@ -16,14 +17,18 @@ import com.sportradar.unifiedodds.sdk.internal.impl.SportEntityFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.MessageTimestampImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.unifiedodds.sdk.shared.StubUofConfiguration;
+import com.sportradar.utils.OldStyleTest;
 import com.sportradar.utils.Urn;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "ClassFanOutComplexity", "MagicNumber", "VisibilityModifier" })
 public class FeedMessageFactoryTest {
 
@@ -33,6 +38,7 @@ public class FeedMessageFactoryTest {
 
     byte[] rawMsg = new byte[] {};
     MessageTimestamp timestamp = new MessageTimestampImpl(1);
+    Map<String, String> headers = ImmutableMap.of();
 
     @BeforeEach
     public void setup() throws Exception {
@@ -54,7 +60,7 @@ public class FeedMessageFactoryTest {
     public void buildsBetStop() throws Exception {
         UfBetStop msg = XmlMessageReader.readMessageFromResource(BET_STOP_MSG_URI);
 
-        BetStop<SportEvent> result = factory.buildBetStop(sportEvent, msg, rawMsg, timestamp);
+        BetStop<SportEvent> result = factory.buildBetStop(sportEvent, msg, rawMsg, timestamp, headers);
 
         Assert.assertNotNull(result);
     }
@@ -63,7 +69,13 @@ public class FeedMessageFactoryTest {
     public void buildsFixtureChange() throws Exception {
         UfFixtureChange msg = XmlMessageReader.readMessageFromResource(FIXTURE_CHANGE_MSG_URI);
 
-        FixtureChange<SportEvent> result = factory.buildFixtureChange(sportEvent, msg, rawMsg, timestamp);
+        FixtureChange<SportEvent> result = factory.buildFixtureChange(
+            sportEvent,
+            msg,
+            rawMsg,
+            timestamp,
+            headers
+        );
 
         Assert.assertNotNull(result);
     }
@@ -72,7 +84,13 @@ public class FeedMessageFactoryTest {
     public void buildsBetSettlement() throws Exception {
         UfBetSettlement msg = XmlMessageReader.readMessageFromResource(BET_SETTLEMENT_MSG_URI);
 
-        BetSettlement<SportEvent> result = factory.buildBetSettlement(sportEvent, msg, rawMsg, timestamp);
+        BetSettlement<SportEvent> result = factory.buildBetSettlement(
+            sportEvent,
+            msg,
+            rawMsg,
+            timestamp,
+            ImmutableMap.of()
+        );
 
         Assert.assertNotNull(result);
     }
@@ -87,7 +105,8 @@ public class FeedMessageFactoryTest {
             sportEvent,
             msg,
             rawMsg,
-            timestamp
+            timestamp,
+            ImmutableMap.of()
         );
 
         Assert.assertNotNull(result);
@@ -97,7 +116,13 @@ public class FeedMessageFactoryTest {
     public void buildsOddsChange() throws Exception {
         UfOddsChange msg = XmlMessageReader.readMessageFromResource(ODDS_CHANGE_MSG_URI);
 
-        OddsChange<SportEvent> result = factory.buildOddsChange(sportEvent, msg, rawMsg, timestamp);
+        OddsChange<SportEvent> result = factory.buildOddsChange(
+            sportEvent,
+            msg,
+            rawMsg,
+            timestamp,
+            Collections.emptyMap()
+        );
 
         Assert.assertNotNull(result);
     }
@@ -110,7 +135,8 @@ public class FeedMessageFactoryTest {
             sportEvent,
             msg,
             rawMsg,
-            timestamp
+            timestamp,
+            headers
         );
 
         Assert.assertNotNull(result);
@@ -120,7 +146,7 @@ public class FeedMessageFactoryTest {
     public void buildsBetCancel() throws Exception {
         UfBetCancel msg = XmlMessageReader.readMessageFromResource(BET_CANCEL_MSG_URI);
 
-        BetCancel<SportEvent> result = factory.buildBetCancel(sportEvent, msg, rawMsg, timestamp);
+        BetCancel<SportEvent> result = factory.buildBetCancel(sportEvent, msg, rawMsg, timestamp, headers);
 
         Assert.assertNotNull(result);
     }

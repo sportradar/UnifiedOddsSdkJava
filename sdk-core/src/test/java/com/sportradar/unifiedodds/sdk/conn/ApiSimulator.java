@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiFilteredCalculationResponse;
+import com.sportradar.uf.custombet.datamodel.CapiPreBuiltBets;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.sportsapi.datamodel.*;
 import com.sportradar.utils.Urn;
@@ -147,7 +148,41 @@ public class ApiSimulator {
     }
 
     public void stubWhoAmIWithEmptyResponseBody() {
-        register(get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(WireMock.ok()));
+        register(get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(WireMock.ok().withBody("")));
+    }
+
+    public void stubWhoAmIWithBadRequestErrorResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(badRequest().withBody("<response/>"))
+        );
+    }
+
+    public void stubWhoAmIWithNotFoundErrorResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml"))
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_NOT_FOUND).withBody("<response/>"))
+        );
+    }
+
+    public void stubWhoAmIWithInternalServerErrorResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                        .withBody("<response/>")
+                )
+        );
+    }
+
+    public void stubWhoAmIWithServiceUnavailableResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml"))
+                .willReturn(
+                    WireMock.aResponse().withStatus(HttpStatus.SC_SERVICE_UNAVAILABLE).withBody("<response/>")
+                )
+        );
     }
 
     public void stubEmptyScheduleForNext3Days(Locale language) {
@@ -538,7 +573,7 @@ public class ApiSimulator {
         );
     }
 
-    public void stubAllSports(Locale language, HeaderEquality headerEquality) {
+    public void stubAllSports(Locale language, HeaderEquality header) {
         val allSportsJaxb = new JAXBElement<>(
             new QName(UNIFIED_XML_NAMESPACE, "sports"),
             SapiSportsEndpoint.class,
@@ -546,7 +581,7 @@ public class ApiSimulator {
         );
         register(
             get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
-                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .withHeader(header.name, header.valuePattern)
                 .willReturn(ok(JaxbContexts.SportsApi.marshall(allSportsJaxb)))
         );
     }
@@ -758,6 +793,18 @@ public class ApiSimulator {
             post(urlPathMatching("/v1/custombet/calculate-filter"))
                 .willReturn(
                     WireMock.aResponse().withBody(toXml(response)).withStatus(HttpStatus.SC_NOT_FOUND)
+                )
+        );
+    }
+
+    public void stubCustomBetPrebuiltSelections(CapiPreBuiltBets response) {
+        register(
+            get(urlPathEqualTo("/v1/custombet/prebuilt"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
                 )
         );
     }

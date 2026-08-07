@@ -376,7 +376,7 @@ public class DataProviderHeadersTest {
                 eventSelection.setOdds(1.2);
 
                 CapiSelections selections = new CapiSelections();
-                selections.getSelections().add(eventSelection);
+                selections.getSelectionsAndOrSelections().add(eventSelection);
                 return selections;
             }
         }

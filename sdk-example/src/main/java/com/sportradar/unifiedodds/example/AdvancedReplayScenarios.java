@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.example;
 
+import static com.sportradar.unifiedodds.example.common.ConsoleHelper.readLine;
+
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
@@ -12,13 +14,13 @@ import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.UofSdkForReplay;
 import com.sportradar.unifiedodds.sdk.UofSessionBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.internal.impl.ReplayManager;
 import com.sportradar.utils.Urn;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Scanner;
 import java.util.stream.IntStream;
 
 /**
@@ -32,7 +34,7 @@ public class AdvancedReplayScenarios {
         UofConfiguration config = UofSdk
             .getUofConfigurationBuilder()
             .setAccessToken("your-token-here")
-            .selectReplay()
+            .selectEnvironment(Environment.ReplayWithIntegrationCredentials)
             .setNodeId(SdkConstants.NODE_ID)
             .setDefaultLanguage(Locale.ENGLISH)
             .build();
@@ -81,9 +83,7 @@ public class AdvancedReplayScenarios {
         System.out.println("Sample events:");
         IntStream
             .range(0, ExampleReplayEvents.SAMPLE_EVENTS.size())
-            .forEach(i ->
-                System.out.println(String.format("[%2d] %s", i, ExampleReplayEvents.SAMPLE_EVENTS.get(i)))
-            );
+            .forEach(i -> System.out.printf("[%2d] %s%n", i, ExampleReplayEvents.SAMPLE_EVENTS.get(i)));
 
         System.out.println();
 
@@ -91,7 +91,7 @@ public class AdvancedReplayScenarios {
             System.out.println(
                 "Select an event to add or pres 'x' if you do not want to add additional events:"
             );
-            String additionalConsoleInput = getConsoleInput();
+            String additionalConsoleInput = readLine();
 
             if (additionalConsoleInput.equals("x")) {
                 break;
@@ -107,7 +107,7 @@ public class AdvancedReplayScenarios {
                 .get(additionalItemPosition)
                 .getEventId();
             replayManager.addSportEventToReplay(additionalEventId);
-            System.out.println(String.format("Event[%s] added to the replay server", additionalEventId));
+            System.out.printf("Event[%s] added to the replay server%n", additionalEventId);
         }
     }
 
@@ -124,14 +124,5 @@ public class AdvancedReplayScenarios {
         }
 
         return listItemPosition;
-    }
-
-    private static String getConsoleInput() {
-        Scanner scanner = new Scanner(System.in);
-        if (scanner.hasNextLine()) {
-            return scanner.nextLine();
-        } else {
-            return getConsoleInput();
-        }
     }
 }

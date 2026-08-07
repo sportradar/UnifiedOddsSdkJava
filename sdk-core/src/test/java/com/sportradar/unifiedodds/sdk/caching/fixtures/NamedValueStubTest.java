@@ -5,9 +5,11 @@ package com.sportradar.unifiedodds.sdk.caching.fixtures;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sportradar.utils.OldStyleTest;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@OldStyleTest
 public class NamedValueStubTest {
 
     private final int id = 45;

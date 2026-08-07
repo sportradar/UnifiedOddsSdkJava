@@ -4,7 +4,15 @@ import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import java.util.List;
 
-@SuppressWarnings({ "DeclarationOrder", "HideUtilityClassConstructor", "LineLength", "MagicNumber" })
+@SuppressWarnings(
+    {
+        "DeclarationOrder",
+        "HideUtilityClassConstructor",
+        "LineLength",
+        "MagicNumber",
+        "MultipleStringLiterals",
+    }
+)
 public final class EnvironmentManager {
 
     private static final List<EnvironmentSetting> ENVIRONMENT_SETTINGS;
@@ -55,24 +63,6 @@ public final class EnvironmentManager {
                     Lists.newArrayList(Environment.Production)
                 ),
                 new EnvironmentSetting(
-                    Environment.Replay,
-                    "replaymq.betradar.com",
-                    "stgapi.betradar.com",
-                    STG_AUTH_SPORTRADAR_COM,
-                    80,
-                    true,
-                    basicRetryList
-                ),
-                new EnvironmentSetting(
-                    Environment.GlobalReplay,
-                    "global.replaymq.betradar.com",
-                    "stgapi.betradar.com",
-                    STG_AUTH_SPORTRADAR_COM,
-                    80,
-                    true,
-                    basicRetryList
-                ),
-                new EnvironmentSetting(
                     Environment.GlobalProduction,
                     "global.mq.betradar.com",
                     "global.api.betradar.com",
@@ -89,6 +79,24 @@ public final class EnvironmentManager {
                     80,
                     true,
                     basicRetryList
+                ),
+                new EnvironmentSetting(
+                    Environment.ReplayWithProductionCredentials,
+                    "replaymq.betradar.com",
+                    "api.betradar.com",
+                    AUTH_SPORTRADAR_COM,
+                    80,
+                    true,
+                    Lists.newArrayList()
+                ),
+                new EnvironmentSetting(
+                    Environment.ReplayWithIntegrationCredentials,
+                    "replaymq.betradar.com",
+                    "stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
+                    80,
+                    true,
+                    Lists.newArrayList()
                 )
             );
     }

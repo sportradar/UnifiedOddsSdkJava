@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.sportradar.com/custombet/v1/endpoints"
+  targetNamespace="http://schemas.sportradar.com/custombet/v1/endpoints"
+  elementFormDefault="qualified">
+
+  <xs:complexType name="EventType">
+    <xs:annotation>
+      <xs:documentation>Contains event specific data, like available markets</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="markets" type="MarketsType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Valid event URN, such as sr:match:123456</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="MarketsType">
+    <xs:annotation>
+      <xs:documentation>Wrapper for available markets</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="market" type="MarketType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketType">
+    <xs:annotation>
+      <xs:documentation>Market with all outcomes available</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="outcome" type="OutcomeType" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:int" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique id for a market</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="specifiers" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>
+          Market specifiers to identify markets with additional parameters, if applicable, such as
+          "total=1.5"
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="OutcomeType">
+    <xs:annotation>
+      <xs:documentation>An outcome for a market</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique id of the market outcome</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+</xs:schema>
+

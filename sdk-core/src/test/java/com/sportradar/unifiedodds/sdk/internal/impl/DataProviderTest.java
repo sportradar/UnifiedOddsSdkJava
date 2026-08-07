@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.google.common.collect.ImmutableMap;
 import com.sportradar.uf.custombet.datamodel.CapiCalculationResponse;
 import com.sportradar.uf.custombet.datamodel.CapiResponse;
 import com.sportradar.uf.custombet.datamodel.CapiSelectionType;
@@ -55,6 +56,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @Slf4j
 @SuppressWarnings({ "MagicNumber", "IllegalCatch", "MultipleStringLiterals", "ClassFanOutComplexity" })
@@ -65,6 +67,9 @@ public class DataProviderTest {
         .newInstance()
         .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
         .build();
+
+    private static final String DATA_FETCHERS =
+        "com.sportradar.unifiedodds.sdk.internal.impl.DataProviderTest#dataFetchers";
 
     private BaseUrl apiBaseUrl;
     private ApiSimulator apiSimulator;
@@ -161,7 +166,46 @@ public class DataProviderTest {
         }
 
         @EnumSource(HttpFetcherType.class)
-        @ParameterizedTest
+        @ParameterizedTest(name = "{0}")
+        void returnsDataForGetWithHeadersRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val provider = createDataProviderFor("/sports/de/sports.xml")
+                .with(cfg)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
+                .with(sportsApiDeserializer())
+                .<SapiSportsEndpoint>build();
+
+            apiSimulator.stubAllSports(Locale.GERMAN, requiringHeader("Custom-Header", "HeaderValue"));
+
+            val allSports = provider.getDataWithHeaders(ImmutableMap.of("Custom-Header", "HeaderValue"));
+
+            assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
+        }
+
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest(name = "{0}")
+        void returnsDataForGetWithHeadersRequestWithEmptyHeadersMap(HttpFetcherType httpFetcherType)
+            throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val provider = createDataProviderFor("/sports/%s/sports.xml")
+                .with(cfg)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
+                .with(sportsApiDeserializer())
+                .<SapiSportsEndpoint>build();
+
+            apiSimulator.stubAllSports(Locale.GERMAN);
+
+            val allSports = provider.getDataWithHeaders(ImmutableMap.of(), Locale.GERMAN.getLanguage());
+
+            assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
+        }
+
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest(name = "{0}")
         void sendsAccessTokenAsHeader(HttpFetcherType httpFetcherType) throws Exception {
             val cfg = uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
@@ -224,7 +268,7 @@ public class DataProviderTest {
             eventSelection.setOdds(1.2);
 
             CapiSelections selections = new CapiSelections();
-            selections.getSelections().add(eventSelection);
+            selections.getSelectionsAndOrSelections().add(eventSelection);
             return selections;
         }
     }

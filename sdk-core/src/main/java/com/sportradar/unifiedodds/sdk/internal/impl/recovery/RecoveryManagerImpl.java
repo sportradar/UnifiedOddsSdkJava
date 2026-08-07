@@ -114,7 +114,7 @@ public class RecoveryManagerImpl
         this.httpHelper = httpHelper;
         this.messageFactory = messageFactory;
         this.maxRecoveryExecutionTime =
-            TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionSeconds(), TimeUnit.MINUTES);
+            TimeUnit.MILLISECONDS.convert(config.getMaxRecoveryExecutionSeconds(), TimeUnit.SECONDS);
         this.taskScheduler = taskScheduler;
         this.sdkMdcContextDescription = whoAmIReader.getAssociatedSdkMdcContextMap();
         this.bookmakerId = whoAmIReader.getBookmakerId();

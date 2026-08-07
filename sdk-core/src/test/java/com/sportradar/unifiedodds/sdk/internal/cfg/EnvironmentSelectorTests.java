@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.sportradar.unifiedodds.sdk.cfg.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
+import com.sportradar.utils.OldStyleTest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+@OldStyleTest
 @SuppressWarnings({ "MagicNumber", "MultipleStringLiterals" })
 public class EnvironmentSelectorTests extends ConfigurationBuilderSetup {
 
@@ -66,7 +68,8 @@ public class EnvironmentSelectorTests extends ConfigurationBuilderSetup {
 
     @Test
     public void selectReplayEnvironmentReturnTest() {
-        ConfigurationBuilder configurationBuilder = getEnvironmentSelector().selectReplay();
+        ConfigurationBuilder configurationBuilder = getEnvironmentSelector()
+            .selectEnvironment(Environment.ReplayWithIntegrationCredentials);
 
         Assert.assertNotNull(configurationBuilder);
     }
@@ -105,13 +108,13 @@ public class EnvironmentSelectorTests extends ConfigurationBuilderSetup {
     @Test
     public void replayEnvironmentResultValidation() {
         UofConfiguration cfg = getEnvironmentSelector()
-            .selectReplay()
+            .selectEnvironment(Environment.ReplayWithIntegrationCredentials)
             .setDesiredLanguages(Collections.singletonList(languageDe))
             .build();
 
         Assert.assertNotNull(cfg);
-        Assert.assertEquals(Environment.Replay, cfg.getEnvironment());
-        verifyConfig(cfg, Environment.Replay, languageDe);
+        Assert.assertEquals(Environment.ReplayWithIntegrationCredentials, cfg.getEnvironment());
+        verifyConfig(cfg, Environment.ReplayWithIntegrationCredentials, languageDe);
     }
 
     @Test
@@ -127,43 +130,13 @@ public class EnvironmentSelectorTests extends ConfigurationBuilderSetup {
     }
 
     @Test
-    public void replayShouldTargetIntegrationApiBecauseReplayButWeNeedAnExplanationWhy() {
-        UofConfiguration cfg = getEnvironmentSelector()
-            .selectReplay()
-            .setDefaultLanguage(defaultLanguage)
-            .build();
-
-        Assert.assertEquals(cfg.getApi().getHost(), EnvironmentManager.getApiHost(Environment.Integration));
-    }
-
-    @Test
-    public void globalAndNonGlobalStgApisSitUnderSameIpsHoweverReplayShouldPointToNonGlobalAsItIsLongTermStrategy() {
-        UofConfiguration cfg = getEnvironmentSelector()
-            .selectReplay()
-            .setDefaultLanguage(defaultLanguage)
-            .build();
-
-        Assert.assertEquals("stgapi.betradar.com", cfg.getApi().getHost());
-    }
-
-    @Test
-    public void replayShouldPointToNonGlobalMessagingHostAsItIsLongTermStrategy() {
-        UofConfiguration cfg = getEnvironmentSelector()
-            .selectReplay()
-            .setDefaultLanguage(defaultLanguage)
-            .build();
-
-        Assert.assertEquals("replaymq.betradar.com", cfg.getRabbit().getHost());
-    }
-
-    @Test
     public void replayConfigurationShouldBeCreatedForReplayEnvironment() {
         UofConfiguration cfg = getEnvironmentSelector()
-            .selectReplay()
+            .selectEnvironment(Environment.ReplayWithIntegrationCredentials)
             .setDefaultLanguage(defaultLanguage)
             .build();
 
-        Assert.assertEquals(Environment.Replay, cfg.getEnvironment());
+        Assert.assertEquals(Environment.ReplayWithIntegrationCredentials, cfg.getEnvironment());
     }
 
     @Test

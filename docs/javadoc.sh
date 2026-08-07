@@ -1,1 +1,1 @@
-/usr/local/openjdk-8/jre/../bin/javadoc @options @packages
+/opt/java/openjdk/bin/javadoc @options @packages

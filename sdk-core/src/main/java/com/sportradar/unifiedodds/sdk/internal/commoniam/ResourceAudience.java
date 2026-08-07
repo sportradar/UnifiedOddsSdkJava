@@ -4,8 +4,8 @@
 package com.sportradar.unifiedodds.sdk.internal.commoniam;
 
 public enum ResourceAudience {
-    UF_REST_API("UF-RestAPI"),
-    UF_RABBIT_MQ("UF-RabbitMQ");
+    UF_REST_API("https://api.betradar.com"),
+    UF_RABBIT_MQ("https://mq.betradar.com");
 
     private final String value;
 
