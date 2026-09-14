@@ -1,6 +1,11 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.10.0**
+**4.11.0**
+- Upgraded httpclient5 to the latest version (5.6.4) to mitigate security vulnerabilities.
+- Upgraded amqp-client (RabbitMQ) to the latest version (5.35.0) to mitigate security vulnerabilities.
+- Added missing default method to `getMessageHeaders` in the `Message` interface
+
+**4.10.0 (2026-06-01)**
 - Extended feed messages with `getMessageHeaders()` method to expose raw AMQP message headers on all feed message types.
 
 **4.9.0 (2026-05-20)**

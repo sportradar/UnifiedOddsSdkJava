@@ -24,5 +24,7 @@ public interface Message {
      * Gets the AMQP message headers delivered with the feed message
      * @return the AMQP headers as a string map, never null
      */
-    Map<String, String> getMessageHeaders();
+    default Map<String, String> getMessageHeaders() {
+        throw new UnsupportedOperationException("Method not implemented. Use derived type.");
+    }
 }
