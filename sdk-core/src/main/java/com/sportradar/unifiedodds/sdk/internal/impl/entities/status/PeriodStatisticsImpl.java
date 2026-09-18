@@ -55,13 +55,11 @@ class PeriodStatisticsImpl implements PeriodStatistics {
             return "PeriodStatisticsImpl{}";
         }
 
-        String teamStatisticsResult = "";
-        for (TeamStatisticsDto teamStatistics : stats.getTeamStatisticDtos()) {
-            teamStatisticsResult += " | " + teamStatistics.toString();
-        }
-        if (teamStatisticsResult.length() > 3) {
-            teamStatisticsResult = teamStatisticsResult.substring(3);
-        }
+        String teamStatisticsResult = stats
+            .getTeamStatisticDtos()
+            .stream()
+            .map(TeamStatisticsDto::toString)
+            .collect(Collectors.joining(" | "));
 
         return (
             "PeriodStatisticsImpl{" +

@@ -27,8 +27,8 @@ class NameExpressionHelper {
 
         List<String> expressions = new ArrayList<>();
         for (int currentIndex = 0; currentIndex < descriptor.length(); currentIndex++) {
-            int startIndex = descriptor.indexOf("{", currentIndex);
-            int endIndex = descriptor.indexOf("}", currentIndex);
+            int startIndex = descriptor.indexOf('{', currentIndex);
+            int endIndex = descriptor.indexOf('}', currentIndex);
 
             if (startIndex < 0 && endIndex < 0) {
                 break;
