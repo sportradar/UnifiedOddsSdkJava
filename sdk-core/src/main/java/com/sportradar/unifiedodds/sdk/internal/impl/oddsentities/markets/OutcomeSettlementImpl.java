@@ -7,9 +7,11 @@ package com.sportradar.unifiedodds.sdk.internal.impl.oddsentities.markets;
 import static com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult.UnsupportedBySdk;
 
 import com.google.common.collect.ImmutableMap;
+import com.sportradar.uf.datamodel.UfEachWayResult;
 import com.sportradar.uf.datamodel.UfResult;
 import com.sportradar.uf.datamodel.UfVoidFactor;
 import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProvider;
+import com.sportradar.unifiedodds.sdk.oddsentities.EachWayResult;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeDefinition;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeSettlement;
@@ -30,8 +32,17 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
         .put(UfResult.UNDECIDED_YET, OutcomeResult.UndecidedYet)
         .build();
 
+    private static final Map<String, EachWayResult> EACH_WAY_RESULTS = ImmutableMap
+        .<String, EachWayResult>builder()
+        .put(UfEachWayResult.WINNER_PLACE.value(), EachWayResult.WinnerPlace)
+        .put(UfEachWayResult.PLACE.value(), EachWayResult.Place)
+        .build();
+
     private final double voidFactor;
     private final double deadHeatFactor;
+    private final EachWayResult eachWayResult;
+    private final Double eachWayFactor;
+    private final Double deadHeatFactorPlace;
     private final OutcomeResult outcomeResult;
 
     OutcomeSettlementImpl(
@@ -41,11 +52,20 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
         Locale defaultLocale,
         UfResult result,
         UfVoidFactor voidFactor,
-        Double deadHeatFactor
+        Double deadHeatFactor,
+        String eachWayResult,
+        Double eachWayFactor,
+        Double deadHeatFactorPlace
     ) {
         super(id, nameProvider, outcomeDefinition, defaultLocale);
         this.voidFactor = voidFactor == null ? 0.0 : voidFactor.value();
         this.deadHeatFactor = deadHeatFactor == null ? 1 : deadHeatFactor;
+        this.eachWayResult =
+            eachWayResult == null
+                ? null
+                : EACH_WAY_RESULTS.getOrDefault(eachWayResult, EachWayResult.UnsupportedBySdk);
+        this.eachWayFactor = eachWayFactor;
+        this.deadHeatFactorPlace = deadHeatFactorPlace;
         this.outcomeResult = OUTCOME_RESULTS.getOrDefault(result, UnsupportedBySdk);
     }
 
@@ -80,5 +100,35 @@ class OutcomeSettlementImpl extends OutcomeImpl implements OutcomeSettlement {
     @Override
     public OutcomeResult getOutcomeResult() {
         return outcomeResult;
+    }
+
+    /**
+     * Returns whether the each-way outcome is settled as a win or a place
+     *
+     * @return the each-way result, or null if not present
+     */
+    @Override
+    public EachWayResult getEachWayResult() {
+        return eachWayResult;
+    }
+
+    /**
+     * Returns the each-way factor (fraction of win odds used to settle the place part)
+     *
+     * @return the each-way factor, or null if not present
+     */
+    @Override
+    public Double getEachWayFactor() {
+        return eachWayFactor;
+    }
+
+    /**
+     * Returns the dead-heat factor for the place part of an each-way bet
+     *
+     * @return the dead-heat factor for place, or null if not present
+     */
+    @Override
+    public Double getDeadHeatFactorPlace() {
+        return deadHeatFactorPlace;
     }
 }

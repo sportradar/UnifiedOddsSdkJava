@@ -3,6 +3,7 @@
  */
 package com.sportradar.unifiedodds.sdk.impl.oddsentities.markets;
 
+import com.sportradar.unifiedodds.sdk.oddsentities.EachWayResult;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeResult;
 import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeSettlement;
 import java.util.List;
@@ -24,6 +25,10 @@ public class OutcomeSettlementsAssert
 
     public OutcomeWithResultBuilder hasWinningOutcome() {
         return new OutcomeWithResultBuilder(OutcomeResult.Won);
+    }
+
+    public OutcomeWithResultBuilder hasOutcome() {
+        return new OutcomeWithResultBuilder();
     }
 
     public OutcomeWithResultBuilder hasLostOutcome() {
@@ -50,13 +55,74 @@ public class OutcomeSettlementsAssert
             this.expectedResult = expectedResult;
         }
 
-        public OutcomeSettlementsAssert withId(String id) {
+        private OutcomeWithResultBuilder() {
+            this.expectedResult = null;
+        }
+
+        public OutcomeSettlementAssertions withId(String id) {
             val foundOutcome = findOutcomeById(id);
 
             Assertions.assertThat(foundOutcome).isNotNull();
-            Assertions.assertThat(foundOutcome.getOutcomeResult()).isEqualTo(expectedResult);
+            if (expectedResult != null) {
+                Assertions.assertThat(foundOutcome.getOutcomeResult()).isEqualTo(expectedResult);
+            }
 
-            return OutcomeSettlementsAssert.this;
+            return new OutcomeSettlementAssertions(foundOutcome);
+        }
+    }
+
+    public class OutcomeSettlementAssertions {
+
+        private final OutcomeSettlement outcome;
+
+        private OutcomeSettlementAssertions(OutcomeSettlement outcome) {
+            this.outcome = outcome;
+        }
+
+        public OutcomeSettlementAssertions withEachWayResult(EachWayResult expectedEachWayResult) {
+            Assertions.assertThat(outcome.getEachWayResult()).isEqualTo(expectedEachWayResult);
+            return this;
+        }
+
+        public OutcomeSettlementAssertions andNoEachWayResult() {
+            Assertions.assertThat(outcome.getEachWayResult()).isNull();
+            return this;
+        }
+
+        public OutcomeSettlementAssertions withEachWayFactor(Double expectedEachWayFactor) {
+            Assertions.assertThat(outcome.getEachWayFactor()).isEqualTo(expectedEachWayFactor);
+            return this;
+        }
+
+        public OutcomeSettlementAssertions andNoEachWayFactor() {
+            Assertions.assertThat(outcome.getEachWayFactor()).isNull();
+            return this;
+        }
+
+        public OutcomeSettlementAssertions withDeadHeatFactorPlace(Double expectedDeadHeatFactorPlace) {
+            Assertions.assertThat(outcome.getDeadHeatFactorPlace()).isEqualTo(expectedDeadHeatFactorPlace);
+            return this;
+        }
+
+        public OutcomeSettlementAssertions andNoDeadHeatFactorPlace() {
+            Assertions.assertThat(outcome.getDeadHeatFactorPlace()).isNull();
+            return this;
+        }
+
+        public OutcomeWithResultBuilder hasWinningOutcome() {
+            return OutcomeSettlementsAssert.this.hasWinningOutcome();
+        }
+
+        public OutcomeWithResultBuilder hasLostOutcome() {
+            return OutcomeSettlementsAssert.this.hasLostOutcome();
+        }
+
+        public OutcomeWithResultBuilder hasUndecidedOutcome() {
+            return OutcomeSettlementsAssert.this.hasUndecidedOutcome();
+        }
+
+        public OutcomeWithResultBuilder hasUnsupportedBySdkOutcome() {
+            return OutcomeSettlementsAssert.this.hasUnsupportedBySdkOutcome();
         }
     }
 }

@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.11.0**
+**4.12.0**
+- Added support for Each-Way settlements. Additional properties `each_way_result`/`each_way_factor`/`dead_heat_factor_place` exposed in bet settlement messages.
+
+**4.11.0 (2026-09-14)**
 - Upgraded httpclient5 to the latest version (5.6.4) to mitigate security vulnerabilities.
 - Upgraded amqp-client (RabbitMQ) to the latest version (5.35.0) to mitigate security vulnerabilities.
 - Added missing default method to `getMessageHeaders` in the `Message` interface

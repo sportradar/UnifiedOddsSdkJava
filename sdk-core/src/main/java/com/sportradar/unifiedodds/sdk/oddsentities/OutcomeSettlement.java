@@ -31,4 +31,31 @@ public interface OutcomeSettlement extends Outcome {
      * @return an indication of the outcome result state
      */
     OutcomeResult getOutcomeResult();
+
+    /**
+     * Returns whether the each-way outcome is settled as a win or a place
+     *
+     * @return the each-way result, or null if not present
+     */
+    default EachWayResult getEachWayResult() {
+        return null;
+    }
+
+    /**
+     * Returns the each-way factor (fraction of win odds used to settle the place part)
+     *
+     * @return the each-way factor, or null if not present
+     */
+    default Double getEachWayFactor() {
+        return null;
+    }
+
+    /**
+     * Returns the dead-heat factor for the place part of an each-way bet
+     *
+     * @return the dead-heat factor for place, or null if not present
+     */
+    default Double getDeadHeatFactorPlace() {
+        return null;
+    }
 }

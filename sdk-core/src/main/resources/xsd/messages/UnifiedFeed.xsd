@@ -528,6 +528,9 @@
           <xs:attribute name="result" type="result" use="required"/>
           <xs:attribute name="void_factor" type="voidFactor"/>
           <xs:attribute name="dead_heat_factor" type="xs:double"/>
+          <xs:attribute name="dead_heat_factor_place" type="xs:double"/>
+          <xs:attribute name="each_way_factor" type="xs:double"/>
+          <xs:attribute name="each_way_result" type="xs:string"/>
         </xs:complexType>
       </xs:element>
     </xs:choice>
@@ -536,6 +539,21 @@
     <xs:attribute name="void_reason" type="xs:int"/>
     <xs:attribute name="result" type="xs:string"/>
   </xs:complexType>
+
+  <xs:simpleType name="eachWayResult">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="place">
+        <xs:annotation>
+          <xs:documentation>PLACE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="winner|place">
+        <xs:annotation>
+          <xs:documentation>WINNER_AND_PLACE</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:simpleType name="voidFactor">
     <xs:restriction base="xs:double">

@@ -6,6 +6,7 @@ package com.sportradar.unifiedodds.sdk.conn;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.UfOddsChangeOutcomeBuilder.activeOutcome;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.UfOddsChangeOutcomeBuilder.outcome;
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfVariantSpecifier.variant;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.AnytimeGoalscorerMarketIds.ANYTIME_GOALSCORER_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ChampionshipFreeTextMarketIds.nflAfcConferenceOutrightsVariant;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.EXACT_GOALS_MARKET_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.FlexScoreMarketIds.*;
@@ -454,6 +455,22 @@ public class UfMarkets {
             return market;
         }
 
+        public static UfBetSettlementMarket anytimeGoalscorerPlayerMarket() {
+            UfBetSettlementMarket market = new UfBetSettlementMarket();
+            market.setId(ANYTIME_GOALSCORER_MARKET_ID);
+
+            populateOutcomeIds(from(AnytimeGoalscorerMarketIds.PLAYER_OUTCOME_IDS), to(market));
+            return market;
+        }
+
+        private static void populateOutcomeIds(List<String> outcomeIds, UfBetSettlementMarket market) {
+            outcomeIds.forEach(id -> {
+                val outcome = new UfBetSettlementMarket.UfOutcome();
+                outcome.setId(id);
+                market.getOutcome().add(outcome);
+            });
+        }
+
         public static class UfBetSettlementOutcomeBuilder {
 
             private final UfBetSettlementMarket.UfOutcome outcome = new UfBetSettlementMarket.UfOutcome();
@@ -481,6 +498,21 @@ public class UfMarkets {
 
             public UfBetSettlementOutcomeBuilder resultUnsupportedBySdk() {
                 outcome.setResult(null);
+                return this;
+            }
+
+            public UfBetSettlementOutcomeBuilder withEachWayResult(String eachWayResult) {
+                outcome.setEachWayResult(eachWayResult);
+                return this;
+            }
+
+            public UfBetSettlementOutcomeBuilder withEachWayFactor(double eachWayFactor) {
+                outcome.setEachWayFactor(eachWayFactor);
+                return this;
+            }
+
+            public UfBetSettlementOutcomeBuilder withDeadHeatFactorPlace(double deadHeatFactorPlace) {
+                outcome.setDeadHeatFactorPlace(deadHeatFactorPlace);
                 return this;
             }
 

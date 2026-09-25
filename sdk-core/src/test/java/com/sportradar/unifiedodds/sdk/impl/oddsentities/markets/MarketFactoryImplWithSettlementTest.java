@@ -10,6 +10,7 @@ import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorPro
 import static com.sportradar.unifiedodds.sdk.caching.markets.MarketDescriptorProviders.providing;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithSettlementOutcomes.*;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.AnytimeGoalscorerMarketIds.PLAYER_OUTCOME_IDS;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OddEvenMarketIds.ODD_OUTCOME_ID;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.OneXtwoMarketIds.*;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
@@ -27,8 +28,10 @@ import static com.sportradar.utils.domain.producers.ProducerIds.PREMIUM_CRICKET_
 import static com.sportradar.utils.domain.producers.ProducerIds.anyProducerId;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sportradar.uf.datamodel.UfEachWayResult;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.entities.SportEvents;
+import com.sportradar.unifiedodds.sdk.oddsentities.EachWayResult;
 import com.sportradar.utils.domain.UniqueObjects;
 import com.sportradar.utils.domain.names.Languages;
 import com.sportradar.utils.domain.producers.ProducerIds;
@@ -39,6 +42,8 @@ import lombok.val;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class MarketFactoryImplWithSettlementTest {
@@ -49,6 +54,9 @@ public class MarketFactoryImplWithSettlementTest {
     public static final String NON_PREMIUM_CRICKET_PRODUCER_IDS_AND_EXCEPTION_HANDLING_STRATEGIES =
         "com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImplWithSettlementTest" +
         "#nonPremiumCricketProducerIdsAndExceptionHandlingStrategies";
+    public static final String EACH_WAY_RESULTS =
+        "com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketFactoryImplWithSettlementTest" +
+        "#eachWayResults";
 
     private static Object[] nonPremiumCricketProducerIdsAndExceptionHandlingStrategies() {
         return Arrays
@@ -64,6 +72,14 @@ public class MarketFactoryImplWithSettlementTest {
 
     private static Object[] exceptionHandlingStrategies() {
         return new Object[][] { { Throw, WILL_THROW_EXCEPTIONS }, { Catch, WILL_CATCH_EXCEPTIONS } };
+    }
+
+    private static Stream<Arguments> eachWayResults() {
+        return Stream.of(
+            Arguments.of(UfEachWayResult.WINNER_PLACE.value(), EachWayResult.WinnerPlace),
+            Arguments.of(UfEachWayResult.PLACE.value(), EachWayResult.Place),
+            Arguments.of("unknown_future_value", EachWayResult.UnsupportedBySdk)
+        );
     }
 
     @Nested
@@ -415,6 +431,60 @@ public class MarketFactoryImplWithSettlementTest {
                 .get();
 
             assertThat(market.getOutcomeSettlements()).hasUnsupportedBySdkOutcome().withId(ODD_OUTCOME_ID);
+        }
+
+        @ParameterizedTest
+        @MethodSource(EACH_WAY_RESULTS)
+        void eachWayAttributesAreReturnedWhenPresent(String given, EachWayResult expected) {
+            val aLanguage = Languages.any();
+            val eachWayFactor = 0.25;
+            val deadHeatFactorPlace = 0.5;
+            val marketFactory = stubbingOutCaches()
+                .with(noMarketDescribingProvider())
+                .withDefaultLanguage(aLanguage)
+                .with(Throw)
+                .build();
+
+            val playerMarket = anytimeGoalscorerPlayerMarket();
+            playerMarket.getOutcome().get(0).setEachWayResult(given);
+            playerMarket.getOutcome().get(0).setEachWayFactor(eachWayFactor);
+            playerMarket.getOutcome().get(0).setDeadHeatFactorPlace(deadHeatFactorPlace);
+
+            val market = marketFactory
+                .buildMarketWithSettlement(SportEvents.any(), playerMarket, anyProducerId())
+                .get();
+
+            assertThat(market.getOutcomeSettlements())
+                .hasOutcome()
+                .withId(PLAYER_OUTCOME_IDS.get(0))
+                .withEachWayResult(expected)
+                .withEachWayFactor(eachWayFactor)
+                .withDeadHeatFactorPlace(deadHeatFactorPlace);
+        }
+
+        @Test
+        void eachWayAttributesAreNullWhenAbsent() {
+            val aLanguage = Languages.any();
+            val marketFactory = stubbingOutCaches()
+                .with(noMarketDescribingProvider())
+                .withDefaultLanguage(aLanguage)
+                .with(Throw)
+                .build();
+
+            val market = marketFactory
+                .buildMarketWithSettlement(
+                    SportEvents.any(),
+                    anytimeGoalscorerPlayerMarket(),
+                    anyProducerId()
+                )
+                .get();
+
+            assertThat(market.getOutcomeSettlements())
+                .hasOutcome()
+                .withId(PLAYER_OUTCOME_IDS.get(0))
+                .andNoEachWayResult()
+                .andNoEachWayFactor()
+                .andNoDeadHeatFactorPlace();
         }
     }
 }
