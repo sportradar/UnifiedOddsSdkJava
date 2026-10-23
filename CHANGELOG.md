@@ -1,6 +1,9 @@
 ### Unified Feed SDK 4.x changelog
 
-**4.12.0**
+**4.13.0**
+- Fixed an issue where usage metrics export could keep running after `UofSdk.close()`, causing duplicate exporters when starting another SDK instance in the same process.
+
+**4.12.0 (2026-09-23)**
 - Added support for Each-Way settlements. Additional properties `each_way_result`/`each_way_factor`/`dead_heat_factor_place` exposed in bet settlement messages.
 
 **4.11.0 (2026-09-14)**

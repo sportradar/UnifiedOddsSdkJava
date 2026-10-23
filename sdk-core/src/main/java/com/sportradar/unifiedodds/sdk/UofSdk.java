@@ -36,6 +36,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.recovery.SingleRecoveryManag
 import com.sportradar.unifiedodds.sdk.managers.*;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportAsDiIsNotTestedAtUnitTestLevel;
+import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import java.io.IOException;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
@@ -605,6 +606,14 @@ public class UofSdk implements AutoCloseable {
             internalCachesProvider.close();
         } catch (Exception ex) {
             logger.warn("Error during close - InternalCachesProvider", ex);
+        }
+        try {
+            SdkMeterProvider usageMeterProvider = injector.getInstance(
+                Key.get(SdkMeterProvider.class, Names.named("UsageMeterProvider"))
+            );
+            usageMeterProvider.close();
+        } catch (Exception ex) {
+            logger.warn("Error during close - UsageMeterProvider", ex);
         }
     }
 
