@@ -95,10 +95,6 @@ public final class SdkSetup {
         return new SdkSetup(Credentials.any(), null, sportsApiBaseUrl, nodeId);
     }
 
-    public static SdkSetup with(BaseUrl sportsApiBaseUrl, int nodeId) {
-        return new SdkSetup(Credentials.any(), null, sportsApiBaseUrl, nodeId);
-    }
-
     public SdkSetup with(ListenerCollectingRawMessages collectingRawMessagesListener) {
         this.rawMessagesListener = Optional.of(collectingRawMessagesListener);
         return this;
