@@ -1,3 +1,7 @@
+com.sportradar.utils
+com.sportradar.utils.thread.sleep
+com.sportradar.utils.jacoco
+com.sportradar.utils.stream.optional
 com.sportradar.unifiedodds.sdk
 com.sportradar.unifiedodds.sdk.exceptions
 com.sportradar.unifiedodds.sdk.extended
