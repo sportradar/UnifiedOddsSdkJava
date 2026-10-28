@@ -31,6 +31,7 @@ import com.sportradar.unifiedodds.sdk.internal.impl.recovery.SingleRecoveryManag
 import com.sportradar.unifiedodds.sdk.managers.*;
 import com.sportradar.utils.Urn;
 import com.sportradar.utils.jacoco.ExcludeFromJacocoGeneratedReportAsDiIsNotTestedAtUnitTestLevel;
+import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import java.io.IOException;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
@@ -574,10 +575,14 @@ public class UofSdk implements AutoCloseable {
         }
 
         try {
-            MetricsRegisterer metricsRegisterer = injector.getInstance(Key.get(MetricsRegisterer.class));
-            metricsRegisterer.close();
+            injector.getInstance(Key.get(MetricsRegisterer.class)).close();
         } catch (Exception ex) {
             logger.warn("Error during close - MetricsRegisterer", ex);
+        }
+        try {
+            injector.getInstance(Key.get(SdkMeterProvider.class, Names.named("UsageMeterProvider"))).close();
+        } catch (Exception ex) {
+            logger.warn("Error during close - UsageMeterProvider", ex);
         }
     }
 

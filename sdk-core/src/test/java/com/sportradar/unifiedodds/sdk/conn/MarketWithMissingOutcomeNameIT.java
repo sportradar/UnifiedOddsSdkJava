@@ -10,11 +10,14 @@ import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.Correct
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.ExactGoals.exactGoalsMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.FreeTextMarketDescription.freeTextMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NascarOutrights.nascarOutrightsMarketDescription;
+import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.NascarOutrights.outcomeDescriptionFor;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OneXtwo.oneXtwoMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiVariantDescriptions.ExactGoals.fivePlusVariantDescription;
 import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.*;
 import static com.sportradar.unifiedodds.sdk.conn.marketids.ExactGoalsMarketIds.fivePlusVariant;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.FREE_TEXT_MARKET_ID;
+import static com.sportradar.unifiedodds.sdk.conn.marketids.FreeTextMarketIds.nascarOutrightsVariant;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
@@ -24,6 +27,7 @@ import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credent
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static java.util.stream.Collectors.toList;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -42,6 +46,7 @@ import com.sportradar.unifiedodds.sdk.entities.markets.OutcomeMappingData;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.OutcomeAssert;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
 import com.sportradar.unifiedodds.sdk.oddsentities.MarketWithOdds;
@@ -51,6 +56,8 @@ import com.sportradar.unifiedodds.sdk.oddsentities.OutcomeOdds;
 import com.sportradar.unifiedodds.sdk.shared.FeedMessageBuilder;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.*;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -80,6 +87,7 @@ import org.junit.jupiter.params.provider.MethodSource;
         "MultipleStringLiterals",
         "OverloadMethodsDeclarationOrder",
         "ParameterAssignment",
+        "VariableDeclarationUsageDistance",
     }
 )
 class MarketWithMissingOutcomeNameIT {
@@ -438,6 +446,234 @@ class MarketWithMissingOutcomeNameIT {
             OutcomeAssert
                 .assertThat(faultyOutcome)
                 .getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void failedSingleVariantCallIsThrottledFor30sForSingleLanguageReturnsInvariantMarketNameKnownIssue(
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+    ) throws IOException, TimeoutException, InitException, InterruptedException {
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(SportEvent.MATCH);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        Locale aLanguage = Locale.ENGLISH;
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+        val outcomeId = nascarOutrightsVariant().outcomeIds().get(0);
+
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubMarketListContaining(freeTextMarketDescription(), aLanguage);
+        apiSimulator.stubSingleVariantMarket(
+            SC_NOT_FOUND,
+            FREE_TEXT_MARKET_ID,
+            nascarOutrightsVariant(),
+            aLanguage
+        );
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(exceptionHandlingStrategy)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            val oddsChangeSentAt = Instant.now();
+            rabbitProducer.send(messages.oddsChange(nascarOutrightsMarket()), routingKeys.liveOddsChange());
+
+            val market = theOnlyMarketIn(listinerWaitingFor.theOnlyOddsChange());
+            val outcome = firstOutcomeOf(market);
+
+            Assertions.assertThat(market.getName(aLanguage)).isEqualTo(freeTextMarketDescription().getName());
+            OutcomeAssert
+                .assertThat(outcome)
+                .nameIsNotBackedByOutcomeDescriptionForDefaultLanguage(
+                    aLanguage,
+                    willFailRespectingSdkStrategy
+                );
+
+            apiSimulator.stubSingleVariantMarket(nascarOutrightsMarketDescription(), aLanguage);
+
+            Assertions
+                .assertThat(Duration.between(oddsChangeSentAt, Instant.now()))
+                .isLessThan(Duration.ofSeconds(30));
+            Assertions.assertThat(market.getName(aLanguage)).isEqualTo(freeTextMarketDescription().getName());
+            OutcomeAssert
+                .assertThat(outcome)
+                .nameIsNotBackedByOutcomeDescriptionForDefaultLanguage(
+                    aLanguage,
+                    willFailRespectingSdkStrategy
+                );
+
+            waitUntilMoreThanHalfMinuteSince(oddsChangeSentAt);
+
+            Assertions
+                .assertThat(Duration.between(oddsChangeSentAt, Instant.now()))
+                .isGreaterThan(Duration.ofSeconds(30));
+            Assertions
+                .assertThat(market.getName(aLanguage))
+                .isEqualTo(nascarOutrightsMarketDescription().getName());
+            Assertions
+                .assertThat(outcome.getName(aLanguage))
+                .isEqualTo(outcomeDescriptionFor(outcomeId).getName());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void deletingCachedVariantDescriptionClearsThrottlingAndRefetchesFromApi(
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+    ) throws IOException, TimeoutException, InitException {
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(SportEvent.MATCH);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        Locale aLanguage = Locale.ENGLISH;
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+        val outcomeId = nascarOutrightsVariant().outcomeIds().get(0);
+
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubMarketListContaining(freeTextMarketDescription(), aLanguage);
+        apiSimulator.stubSingleVariantMarket(
+            nullifyFirstOutcomeName(nascarOutrightsMarketDescription()),
+            aLanguage
+        );
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(exceptionHandlingStrategy)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            rabbitProducer.send(messages.oddsChange(nascarOutrightsMarket()), routingKeys.liveOddsChange());
+
+            val oddsChange = listinerWaitingFor.theOnlyOddsChange();
+            val retrievedAt = Instant.now();
+            val market = theOnlyMarketIn(oddsChange);
+            val faultyOutcome = firstOutcomeOf(market);
+
+            OutcomeAssert
+                .assertThat(faultyOutcome)
+                .getNameForDefault(aLanguage, willFailRespectingSdkStrategy);
+
+            sdk
+                .getMarketDescriptionManager()
+                .deleteVariantMarketDescriptionFromCache(FREE_TEXT_MARKET_ID, nascarOutrightsVariant().id());
+
+            apiSimulator.stubSingleVariantMarket(nascarOutrightsMarketDescription(), aLanguage);
+
+            Assertions
+                .assertThat(Duration.between(retrievedAt, Instant.now()))
+                .isLessThan(Duration.ofSeconds(30));
+            Assertions
+                .assertThat(faultyOutcome.getName(aLanguage))
+                .isEqualTo(outcomeDescriptionFor(outcomeId).getName());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void failedSingleVariantCallIsThrottledPerLanguage(
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+    ) throws IOException, TimeoutException, InitException, InterruptedException {
+        globalVariables.setProducer(ProducerId.LIVE_ODDS);
+        globalVariables.setSportEventUrn(SportEvent.MATCH);
+        globalVariables.setSportUrn(Sport.FOOTBALL);
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        Locale english = Locale.ENGLISH;
+        Locale french = Locale.FRENCH;
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubMarketListContaining(freeTextMarketDescription(), english);
+        apiSimulator.stubMarketListContaining(freeTextMarketDescription(), french);
+        apiSimulator.stubSingleVariantMarket(
+            SC_NOT_FOUND,
+            FREE_TEXT_MARKET_ID,
+            nascarOutrightsVariant(),
+            english
+        );
+        apiSimulator.stubSingleVariantMarket(nascarOutrightsMarketDescription(french), french);
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(exceptionHandlingStrategy)
+                .withDefaultLanguage(english)
+                .withDesiredLanguages(french)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            val oddsChangeSentAt = Instant.now();
+            rabbitProducer.send(messages.oddsChange(nascarOutrightsMarket()), routingKeys.liveOddsChange());
+
+            val market = theOnlyMarketIn(listinerWaitingFor.theOnlyOddsChange());
+
+            Assertions.assertThat(market.getName(english)).isEqualTo(freeTextMarketDescription().getName());
+            Assertions
+                .assertThat(market.getName(french))
+                .isEqualTo(nascarOutrightsMarketDescription(french).getName());
+
+            apiSimulator.stubSingleVariantMarket(nascarOutrightsMarketDescription(english), english);
+
+            // known behavior of SDK: second call does not return Freetext market name but behaves according to exception handling strategy
+            Assertions
+                .assertThat(Duration.between(oddsChangeSentAt, Instant.now()))
+                .isLessThan(Duration.ofSeconds(30));
+            MarketAssert.assertThat(market).getNameForGiven(english, willFailRespectingSdkStrategy);
+            Assertions
+                .assertThat(market.getName(french))
+                .isEqualTo(nascarOutrightsMarketDescription(french).getName());
+
+            waitUntilMoreThanHalfMinuteSince(oddsChangeSentAt);
+
+            Assertions
+                .assertThat(Duration.between(oddsChangeSentAt, Instant.now()))
+                .isGreaterThan(Duration.ofSeconds(30));
+            Assertions
+                .assertThat(market.getName(english))
+                .isEqualTo(nascarOutrightsMarketDescription().getName());
+            Assertions
+                .assertThat(market.getName(french))
+                .isEqualTo(nascarOutrightsMarketDescription(french).getName());
+        }
+    }
+
+    private static void waitUntilMoreThanHalfMinuteSince(Instant since) throws InterruptedException {
+        Duration elapsed = Duration.between(since, Instant.now());
+        Duration remaining = Duration.ofSeconds(35).minus(elapsed);
+        if (!remaining.isNegative() && !remaining.isZero()) {
+            Thread.sleep(remaining.toMillis());
         }
     }
 

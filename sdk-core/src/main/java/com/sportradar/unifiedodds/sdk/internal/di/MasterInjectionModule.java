@@ -59,7 +59,8 @@ public class MasterInjectionModule extends AbstractModule {
 
         install(new GlobalVariablesModule(new ResourceReader()));
         install(new JmxModule());
-        install(new MetricsModule());
+        install(new SdkMetricsModule());
+        install(new UsageMetricsModule());
         install(new DeserializerModule());
         install(new HttpClientModule(configInternal));
         install(new WhoAmIReaderModule(configInternal));

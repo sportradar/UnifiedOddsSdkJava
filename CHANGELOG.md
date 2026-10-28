@@ -1,6 +1,17 @@
 ### Unified Feed SDK 5.x changelog
 
-**5.0.0-rc5**
+**5.0.0 (2026-10-28)** (breaking change)
+- Added private key JWT client authentication through `setClientAuthentication`, as an alternative to access tokens. Client authentication works for Unified Feed API calls, RabbitMQ connections, and Replay server connections with `Environment.ReplayWithIntegrationCredentials` or `Environment.ReplayWithProductionCredentials`. A custom environment can set the authentication host, port, SSL usage, and tenant. See the migration guide for setup.
+- Added a dependency on `com.auth0:java-jwt` 4.6.1 for client authentication.
+- When client authentication is used, a Unified Feed API call is retried once if the response status is 401 (Unauthorized).
+- Removed `EnvironmentSelector.selectReplay()` and the `Environment.Replay` and `Environment.GlobalReplay` constants (breaking change). Use `Environment.ReplayWithIntegrationCredentials` or `Environment.ReplayWithProductionCredentials`. The SDK no longer detects whether credentials belong to integration or production.
+- Replaced `CustomConfigurationBuilder.setMessagingUsername` and `setMessagingPassword` with `setMessagingCredentials(String username, String password)` (breaking change).
+- Removed the default implementations of `Message.getMessageHeaders()`, `OutcomeSettlement.getEachWayResult()`, `OutcomeSettlement.getEachWayFactor()`, and `OutcomeSettlement.getDeadHeatFactorPlace()` (breaking change). Custom implementations of these interfaces must implement the methods.
+- When bookmaker details (`whoami`) cannot be loaded, the SDK checks only the configured environment.
+- Messaging username and password are obfuscated in the logged configuration.
+- Upgraded the RabbitMQ client to 5.37.0 and other SDK dependencies to the latest supported versions, including Jackson databind 2.22.3.
+
+**5.0.0-rc5 (2026-08-07)**
 - Added PreBuilt Bets support: CustomBetManager now allows retrieving available prebuilt bets for an event and obtaining prebuilt bet selections based on event recommendations.
 - Added OR-selections support to CustomBetManager: multiple selections can now be combined with OR logic when building custom bet calculate requests.
 - Extended feed messages with getMessageHeaders() method to expose raw AMQP message headers on all feed message types.
@@ -26,7 +37,15 @@
  - Introduced ClientAuthentication configuration as a more secure and recommended alternative to access tokens.
  - Added a dependency to com.auth0:java-jvt:4.5.0 to support Common IAM authentication.
 
-**4.11.0**
+**4.13.0 (2026-10-23)**
+- Fixed an issue where usage metrics export could keep running after `UofSdk.close()`, causing duplicate exporters when starting another SDK instance in the same process.
+
+**4.12.0 (2026-09-23)**
+- Added support for Each-Way settlements. Additional properties `each_way_result`/`each_way_factor`/`dead_heat_factor_place` exposed in bet settlement messages.
+
+**4.11.0 (2026-09-14)**
+- Upgraded httpclient5 to the latest version (5.6.4) to mitigate security vulnerabilities.
+- Upgraded amqp-client (RabbitMQ) to the latest version (5.35.0) to mitigate security vulnerabilities.
 - Added missing default method to `getMessageHeaders` in the `Message` interface
 
 **4.10.0 (2026-06-01)**

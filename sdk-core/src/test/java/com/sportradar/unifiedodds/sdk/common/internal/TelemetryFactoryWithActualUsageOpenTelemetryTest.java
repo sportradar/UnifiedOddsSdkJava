@@ -13,6 +13,7 @@ import static com.sportradar.unifiedodds.sdk.internal.common.telemetry.Telemetry
 import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.providingBearerToken;
 import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.with;
 import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.awaitility.Awaitility.await;
 
@@ -73,7 +74,8 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .createFromDi()
             .withVersion("2.0.1")
             .withConfiguration(configuration)
-            .build();
+            .build()
+            .telemetryFactory();
 
         factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()));
 
@@ -109,7 +111,8 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .createFromDi()
             .withVersion("2.0.1")
             .withConfiguration(configuration)
-            .build();
+            .build()
+            .telemetryFactory();
 
         String environmentName = configuration.getEnvironment().name().toLowerCase();
         try (val g = factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))) {
@@ -148,7 +151,8 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .withVersion("2.0.1")
             .withConfiguration(configuration)
             .withOAuth2TokenCache(commonIamTokenCache)
-            .build();
+            .build()
+            .telemetryFactory();
 
         String environmentName = configuration.getEnvironment().name().toLowerCase();
         try (val g = factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))) {
@@ -192,7 +196,8 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .withVersion("2.0.1")
             .withConfiguration(configuration)
             .withOAuth2TokenCache(commonIamTokenCache)
-            .build();
+            .build()
+            .telemetryFactory();
 
         try (val g = factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))) {
             awaitIgnoringExceptions()
@@ -247,7 +252,8 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .createFromDi()
             .withVersion("2.0.1")
             .withConfiguration(configuration)
-            .build();
+            .build()
+            .telemetryFactory();
 
         factory.gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()));
 
@@ -277,6 +283,104 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
     }
 
     @Test
+    void stopsPeriodicUsageExportAfterUsageMeterProviderIsClosed() throws Exception {
+        val configuration = uofConfigurationForUsageTelemetry()
+            .withAccessToken("access-token")
+            .withEnvironment(Environment.Integration)
+            .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(12))
+            .withUsageConfiguration(
+                usageConfigurationForUsageTelemetry()
+                    .withExportEnabled(true)
+                    .withExportIntervalInSec((int) EXPORT_INTERVAL.getSeconds())
+                    .withExportTimeoutInSec((int) EXPORT_TIMEOUT.getSeconds())
+                    .withHost(usageServiceMetricsApiUrl)
+                    .build()
+            )
+            .build();
+
+        val usageTelemetry = UsageTelemetryFactories
+            .createFromDi()
+            .withVersion("2.0.1")
+            .withConfiguration(configuration)
+            .build();
+
+        String environmentName = configuration.getEnvironment().name().toLowerCase();
+        try (
+            val g = usageTelemetry
+                .telemetryFactory()
+                .gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()))
+        ) {
+            await()
+                .atMost(Duration.of(5, ChronoUnit.SECONDS))
+                .with()
+                .pollInterval(Duration.ofSeconds(1))
+                .ignoreExceptions()
+                .until(openTelemetryExportHappened(with(environmentName)));
+        }
+
+        int requestCountBeforeClose = metricsExportRequestCount();
+        usageTelemetry.usageMeterProvider().close();
+
+        await()
+            .atMost(Duration.ofMillis(500))
+            .pollInterval(Duration.ofMillis(50))
+            .until(() -> metricsExportRequestCount() >= requestCountBeforeClose);
+
+        int requestCountAfterCloseFlush = metricsExportRequestCount();
+
+        await()
+            .atMost(Duration.of(4, ChronoUnit.SECONDS))
+            .pollInterval(EXPORT_INTERVAL)
+            .untilAsserted(() ->
+                assertThat(metricsExportRequestCount()).isEqualTo(requestCountAfterCloseFlush)
+            );
+    }
+
+    @Test
+    void doesNotRetryFailedUsageExport() {
+        int exportIntervalInSec = 8;
+        val configuration = uofConfigurationForUsageTelemetry()
+            .withAccessToken("access-token")
+            .withEnvironment(Environment.Integration)
+            .withNodeId(1)
+            .withBookmakerDetails(bookmakerDetailsWithBookmakerId(12))
+            .withUsageConfiguration(
+                usageConfigurationForUsageTelemetry()
+                    .withExportEnabled(true)
+                    .withExportIntervalInSec(exportIntervalInSec)
+                    .withExportTimeoutInSec((int) EXPORT_TIMEOUT.getSeconds())
+                    .withHost(usageServiceMetricsApiUrl)
+                    .build()
+            )
+            .build();
+
+        wireMock.stubFor(post("/v1/metrics").willReturn(aResponse().withStatus(503)));
+
+        val usageTelemetry = UsageTelemetryFactories
+            .createFromDi()
+            .withVersion("2.0.1")
+            .withConfiguration(configuration)
+            .build();
+
+        usageTelemetry.telemetryFactory().gauge(UsageGauge.PRODUCER_STATUS, () -> gaugeValue(1L, emptyMap()));
+
+        await()
+            .atMost(Duration.ofSeconds(12))
+            .pollInterval(Duration.ofMillis(200))
+            .ignoreExceptions()
+            .until(() -> metricsExportRequestCount() >= 1);
+
+        await()
+            .during(Duration.ofSeconds(3))
+            .atMost(Duration.ofSeconds(4))
+            .pollInterval(Duration.ofMillis(200))
+            .untilAsserted(() -> assertThat(metricsExportRequestCount()).isEqualTo(1));
+
+        usageTelemetry.usageMeterProvider().close();
+    }
+
+    @Test
     void usageExportTimesOutAfterConfiguredTime() throws Exception {
         val configuration = uofConfigurationForUsageTelemetry()
             .withAccessToken("access-token")
@@ -297,7 +401,8 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
             .createFromDi()
             .withVersion("2.0.1")
             .withConfiguration(configuration)
-            .build();
+            .build()
+            .telemetryFactory();
 
         wireMock.stubFor(
             post("/v1/metrics")
@@ -315,6 +420,10 @@ class TelemetryFactoryWithActualUsageOpenTelemetryTest {
                 wireMock.verify(moreThanOrExactly(2), postRequestedFor(WireMock.urlEqualTo("/v1/metrics")));
                 return true;
             });
+    }
+
+    private int metricsExportRequestCount() {
+        return wireMock.findAll(postRequestedFor(WireMock.urlEqualTo("/v1/metrics"))).size();
     }
 
     private static Callable<Boolean> openTelemetryExportHappened(String environmentName) {

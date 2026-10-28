@@ -14,10 +14,13 @@ import static com.sportradar.unifiedodds.sdk.conn.UfMarkets.WithOdds.playerToStr
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfAppearanceNrSpecifier.appearanceNr;
 import static com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfPlayerSpecifier.player;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_CATCH_EXCEPTIONS;
+import static com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy.WILL_THROW_EXCEPTIONS;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
 import static com.sportradar.utils.domain.names.LanguageHolder.in;
 import static com.sportradar.utils.domain.names.TranslationHolder.with;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
@@ -26,9 +29,12 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.uf.sportsapi.datamodel.DescMarket;
 import com.sportradar.uf.sportsapi.datamodel.SapiPlayerExtended;
+import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.conn.SapiPlayerProfiles.Mlb;
 import com.sportradar.unifiedodds.sdk.conn.UfSpecifiers.UfAppearanceNrSpecifier;
+import com.sportradar.unifiedodds.sdk.exceptions.ObjectNotFoundException;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
+import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.ExpectationTowardsSdkErrorHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.MarketAssert;
 import com.sportradar.unifiedodds.sdk.impl.oddsentities.markets.Ordinals;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
@@ -185,6 +191,86 @@ public class MarketWithPlayerProfileMarketNameIT {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("exceptionHandlingStrategies")
+    void uponFailedPlayerProfileCallFetchingMarketNameRespectsExceptionHandlingStrategy(
+        ExceptionHandlingStrategy exceptionHandlingStrategy,
+        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+    ) throws Exception {
+        globalVariables.setProducer(LIVE_ODDS);
+        globalVariables.setSportEventUrn(MLB_HOUSTON_ASTROS_LOS_ANGELES_ANGELS_2024);
+        globalVariables.setSportUrn(BASEBALL);
+        FeedMessageBuilder messages = new FeedMessageBuilder(globalVariables);
+        Locale aLanguage = Locale.ENGLISH;
+        RoutingKeys routingKeys = new RoutingKeys(globalVariables);
+        SapiPlayerExtended player = Mlb.victorCaratiniProfile();
+
+        apiSimulator.defineBookmaker();
+        apiSimulator.activateOnlyLiveProducer();
+        apiSimulator.stubMarketListContaining(
+            playerToStrikeOutAppearanceTimeAtBatMarketDescription(aLanguage),
+            aLanguage
+        );
+        apiSimulator.stubMatchSummary(aLanguage, mlbHoustonAstrosLosAngelesAngels2024());
+        apiSimulator.stubPlayerProfileNotFound(aLanguage, withIdFrom(player));
+
+        try (
+            val rabbitProducer = connectDeclaringExchange(
+                exchangeLocation,
+                adminCredentials,
+                factory,
+                new TimeUtilsImpl()
+            );
+            val sdk = SdkSetup
+                .with(sdkCredentials, RABBIT_BASE_URL, sportsApiBaseUrl, globalVariables.getNodeId())
+                .with(ListenerCollectingMessages.to(messagesStorage))
+                .with(exceptionHandlingStrategy)
+                .withDefaultLanguage(aLanguage)
+                .with1Session()
+                .withOpenedFeed()
+        ) {
+            rabbitProducer.send(
+                messages.oddsChange(
+                    playerToStrikeOutAppearanceTimeAtBatMarket(appearanceNr(1), player(withIdFrom(player)))
+                ),
+                routingKeys.liveOddsChange()
+            );
+
+            val market = theOnlyMarketIn(listenerWaitingFor.theOnlyOddsChange());
+
+            getNameForGiven(market, aLanguage, willFailRespectingSdkStrategy);
+            getNamesForGiven(market, aLanguage, willFailRespectingSdkStrategy);
+        }
+    }
+
+    private void getNameForGiven(
+        MarketWithOdds market,
+        Locale aLanguage,
+        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+    ) {
+        if (willFailRespectingSdkStrategy == WILL_THROW_EXCEPTIONS) {
+            resultsInObjectNotFoundWhen(() -> market.getName(aLanguage));
+        } else {
+            Assertions.assertThat(market.getName(aLanguage)).isNull();
+        }
+    }
+
+    private void getNamesForGiven(
+        MarketWithOdds market,
+        Locale aLanguage,
+        ExpectationTowardsSdkErrorHandlingStrategy willFailRespectingSdkStrategy
+    ) {
+        if (willFailRespectingSdkStrategy == WILL_THROW_EXCEPTIONS) {
+            resultsInObjectNotFoundWhen(() -> market.getNames(singletonList(aLanguage)));
+        } else {
+            Assertions.assertThat(market.getNames(singletonList(aLanguage))).containsEntry(aLanguage, null);
+        }
+    }
+
+    private void resultsInObjectNotFoundWhen(Runnable runnable) {
+        Assertions.assertThatThrownBy(runnable::run).isInstanceOf(ObjectNotFoundException.class);
+    }
+
     private static Urn withIdFrom(SapiPlayerExtended player) {
         return Urn.parse(player.getId());
     }
@@ -215,6 +301,13 @@ public class MarketWithPlayerProfileMarketNameIT {
     ) {
         Assertions.assertThat(oddsChange.getMarkets()).hasSize(1);
         return oddsChange.getMarkets().get(0);
+    }
+
+    private static Object[] exceptionHandlingStrategies() {
+        return new Object[][] {
+            { Throw, WILL_THROW_EXCEPTIONS },
+            { ExceptionHandlingStrategy.Catch, WILL_CATCH_EXCEPTIONS },
+        };
     }
 
     static Stream<Arguments> appearanceAndPlayer() {

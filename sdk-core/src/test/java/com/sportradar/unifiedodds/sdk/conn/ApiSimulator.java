@@ -974,6 +974,14 @@ public class ApiSimulator {
         );
     }
 
+    public void stubPlayerProfileNotFound(Locale language, Urn id) {
+        stub(
+            HttpStatus.SC_NOT_FOUND,
+            format("/v1/sports/%s/players/%s/profile.xml", language.getLanguage(), id),
+            sapiNotFoundResponse()
+        );
+    }
+
     public void stubSportCategories(Locale langA, Sport sport, SapiCategory category) {
         Urn sportUrn = sport.getUrn();
         val categories = createCategories(sportUrn, category, sport.name());

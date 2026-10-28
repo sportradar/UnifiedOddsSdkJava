@@ -23,11 +23,11 @@ import static com.sportradar.utils.time.TimeInterval.seconds;
 import static java.time.Duration.ofSeconds;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static org.assertj.core.api.Assertions.*;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.Level;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.sportradar.unifiedodds.sdk.LoggerDefinitions;
@@ -690,11 +690,13 @@ class CommonIamTokenCacheTest {
         CommonIamTokenCache tokenCache = createCommonIamTokenCache()
             .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
             .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
             .build();
 
         assertThatThrownBy(tokenCache::getToken)
             .isInstanceOf(OAuth2TokenRetrievalException.class)
-            .hasMessageContaining("Failed to retrieve OAuth token");
+            .hasMessageContaining("Failed to retrieve OAuth token")
+            .hasRootCauseMessage("Common IAM dit not return access_token value");
     }
 
     @Test
@@ -703,11 +705,13 @@ class CommonIamTokenCacheTest {
         CommonIamTokenCache tokenCache = createCommonIamTokenCache()
             .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
             .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
             .build();
 
         assertThatThrownBy(tokenCache::getToken)
             .isInstanceOf(OAuth2TokenRetrievalException.class)
-            .hasMessageContaining("Failed to retrieve OAuth token");
+            .hasMessageContaining("Failed to retrieve OAuth token")
+            .hasRootCauseExactlyInstanceOf(MismatchedInputException.class);
     }
 
     @Test
@@ -716,11 +720,13 @@ class CommonIamTokenCacheTest {
         CommonIamTokenCache tokenCache = createCommonIamTokenCache()
             .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
             .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
             .build();
 
         assertThatThrownBy(tokenCache::getToken)
             .isInstanceOf(OAuth2TokenRetrievalException.class)
-            .hasMessageContaining("Failed to retrieve OAuth token");
+            .hasMessageContaining("Failed to retrieve OAuth token")
+            .hasRootCauseMessage("Common IAM did not return expires_in value");
     }
 
     @Test
@@ -729,11 +735,13 @@ class CommonIamTokenCacheTest {
         CommonIamTokenCache tokenCache = createCommonIamTokenCache()
             .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
             .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
             .build();
 
         assertThatThrownBy(tokenCache::getToken)
             .isInstanceOf(OAuth2TokenRetrievalException.class)
-            .hasMessageContaining("Failed to retrieve OAuth token");
+            .hasMessageContaining("Failed to retrieve OAuth token")
+            .hasRootCauseExactlyInstanceOf(MismatchedInputException.class);
     }
 
     @Test
@@ -742,11 +750,13 @@ class CommonIamTokenCacheTest {
         CommonIamTokenCache tokenCache = createCommonIamTokenCache()
             .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
             .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
             .build();
 
         assertThatThrownBy(tokenCache::getToken)
             .isInstanceOf(OAuth2TokenRetrievalException.class)
-            .hasMessageContaining("Failed to retrieve OAuth token");
+            .hasMessageContaining("Failed to retrieve OAuth token")
+            .hasRootCauseMessage("Common IAM did not return token_type value");
     }
 
     @Test
@@ -755,11 +765,13 @@ class CommonIamTokenCacheTest {
         CommonIamTokenCache tokenCache = createCommonIamTokenCache()
             .with(uofConfigWith1sFastFailingTimeoutAndOAuthOn(apiBaseUrl.get()))
             .with(internalConfigWith1sTimeoutAndMax1Connection())
+            .withResourceAudience(UF_REST_API)
             .build();
 
         assertThatThrownBy(tokenCache::getToken)
             .isInstanceOf(OAuth2TokenRetrievalException.class)
-            .hasMessageContaining("Failed to retrieve OAuth token");
+            .hasMessageContaining("Failed to retrieve OAuth token")
+            .hasRootCauseExactlyInstanceOf(MismatchedInputException.class);
     }
 
     @Test

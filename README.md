@@ -25,8 +25,9 @@ MyUofListener listener = new MyUofListener();
 MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
 // Configure the SDK with your access token
-UofConfiguration config = UofSdk.getConfigurationBuilder()
+UofConfiguration config = UofSdk.getUofConfigurationBuilder()
     .setAccessToken("your-token")
+    .selectEnvironment(Environment.Integration)
     .build();
 
 // Initialize the SDK
@@ -89,8 +90,9 @@ For optimal performance, consider separating high-priority and low-priority mess
 MyUofListener listener = new MyUofListener();
 MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
-UofConfiguration config = UofSdk.getConfigurationBuilder()
+UofConfiguration config = UofSdk.getUofConfigurationBuilder()
     .setAccessToken("your-token")
+    .selectEnvironment(Environment.Integration)
     .build();
 
 UofSdk uofSdk = new UofSdk(globalEventsListener, config);
@@ -134,10 +136,11 @@ sessionBuilder.setListener(listener)
 The SDK provides English content by default. Customize language preferences using [UofConfigurationBuilder](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html):
 
 ```java
-UofConfiguration config = UofSdk.getConfigurationBuilder()
+UofConfiguration config = UofSdk.getUofConfigurationBuilder()
     .setAccessToken("your-token")
-    .setDefaultLocale(Locale.GERMAN)
-    .addDesiredLocales(Arrays.asList(Locale.FRENCH, Locale.SPANISH))
+    .selectEnvironment(Environment.Integration)
+    .setDefaultLanguage(Locale.GERMAN)
+    .setDesiredLanguages(Arrays.asList(Locale.FRENCH, Locale.SPANISH))
     .build();
 ```
 
@@ -177,7 +180,7 @@ Calendar cal = Calendar.getInstance();
 cal.add(Calendar.DATE, -2);
 
 ProducerManager producerManager = uofSdk.getProducerManager();
-producerManager.setProducerLastMessageTimestamp(1, cal.getTime().getTime());
+producerManager.setProducerRecoveryFromTimestamp(1, cal.getTime().getTime());
 
 // Configure sessions...
 

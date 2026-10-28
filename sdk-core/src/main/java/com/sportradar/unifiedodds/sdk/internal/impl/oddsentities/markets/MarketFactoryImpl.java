@@ -27,7 +27,6 @@ import com.sportradar.unifiedodds.sdk.internal.impl.markets.NameProviderFactory;
 import com.sportradar.unifiedodds.sdk.oddsentities.*;
 import com.sportradar.utils.Urn;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -563,7 +562,10 @@ public class MarketFactoryImpl implements MarketFactory {
                 defaultLocale,
                 o.getResult(),
                 o.getVoidFactor(),
-                o.getDeadHeatFactor()
+                o.getDeadHeatFactor(),
+                o.getEachWayResult(),
+                o.getEachWayFactor(),
+                o.getDeadHeatFactorPlace()
             );
 
             builtOutcomes.add(outcomeSettlement);

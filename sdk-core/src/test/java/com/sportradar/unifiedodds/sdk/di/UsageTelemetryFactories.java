@@ -14,9 +14,10 @@ import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory;
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryImpl;
 import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
-import com.sportradar.unifiedodds.sdk.internal.di.MetricsModule;
+import com.sportradar.unifiedodds.sdk.internal.di.UsageMetricsModule;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtils;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import lombok.val;
 
 public class UsageTelemetryFactories {
@@ -50,14 +51,15 @@ public class UsageTelemetryFactories {
             return this;
         }
 
-        public TelemetryFactory build() {
+        public UsageTelemetryFromDi build() {
             val injector = Guice.createInjector(
                 moduleWithBoundSdkVersionUofConfigurationAndTokenCache(),
-                new MetricsModule()
+                new UsageMetricsModule()
             );
 
-            return injector.getInstance(
-                Key.get(TelemetryFactory.class, Names.named("UsageTelemetryFactory"))
+            return new UsageTelemetryFromDi(
+                injector.getInstance(Key.get(TelemetryFactory.class, Names.named("UsageTelemetryFactory"))),
+                injector.getInstance(Key.get(SdkMeterProvider.class, Names.named("UsageMeterProvider")))
             );
         }
 
@@ -72,6 +74,25 @@ public class UsageTelemetryFactories {
                         .toInstance(ofNullable(oAuth2TokenCache).orElse(mock(OAuth2TokenCache.class)));
                 }
             };
+        }
+    }
+
+    public static final class UsageTelemetryFromDi {
+
+        private final TelemetryFactory telemetryFactory;
+        private final SdkMeterProvider usageMeterProvider;
+
+        UsageTelemetryFromDi(TelemetryFactory telemetryFactory, SdkMeterProvider usageMeterProvider) {
+            this.telemetryFactory = telemetryFactory;
+            this.usageMeterProvider = usageMeterProvider;
+        }
+
+        public TelemetryFactory telemetryFactory() {
+            return telemetryFactory;
+        }
+
+        public SdkMeterProvider usageMeterProvider() {
+            return usageMeterProvider;
         }
     }
 

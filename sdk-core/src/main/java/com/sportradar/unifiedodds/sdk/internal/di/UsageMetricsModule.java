@@ -17,7 +17,6 @@ import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryFactory
 import com.sportradar.unifiedodds.sdk.internal.common.telemetry.TelemetryImpl;
 import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.TimeUtilsImpl;
-import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.exporter.otlp.http.metrics.OtlpHttpMetricExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -31,66 +30,23 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @SuppressWarnings("ClassFanOutComplexity")
-public class MetricsModule implements Module {
+public class UsageMetricsModule implements Module {
 
     @Override
     public void configure(Binder binder) {
         // nothing needed here
     }
 
-    /**
-     * Returns the TelemetryFactory object used by the SDK to publish internal metrics (to GlobalOpenTelemetry)
-     *
-     * @return the TelemetryFactory object used by the SDK to publish internal metrics (to GlobalOpenTelemetry)
-     */
     @Provides
     @Singleton
-    @Named("InternalSdkTelemetryFactory")
-    private TelemetryFactory provideInternalSdkTelemetryFactory(@Named("version") String sdkVersion) {
-        String instrumentationScopeName = "UofSdk-Java";
-        TelemetryImpl uofSdkTelemetry = new TelemetryImpl(
-            GlobalOpenTelemetry.get(),
-            instrumentationScopeName,
-            sdkVersion
-        );
-        return new TelemetryFactory(uofSdkTelemetry, new TimeUtilsImpl());
-    }
-
-    /**
-     * Returns the TelemetryFactory object used by the SDK to publish Usage Metrics to Usage Service
-     *
-     * @return the TelemetryFactory object used by the SDK to publish Usage Metrics to Usage Service
-     */
-    @Provides
-    @Singleton
-    @Named("UsageTelemetryFactory")
-    private TelemetryFactory provideUsageTelemetryFactory(
+    @Named("UsageMeterProvider")
+    private SdkMeterProvider provideUsageMeterProvider(
         UofConfiguration configuration,
         @Named("OAuth2TokenCacheForApiCalls") OAuth2TokenCache oAuth2TokenCache,
         @Named("version") String sdkVersion
     ) {
-        String instrumentationScopeName = "UofSdk-Java";
-
-        OpenTelemetry usageOpenTelemetry = createUsageOpenTelemetry(
-            configuration,
-            sdkVersion,
-            oAuth2TokenCache
-        );
-        TelemetryImpl uofSdkTelemetry = new TelemetryImpl(
-            usageOpenTelemetry,
-            instrumentationScopeName,
-            sdkVersion
-        );
-        return new TelemetryFactory(uofSdkTelemetry, new TimeUtilsImpl());
-    }
-
-    public OpenTelemetry createUsageOpenTelemetry(
-        UofConfiguration configuration,
-        String sdkVersion,
-        OAuth2TokenCache tokenCache
-    ) {
         if (!configuration.getUsage().isExportEnabled()) {
-            return OpenTelemetry.noop();
+            return SdkMeterProvider.builder().build();
         }
         String usageServiceEndpointUrl = configuration.getUsage().getHost() + "/v1/metrics";
         String environmentName = configuration.getEnvironment().name().toLowerCase(Locale.getDefault());
@@ -103,9 +59,10 @@ public class MetricsModule implements Module {
             .addHeader("x-environment", environmentName)
             .addHeader("x-node-id", configuration.getNodeId().toString())
             .addHeader("x-sdk-version", sdkVersion)
-            .setHeaders(getAccessTokenHeaderSupplier(configuration, tokenCache))
+            .setHeaders(getAccessTokenHeaderSupplier(configuration, oAuth2TokenCache))
             .setAggregationTemporalitySelector(AggregationTemporalitySelector.deltaPreferred())
             .setTimeout(configuration.getUsage().getExportTimeoutInSec(), SECONDS)
+            .setRetryPolicy(null)
             .build();
 
         Resource resource = Resource
@@ -129,12 +86,44 @@ public class MetricsModule implements Module {
             .setInterval(configuration.getUsage().getExportIntervalInSec(), SECONDS)
             .build();
 
-        SdkMeterProvider meterProvider = SdkMeterProvider
+        return SdkMeterProvider
             .builder()
             .setResource(resource)
             .registerMetricReader(periodicMetricReader)
             .build();
+    }
 
+    /**
+     * Returns the TelemetryFactory object used by the SDK to publish Usage Metrics to Usage Service
+     *
+     * @return the TelemetryFactory object used by the SDK to publish Usage Metrics to Usage Service
+     */
+    @Provides
+    @Singleton
+    @Named("UsageTelemetryFactory")
+    private TelemetryFactory provideUsageTelemetryFactory(
+        UofConfiguration configuration,
+        @Named("version") String sdkVersion,
+        @Named("UsageMeterProvider") SdkMeterProvider usageMeterProvider
+    ) {
+        String instrumentationScopeName = "UofSdk-Java";
+
+        OpenTelemetry usageOpenTelemetry = createUsageOpenTelemetry(configuration, usageMeterProvider);
+        TelemetryImpl uofSdkTelemetry = new TelemetryImpl(
+            usageOpenTelemetry,
+            instrumentationScopeName,
+            sdkVersion
+        );
+        return new TelemetryFactory(uofSdkTelemetry, new TimeUtilsImpl());
+    }
+
+    public OpenTelemetry createUsageOpenTelemetry(
+        UofConfiguration configuration,
+        SdkMeterProvider meterProvider
+    ) {
+        if (!configuration.getUsage().isExportEnabled()) {
+            return OpenTelemetry.noop();
+        }
         return OpenTelemetrySdk.builder().setMeterProvider(meterProvider).build();
     }
 
