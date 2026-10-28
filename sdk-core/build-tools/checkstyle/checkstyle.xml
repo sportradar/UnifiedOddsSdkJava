@@ -77,6 +77,10 @@
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
+        <property name="files" value="CommonIamTokenCacheTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
         <property name="files" value="MdcScheduledExecutorService.java"/>
     </module>
     <module name="SuppressionSingleFilter">
@@ -370,6 +374,10 @@
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
         <property name="files" value="SportEventCacheMatchSummaryTest.java"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="FileLength"/>
+        <property name="files" value="RabbitClientCredentialsTest.java"/>
     </module>
     <module name="SuppressionSingleFilter">
         <property name="checks" value="FileLength"/>
@@ -1717,7 +1725,7 @@
         <module name="SuppressWarningsHolder"/>
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="0"/>
-            <property name="allowedAbbreviations" value="I,IT"/>
+            <property name="allowedAbbreviations" value="I,IT,O"/>
         </module>
         <module name="AnnotationLocation"/>
         <module name="AnonInnerLength"/>

@@ -22,7 +22,6 @@ public class SdkInternalConfigurationStubs {
     @SuppressWarnings("HiddenField")
     public static class Builder {
 
-        private ProvidedValue<String> accessToken;
         private ProvidedValue<Locale> defaultLocale;
         private ProvidedValue<List<Locale>> desiredLocales;
         private ProvidedValue<String> messagingHost;
@@ -52,11 +51,6 @@ public class SdkInternalConfigurationStubs {
         private ProvidedValue<List<Integer>> disabledProducers;
         private ProvidedValue<Set<String>> schedulerTasksToSkip;
         private ProvidedValue<Long> fastHttpClientTimeout;
-
-        public Builder withAccessToken(String accessToken) {
-            this.accessToken = new ProvidedValue<>(accessToken);
-            return this;
-        }
 
         public Builder withDefaultLocale(Locale defaultLocale) {
             this.defaultLocale = new ProvidedValue<>(defaultLocale);
@@ -222,10 +216,6 @@ public class SdkInternalConfigurationStubs {
                     );
                 }
             );
-
-            if (accessToken != null) {
-                doReturn(accessToken.get()).when(mock).getAccessToken();
-            }
 
             if (defaultLocale != null) {
                 doReturn(defaultLocale.get()).when(mock).getDefaultLocale();

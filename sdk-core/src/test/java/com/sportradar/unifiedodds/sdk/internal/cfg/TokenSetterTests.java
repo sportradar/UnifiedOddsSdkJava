@@ -126,7 +126,7 @@ public class TokenSetterTests extends ConfigurationBuilderSetup {
 
     @Test
     public void environmentFromPropertiesCanBeOverridden() {
-        Environment selectedEnvironment = Environment.Replay;
+        Environment selectedEnvironment = Environment.Production;
         Assert.assertEquals(Environment.Integration, basePropertiesReader.readEnvironment());
         UofConfiguration config = getTokenSetter(baseSection)
             .setAccessTokenFromSdkProperties()

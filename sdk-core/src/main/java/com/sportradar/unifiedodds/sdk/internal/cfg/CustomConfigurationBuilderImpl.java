@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofClientAuthenticationImpl.PrivateKeyJwtImpl;
 
 /**
  * A basic implementation of the {@link CustomConfigurationBuilder}
@@ -82,6 +83,60 @@ class CustomConfigurationBuilderImpl
         return this;
     }
 
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationHost(String host) {
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(host),
+            "Client Authentication Host can not be null/empty"
+        );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication host"
+        );
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setHost(host);
+        return this;
+    }
+
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationTenant(String tenant) {
+        Preconditions.checkArgument(
+            tenant != null && !Strings.isNullOrEmpty(tenant.trim()),
+            "Client Authentication tenant can not be null/empty"
+        );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication tenant"
+        );
+
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setTenant(tenant);
+        return this;
+    }
+
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationPort(int port) {
+        Preconditions.checkArgument(port > 0, "Client Authentication Port must be greater than 0");
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication port"
+        );
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setPort(port);
+        return this;
+    }
+
+    @Override
+    public CustomConfigurationBuilder setClientAuthenticationUseSsl(boolean useSsl) {
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() != null,
+            "Client authentication must be set up in order to set authentication ssl usage setting"
+        );
+        PrivateKeyJwtImpl clientAuthentication = (PrivateKeyJwtImpl) configuration.getClientAuthentication();
+        clientAuthentication.setUseSsl(useSsl);
+        return this;
+    }
+
     /**
      * Sets the host name of the AMQP server
      *
@@ -111,30 +166,16 @@ class CustomConfigurationBuilderImpl
     }
 
     /**
-     * Sets the username used to authenticate with the messaging server
+     * Sets the username and password used to authenticate with the messaging server
      *
      * @param username the username used to authenticate with the messaging server
-     * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
-     */
-    @Override
-    public CustomConfigurationBuilder setMessagingUsername(String username) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(username));
-        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
-        rabbitConfiguration.setUsername(username);
-        return this;
-    }
-
-    /**
-     * Sets the password used to authenticate with the messaging server
-     *
      * @param password the password used to authenticate with the messaging server
      * @return the {@link CustomConfigurationBuilder} instance used to set custom config values
      */
     @Override
-    public CustomConfigurationBuilder setMessagingPassword(String password) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(password));
-        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
-        rabbitConfiguration.setPassword(password);
+    public CustomConfigurationBuilder setMessagingCredentials(String username, String password) {
+        setMessagingUsername(username);
+        setMessagingPassword(password);
         return this;
     }
 
@@ -179,5 +220,23 @@ class CustomConfigurationBuilderImpl
         configuration.acquireBookmakerDetailsAndProducerData();
 
         return configuration;
+    }
+
+    private void setMessagingUsername(String username) {
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(username),
+            "messaging username cannot be null or not empty"
+        );
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setUsername(username);
+    }
+
+    private void setMessagingPassword(String password) {
+        Preconditions.checkArgument(
+            !Strings.isNullOrEmpty(password),
+            "messaging password cannot be null or not empty"
+        );
+        UofRabbitConfigurationImpl rabbitConfiguration = (UofRabbitConfigurationImpl) configuration.getRabbit();
+        rabbitConfiguration.setPassword(password);
     }
 }

@@ -3,120 +3,42 @@
  */
 package com.sportradar.unifiedodds.sdk.internal.impl;
 
+import static com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCacheFixtures.failingWithOAuth2TokenRetrievalException;
 import static java.util.Optional.ofNullable;
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
+import com.sportradar.unifiedodds.sdk.internal.di.HttpClientFactory;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
 import java.time.Instant;
-import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import java.util.concurrent.TimeUnit;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 @SuppressWarnings({ "MultipleStringLiterals" })
 public class HttpDataFetchers {
 
-    public static LogHttpDataFetcherBuilder createLogDataFetcher() {
-        return new LogHttpDataFetcherBuilder();
-    }
-
-    public static LogFastHttpDataFetcherBuilder createLogFastDataFetcher() {
-        return new LogFastHttpDataFetcherBuilder();
-    }
-
     public static HttpHelperBuilder createHttpHelperBuilder() {
         return new HttpHelperBuilder();
     }
 
-    public static HttpDataFetcherWith20sFutureTimeoutBuilder createDataFetcherWith20sRequestTimeout() {
-        return new HttpDataFetcherWith20sFutureTimeoutBuilder();
-    }
-
-    public static final class LogHttpDataFetcherBuilder {
-
-        private CloseableHttpAsyncClient httpClient;
-        private SdkInternalConfiguration configuration;
-        private UserAgentProvider userAgentProvider;
-        private TraceIdProvider traceIdProvider;
-
-        public LogHttpDataFetcherBuilder with(CloseableHttpAsyncClient client) {
-            this.httpClient = client;
-            return this;
-        }
-
-        public LogHttpDataFetcherBuilder with(SdkInternalConfiguration cfg) {
-            this.configuration = cfg;
-            return this;
-        }
-
-        public LogHttpDataFetcherBuilder with(UserAgentProvider provider) {
-            this.userAgentProvider = provider;
-            return this;
-        }
-
-        public LogHttpDataFetcherBuilder with(TraceIdProvider provider) {
-            this.traceIdProvider = provider;
-            return this;
-        }
-
-        public LogHttpDataFetcher build() {
-            return new LogHttpDataFetcher(
-                ofNullable(configuration).orElse(mock(SdkInternalConfiguration.class)),
-                ofNullable(httpClient).orElse(mock(CloseableHttpAsyncClient.class)),
-                new UnifiedOddsStatistics(),
-                new HttpResponseHandler(),
-                ofNullable(userAgentProvider).orElse(new UserAgentProvider("1.0.0", Instant.now())),
-                ofNullable(traceIdProvider).orElse(new TraceIdProvider())
-            );
-        }
-    }
-
-    public static final class LogFastHttpDataFetcherBuilder {
-
-        private CloseableHttpAsyncClient httpClient;
-        private SdkInternalConfiguration configuration;
-        private TraceIdProvider traceIdProvider;
-
-        public LogFastHttpDataFetcherBuilder with(CloseableHttpAsyncClient client) {
-            this.httpClient = client;
-            return this;
-        }
-
-        public LogFastHttpDataFetcherBuilder with(SdkInternalConfiguration cfg) {
-            this.configuration = cfg;
-            return this;
-        }
-
-        public LogFastHttpDataFetcherBuilder with(TraceIdProvider provider) {
-            this.traceIdProvider = provider;
-            return this;
-        }
-
-        public LogFastHttpDataFetcher build() {
-            return new LogFastHttpDataFetcher(
-                ofNullable(configuration).orElse(mock(SdkInternalConfiguration.class)),
-                ofNullable(httpClient).orElse(mock(CloseableHttpAsyncClient.class)),
-                new UnifiedOddsStatistics(),
-                new HttpResponseHandler(),
-                new UserAgentProvider("1.0.0", Instant.now()),
-                ofNullable(traceIdProvider).orElse(new TraceIdProvider())
-            );
-        }
-    }
-
     public static final class HttpHelperBuilder {
 
-        private CloseableHttpClient httpClient;
-        private SdkInternalConfiguration configuration;
+        private SdkInternalConfiguration deprecatedConfiguration;
         private UserAgentProvider userAgentProvider;
-        private TraceIdProvider traceIdProvider;
+        private UofConfiguration config;
+        private OAuth2TokenCache tokenCache;
 
-        public HttpHelperBuilder with(CloseableHttpClient client) {
-            this.httpClient = client;
+        public HttpHelperBuilder with(SdkInternalConfiguration cfg) {
+            this.deprecatedConfiguration = cfg;
             return this;
         }
 
-        public HttpHelperBuilder with(SdkInternalConfiguration cfg) {
-            this.configuration = cfg;
+        @SuppressWarnings("HiddenField")
+        public HttpHelperBuilder with(UofConfigurationStub config) {
+            this.config = config;
             return this;
         }
 
@@ -125,72 +47,34 @@ public class HttpDataFetchers {
             return this;
         }
 
-        public HttpHelperBuilder with(TraceIdProvider provider) {
-            this.traceIdProvider = provider;
+        @SuppressWarnings("HiddenField")
+        public HttpHelperBuilder with(OAuth2TokenCache tokenCache) {
+            this.tokenCache = tokenCache;
             return this;
         }
 
         public HttpHelper build() {
             return new HttpHelper(
-                ofNullable(configuration).orElse(mock(SdkInternalConfiguration.class)),
-                ofNullable(httpClient).orElse(mock(CloseableHttpClient.class)),
+                ofNullable(deprecatedConfiguration).orElse(mock(SdkInternalConfiguration.class)),
+                ofNullable(config).orElse(mock(UofConfiguration.class)),
+                ofNullable(tokenCache).orElse(failingWithOAuth2TokenRetrievalException()),
+                createHttpClientFor(deprecatedConfiguration),
                 mock(MessageAndActionExtractor.class),
                 ofNullable(userAgentProvider).orElse(new UserAgentProvider("1.0.0", Instant.now())),
-                ofNullable(traceIdProvider).orElse(new TraceIdProvider())
+                new TraceIdProvider()
             );
         }
-    }
 
-    @SuppressWarnings("MagicNumber")
-    public static final class HttpDataFetcherWith20sFutureTimeoutBuilder {
-
-        private CloseableHttpAsyncClient httpClient;
-        private SdkInternalConfiguration configuration;
-
-        public HttpDataFetcherWith20sFutureTimeoutBuilder with(CloseableHttpAsyncClient client) {
-            this.httpClient = client;
-            return this;
-        }
-
-        public HttpDataFetcherWith20sFutureTimeoutBuilder with(SdkInternalConfiguration cfg) {
-            this.configuration = cfg;
-            return this;
-        }
-
-        public HttpDataFetcherWithCustomTimeout build() {
-            return new HttpDataFetcherWithCustomTimeout(
-                ofNullable(configuration).orElse(mock(SdkInternalConfiguration.class)),
-                ofNullable(httpClient).orElse(mock(CloseableHttpAsyncClient.class)),
-                new UnifiedOddsStatistics(),
-                new HttpResponseHandler(),
-                new UserAgentProvider("1.0.0", Instant.now()),
-                new TraceIdProvider(),
-                20
+        private static CloseableHttpClient createHttpClientFor(SdkInternalConfiguration cfg) {
+            int maxTimeoutInMillis = Math.toIntExact(
+                TimeUnit.MILLISECONDS.convert(cfg.getHttpClientTimeout(), TimeUnit.SECONDS)
             );
-        }
-    }
-
-    @SuppressWarnings({ "ParameterNumber" })
-    public static final class HttpDataFetcherWithCustomTimeout extends HttpDataFetcher {
-
-        HttpDataFetcherWithCustomTimeout(
-            SdkInternalConfiguration config,
-            CloseableHttpAsyncClient httpClient,
-            UnifiedOddsStatistics statsBean,
-            HttpResponseHandler responseHandler,
-            UserAgentProvider userAgentProvider,
-            TraceIdProvider traceIdProvider,
-            long timeoutSeconds
-        ) {
-            super(
-                config,
-                httpClient,
-                statsBean,
-                responseHandler,
-                userAgentProvider,
-                traceIdProvider,
-                timeoutSeconds
-            );
+            return new HttpClientFactory()
+                .create(
+                    maxTimeoutInMillis,
+                    cfg.getHttpClientMaxConnTotal(),
+                    cfg.getHttpClientMaxConnPerRoute()
+                );
         }
     }
 }

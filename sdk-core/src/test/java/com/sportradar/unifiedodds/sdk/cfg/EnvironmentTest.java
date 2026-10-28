@@ -18,9 +18,15 @@ public class EnvironmentTest {
         assertEquals(Environment.GlobalIntegration, Environment.getEnvironment("GlobalIntegration"));
         assertEquals(Environment.Production, Environment.getEnvironment("Production"));
         assertEquals(Environment.GlobalProduction, Environment.getEnvironment("GlobalProduction"));
-        assertEquals(Environment.Replay, Environment.getEnvironment("Replay"));
-        assertEquals(Environment.GlobalReplay, Environment.getEnvironment("GlobalReplay"));
         assertEquals(Environment.Custom, Environment.getEnvironment("Custom"));
+        assertEquals(
+            Environment.ReplayWithProductionCredentials,
+            Environment.getEnvironment("ReplayWithProductionCredentials")
+        );
+        assertEquals(
+            Environment.ReplayWithIntegrationCredentials,
+            Environment.getEnvironment("ReplayWithIntegrationCredentials")
+        );
     }
 
     @Test

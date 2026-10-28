@@ -624,10 +624,7 @@ public class UofSessionImpl implements UofSession, MessageConsumer, FeedMessageP
     private boolean isMessageDiscardable(UnmarshalledMessage o) {
         int producerId = FeedMessageHelper.provideProducerIdFromMessage(o);
 
-        if (
-            config.getEnvironment() == Environment.Replay ||
-            config.getEnvironment() == Environment.GlobalReplay
-        ) {
+        if (Environment.isReplay(config.getEnvironment())) {
             return false;
         }
 

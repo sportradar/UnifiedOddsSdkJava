@@ -4,7 +4,10 @@
 
 package com.sportradar.unifiedodds.sdk.internal.cfg;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.ConfigurationBuilderBase;
 import java.util.*;
@@ -125,8 +128,6 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         }
         sdkConfigurationReader.readMessagingHost().ifPresent(rabbitConfig::setHost);
         sdkConfigurationReader.readMessagingUseSsl().ifPresent(rabbitConfig::useSsl);
-        sdkConfigurationReader.readMessagingUsername().ifPresent(rabbitConfig::setUsername);
-        sdkConfigurationReader.readMessagingPassword().ifPresent(rabbitConfig::setPassword);
         sdkConfigurationReader.readMessagingVirtualHost().ifPresent(rabbitConfig::setVirtualHost);
 
         UofApiConfigurationImpl apiConfig = (UofApiConfigurationImpl) configuration.getApi();
@@ -134,6 +135,25 @@ abstract class ConfigurationBuilderBaseImpl<T> implements ConfigurationBuilderBa
         sdkConfigurationReader.readApiUseSsl().ifPresent(apiConfig::useSsl);
         sdkConfigurationReader.readApiPort().ifPresent(apiConfig::setPort);
 
+        String username = sdkConfigurationReader.readMessagingUsername().orElse(null);
+        String password = sdkConfigurationReader.readMessagingPassword().orElse(null);
+
+        if (!areCredentialsValid(username, password)) {
+            throw new IllegalArgumentException(
+                "Both messaging username and password must be set together in the configuration"
+            );
+        }
+
+        rabbitConfig.setUsername(username);
+        rabbitConfig.setPassword(password);
+
         configuration.checkAndUpdateConnectionSettings();
+    }
+
+    private static boolean areCredentialsValid(String username, String password) {
+        boolean bothCredentialsAreEmpty = isNullOrEmpty(username) && isNullOrEmpty(password);
+        boolean bothCredentialsAreSet = !isNullOrEmpty(username) && !isNullOrEmpty(password);
+
+        return bothCredentialsAreEmpty || bothCredentialsAreSet;
     }
 }

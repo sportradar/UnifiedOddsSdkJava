@@ -13,8 +13,12 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
+import java.time.Duration;
 import javax.xml.bind.JAXBException;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
@@ -42,7 +46,7 @@ public abstract class HttpDataFetcherIT {
     protected HttpDataFetcherIT() throws JAXBException {}
 
     public abstract HttpDataFetcher createHttpDataFetcher(
-        SdkInternalConfiguration config,
+        UofConfiguration config,
         CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler httpResponseHandler
@@ -55,7 +59,7 @@ public abstract class HttpDataFetcherIT {
 
         httpFetcher =
             createHttpDataFetcher(
-                configWithTimeouts(),
+                uofConfigWith2SecondNormalAnd1SecondFastTimeouts(),
                 httpClient,
                 mock(UnifiedOddsStatistics.class),
                 httpResponseHandler
@@ -170,10 +174,11 @@ public abstract class HttpDataFetcherIT {
         return "http://localhost:" + wireMockRule.port() + path;
     }
 
-    private static SdkInternalConfiguration configWithTimeouts() {
-        val config = mock(SdkInternalConfiguration.class);
-        when(config.getHttpClientTimeout()).thenReturn(2000);
-        when(config.getFastHttpClientTimeout()).thenReturn(1000L);
+    private static UofConfiguration uofConfigWith2SecondNormalAnd1SecondFastTimeouts() {
+        val config = new UofConfigurationStub();
+        UofApiConfigurationStub apiConfig = (UofApiConfigurationStub) config.getApi();
+        apiConfig.setHttpClientTimeout(Duration.ofSeconds(2));
+        apiConfig.setHttpClientFastFailingTimeout(Duration.ofSeconds(1));
         return config;
     }
 }

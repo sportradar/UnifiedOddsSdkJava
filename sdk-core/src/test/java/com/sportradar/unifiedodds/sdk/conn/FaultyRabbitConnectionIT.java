@@ -5,18 +5,22 @@ package com.sportradar.unifiedodds.sdk.conn;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.anotherValidCommonIamToken;
+import static com.sportradar.unifiedodds.sdk.conn.CommonIamTokens.validCommonIamToken;
 import static com.sportradar.unifiedodds.sdk.conn.PeriodicAliveSender.periodicAliveSender;
 import static com.sportradar.unifiedodds.sdk.impl.Constants.*;
 import static com.sportradar.unifiedodds.sdk.integrationtest.preconditions.PreconditionsForProxiedRabbitIntegrationTests.shouldMavenRunToxiproxyIntegrationTests;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assume.assumeThat;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
@@ -30,10 +34,11 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 import lombok.val;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 @SuppressWarnings(
     {
@@ -52,14 +57,28 @@ import org.junit.Test;
         "ParameterAssignment",
     }
 )
-public class FaultyRabbitConnectionIT {
+class FaultyRabbitConnectionIT {
 
     private static final int MILLIS_IN_SECOND = 1000;
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+    @RegisterExtension
+    private static WireMockExtension sportApiMock = WireMockExtension
+        .newInstance()
+        .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
+        .build();
 
-    private Credentials sdkCredentials = Credentials.with(Constants.SDK_USERNAME, Constants.SDK_PASSWORD);
+    @RegisterExtension
+    private static WireMockExtension commonIamWireMock = WireMockExtension
+        .newInstance()
+        .options(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)))
+        .build();
+
+    private final CommonIamData commonIamData = CommonIamData.with(
+        Constants.COMMON_IAM_CLIENT_ID,
+        Constants.COMMON_IAM_KEY_ID,
+        Constants.COMMON_IAM_PRIVATE_KEY
+    );
+
     private VhostLocation vhostLocation = VhostLocation.at(RABBIT_BASE_URL, Constants.UF_VIRTUALHOST);
     private ExchangeLocation exchangeLocation = ExchangeLocation.at(vhostLocation, Constants.UF_EXCHANGE);
     private Credentials adminCredentials = Credentials.with(
@@ -79,36 +98,48 @@ public class FaultyRabbitConnectionIT {
         VhostLocation.at(RABBIT_BASE_URL, UF_VIRTUALHOST),
         rabbitMqClient
     );
+    private final String bookmakerIdOf1 = "1";
 
     private BaseUrl sportsApiBaseUrl;
+    private BaseUrl commonIamApiBaseUrl;
+    private CommonIamSimulator commonIamSimulator;
 
-    public FaultyRabbitConnectionIT() throws Exception {}
+    FaultyRabbitConnectionIT() throws Exception {}
 
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    void setup() throws Exception {
         if (shouldMavenRunToxiproxyIntegrationTests()) {
             proxy = ProxiedRabbit.proxyRabbit();
         }
-        rabbitMqUserSetup.setupUser(sdkCredentials);
-        sportsApiBaseUrl = BaseUrl.of("localhost", wireMockRule.port());
+        sportsApiBaseUrl = BaseUrl.of("localhost", sportApiMock.getPort());
+        commonIamApiBaseUrl = BaseUrl.of("localhost", commonIamWireMock.getPort());
+        commonIamSimulator = new CommonIamSimulator(commonIamWireMock.getRuntimeInfo().getWireMock());
     }
 
-    @After
-    public void tearDownProxy() throws Exception {
+    @AfterEach
+    void tearDownProxy() throws Exception {
         if (shouldMavenRunToxiproxyIntegrationTests()) {
             proxy.close();
         }
         rabbitMqUserSetup.revertChangesMade();
     }
 
+    @Timeout(value = 5, unit = MINUTES)
     @Test
-    public void messagesAreNotDuplicatedAfterNetworkOutage()
+    void messagesAreNotDuplicatedAfterNetworkOutage()
         throws InitException, IOException, TimeoutException, InterruptedException {
         assumeThat("see developerREADME", shouldMavenRunToxiproxyIntegrationTests(), equalTo(true));
+
+        rabbitMqUserSetup.setupUser(
+            Credentials.with(bookmakerIdOf1, anotherValidCommonIamToken().getAccessToken())
+        );
         stubAnyGetAndPostApiCallsToReturnOk();
         stubBookmaker();
         enableOnlyLiveProducer();
         final int nodeId = 1;
+
+        commonIamSimulator.stubTokenEndpointForApi(validCommonIamToken());
+        commonIamSimulator.stubTokenEndpointForRabbit(anotherValidCommonIamToken());
 
         try (
             val rabbitProducer = connectDeclaringExchange(
@@ -118,8 +149,10 @@ public class FaultyRabbitConnectionIT {
                 new TimeUtilsImpl()
             );
             val sdk = SdkSetup
-                .with(sdkCredentials, PROXIED_RABBIT_BASE_URL, sportsApiBaseUrl, nodeId)
+                .withCommonIam(PROXIED_RABBIT_BASE_URL, sportsApiBaseUrl, nodeId)
                 .with(ListenerCollectingRawMessages.to(rawMessagesStorage))
+                .withCommonIamCredentials(commonIamData)
+                .withCommonIamApiBaseUrl(commonIamApiBaseUrl)
                 .with1Session()
                 .withDefaultLanguage(Locale.ENGLISH)
                 .withOpenedFeed();
@@ -136,8 +169,8 @@ public class FaultyRabbitConnectionIT {
     }
 
     private void stubAnyGetAndPostApiCallsToReturnOk() {
-        wireMockRule.stubFor(get(anyUrl()).willReturn(WireMock.ok()));
-        wireMockRule.stubFor(post(anyUrl()).willReturn(WireMock.ok()));
+        sportApiMock.stubFor(get(anyUrl()).willReturn(WireMock.ok()));
+        sportApiMock.stubFor(post(anyUrl()).willReturn(WireMock.ok()));
     }
 
     private void waitEnoughTimeForSdkToRecoverConnectionAndChannels() {
@@ -155,7 +188,7 @@ public class FaultyRabbitConnectionIT {
     }
 
     private void enableOnlyLiveProducer() {
-        wireMockRule.stubFor(
+        sportApiMock.stubFor(
             get(urlPathEqualTo("/v1/descriptions/producers.xml"))
                 .willReturn(
                     WireMock.ok(
@@ -223,7 +256,7 @@ public class FaultyRabbitConnectionIT {
     }
 
     private void stubBookmaker() {
-        wireMockRule.stubFor(
+        sportApiMock.stubFor(
             get(urlPathEqualTo("/v1/users/whoami.xml"))
                 .willReturn(
                     WireMock.ok(

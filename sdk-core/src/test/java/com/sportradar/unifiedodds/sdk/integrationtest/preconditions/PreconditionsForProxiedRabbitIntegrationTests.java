@@ -29,7 +29,9 @@ public class PreconditionsForProxiedRabbitIntegrationTests {
                     "Running integration tests require Toxiproxy server interface to be running on: " +
                     TOXIPROXY_BASE_URL.get() +
                     ", however the port is not opened. " +
-                    "Start Toxiproxy server or execute unit tests only e.g. mvn clean test. " +
+                    "Start Toxiproxy server " +
+                    "(this can be done by bringing docker compose up in local-development folder) " +
+                    "or execute unit tests only e.g. mvn clean test. " +
                     "NOT RECOMMENDED: or skip integration tests exercising proxied rabbit " +
                     "via adding -D" +
                     SKIP_TOXIPROXY_TESTS_MAVEN_PARAMETER +

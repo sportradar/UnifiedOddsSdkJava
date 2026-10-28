@@ -7,14 +7,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.ApiStubDelay.toBeDelayedBy;
 import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
 import static com.sportradar.unifiedodds.sdk.conn.SapiProducers.buildActiveProducer;
+import static com.sportradar.unifiedodds.sdk.conn.SapiProducers.buildActiveProducers;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.allSports;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 
+import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +33,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.xml.bind.JAXB;
@@ -40,6 +45,7 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.apache.http.HttpStatus;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings(
     { "ClassFanOutComplexity", "ClassDataAbstractionCoupling", "MultipleStringLiterals", "MagicNumber" }
@@ -50,13 +56,16 @@ public class ApiSimulator {
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     public static final String UNIFIED_XML_NAMESPACE = "http://schemas.sportradar.com/sportsapi/v1/unified";
     private final Consumer<MappingBuilder> stubRegistrar;
+    private final WireMockVerifier wireMockVerifier;
 
     public ApiSimulator(WireMockRule wireMockRule) {
         this.stubRegistrar = wireMockRule::stubFor;
+        wireMockVerifier = new WireMockVerifier(wireMockRule);
     }
 
     public ApiSimulator(WireMock wireMock) {
         this.stubRegistrar = wireMock::register;
+        wireMockVerifier = new WireMockVerifier(wireMock);
     }
 
     public void activateOnlyLiveProducer() {
@@ -92,23 +101,88 @@ public class ApiSimulator {
         );
     }
 
+    public void activateProducers(List<ProducerId> producersToActivate) {
+        Producers producers = new Producers();
+        producers.setResponseCode(ResponseCode.OK);
+        producers.getProducer().addAll(buildActiveProducers(producersToActivate));
+
+        register(
+            get(urlPathEqualTo("/v1/descriptions/producers.xml"))
+                .willReturn(WireMock.ok(JaxbContexts.SportsApi.marshall(producers)))
+        );
+    }
+
     public void defineBookmaker() {
         register(
             get(urlPathEqualTo("/v1/users/whoami.xml"))
-                .willReturn(
-                    WireMock.ok(
-                        XML_DECLARATION +
-                        "<bookmaker_details response_code=\"OK\" " +
-                        "expire_at=\"2030-07-26T17:44:24Z\" " +
-                        "bookmaker_id=\"1\" " +
-                        "virtual_host=\"/virtualhost\"/>"
-                    )
-                )
+                .willReturn(WireMock.ok(bookmakerWithId1AtVirtualhost()))
+        );
+    }
+
+    public void defineBookmaker(HeaderEquality... requiredHeaders) {
+        defineBookmakerWithIdOf1(requiredHeaders);
+    }
+
+    public void defineBookmakerWithIdOf1(HeaderEquality... requiredHeaders) {
+        val finalMapping = Arrays
+            .stream(requiredHeaders)
+            .reduce(
+                get(urlPathEqualTo("/v1/users/whoami.xml")),
+                (mapping, header) -> mapping.withHeader(header.name, header.valuePattern),
+                (mapping1, mapping2) -> mapping2
+            );
+
+        register(finalMapping.willReturn(WireMock.ok(bookmakerWithId1AtVirtualhost())));
+    }
+
+    @NotNull
+    @SuppressWarnings("UnnecessaryParentheses")
+    private static String bookmakerWithId1AtVirtualhost() {
+        return (
+            XML_DECLARATION +
+            "<bookmaker_details response_code=\"OK\" " +
+            "expire_at=\"2030-07-26T17:44:24Z\" " +
+            "bookmaker_id=\"1\" " +
+            "virtual_host=\"/virtualhost\"/>"
         );
     }
 
     public void stubWhoAmIWithEmptyResponseBody() {
-        register(get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(WireMock.ok()));
+        register(get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(WireMock.ok().withBody("")));
+    }
+
+    public void stubWhoAmIWithBadRequestErrorResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml")).willReturn(badRequest().withBody("<response/>"))
+        );
+    }
+
+    public void stubWhoAmIWithNotFoundErrorResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml"))
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_NOT_FOUND).withBody("<response/>"))
+        );
+    }
+
+    public void stubWhoAmIWithInternalServerErrorResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml"))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                        .withBody("<response/>")
+                )
+        );
+    }
+
+    public void stubWhoAmIWithServiceUnavailableResponse() {
+        register(
+            get(urlPathEqualTo("/v1/users/whoami.xml"))
+                .willReturn(
+                    WireMock.aResponse().withStatus(HttpStatus.SC_SERVICE_UNAVAILABLE).withBody("<response/>")
+                )
+        );
     }
 
     public void stubEmptyScheduleForNext3Days(Locale language) {
@@ -519,6 +593,38 @@ public class ApiSimulator {
         );
     }
 
+    public void stubAllSportsWithUnauthorizedResponseFirstThenSuccess(
+        Locale language,
+        HeaderEquality initialTokenHeader,
+        HeaderEquality refreshedTokenHeader
+    ) {
+        val allSportsJaxb = new JAXBElement<>(
+            new QName(UNIFIED_XML_NAMESPACE, "sports"),
+            SapiSportsEndpoint.class,
+            allSports()
+        );
+
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(initialTokenHeader.name, initialTokenHeader.valuePattern)
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(refreshedTokenHeader.name, refreshedTokenHeader.valuePattern)
+                .willReturn(ok(JaxbContexts.SportsApi.marshall(allSportsJaxb)))
+        );
+    }
+
+    public void stubAllSportsWithUnauthorizedResponse(Locale language, HeaderEquality token) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/sports.xml", language.getLanguage())))
+                .withHeader(token.name, token.valuePattern)
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+    }
+
     public void stubEmptyAllTournaments(Locale language) {
         val allTournaments = new SapiTournamentsEndpoint();
         val allTournamentsJaxb = new JAXBElement<>(
@@ -559,60 +665,6 @@ public class ApiSimulator {
         );
     }
 
-    public void stubPostRequest(String url, HeaderEquality headerEquality) {
-        register(post(url).withHeader(headerEquality.name, headerEquality.valuePattern));
-    }
-
-    public void stubPostRequest(String url, HeaderEquality headerEquality, ApiStubDelay delay) {
-        register(
-            post(url)
-                .withHeader(headerEquality.name, headerEquality.valuePattern)
-                .willReturn(aResponse().withFixedDelay((int) delay.delay.toMillis()))
-        );
-    }
-
-    public void stubFailedPostRequest(String url, HeaderEquality headerEquality) {
-        register(
-            post(url).withHeader(headerEquality.name, headerEquality.valuePattern).willReturn(badRequest())
-        );
-    }
-
-    public void stubPutRequest(String url, HeaderEquality headerEquality) {
-        register(put(url).withHeader(headerEquality.name, headerEquality.valuePattern));
-    }
-
-    public void stubPutRequest(String url, HeaderEquality headerEquality, ApiStubDelay delay) {
-        register(
-            put(url)
-                .withHeader(headerEquality.name, headerEquality.valuePattern)
-                .willReturn(aResponse().withFixedDelay((int) delay.delay.toMillis()))
-        );
-    }
-
-    public void stubFailedPutRequest(String url, HeaderEquality headerEquality) {
-        register(
-            put(url).withHeader(headerEquality.name, headerEquality.valuePattern).willReturn(badRequest())
-        );
-    }
-
-    public void stubDeleteRequest(String url, HeaderEquality headerEquality) {
-        register(delete(url).withHeader(headerEquality.name, headerEquality.valuePattern));
-    }
-
-    public void stubDeleteRequest(String url, HeaderEquality headerEquality, ApiStubDelay delay) {
-        register(
-            delete(url)
-                .withHeader(headerEquality.name, headerEquality.valuePattern)
-                .willReturn(aResponse().withFixedDelay((int) delay.delay.toMillis()))
-        );
-    }
-
-    public void stubFailedDeleteRequest(String url, HeaderEquality headerEquality) {
-        register(
-            delete(url).withHeader(headerEquality.name, headerEquality.valuePattern).willReturn(badRequest())
-        );
-    }
-
     public void stubAllTournamentsWithBadRequestErrorResponse(
         Locale language,
         HeaderEquality headerEquality
@@ -621,6 +673,36 @@ public class ApiSimulator {
             get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
                 .withHeader(headerEquality.name, headerEquality.valuePattern)
                 .willReturn(badRequest().withBody("<response/>"))
+        );
+    }
+
+    public void stubAllTournamentsWithUnauthorizedErrorResponse(
+        Locale language,
+        HeaderEquality headerEquality
+    ) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+    }
+
+    public void stubAllTournamentsWithUnauthorizedErrorResponse(Locale language) {
+        register(
+            get(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .willReturn(unauthorized().withBody("<response/>"))
+        );
+    }
+
+    public void verifyAllTournamentsCalled(
+        CountMatchingStrategy countMatchingStrategy,
+        Locale language,
+        HeaderEquality headerEquality
+    ) {
+        verifyThat(
+            countMatchingStrategy,
+            getRequestedFor(urlPathMatching(format("/v1/sports/%s/tournaments.xml", language.getLanguage())))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
         );
     }
 
@@ -651,6 +733,18 @@ public class ApiSimulator {
     private void stub(Object descriptions, String path) {
         register(
             get(urlPathMatching(path)).willReturn(WireMock.ok(JaxbContexts.SportsApi.marshall(descriptions)))
+        );
+    }
+
+    private void stubPostingOnPath(String path, int httpStatus, Object parsedBody) {
+        register(
+            post(urlPathEqualTo(path))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(httpStatus)
+                        .withBody(JaxbContexts.SportsApi.marshall(parsedBody))
+                )
         );
     }
 
@@ -740,6 +834,50 @@ public class ApiSimulator {
         );
     }
 
+    public void stubCustomBetCalculate(
+        CapiCalculationResponse response,
+        BodyCondition requestBodyCondition,
+        HeaderEquality headerEquality
+    ) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .withRequestBody(equalTo(JaxbContexts.CustomBetApi.marshall(requestBodyCondition.value)))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withBody(JaxbContexts.CustomBetApi.marshall(response))
+                )
+        );
+    }
+
+    public void stubCustomBetCalculateWithUnauthorizedResponse() {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED))
+        );
+    }
+
+    public void stubCustomBetCalculateWithUnauthorizedResponse(HeaderEquality headerEquality) {
+        register(
+            post(urlPathMatching("/v1/custombet/calculate"))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED))
+        );
+    }
+
+    public void verifyCustomBetCalculateCalled(
+        CountMatchingStrategy countMatchingStrategy,
+        HeaderEquality headerEquality
+    ) {
+        verifyThat(
+            countMatchingStrategy,
+            postRequestedFor(urlPathMatching("/v1/custombet/calculate"))
+                .withHeader(headerEquality.name, headerEquality.valuePattern)
+        );
+    }
+
     public void stubCustomBetCalculateFilter(CapiFilteredCalculationResponse response) {
         register(
             post(urlPathMatching("/v1/custombet/calculate-filter"))
@@ -761,6 +899,13 @@ public class ApiSimulator {
 
     private void register(MappingBuilder mappingBuilder) {
         stubRegistrar.accept(mappingBuilder);
+    }
+
+    private void verifyThat(
+        CountMatchingStrategy countMatchingStrategy,
+        RequestPatternBuilder requestPatternBuilder
+    ) {
+        wireMockVerifier.verifyThat(countMatchingStrategy, requestPatternBuilder);
     }
 
     @SneakyThrows
@@ -949,6 +1094,23 @@ public class ApiSimulator {
         }
     }
 
+    public void stubRecovery(ProducerId producerId) {
+        Producer producer = buildActiveProducer(producerId);
+        Response recoveryAccepted = new Response();
+        recoveryAccepted.setResponseCode(ResponseCode.ACCEPTED);
+        recoveryAccepted.setAction("Recovery description");
+        recoveryAccepted.setMessage("Accepted.");
+
+        String path = getPathOnlyOfRecoveryUrl(producer);
+
+        stubPostingOnPath(path, HttpStatus.SC_ACCEPTED, recoveryAccepted);
+    }
+
+    private static String getPathOnlyOfRecoveryUrl(Producer producer) {
+        String fullUrl = producer.getApiUrl() + "recovery/initiate_request";
+        return fullUrl.substring(fullUrl.indexOf('/', 8));
+    }
+
     public void stubEventOddsRecovery(
         String id,
         HeaderEquality headerEquality,
@@ -962,6 +1124,12 @@ public class ApiSimulator {
         register(mapping.willReturn(ok("OK")));
     }
 
+    public void stubEventOddsRecovery(String id) {
+        register(
+            post(urlPathMatching(format(".*/odds/events/%s/initiate_request", id))).willReturn(ok("OK"))
+        );
+    }
+
     public void stubEventStatefulRecovery(
         String id,
         HeaderEquality headerEquality,
@@ -973,6 +1141,13 @@ public class ApiSimulator {
             .concat(Stream.of(headerEquality), Arrays.stream(additionalHeaderEqualities))
             .forEach(eq -> mapping.withHeader(eq.name, eq.valuePattern));
         register(mapping.willReturn(ok("OK")));
+    }
+
+    public void stubEventStatefulRecovery(String id) {
+        register(
+            post(urlPathMatching(format(".*/stateful_messages/events/%s/initiate_request", id)))
+                .willReturn(ok("OK"))
+        );
     }
 
     public void stubTournamentSummaryNotFound(Locale language, Urn id) {
@@ -1001,6 +1176,22 @@ public class ApiSimulator {
             format("/v1/sports/%s/sport_events/%s/timeline.xml", language.getLanguage(), id),
             timelineElement
         );
+    }
+
+    public void verifyTotalCallsAtLeast(int expectedApiCallCount) {
+        verifyThat(moreThanOrExactly(expectedApiCallCount), RequestPatternBuilder.allRequests());
+    }
+
+    public Boolean isRecoveryEverRequestedFor(ProducerId producerId) {
+        Producer producer = buildActiveProducer(producerId);
+        String path = getPathOnlyOfRecoveryUrl(producer);
+
+        try {
+            wireMockVerifier.verifyThat(moreThanOrExactly(1), postRequestedFor(urlPathEqualTo(path)));
+            return true;
+        } catch (AssertionError e) {
+            return false;
+        }
     }
 
     @Value
@@ -1035,15 +1226,16 @@ public class ApiSimulator {
         }
     }
 
+    @SuppressWarnings("VisibilityModifier")
     public static class ApiStubDelay {
 
-        private final Duration delay;
+        public final Duration delay;
 
         private ApiStubDelay(Duration delay) {
             this.delay = delay;
         }
 
-        public static ApiStubDelay toBeDelayedBy(int delay, TemporalUnit unit) {
+        public static ApiStubDelay toBeDelayedBy(long delay, TemporalUnit unit) {
             return new ApiStubDelay(Duration.of(delay, unit));
         }
 
@@ -1052,28 +1244,44 @@ public class ApiSimulator {
         }
     }
 
+    @SuppressWarnings("VisibilityModifier")
     public static class HeaderEquality {
 
-        private final String name;
-        private final StringValuePattern valuePattern;
+        public static final String UUID_REGEX =
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
+        public final String name;
+        public final StringValuePattern valuePattern;
 
         public HeaderEquality(String name, StringValuePattern valuePattern) {
             this.name = name;
             this.valuePattern = valuePattern;
         }
 
-        public static HeaderEquality forHeader(String name, String value) {
+        public static HeaderEquality requiringHeader(String name, String value) {
             return new HeaderEquality(name, equalTo(value));
         }
 
-        public static HeaderEquality forHeaderWithAnyValue(String name) {
+        public static HeaderEquality requiringAuthorizationHeader(String value) {
+            return new HeaderEquality("Authorization", equalTo(value));
+        }
+
+        public static HeaderEquality requiringHeaderWithAnyValue(String name) {
             return new HeaderEquality(name, matching("^.+$"));
+        }
+
+        public static HeaderEquality requiringHeaderWithAnyUuidValue(String name) {
+            return new HeaderEquality(name, matching(UUID_REGEX));
+        }
+
+        public static HeaderEquality requiringNoHeader(String name) {
+            return new HeaderEquality(name, absent());
         }
     }
 
+    @SuppressWarnings("VisibilityModifier")
     public static class BodyCondition {
 
-        private final Object value;
+        public final Object value;
 
         public BodyCondition(Object value) {
             this.value = value;
@@ -1081,6 +1289,26 @@ public class ApiSimulator {
 
         public static BodyCondition forRequestBody(Object value) {
             return new BodyCondition(value);
+        }
+    }
+
+    public static class WireMockVerifier {
+
+        private final BiConsumer<CountMatchingStrategy, RequestPatternBuilder> stubVerifier;
+
+        public WireMockVerifier(WireMockRule wireMockRule) {
+            stubVerifier = wireMockRule::verify;
+        }
+
+        public WireMockVerifier(WireMock wireMock) {
+            stubVerifier = wireMock::verifyThat;
+        }
+
+        public void verifyThat(
+            CountMatchingStrategy countMatchingStrategy,
+            RequestPatternBuilder requestPatternBuilder
+        ) {
+            stubVerifier.accept(countMatchingStrategy, requestPatternBuilder);
         }
     }
 }

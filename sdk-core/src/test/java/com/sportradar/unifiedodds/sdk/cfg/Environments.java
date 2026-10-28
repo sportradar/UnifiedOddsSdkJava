@@ -24,8 +24,8 @@ public class Environments {
 
     public static Set<Environment> getReplayEnvironments() {
         Set<Environment> replayEnvironments = new HashSet<>();
-        replayEnvironments.add(Environment.Replay);
-        replayEnvironments.add(Environment.GlobalReplay);
+        replayEnvironments.add(Environment.ReplayWithProductionCredentials);
+        replayEnvironments.add(Environment.ReplayWithIntegrationCredentials);
         return replayEnvironments;
     }
 

@@ -10,12 +10,16 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.shared.SportsApiXmlResponseProvider;
+import java.time.Duration;
 import javax.xml.bind.JAXBException;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
@@ -26,7 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-@SuppressWarnings("MagicNumber")
+@SuppressWarnings({ "MagicNumber", "ClassFanOutComplexity" })
 public class HttpDataFetcherLoggersIT {
 
     @Rule
@@ -58,7 +62,8 @@ public class HttpDataFetcherLoggersIT {
             mock(UnifiedOddsStatistics.class),
             httpResponseHandler,
             mock(UserAgentProvider.class),
-            mock(TraceIdProvider.class)
+            mock(TraceIdProvider.class),
+            mock(OAuth2TokenCache.class)
         );
         httpDataFetcherShouldReturnHttpDataWhenHttpRequestSuccessful(httpDataFetcher);
     }
@@ -72,7 +77,8 @@ public class HttpDataFetcherLoggersIT {
             mock(UnifiedOddsStatistics.class),
             httpResponseHandler,
             mock(UserAgentProvider.class),
-            mock(TraceIdProvider.class)
+            mock(TraceIdProvider.class),
+            mock(OAuth2TokenCache.class)
         );
         httpDataFetcherShouldReturnHttpDataWhenHttpRequestSuccessful(httpDataFetcher);
     }
@@ -92,10 +98,11 @@ public class HttpDataFetcherLoggersIT {
         assertEquals(apiXmlResponseString, responseData.getResponse());
     }
 
-    private static SdkInternalConfiguration configWithTimeouts() {
-        val config = mock(SdkInternalConfiguration.class);
-        when(config.getHttpClientTimeout()).thenReturn(2000);
-        when(config.getFastHttpClientTimeout()).thenReturn(1000L);
+    private static UofConfiguration configWithTimeouts() {
+        val config = new UofConfigurationStub();
+        UofApiConfigurationStub apiConfig = (UofApiConfigurationStub) config.getApi();
+        apiConfig.setHttpClientTimeout(Duration.ofSeconds(2));
+        apiConfig.setHttpClientFastFailingTimeout(Duration.ofSeconds(2));
         return config;
     }
 }

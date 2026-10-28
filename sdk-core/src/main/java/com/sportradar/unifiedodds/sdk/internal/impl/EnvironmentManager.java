@@ -4,7 +4,15 @@ import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import java.util.List;
 
-@SuppressWarnings({ "DeclarationOrder", "HideUtilityClassConstructor", "LineLength", "MagicNumber" })
+@SuppressWarnings(
+    {
+        "DeclarationOrder",
+        "HideUtilityClassConstructor",
+        "LineLength",
+        "MagicNumber",
+        "MultipleStringLiterals",
+    }
+)
 public final class EnvironmentManager {
 
     private static final List<EnvironmentSetting> ENVIRONMENT_SETTINGS;
@@ -25,6 +33,10 @@ public final class EnvironmentManager {
         return ENVIRONMENT_SETTINGS;
     }
 
+    public static final String STG_AUTH_SPORTRADAR_COM = "stg-auth.sportradar.com";
+
+    public static final String AUTH_SPORTRADAR_COM = "auth.sportradar.com";
+
     static {
         List<Environment> basicRetryList = Lists.newArrayList(
             Environment.Integration,
@@ -36,6 +48,7 @@ public final class EnvironmentManager {
                     Environment.Production,
                     "mq.betradar.com",
                     "api.betradar.com",
+                    AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     Lists.newArrayList(Environment.Integration)
@@ -44,30 +57,16 @@ public final class EnvironmentManager {
                     Environment.Integration,
                     "stgmq.betradar.com",
                     "stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     Lists.newArrayList(Environment.Production)
                 ),
                 new EnvironmentSetting(
-                    Environment.Replay,
-                    "replaymq.betradar.com",
-                    "stgapi.betradar.com",
-                    80,
-                    true,
-                    basicRetryList
-                ),
-                new EnvironmentSetting(
-                    Environment.GlobalReplay,
-                    "global.replaymq.betradar.com",
-                    "stgapi.betradar.com",
-                    80,
-                    true,
-                    basicRetryList
-                ),
-                new EnvironmentSetting(
                     Environment.GlobalProduction,
                     "global.mq.betradar.com",
                     "global.api.betradar.com",
+                    AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     basicRetryList
@@ -76,9 +75,28 @@ public final class EnvironmentManager {
                     Environment.GlobalIntegration,
                     "global.stgmq.betradar.com",
                     "global.stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
                     80,
                     true,
                     basicRetryList
+                ),
+                new EnvironmentSetting(
+                    Environment.ReplayWithProductionCredentials,
+                    "replaymq.betradar.com",
+                    "api.betradar.com",
+                    AUTH_SPORTRADAR_COM,
+                    80,
+                    true,
+                    Lists.newArrayList()
+                ),
+                new EnvironmentSetting(
+                    Environment.ReplayWithIntegrationCredentials,
+                    "replaymq.betradar.com",
+                    "stgapi.betradar.com",
+                    STG_AUTH_SPORTRADAR_COM,
+                    80,
+                    true,
+                    Lists.newArrayList()
                 )
             );
     }

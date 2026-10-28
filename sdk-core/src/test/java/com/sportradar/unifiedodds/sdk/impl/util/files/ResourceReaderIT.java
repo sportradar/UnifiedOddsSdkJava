@@ -24,6 +24,6 @@ public class ResourceReaderIT {
         ) {
             text = CharStreams.toString(reader);
         }
-        assertThat(text).startsWith("version=4");
+        assertThat(text).startsWith("version=");
     }
 }

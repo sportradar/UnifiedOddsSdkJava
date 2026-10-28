@@ -13,9 +13,11 @@ import javax.management.ObjectName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MetricsRegisterer {
+public class MetricsRegisterer implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmxModule.class);
+    private static final String SDK_STATISTICS_OBJECT_NAME =
+        "com.sportradar.unifiedodds.sdk.impl:type=UnifiedOdds";
 
     private final MBeanServer mbeanServer;
 
@@ -26,7 +28,7 @@ public class MetricsRegisterer {
     public UnifiedOddsStatistics createUnifiedOddsStatistics() {
         UnifiedOddsStatistics statsBean = null;
         try {
-            ObjectName name = new ObjectName("com.sportradar.unifiedodds.sdk.impl:type=UnifiedOdds");
+            ObjectName name = new ObjectName(SDK_STATISTICS_OBJECT_NAME);
             statsBean = new UnifiedOddsStatistics();
             if (!mbeanServer.isRegistered(name)) {
                 mbeanServer.registerMBean(statsBean, name);
@@ -41,5 +43,13 @@ public class MetricsRegisterer {
         }
 
         return statsBean;
+    }
+
+    @Override
+    public void close() throws Exception {
+        ObjectName name = new ObjectName(SDK_STATISTICS_OBJECT_NAME);
+        if (mbeanServer.isRegistered(name)) {
+            mbeanServer.unregisterMBean(name);
+        }
     }
 }

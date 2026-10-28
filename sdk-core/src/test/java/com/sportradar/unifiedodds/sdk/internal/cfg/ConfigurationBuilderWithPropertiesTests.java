@@ -484,7 +484,7 @@ public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilde
             prodBuilder().build().getRabbit().getHost()
         );
         Assert.assertEquals(
-            EnvironmentManager.getMqHost(Environment.Replay),
+            EnvironmentManager.getMqHost(Environment.ReplayWithIntegrationCredentials),
             replayBuilder().build().getRabbit().getHost()
         );
     }
@@ -593,7 +593,7 @@ public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilde
             prodBuilder().build().getApi().getHost()
         );
         Assert.assertEquals(
-            EnvironmentManager.getApiHost(Environment.Replay),
+            EnvironmentManager.getApiHost(Environment.ReplayWithIntegrationCredentials),
             replayBuilder().build().getApi().getHost()
         );
 
@@ -606,7 +606,7 @@ public class ConfigurationBuilderWithPropertiesTests extends ConfigurationBuilde
             productionBuilder("token").setDefaultLanguage(defaultLanguage).build().getApi().getHost()
         );
         Assert.assertEquals(
-            EnvironmentManager.getApiHost(Environment.Replay),
+            EnvironmentManager.getApiHost(Environment.ReplayWithIntegrationCredentials),
             replayBuilder("token").setDefaultLanguage(defaultLanguage).build().getApi().getHost()
         );
     }

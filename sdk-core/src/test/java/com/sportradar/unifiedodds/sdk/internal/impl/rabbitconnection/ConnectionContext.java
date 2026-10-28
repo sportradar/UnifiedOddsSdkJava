@@ -4,6 +4,7 @@
 package com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection;
 
 import static com.sportradar.unifiedodds.sdk.MessageInterest.AllMessages;
+import static com.sportradar.unifiedodds.sdk.caching.markets.GenericAnswers.withAllMethodsThrowingByDefault;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.mockito.Mockito.mock;
@@ -13,7 +14,9 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Recoverable;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sportradar.unifiedodds.sdk.SdkConnectionStatusListener;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.conn.RabbitMqMessageListener;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.utils.thread.sleep.Sleep;
@@ -53,9 +56,11 @@ public class ConnectionContext implements AutoCloseable {
         private TimeUtils timeUtils;
         private Sleep sleep;
         private String sdkVersion;
-        private SdkInternalConfiguration configuration;
+        private SdkInternalConfiguration deprecatedConfiguration;
         private String consumerDescription;
         private List<String> routingKeys;
+        private OAuth2TokenCache tokenCache;
+        private UofConfiguration configuration;
 
         private RabbitMqChannelBuilder() {}
 
@@ -85,7 +90,17 @@ public class ConnectionContext implements AutoCloseable {
         }
 
         public RabbitMqChannelBuilder with(SdkInternalConfiguration configuration) {
-            this.configuration = configuration;
+            this.deprecatedConfiguration = configuration;
+            return this;
+        }
+
+        public RabbitMqChannelBuilder with(OAuth2TokenCache tokenCache) {
+            this.tokenCache = tokenCache;
+            return this;
+        }
+
+        public RabbitMqChannelBuilder with(UofConfiguration config) {
+            this.configuration = config;
             return this;
         }
 
@@ -139,13 +154,19 @@ public class ConnectionContext implements AutoCloseable {
             val sdkConnectionStatusListener = ofNullable(this.sdkConnectionStatusListener)
                 .orElse(mock(SdkConnectionStatusListener.class));
             val timeUtils = ofNullable(this.timeUtils).orElse(new TimeUtilsImpl());
+            val tokenCache = ofNullable(this.tokenCache).orElse(createErroringOnAllMethodsTokenCache());
 
             if (realConnectionFactory == null) {
                 realConnectionFactory =
-                    createRealConnectionFactory(sdkConnectionStatusListener, whoAmIReader, timeUtils);
+                    createRealConnectionFactory(
+                        sdkConnectionStatusListener,
+                        whoAmIReader,
+                        timeUtils,
+                        tokenCache
+                    );
             }
 
-            RabbitMqChannelImpl build = new RabbitMqChannelImpl(
+            RabbitMqChannelImpl channel = new RabbitMqChannelImpl(
                 rabbitMqSystemListener,
                 whoAmIReader,
                 ofNullable(sdkVersion).orElseThrow(() -> exceptionDueToMissing("SdkVersion")),
@@ -154,12 +175,23 @@ public class ConnectionContext implements AutoCloseable {
                 new Sleep()
             );
 
-            build.open(
+            channel.open(
                 ofNullable(routingKeys).orElseThrow(() -> exceptionDueToMissing("RoutingKeys")),
                 createConsumerWithDescriptionAndListenerIfPresent(),
                 AllMessages.toShortString()
             );
-            return build;
+            return channel;
+        }
+
+        private OAuth2TokenCache createErroringOnAllMethodsTokenCache() {
+            return mock(
+                OAuth2TokenCache.class,
+                invocation -> {
+                    throw new UnsupportedOperationException(
+                        "OAuth2TokenCache not injected - use with(OAuth2TokenCache)"
+                    );
+                }
+            );
         }
 
         @NotNull
@@ -212,20 +244,25 @@ public class ConnectionContext implements AutoCloseable {
         private SingleInstanceAmqpConnectionFactory createRealConnectionFactory(
             SdkConnectionStatusListener sdkConnectionStatusListener,
             WhoAmIReader whoAmIReader,
-            TimeUtils timeUtils
+            TimeUtils timeUtils,
+            OAuth2TokenCache tokenCache
         ) {
+            val deprecatedConfig = ofNullable(deprecatedConfiguration)
+                .orElse(stubDeprecatedConfigurationErroringOnAllMethods());
             val config = ofNullable(configuration).orElse(stubConfigurationErroringOnAllMethods());
             val configuredConnectionFactory = createConfiguredConnectionFactory(
-                config,
+                deprecatedConfig,
                 sdkConnectionStatusListener,
-                timeUtils
+                timeUtils,
+                tokenCache,
+                config
             );
             val firewallChecker = createFirewallChecker();
             val sslProtocolsProvider = new SslProtocolsProvider();
 
             return new SingleInstanceAmqpConnectionFactory(
                 configuredConnectionFactory,
-                config,
+                deprecatedConfig,
                 sdkConnectionStatusListener,
                 whoAmIReader,
                 firewallChecker,
@@ -234,22 +271,20 @@ public class ConnectionContext implements AutoCloseable {
             );
         }
 
-        private SdkInternalConfiguration stubConfigurationErroringOnAllMethods() {
-            return mock(
-                SdkInternalConfiguration.class,
-                invocation -> {
-                    String methodName = invocation.getMethod().getName();
-                    throw new UnsupportedOperationException(
-                        "SdkInternalConfiguration." + methodName + "() is not stubbed"
-                    );
-                }
-            );
+        private UofConfiguration stubConfigurationErroringOnAllMethods() {
+            return mock(UofConfiguration.class, withAllMethodsThrowingByDefault());
+        }
+
+        private SdkInternalConfiguration stubDeprecatedConfigurationErroringOnAllMethods() {
+            return mock(SdkInternalConfiguration.class, withAllMethodsThrowingByDefault());
         }
 
         private ConfiguredConnectionFactory createConfiguredConnectionFactory(
             SdkInternalConfiguration config,
             SdkConnectionStatusListener sdkConnectionStatusListener,
-            TimeUtils timeUtils
+            TimeUtils timeUtils,
+            OAuth2TokenCache tokenCache,
+            UofConfiguration uofConfiguration
         ) {
             val rabbitConnectionFactory = new ConnectionFactory();
             val dedicatedExecutor = Executors.newSingleThreadExecutor();
@@ -258,10 +293,12 @@ public class ConnectionContext implements AutoCloseable {
             return new ConfiguredConnectionFactory(
                 rabbitConnectionFactory,
                 config,
+                uofConfiguration,
                 version,
                 sdkConnectionStatusListener,
                 dedicatedExecutor,
-                timeUtils
+                timeUtils,
+                tokenCache
             );
         }
 

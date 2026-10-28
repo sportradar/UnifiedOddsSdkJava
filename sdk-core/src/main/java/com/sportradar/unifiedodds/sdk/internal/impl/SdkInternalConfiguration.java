@@ -9,8 +9,6 @@ import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationPropertiesReader;
-import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationYamlReader;
 import com.sportradar.utils.SdkHelper;
 import java.util.*;
 
@@ -22,7 +20,6 @@ import java.util.*;
 )
 public class SdkInternalConfiguration {
 
-    private final String accessToken;
     private final Locale defaultLocale;
     private final List<Locale> desiredLocales;
     private final String host;
@@ -53,23 +50,12 @@ public class SdkInternalConfiguration {
     private final int recoveryHttpClientMaxConnTotal;
     private final int recoveryHttpClientMaxConnPerRoute;
 
-    public SdkInternalConfiguration(
-        UofConfiguration cfg,
-        SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-        SdkConfigurationYamlReader sdkConfigurationYamlReader
-    ) {
-        this(cfg, false, sdkConfigurationPropertiesReader, sdkConfigurationYamlReader);
+    public SdkInternalConfiguration(UofConfiguration cfg) {
+        this(cfg, false);
     }
 
-    public SdkInternalConfiguration(
-        UofConfiguration cfg,
-        boolean setReplaySession,
-        SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader,
-        SdkConfigurationYamlReader sdkConfigurationYamlReader
-    ) {
+    public SdkInternalConfiguration(UofConfiguration cfg, boolean setReplaySession) {
         Preconditions.checkNotNull(cfg, "cfg");
-        Preconditions.checkNotNull(sdkConfigurationPropertiesReader, "sdkConfigurationPropertiesReader");
-        Preconditions.checkNotNull(sdkConfigurationYamlReader, "sdkConfigurationYamlReader");
 
         host = cfg.getRabbit().getHost();
         apiHost = cfg.getApi().getHost();
@@ -79,7 +65,6 @@ public class SdkInternalConfiguration {
         useMessagingSsl = cfg.getRabbit().getUseSsl();
         port = cfg.getRabbit().getPort();
 
-        accessToken = cfg.getAccessToken();
         defaultLocale = cfg.getDefaultLanguage();
         desiredLocales = cfg.getLanguages();
         inactivitySeconds = (int) (cfg.getProducer().getInactivitySeconds().toMillis() / 1000);
@@ -156,14 +141,6 @@ public class SdkInternalConfiguration {
      */
     public int getMinIntervalBetweenRecoveryRequests() {
         return minIntervalBetweenRecoveryRequests;
-    }
-
-    /**
-     *
-     * @return your access token that is used to identify and verify your identity
-     */
-    public String getAccessToken() {
-        return accessToken;
     }
 
     /**
@@ -375,10 +352,7 @@ public class SdkInternalConfiguration {
 
     @Override
     public String toString() {
-        String obfuscatedToken = SdkHelper.obfuscate(accessToken);
-
         return new StringJoiner(", ", SdkInternalConfiguration.class.getSimpleName() + "[", "]")
-            .add("accessToken='" + obfuscatedToken + "'")
             .add("defaultLocale=" + defaultLocale)
             .add("desiredLocales=" + desiredLocales)
             .add("host='" + host + "'")

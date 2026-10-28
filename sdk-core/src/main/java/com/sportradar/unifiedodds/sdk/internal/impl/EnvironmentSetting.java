@@ -9,14 +9,17 @@ public class EnvironmentSetting {
     private Environment environment;
     private String mqHost;
     private String apiHost;
+    private String clientAuthenticationHost;
     private int apiPort;
     private Boolean onlySsl;
     private List<Environment> retryList;
 
+    @SuppressWarnings("ParameterNumber")
     public EnvironmentSetting(
         Environment environment,
         String mqHost,
         String apiHost,
+        String clientAuthenticationHost,
         int apiPort,
         Boolean onlySsl,
         List<Environment> environmentRetryList
@@ -24,6 +27,7 @@ public class EnvironmentSetting {
         this.environment = environment;
         this.mqHost = mqHost;
         this.apiHost = apiHost;
+        this.clientAuthenticationHost = clientAuthenticationHost;
         this.apiPort = apiPort;
         this.onlySsl = onlySsl;
         this.retryList = environmentRetryList == null ? Lists.newArrayList() : environmentRetryList;
@@ -51,6 +55,10 @@ public class EnvironmentSetting {
      */
     public String getApiHost() {
         return apiHost;
+    }
+
+    public String getClientAuthenticationHost() {
+        return clientAuthenticationHost;
     }
 
     int getApiPort() {

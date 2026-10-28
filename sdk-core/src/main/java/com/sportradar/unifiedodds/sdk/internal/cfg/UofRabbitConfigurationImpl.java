@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.UofRabbitConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
+import com.sportradar.utils.SdkHelper;
 import java.time.Duration;
 import java.util.StringJoiner;
 
@@ -137,12 +138,14 @@ public class UofRabbitConfigurationImpl implements UofRabbitConfiguration {
 
     @Override
     public String toString() {
+        String obfuscatedUsername = username != null ? SdkHelper.obfuscate(username) : null;
+        String obfuscatedPassword = username != null ? SdkHelper.obfuscate(password) : null;
         return new StringJoiner(", ", "RabbitConfiguration{", "}")
             .add("host=" + host)
             .add("port=" + port)
             .add("useSsl=" + useSsl)
-            .add("username=" + username)
-            .add("password=" + password)
+            .add("username=" + obfuscatedUsername)
+            .add("password=" + obfuscatedPassword)
             .add("virtualHost=" + virtualHost)
             .add("connectionTimeout=" + connectionTimeout.getSeconds())
             .add("heartBeat=" + heartBeat.getSeconds())

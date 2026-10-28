@@ -7,6 +7,7 @@ package com.sportradar.unifiedodds.sdk.internal.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.sportradar.unifiedodds.sdk.cfg.*;
+import com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import java.util.Optional;
@@ -17,6 +18,11 @@ import java.util.function.Function;
  */
 @SuppressWarnings({ "LineLength" })
 public class TokenSetterImpl implements TokenSetter {
+
+    private static final String ACCESS_TOKEN_MUTUAL_EXCLUSIVITY_ERROR =
+        "Access Token cannot be set together with Client Authentication";
+    private static final String CLIENT_AUTHENTICATION_MUTUAL_EXCLUSIVITY_ERROR =
+        "Client Authentication cannot be set together with Access Token";
 
     private final SdkConfigurationPropertiesReader sdkConfigurationPropertiesReader;
     private final SdkConfigurationYamlReader sdkConfigurationYamlReader;
@@ -47,9 +53,11 @@ public class TokenSetterImpl implements TokenSetter {
     @Override
     public EnvironmentSelector setAccessToken(String token) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(token), "Access token can not be null/empty");
-
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() == null,
+            ACCESS_TOKEN_MUTUAL_EXCLUSIVITY_ERROR
+        );
         configuration.setAccessToken(token);
-
         return new EnvironmentSelectorImpl(
             configuration,
             sdkConfigurationPropertiesReader,
@@ -72,6 +80,10 @@ public class TokenSetterImpl implements TokenSetter {
             new IllegalArgumentException(
                 "Could not read the access token from the SDK properties(uf.sdk.accessToken)"
             )
+        );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() == null,
+            ACCESS_TOKEN_MUTUAL_EXCLUSIVITY_ERROR
         );
 
         configuration.setAccessToken(token);
@@ -99,6 +111,10 @@ public class TokenSetterImpl implements TokenSetter {
                 "Could not read the access token from the SDK YAML file(sportradar.sdk.uf.accessToken)"
             )
         );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() == null,
+            ACCESS_TOKEN_MUTUAL_EXCLUSIVITY_ERROR
+        );
 
         configuration.setAccessToken(token);
 
@@ -125,9 +141,36 @@ public class TokenSetterImpl implements TokenSetter {
             !Strings.isNullOrEmpty(token),
             "Token system variable uf.accesstoken not found"
         );
+        Preconditions.checkArgument(
+            configuration.getClientAuthentication() == null,
+            ACCESS_TOKEN_MUTUAL_EXCLUSIVITY_ERROR
+        );
 
         configuration.setAccessToken(token);
 
+        return new EnvironmentSelectorImpl(
+            configuration,
+            sdkConfigurationPropertiesReader,
+            sdkConfigurationYamlReader
+        );
+    }
+
+    /**
+     * Sets the authentication used to access Sportradar resources (AMQP broker, Sports API, ...)
+     *
+     * @param authentication the authentication object
+     * @return the {@link EnvironmentSelector} instance allowing the selection of target environment
+     */
+    @Override
+    public EnvironmentSelector setClientAuthentication(
+        UofClientAuthentication.PrivateKeyJwtData authentication
+    ) {
+        Preconditions.checkArgument(authentication != null, "Client Authentication cannot be null");
+        Preconditions.checkArgument(
+            configuration.getAccessToken() == null,
+            CLIENT_AUTHENTICATION_MUTUAL_EXCLUSIVITY_ERROR
+        );
+        configuration.setAuthentication(authentication);
         return new EnvironmentSelectorImpl(
             configuration,
             sdkConfigurationPropertiesReader,

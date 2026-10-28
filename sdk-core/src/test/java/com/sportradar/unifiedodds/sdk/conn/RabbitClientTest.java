@@ -9,6 +9,7 @@ import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.s
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials.with;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqClientFactory.createRabbitMqClient;
 import static com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.RabbitMqProducer.connectDeclaringExchange;
+import static java.lang.String.valueOf;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,11 +18,11 @@ import static org.junit.Assume.assumeThat;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.http.client.Client;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.impl.Constants;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
-import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.ConnectionContext;
-import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.RabbitMqChannelImpl;
+import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.*;
 import com.sportradar.unifiedodds.sdk.testutil.configuration.SdkInternalConfigurationStubs;
 import com.sportradar.unifiedodds.sdk.testutil.generic.concurrent.AtomicActionPerformer;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
@@ -32,10 +33,7 @@ import com.sportradar.utils.time.TimeUtilsStub;
 import java.io.IOException;
 import java.time.Instant;
 import lombok.val;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.*;
 
 @SuppressWarnings(
     {
@@ -58,12 +56,10 @@ class RabbitClientTest {
 
     private static final Instant FIXED_TIME = Instant.ofEpochMilli(1664402400000L);
 
+    private final String commonIamToken = "abc123";
     private final int bookmakerId = 8736;
     private final int nodeId = 1234;
-    private final Credentials sdkCredentials = Credentials.with(
-        RabbitClientTest.class.getSimpleName(),
-        Constants.SDK_PASSWORD
-    );
+    private final Credentials sdkCredentials = Credentials.with(valueOf(bookmakerId), commonIamToken);
     private final VhostLocation vhostLocation = VhostLocation.at(RABBIT_BASE_URL, Constants.UF_VIRTUALHOST);
     private final ExchangeLocation exchangeLocation = ExchangeLocation.at(
         vhostLocation,
@@ -75,6 +71,7 @@ class RabbitClientTest {
     );
     private final ConnectionFactory factory = new ConnectionFactory();
     private final RabbitMessagesInMemoryStorage rabbitMessagesStorage = new RabbitMessagesInMemoryStorage();
+    private final WaiterForRabbitMessages waiterFor = new WaiterForRabbitMessages(rabbitMessagesStorage);
     private final Client rabbitMqClient = createRabbitMqClient(
         RABBIT_IP,
         with(ADMIN_USERNAME, ADMIN_PASSWORD),
@@ -90,6 +87,11 @@ class RabbitClientTest {
 
     RabbitClientTest() throws Exception {}
 
+    @BeforeAll
+    static void doesNotExecuteAnyTestsIfRabbitServerNotSetUp() throws Exception {
+        assumeThat(shouldMavenRunTestsExercisingRabbitServer(), equalTo(true));
+    }
+
     @BeforeEach
     void setup() throws Exception {
         rabbitMqUserSetup.setupUser(sdkCredentials);
@@ -103,8 +105,6 @@ class RabbitClientTest {
     @Timeout(value = 30, unit = SECONDS)
     @Test
     void receivesMessage() throws Exception {
-        assumeThat(shouldMavenRunTestsExercisingRabbitServer(), equalTo(true));
-
         try (
             val rabbitProducer = connectDeclaringExchange(
                 exchangeLocation,
@@ -122,7 +122,6 @@ class RabbitClientTest {
 
             SdkInternalConfiguration deprecatedConfiguration = SdkInternalConfigurationStubs
                 .simpleStub()
-                .withAccessToken("test-token")
                 .withSdkNodeId(nodeId)
                 .withMessagingUsername(sdkCredentials.getUsername())
                 .withMessagingPassword(sdkCredentials.getPassword())
@@ -130,14 +129,18 @@ class RabbitClientTest {
                 .withMessagingVirtualHost(UF_VIRTUALHOST)
                 .withMessagingHost(RABBIT_BASE_URL.getHost())
                 .withPort(RABBIT_BASE_URL.getPort())
-                .withApiHost("anything.com")
+                .withApiHost("anyhost.local")
                 .build();
+
+            UofConfigurationStub config = new UofConfigurationStub();
+            config.setAccessToken("test-token");
 
             RabbitMqChannelImpl channel = connectionContext
                 .channelBuilder()
                 .with(whoAmIReader)
                 .with(time)
                 .with(deprecatedConfiguration)
+                .with(config)
                 .withRoutingKeys("-.-.-.alive.#")
                 .with(ListenerCollectingRabbitMessages.to(rabbitMessagesStorage))
                 .withConsumerDescription("something")
@@ -145,15 +148,10 @@ class RabbitClientTest {
                 .buildOpened();
 
             rabbitProducer.send(aliveForProducer1(), RoutingKeys.alive());
-            assertThatEventuallyOneMessageHasBeenReceived();
+            waiterFor.theOnlyAliveMessage();
 
             channel.close();
         }
-    }
-
-    private void assertThatEventuallyOneMessageHasBeenReceived() throws IOException {
-        await()
-            .until(() -> rabbitMessagesStorage.findAlivesOf(MessageInterest.SystemAliveMessages).size() == 1);
     }
 
     private String aliveForProducer1() {

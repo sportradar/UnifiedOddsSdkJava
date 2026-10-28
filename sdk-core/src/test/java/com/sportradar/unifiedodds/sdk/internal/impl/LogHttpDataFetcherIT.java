@@ -5,9 +5,10 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 
 import static org.mockito.Mockito.mock;
 
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import javax.xml.bind.JAXBException;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 public class LogHttpDataFetcherIT extends HttpDataFetcherIT {
 
@@ -15,7 +16,7 @@ public class LogHttpDataFetcherIT extends HttpDataFetcherIT {
 
     @Override
     public HttpDataFetcher createHttpDataFetcher(
-        SdkInternalConfiguration config,
+        UofConfiguration config,
         CloseableHttpAsyncClient httpClient,
         UnifiedOddsStatistics statsBean,
         HttpResponseHandler httpResponseHandler
@@ -26,7 +27,8 @@ public class LogHttpDataFetcherIT extends HttpDataFetcherIT {
             statsBean,
             httpResponseHandler,
             mock(UserAgentProvider.class),
-            mock(TraceIdProvider.class)
+            mock(TraceIdProvider.class),
+            mock(OAuth2TokenCache.class)
         );
     }
 }

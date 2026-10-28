@@ -92,4 +92,9 @@ public interface UofConfiguration {
      * @return the settings for usage exporter
      */
     UofUsageConfiguration getUsage();
+
+    /**
+     * @return the authentication object used to identify and verify your identity, or null if not set
+     */
+    UofClientAuthentication.PrivateKeyJwt getClientAuthentication();
 }

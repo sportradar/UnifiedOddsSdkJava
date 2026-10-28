@@ -14,11 +14,6 @@ import com.sportradar.unifiedodds.sdk.internal.impl.*;
 @SuppressWarnings({ "LineLength", "MultipleStringLiterals" })
 public class DataProvidersModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        // empty
-    }
-
     @Provides
     @Named("SummaryEndpointDataProvider")
     private ExecutionPathDataProvider<Object> provideSummaryEndpointDataProvider(

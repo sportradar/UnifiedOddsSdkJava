@@ -11,7 +11,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
+import com.sportradar.unifiedodds.sdk.internal.commoniam.OAuth2TokenCache;
 import com.sportradar.unifiedodds.sdk.internal.impl.SdkInternalConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.TraceIdProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.UserAgentProvider;
@@ -32,13 +34,16 @@ public class HttpHelperTest {
     @Nested
     public class WhenIoExceptionHappensDuringPost {
 
-        private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+        private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+        private final UofConfiguration configuration = mock(UofConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
         private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
         private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
         private HttpHelper httpHelper = new HttpHelper(
-            config,
+            deprecatedConfig,
+            configuration,
+            mock(OAuth2TokenCache.class),
             httpClient,
             messageExtractor,
             userAgent,
@@ -104,13 +109,16 @@ public class HttpHelperTest {
     @Nested
     public class WhenIoExceptionHappensDuringPut {
 
-        private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+        private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+        private final UofConfiguration configuration = mock(UofConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
         private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
         private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
         private HttpHelper httpHelper = new HttpHelper(
-            config,
+            deprecatedConfig,
+            configuration,
+            mock(OAuth2TokenCache.class),
             httpClient,
             messageExtractor,
             userAgent,
@@ -176,13 +184,16 @@ public class HttpHelperTest {
     @Nested
     public class WhenIoExceptionHappensDuringDelete {
 
-        private final SdkInternalConfiguration config = mock(SdkInternalConfiguration.class);
+        private final SdkInternalConfiguration deprecatedConfig = mock(SdkInternalConfiguration.class);
+        private final UofConfiguration configuration = mock(UofConfiguration.class);
         private final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         private final MessageAndActionExtractor messageExtractor = mock(MessageAndActionExtractor.class);
         private final UserAgentProvider userAgent = mock(UserAgentProvider.class);
         private final TraceIdProvider traceIdProvider = mock(TraceIdProvider.class);
         private HttpHelper httpHelper = new HttpHelper(
-            config,
+            deprecatedConfig,
+            configuration,
+            mock(OAuth2TokenCache.class),
             httpClient,
             messageExtractor,
             userAgent,

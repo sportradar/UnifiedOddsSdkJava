@@ -17,6 +17,10 @@ public class RoutingKeys {
         return "-.-.-.alive.-.-.-.-";
     }
 
+    public String snapshotComplete() {
+        return format("-.-.-.snapshot_complete.-.-.-.%d", globalVariables.getNodeId());
+    }
+
     public String liveOddsChange() {
         return format(
             "hi.-.live.odds_change.%d.sr:%s.%d.%s",

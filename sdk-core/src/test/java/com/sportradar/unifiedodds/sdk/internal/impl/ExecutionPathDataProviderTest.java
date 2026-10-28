@@ -82,7 +82,7 @@ class ExecutionPathDataProviderTest {
     }
 
     @Nested
-    class GetFinalUrl {
+    class GetFinalBaseUrl {
 
         @ParameterizedTest
         @MethodSource(LOCALES)

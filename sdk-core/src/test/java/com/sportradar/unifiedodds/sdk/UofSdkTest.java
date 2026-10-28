@@ -3,15 +3,14 @@
  */
 package com.sportradar.unifiedodds.sdk;
 
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.inject.*;
+import com.google.inject.Injector;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.ReplayManager;
@@ -72,13 +71,13 @@ public class UofSdkTest {
         return Arrays
             .asList(Environment.values())
             .stream()
-            .filter(e -> e != Replay)
-            .filter(e -> e != GlobalReplay)
+            .filter(e -> e != ReplayWithIntegrationCredentials)
+            .filter(e -> e != ReplayWithProductionCredentials)
             .toArray();
     }
 
     private static Object[] replayEnvironments() {
-        return new Environment[] { Replay, GlobalReplay };
+        return new Environment[] { ReplayWithIntegrationCredentials, ReplayWithProductionCredentials };
     }
 
     static class InjectorReplacingUofSdk extends UofSdk {

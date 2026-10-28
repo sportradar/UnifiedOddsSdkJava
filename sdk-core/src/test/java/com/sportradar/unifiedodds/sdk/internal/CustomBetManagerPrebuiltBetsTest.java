@@ -29,6 +29,7 @@ import com.sportradar.utils.Urn;
 import com.sportradar.utils.time.TimeUtilsStub;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.stream.Stream;
 import lombok.val;
 import org.junit.jupiter.api.Named;
@@ -367,7 +368,7 @@ class PrebuiltBetsPropertyProviders {
                 "generatedAt - available",
                 p -> p.setGeneratedAt(GENERATED_AT),
                 PrebuiltBets::getGeneratedAt,
-                Date.from(Instant.parse(GENERATED_AT))
+                Date.from(OffsetDateTime.parse(GENERATED_AT).toInstant())
             ),
             arguments("generatedAt - null", p -> p.setGeneratedAt(null), PrebuiltBets::getGeneratedAt, null),
             arguments(

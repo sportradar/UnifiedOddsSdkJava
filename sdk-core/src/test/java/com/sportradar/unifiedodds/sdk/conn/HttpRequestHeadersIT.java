@@ -7,8 +7,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.sportradar.unifiedodds.sdk.SapiCategories.international;
 import static com.sportradar.unifiedodds.sdk.conn.AcceptanceTestDsl.Setup.context;
-import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.forHeader;
-import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.forHeaderWithAnyValue;
+import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.requiringHeader;
+import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.requiringHeaderWithAnyValue;
 import static com.sportradar.unifiedodds.sdk.conn.ProducerId.LIVE_ODDS;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OddEven.oddEvenMarketDescription;
 import static com.sportradar.unifiedodds.sdk.conn.SapiMarketDescriptions.OneXtwo.oneXtwoMarketDescription;
@@ -107,9 +107,9 @@ class HttpRequestHeadersIT {
                     api.stubMatchSummary(
                         aLanguage,
                         soccerMatchGermanyScotlandEuro2024(),
-                        forHeader("x-access-token", sdkCredentials.getUsername()),
-                        forHeaderWithAnyValue("user-agent"),
-                        forHeaderWithAnyValue("trace-id")
+                        requiringHeader("x-access-token", sdkCredentials.getUsername()),
+                        requiringHeaderWithAnyValue("user-agent"),
+                        requiringHeaderWithAnyValue("trace-id")
                     );
                     return api;
                 })
@@ -141,9 +141,9 @@ class HttpRequestHeadersIT {
             apiSimulator.stubMatchSummary(
                 aLanguage,
                 soccerMatchGermanyScotlandEuro2024(),
-                forHeader("x-access-token", sdkCredentials.getUsername()),
-                forHeaderWithAnyValue("user-agent"),
-                forHeaderWithAnyValue("trace-id")
+                requiringHeader("x-access-token", sdkCredentials.getUsername()),
+                requiringHeaderWithAnyValue("user-agent"),
+                requiringHeaderWithAnyValue("trace-id")
             );
 
             try (
@@ -177,9 +177,9 @@ class HttpRequestHeadersIT {
             apiSimulator.stubMatchSummaryNotFound(
                 aLanguage,
                 Urn.parse(GERMANY_SCOTLAND_MATCH_URN),
-                forHeader("x-access-token", sdkCredentials.getUsername()),
-                forHeaderWithAnyValue("user-agent"),
-                forHeaderWithAnyValue("trace-id")
+                requiringHeader("x-access-token", sdkCredentials.getUsername()),
+                requiringHeaderWithAnyValue("user-agent"),
+                requiringHeaderWithAnyValue("trace-id")
             );
 
             try (
@@ -213,9 +213,9 @@ class HttpRequestHeadersIT {
             apiSimulator.stubMarketListContaining(
                 oneXtwoMarketDescription(),
                 aLanguage,
-                forHeader("x-access-token", sdkCredentials.getUsername()),
-                forHeaderWithAnyValue("user-agent"),
-                forHeaderWithAnyValue("trace-id")
+                requiringHeader("x-access-token", sdkCredentials.getUsername()),
+                requiringHeaderWithAnyValue("user-agent"),
+                requiringHeaderWithAnyValue("trace-id")
             );
 
             try (
@@ -247,9 +247,9 @@ class HttpRequestHeadersIT {
             apiSimulator.activateProducer(LIVE_ODDS, "http://" + sportsApiBaseUrl.get() + "/recovery/");
             apiSimulator.stubEventOddsRecovery(
                 GERMANY_SCOTLAND_MATCH_URN,
-                forHeader("x-access-token", sdkCredentials.getUsername()),
-                forHeaderWithAnyValue("user-agent"),
-                forHeaderWithAnyValue("trace-id")
+                requiringHeader("x-access-token", sdkCredentials.getUsername()),
+                requiringHeaderWithAnyValue("user-agent"),
+                requiringHeaderWithAnyValue("trace-id")
             );
 
             try (
@@ -285,9 +285,9 @@ class HttpRequestHeadersIT {
             apiSimulator.activateProducer(LIVE_ODDS, "http://" + sportsApiBaseUrl.get() + "/recovery/");
             apiSimulator.stubEventStatefulRecovery(
                 GERMANY_SCOTLAND_MATCH_URN,
-                forHeader("x-access-token", sdkCredentials.getUsername()),
-                forHeaderWithAnyValue("user-agent"),
-                forHeaderWithAnyValue("trace-id")
+                requiringHeader("x-access-token", sdkCredentials.getUsername()),
+                requiringHeaderWithAnyValue("user-agent"),
+                requiringHeaderWithAnyValue("trace-id")
             );
 
             try (

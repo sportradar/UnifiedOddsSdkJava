@@ -11,6 +11,10 @@ public class UofApiConfigurationStub implements UofApiConfiguration {
     private Duration httpClientRecoveryTimeout;
     private String host;
     private Duration httpClientFastFailingTimeout;
+    private boolean useSsl;
+    private int port;
+    private int httpClientMaxConnTotal;
+    private int httpClientMaxConnPerRoute;
 
     @Override
     public String getHost() {
@@ -21,14 +25,22 @@ public class UofApiConfigurationStub implements UofApiConfiguration {
         this.host = host;
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     @Override
     public int getPort() {
-        return 0;
+        return port;
+    }
+
+    public void setUseSsl(boolean useSsl) {
+        this.useSsl = useSsl;
     }
 
     @Override
     public boolean getUseSsl() {
-        return false;
+        return useSsl;
     }
 
     public void setHttpClientTimeout(Duration duration) {
@@ -58,14 +70,22 @@ public class UofApiConfigurationStub implements UofApiConfiguration {
         this.httpClientFastFailingTimeout = duration;
     }
 
+    public void setHttpClientMaxConnTotal(int httpClientMaxConnTotal) {
+        this.httpClientMaxConnTotal = httpClientMaxConnTotal;
+    }
+
     @Override
     public int getHttpClientMaxConnTotal() {
-        return 0;
+        return httpClientMaxConnTotal;
+    }
+
+    public void setHttpClientMaxConnPerRoute(int httpClientMaxConnPerRoute) {
+        this.httpClientMaxConnPerRoute = httpClientMaxConnPerRoute;
     }
 
     @Override
     public int getHttpClientMaxConnPerRoute() {
-        return 0;
+        return httpClientMaxConnPerRoute;
     }
 
     @Override

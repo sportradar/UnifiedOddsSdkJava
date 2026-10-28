@@ -145,11 +145,6 @@ public class UofConfigurations {
             return this;
         }
 
-        public BuilderViaJavaStubbingOutDataProvidersAndReaders withReplay() {
-            this.replayEnvironmentSelector = Optional.of(ReplayEnvironmentConfigurer.viaNoArgCall());
-            return this;
-        }
-
         public BuilderViaJavaStubbingOutDataProvidersAndReaders enableUsageExport() {
             this.usageExportEnabled = true;
             return this;
@@ -193,15 +188,10 @@ public class UofConfigurations {
         private static class ReplayEnvironmentConfigurer {
 
             private final Environment environment;
-            private final boolean configViaNoArgCall;
-
-            static ReplayEnvironmentConfigurer viaNoArgCall() {
-                return new ReplayEnvironmentConfigurer(null, true);
-            }
 
             static ReplayEnvironmentConfigurer of(Environment environment) {
                 validateIsReplay(environment);
-                return new ReplayEnvironmentConfigurer(environment, false);
+                return new ReplayEnvironmentConfigurer(environment);
             }
 
             private static void validateIsReplay(Environment environment) {
@@ -215,11 +205,7 @@ public class UofConfigurations {
             }
 
             ConfigurationBuilder select(EnvironmentSelector environmentSelector) {
-                if (configViaNoArgCall) {
-                    return environmentSelector.selectReplay();
-                } else {
-                    return environmentSelector.selectEnvironment(environment);
-                }
+                return environmentSelector.selectEnvironment(environment);
             }
         }
     }

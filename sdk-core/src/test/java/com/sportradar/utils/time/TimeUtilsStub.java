@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 public class TimeUtilsStub implements TimeUtils {
 
     private final AtomicActionPerformer atomicActionPerformer;
-    private Instant instant;
+    private volatile Instant instant;
 
     private TimeUtilsStub(final AtomicActionPerformer atomicActionPerformer, final Instant instant) {
         this.atomicActionPerformer = atomicActionPerformer;

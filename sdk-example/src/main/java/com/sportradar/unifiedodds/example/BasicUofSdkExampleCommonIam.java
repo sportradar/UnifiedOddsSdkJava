@@ -4,32 +4,60 @@
 
 package com.sportradar.unifiedodds.example;
 
+import static com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication.privateKeyJwt;
+import static java.util.Locale.ENGLISH;
+
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.MessageListener;
+import com.sportradar.unifiedodds.example.common.Pkcs8PrivateKeyLoader;
 import com.sportradar.unifiedodds.sdk.MessageInterest;
 import com.sportradar.unifiedodds.sdk.UofSdk;
 import com.sportradar.unifiedodds.sdk.UofSessionBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.Environment;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.managers.MarketDescriptionManager;
 import com.sportradar.unifiedodds.sdk.managers.ProducerManager;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
-import java.io.IOException;
+import java.security.PrivateKey;
 
 /**
  * The following example is a very simple example that just connects to the Unified Odds Feed and
  * prints out some information about all the messages it receives.
  */
 @SuppressWarnings({ "HideUtilityClassConstructor", "MagicNumber", "MethodLength" })
-public class BasicUofSdkExampleMain {
+public class BasicUofSdkExampleCommonIam {
 
-    public static void main(String[] args) throws InitException, IOException, InterruptedException {
-        // first you need to prepare a configuration suitable to your use. The most important thing is the access
-        // token provided by Sportradar. You can set the token through the builder via two ways:
-        //      - as a system property(JVM argument -Duf.accesstoken=<your-access-token>)
-        //        and then invoking setAccessTokenFromSystemVar on the builder
-        //      - directly setting the access token in the builder using the setAccessToken(String accessToken) method
-        UofConfiguration config = UofSdk.getUofConfigurationBuilder().buildConfigFromSdkProperties();
+    public static void main(String[] args) throws Exception {
+        // first you need to prepare a configuration suitable to your use. The most important thing is
+        // the authentication configuration.
+        // 1. generate a private/public key pair
+        // 2. upload the public key to Sportradar, so it can be used to authenticate your service.
+        // 3. Sportradar will provide you with a key id and service id (OAuth client id).
+        // 4. In order to start SDK you need both:
+        //   a. access token and
+        //   b. set up client authentication using the private key, signing key id and client id.
+        // Both of them need to belong to the same environment e.g. Integration.
+
+        String pkcs8RsaSha256PrivateKeyPem =
+            "-----BEGIN PRIVATE KEY-----\n" +
+            "your PKCS#8 RSA SHA256 private key PEM file content\n" +
+            "-----END PRIVATE KEY-----";
+
+        PrivateKey privateKey = Pkcs8PrivateKeyLoader.parse(pkcs8RsaSha256PrivateKeyPem);
+
+        UofConfiguration config = UofSdk
+            .getUofConfigurationBuilder()
+            .setClientAuthentication(
+                privateKeyJwt()
+                    .setSigningKeyId("yourSigningKeyId") // Key id issued after registering the Public Key with Sportradar
+                    .setClientId("yourServiceId") // Sportradar Service Id
+                    .setPrivateKey(privateKey)
+                    .build()
+            )
+            .selectEnvironment(Environment.GlobalIntegration)
+            .setNodeId(123)
+            .setDefaultLanguage(ENGLISH)
+            .build();
         // create the new feed
         UofSdk uofSdk = new UofSdk(new GlobalEventsListener(), config);
 

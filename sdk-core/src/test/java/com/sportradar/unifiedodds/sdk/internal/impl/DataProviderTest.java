@@ -6,16 +6,14 @@ package com.sportradar.unifiedodds.sdk.internal.impl;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.sportradar.unifiedodds.sdk.CapiCustomBet.getCalculationWithHarmonization;
 import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.BodyCondition.forRequestBody;
-import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.forHeader;
+import static com.sportradar.unifiedodds.sdk.conn.ApiSimulator.HeaderEquality.requiringHeader;
 import static com.sportradar.unifiedodds.sdk.conn.SapiSports.allSports;
 import static com.sportradar.unifiedodds.sdk.conn.SapiTournaments.Euro2024.euro2024TournamentInfo;
+import static com.sportradar.unifiedodds.sdk.internal.cfg.TestConfigHelper.setHostAndPort;
 import static com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.createDataProviderFor;
 import static com.sportradar.unifiedodds.sdk.internal.impl.Deserializers.customBetApiDeserializer;
 import static com.sportradar.unifiedodds.sdk.internal.impl.Deserializers.sportsApiDeserializer;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpClients.createStartedAsyncHttpClientFor;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpDataFetchers.createLogDataFetcher;
-import static com.sportradar.unifiedodds.sdk.internal.impl.HttpDataFetchers.createLogFastDataFetcher;
-import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.in;
+import static com.sportradar.unifiedodds.sdk.testutil.generic.naturallanguage.Prepositions.*;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
@@ -32,19 +30,23 @@ import com.sportradar.uf.custombet.datamodel.CapiSelectionType;
 import com.sportradar.uf.custombet.datamodel.CapiSelections;
 import com.sportradar.uf.sportsapi.datamodel.SapiSportsEndpoint;
 import com.sportradar.uf.sportsapi.datamodel.SapiTournamentsEndpoint;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfigurationStub;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfigurationStub;
 import com.sportradar.unifiedodds.sdk.conn.ApiSimulator;
 import com.sportradar.unifiedodds.sdk.exceptions.CommunicationException;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.exceptions.DeserializationException;
+import com.sportradar.unifiedodds.sdk.internal.impl.DataProviders.HttpFetcherType;
 import com.sportradar.unifiedodds.sdk.internal.impl.http.ApiResponseHandlingException;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
 import com.sportradar.utils.Urns;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -53,11 +55,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @Slf4j
-@SuppressWarnings({ "MagicNumber", "IllegalCatch", "MultipleStringLiterals" })
+@SuppressWarnings({ "MagicNumber", "IllegalCatch", "MultipleStringLiterals", "ClassFanOutComplexity" })
 public class DataProviderTest {
 
     @RegisterExtension
@@ -81,14 +83,15 @@ public class DataProviderTest {
     @Nested
     class PositiveResponses {
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
-        void returnsDataForGetRequest(String description, DataFetcherProvider dataFetcherProvider)
-            throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void returnsDataForGetRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/de/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
@@ -99,16 +102,16 @@ public class DataProviderTest {
             assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
-        void returnsDataForGetWithArgsRequestWithChineseUnicodeCharacters(
-            String description,
-            DataFetcherProvider dataFetcherProvider
-        ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void returnsDataForGetWithArgsRequestWithChineseUnicodeCharacters(HttpFetcherType httpFetcherType)
+            throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/zh/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
@@ -119,16 +122,15 @@ public class DataProviderTest {
             assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports(Locale.CHINESE)));
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
-        void returnsDataForGetWithAdditionalInfoRequest(
-            String description,
-            DataFetcherProvider dataFetcherProvider
-        ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void returnsDataForGetWithAdditionalInfoRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/%s/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
@@ -139,14 +141,15 @@ public class DataProviderTest {
             assertThat(idAndNameListOf(allSports.getData())).isEqualTo(idAndNameListOf(allSports()));
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
-        void returnsDataForPostRequest(String description, DataFetcherProvider dataFetcherProvider)
-            throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void returnsDataForPostRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/custombet/calculate")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(customBetApiDeserializer())
                 .<CapiCalculationResponse>build();
 
@@ -162,34 +165,35 @@ public class DataProviderTest {
                 .isEqualTo(getCalculationWithHarmonization(true).getCalculation().getOdds());
         }
 
-        @MethodSource(DATA_FETCHERS)
+        @EnumSource(HttpFetcherType.class)
         @ParameterizedTest(name = "{0}")
-        void returnsDataForGetWithHeadersRequest(String description, DataFetcherProvider dataFetcherProvider)
-            throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        void returnsDataForGetWithHeadersRequest(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/de/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
-            apiSimulator.stubAllSports(Locale.GERMAN, forHeader("Custom-Header", "HeaderValue"));
+            apiSimulator.stubAllSports(Locale.GERMAN, requiringHeader("Custom-Header", "HeaderValue"));
 
             val allSports = provider.getDataWithHeaders(ImmutableMap.of("Custom-Header", "HeaderValue"));
 
             assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
         }
 
-        @MethodSource(DATA_FETCHERS)
+        @EnumSource(HttpFetcherType.class)
         @ParameterizedTest(name = "{0}")
-        void returnsDataForGetWithHeadersRequestWithEmptyHeadersMap(
-            String description,
-            DataFetcherProvider dataFetcherProvider
-        ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        void returnsDataForGetWithHeadersRequestWithEmptyHeadersMap(HttpFetcherType httpFetcherType)
+            throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/%s/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
@@ -200,14 +204,15 @@ public class DataProviderTest {
             assertThat(idAndNameListOf(allSports)).isEqualTo(idAndNameListOf(allSports()));
         }
 
-        @MethodSource(DATA_FETCHERS)
+        @EnumSource(HttpFetcherType.class)
         @ParameterizedTest(name = "{0}")
-        void sendsAccessTokenAsHeader(String description, DataFetcherProvider dataFetcherProvider)
-            throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOnAndToken(apiBaseUrl.get());
+        void sendsAccessTokenAsHeader(HttpFetcherType httpFetcherType) throws Exception {
+            val cfg = uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/de/tournaments.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiTournamentsEndpoint>build();
 
@@ -215,7 +220,7 @@ public class DataProviderTest {
             apiSimulator.stubAllTournaments(
                 in(Locale.GERMAN),
                 tournament,
-                forHeader("x-access-token", cfg.getAccessToken())
+                requiringHeader("x-access-token", cfg.getAccessToken())
             );
 
             SapiTournamentsEndpoint data = provider.getData();
@@ -225,20 +230,16 @@ public class DataProviderTest {
 
         @Test
         void sendsUserAgentAsHeader() throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOnAndToken(apiBaseUrl.get());
+            val cfg = uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val userAgentProvider = new UserAgentProvider(
                 "Java-SDK 9.10.11",
                 Instant.ofEpochMilli(1740586231)
             );
             val provider = createDataProviderFor("/sports/de/tournaments.xml")
                 .with(cfg)
-                .with(
-                    createLogDataFetcher()
-                        .with(createStartedAsyncHttpClientFor(cfg))
-                        .with(cfg)
-                        .with(userAgentProvider)
-                        .build()
-                )
+                .with(deprecatedCfg)
+                .with(userAgentProvider)
                 .with(sportsApiDeserializer())
                 .<SapiTournamentsEndpoint>build();
 
@@ -246,7 +247,7 @@ public class DataProviderTest {
             apiSimulator.stubAllTournaments(
                 in(Locale.GERMAN),
                 tournament,
-                forHeader("user-agent", userAgentProvider.asHeaderValue())
+                requiringHeader("user-agent", userAgentProvider.asHeaderValue())
             );
 
             SapiTournamentsEndpoint data = provider.getData();
@@ -256,18 +257,6 @@ public class DataProviderTest {
 
         private List<String> idAndNameListOf(SapiSportsEndpoint allSports) {
             return allSports.getSport().stream().map(s -> s.getId() + "-" + s.getName()).collect(toList());
-        }
-
-        private SdkInternalConfiguration configurationForApiWith1sClientTimeoutNoSslOnAndToken(
-            String anyFreePort
-        ) {
-            SdkInternalConfiguration cfg = mock(SdkInternalConfiguration.class);
-            when(cfg.getApiHostAndPort()).thenReturn(anyFreePort);
-            when(cfg.getUseApiSsl()).thenReturn(false);
-            when(cfg.getHttpClientTimeout()).thenReturn(1);
-            when(cfg.getFastHttpClientTimeout()).thenReturn(1L);
-            when(cfg.getAccessToken()).thenReturn("some-token-1234");
-            return cfg;
         }
 
         public CapiSelections customBetSelectionsForHarmonization() {
@@ -287,24 +276,27 @@ public class DataProviderTest {
     @Nested
     class Concurrency {
 
-        private final int numberOfThreads = 10;
-        private final ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+        private final int tenThreads = 10;
+        private final ExecutorService executor = Executors.newFixedThreadPool(tenThreads);
 
         @AfterEach
         void tearDown() {
             executor.shutdown();
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void returnsDataForGetRequestWhenMultipleThreadsAreAccessingTheSameDataProvider(
-            String description,
-            DataFetcherProvider dataFetcherProvider
+            HttpFetcherType httpFetcherType
         ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val config = uofConfigForApiWith10MaxConnectionsAnd1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith10MaxConnectionsAnd1sClientTimeoutNoSslOn(
+                apiBaseUrl.get()
+            );
             val provider = createDataProviderFor("/sports/de/sports.xml")
-                .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(config)
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
@@ -312,7 +304,7 @@ public class DataProviderTest {
 
             Callable<SapiSportsEndpoint> getData = () -> provider.getData();
 
-            List<SapiSportsEndpoint> results = repeatTimes(numberOfThreads, getData);
+            List<SapiSportsEndpoint> results = repeatTimes(tenThreads, getData);
 
             assertThat(results)
                 .isNotEmpty()
@@ -341,16 +333,17 @@ public class DataProviderTest {
     @Nested
     class DataProviderErrors {
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void throwsDeserializationExceptionWhenPostRequestBodyCannotBeSerializedUsingProvidedSerializer(
-            String description,
-            DataFetcherProvider dataFetcherProvider
+            HttpFetcherType httpFetcherType
         ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/custombet/calculate")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .build();
 
@@ -362,16 +355,17 @@ public class DataProviderTest {
                 .withCauseInstanceOf(DeserializationException.class);
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void throwsDeserializationExceptionWhenResponseBodyCannotBeSerializedUsingProvidedSerializer(
-            String description,
-            DataFetcherProvider dataFetcherProvider
+            HttpFetcherType httpFetcherType
         ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/users/whoami.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(customBetApiDeserializer())
                 .build();
 
@@ -383,16 +377,17 @@ public class DataProviderTest {
                 .withCauseInstanceOf(DeserializationException.class);
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void throwsApiResponseHandlingExceptionWhenHttpResponseHasNoBodyAtAll(
-            String description,
-            DataFetcherProvider dataFetcherProvider
+            HttpFetcherType httpFetcherType
         ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/users/whoami.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(customBetApiDeserializer())
                 .build();
 
@@ -412,16 +407,16 @@ public class DataProviderTest {
                 });
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
-        void throwsApiResponseHandlingExceptionWhenHttpStatus404(
-            String description,
-            DataFetcherProvider dataFetcherProvider
-        ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
+        void throwsApiResponseHandlingExceptionWhenHttpStatus404(HttpFetcherType httpFetcherType)
+            throws Exception {
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/custombet/calculate")
                 .with(cfg)
-                .with(createLogDataFetcher().with(createStartedAsyncHttpClientFor(cfg)).with(cfg).build())
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(customBetApiDeserializer())
                 .build();
 
@@ -441,16 +436,17 @@ public class DataProviderTest {
                 });
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void throwsApiResponseHandlingExceptionWhenBadRequestWithEmptyErrorMessage(
-            String description,
-            DataFetcherProvider dataFetcherProvider
+            HttpFetcherType httpFetcherType
         ) throws Exception {
-            val cfg = configurationForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val cfg = uofConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
+            val deprecatedCfg = internalConfigForApiWith1sClientTimeoutNoSslOn(apiBaseUrl.get());
             val provider = createDataProviderFor("/sports/de/sports.xml")
                 .with(cfg)
-                .with(dataFetcherProvider.getFor(cfg))
+                .with(deprecatedCfg)
+                .with(httpFetcherType)
                 .with(sportsApiDeserializer())
                 .<SapiSportsEndpoint>build();
 
@@ -471,30 +467,39 @@ public class DataProviderTest {
                 });
         }
 
-        @MethodSource(DATA_FETCHERS)
-        @ParameterizedTest(name = "{0}")
+        @EnumSource(HttpFetcherType.class)
+        @ParameterizedTest
         void throwsExceptionWhenDataProviderInitializedWithConfigurationWithoutTimeout(
-            String description,
-            DataFetcherProvider dataFetcherProvider
+            HttpFetcherType httpFetcherType
         ) throws Exception {
-            val cfg = configurationWithBothHttpTimeoutsSetToZero();
+            val deprecatedCfg = internalConfigWithBothHttpTimeoutsSetToZero();
+            val cfg = uofConfigWithBothHttpTimeoutsSetToZero();
 
             assertThatException()
                 .isThrownBy(() ->
                     createDataProviderFor("/sports/de/sports.xml")
+                        .with(deprecatedCfg)
                         .with(cfg)
-                        .with(dataFetcherProvider.getFor(cfg))
+                        .with(httpFetcherType)
                         .build()
                 )
                 .isInstanceOf(IllegalArgumentException.class)
                 .withMessage("timeout cannot be 0");
         }
 
-        private SdkInternalConfiguration configurationWithBothHttpTimeoutsSetToZero() {
+        private SdkInternalConfiguration internalConfigWithBothHttpTimeoutsSetToZero() {
             SdkInternalConfiguration cfg = mock(SdkInternalConfiguration.class);
             when(cfg.getHttpClientTimeout()).thenReturn(0);
             when(cfg.getFastHttpClientTimeout()).thenReturn(0L);
             return cfg;
+        }
+
+        private UofConfiguration uofConfigWithBothHttpTimeoutsSetToZero() {
+            UofConfigurationStub config = new UofConfigurationStub();
+            UofApiConfigurationStub apiConfig = (UofApiConfigurationStub) config.getApi();
+            apiConfig.setHttpClientTimeout(Duration.ZERO);
+            apiConfig.setHttpClientFastFailingTimeout(Duration.ZERO);
+            return config;
         }
 
         private CapiResponse anyNonSapiSerializableXmlElement() {
@@ -506,31 +511,48 @@ public class DataProviderTest {
         return sapiResponse.getSport().stream().map(s -> s.getId() + "-" + s.getName()).collect(toList());
     }
 
-    private SdkInternalConfiguration configurationForApiWith1sClientTimeoutNoSslOn(String anyFreePort) {
+    private UofConfiguration uofConfigForApiWithTokenAnd1sClientTimeoutNoSslOn(String authorityOfUri) {
+        UofConfigurationStub config = uofConfigForApiWith1sClientTimeoutNoSslOn(authorityOfUri);
+        config.setAccessToken("some-token-1234");
+        return config;
+    }
+
+    private SdkInternalConfiguration internalConfigForApiWith10MaxConnectionsAnd1sClientTimeoutNoSslOn(
+        String authorityOfUri
+    ) {
+        SdkInternalConfiguration cfg = internalConfigForApiWith1sClientTimeoutNoSslOn(authorityOfUri);
+        when(cfg.getHttpClientMaxConnTotal()).thenReturn(10);
+        when(cfg.getHttpClientMaxConnPerRoute()).thenReturn(10);
+        return cfg;
+    }
+
+    private UofConfiguration uofConfigForApiWith10MaxConnectionsAnd1sClientTimeoutNoSslOn(
+        String authorityOfUri
+    ) {
+        UofConfigurationStub config = uofConfigForApiWith1sClientTimeoutNoSslOn(authorityOfUri);
+        UofApiConfigurationStub apiConfig = (UofApiConfigurationStub) config.getApi();
+        apiConfig.setHttpClientMaxConnTotal(10);
+        apiConfig.setHttpClientMaxConnPerRoute(10);
+        return config;
+    }
+
+    private SdkInternalConfiguration internalConfigForApiWith1sClientTimeoutNoSslOn(String host) {
         SdkInternalConfiguration cfg = mock(SdkInternalConfiguration.class);
-        when(cfg.getApiHostAndPort()).thenReturn(anyFreePort);
+        when(cfg.getApiHostAndPort()).thenReturn(host);
         when(cfg.getUseApiSsl()).thenReturn(false);
         when(cfg.getHttpClientTimeout()).thenReturn(1);
         when(cfg.getFastHttpClientTimeout()).thenReturn(1L);
         return cfg;
     }
 
-    static Stream<Arguments> dataFetchers() {
-        return Stream.of(
-            Arguments.arguments(
-                "NormalDataFetcher",
-                (DataFetcherProvider) cfg ->
-                    createLogDataFetcher().with(createStartedAsyncHttpClientFor(cfg)).with(cfg).build()
-            ),
-            Arguments.arguments(
-                "FastDataFetcher",
-                (DataFetcherProvider) cfg ->
-                    createLogFastDataFetcher().with(createStartedAsyncHttpClientFor(cfg)).with(cfg).build()
-            )
-        );
-    }
-
-    interface DataFetcherProvider {
-        HttpDataFetcher getFor(SdkInternalConfiguration cfg);
+    private UofConfigurationStub uofConfigForApiWith1sClientTimeoutNoSslOn(String authorityOfUri) {
+        UofApiConfigurationStub apiConfig = new UofApiConfigurationStub();
+        apiConfig.setHttpClientTimeout(Duration.ofSeconds(1));
+        apiConfig.setHttpClientFastFailingTimeout(Duration.ofSeconds(1));
+        apiConfig.setUseSsl(false);
+        setHostAndPort(from(authorityOfUri), to(apiConfig));
+        UofConfigurationStub config = new UofConfigurationStub();
+        config.setApi(apiConfig);
+        return config;
     }
 }

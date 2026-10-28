@@ -7,6 +7,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sportradar.uf.sportsapi.datamodel.*;
+import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.HttpHelper;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.MessageAndActionExtractor;
@@ -42,13 +43,21 @@ public class SdkTestModule implements Module {
     @Singleton
     @Named("RecoveryHttpHelper")
     private HttpHelper provideRecoveryHttpHelper(
-        SdkInternalConfiguration config,
+        SdkInternalConfiguration deprecatedConfig,
+        UofConfiguration uofConfiguration,
         @Named("RecoveryHttpClient") CloseableHttpClient httpClient,
         MessageAndActionExtractor messageExtractor,
         UserAgentProvider userAgentProvider,
         TraceIdProvider traceIdProvider
     ) {
-        return new TestHttpHelper(config, httpClient, messageExtractor, userAgentProvider, traceIdProvider);
+        return new TestHttpHelper(
+            deprecatedConfig,
+            uofConfiguration,
+            httpClient,
+            messageExtractor,
+            userAgentProvider,
+            traceIdProvider
+        );
     }
 
     @Provides

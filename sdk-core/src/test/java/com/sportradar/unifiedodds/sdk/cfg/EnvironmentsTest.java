@@ -6,10 +6,10 @@ package com.sportradar.unifiedodds.sdk.cfg;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Custom;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalIntegration;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalProduction;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Integration;
 import static com.sportradar.unifiedodds.sdk.cfg.Environment.Production;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.ReplayWithIntegrationCredentials;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.ReplayWithProductionCredentials;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sportradar.utils.OldStyleTest;
@@ -27,8 +27,8 @@ public class EnvironmentsTest {
     @Test
     public void getsReplayEnvironments() {
         val replayEnvironments = new HashSet<>();
-        replayEnvironments.add(Replay);
-        replayEnvironments.add(GlobalReplay);
+        replayEnvironments.add(ReplayWithProductionCredentials);
+        replayEnvironments.add(ReplayWithIntegrationCredentials);
 
         assertThat(Environments.getReplayEnvironments()).isEqualTo(replayEnvironments);
     }

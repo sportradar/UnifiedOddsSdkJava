@@ -48,8 +48,8 @@ public class ConfigureExceptionHandlingStrategyTest {
             .setDefaultLanguage(anyLanguage)
             .setExceptionHandlingStrategy(strategy)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(strategy, config.getExceptionHandlingStrategy());
         assertEquals(strategy, internalConfig.getExceptionHandlingStrategy());
@@ -58,13 +58,5 @@ public class ConfigureExceptionHandlingStrategyTest {
 
     private static Object[] allStrategies() {
         return new Object[] { ExceptionHandlingStrategy.Throw, ExceptionHandlingStrategy.Catch };
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

@@ -4,15 +4,10 @@
 
 package com.sportradar.unifiedodds.sdk.internal.cfg;
 
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
-import static com.sportradar.unifiedodds.sdk.impl.BookmakerDetailsDataProvider.providing;
 import static com.sportradar.unifiedodds.sdk.impl.ProducerDataProviderStubs.providerOfSingleEmptyProducer;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.emptyBookmakerDetailsReader;
 import static com.sportradar.unifiedodds.sdk.impl.apireaders.WhoAmIReaderStubs.readerProvidingBookmaker;
-import static com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurations.BuilderViaFileStubbingOutDataProvidersAndReaders.viaFileStubbingOutDataProvidersAndReaders;
-import static com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurations.BuilderViaJavaStubbingOutDataProvidersAndReaders.viaJavaStubbingOutDataProvidersAndReaders;
-import static com.sportradar.utils.domain.names.LanguageHolder.in;
+import static com.sportradar.unifiedodds.sdk.internal.cfg.BaseUrl.baseUrl;
 import static java.util.Locale.ENGLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -20,16 +15,19 @@ import static org.mockito.Mockito.when;
 
 import com.sportradar.unifiedodds.sdk.ExceptionHandlingStrategy;
 import com.sportradar.unifiedodds.sdk.cfg.Environment;
+import com.sportradar.unifiedodds.sdk.cfg.UofApiConfiguration;
+import com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
-import com.sportradar.unifiedodds.sdk.conn.SapiBookmakerDetails;
 import com.sportradar.unifiedodds.sdk.entities.BookmakerDetails;
-import com.sportradar.unifiedodds.sdk.internal.exceptions.DataProviderException;
 import com.sportradar.unifiedodds.sdk.internal.impl.EnvironmentManager;
 import com.sportradar.unifiedodds.sdk.internal.impl.ProducerDataProvider;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.entities.BookmakerDetailsImpl;
 import com.sportradar.utils.OldStyleTest;
 import java.security.InvalidParameterException;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
@@ -38,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 @OldStyleTest
+@SuppressWarnings({ "MagicNumber", "ClassFanOutComplexity" })
 public class UofConfigurationTests {
 
     private final Function<UofConfiguration, WhoAmIReader> anyBookmaker = c -> emptyBookmakerDetailsReader();
@@ -344,39 +343,6 @@ public class UofConfigurationTests {
     }
 
     @Test
-    public void getApiHostWithPort() {
-        final int newPort = 555;
-        final Environment newValue = Environment.GlobalProduction;
-        config.updateSdkEnvironment(newValue);
-        ((UofApiConfigurationImpl) config.getApi()).setPort(newPort);
-
-        String hostWithPort = EnvironmentManager.getApiHost(newValue) + ":" + newPort;
-        Assert.assertEquals(hostWithPort, config.getApiHostAndPort());
-    }
-
-    @Test
-    public void getApiWithPortWhenPortZero() {
-        final int newPort = 0;
-        final Environment newValue = Environment.GlobalProduction;
-        config.updateSdkEnvironment(newValue);
-        ((UofApiConfigurationImpl) config.getApi()).setPort(newPort);
-
-        String hostWithPort = EnvironmentManager.getApiHost(newValue);
-        Assert.assertEquals(hostWithPort, config.getApiHostAndPort());
-    }
-
-    @Test
-    public void getApiWithPortWhenPortDefault() {
-        final int newPort = 80;
-        final Environment newValue = Environment.GlobalProduction;
-        config.updateSdkEnvironment(newValue);
-        ((UofApiConfigurationImpl) config.getApi()).setPort(newPort);
-
-        String hostWithPort = EnvironmentManager.getApiHost(newValue);
-        Assert.assertEquals(hostWithPort, config.getApiHostAndPort());
-    }
-
-    @Test
     public void useCorrectRabbitPortWhenChangingEnvironmentWhenUseSslFalse() {
         final Environment newValue = Environment.GlobalProduction;
         ((UofRabbitConfigurationImpl) config.getRabbit()).useSsl(false);
@@ -396,25 +362,49 @@ public class UofConfigurationTests {
 
     @Test
     public void toStringHasAllTheValues() {
-        Assert.assertNotNull(config);
+        assertThat(config).isNotNull();
+
+        config.setAuthentication(clientAuthentication());
 
         String summary = config.toString();
 
-        Assert.assertNotNull(summary);
-        Assert.assertTrue(summary.contains("UofConfiguration"));
-        Assert.assertTrue(summary.contains("accessToken="));
-        Assert.assertTrue(summary.contains("environment="));
-        Assert.assertTrue(summary.contains("nodeId="));
-        Assert.assertTrue(summary.contains("defaultLanguage="));
-        Assert.assertTrue(summary.contains("languages=("));
-        Assert.assertTrue(summary.contains("exceptionHandlingStrategy="));
-        Assert.assertTrue(summary.contains("connectionTimeout"));
-        Assert.assertTrue(summary.contains("ApiConfiguration"));
-        Assert.assertTrue(summary.contains("RabbitConfiguration"));
-        Assert.assertTrue(summary.contains("CacheConfiguration"));
-        Assert.assertTrue(summary.contains("ProducerConfiguration"));
-        Assert.assertTrue(summary.contains("AdditionalConfiguration"));
-        Assert.assertTrue(summary.contains("UsageConfiguration"));
+        assertThat(summary).isNotEmpty();
+        assertThat(summary).contains("UofConfiguration");
+        assertThat(summary).contains("accessToken=");
+        assertThat(summary).contains("environment=");
+        assertThat(summary).contains("nodeId=");
+        assertThat(summary).contains("defaultLanguage=");
+        assertThat(summary).contains("languages=(");
+        assertThat(summary).contains("exceptionHandlingStrategy=");
+        assertThat(summary).contains("connectionTimeout");
+        assertThat(summary).contains("ApiConfiguration");
+        assertThat(summary).contains("RabbitConfiguration");
+        assertThat(summary).contains("CacheConfiguration");
+        assertThat(summary).contains("ProducerConfiguration");
+        assertThat(summary).contains("AdditionalConfiguration");
+        assertThat(summary).contains("UsageConfiguration");
+        assertThat(summary).contains("PrivateKeyJwt");
+    }
+
+    @Test
+    public void toStringOmitsAuthenticationWhenNull() {
+        assertThat(config).isNotNull();
+
+        config.setAuthentication(null);
+
+        String summary = config.toString();
+
+        assertThat(summary).isNotEmpty();
+        assertThat(summary).doesNotContain("PrivateKeyJwt");
+    }
+
+    private UofClientAuthentication.PrivateKeyJwtData clientAuthentication() {
+        return UofClientAuthentication
+            .privateKeyJwt()
+            .setSigningKeyId("signing-key-id")
+            .setClientId("some-client-id")
+            .setPrivateKey(anyPrivateKey())
+            .build();
     }
 
     @Test
@@ -465,7 +455,9 @@ public class UofConfigurationTests {
         Assert.assertEquals(host, config.getApi().getHost());
         Assert.assertEquals(port, config.getApi().getPort());
         Assert.assertFalse(config.getApi().getUseSsl());
-        Assert.assertEquals(host + ":" + port, config.getApiHostAndPort());
+        UofApiConfiguration config1 = config.getApi();
+        String hostAndPort = baseUrl().setHost(config1.getHost()).setPort(config1.getPort()).getHostAndPort();
+        Assert.assertEquals(host + ":" + port, hostAndPort);
     }
 
     @Test
@@ -486,7 +478,9 @@ public class UofConfigurationTests {
         Assert.assertEquals(host, config.getApi().getHost());
         Assert.assertEquals(port, config.getApi().getPort());
         Assert.assertTrue(config.getApi().getUseSsl());
-        Assert.assertEquals(host + ":" + port, config.getApiHostAndPort());
+        UofApiConfiguration config1 = config.getApi();
+        String hostAndPort = baseUrl().setHost(config1.getHost()).setPort(config1.getPort()).getHostAndPort();
+        Assert.assertEquals(host + ":" + port, hostAndPort);
     }
 
     @Test
@@ -510,172 +504,6 @@ public class UofConfigurationTests {
             Duration.ofMillis(1),
             configuration.getBookmakerDetails().getServerTimeDifference()
         );
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenIsUsedToReplay() throws DataProviderException {
-        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
-            .withIntegrationDataProvider(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withReplay(Replay)
-            .build();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenIsUsedToReplay() throws DataProviderException {
-        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
-            .withProductionDataProvider(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withReplay(Replay)
-            .build();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenIsUsedToReplayViaNoArgCall()
-        throws DataProviderException {
-        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
-            .withIntegrationDataProvider(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withReplay()
-            .build();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenIsUsedToReplayViaNoArgCall()
-        throws DataProviderException {
-        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
-            .withProductionDataProvider(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withReplay()
-            .build();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenIsUsedForGlobalReplay()
-        throws DataProviderException {
-        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
-            .withIntegrationDataProvider(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withReplay(GlobalReplay)
-            .build();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenIsUsedForGlobalReplay()
-        throws DataProviderException {
-        val configuration = viaJavaStubbingOutDataProvidersAndReaders()
-            .withProductionDataProvider(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withReplay(GlobalReplay)
-            .build();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenInPropsFileIsUsedToReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withProps(p -> p.with(Replay))
-            .buildFromProps();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenInPropsFileIsUsedToReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withProps(p -> p.with(Replay))
-            .buildFromProps();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenInPropsFileIsUsedForGlobalReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withProps(p -> p.with(GlobalReplay))
-            .buildFromProps();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenInPropsFileIsUsedForGlobalReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withProps(p -> p.with(GlobalReplay))
-            .buildFromProps();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenInYamlFileIsUsedToReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withYaml(p -> p.with(Replay))
-            .buildFromYaml();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenInYamlFileIsUsedToReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withYaml(p -> p.with(Replay))
-            .buildFromYaml();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
-    }
-
-    @Test
-    public void integrationApiHostIsSetWhenIntegrationTokenInYamlFileIsUsedForGlobalReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withIntegration(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withYaml(p -> p.with(GlobalReplay))
-            .buildFromYaml();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Integration).getApiHost());
-    }
-
-    @Test
-    public void productionApiHostIsSetWhenProductionTokenInYamlFileIsUsedForGlobalReplay()
-        throws DataProviderException {
-        val configuration = viaFileStubbingOutDataProvidersAndReaders()
-            .withProduction(providing(in(ENGLISH), SapiBookmakerDetails.valid()))
-            .withYaml(p -> p.with(GlobalReplay))
-            .buildFromYaml();
-
-        assertThat(configuration.getApi().getHost())
-            .isEqualTo(EnvironmentManager.getSetting(Environment.Production).getApiHost());
     }
 
     @Test
@@ -710,5 +538,17 @@ public class UofConfigurationTests {
             anyProducers
         );
         configuration.acquireBookmakerDetailsAndProducerData();
+    }
+
+    private static PrivateKey anyPrivateKey() {
+        try {
+            val keyGen = KeyPairGenerator.getInstance("RSA");
+            val keySize = 2048;
+            keyGen.initialize(keySize);
+            val keyPair = keyGen.generateKeyPair();
+            return keyPair.getPrivate();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Failed to create dummy private key", e);
+        }
     }
 }

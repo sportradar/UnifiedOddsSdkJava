@@ -4,10 +4,12 @@
 
 package com.sportradar.unifiedodds.example;
 
+import static com.sportradar.unifiedodds.example.common.ConsoleHelper.readLine;
+
+import com.sportradar.unifiedodds.example.common.Pkcs8PrivateKeyLoader;
+import com.sportradar.unifiedodds.example.credentialcheck.CredentialCheckExample;
 import com.sportradar.unifiedodds.example.examples.*;
-import com.sportradar.unifiedodds.sdk.exceptions.InitException;
-import java.io.IOException;
-import java.util.Scanner;
+import java.security.PrivateKey;
 
 /**
  * The SDK basic example selector
@@ -25,18 +27,34 @@ import java.util.Scanner;
 )
 public class UofSdkExamples {
 
-    public static void main(String[] args) throws IOException, InitException, InterruptedException {
+    public static void main(String[] args) throws Exception {
         System.out.println("UofSdkExamples - example selector, START");
         System.out.println();
 
         doExampleSelection();
     }
 
-    private static void doExampleSelection() throws IOException, InitException, InterruptedException {
+    private static void doExampleSelection() throws Exception {
         System.out.println("Available examples: (select the one you would like to run)");
-        System.out.println("  1 - Basic SDK Setup");
+        System.out.println("  0 - Credential troubleshooting");
         System.out.println(
-            "      → Single UofSession with MessageInterest.AllMessages, full odds recovery from all producers"
+            "      → Check SSO token or CommonIAM credentials against Integration & Production"
+        );
+        System.out.println("      → Demonstrates: credential diagnostics without starting the SDK");
+        System.out.println();
+
+        System.out.println("  1a - Basic SDK Setup (Access Token)");
+        System.out.println(
+            "      → Single UofSession using Access Token with MessageInterest.AllMessages, full odds recovery from all producers"
+        );
+        System.out.println(
+            "      → Demonstrates: SDK initialization, GlobalEventsListener, MessageListener patterns"
+        );
+        System.out.println();
+
+        System.out.println("  1b - Basic SDK Setup (Client Authentication)");
+        System.out.println(
+            "      → Single UofSession using Client Authentication with MessageInterest.AllMessages, full odds recovery from all producers"
         );
         System.out.println(
             "      → Demonstrates: SDK initialization, GlobalEventsListener, MessageListener patterns"
@@ -121,52 +139,106 @@ public class UofSdkExamples {
             "      → Demonstrates: Cache management, state persistence, performance optimization"
         );
 
-        String selection = getConsoleInput();
+        String selection = readLine();
 
-        boolean isReplayEnvironment = selection.equals("7");
-        String environment = isReplayEnvironment ? "Replay" : "Integration";
-        System.out.println("Please enter a valid Unified Feed token for '" + environment + "' environment:");
-        String token = getConsoleInput();
+        if (selection.equals("0")) {
+            CredentialCheckExample.run();
+            return;
+        }
+
+        String accessToken = null;
+        PrivateKey privateKey = null;
+        String clientId = null;
+        String keyId = null;
+
+        boolean isAccessTokenCase = selection.equals("7") || selection.equals("1a");
+        if (isAccessTokenCase) {
+            System.out.println("Please enter a valid Unified Feed token for 'Integration' environment:");
+            accessToken = readLine();
+        } else {
+            System.out.println(
+                "Please enter an absolute path " +
+                "to a private key (RSA SHA256 PCKS#8 key in PEM format) for 'Integration' environment:"
+            );
+            String pemFilePath = readLine();
+            privateKey = Pkcs8PrivateKeyLoader.loadFromPath(pemFilePath);
+
+            System.out.println(
+                "Please enter a OAuth client id (Sportradar service id) for 'Integration' environment. " +
+                "It was supplied by Sportradar after uploading the public key:"
+            );
+            clientId = readLine();
+
+            System.out.println(
+                "Please enter a signing key id for 'Integration' environment. " +
+                "It was supplied by Sportradar after uploading the public key:"
+            );
+            keyId = readLine();
+        }
 
         switch (selection) {
-            case "1":
-                SingleSessionSetup singleSessionSetup = new SingleSessionSetup();
+            case "1a":
+                SingleSessionSetup singleSessionSetupAccessToken = new SingleSessionSetup(accessToken);
+                singleSessionSetupAccessToken.run(false);
+                break;
+            case "1b":
+                SingleSessionSetup singleSessionSetup = new SingleSessionSetup(privateKey, clientId, keyId);
                 singleSessionSetup.run(false);
                 break;
             case "2":
-                MultiSessionSetup multiSessionSetup = new MultiSessionSetup(token);
+                MultiSessionSetup multiSessionSetup = new MultiSessionSetup(privateKey, clientId, keyId);
                 multiSessionSetup.run();
                 break;
             case "3":
-                SingleSessionSetup singleSessionSetupRecovery = new SingleSessionSetup();
+                SingleSessionSetup singleSessionSetupRecovery = new SingleSessionSetup(
+                    privateKey,
+                    clientId,
+                    keyId
+                );
                 singleSessionSetupRecovery.run(true);
                 break;
             case "4":
-                DataSessionSetup dataSessionSetup = new DataSessionSetup(token);
+                DataSessionSetup dataSessionSetup = new DataSessionSetup(privateKey, clientId, keyId);
                 dataSessionSetup.run(true);
                 break;
             case "5":
-                AvailableMarketsPrinter availableMarketsPrinter = new AvailableMarketsPrinter(token);
+                AvailableMarketsPrinter availableMarketsPrinter = new AvailableMarketsPrinter(
+                    privateKey,
+                    clientId,
+                    keyId
+                );
                 availableMarketsPrinter.print();
                 break;
             case "6":
-                AvailableMarketsPrinter availableMarketsPrinterMappings = new AvailableMarketsPrinter(token);
+                AvailableMarketsPrinter availableMarketsPrinterMappings = new AvailableMarketsPrinter(
+                    privateKey,
+                    clientId,
+                    keyId
+                );
                 availableMarketsPrinterMappings.print(true);
                 break;
             case "7":
-                ReplaySessionSetup replaySessionSetup = new ReplaySessionSetup();
+                ReplaySessionSetup replaySessionSetup = new ReplaySessionSetup(accessToken);
                 replaySessionSetup.run();
                 break;
             case "8":
-                SportEventDataPrinter sportEventDataPrinter = new SportEventDataPrinter(token);
+                SportEventDataPrinter sportEventDataPrinter = new SportEventDataPrinter(
+                    privateKey,
+                    clientId,
+                    keyId
+                );
                 sportEventDataPrinter.print();
                 break;
             case "9":
-                AdvancedConfigurationSetup advancedConfigurationSetup = new AdvancedConfigurationSetup(token);
+                AdvancedConfigurationSetup advancedConfigurationSetup = new AdvancedConfigurationSetup(
+                    privateKey,
+                    clientId,
+                    keyId
+                );
                 advancedConfigurationSetup.run();
                 break;
             case "10":
-                ExportImportSetup exportImportSetup = new ExportImportSetup(token);
+                ExportImportSetup exportImportSetup = new ExportImportSetup(privateKey, clientId, keyId);
                 exportImportSetup.run();
                 break;
             default:
@@ -175,15 +247,6 @@ public class UofSdkExamples {
                 System.out.println();
                 doExampleSelection();
                 break;
-        }
-    }
-
-    private static String getConsoleInput() {
-        Scanner scanner = new Scanner(System.in);
-        if (scanner.hasNextLine()) {
-            return scanner.nextLine();
-        } else {
-            return getConsoleInput();
         }
     }
 }

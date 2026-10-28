@@ -4,6 +4,8 @@
 
 package com.sportradar.unifiedodds.example.examples;
 
+import static com.sportradar.unifiedodds.sdk.cfg.UofClientAuthentication.privateKeyJwt;
+
 import com.sportradar.unifiedodds.example.common.GlobalEventsListener;
 import com.sportradar.unifiedodds.example.common.SdkConstants;
 import com.sportradar.unifiedodds.example.common.SportEntityWriter;
@@ -13,6 +15,7 @@ import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.entities.SportEvent;
 import com.sportradar.unifiedodds.sdk.managers.SportDataProvider;
 import com.sportradar.utils.Urn;
+import java.security.PrivateKey;
 import java.util.Locale;
 
 /**
@@ -24,14 +27,20 @@ public class SportEventDataPrinter {
     private final UofSdk uofSdk;
     private final UofConfiguration configuration;
 
-    public SportEventDataPrinter(String token) {
+    public SportEventDataPrinter(PrivateKey privateKey, String clientId, String keyId) {
         logEntry("Running the UofSdk SDK Basic example - multiple session");
 
-        logEntry("Building the configuration using the provided token");
+        logEntry("Building the configuration using the provided client authentication");
         configuration =
             UofSdk
                 .getUofConfigurationBuilder()
-                .setAccessToken(token)
+                .setClientAuthentication(
+                    privateKeyJwt()
+                        .setClientId(clientId)
+                        .setPrivateKey(privateKey)
+                        .setSigningKeyId(keyId)
+                        .build()
+                )
                 .selectEnvironment(Environment.GlobalIntegration)
                 .setNodeId(SdkConstants.NODE_ID)
                 .setDefaultLanguage(Locale.ENGLISH)

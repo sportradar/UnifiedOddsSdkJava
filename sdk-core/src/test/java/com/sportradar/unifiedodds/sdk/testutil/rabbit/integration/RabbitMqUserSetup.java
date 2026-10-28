@@ -4,9 +4,7 @@
 package com.sportradar.unifiedodds.sdk.testutil.rabbit.integration;
 
 import com.rabbitmq.http.client.Client;
-import com.rabbitmq.http.client.ClientParameters;
 import com.rabbitmq.http.client.domain.UserPermissions;
-import com.sportradar.unifiedodds.sdk.testutil.generic.functional.ThrowingFunction;
 import java.util.*;
 import lombok.NonNull;
 import lombok.val;
@@ -47,6 +45,14 @@ public class RabbitMqUserSetup {
         upsertUser(credentialsToSetup);
         rabbitClient.createVhost(vhostLocation.getVirtualHostname());
         grantAdminPermissions(credentialsToSetup.getUsername());
+    }
+
+    public void updateUser(Credentials credentialsToSetup) {
+        rabbitClient.updateUser(
+            credentialsToSetup.getUsername(),
+            credentialsToSetup.getPassword().toCharArray(),
+            Collections.singletonList("user")
+        );
     }
 
     private void grantAdminPermissions(String username) {

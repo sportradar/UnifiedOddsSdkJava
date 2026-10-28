@@ -4,6 +4,9 @@
 
 package com.sportradar.unifiedodds.sdk.cfg;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
 /**
  * A description of the environment
  */
@@ -15,12 +18,22 @@ public enum Environment {
 
     Custom,
 
-    Replay,
-    GlobalReplay,
-
     GlobalProduction,
 
-    GlobalIntegration;
+    GlobalIntegration,
+
+    ReplayWithProductionCredentials,
+
+    ReplayWithIntegrationCredentials;
+
+    private static final Set<Environment> REPLAY_ENVIRONMENTS = ImmutableSet.of(
+        ReplayWithProductionCredentials,
+        ReplayWithIntegrationCredentials
+    );
+
+    public static boolean isReplay(Environment environment) {
+        return REPLAY_ENVIRONMENTS.contains(environment);
+    }
 
     public static Environment getEnvironment(String environment) {
         if (environment == null) {
@@ -34,14 +47,14 @@ public enum Environment {
                 return Production;
             case "Custom":
                 return Custom;
-            case "Replay":
-                return Replay;
-            case "GlobalReplay":
-                return GlobalReplay;
             case "GlobalProduction":
                 return GlobalProduction;
             case "GlobalIntegration":
                 return GlobalIntegration;
+            case "ReplayWithProductionCredentials":
+                return ReplayWithProductionCredentials;
+            case "ReplayWithIntegrationCredentials":
+                return ReplayWithIntegrationCredentials;
             default:
                 return null;
         }

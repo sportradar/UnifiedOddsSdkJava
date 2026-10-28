@@ -55,6 +55,13 @@ public class ConfigurationUnitBuilders {
             return this;
         }
 
+        public ConfigurationUnitBuilder withConfiguredBookmakerProvider(
+            DataProvider<BookmakerDetails> bookmakerProvider
+        ) {
+            this.configuredBookmakerProvider = Optional.of(bookmakerProvider);
+            return this;
+        }
+
         public ConfigurationUnitBuilder withProductionBookmakerProvider(
             DataProvider<BookmakerDetails> bookmakerProvider
         ) {
@@ -119,11 +126,7 @@ public class ConfigurationUnitBuilders {
                     ),
                 uofConfig ->
                     new ProducerDataProviderImpl(
-                        new SdkInternalConfiguration(
-                            uofConfig,
-                            new StubSdkConfigurationPropertiesReader(propsFileContent),
-                            new StubSdkConfigurationYamlReader(yamlFileContent)
-                        ),
+                        new SdkInternalConfiguration(uofConfig),
                         producersProvider.get()
                     )
             );

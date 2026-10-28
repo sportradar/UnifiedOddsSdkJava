@@ -10,23 +10,31 @@ import static java.util.Collections.emptyList;
 import com.google.common.collect.Lists;
 import com.sportradar.unifiedodds.sdk.*;
 import com.sportradar.unifiedodds.sdk.cfg.CustomConfigurationBuilder;
+import com.sportradar.unifiedodds.sdk.cfg.EnvironmentSelector;
+import com.sportradar.unifiedodds.sdk.cfg.TokenSetter;
 import com.sportradar.unifiedodds.sdk.cfg.UofConfiguration;
 import com.sportradar.unifiedodds.sdk.exceptions.InitException;
 import com.sportradar.unifiedodds.sdk.extended.UofExtListener;
 import com.sportradar.unifiedodds.sdk.extended.UofSdkExt;
+import com.sportradar.unifiedodds.sdk.internal.cfg.UofClientAuthenticationImpl;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.BaseUrl;
+import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.CommonIamData;
 import com.sportradar.unifiedodds.sdk.testutil.rabbit.integration.Credentials;
 import com.sportradar.utils.domain.names.Languages;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("ClassFanOutComplexity")
 public final class SdkSetup {
 
-    private final Credentials sdkCredentials;
+    private final Authentication authentication;
 
     private final BaseUrl rabbitBaseUrl;
 
@@ -41,10 +49,33 @@ public final class SdkSetup {
     private Optional<UofExtListener> rawMessagesListener = Optional.empty();
 
     private Optional<UofListener> messagesListener = Optional.empty();
+    private Optional<UofGlobalEventsListener> globalMessagesListener = Optional.empty();
     private Optional<ExceptionHandlingStrategy> exceptionHandlingStrategy = Optional.empty();
     private boolean useDefaultExceptionHandlingStrategy;
     private Optional<Locale> defaultLanguage = Optional.empty();
     private Optional<List<Locale>> desiredLanguages = Optional.empty();
+    private Optional<BaseUrl> commonIamApiBaseUrl = Optional.empty();
+    private Optional<CommonIamData> comonIamCredentials = Optional.empty();
+
+    private SdkSetup(
+        Authentication authentication,
+        BaseUrl rabbitBaseUrl,
+        BaseUrl sportsApiBaseUrl,
+        int nodeId
+    ) {
+        this.authentication = authentication;
+        this.rabbitBaseUrl = rabbitBaseUrl;
+        this.sportsApiBaseUrl = sportsApiBaseUrl;
+        this.nodeId = nodeId;
+    }
+
+    public SdkSetup(Credentials credentials, BaseUrl rabbitBaseUrl, BaseUrl sportsApiBaseUrl, int nodeId) {
+        this(Authentication.nonCommonIam(credentials), rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+    }
+
+    public static SdkSetup withCommonIam(BaseUrl rabbitBaseUrl, BaseUrl sportsApiBaseUrl, int nodeId) {
+        return new SdkSetup(Authentication.commonIam(), rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+    }
 
     public static SdkSetup with(
         Credentials sdkCredentials,
@@ -52,7 +83,12 @@ public final class SdkSetup {
         BaseUrl sportsApiBaseUrl,
         int nodeId
     ) {
-        return new SdkSetup(sdkCredentials, rabbitBaseUrl, sportsApiBaseUrl, nodeId);
+        return new SdkSetup(
+            Authentication.nonCommonIam(sdkCredentials),
+            rabbitBaseUrl,
+            sportsApiBaseUrl,
+            nodeId
+        );
     }
 
     public static SdkSetup with(BaseUrl sportsApiBaseUrl, int nodeId) {
@@ -71,6 +107,11 @@ public final class SdkSetup {
 
     public SdkSetup with(ListenerCollectingMessages collectingMessagesListener) {
         this.messagesListener = Optional.of(collectingMessagesListener);
+        return this;
+    }
+
+    public SdkSetup with(UofGlobalEventsListener collectingRawMessagesListener) {
+        this.globalMessagesListener = Optional.of(collectingRawMessagesListener);
         return this;
     }
 
@@ -104,10 +145,22 @@ public final class SdkSetup {
         return this;
     }
 
+    public SdkSetup withCommonIamApiBaseUrl(BaseUrl baseUrl) {
+        this.commonIamApiBaseUrl = Optional.of(baseUrl);
+        return this;
+    }
+
+    public SdkSetup withCommonIamCredentials(CommonIamData commonIamData) {
+        this.comonIamCredentials = Optional.of(commonIamData);
+        return this;
+    }
+
     public UofSdk withoutFeed() throws InitException {
-        CustomConfigurationBuilder configBuilder = UofSdk
-            .getUofConfigurationBuilder()
-            .setAccessToken(sdkCredentials.getUsername())
+        val tokenSetter = UofSdk.getUofConfigurationBuilder();
+        val environmentSelector = comonIamCredentials
+            .map(setOn(tokenSetter))
+            .orElseGet(() -> setAccessTokenOn(tokenSetter));
+        val configBuilder = environmentSelector
             .selectCustom()
             .setApiUseSsl(false)
             .setApiHost(sportsApiBaseUrl.get())
@@ -119,20 +172,57 @@ public final class SdkSetup {
         setHttpClientFastFailingTimeout(configBuilder);
         setHttpClientTimeout(configBuilder);
         setExceptionHandlingStrategy(configBuilder);
+        setCommonIamApiBaseUrl(configBuilder);
 
         UofConfiguration config = configBuilder.build();
 
         return createSdk(config);
     }
 
+    @NotNull
+    private static Function<CommonIamData, EnvironmentSelector> setOn(TokenSetter tokenSetter) {
+        return credentials ->
+            tokenSetter.setClientAuthentication(
+                UofClientAuthenticationImpl.PrivateKeyJwtDataImpl.create(
+                    credentials.getClientId(),
+                    credentials.getKeyId(),
+                    credentials.getPrivateKey()
+                )
+            );
+    }
+
+    private EnvironmentSelector setAccessTokenOn(TokenSetter tokenSetter) {
+        val accessToken = Optional
+            .ofNullable(authentication.getNonCommonIamCredentials())
+            .map(Credentials::getUsername)
+            .orElse("notUsed");
+        return tokenSetter.setAccessToken(accessToken);
+    }
+
     public UofSdk withOpenedFeed() throws InitException {
-        CustomConfigurationBuilder configBuilder = UofSdk
-            .getUofConfigurationBuilder()
-            .setAccessToken(sdkCredentials.getUsername())
+        UofConfiguration config = createUofConfiguration();
+        UofSdk sdk = createSdk(config);
+
+        if (configureSession) {
+            configure1Session(sdk);
+        }
+
+        sdk.open();
+        return sdk;
+    }
+
+    public UofConfiguration buildConfigurationWithoutSdk() {
+        return createUofConfiguration();
+    }
+
+    private UofConfiguration createUofConfiguration() {
+        val tokenSetter = UofSdk.getUofConfigurationBuilder();
+        val environmentSelector = comonIamCredentials
+            .map(setOn(tokenSetter))
+            .orElseGet(() -> setAccessTokenOn(tokenSetter));
+        val configBuilder = environmentSelector
             .selectCustom()
             .setApiUseSsl(false)
-            .setMessagingUsername(sdkCredentials.getUsername())
-            .setMessagingPassword(sdkCredentials.getPassword())
             .setMessagingHost(rabbitBaseUrl.getHost())
             .setMessagingPort(rabbitBaseUrl.getPort())
             .setMessagingUseSsl(false)
@@ -143,19 +233,20 @@ public final class SdkSetup {
             .setNodeId(nodeId)
             .enableUsageExport(false);
 
+        if (!authentication.isCommonIam()) {
+            configBuilder.setMessagingCredentials(
+                authentication.getNonCommonIamCredentials().getUsername(),
+                authentication.getNonCommonIamCredentials().getPassword()
+            );
+        }
+
         setHttpClientFastFailingTimeout(configBuilder);
         setHttpClientTimeout(configBuilder);
         setExceptionHandlingStrategy(configBuilder);
+        setCommonIamApiBaseUrl(configBuilder);
 
         UofConfiguration config = configBuilder.build();
-        UofSdk sdk = createSdk(config);
-
-        if (configureSession) {
-            configure1Session(sdk);
-        }
-
-        sdk.open();
-        return sdk;
+        return config;
     }
 
     private void setHttpClientTimeout(CustomConfigurationBuilder configBuilder) {
@@ -176,11 +267,22 @@ public final class SdkSetup {
         }
     }
 
+    private void setCommonIamApiBaseUrl(CustomConfigurationBuilder configBuilder) {
+        commonIamApiBaseUrl.ifPresent(baseUrl -> {
+            configBuilder.setClientAuthenticationHost(baseUrl.getHost());
+            configBuilder.setClientAuthenticationPort(baseUrl.getPort());
+            configBuilder.setClientAuthenticationUseSsl(false);
+        });
+    }
+
     private UofSdk createSdk(UofConfiguration config) {
+        UofGlobalEventsListener globalEventsListener = globalMessagesListener.orElse(
+            new NoOpUofGlobalEventsListener()
+        );
         if (rawMessagesListener.isPresent()) {
-            return new UofSdkExt(new NoOpUofGlobalEventsListener(), config, rawMessagesListener.get());
+            return new UofSdkExt(globalEventsListener, config, rawMessagesListener.get());
         } else {
-            return new UofSdk(new NoOpUofGlobalEventsListener(), config);
+            return new UofSdk(globalEventsListener, config);
         }
     }
 
@@ -190,5 +292,27 @@ public final class SdkSetup {
             .setListener(messagesListener.orElse(new NoOpUofListener()))
             .setMessageInterest(MessageInterest.AllMessages)
             .build();
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class Authentication {
+
+        private final Credentials credentials;
+
+        private static Authentication nonCommonIam(Credentials credentials) {
+            return new Authentication(credentials);
+        }
+
+        private static Authentication commonIam() {
+            return new Authentication(null);
+        }
+
+        private boolean isCommonIam() {
+            return credentials == null;
+        }
+
+        private Credentials getNonCommonIamCredentials() {
+            return credentials;
+        }
     }
 }

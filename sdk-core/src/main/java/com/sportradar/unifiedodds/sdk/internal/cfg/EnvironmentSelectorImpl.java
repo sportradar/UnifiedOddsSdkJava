@@ -34,17 +34,6 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
         this.configurationYamlReader = sdkConfigurationYamlReader;
     }
 
-    @Override
-    public ConfigurationBuilder selectReplay() {
-        configuration.updateSdkEnvironment(Environment.Replay);
-
-        return new ConfigurationBuilderImpl(
-            configuration,
-            configurationPropertiesReader,
-            configurationYamlReader
-        );
-    }
-
     /**
      * Returns a {@link CustomConfigurationBuilder} allowing the properties to be set to custom values (usefull for testing with local AMQP)
      *
@@ -65,7 +54,8 @@ class EnvironmentSelectorImpl implements EnvironmentSelector {
 
     /**
      * Returns a {@link ConfigurationBuilder} with properties set to values needed to access specified environment.
-     * (for accessing replay or custom server use selectReplay or selectCustom)
+     * For a replay server, pass {@link Environment#ReplayWithIntegrationCredentials} or
+     * {@link Environment#ReplayWithProductionCredentials}. For a custom server, use {@link #selectCustom()}.
      *
      * @param environment a {@link Environment} specifying to which environment to connect
      * @return a {@link ConfigurationBuilder} with properties set to values needed to access specified environment

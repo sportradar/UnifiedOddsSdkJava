@@ -1,4 +1,4 @@
-# Sportradar Unified Odds SDK for Java 4.x
+# Sportradar Unified Odds SDK for Java 5.x
 
 A comprehensive Java SDK that simplifies access to Sportradar's real-time odds and sports data for bookmakers. This SDK seamlessly integrates message subscriptions with RESTful API calls, providing a unified interface while handling complex recovery mechanisms automatically.
 
@@ -6,6 +6,7 @@ A comprehensive Java SDK that simplifies access to Sportradar's real-time odds a
 
 - **Upgrading from version 2.x to 3.x?** See our [Migration Guide v3](migration-guide-v3.md)
 - **Upgrading from version 3.x to 4.x?** See our [Migration Guide v4](migration-guide-v4.md)
+- **Upgrading from version 4.x to 5.x?** See our [Migration Guide v5](migration-guide-v5.md)
 
 ## 🚀 Quick Start Guide
 
@@ -24,8 +25,9 @@ MyUofListener listener = new MyUofListener();
 MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
 // Configure the SDK with your access token
-UofConfiguration config = UofSdk.getConfigurationBuilder()
+UofConfiguration config = UofSdk.getUofConfigurationBuilder()
     .setAccessToken("your-token")
+    .selectEnvironment(Environment.Integration)
     .build();
 
 // Initialize the SDK
@@ -88,8 +90,9 @@ For optimal performance, consider separating high-priority and low-priority mess
 MyUofListener listener = new MyUofListener();
 MyUofGlobalEventsListener globalEventsListener = new MyUofGlobalEventsListener();
 
-UofConfiguration config = UofSdk.getConfigurationBuilder()
+UofConfiguration config = UofSdk.getUofConfigurationBuilder()
     .setAccessToken("your-token")
+    .selectEnvironment(Environment.Integration)
     .build();
 
 UofSdk uofSdk = new UofSdk(globalEventsListener, config);
@@ -133,10 +136,11 @@ sessionBuilder.setListener(listener)
 The SDK provides English content by default. Customize language preferences using [UofConfigurationBuilder](https://sportradar.github.io/UnifiedOddsSdkJava/com/sportradar/unifiedodds/sdk/cfg/UofConfigurationBuilder.html):
 
 ```java
-UofConfiguration config = UofSdk.getConfigurationBuilder()
+UofConfiguration config = UofSdk.getUofConfigurationBuilder()
     .setAccessToken("your-token")
-    .setDefaultLocale(Locale.GERMAN)
-    .addDesiredLocales(Arrays.asList(Locale.FRENCH, Locale.SPANISH))
+    .selectEnvironment(Environment.Integration)
+    .setDefaultLanguage(Locale.GERMAN)
+    .setDesiredLanguages(Arrays.asList(Locale.FRENCH, Locale.SPANISH))
     .build();
 ```
 
@@ -176,7 +180,7 @@ Calendar cal = Calendar.getInstance();
 cal.add(Calendar.DATE, -2);
 
 ProducerManager producerManager = uofSdk.getProducerManager();
-producerManager.setProducerLastMessageTimestamp(1, cal.getTime().getTime());
+producerManager.setProducerRecoveryFromTimestamp(1, cal.getTime().getTime());
 
 // Configure sessions...
 
@@ -195,5 +199,5 @@ uofSdk.open(); // Start the feed
 ## 📚 Additional Resources
 
 - **[Complete API Documentation](https://sportradar.github.io/UnifiedOddsSdkJava/)** - Comprehensive Javadocs
-- **[Migration Guides](migration-guide-v4.md)** - Version upgrade instructions
+- **[Migration Guides](migration-guide-v5.md)** - Version upgrade instructions (see also [v3](migration-guide-v3.md), [v4](migration-guide-v4.md))
 - **[SDK Examples](sdk-example/)** - Sample implementations and use cases

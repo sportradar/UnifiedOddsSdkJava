@@ -43,8 +43,8 @@ public class ConfigureHttpClientMaxConnectionTotalTest {
             .setDefaultLanguage(anyLanguage)
             .setHttpClientMaxConnTotal(amount)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(amount, config.getApi().getHttpClientMaxConnTotal());
         assertEquals(amount, internalConfig.getHttpClientMaxConnTotal());
@@ -59,19 +59,11 @@ public class ConfigureHttpClientMaxConnectionTotalTest {
             .setDefaultLanguage(anyLanguage)
             .setHttpClientMaxConnTotal(amount)
             .build();
-        val internalConfig = new SdkInternalConfiguration(config, anyProps(), anyYaml());
-        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode, anyProps(), anyYaml());
+        val internalConfig = new SdkInternalConfiguration(config);
+        val internalConfigForReplay = new SdkInternalConfiguration(config, replayMode);
 
         assertEquals(amount, config.getApi().getHttpClientMaxConnTotal());
         assertEquals(amount, internalConfig.getRecoveryHttpClientMaxConnTotal());
         assertEquals(amount, internalConfigForReplay.getRecoveryHttpClientMaxConnTotal());
-    }
-
-    private static SdkConfigurationYamlReader anyYaml() {
-        return mock(SdkConfigurationYamlReader.class);
-    }
-
-    private static SdkConfigurationPropertiesReader anyProps() {
-        return mock(SdkConfigurationPropertiesReader.class);
     }
 }

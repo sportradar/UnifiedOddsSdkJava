@@ -5,8 +5,7 @@ package com.sportradar.unifiedodds.sdk.impl;
 
 import static com.sportradar.unifiedodds.sdk.MessageInterest.AllMessages;
 import static com.sportradar.unifiedodds.sdk.MessageInterest.PrematchMessagesOnly;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.*;
 import static com.sportradar.unifiedodds.sdk.oddsentities.ProducerStubs.stubLiveProducer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -77,13 +76,13 @@ public class UofSessionImplTest {
         return Arrays
             .asList(Environment.values())
             .stream()
-            .filter(e -> e != Replay)
-            .filter(e -> e != GlobalReplay)
+            .filter(e -> e != ReplayWithIntegrationCredentials)
+            .filter(e -> e != ReplayWithProductionCredentials)
             .toArray();
     }
 
     private static Object[] replayEnvironments() {
-        return new Environment[] { Replay, GlobalReplay };
+        return new Environment[] { ReplayWithIntegrationCredentials, ReplayWithProductionCredentials };
     }
 
     @ParameterizedTest

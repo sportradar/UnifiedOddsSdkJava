@@ -4,6 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk.internal.cfg;
 
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.ReplayWithIntegrationCredentials;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -201,7 +202,7 @@ public class ConfigurationBuilderSetup {
             anyConfig -> producerDataProvider
         )
             .setAccessTokenFromSdkProperties()
-            .selectReplay()
+            .selectEnvironment(ReplayWithIntegrationCredentials)
             .loadConfigFromSdkProperties();
     }
 
@@ -213,7 +214,7 @@ public class ConfigurationBuilderSetup {
             anyConfig -> producerDataProvider
         )
             .setAccessToken(token)
-            .selectReplay();
+            .selectEnvironment(ReplayWithIntegrationCredentials);
     }
 
     public CustomConfigurationBuilder customBuilder(Map<String, String> section) {

@@ -4,9 +4,7 @@
 
 package com.sportradar.unifiedodds.sdk;
 
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.GlobalReplay;
-import static com.sportradar.unifiedodds.sdk.cfg.Environment.Replay;
-import static java.util.Arrays.asList;
+import static com.sportradar.unifiedodds.sdk.cfg.Environment.isReplay;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -25,10 +23,7 @@ import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationPropertiesRea
 import com.sportradar.unifiedodds.sdk.internal.cfg.SdkConfigurationYamlReaderFactory;
 import com.sportradar.unifiedodds.sdk.internal.cfg.TokenSetterImpl;
 import com.sportradar.unifiedodds.sdk.internal.cfg.UofConfigurationImpl;
-import com.sportradar.unifiedodds.sdk.internal.di.ConfigurationInjectingModule;
-import com.sportradar.unifiedodds.sdk.internal.di.CustomisableSdkModule;
-import com.sportradar.unifiedodds.sdk.internal.di.InternalCachesProvider;
-import com.sportradar.unifiedodds.sdk.internal.di.MasterInjectionModule;
+import com.sportradar.unifiedodds.sdk.internal.di.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.*;
 import com.sportradar.unifiedodds.sdk.internal.impl.apireaders.WhoAmIReader;
 import com.sportradar.unifiedodds.sdk.internal.impl.rabbitconnection.AmqpConnectionFactory;
@@ -172,13 +167,7 @@ public class UofSdk implements AutoCloseable {
 
         this.uofConfiguration = config;
 
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, isReplay(config.getEnvironment()));
         this.injector = createSdkInjector(listener, null);
         checkLocales();
         this.uofExtListener = null;
@@ -203,13 +192,7 @@ public class UofSdk implements AutoCloseable {
 
         this.uofConfiguration = config;
 
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, isReplay(config.getEnvironment()));
         this.injector = createSdkInjector(listener, null);
         this.uofExtListener = uofExtListener;
     }
@@ -235,13 +218,7 @@ public class UofSdk implements AutoCloseable {
 
         this.uofConfiguration = config;
 
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                useReplay,
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, useReplay);
         this.injector = createSdkInjector(listener, customisableSdkModule);
         this.uofExtListener = uofExtListener;
     }
@@ -260,13 +237,7 @@ public class UofSdk implements AutoCloseable {
         logger.info("UofSdk instance created with \n{}", config);
 
         this.uofConfiguration = config;
-        this.oddsFeedConfiguration =
-            new SdkInternalConfiguration(
-                config,
-                asList(Replay, GlobalReplay).contains(config.getEnvironment()),
-                SdkConfigurationPropertiesReaderFactory.create(),
-                SdkConfigurationYamlReaderFactory.create()
-            );
+        this.oddsFeedConfiguration = new SdkInternalConfiguration(config, isReplay(config.getEnvironment()));
         this.injector = injector;
 
         logger.warn("UofSdk initialised with a provided predefined injector");
@@ -301,12 +272,7 @@ public class UofSdk implements AutoCloseable {
         return Guice.createInjector(
             new ConfigurationInjectingModule(
                 uofConfiguration,
-                new SdkInternalConfiguration(
-                    uofConfiguration,
-                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment()),
-                    SdkConfigurationPropertiesReaderFactory.create(),
-                    SdkConfigurationYamlReaderFactory.create()
-                )
+                new SdkInternalConfiguration(uofConfiguration, isReplay(uofConfiguration.getEnvironment()))
             )
         );
     }
@@ -607,11 +573,14 @@ public class UofSdk implements AutoCloseable {
         } catch (Exception ex) {
             logger.warn("Error during close - InternalCachesProvider", ex);
         }
+
         try {
-            SdkMeterProvider usageMeterProvider = injector.getInstance(
-                Key.get(SdkMeterProvider.class, Names.named("UsageMeterProvider"))
-            );
-            usageMeterProvider.close();
+            injector.getInstance(Key.get(MetricsRegisterer.class)).close();
+        } catch (Exception ex) {
+            logger.warn("Error during close - MetricsRegisterer", ex);
+        }
+        try {
+            injector.getInstance(Key.get(SdkMeterProvider.class, Names.named("UsageMeterProvider"))).close();
         } catch (Exception ex) {
             logger.warn("Error during close - UsageMeterProvider", ex);
         }
@@ -684,12 +653,7 @@ public class UofSdk implements AutoCloseable {
         return Guice.createInjector(
             new MasterInjectionModule(
                 listener,
-                new SdkInternalConfiguration(
-                    uofConfiguration,
-                    asList(Replay, GlobalReplay).contains(uofConfiguration.getEnvironment()),
-                    SdkConfigurationPropertiesReaderFactory.create(),
-                    SdkConfigurationYamlReaderFactory.create()
-                ),
+                new SdkInternalConfiguration(uofConfiguration, isReplay(uofConfiguration.getEnvironment())),
                 this.uofConfiguration,
                 customisableSdkModule
             )
